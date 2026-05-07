@@ -1,0 +1,44 @@
+# Ignore everything in Foundry Data by default
+/*
+
+# Keep this gitignore file
+!/.gitignore
+
+# -----------------------------
+# Track only this module
+# -----------------------------
+
+!/modules/
+/modules/*
+!/modules/fabula-ultima-companion/
+!/modules/fabula-ultima-companion/**
+
+# Ignore old nested Git backup if it exists
+/modules/fabula-ultima-companion/.git_BACKUP/
+
+# -----------------------------
+# Track only this world
+# -----------------------------
+
+!/worlds/
+/worlds/*
+!/worlds/fabula-ultima-2/
+!/worlds/fabula-ultima-2/**
+
+# Do not upload world assets folder
+/worlds/fabula-ultima-2/assets/
+/worlds/fabula-ultima-2/assets/**
+
+# -----------------------------
+# Ignore archive/temp files
+# -----------------------------
+
+*.zip
+*.rar
+*.7z
+*.tmp
+*.temp
+*.lock
+
+.DS_Store
+Thumbs.db

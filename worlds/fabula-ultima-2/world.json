@@ -1,0 +1,53 @@
+{
+  "title": "Fabula Ultima",
+  "id": "fabula-ultima-2",
+  "system": "custom-system-builder",
+  "coreVersion": "12.343",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12.343"
+  },
+  "systemVersion": "4.8.5",
+  "safeMode": false,
+  "background": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Art/posterwwtt3-2.jpg",
+  "lastPlayed": "Fri May 08 2026 01:26:32 GMT+0700 (Indochina Time)",
+  "playtime": 4737043,
+  "packs": [
+    {
+      "label": "Fabula Ultima Class",
+      "type": "Actor",
+      "name": "fabula-ultima-class",
+      "path": "packs/fabula-ultima-class",
+      "system": "custom-system-builder",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "label": "Skill",
+      "type": "Item",
+      "name": "skill",
+      "path": "packs/skill",
+      "system": "custom-system-builder",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "label": "Action System",
+      "type": "Macro",
+      "name": "action-system",
+      "path": "packs/action-system",
+      "system": "custom-system-builder",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    }
+  ]
+}
