@@ -16,6 +16,7 @@
   "socket": true,
     "scripts": [
   "scripts/shared-utils.js",
+  "scripts/reload-broadcast.js",
   "scripts/db-resolver.js",
   "scripts/auto-crisis-detection.js",
   "scripts/richtext-script-converter-api.js",
