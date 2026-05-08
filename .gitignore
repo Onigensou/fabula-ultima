@@ -25,17 +25,29 @@
 !/worlds/fabula-ultima-2/
 !/worlds/fabula-ultima-2/**
 
-# Do not upload world assets folder
+# Do not track world assets (large binary files)
 /worlds/fabula-ultima-2/assets/
-/worlds/fabula-ultima-2/assets/**
+
+# Do not track live world session data (LevelDB - binary, always changing)
+# This covers actors, items, scenes, fog, combat, chat, etc. in the live world.
+# Track game objects via JSON-format compendium packs instead (see below).
+/worlds/fabula-ultima-2/data/
 
 # -----------------------------
-# Ignore safe Foundry/LevelDB runtime noise
+# Ignore LevelDB runtime files everywhere in world packs
+# Packs should use "format": "json" in world.json so only .json files appear here.
 # -----------------------------
 
-/worlds/fabula-ultima-2/data/**/LOG
-/worlds/fabula-ultima-2/data/**/LOG.old
-/worlds/fabula-ultima-2/data/**/LOCK
+**/*.ldb
+**/MANIFEST-*
+**/CURRENT
+**/LOCK
+**/LOG
+**/LOG.old
+
+# Numbered LevelDB write-ahead logs (e.g. 001234.log)
+# Note: does NOT ignore module script .js files
+worlds/fabula-ultima-2/packs/**/*.log
 
 # -----------------------------
 # Ignore archive/temp files
