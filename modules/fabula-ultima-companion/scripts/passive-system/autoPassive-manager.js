@@ -627,6 +627,32 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
         });
       }
 
+      // Broadcast a passive UI card so players see that this reaction triggered.
+      // PassiveLogic-Action/Resolution skip their card broadcast for autoPassive
+      // executions; we emit the single card here instead.
+      try {
+        const passiveCardApi =
+          globalThis.FUCompanion?.api?.passiveCard?.broadcast ?? null;
+        if (typeof passiveCardApi === "function" && item) {
+          const cardAttackerUuid = token?.document?.uuid ?? token?.uuid ?? null;
+          await passiveCardApi({
+            title: item.name ?? "Reaction",
+            attackerUuid: cardAttackerUuid,
+            options: { executionMode: "reaction_passive_grant" }
+          });
+          log("PASSIVE CARD broadcast done (reaction_passive_grant)", {
+            itemName: item.name,
+            cardAttackerUuid
+          });
+        }
+      } catch (cardErr) {
+        warn("Passive card broadcast threw; continuing.", {
+          actorName: actor?.name,
+          itemName: item?.name,
+          err: String(cardErr?.message ?? cardErr)
+        });
+      }
+
 const preferredPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);
 
 const inheritedDamageBatchId = resolveInheritedDamageBatchId({
