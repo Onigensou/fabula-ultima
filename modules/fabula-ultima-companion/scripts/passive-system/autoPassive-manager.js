@@ -604,18 +604,21 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
         };
       }
 
-      // Apply declarative resource grant declared on this row, if any.
+      // Apply the declarative effect referenced by this row, if any.
+      // Effect rows live on the same item in reaction_effect_table; the
+      // trigger row's reaction_effect_ref names which effect to dispatch.
       // Independent of the reaction skill's own ACE/logic — fires once per
       // matched row, before the skill goes through the action pipeline.
       try {
         const grantApi = window["oni.ReactionGrant"]
           ?? globalThis.FUCompanion?.api?.reactionGrant
           ?? null;
-        if (grantApi?.applyRowGrant) {
-          await grantApi.applyRowGrant(row, token, game.combat);
+        const effectRef = row?.reaction_effect_ref;
+        if (grantApi?.applyEffectByLabel && effectRef) {
+          await grantApi.applyEffectByLabel(item, effectRef, token, game.combat);
         }
       } catch (grantErr) {
-        warn("Reaction grant application threw; continuing with skill execution.", {
+        warn("Reaction effect dispatch threw; continuing with skill execution.", {
           actorName: actor?.name,
           itemName: item?.name,
           triggerKey,

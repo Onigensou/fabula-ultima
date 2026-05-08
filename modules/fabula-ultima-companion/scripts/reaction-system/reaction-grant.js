@@ -1,18 +1,24 @@
 /**
- * [ONI] Reaction System — Grant Output Layer (Foundry VTT v12)
+ * [ONI] Reaction System — Effect Output Layer (Foundry VTT v12)
  * ---------------------------------------------------------------------------
- * Declarative resource-grant output for reaction_config_table rows.
+ * Declarative reaction-effect dispatch, table-linked.
  *
- * A reaction row may carry:
- *   reaction_grant_resource   — one of "" | hp | mp | ip | zero_power | zenit | enmity
- *   reaction_grant_amount     — signed integer; positive grants, negative drains.
- *                               Empty or 0 disables the grant.
- *   reaction_grant_target     — "" | self | ally | enemy | all (default: self)
+ * Skills hold two sibling dynamic tables:
+ *
+ *   reaction_config_table  — trigger rows. Each row carries a `reaction_effect_ref`
+ *                            string that identifies which effect to fire when
+ *                            the row matches. Blank ref = no declarative effect.
+ *
+ *   reaction_effect_table  — effect rows. Each row has:
+ *                              effect_label   (string identifier — what trigger rows reference)
+ *                              effect_kind    ("grant" today; extensible later)
+ *                              grant_resource / grant_amount / grant_target  (when kind=grant)
  *
  * When a row matches and fires (passive auto-fire OR manual reaction-skill
- * selection), applyRowGrant(...) updates the resolved target actors directly.
- * The chosen reaction skill still runs through the action pipeline as before;
- * the grant is independent and does not require ACE/PassiveLogic on the skill.
+ * selection), applyEffectByLabel(...) looks up the effect on the same item
+ * by label, dispatches by kind, and applies the effect. The chosen reaction
+ * skill still runs through the action pipeline as before; the effect is
+ * independent and does not require ACE/PassiveLogic on the skill.
  *
  * Group semantics (mirrors reaction_debuff_count_target):
  *   self  → reactor's actor
@@ -54,7 +60,32 @@ Hooks.once("ready", () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Small helpers
+  // Effect-table reading
+  // ---------------------------------------------------------------------------
+  function readEffectRows(item) {
+    const sys = item?.system ?? {};
+    const props = sys.props ?? sys;
+    const tbl = props?.reaction_effect_table;
+    if (!tbl) return [];
+    if (Array.isArray(tbl)) return tbl.filter(r => r && typeof r === "object");
+    if (typeof tbl === "object") return Object.values(tbl).filter(r => r && typeof r === "object");
+    return [];
+  }
+
+  function findEffectByLabel(item, label) {
+    if (!item || !label) return null;
+    const want = String(label).trim();
+    if (!want) return null;
+    const rows = readEffectRows(item);
+    for (const row of rows) {
+      const have = (row.effect_label ?? "").toString().trim();
+      if (have === want) return row;
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disposition / ownership / number reading
   // ---------------------------------------------------------------------------
   function normalizeDisposition(disposition) {
     if (disposition === -2) return 0;   // Secret → treat as Neutral
@@ -143,7 +174,7 @@ Hooks.once("ready", () => {
   }
 
   // ---------------------------------------------------------------------------
-  // Per-actor application
+  // Per-actor resource update
   // ---------------------------------------------------------------------------
   async function applyOneActor(actor, resourceKey, delta) {
     const def = RESOURCE_MAP[resourceKey];
@@ -197,23 +228,10 @@ Hooks.once("ready", () => {
   }
 
   // ---------------------------------------------------------------------------
-  // Public entry
+  // Effect dispatch
   // ---------------------------------------------------------------------------
-  // applyRowGrant(row, reactionToken, combat?)
-  //   → Promise<{ ok, skipped?, reason?, applied: [{actorUuid, actorName, ok, ...}] }>
-  //
-  // Idempotency note: this WILL fire every time it's called. The reaction
-  // system's existing dedupe (executionKey in autoPassive-manager) gates how
-  // often the row fires, not us.
-  async function applyRowGrant(row, reactionToken, combat = game.combat) {
-    if (!row || typeof row !== "object") {
-      return { ok: false, reason: "missing_row", applied: [] };
-    }
-    if (!reactionToken) {
-      return { ok: false, reason: "missing_reaction_token", applied: [] };
-    }
-
-    const resourceKey = (row.reaction_grant_resource ?? "").toString().trim().toLowerCase();
+  async function applyGrantEffect(effectRow, reactionToken, combat) {
+    const resourceKey = (effectRow.grant_resource ?? "").toString().trim().toLowerCase();
     if (!resourceKey) {
       return { ok: true, skipped: true, reason: "no_resource", applied: [] };
     }
@@ -221,9 +239,9 @@ Hooks.once("ready", () => {
       return { ok: false, reason: "unknown_resource", resourceKey, applied: [] };
     }
 
-    const amountStr = (row.reaction_grant_amount === null || row.reaction_grant_amount === undefined)
+    const amountStr = (effectRow.grant_amount === null || effectRow.grant_amount === undefined)
       ? ""
-      : String(row.reaction_grant_amount).trim();
+      : String(effectRow.grant_amount).trim();
     if (amountStr === "") {
       return { ok: true, skipped: true, reason: "no_amount", applied: [] };
     }
@@ -232,12 +250,12 @@ Hooks.once("ready", () => {
       return { ok: true, skipped: true, reason: "zero_or_invalid_amount", applied: [] };
     }
 
-    const targetMode = (row.reaction_grant_target ?? "self").toString().trim().toLowerCase() || "self";
+    const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
     const targetActors = resolveTargetActors(targetMode, reactionToken, combat);
     if (!targetActors.length) {
-      console.warn(TAG, "applyRowGrant: no target actors resolved", {
+      console.warn(TAG, "applyGrantEffect: no target actors resolved", {
         targetMode,
-        reactionTokenName: reactionToken?.document?.name,
+        reactorName: reactionToken?.actor?.name,
         hasCombat: !!combat
       });
       return { ok: false, reason: "no_targets", applied: [] };
@@ -248,29 +266,68 @@ Hooks.once("ready", () => {
       const res = await applyOneActor(actor, resourceKey, amount);
       applied.push({ actorUuid: actor.uuid, actorName: actor.name, ...res });
     }
-
-    console.log(TAG, "applyRowGrant complete", {
-      resourceKey,
-      amount,
-      targetMode,
-      reactorName: reactionToken?.actor?.name,
-      results: applied
-    });
-
-    return { ok: true, applied };
+    return { ok: true, applied, kind: "grant", resourceKey, amount, targetMode };
   }
 
   // ---------------------------------------------------------------------------
-  // Convenience: fire grants for every row in a chosen reaction group
-  // (used by the manual-reaction path, where the user picks a skill that may
-  // span multiple matching rows).
-  async function applyGrantsForGroup(chosenGroup, reactionToken, combat = game.combat) {
+  // Public entries
+  // ---------------------------------------------------------------------------
+  // applyEffectByLabel(item, effectLabel, reactionToken, combat?)
+  //   → Promise<{ ok, skipped?, reason?, applied: [...] }>
+  //
+  // Looks up an effect row on `item.system.props.reaction_effect_table` by
+  // its `effect_label`, dispatches by `effect_kind`. Blank label = silent
+  // skip (the trigger row simply has no declarative effect).
+  async function applyEffectByLabel(item, effectLabel, reactionToken, combat = game.combat) {
+    if (!item) return { ok: false, reason: "missing_item", applied: [] };
+    if (!reactionToken) return { ok: false, reason: "missing_reaction_token", applied: [] };
+
+    const ref = (effectLabel ?? "").toString().trim();
+    if (!ref) return { ok: true, skipped: true, reason: "no_effect_ref", applied: [] };
+
+    const effectRow = findEffectByLabel(item, ref);
+    if (!effectRow) {
+      console.warn(TAG, `applyEffectByLabel: no effect with label "${ref}" on item "${item?.name}"`);
+      return { ok: false, reason: "effect_not_found", effectLabel: ref, applied: [] };
+    }
+
+    const kind = (effectRow.effect_kind ?? "").toString().trim().toLowerCase() || "grant";
+    let result;
+    switch (kind) {
+      case "grant":
+        result = await applyGrantEffect(effectRow, reactionToken, combat);
+        break;
+      default:
+        console.warn(TAG, `applyEffectByLabel: unknown effect_kind "${kind}" on label "${ref}"`);
+        return { ok: false, reason: "unknown_effect_kind", effectKind: kind, effectLabel: ref, applied: [] };
+    }
+
+    console.log(TAG, "applyEffectByLabel complete", {
+      itemName: item?.name,
+      effectLabel: ref,
+      kind,
+      reactorName: reactionToken?.actor?.name,
+      result
+    });
+    return result;
+  }
+
+  // applyEffectsForGroup(chosenGroup, reactionToken, combat?)
+  // Iterates every matched row of every entry in the chosen reaction group
+  // and applies the effect referenced by each row's reaction_effect_ref.
+  // Used by the manual-reaction path.
+  async function applyEffectsForGroup(chosenGroup, reactionToken, combat = game.combat) {
     const out = [];
-    if (!chosenGroup || !Array.isArray(chosenGroup.entries)) return out;
-    for (const entry of chosenGroup.entries) {
+    if (!chosenGroup) return out;
+    const entries = Array.isArray(chosenGroup.entries) ? chosenGroup.entries : [];
+    for (const entry of entries) {
+      const item = entry?.item ?? chosenGroup.item ?? null;
+      if (!item) continue;
       const rows = Array.isArray(entry?.rows) ? entry.rows : [];
       for (const row of rows) {
-        const res = await applyRowGrant(row, reactionToken, combat);
+        const ref = row?.reaction_effect_ref;
+        if (!ref) continue;
+        const res = await applyEffectByLabel(item, ref, reactionToken, combat);
         out.push(res);
       }
     }
@@ -281,8 +338,10 @@ Hooks.once("ready", () => {
   // Export
   // ---------------------------------------------------------------------------
   window[KEY] = {
-    applyRowGrant,
-    applyGrantsForGroup,
+    applyEffectByLabel,
+    applyEffectsForGroup,
+    findEffectByLabel,
+    readEffectRows,
     RESOURCE_MAP
   };
 
