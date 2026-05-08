@@ -609,13 +609,19 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
       // trigger row's reaction_effect_ref names which effect to dispatch.
       // Independent of the reaction skill's own ACE/logic — fires once per
       // matched row, before the skill goes through the action pipeline.
+      let grantApplied = false;
       try {
         const grantApi = window["oni.ReactionGrant"]
           ?? globalThis.FUCompanion?.api?.reactionGrant
           ?? null;
         const effectRef = row?.reaction_effect_ref;
         if (grantApi?.applyEffectByLabel && effectRef) {
-          await grantApi.applyEffectByLabel(item, effectRef, token, game.combat);
+          const grantResult = await grantApi.applyEffectByLabel(item, effectRef, token, game.combat);
+          grantApplied =
+            !!grantResult?.ok &&
+            !grantResult?.skipped &&
+            Array.isArray(grantResult?.applied) &&
+            grantResult.applied.some(a => a?.ok && !a?.noop);
         }
       } catch (grantErr) {
         warn("Reaction effect dispatch threw; continuing with skill execution.", {
@@ -627,30 +633,33 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
         });
       }
 
-      // Broadcast a passive UI card so players see that this reaction triggered.
+      // Broadcast a passive UI card only when a grant actually landed.
       // PassiveLogic-Action/Resolution skip their card broadcast for autoPassive
-      // executions; we emit the single card here instead.
-      try {
-        const passiveCardApi =
-          globalThis.FUCompanion?.api?.passiveCard?.broadcast ?? null;
-        if (typeof passiveCardApi === "function" && item) {
-          const cardAttackerUuid = token?.document?.uuid ?? token?.uuid ?? null;
-          await passiveCardApi({
-            title: item.name ?? "Reaction",
-            attackerUuid: cardAttackerUuid,
-            options: { executionMode: "reaction_passive_grant" }
-          });
-          log("PASSIVE CARD broadcast done (reaction_passive_grant)", {
-            itemName: item.name,
-            cardAttackerUuid
+      // executions, so skill-bodied passives still rely on the action card they
+      // produce downstream. The grant path produces no such card on its own.
+      if (grantApplied) {
+        try {
+          const passiveCardApi =
+            globalThis.FUCompanion?.api?.passiveCard?.broadcast ?? null;
+          if (typeof passiveCardApi === "function" && item) {
+            const cardAttackerUuid = token?.document?.uuid ?? token?.uuid ?? null;
+            await passiveCardApi({
+              title: item.name ?? "Reaction",
+              attackerUuid: cardAttackerUuid,
+              options: { executionMode: "reaction_passive_grant" }
+            });
+            log("PASSIVE CARD broadcast done (reaction_passive_grant)", {
+              itemName: item.name,
+              cardAttackerUuid
+            });
+          }
+        } catch (cardErr) {
+          warn("Passive card broadcast threw; continuing.", {
+            actorName: actor?.name,
+            itemName: item?.name,
+            err: String(cardErr?.message ?? cardErr)
           });
         }
-      } catch (cardErr) {
-        warn("Passive card broadcast threw; continuing.", {
-          actorName: actor?.name,
-          itemName: item?.name,
-          err: String(cardErr?.message ?? cardErr)
-        });
       }
 
 const preferredPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);

@@ -103,35 +103,40 @@ Hooks.once("ready", () => {
       label: "At the start of conflict",
       bucket: "conflict_start",
       subjectFrom: null,
-      filters: []
+      filters: [],
+      aliases: ["start_of_conflict"] // raw form emitted by reaction-phaseHandler
     },
     {
       key: "round_start",
       label: "At the start of the Round",
       bucket: "round_start",
       subjectFrom: null,
-      filters: ["debuff_count"]
+      filters: ["debuff_count"],
+      aliases: ["start_of_round"]
     },
     {
       key: "round_end",
       label: "At the end of the Round",
       bucket: "round_end",
       subjectFrom: null,
-      filters: ["debuff_count"]
+      filters: ["debuff_count"],
+      aliases: ["end_of_round"]
     },
     {
       key: "turn_start",
       label: "At the start of a turn",
       bucket: "turn_start",
       subjectFrom: SUBJECT_TURN,
-      filters: ["source", "debuff_count"]
+      filters: ["source", "debuff_count"],
+      aliases: ["start_of_turn"]
     },
     {
       key: "turn_end",
       label: "At the end of a turn",
       bucket: "turn_end",
       subjectFrom: SUBJECT_TURN,
-      filters: ["source", "debuff_count"]
+      filters: ["source", "debuff_count"],
+      aliases: ["end_of_turn"]
     },
 
     // ----- Action declaration / check triggers -------------------------------
