@@ -619,6 +619,21 @@ Hooks.once("ready", () => {
         sourceActionRef
       });
 
+      // Apply declarative resource grants from every matching row of the
+      // chosen reaction. Fires once per matched row, before the skill goes
+      // through the action pipeline.
+      try {
+        const grantApi = window["oni.ReactionGrant"]
+          ?? globalThis.FUCompanion?.api?.reactionGrant
+          ?? null;
+        if (grantApi?.applyGrantsForGroup) {
+          const reactToken = token ?? actor?.getActiveTokens?.(true, true)?.[0] ?? null;
+          await grantApi.applyGrantsForGroup(chosenGroup, reactToken, game.combat);
+        }
+      } catch (grantErr) {
+        console.warn("[ReactionChooseSkill] Reaction grant application threw; continuing with skill execution.", grantErr);
+      }
+
       window.__PAYLOAD = payload;
       await ADF.execute({ __AUTO: true, __PAYLOAD: payload });
     }

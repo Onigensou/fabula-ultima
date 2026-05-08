@@ -604,6 +604,26 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
         };
       }
 
+      // Apply declarative resource grant declared on this row, if any.
+      // Independent of the reaction skill's own ACE/logic — fires once per
+      // matched row, before the skill goes through the action pipeline.
+      try {
+        const grantApi = window["oni.ReactionGrant"]
+          ?? globalThis.FUCompanion?.api?.reactionGrant
+          ?? null;
+        if (grantApi?.applyRowGrant) {
+          await grantApi.applyRowGrant(row, token, game.combat);
+        }
+      } catch (grantErr) {
+        warn("Reaction grant application threw; continuing with skill execution.", {
+          actorName: actor?.name,
+          itemName: item?.name,
+          triggerKey,
+          rowIndex,
+          err: String(grantErr?.message ?? grantErr)
+        });
+      }
+
 const preferredPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);
 
 const inheritedDamageBatchId = resolveInheritedDamageBatchId({

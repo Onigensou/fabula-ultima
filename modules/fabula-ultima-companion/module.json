@@ -127,6 +127,7 @@
   "scripts/battle-end/battleEnd-summaryUI-listener.js",
   "scripts/reaction-system/reaction-triggers.config.js",
   "scripts/reaction-system/reaction-triggerCore.js",
+  "scripts/reaction-system/reaction-grant.js",
   "scripts/reaction-system/reaction-buttonUI.js",
   "scripts/reaction-system/reaction-chooseSkill.js",
   "scripts/reaction-system/reaction-rebuildActionCard.js",

@@ -1820,6 +1820,118 @@
                           "readonlyPredefined": false
                         },
                         {
+                          "key": "reaction_grant_resource",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Resource to grant when this reaction fires (independent of the chosen skill's effects). Leave blank to disable.",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "",
+                              "value": "—"
+                            },
+                            {
+                              "key": "hp",
+                              "value": "HP"
+                            },
+                            {
+                              "key": "mp",
+                              "value": "MP"
+                            },
+                            {
+                              "key": "ip",
+                              "value": "IP"
+                            },
+                            {
+                              "key": "zero_power",
+                              "value": "Zero Power"
+                            },
+                            {
+                              "key": "zenit",
+                              "value": "Zenit"
+                            },
+                            {
+                              "key": "enmity",
+                              "value": "Enmity"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Grant",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_grant_amount",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Amount to grant. Negative values drain. Empty or 0 disables the grant.",
+                          "visibilityFormula": "not(equalText(sameRow(\"reaction_grant_resource\",''), \"\"))",
+                          "type": "numberField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "allowDecimal": false,
+                          "minVal": "",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text",
+                          "align": "left",
+                          "colName": "Amount",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_grant_target",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Who receives the grant (relative to the reactor). Default: self. Ally includes the reactor.",
+                          "visibilityFormula": "not(equalText(sameRow(\"reaction_grant_resource\",''), \"\"))",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "self",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            },
+                            {
+                              "key": "ally",
+                              "value": "Ally"
+                            },
+                            {
+                              "key": "enemy",
+                              "value": "Enemy"
+                            },
+                            {
+                              "key": "all",
+                              "value": "All"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Recipient",
+                          "readonlyPredefined": false
+                        },
+                        {
                           "key": "reaction_isPassive",
                           "colSpan": 1,
                           "rowSpan": 1,
