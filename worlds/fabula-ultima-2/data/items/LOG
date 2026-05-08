@@ -1,6 +1,33 @@
-2026/05/08-01:26:29.038 241c Recovering log #6412
-2026/05/08-01:26:29.050 241c Delete type=0 #6412
-2026/05/08-01:26:29.050 241c Delete type=3 #6411
-2026/05/08-01:43:50.264 6120 Level-0 table #6416: started
-2026/05/08-01:43:50.279 6120 Level-0 table #6416: 413103 bytes OK
-2026/05/08-01:43:50.283 6120 Delete type=0 #6414
+2026/05/08-22:10:47.849 1dbc Recovering log #6415
+2026/05/08-22:10:47.854 1dbc Level-0 table #6418: started
+2026/05/08-22:10:47.862 1dbc Level-0 table #6418: 106977 bytes OK
+2026/05/08-22:10:47.874 1dbc Delete type=0 #6415
+2026/05/08-22:10:47.874 1dbc Delete type=3 #6413
+2026/05/08-22:10:47.957 4cec Compacting 1@1 + 8@2 files
+2026/05/08-22:10:48.005 4cec Generated table #6420@1: 208 keys, 2113952 bytes
+2026/05/08-22:10:48.063 4cec Generated table #6421@1: 205 keys, 2112491 bytes
+2026/05/08-22:10:48.118 4cec Generated table #6422@1: 209 keys, 2108130 bytes
+2026/05/08-22:10:48.181 4cec Generated table #6423@1: 216 keys, 2116197 bytes
+2026/05/08-22:10:48.246 4cec Generated table #6424@1: 212 keys, 2119024 bytes
+2026/05/08-22:10:48.294 4cec Generated table #6425@1: 207 keys, 2114478 bytes
+2026/05/08-22:10:48.351 4cec Generated table #6426@1: 210 keys, 2111812 bytes
+2026/05/08-22:10:48.400 4cec Generated table #6427@1: 576 keys, 2069013 bytes
+2026/05/08-22:10:48.400 4cec Compacted 1@1 + 8@2 files => 16865097 bytes
+2026/05/08-22:10:48.404 4cec compacted to: files[ 1 0 8 0 0 0 0 ]
+2026/05/08-22:10:48.404 4cec Delete type=2 #6291
+2026/05/08-22:10:48.405 4cec Delete type=2 #6292
+2026/05/08-22:10:48.405 4cec Delete type=2 #6317
+2026/05/08-22:10:48.405 4cec Delete type=2 #6318
+2026/05/08-22:10:48.406 4cec Delete type=2 #6319
+2026/05/08-22:10:48.406 4cec Delete type=2 #6320
+2026/05/08-22:10:48.407 4cec Delete type=2 #6321
+2026/05/08-22:10:48.407 4cec Delete type=2 #6322
+2026/05/08-22:10:48.407 4cec Delete type=2 #6416
+2026/05/08-22:10:50.387 4cec Moved #6418 to level-1 106977 bytes OK: files[ 0 1 8 0 0 0 0 ]
+2026/05/08-22:10:58.600 4cec Compacting 1@1 + 4@2 files
+2026/05/08-22:10:58.652 4cec Generated table #6428@1: 211 keys, 2115826 bytes
+2026/05/08-22:10:58.701 4cec Generated table #6429@1: 208 keys, 2116515 bytes
+2026/05/08-22:10:58.749 4cec Generated table #6430@1: 209 keys, 2114816 bytes
+2026/05/08-22:10:58.796 4cec Generated table #6431@1: 208 keys, 2033847 bytes
+2026/05/08-22:10:58.796 4cec Compacted 1@1 + 4@2 files => 8381004 bytes
+2026/05/08-22:10:58.799 4cec compacted to: files[ 0 0 8 0 0 0 0 ]

@@ -1,18 +1,16 @@
-2026/05/08-01:26:29.302 5f3c Recovering log #9676
-2026/05/08-01:26:29.304 5f3c Level-0 table #9682: started
-2026/05/08-01:26:29.314 5f3c Level-0 table #9682: 336795 bytes OK
-2026/05/08-01:26:29.326 5f3c Delete type=0 #9676
-2026/05/08-01:26:29.326 5f3c Delete type=3 #9674
-2026/05/08-01:26:29.397 6120 Moved #9682 to level-1 336795 bytes OK: files[ 0 1 6 0 0 0 0 ]
-2026/05/08-01:26:32.122 6120 Compacting 1@1 + 4@2 files
-2026/05/08-01:26:32.175 6120 Generated table #9684@1: 3405 keys, 2132489 bytes
-2026/05/08-01:26:32.224 6120 Generated table #9685@1: 1008 keys, 2132236 bytes
-2026/05/08-01:26:32.272 6120 Generated table #9686@1: 419 keys, 2114175 bytes
-2026/05/08-01:26:32.323 6120 Generated table #9687@1: 376 keys, 2111863 bytes
-2026/05/08-01:26:32.323 6120 Compacted 1@1 + 4@2 files => 8490763 bytes
-2026/05/08-01:26:32.326 6120 compacted to: files[ 0 0 6 0 0 0 0 ]
-2026/05/08-01:26:32.326 6120 Delete type=2 #9677
-2026/05/08-01:26:32.327 6120 Delete type=2 #9678
-2026/05/08-01:26:32.328 6120 Delete type=2 #9679
-2026/05/08-01:26:32.328 6120 Delete type=2 #9680
-2026/05/08-01:26:32.329 6120 Delete type=2 #9682
+2026/05/08-22:10:48.302 4da0 Recovering log #9683
+2026/05/08-22:10:48.302 4da0 Level-0 table #9689: started
+2026/05/08-22:10:48.306 4da0 Level-0 table #9689: 8804 bytes OK
+2026/05/08-22:10:48.314 4da0 Delete type=0 #9683
+2026/05/08-22:10:48.314 4da0 Delete type=3 #9681
+2026/05/08-22:10:48.458 4cec Moved #9689 to level-1 8804 bytes OK: files[ 0 1 6 0 0 0 0 ]
+2026/05/08-22:10:51.367 4cec Compacting 1@1 + 3@2 files
+2026/05/08-22:10:51.419 4cec Generated table #9691@1: 1008 keys, 2132236 bytes
+2026/05/08-22:10:51.467 4cec Generated table #9692@1: 419 keys, 2114175 bytes
+2026/05/08-22:10:51.514 4cec Generated table #9693@1: 376 keys, 2111590 bytes
+2026/05/08-22:10:51.514 4cec Compacted 1@1 + 3@2 files => 6358001 bytes
+2026/05/08-22:10:51.518 4cec compacted to: files[ 0 0 6 0 0 0 0 ]
+2026/05/08-22:10:51.518 4cec Delete type=2 #9685
+2026/05/08-22:10:51.519 4cec Delete type=2 #9686
+2026/05/08-22:10:51.519 4cec Delete type=2 #9687
+2026/05/08-22:10:51.519 4cec Delete type=2 #9689
