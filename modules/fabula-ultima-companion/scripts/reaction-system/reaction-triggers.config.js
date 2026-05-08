@@ -23,6 +23,7 @@
  *     filters:        which row filters apply
  *                     ["source"]                          → reaction_source matters
  *                     ["source", "damage_type"]           → also reaction_damage_type
+ *                     ["source", "debuff_count"]          → also reaction_debuff_count_*
  *     aliases:        deprecated/raw payload trigger strings that map to this key
  *   }
  *
@@ -109,28 +110,28 @@ Hooks.once("ready", () => {
       label: "At the start of the Round",
       bucket: "round_start",
       subjectFrom: null,
-      filters: []
+      filters: ["debuff_count"]
     },
     {
       key: "round_end",
       label: "At the end of the Round",
       bucket: "round_end",
       subjectFrom: null,
-      filters: []
+      filters: ["debuff_count"]
     },
     {
       key: "turn_start",
       label: "At the start of a turn",
       bucket: "turn_start",
       subjectFrom: SUBJECT_TURN,
-      filters: ["source"]
+      filters: ["source", "debuff_count"]
     },
     {
       key: "turn_end",
       label: "At the end of a turn",
       bucket: "turn_end",
       subjectFrom: SUBJECT_TURN,
-      filters: ["source"]
+      filters: ["source", "debuff_count"]
     },
 
     // ----- Action declaration / check triggers -------------------------------
@@ -269,7 +270,7 @@ Hooks.once("ready", () => {
       label: "When a creature gains a Status Effect",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
-      filters: ["source"]
+      filters: ["source", "debuff_count"]
     },
     {
       key: "creature_enter_crisis",

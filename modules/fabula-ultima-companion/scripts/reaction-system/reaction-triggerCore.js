@@ -33,6 +33,7 @@ Hooks.once("ready", () => {
   //   extractReactionTriggers(item)
   //   reactionSourceMatchesRow(rowSource, reactionToken, triggerKey, phasePayload, combat)
   //   reactionDamageTypeMatchesRow(rowDamageType, triggerKey, phasePayload)
+  //   reactionDebuffCountMatchesRow(rowTarget, rowMin, reactionToken, triggerKey, combat)
   // ============================================================================
   (() => {
     const KEY = "oni.ReactionTriggerCore";
@@ -366,6 +367,100 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // reaction_debuff_count_* matching
+    // -------------------------------------------------------------------------
+    // Off semantics: an empty/zero `_min` always matches (filter inactive).
+    // When active, sums "Debuff"-classified active effects across the chosen
+    // group (self/ally/enemy/all, computed relative to the reactor's
+    // disposition; `ally` includes the reactor itself) and returns whether
+    // the total meets the configured minimum. Effects that are disabled or
+    // suppressed (expired but not yet removed) are skipped.
+    //
+    // Categorization is delegated to ActiveEffectManager-registry's
+    // inferCategory(), reachable via globalThis.FUCompanion.api.activeEffectRegistry.
+    // If that helper is unavailable when the filter is active, we fail-closed
+    // (no match) — better to drop a reaction than to mis-fire.
+    function reactionDebuffCountMatchesRow(rowTargetRaw, rowMinRaw, reactionToken, triggerKey, combat) {
+      const rawMin = (rowMinRaw === null || rowMinRaw === undefined) ? "" : String(rowMinRaw).trim();
+      if (rawMin === "") return true;
+      const minVal = Number(rawMin);
+      if (!Number.isFinite(minVal) || minVal <= 0) return true;
+
+      const filters = registry.filtersFor(triggerKey);
+      if (!filters.includes("debuff_count")) return true; // silently inert
+
+      if (!combat || !reactionToken) return false;
+
+      const target = (rowTargetRaw ?? "").toString().trim().toLowerCase();
+      if (!target) return true; // no target group chosen → filter inactive
+
+      const inferCategory = globalThis?.FUCompanion?.api?.activeEffectRegistry?._internal?.inferCategory;
+      if (typeof inferCategory !== "function") {
+        console.warn("[ReactionTriggerCore] reaction_debuff_count: inferCategory unavailable; failing closed.");
+        return false;
+      }
+
+      const reactDisp = normalizeDisposition(reactionToken?.document?.disposition ?? 0);
+      const reactActorUuid = reactionToken?.actor?.uuid;
+
+      const combatants = combat.combatants?.contents ?? combat.combatants ?? [];
+      const seenActorUuids = new Set();
+      const actors = [];
+      for (const cmbt of combatants) {
+        const actor = cmbt?.actor;
+        if (!actor || !actor.uuid) continue;
+        if (seenActorUuids.has(actor.uuid)) continue;
+
+        const tokenId = cmbt.tokenId ?? cmbt.token?.id;
+        const tokenDoc = byIdOnCanvas(tokenId)?.document;
+        const subDisp = normalizeDisposition(tokenDoc?.disposition ?? 0);
+
+        let included = false;
+        switch (target) {
+          case "self":
+            included = !!reactActorUuid && actor.uuid === reactActorUuid;
+            break;
+          case "ally":
+            // Same-disposition tokens; INCLUDES reactor itself.
+            included = (reactDisp === 1 && subDisp === 1) ||
+                       (reactDisp === -1 && subDisp === -1);
+            break;
+          case "enemy":
+            included = (reactDisp === 1 && subDisp === -1) ||
+                       (reactDisp === -1 && subDisp === 1);
+            break;
+          case "all":
+            included = true;
+            break;
+          default:
+            included = false;
+        }
+
+        if (included) {
+          seenActorUuids.add(actor.uuid);
+          actors.push(actor);
+        }
+      }
+
+      let total = 0;
+      for (const actor of actors) {
+        const effects = actor.effects?.contents ?? actor.effects ?? [];
+        for (const effect of effects) {
+          if (!effect) continue;
+          if (effect.disabled) continue;
+          if (effect.isSuppressed) continue;
+          try {
+            if (inferCategory(effect) === "Debuff") total++;
+          } catch (e) {
+            console.warn("[ReactionTriggerCore] inferCategory threw on effect", effect, e);
+          }
+        }
+      }
+
+      return total >= minVal;
+    }
+
+    // -------------------------------------------------------------------------
     // collectReactionsForTrigger – main detector entry point
     // -------------------------------------------------------------------------
     function collectReactionsForTrigger(triggerKey, phasePayload) {
@@ -430,6 +525,15 @@ Hooks.once("ready", () => {
             // Damage-type filter (Physical / Fire / Ice / etc.)
             if (!reactionDamageTypeMatchesRow(row.reaction_damage_type, normalizedTriggerKey, phasePayload)) continue;
 
+            // Debuff-count filter (only consulted on triggers that declare it).
+            if (!reactionDebuffCountMatchesRow(
+              row.reaction_debuff_count_target,
+              row.reaction_debuff_count_min,
+              token,
+              normalizedTriggerKey,
+              combat
+            )) continue;
+
             matchingRows.push(row);
           }
 
@@ -482,7 +586,8 @@ Hooks.once("ready", () => {
       extractRows,
       extractReactionTriggers,
       reactionSourceMatchesRow,
-      reactionDamageTypeMatchesRow
+      reactionDamageTypeMatchesRow,
+      reactionDebuffCountMatchesRow
     };
 
     console.log("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");

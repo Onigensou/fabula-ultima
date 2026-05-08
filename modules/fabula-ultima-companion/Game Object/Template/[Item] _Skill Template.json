@@ -1753,6 +1753,73 @@
                           "readonlyPredefined": false
                         },
                         {
+                          "key": "reaction_debuff_count_target",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Whose tokens to scan for debuffs (relative to the reactor). Leave blank to disable.",
+                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "",
+                              "value": "—"
+                            },
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            },
+                            {
+                              "key": "ally",
+                              "value": "Ally"
+                            },
+                            {
+                              "key": "enemy",
+                              "value": "Enemy"
+                            },
+                            {
+                              "key": "all",
+                              "value": "All"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Debuff Group",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_debuff_count_min",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Minimum total debuffs across the chosen group (blank = filter off)",
+                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "type": "numberField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "allowDecimal": false,
+                          "minVal": "0",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text",
+                          "align": "left",
+                          "colName": "Min Debuffs",
+                          "readonlyPredefined": false
+                        },
+                        {
                           "key": "reaction_isPassive",
                           "colSpan": 1,
                           "rowSpan": 1,
