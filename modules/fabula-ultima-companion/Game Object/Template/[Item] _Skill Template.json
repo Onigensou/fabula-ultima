@@ -1545,11 +1545,15 @@
                             },
                             {
                               "key": "creature_targeted_by_action",
-                              "value": "When a creature get target by an action"
+                              "value": "When a creature gets targeted by an action"
+                            },
+                            {
+                              "key": "creature_fumbles_check",
+                              "value": "When a creature fumbles a Check"
                             },
                             {
                               "key": "creature_hit_by_action",
-                              "value": "When a creature get hit by an action"
+                              "value": "When a creature gets hit by an action"
                             },
                             {
                               "key": "creature_critical_hit",
@@ -1558,10 +1562,6 @@
                             {
                               "key": "creature_miss_action",
                               "value": "When a creature misses an Action"
-                            },
-                            {
-                              "key": "creature_fumbles_check",
-                              "value": "When a creature fumbles a Check"
                             },
                             {
                               "key": "creature_deals_damage",
