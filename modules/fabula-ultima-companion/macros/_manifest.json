@@ -2,6 +2,7 @@
   "_comment": "Maintained list of Foundry world macros to sync from this repo. Each entry maps a file path (relative to module root) to the macro name as it exists in the Foundry world. Add new entries when introducing new macros that need source-controlled syncing.",
   "moduleId": "fabula-ultima-companion",
   "macros": [
+    { "path": "macros/Reload All Clients.js",                     "name": "Reload All Clients" },
     { "path": "macros/Action Pipeline/ActionAnimationHandler.js",  "name": "ActionAnimationHandler" },
     { "path": "macros/Action Pipeline/ActionDataComputation.js",   "name": "ActionDataComputation" },
     { "path": "macros/Action Pipeline/ActionDataFetch.js",         "name": "ActionDataFetch" },
