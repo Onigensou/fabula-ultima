@@ -1,5 +1,5 @@
-2026/05/08-22:10:47.596 1dbc Recovering log #5372
-2026/05/08-22:10:47.597 1dbc Level-0 table #5375: started
-2026/05/08-22:10:47.605 1dbc Level-0 table #5375: 118546 bytes OK
-2026/05/08-22:10:47.619 1dbc Delete type=0 #5372
-2026/05/08-22:10:47.619 1dbc Delete type=3 #5370
+2026/05/08-22:27:43.119 2ec0 Recovering log #5376
+2026/05/08-22:27:43.119 2ec0 Level-0 table #5378: started
+2026/05/08-22:27:43.125 2ec0 Level-0 table #5378: 46755 bytes OK
+2026/05/08-22:27:43.140 2ec0 Delete type=0 #5376
+2026/05/08-22:27:43.140 2ec0 Delete type=3 #5374
