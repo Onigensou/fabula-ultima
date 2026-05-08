@@ -1552,6 +1552,10 @@
                               "value": "When a creature fumbles a Check"
                             },
                             {
+                              "key": "creature_check_outcome_flipped",
+                              "value": "When a creature changes the outcome of a check"
+                            },
+                            {
                               "key": "creature_hit_by_action",
                               "value": "When a creature gets hit by an action"
                             },

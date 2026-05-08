@@ -660,6 +660,82 @@ const promptTraitReroll = async ({ attrA, attrB, dieA, dieB, rollA, rollB }) => 
   };
 
   // ---------------------------------------------------------------------------
+  // Reaction emit: creature_check_outcome_flipped
+  // ---------------------------------------------------------------------------
+  // Fired whenever an Invoke Trait / Invoke Bond mutation completes. The
+  // payload carries before/after roll snapshots so future row filters can
+  // narrow to genuine fail↔success flips. We do not gate emission on a
+  // detected flip here because attack rolls have res.pass===null (pass/fail
+  // is decided per-target downstream), so detection at this layer would
+  // miss the most common flip case.
+  function emitCheckOutcomeFlipped({ actor, mechanism, before, after }) {
+    if (!actor) return;
+
+    const tokens = (typeof actor.getActiveTokens === "function")
+      ? actor.getActiveTokens(true, true)
+      : [];
+    const token = Array.isArray(tokens) && tokens[0] ? tokens[0] : null;
+    const tokenUuid = token?.document?.uuid ?? null;
+
+    const reactionPayload = {
+      kind: "check_outcome_flipped",
+      trigger: "creature_check_outcome_flipped",
+      timestamp: Date.now(),
+
+      actorUuid: actor.uuid ?? null,
+      tokenUuid,
+      sourceUuid: tokenUuid,
+      subjectTokenUuid: tokenUuid,
+      subjectActorUuid: actor.uuid ?? null,
+
+      flipMechanism: mechanism,
+      before: { ...before },
+      after: { ...after },
+
+      requestedByUserId: game.user?.id ?? null,
+      requestedByUserName: game.user?.name ?? null
+    };
+
+    const channel = `module.${MODULE_SCOPE}`;
+
+    if (game.user?.isGM) {
+      if (globalThis.ONI?.emit) {
+        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
+      }
+    } else {
+      if (game.socket) {
+        game.socket.emit(channel, {
+          type: "OniReactionPhaseRequest",
+          payload: reactionPayload
+        });
+      } else {
+        console.warn(`${TAG} game.socket unavailable; cannot forward reaction phase to GM.`, reactionPayload);
+      }
+      if (globalThis.ONI?.emit) {
+        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
+      }
+    }
+
+    console.log(`${TAG} Emitted creature_check_outcome_flipped`, {
+      actorName: actor.name,
+      mechanism,
+      totalDelta: (after?.total ?? 0) - (before?.total ?? 0)
+    });
+  }
+
+  function snapshotResult(res) {
+    return {
+      rollA: safeInt(res?.rollA, 0),
+      rollB: safeInt(res?.rollB, 0),
+      total: safeInt(res?.total, 0),
+      hr:    safeInt(res?.hr, 0),
+      isCrit:   !!res?.isCrit,
+      isFumble: !!res?.isFumble,
+      pass: (res?.pass === true || res?.pass === false) ? res.pass : null
+    };
+  }
+
+  // ---------------------------------------------------------------------------
   // Apply invoke: Trait
   // ---------------------------------------------------------------------------
     const applyInvokeTrait = async (message) => {
@@ -753,6 +829,13 @@ const newB = (choice === "B" || choice === "AB")
     await updateCard(message, next);
 
     console.log(`${TAG} Applied`, { msgId: message.id, which: "trait", newTotal: next.result.total, rolls: [newA, newB] });
+
+    emitCheckOutcomeFlipped({
+      actor,
+      mechanism: "trait",
+      before: snapshotResult(res),
+      after:  snapshotResult(next.result)
+    });
   };
 
   // ---------------------------------------------------------------------------
@@ -796,6 +879,7 @@ const newB = (choice === "B" || choice === "AB")
     }
 
     const bonus = safeInt(pick.bonus, 0);
+    const beforeSnap = snapshotResult(payload.result);
 
     const next = deepClone(payload);
     next.meta = next.meta || {};
@@ -823,6 +907,13 @@ const newB = (choice === "B" || choice === "AB")
     await updateCard(message, next);
 
     console.log(`${TAG} Applied`, { msgId: message.id, which: "bond", bonus, newTotal: next.result.total });
+
+    emitCheckOutcomeFlipped({
+      actor,
+      mechanism: "bond",
+      before: beforeSnap,
+      after:  snapshotResult(next.result)
+    });
   };
 
   // ---------------------------------------------------------------------------

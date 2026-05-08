@@ -165,6 +165,13 @@ Hooks.once("ready", () => {
       subjectFrom: SUBJECT_PERFORMER,
       filters: ["source"]
     },
+    {
+      key: "creature_check_outcome_flipped",
+      label: "When a creature changes the outcome of a check",
+      bucket: "action_phase",
+      subjectFrom: SUBJECT_PERFORMER,
+      filters: ["source"]
+    },
 
     // ----- Resolution triggers (hit / damage / heal / state changes) ---------
     {
