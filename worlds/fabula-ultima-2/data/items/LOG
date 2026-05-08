@@ -1,6 +1,0 @@
-2026/05/08-22:40:25.944 2bb8 Recovering log #6433
-2026/05/08-22:40:25.946 2bb8 Level-0 table #6435: started
-2026/05/08-22:40:25.953 2bb8 Level-0 table #6435: 83349 bytes OK
-2026/05/08-22:40:25.965 2bb8 Delete type=0 #6433
-2026/05/08-22:40:25.965 2bb8 Delete type=3 #6432
-2026/05/08-22:40:36.028 2b90 Moved #6435 to level-1 83349 bytes OK: files[ 0 1 8 0 0 0 0 ]
