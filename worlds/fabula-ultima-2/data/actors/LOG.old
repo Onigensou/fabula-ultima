@@ -1,24 +1,23 @@
-2026/05/08-22:10:46.590 4da0 Recovering log #71510
-2026/05/08-22:10:46.601 4da0 Level-0 table #71517: started
-2026/05/08-22:10:46.611 4da0 Level-0 table #71517: 237647 bytes OK
-2026/05/08-22:10:46.623 4da0 Delete type=2 #71504
-2026/05/08-22:10:46.623 4da0 Delete type=2 #71505
-2026/05/08-22:10:46.624 4da0 Delete type=2 #71506
-2026/05/08-22:10:46.624 4da0 Delete type=2 #71507
-2026/05/08-22:10:46.624 4da0 Delete type=0 #71510
-2026/05/08-22:10:46.625 4da0 Delete type=2 #71511
-2026/05/08-22:10:46.625 4da0 Delete type=3 #71508
-2026/05/08-22:10:47.444 4cec Moved #71517 to level-1 237647 bytes OK: files[ 0 1 16 0 0 0 0 ]
-2026/05/08-22:10:58.799 4cec Compacting 1@1 + 3@2 files
-2026/05/08-22:10:58.849 4cec Generated table #71519@1: 92 keys, 2111921 bytes
-2026/05/08-22:10:58.900 4cec Generated table #71520@1: 92 keys, 2435488 bytes
-2026/05/08-22:10:58.949 4cec Generated table #71521@1: 83 keys, 1986485 bytes
-2026/05/08-22:10:58.949 4cec Compacted 1@1 + 3@2 files => 6533894 bytes
-2026/05/08-22:10:58.953 4cec compacted to: files[ 0 0 16 0 0 0 0 ]
-2026/05/08-22:13:31.574 4cec Level-0 table #71523: started
-2026/05/08-22:13:31.592 4cec Level-0 table #71523: 676936 bytes OK
-2026/05/08-22:13:31.596 4cec Delete type=2 #71139
-2026/05/08-22:13:31.596 4cec Delete type=2 #71140
-2026/05/08-22:13:31.597 4cec Delete type=2 #71512
-2026/05/08-22:13:31.597 4cec Delete type=2 #71517
-2026/05/08-22:13:31.597 4cec Delete type=0 #71518
+2026/05/08-22:27:42.773 4078 Recovering log #71522
+2026/05/08-22:27:42.777 4078 Level-0 table #71525: started
+2026/05/08-22:27:42.789 4078 Level-0 table #71525: 338526 bytes OK
+2026/05/08-22:27:42.801 4078 Delete type=0 #71522
+2026/05/08-22:27:42.801 4078 Delete type=3 #71516
+2026/05/08-22:27:43.002 2be8 Compacting 1@0 + 1@1 files
+2026/05/08-22:27:43.023 2be8 Generated table #71527@0: 4 keys, 338526 bytes
+2026/05/08-22:27:43.023 2be8 Compacted 1@0 + 1@1 files => 338526 bytes
+2026/05/08-22:27:43.026 2be8 compacted to: files[ 0 1 16 0 0 0 0 ]
+2026/05/08-22:27:58.160 2be8 Compacting 1@1 + 4@2 files
+2026/05/08-22:27:58.222 2be8 Generated table #71528@1: 90 keys, 2120176 bytes
+2026/05/08-22:27:58.389 2be8 Generated table #71529@1: 96 keys, 2117011 bytes
+2026/05/08-22:27:58.506 2be8 Generated table #71530@1: 97 keys, 2108663 bytes
+2026/05/08-22:27:58.553 2be8 Generated table #71531@1: 201 keys, 1992430 bytes
+2026/05/08-22:27:58.553 2be8 Compacted 1@1 + 4@2 files => 8338280 bytes
+2026/05/08-22:27:58.556 2be8 compacted to: files[ 0 0 16 0 0 0 0 ]
+2026/05/08-22:27:58.556 2be8 Delete type=2 #71513
+2026/05/08-22:27:58.556 2be8 Delete type=2 #71514
+2026/05/08-22:27:58.558 2be8 Delete type=2 #71515
+2026/05/08-22:27:58.558 2be8 Delete type=2 #71521
+2026/05/08-22:27:58.558 2be8 Delete type=2 #71523
+2026/05/08-22:27:58.559 2be8 Delete type=2 #71525
+2026/05/08-22:27:58.559 2be8 Delete type=2 #71527
