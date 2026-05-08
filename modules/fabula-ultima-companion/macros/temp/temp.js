@@ -17,18 +17,22 @@
  * To use: paste into a Foundry macro (script type) and execute.
  */
 (async () => {
-  const TEMPLATE_ID = "SDnMHKSw2YOzeM4f";
   const TAG = "[skill-trigger-fix]";
+  const TEMPLATE_NAME = "_Skill Template";
+  const TEMPLATE_TYPE = "_equippableItemTemplate";
 
-  const item = game.items.get(TEMPLATE_ID);
-  if (!item) {
-    ui.notifications.error(`${TAG} Item ${TEMPLATE_ID} not found in world`);
+  const candidates = game.items.filter(i => i.name === TEMPLATE_NAME && i.type === TEMPLATE_TYPE);
+  if (candidates.length === 0) {
+    ui.notifications.error(`${TAG} No item named "${TEMPLATE_NAME}" (type ${TEMPLATE_TYPE}) found in world`);
     return;
   }
-  if (item.name !== "_Skill Template") {
-    ui.notifications.error(`${TAG} Item ${TEMPLATE_ID} is "${item.name}", expected "_Skill Template"`);
+  if (candidates.length > 1) {
+    const ids = candidates.map(c => c.id).join(", ");
+    ui.notifications.error(`${TAG} Multiple "${TEMPLATE_NAME}" items found (${candidates.length}: ${ids}). Cannot proceed.`);
     return;
   }
+  const item = candidates[0];
+  console.log(`${TAG} resolved template ->`, { id: item.id, name: item.name });
 
   const sys = foundry.utils.deepClone(item.system);
   let tablesPatched = 0;
