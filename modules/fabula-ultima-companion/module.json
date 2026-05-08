@@ -62,6 +62,7 @@
   "scripts/passive-system/autoPassive-manager.js",
   "scripts/passive-system/passive-card-ui.js",
   "scripts/passive-system/passive-modifier-engine.js",
+  "scripts/passive-system/passive-rules-setup.js",
   "scripts/applyDamage-button.js",
   "scripts/invokeButtons.js",
   "scripts/fu-card-hydrate.js",
