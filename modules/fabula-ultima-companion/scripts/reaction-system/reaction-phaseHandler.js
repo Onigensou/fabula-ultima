@@ -303,6 +303,12 @@ Hooks.once("ready", () => {
   // ============================================================================
   const ONI_LAST_ENDED_ROUND = {}; // { [combatId]: lastRoundNumber }
 
+  // Prior turn index per combat, captured in preUpdateCombat. Foundry's
+  // updateCombat fires after combat.turn has already been overwritten, so the
+  // end-of-turn branch (turn -> null) needs this snapshot to resolve which
+  // combatant just ended via combat.turns[priorTurn].
+  const ONI_PRIOR_TURN_BY_COMBAT = new Map(); // combatId -> turn index
+
   /**
    * Check Lancer Initiative flags to see if the ROUND is truly over.
    *
@@ -434,6 +440,14 @@ Hooks.once("ready", () => {
   // NOTE: We still do NOT use combatTurn for turn phases.
   // We rely entirely on updateCombat + combat.combatant, like your Turn-Change demo.
 
+  // Capture the prior turn index BEFORE Foundry overwrites combat.turn, so the
+  // end-of-turn branch in updateCombat can resolve who just ended.
+  Hooks.on("preUpdateCombat", (combat, changed) => {
+    if (!combat) return;
+    if (!Object.prototype.hasOwnProperty.call(changed ?? {}, "turn")) return;
+    ONI_PRIOR_TURN_BY_COMBAT.set(combat.id, combat.turn);
+  });
+
   // Start-of-turn / End-of-turn via updateCombat.
   Hooks.on("updateCombat", (combat, changed, options, userId) => {
     try {
@@ -499,20 +513,36 @@ Hooks.once("ready", () => {
         else {
           const round = combat.round ?? 1;
 
+          // Resolve the combatant whose turn just ended. The prior turn index
+          // was captured in preUpdateCombat; combat.turns is still indexable.
+          const priorTurn = ONI_PRIOR_TURN_BY_COMBAT.get(combat.id);
+          ONI_PRIOR_TURN_BY_COMBAT.delete(combat.id);
+
+          const endedCmbt =
+            Number.isInteger(priorTurn) ? combat.turns?.[priorTurn] ?? null : null;
+
+          const endedActor    = endedCmbt?.actor ?? null;
+          const endedTokenDoc = endedCmbt?.token ?? null;
+          const combatantId   = endedCmbt?.id ?? null;
+          const combatantName = endedCmbt?.name ?? null;
+          const actorId       = endedActor?.id ?? null;
+          const actorUuid     = endedActor?.uuid ?? null;
+          const tokenId       = endedTokenDoc?.id ?? endedCmbt?.tokenId ?? null;
+          const tokenUuid     = endedTokenDoc?.uuid ?? endedTokenDoc?.document?.uuid ?? null;
+
           console.log(
             "%c[PhaseHandler] ENTER PHASE: end_of_turn",
             "color: #f44336; font-weight: bold;",
             {
               combatId: combat.id,
               round,
-              // We don't really know "who ended" here generically, only that
-              // there is now no active combatant.
-              combatantId: null,
-              combatantName: null,
-              actorId: null,
-              actorUuid: null,
-              tokenId: null,
-              tokenUuid: null,
+              priorTurn,
+              combatantId,
+              combatantName,
+              actorId,
+              actorUuid,
+              tokenId,
+              tokenUuid,
               userId,
             }
           );
@@ -523,12 +553,12 @@ Hooks.once("ready", () => {
             combatId: combat.id,
             sceneId: combat.scene?.id ?? combat.sceneId ?? null,
             round,
-            combatantId: null,
-            combatantName: null,
-            actorId: null,
-            actorUuid: null,
-            tokenId: null,
-            tokenUuid: null,
+            combatantId,
+            combatantName,
+            actorId,
+            actorUuid,
+            tokenId,
+            tokenUuid,
             userId,
           });
         }
