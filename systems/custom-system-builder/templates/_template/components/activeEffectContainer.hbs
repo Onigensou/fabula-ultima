@@ -1,0 +1,286 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectTitle-{{appId}}'>
+        {{localize 'CSB.ComponentProperties.ActiveEffectContainer.TableTitle'}}</label>
+    <input type='text' id='activeEffectTitle-{{appId}}' data-key='title' name='title' value='{{title}}' />
+</div>
+
+<div class='custom-system-form-group-outer'>
+    <b>{{localize 'CSB.ComponentProperties.ActiveEffectContainer.Columns.Active.Title'}}</b>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectActiveEnabled-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnEnabled'
+                }}</label>
+            <input id='activeEffectActiveEnabled-{{appId}}' type='checkbox' data-key='activeEnabled' name='activeEnabled' {{checked staticRowLayout.active.enabled}} />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectActiveLabel-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnLabel'
+                }}</label>
+            <input id='activeEffectActiveLabel-{{appId}}' type='text' data-key='activeLabel' name='activeLabel' value='{{staticRowLayout.active.colName}}' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectActiveAlign-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnAlign'
+                }}</label>
+            <select id='activeEffectActiveAlign-{{appId}}' data-key='activeAlign' name='activeAlign'>
+                {{selectOptions ALIGNMENTS selected=staticRowLayout.active.align localize=true}}
+            </select>
+        </div>
+    </div>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectActiveSort-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnSort'
+                }}</label>
+            <input id='activeEffectActiveSort-{{appId}}' type='number' data-key='activeSort' name='activeSort' value='{{staticRowLayout.active.sort}}' />
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-form-group-outer'>
+    <b>{{localize 'CSB.ComponentProperties.ActiveEffectContainer.Columns.Ref.Title'}}</b>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectNameEnabled-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnEnabled'
+                }}</label>
+            <input id='activeEffectNameEnabled-{{appId}}' type='checkbox' data-key='nameEnabled' name='nameEnabled' checked='checked' disabled='disabled' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectNameLabel-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnLabel'
+                }}</label>
+            <input id='activeEffectNameLabel-{{appId}}' type='text' data-key='nameLabel' name='nameLabel' value='{{staticRowLayout.name.colName}}' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectNameAlign-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnAlign'
+                }}</label>
+            <select id='activeEffectNameAlign-{{appId}}' data-key='nameAlign' name='nameAlign'>
+                {{selectOptions ALIGNMENTS selected=staticRowLayout.name.align localize=true}}
+            </select>
+        </div>
+    </div>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectNameSort-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnSort'
+                }}</label>
+            <input id='activeEffectNameSort-{{appId}}' type='number' data-key='nameSort' name='nameSort' value='{{staticRowLayout.name.sort}}' />
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-form-group-outer'>
+    <b>{{localize 'CSB.ComponentProperties.ActiveEffectContainer.Columns.Origin.Title'}}</b>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectOriginEnabled-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnEnabled'
+                }}</label>
+            <input id='activeEffectOriginEnabled-{{appId}}' type='checkbox' data-key='originEnabled' name='originEnabled' {{checked staticRowLayout.origin.enabled}} />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectOriginLabel-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnLabel'
+                }}</label>
+            <input id='activeEffectOriginLabel-{{appId}}' type='text' data-key='originLabel' name='originLabel' value='{{staticRowLayout.origin.colName}}' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectOriginAlign-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnAlign'
+                }}</label>
+            <select id='activeEffectOriginAlign-{{appId}}' data-key='originAlign' name='originAlign'>
+                {{selectOptions ALIGNMENTS selected=staticRowLayout.origin.align localize=true}}
+            </select>
+        </div>
+    </div>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectOriginSort-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnSort'
+                }}</label>
+            <input id='activeEffectOriginSort-{{appId}}' type='number' data-key='originSort' name='originSort' value='{{staticRowLayout.origin.sort}}' />
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-form-group-outer'>
+    <b>{{localize 'CSB.ComponentProperties.ActiveEffectContainer.Columns.Description.Title'}}</b>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectDescriptionEnabled-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnEnabled'
+                }}</label>
+            <input id='activeEffectDescriptionEnabled-{{appId}}' type='checkbox' data-key='descriptionEnabled' name='descriptionEnabled' {{checked staticRowLayout.description.enabled}} />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectDescriptionLabel-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnLabel'
+                }}</label>
+            <input id='activeEffectDescriptionLabel-{{appId}}' type='text' data-key='descriptionLabel' name='descriptionLabel' value='{{staticRowLayout.description.colName}}' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectDescriptionAlign-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnAlign'
+                }}</label>
+            <select id='activeEffectDescriptionAlign-{{appId}}' data-key='descriptionAlign' name='descriptionAlign'>
+                {{selectOptions ALIGNMENTS selected=staticRowLayout.description.align localize=true}}
+            </select>
+        </div>
+    </div>
+    <div class='custom-system-form-group'>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectDescriptionSort-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnSort'
+                }}</label>
+            <input id='activeEffectDescriptionSort-{{appId}}' type='number' data-key='descriptionSort' name='descriptionSort' value='{{staticRowLayout.description.sort}}' />
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='activeEffectDescriptionFormat-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.ActiveEffectContainer.ColumnFormat'
+                }}</label>
+            <select id='activeEffectDescriptionFormat-{{appId}}' data-key='descriptionFormat' name='descriptionFormat'>
+                {{selectOptions DESCRIPTION_FORMATS selected=staticRowLayout.description.format localize=true}}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-form-group-outer'>
+    <b>{{localize 'CSB.ComponentProperties.ActiveEffectContainer.Columns.Count.Title'}}</b>
+    {{#if STATUS_COUNTER_ENABLED}}
+        <div class='custom-system-form-group'>
+            <div class='custom-system-form-field'>
+                <label for='activeEffectCountEnabled-{{appId}}'>{{localize
+                        'CSB.ComponentProperties.ActiveEffectContainer.ColumnEnabled'
+                    }}</label>
+                <input id='activeEffectCountEnabled-{{appId}}' type='checkbox' data-key='countEnabled' name='countEnabled' {{checked staticRowLayout.count.enabled}} />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='activeEffectCountLabel-{{appId}}'>{{localize
+                        'CSB.ComponentProperties.ActiveEffectContainer.ColumnLabel'
+                    }}</label>
+                <input id='activeEffectCountLabel-{{appId}}' type='text' data-key='countLabel' name='countLabel' value='{{staticRowLayout.count.colName}}' />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='activeEffectCountAlign-{{appId}}'>{{localize
+                        'CSB.ComponentProperties.ActiveEffectContainer.ColumnAlign'
+                    }}</label>
+                <select id='activeEffectCountAlign-{{appId}}' data-key='countAlign' name='countAlign'>
+                    {{selectOptions ALIGNMENTS selected=staticRowLayout.count.align localize=true}}
+                </select>
+            </div>
+        </div>
+        <div class='custom-system-form-group'>
+            <div class='custom-system-form-field'>
+                <label for='activeEffectCountSort-{{appId}}'>{{localize
+                        'CSB.ComponentProperties.ActiveEffectContainer.ColumnSort'
+                    }}</label>
+                <input id='activeEffectCountSort-{{appId}}' type='number' data-key='countSort' name='countSort' value='{{staticRowLayout.count.sort}}' />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='activeEffectCountReadonly-{{appId}}'>{{localize
+                        'CSB.ComponentProperties.ActiveEffectContainer.ColumnReadonly'
+                    }}</label>
+                <input id='activeEffectCountReadonly-{{appId}}' type='checkbox' data-key='countReadonly' name='countReadonly' {{checked staticRowLayout.count.readonly}} />
+            </div>
+        </div>
+
+    {{else}}
+        <div>
+            {{{localize
+                'CSB.ComponentProperties.ActiveEffectContainer.StatusCounter'
+                url='<a href=https://foundryvtt.com/packages/statuscounter>Status Counter</a>'
+            }}}
+        </div>
+    {{/if}}
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectHeadDisplay-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ExtensibleTable.DisplayColumnName'
+        }}</label>
+    <input type='checkbox' id='activeEffectHeadDisplay-{{appId}}' data-key='headDisplay' name='headDisplay' {{checked headDisplay}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectHead-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ExtensibleTable.ColumnNameBold'
+        }}</label>
+    <input type='checkbox' id='activeEffectHead-{{appId}}' data-key='head' name='head' {{checked head}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectHideEmpty-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.HideEmpty'
+        }}</label>
+    <input type='checkbox' id='activeEffectHideEmpty-{{appId}}' data-key='hideEmpty' name='hideEmpty' {{checked hideEmpty}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectShowDelete-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.ShowActiveEffectDeleteButton'
+        }}</label>
+    <input type='checkbox' id='activeEffectShowDelete-{{appId}}' data-key='showDelete' name='showDelete' {{checked showDelete}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectDeleteWarning-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.ShowConfirmationDialogOnActiveEffectDelete'
+        }}</label>
+    <input type='checkbox' id='activeEffectDeleteWarning-{{appId}}' data-key='deleteWarning' name='deleteWarning' {{checked deleteWarning}} />
+</div>
+<div class='custom-system-form-field'>
+    <label for='activeEffectShowCreateButton-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.ShowCreateButton'
+        }}</label>
+    <input type='checkbox' id='activeEffectShowCreateButton-{{appId}}' data-key='showCreateButton' name='showCreateButton' {{checked showCreateButton}} />
+</div>
+<div class='custom-system-form-field'>
+    <label for='activeEffectShowOnlyOwnEffects-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.ShowOnlyOwnEffects'
+        }}</label>
+    <input type='checkbox' id='activeEffectShowOnlyOwnEffects-{{appId}}' data-key='showOnlyOwnEffects' name='showOnlyOwnEffects' {{checked showOnlyOwnEffects}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='activeEffectSuggestExistingEffects-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.SuggestExistingEffects'
+        }}</label>
+    <input type='checkbox' id='activeEffectSuggestExistingEffects-{{appId}}' data-key='suggestExistingEffects' name='suggestExistingEffects' {{checked suggestExistingEffects}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <h3>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Title'}}</h3>
+</div>
+<div class='custom-system-form-field'>
+    <label for='activeEffectSortOption-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ExtensibleTable.Sort.SortOptions'
+        }}*</label>
+    <select id='activeEffectSortOption-{{appId}}' data-key='sortOption' name='sortOption'>
+        {{selectOptions SIMPLE_TABLE_SORT_OPTIONS selected=sortOption localize=true}}
+    </select>
+
+</div>
+
+<div class='custom-system-form-field'>
+    <h3>{{localize
+            'CSB.ComponentProperties.ActiveEffectContainer.FilterByTags.Title'
+        }}</h3>
+</div>
+<div class='custom-system-form-field'>
+    <div class='custom-system-string-tags-field'>
+        <label for='activeEffectFilterTags-{{appId}}'>{{localize
+                'CSB.ComponentProperties.ActiveEffectContainer.FilterByTags.FieldLabel'
+            }}</label>
+        <string-tags id='activeEffectFilterTags-{{appId}}' data-initial-tags='{{filterTags}}' value='{{filterTags}}' name='filterTags'></string-tags>
+    </div>
+</div>

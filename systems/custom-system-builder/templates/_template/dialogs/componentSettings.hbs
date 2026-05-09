@@ -1,0 +1,84 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-component-editor-dialog'>
+    <div class='custom-system-component-generic-fields'>
+        <div class='custom-system-form-field custom-system-form-field-multiline'>
+            <label for='compType-{{appId}}'>{{localize 'CSB.ComponentProperties.ComponentType.SectionTitle'}}*</label>
+            <select class='compType' id="compType-{{appId}}" data-key='type' name="type">
+                {{selectOptions
+                    componentList 
+                    selected=component.type
+                    valueAttr='key'
+                    labelAttr='label'
+                }}
+            </select>
+        </div>
+        <div class='custom-system-form-field'>
+            <label for='compKey-{{appId}}'>{{localize 'CSB.ComponentProperties.ComponentKey'}}</label>
+            <input type='text' class='compKey' id='compKey-{{appId}}' value='{{component.key}}' data-key='key' name="key" />
+            <div class='custom-system-key-warning notification warning'>
+                {{localize 'CSB.ComponentProperties.ComponentKeyWarning'}}
+            </div>
+        </div>
+
+        <details>
+            <summary>
+                {{localize 'CSB.ComponentProperties.AdvancedConfiguration'}}
+                <hr />
+            </summary>
+
+            <div class='custom-system-form-field'>
+                <label for='compTooltip-{{appId}}'>{{localize 'CSB.ComponentProperties.Tooltip'}}
+                    {{> icon-formula}}
+                </label>
+                <input type='text' class='compTooltip' id='compTooltip-{{appId}}' value='{{component.tooltip}}' data-key='tooltip' name="tooltip" />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compRole-{{appId}}'>{{localize 'CSB.ComponentProperties.MinimumRole'}}*</label>
+                <select class='compRole' id='compRole-{{appId}}' data-key='role' name="role">
+                    {{selectOptions ROLE_LIST selected=component.role localize=true}}
+                </select>
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compPerm-{{appId}}'>{{localize 'CSB.ComponentProperties.MinimumPermission'}}*</label>
+                <select class='compPerm' id='compPerm-{{appId}}' data-key='permission' name="permission">
+                    {{selectOptions PERMISSION_LIST selected=component.permission localize=true}}
+                </select>
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compVisible-{{appId}}'>{{localize 'CSB.ComponentProperties.VisibiltyFormula'}}
+                    {{> icon-formula}}
+                    {{> icon-no-delimiters}}
+                    {{> icon-info title=(localize "CSB.ComponentProperties.VisibiltyFormulaDescription")}}
+                </label>
+                <input type='text' class='compVisible' id='compVisible-{{appId}}' value='{{component.visibilityFormula}}' data-key='visibilityFormula' name="visibilityFormula" />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compEditRole-{{appId}}'>{{localize 'CSB.ComponentProperties.MinimumEditRole'}}*</label>
+                <select class='compEditRole' id='compEditRole-{{appId}}' data-key='editRole' name="editRole">
+                    {{selectOptions ROLE_LIST selected=component.editRole localize=true}}
+                </select>
+            </div>
+            <div class='custom-system-form-field'>
+                <p class="custom-system-field-title">{{localize 'CSB.ComponentProperties.Positionning.Title'}}</p>
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compColSpan-{{appId}}'>{{localize 'CSB.ComponentProperties.Positionning.ColSpan'}}</label>
+                <input type='number' class='compColSpan' id='compColSpan-{{appId}}' value='{{component.colSpan}}' data-key='colSpan' name="colSpan" />
+                <label for='compRowSpan-{{appId}}'>{{localize 'CSB.ComponentProperties.Positionning.RowSpan'}}</label>
+                <input type='number' class='compRowSpan' id='compRowSpan-{{appId}}' value='{{component.rowSpan}}' data-key='rowSpan' name="rowSpan" />
+            </div>
+            <div class='custom-system-form-field'>
+                <label for='compClass-{{appId}}'>{{localize 'CSB.ComponentProperties.AdditionalCssClasses'}}
+                    {{> icon-formula}}
+                </label>
+                <input type='text' class='compClass' id='compClass-{{appId}}' value='{{component.cssClass}}' data-key='cssClass' name="cssClass" />
+            </div>
+            <hr />
+        </details>
+    </div>
+</div>

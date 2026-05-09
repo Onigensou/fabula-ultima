@@ -1,0 +1,25 @@
+/*
+ * Author: Jean-Baptiste Louvet-Daniel
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+.custom-dialog {
+    .dialog-buttons {
+        flex-grow: 0;
+    }
+
+    .standard-form {
+        height: 100%;
+    }
+}
+
+.custom-dialog-legacy {
+    prose-mirror {
+        --color-control-bg: #d9d8c8;
+        --menu-background: rgba(0, 0, 0, 0.1);
+        --color-form-label-hover: var(--color-dark-1);
+    }
+}

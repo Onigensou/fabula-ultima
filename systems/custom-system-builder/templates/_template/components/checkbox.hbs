@@ -1,0 +1,30 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='checkboxLabel-{{appId}}'>{{localize 'CSB.ComponentProperties.InputComponent.Label'}}</label>
+    <input id='checkboxLabel-{{appId}}' type='text' data-key='label' name='label' value='{{label}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='checkboxSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.SectionTitle'}}*</label>
+    <select id='checkboxSize-{{appId}}' data-key='size' name='size'>
+        {{selectOptions COMPONENT_SIZES selected=size localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-size-custom' style='{{#unless (eq size 'custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='checkboxCustomSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.CustomSizeTitle'}}*</label>
+        <input id='checkboxCustomSize-{{appId}}' data-key='customSize' name='customSize' type='number' value='{{customSize}}' />
+    </div>
+</div>
+
+
+<div class='custom-system-form-field'>
+    <label for='checkboxDefaultChecked-{{appId}}'>{{localize 'CSB.ComponentProperties.CheckedByDefault'}}</label>
+    <input id='checkboxDefaultChecked-{{appId}}' type='checkbox' data-key='defaultChecked' name='defaultChecked' {{checked defaultChecked}} />
+</div>

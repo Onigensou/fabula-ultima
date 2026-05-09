@@ -1,0 +1,16 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+<div class='dice-tooltip custom-system-dice-tooltip'>
+    <div class='dice-rolls'>
+        {{#each dice}}
+            <span class='custom-system-dice-pool {{#if ../multipleDice}}custom-system-dice-pool-multiple{{/if}}' title='{{#if this.flavor}}{{this.flavor}}&#013;{{/if}}{{this.formula}} = {{this.total}}' data-hidden="{{this.hidden}}">{{#each
+                    this.dice
+                }}<span
+                        class='roll {{this.classes}} custom-system-roll-tooltip-dice'
+                    >{{{this.result}}}</span>{{/each}}</span>
+        {{/each}}
+    </div>
+</div>

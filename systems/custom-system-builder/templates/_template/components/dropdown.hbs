@@ -1,0 +1,142 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='selectLabel-{{appId}}'>{{localize 'CSB.ComponentProperties.InputComponent.Label'}}</label>
+    <input id='selectLabel-{{appId}}' type='text' data-key='label' name='label' value='{{label}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.SectionTitle'}}*</label>
+    <div class='custom-system-form-field'>
+        <div>
+            <label for='customOptions-{{appId}}'>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.Custom'}}</label>
+            <input type='radio' id='customOptions-{{appId}}' name='dropdownOptionMode' value='custom' {{checked (eq
+                selectedOptionType 'custom' )}} />
+        </div>
+        <div>
+            <label for='dynamicTableOptions-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Dropdown.OptionsOrigin.DynamicTable'}}</label>
+            <input type='radio' id='dynamicTableOptions-{{appId}}' name='dropdownOptionMode' value='table' {{checked (eq
+                selectedOptionType 'table' )}} />
+        </div>
+        <div>
+            <label for='formulaOptions-{{appId}}'>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.Formula'}}</label>
+            <input type='radio' id='formulaOptions-{{appId}}' name='dropdownOptionMode' value='formula' {{checked (eq
+                selectedOptionType 'formula' )}} />
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-custom-options' style='{{#unless (eq selectedOptionType 'custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field custom-system-form-field-multiline'>
+        <label>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.Options'}}</label>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.Key'}}*</th>
+                    <th>{{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.Label'}}</th>
+                    <th>
+                        <a class='addOption'>
+                            <i class='fas fa-plus-circle'></i>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each options}}
+                    <tr class='custom-system-dropdown-option' data-index='{{@index}}'>
+                        <td><input type='text' class='custom-system-dropdown-option-key' name='optionKeys.{{@index}}' value='{{this.key}}' /></td>
+                        <td><input type='text' class='custom-system-dropdown-option-value' name='optionValues.{{@index}}' value='{{this.value}}' /></td>
+                        <td>
+                            <a class='custom-system-delete-option'><i class='fas fa-trash'></i></a>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class='custom-system-dynamic-options' style='{{#unless (eq selectedOptionType 'table')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='selectDynamicTableKey-{{appId}}'>{{localize
+            'CSB.ComponentProperties.Dropdown.OptionsOrigin.DynamicTableKey'}}*</label>
+        <input id='selectDynamicTableKey-{{appId}}' type='text' data-key='tableKey' name='tableKey' value='{{tableKey}}' />
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='selectDynamicTableKeyColumn-{{appId}}'>{{localize
+            'CSB.ComponentProperties.Dropdown.OptionsOrigin.DynamicTableOptionKey'}}*</label>
+        <input id='selectDynamicTableKeyColumn-{{appId}}' type='text' data-key='tableKeyColumn' name='tableKeyColumn' value='{{tableKeyColumn}}' />
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='selectDynamicTableLabelColumn-{{appId}}'>
+            {{localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.DynamicTableOptionLabel'}}
+        </label>
+        <input id='selectDynamicTableLabelColumn-{{appId}}' type='text' data-key='tableLabelColumn' name='tableLabelColumn' value='{{tableLabelColumn}}' />
+    </div>
+</div>
+
+<div class='custom-system-formula-options' style='{{#unless (eq selectedOptionType 'formula')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='formulaKeyOptions-{{appId}}'>{{localize
+            'CSB.ComponentProperties.Dropdown.OptionsOrigin.FormulaForKeyOption'}}*
+            {{> icon-formula}}
+            {{> icon-info title=(localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.ExpectedValueType')}}
+        </label>
+        <textarea id='formulaKeyOptions-{{appId}}' data-key='formulaKeyOptions' name='formulaKeyOptions'>{{formulaKeyOptions}}</textarea>
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='formulaLabelOptions-{{appId}}'>{{localize
+            'CSB.ComponentProperties.Dropdown.OptionsOrigin.FormulaForLabelOption'}}
+            {{> icon-formula}}
+            {{> icon-info title=(concat (localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.ExpectedValueType') '.
+            ' (localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.IfNotSet'))}}
+        </label>
+        <textarea id='formulaLabelOptions-{{appId}}' data-key='formulaLabelOptions' name='formulaLabelOptions'>{{formulaLabelOptions}}</textarea>
+    </div>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='selectDefaultValue-{{appId}}'>{{localize 'CSB.ComponentProperties.DefaultValue'}}
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.Dropdown.OptionsOrigin.DefaultValueTitle')}}
+    </label>
+    <input id='selectDefaultValue-{{appId}}' type='text' data-key='defaultValue' name='defaultValue' value='{{defaultValue}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='selectSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.SectionTitle'}}*</label>
+    <select id='selectSize-{{appId}}' data-key='size' name='size'>
+        {{selectOptions COMPONENT_SIZES selected=size localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-size-custom' style='{{#unless (eq size ' custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='selectCustomSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.CustomSizeTitle'}}*</label>
+        <input id='selectCustomSize-{{appId}}' data-key='customSize' name='customSize' type='number' value='{{customSize}}' />
+    </div>
+</div>
+
+<template class='custom-system-dropdown-option-template'>
+    <tr class='custom-system-dropdown-option'>
+        <td>
+            <input type='text' class='custom-system-dropdown-option-key' />
+        </td>
+        <td>
+            <input type='text' class='custom-system-dropdown-option-value' />
+        </td>
+        <td>
+            <a class='custom-system-delete-option'>
+                <i class='fas fa-trash'></i>
+            </a>
+        </td>
+    </tr>
+</template>

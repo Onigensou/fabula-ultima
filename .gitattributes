@@ -1,0 +1,6 @@
+# LevelDB files — mark as binary to prevent line-ending conversion.
+# CURRENT and MANIFEST-* are plain-text pointers but LevelDB reads them
+# byte-exact; CRLF conversion would corrupt the database on a cross-OS pull.
+*.ldb      binary
+**/CURRENT binary
+**/MANIFEST-* binary

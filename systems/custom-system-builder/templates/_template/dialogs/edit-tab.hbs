@@ -1,0 +1,51 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div>
+    <p>{{localize 'CSB.ComponentProperties.Tab.EnterNameAndKey'}}</p>
+    <p>{{localize 'CSB.ComponentProperties.Tab.NameAndKeyDescription'}}</p>
+    <div>
+        <label>{{localize 'CSB.ComponentProperties.Tab.TabName'}} : </label>
+        <input type='text' name='name' value='{{name}}' />
+    </div>
+    <div>
+        <label>{{localize 'CSB.ComponentProperties.Tab.TabKey'}} : </label>
+        <input type='text' name='key' value='{{key}}' />
+    </div>
+    <div class='custom-system-key-warning notification warning'>
+        {{localize 'CSB.ComponentProperties.ComponentKeyWarning'}}
+    </div>
+    <div>
+        <label>{{localize 'CSB.ComponentProperties.Tab.TabTooltip'}}</label>
+        <input type='text' name='tooltip' value='{{tooltip}}' />
+    </div>
+
+    <details>
+        <summary>
+            {{localize 'CSB.ComponentProperties.AdvancedConfiguration'}}
+            <hr />
+        </summary>
+
+        <div class='custom-system-form-field'>
+            <label>{{localize 'CSB.ComponentProperties.Tab.MinimumRole'}}</label>
+            <select name='role'>
+                {{selectOptions ROLE_LIST selected=role localize=true}}
+            </select>
+        </div>
+        <div class='custom-system-form-field'>
+            <label>{{localize 'CSB.ComponentProperties.Tab.MinimumPermission'}}</label>
+            <select name='permission'>
+                {{selectOptions PERMISSION_LIST selected=permission localize=true}}
+            </select>
+        </div>
+        <div class='custom-system-form-field'>
+            <label>{{localize 'CSB.ComponentProperties.VisibiltyFormula'}}<br />{{localize
+                    'CSB.ComponentProperties.Tab.VisibiltyFormulaDescription'
+                }}</label>
+            <input type='text' value='{{visibilityFormula}}' name='visibilityFormula' />
+        </div>
+    </details>
+</div>

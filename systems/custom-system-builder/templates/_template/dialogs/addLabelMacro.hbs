@@ -1,0 +1,22 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div>
+    <label for='macroName'>{{localize 'CSB.ComponentProperties.Label.AddMacroDialog.MacroName'}}</label><input id='macroName' type='text' />
+</div>
+<p>{{localize 'CSB.ComponentProperties.Label.AddMacroDialog.MacroSlot'}}</p>
+<div style='margin-bottom: 24px'>
+    <div style='width: 50%;display: inline-block;'>
+        <label for='macroPage-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.AddMacroDialog.MacroSlotPage'
+            }}</label><input id='macroPage-{{appId}}' class='macroPage' type='number' />
+    </div>
+    <div style='width: 50%;display: inline-block;'>
+        <label for='macroSlot-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.AddMacroDialog.MacroSlotNumber'
+            }}</label><input id='macroSlot-{{appId}}' class='macroSlot' type='number' />
+    </div>
+</div>

@@ -1,0 +1,31 @@
+/*
+ * Author: Jean-Baptiste Louvet-Daniel
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+.custom-system-user-inputs td {
+    padding: 8px !important;
+}
+
+.custom-system-user-input-block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-system-user-input {
+    flex-grow: 1;
+    flex-shrink: 0.5;
+    margin: 0 5px !important;
+}
+
+.custom-system-user-input-button {
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px groove var(--color-border-light-secondary);
+}

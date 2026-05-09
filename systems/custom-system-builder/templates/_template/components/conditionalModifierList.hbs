@@ -1,0 +1,93 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='modifierHeadDisplay-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.DisplayColumnName'}}</label>
+    <input type='checkbox' id='modifierHeadDisplay-{{appId}}' data-key='headDisplay' name='headDisplay' {{checked headDisplay}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierInfoDisplay-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.DisplayInfoIcon'
+        }}</label>
+    <input type='checkbox' id='modifierInfoDisplay-{{appId}}' data-key='infoDisplay' name='infoDisplay' {{checked infoDisplay}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierHead-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.ColumnNameBold'}}</label>
+    <input type='checkbox' id='modifierHead-{{appId}}' data-key='head' name='head' {{checked head}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <h3>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.FilterModifierGroup'
+        }}</h3>
+</div>
+<div class='custom-system-form-field'>
+    <h4>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.SelectGroup'
+        }}:</h4>
+</div>
+<div class='custom-system-form-field'>
+    <div style='
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: space-between;
+            justify-content: space-between;
+            align-items: center;
+        '>
+        {{#each availableGroups}}
+            <span>
+                <input type='checkbox' id='{{this.group}}-{{appId}}' value='{{this.group}}' name='groupFilter' {{checked this.checked}} />
+                <label for='{{this.group}}-{{appId}}'>{{this.group}}</label>
+            </span>
+        {{/each}}
+    </div>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierSelectionLabel-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.SelectionColumnName'
+        }}*</label>
+    <input id='modifierSelectionLabel-{{appId}}' type='text' data-key='selectionLabel' name='selectionLabel' value='{{selectionLabel}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierSelectionAlign-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.SelectionColumnAlign'
+        }}*</label>
+    <select id='modifierSelectionAlign-{{appId}}' data-key='selectionAlign' name='selectionAlign'>
+        {{selectOptions ALIGNMENTS selected=selectionAlign localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierGroupLabel-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.GroupColumnName'
+        }}*</label>
+    <input id='modifierGroupLabel-{{appId}}' type='text' data-key='groupLabel' name='groupLabel' value='{{groupLabel}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='modifierGroupAlign-{{appId}}'>{{localize
+            'CSB.ComponentProperties.ConditionalModifierList.GroupColumnAlign'
+        }}*</label>
+    <select id='modifierGroupAlign-{{appId}}' data-key='groupAlign' name='groupAlign'>
+        {{selectOptions ALIGNMENTS selected=groupAlign localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-form-field'></div>
+<div class='custom-system-form-field'></div>
+<div class='custom-system-form-field'>
+    <label for='groupFilterFormula-{{appId}}'>{{localize 'CSB.ComponentProperties.ConditionalModifierList.GroupFilterFormula'}}
+        {{> icon-formula}}
+        {{> icon-no-delimiters}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.ConditionalModifierList.GroupFilterFormulaTitle')}}
+    </label>
+    <input id='groupFilterFormula-{{appId}}' type='text' data-key='groupFilterFormula' name='groupFilterFormula' value='{{groupFilterFormula}}' />
+</div>

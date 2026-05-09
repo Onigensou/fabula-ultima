@@ -1,0 +1,39 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div>
+    <div class='custom-system-attribute-bars'>
+        <header class='table-header flexrow'>
+            <label>{{localize 'CSB.Attributes.Name'}}</label>
+            <label>{{localize 'CSB.Attributes.Value'}}</label>
+            <label>{{localize 'CSB.Attributes.Maximum'}}</label>
+            <span class='custom-system-dialog-actions'><label><a class='custom-system-clickable' data-action='addAttributeBar'><i class='far fa-plus-square'></i></a></label></span>
+        </header>
+        <ul class='attributeBarList'>
+            {{#each attributeBars}}
+                <li class='form-group custom-system-attribute-bar' data-index='{{@index}}'>
+                    <div class='form-fields'>
+                        <input type='text' class='custom-system-attribute-bar-name' name='attributeBars.{{@index}}.name' value='{{this.name}}' />
+                        <textarea class='custom-system-attribute-bar-value' name='attributeBars.{{@index}}.value'>{{this.value}}</textarea>
+                        <textarea class='custom-system-attribute-bar-max' name='attributeBars.{{@index}}.max'>{{this.max}}</textarea>
+                        <span class='custom-system-dialog-actions'><a class='custom-system-clickable' data-action='removeAttributeBar'><i class='fas fa-trash'></i></a></span>
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+
+    <template class='custom-system-attribute-bar-template'>
+        <li class='form-group custom-system-attribute-bar'>
+            <div class='form-fields'>
+                <input type='text' class='custom-system-attribute-bar-name' />
+                <textarea class='custom-system-attribute-bar-value'></textarea>
+                <textarea class='custom-system-attribute-bar-max'></textarea>
+                <span class='custom-system-dialog-actions'><a class='custom-system-clickable' data-action='removeAttributeBar'><i class='fas fa-trash'></i></a></span>
+            </div>
+        </li>
+    </template>
+</div>

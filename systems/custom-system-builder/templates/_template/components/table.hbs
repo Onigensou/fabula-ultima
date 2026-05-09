@@ -1,0 +1,21 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='tableRows-{{appId}}'>{{localize 'CSB.ComponentProperties.Table.RowCount'}}*</label>
+    <input id='tableRows-{{appId}}' type='number' data-key='rows' name='rows' value='{{rows}}' min='1' />
+</div>
+<div class='custom-system-form-field'>
+    <label for='tableCols-{{appId}}'>{{localize 'CSB.ComponentProperties.Table.ColCount'}}*</label>
+    <input id='tableCols-{{appId}}' type='number' data-key='cols' name='cols' value='{{cols}}' min='1' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='tableLayout-{{appId}}'>{{localize 'CSB.ComponentProperties.Table.TableLayout'}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.Table.TableLayoutDescription')}}
+    </label>
+    <input id='tableLayout-{{appId}}' type='text' data-key='layout' name='layout' value='{{layout}}' />
+</div>

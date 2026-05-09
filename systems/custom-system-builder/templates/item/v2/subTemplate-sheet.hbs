@@ -1,0 +1,25 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='{{cssClass}} {{item.type}} custom-system-entity' autocomplete='off'>
+    {{! Sheet Header }}
+    <header class='sheet-header'>
+        <div class='profile-img-container' style='width: 64px; height: 64px; flex: 0 0 64px'>
+            <img class='profile-img' src='{{item.img}}' data-action='editImage' title='{{item.name}}' />
+        </div>
+        <div class='header-fields'>
+            <h1 class='itemname'>
+                <input name='name' type='text' value='{{item.name}}' placeholder='Name' />
+            </h1>
+            <div class='custom-system-sheet-actions'>
+                <a class='custom-system-undo' title='{{localize "CSB.TemplateActions.Undo"}}'><i class='fas fa-rotate-left'></i></a>
+                <a class='custom-system-redo' title='{{localize "CSB.TemplateActions.Redo"}}'><i class='fas fa-rotate-right'></i></a>
+            </div>
+        </div>
+    </header>
+
+    <div class='custom-system-customBody'></div>
+</div>

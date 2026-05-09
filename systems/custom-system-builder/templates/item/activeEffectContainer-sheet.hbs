@@ -1,0 +1,23 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<form class='{{item.type}} custom-system-actor' autocomplete='off'>
+    <div class='custom-system-actor-content'>
+        {{! Sheet Header }}
+        <header class='sheet-header'>
+            <div class='profile-img-container' style='width: 50px; height: 50px; flex: 0 0 50px'>
+                <img class='profile-img' src='{{item.img}}' data-edit='img' title='{{item.name}}' />
+            </div>
+            <div class='header-fields'>
+                <h1 class='itemname'>
+                    <input name='name' type='text' value='{{item.name}}' placeholder='Name' />
+                </h1>
+            </div>
+        </header>
+
+        <div class='custom-system-customBody'></div>
+    </div>
+</form>

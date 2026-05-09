@@ -1,0 +1,50 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='textFieldLabel-{{appId}}'>{{localize 'CSB.ComponentProperties.InputComponent.Label'}}</label>
+    <input id='textFieldLabel-{{appId}}' type='text' data-key='label' name='label' value='{{label}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='textFieldSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.SectionTitle'}}*</label>
+    <select id='textFieldSize-{{appId}}' data-key='size' name='size'>
+        {{selectOptions COMPONENT_SIZES selected=size localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-size-custom' style='{{#unless (eq size 'custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='textFieldCustomSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.CustomSizeTitle'}}*</label>
+        <input id='textFieldCustomSize-{{appId}}' data-key='customSize' name='customSize' type='number' value='{{customSize}}' />
+    </div>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='textFieldCharList-{{appId}}'>{{localize 'CSB.ComponentProperties.TextField.AllowedCharacterList'}}</label>
+    <input id='textFieldCharList-{{appId}}' type='text' data-key='charList' name='charList' value='{{charList}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='textFieldMaxLength-{{appId}}'>{{localize 'CSB.ComponentProperties.TextField.MaxLength'}}</label>
+    <input id='textFieldMaxLength-{{appId}}' type='number' data-key='maxLength' name='maxLength' value='{{maxLength}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='textFieldValue-{{appId}}'>{{localize 'CSB.ComponentProperties.DefaultValue'}}
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.AllowFormulaCreateTimeOnly')}}
+    </label>
+    <input id='textFieldValue-{{appId}}' type='text' data-key='defaultValue' name='defaultValue' value='{{defaultValue}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='textFieldAutocomplete-{{appId}}'>{{localize 'CSB.ComponentProperties.TextField.AutoComplete'}}
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.TextField.AutoCompleteDescription')}}
+    </label>
+    <input id='textFieldAutocomplete-{{appId}}' type='text' data-key='autocomplete' name='autocomplete' value='{{autocomplete}}' />
+</div>

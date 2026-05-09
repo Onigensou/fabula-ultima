@@ -1,0 +1,127 @@
+{
+    "id": "custom-system-builder",
+    "title": "Custom System Builder",
+    "description": "Build your own system with easy to use components",
+    "compatibility": {
+        "minimum": "12",
+        "verified": "12.343",
+        "maximum": "12"
+    },
+    "authors": [
+        {
+            "name": "Jean-Baptiste Louvet-Daniel",
+            "email": "linkedfluuuush@gmail.com",
+            "discord": "LinkedFluuuush"
+        },
+        {
+            "name": "Martin1522",
+            "email": "martindeutsch152@outlook.de",
+            "discord": "Martin1522"
+        },
+        {
+            "name": "adorablecoin",
+            "discord": "adorablecoin"
+        },
+        {
+            "name": "Caloup"
+        }
+    ],
+    "relationships": {
+        "recommends": [
+            {
+                "id": "_chatcommands",
+                "type": "module",
+                "manifest": "https://gitlab.com/woodentavern/foundryvtt-chat-command-lib/-/raw/master/src/module.json",
+                "compatibility": {
+                    "minimum": "2.0.1",
+                    "verified": "2.0.1"
+                }
+            },
+            {
+                "id": "dfreds-convenient-effects",
+                "type": "module",
+                "manifest": "https://github.com/DFreds/dfreds-convenient-effects/releases/download/v7.4.2/module.json",
+                "compatibility": {
+                    "minimum": "7.4.2",
+                    "verified": "7.4.2"
+                }
+            },
+            {
+                "id": "statuscounter",
+                "type": "module",
+                "manifest": "https://gitlab.com/woodentavern/status-icon-counters/-/raw/f013291ec37cddb2d4d40eb7a5160834c4813e52/src/module.json",
+                "compatibility": {
+                    "minimum": "3.0.2",
+                    "verified": "3.0.2"
+                }
+            }
+        ]
+    },
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        },
+        {
+            "lang": "fr",
+            "name": "Français",
+            "path": "lang/fr.json"
+        },
+        {
+            "lang": "de",
+            "name": "Deutsch",
+            "path": "lang/de.json"
+        },
+        {
+            "lang": "ru",
+            "name": "Русский",
+            "path": "lang/ru.json"
+        }
+    ],
+    "esmodules": [
+        "module/custom-system-builder.js"
+    ],
+    "scripts": [
+        "lib/math.js",
+        "lib/deep-diff.min.js"
+    ],
+    "styles": [
+        "css/sheet/sheet.css",
+        "css/sheet/sheet-v1.css",
+        "css/sheet/sheet-v2.css",
+        "css/sheet/template.css",
+        "css/chat-message.css",
+        "css/attributes-editor.css",
+        "css/component-editor.css",
+        "css/user-input-editor.css",
+        "css/export-display.css",
+        "css/modifiers-editor.css",
+        "css/custom-status-effects.css",
+        "css/custom-dialog.css",
+        "css/display-settings.css"
+    ],
+    "documentTypes": {
+        "Actor": {
+            "character": {},
+            "_template": {}
+        },
+        "Item": {
+            "equippableItem": {},
+            "_equippableItemTemplate": {},
+            "subTemplate": {},
+            "userInputTemplate": {},
+            "activeEffectContainer": {}
+        }
+    },
+    "grid": {
+        "distance": 2,
+        "units": "m",
+        "type": 1,
+        "diagonals": 0
+    },
+    "url": "https://gitlab.com/custom-system-builder/custom-system-builder/",
+    "manifest": "https://gitlab.com/custom-system-builder/custom-system-builder/-/releases/permalink/latest/downloads/system.json",
+    "download": "https://gitlab.com/custom-system-builder/custom-system-builder/-/releases/4.8.5/downloads/custom-system-builder.zip",
+    "version": "4.8.5"
+}

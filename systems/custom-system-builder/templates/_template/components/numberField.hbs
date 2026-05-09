@@ -1,0 +1,87 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldLabel-{{appId}}'>{{localize 'CSB.ComponentProperties.InputComponent.Label'}}</label>
+    <input id='numberFieldLabel-{{appId}}' type='text' data-key='label' name='label' value='{{label}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.SectionTitle'}}*</label>
+    <select id='numberFieldSize-{{appId}}' data-key='size' name='size'>
+        {{selectOptions COMPONENT_SIZES selected=size localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-size-custom' style='{{#unless (eq size 'custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='numberFieldCustomSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.CustomSizeTitle'}}*</label>
+        <input id='numberFieldCustomSize-{{appId}}' data-key='customSize' name='customSize' type='number' value='{{customSize}}' />
+    </div>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldAllowDecimal-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.AllowDecimal'}}</label>
+    <input type='checkbox' id='numberFieldAllowDecimal-{{appId}}' data-key='allowDecimal' name='allowDecimal' {{checked allowDecimal}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldMinVal-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.MinValue'}}
+        {{> icon-formula}}
+    </label>
+    <input id='numberFieldMinVal-{{appId}}' type='text' data-key='minVal' name='minVal' value='{{minVal}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldMaxVal-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.MaxValue'}}
+        {{> icon-formula}}
+    </label>
+    <input id='numberFieldMaxVal-{{appId}}' type='text' data-key='maxVal' name='maxVal' value='{{maxVal}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldValue-{{appId}}'>Default value
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.AllowFormulaCreateTimeOnly')}}
+    </label>
+    <input id='numberFieldValue-{{appId}}' type='text' data-key='defaultValue' name='defaultValue' value='{{defaultValue}}' />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='numberFieldAllowRelative-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.AllowRelativeModification'}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.NumberField.AllowRelativeModificationDescription')}}
+    </label>
+    <input type='checkbox' id='numberFieldAllowRelative-{{appId}}' data-key='allowRelative' name='allowRelative' {{checked allowRelative}} />
+</div>
+<div class='custom-system-form-field'>
+    <label for='numberFieldShowControls-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.ShowFieldControls'}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.NumberField.ShowFieldControlsDescription')}}
+    </label>
+    <input type='checkbox' id='numberFieldShowControls-{{appId}}' data-key='showControls' name='showControls' {{checked showControls}} />
+</div>
+<div class='custom-system-form-field' id='numberFieldControlsSettings-{{appId}}' name='numberFieldControlsSettings'>
+    <label for='numberFieldControlsStyle-{{appId}}'>{{localize
+            'CSB.ComponentProperties.NumberField.ControlStyle.SectionTitle'
+        }}*</label>
+    <select id='numberFieldControlsStyle-{{appId}}' data-key='controlsStyle' name='controlsStyle'>
+        {{selectOptions NUMBER_FIELD_CONTROLS_STYLES selected=controlsStyle localize=true}}
+    </select>
+    <div class='custom-system-form-field'>
+        <label for='numberFieldControlsCustomIncrements-{{appId}}'>{{localize 'CSB.ComponentProperties.NumberField.ControlsCustomIncrements.Label'}}
+            {{> icon-formula}}
+            {{> icon-info title=(localize "CSB.ComponentProperties.NumberField.ControlsCustomIncrements.Description")}}
+        </label>
+        <input id='numberFieldControlsCustomIncrements-{{appId}}' type='text' data-key='controlsCustomIncrements' name='controlsCustomIncrements' value='{{controlsCustomIncrements}}' />
+    </div>
+</div>
+<div class='custom-system-form-field'>
+    <label for='numberFieldInputStyle-{{appId}}'>{{localize
+            'CSB.ComponentProperties.NumberField.DisplayStyle.SectionTitle'
+        }}*</label>
+    <select id='numberFieldInputStyle-{{appId}}' data-key='inputStyle' name='inputStyle'>
+        {{selectOptions NUMBER_FIELD_INPUT_STYLES selected=inputStyle localize=true}}
+    </select>
+</div>

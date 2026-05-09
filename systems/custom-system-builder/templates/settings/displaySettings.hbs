@@ -1,0 +1,28 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-display'>
+    <div>
+        <h1 class='sheetSize'>{{localize 'CSB.Display.SheetSize'}}</h1>
+        <div class='display-settings'>
+            <label for='custom-system-display-width'>{{localize 'CSB.Display.DefaultWidth'}}</label>
+            <input type='number' name='width' class='custom-system-display-width' value='{{width}}' />
+            <label for='custom-system-display-height'>{{localize 'CSB.Display.DefaultHeight'}}</label>
+            <input type='number' name='height' class='custom-system-display-height' value='{{height}}' />
+        </div>
+        <label for='custom-system-display-fix-size'>{{localize 'CSB.Display.PreventSheetResizing'}}</label>
+        <input type='checkbox' name='fix_size' class='custom-system-display-fix-size' {{checked fix_size}} />
+    </div>
+    <div>
+        <h1 class='pictureSize'>{{localize 'CSB.Display.ProfilPictureSize'}}</h1>
+        <div class='display-settings'>
+            <label for='custom-system-display-pp-width'>{{localize 'CSB.Display.DefaultWidth'}}</label>
+            <input type='number' name='pp_width' class='custom-system-display-pp-width' value='{{pp_width}}' />
+            <label for='custom-system-display-pp-height'>{{localize 'CSB.Display.DefaultHeight'}}</label>
+            <input type='number' name='pp_height' class='custom-system-display-pp-height' value='{{pp_height}}' />
+        </div>
+    </div>
+</div>

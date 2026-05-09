@@ -1,0 +1,54 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='{{cssClass}} {{item.type}} {{item.system.template}} custom-system-entity' autocomplete='off'>
+    {{! Sheet Header }}
+    <header class='sheet-header'>
+        <div class='profile-img-container' style='width: {{item.system.display.pp_width}}px; height: {{item.system.display.pp_height}}px; flex: 0 0 {{item.system.display.pp_width}}px'>
+            <img class='profile-img' src='{{item.img}}' data-action='editImage' title='{{item.name}}' />
+        </div>
+        <div class='header-fields'>
+            <h1 class='itemname'>
+                <input name='name' type='text' value='{{item.name}}' placeholder='Name' />
+                {{#if manualEntitySaving}}
+                    <a class='custom-system-save-entity custom-system-button-inactive' title='{{localize "Save"}}'><i class='fas fa-floppy-disk'></i></a>
+                {{/if}}
+            </h1>
+
+            <div class='custom-system-sheet-actions'>
+                {{#if canReload}}
+                    {{#if isEditable}}
+                        {{#unless isEmbedded}}
+                            <label>
+                                {{localize 'CSB.Sheets.MakeItemUnique'}}
+                                <input type='checkbox' name='system.unique' class='custom-system-item-unique' {{checked item.system.unique}} />
+                            </label>
+                        {{/unless}}
+                    {{/if}}
+
+                    <div class='custom-system-template-select'>
+                        <label for='template-{{item.id}}'> {{localize 'CSB.Sheets.Template'}} : </label>
+
+                        <select id='template-{{item.id}}' name='system.template'>
+                            {{selectOptions
+                                availableTemplates
+                                selected=item.system.template
+                                valueAttr='id'
+                                labelAttr='name'
+                            }}
+                        </select>
+                        <a class='custom-system-reload-template' title='{{localize "CSB.Sheets.ReloadTemplate"}}'><i class='fas fa-sync'></i></a>
+                        <a class='custom-system-open-template' title='{{localize "CSB.Sheets.OpenTemplateSheet"}}'><i class='fas fa-arrow-up-right-from-square'></i></a>
+                    </div>
+                {{/if}}
+            </div>
+
+            <div class='custom-system-customHeader'></div>
+        </div>
+    </header>
+
+    <div class='custom-system-customBody'></div>
+</div>

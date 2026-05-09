@@ -1,0 +1,20 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+<div class='custom-system-component-extensible-table-fields'>
+    <div class='custom-system-form-field'>
+        <label for='compAlign-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.Alignment'}}*</label>
+        <select class='compAlign' class='compAlign-{{appId}}' data-key='align' name='extraConf.align'>
+            {{selectOptions ALIGNMENT_LIST selected=component.align localize=true}}
+        </select>
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='compColName-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.ColumnName'}}</label>
+        <input type='text' class='compColName' id='compColName-{{appId}}' value='{{component.colName}}' data-key='colName' name='extraConf.colName' />
+    </div>
+
+    <hr />
+</div>

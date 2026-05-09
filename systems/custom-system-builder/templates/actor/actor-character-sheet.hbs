@@ -1,0 +1,51 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<form class='{{cssClass}} {{actor.type}} {{actor.system.template}} custom-system-actor' autocomplete='off'>
+    <div class='custom-system-actor-content'>
+        {{! Sheet Header }}
+        <header class='sheet-header'>
+            <div class='profile-img-container' style='width: {{actor.system.display.pp_width}}px; height: {{actor.system.display.pp_height}}px; flex: 0 0 {{actor.system.display.pp_width}}px'>
+                <img class='profile-img' src='{{actor.img}}' data-edit='img' title='{{actor.name}}' />
+            </div>
+            <div class='header-fields'>
+                <h1 class='charname'>
+                    <input name='name' type='text' value='{{actor.name}}' placeholder='{{localize "Name"}}' />
+                    {{#if manualEntitySaving}}
+                        <a class='custom-system-sheet-button custom-system-save-entity' title='{{localize "Save"}}'><i class='fas fa-floppy-disk'></i></a>
+                    {{/if}}
+                </h1>
+
+                {{#if canReload}}
+                    <div class='custom-system-sheet-actions'>
+                        <div class='custom-system-template-select'>
+                            <label for='template-{{actor.id}}'> {{localize 'CSB.Sheets.Template'}} : </label>
+
+                            <select id='template-{{actor.id}}' name='system.template'>
+                                {{selectOptions
+                                    availableTemplates
+                                    selected=actor.system.template
+                                    valueAttr='id'
+                                    labelAttr='name'
+                                }}
+                            </select>
+                            <a class='custom-system-sheet-button custom-system-reload-template' title='{{localize "CSB.Sheets.ReloadTemplate"}}'><i class='fas fa-sync'></i></a>
+                            <a class='custom-system-sheet-button custom-system-open-template' title='{{localize "CSB.Sheets.OpenTemplateSheet"}}'><i class='fas fa-arrow-up-right-from-square'></i></a>
+                        </div>
+                    </div>
+                    <div class='custom-system-sheet-actions'>
+                        <input type='button' class='custom-system-see-attributes' value='{{localize "CSB.Sheets.SeeHiddenAttributes"}}' />
+                        <input type='button' class='custom-system-see-attribute-bars' value='{{localize "CSB.Sheets.SeeAttributeBars"}}' />
+                    </div>
+                {{/if}}
+
+                <div class='custom-system-customHeader'></div>
+            </div>
+        </header>
+
+        <div class='custom-system-customBody'></div>
+    </div>
+</form>

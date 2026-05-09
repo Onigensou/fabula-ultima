@@ -1,0 +1,37 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<form class='{{cssClass}} {{actor.type}} {{actor.id}} custom-system-actor' autocomplete='off'>
+    <div class='custom-system-actor-content'>
+        {{! Sheet Header }}
+        <header class='sheet-header'>
+            <div class='profile-img-container' style='width: {{actor.system.display.pp_width}}px; height: {{actor.system.display.pp_height}}px; flex: 0 0 {{actor.system.display.pp_width}}px'>
+                <img class='profile-img' src='{{actor.img}}' data-edit='img' title='{{actor.name}}' />
+            </div>
+            <div class='header-fields'>
+                <h1 class='charname'>
+                    <input name='name' type='text' value='{{actor.name}}' placeholder='Name' />
+                </h1>
+
+                <div class='custom-system-sheet-actions'>
+                    <input type='button' class='custom-system-configure-display' value='{{localize "CSB.TemplateActions.ConfigureSheetDisplay"}}' />
+                    <input type='button' class='custom-system-configure-attributes' value='{{localize "CSB.TemplateActions.ConfigureHiddenAttributes"}}' />
+                    <input type='button' class='custom-system-configure-attribute-bars' value='{{localize "CSB.TemplateActions.ConfigureAttributeBars"}}' />
+                    <input type='button' class='custom-system-configure-status-effects' value='{{localize "CSB.TemplateActions.ConfigureStatusEffects"}}' />
+                    <input type='button' class='custom-system-reload-all-sheets' value='{{localize "CSB.TemplateActions.ReloadCharacterSheets"}}' />
+                </div>
+                <div class='custom-system-sheet-actions'>
+                    <input type='button' class='custom-system-undo' value='{{localize "CSB.TemplateActions.Undo"}}' />
+                    <input type='button' class='custom-system-redo' value='{{localize "CSB.TemplateActions.Redo"}}' />
+                </div>
+
+                <div class='custom-system-customHeader'></div>
+            </div>
+        </header>
+
+        <div class='custom-system-customBody'></div>
+    </div>
+</form>

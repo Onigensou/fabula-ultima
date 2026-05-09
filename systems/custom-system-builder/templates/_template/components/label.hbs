@@ -1,0 +1,129 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='labelStyle-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.LabelStyle.SectionTitle'}}*</label>
+    <select id='labelStyle-{{appId}}' data-key='style' name='labelStyle'>
+        {{selectOptions LABEL_STYLES selected=style localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='labelSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.SectionTitle'}}*</label>
+    <select id='labelSize-{{appId}}' data-key='size' name='size'>
+        {{selectOptions COMPONENT_SIZES selected=size localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-size-custom' style='{{#unless (eq size ' custom')}}display:none{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <label for='labelCustomSize-{{appId}}'>{{localize 'CSB.ComponentProperties.Size.CustomSizeTitle'}}*</label>
+        <input id='labelCustomSize-{{appId}}' data-key='customSize' name='customSize' type='number' value='{{customSize}}' />
+    </div>
+</div>
+
+
+<div class='custom-system-form-field'>
+    <div class='custom-system-form-field-label custom-system-form-field-multiline'>
+        <label for='labelText-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.LabelText'}}
+            {{> icon-formula}}
+        </label>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRichText-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.UseRichTextEditor'}}</label>
+            <input type='checkbox' id='labelRichText-{{appId}}' name='labelRichText' data-action='toggleEditor' data-editor='value' />
+        </div>
+    </div>
+    <textarea id='labelText-{{appId}}' data-key='value' name='value'>{{value}}</textarea>
+    <prose-mirror id='labelTextEditor-{{appId}}' data-key='value' name='valueEditor' value='{{value}}' style='display: none;'></prose-mirror>
+</div>
+
+<div class='custom-system-form-field'>
+    <div class='custom-system-form-field-label custom-system-form-field-multiline'>
+        <label for='labelPrefix-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.Prefix'}}
+            {{> icon-formula}}
+        </label>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRichTextPrefix-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.UseRichTextEditor'}}</label>
+            <input type='checkbox' id='labelRichTextPrefix-{{appId}}' name='labelRichTextPrefix' data-action='toggleEditor' data-editor='prefix' />
+        </div>
+    </div>
+    <textarea id='labelPrefix-{{appId}}' data-key='prefix' name='prefix'>{{prefix}}</textarea>
+    <prose-mirror id='labelPrefixEditor-{{appId}}' data-key='prefix' name='prefixEditor' value='{{prefix}}' style='display: none;'></prose-mirror>
+</div>
+
+<div class='custom-system-form-field'>
+    <div class='custom-system-form-field-label custom-system-form-field-multiline'>
+        <label for='labelSuffix-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.Suffix'}}
+            {{> icon-formula}}
+        </label>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRichTextSuffix-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.UseRichTextEditor'}}</label>
+            <input type='checkbox' id='labelRichTextSuffix-{{appId}}' name='labelRichTextSuffix' data-action='toggleEditor' data-editor='suffix' />
+        </div>
+    </div>
+    <textarea id='labelSuffix-{{appId}}' data-key='suffix' name='suffix'>{{suffix}}</textarea>
+    <prose-mirror id='labelSuffixEditor-{{appId}}' data-key='suffix' name='suffixEditor' value='{{suffix}}' style='display: none;'></prose-mirror>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='labelIcon-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.Icon'}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.Label.FontAwesomeIconDescription')}}
+    </label>
+    <input id='labelIcon-{{appId}}' type='text' data-key='icon' name='icon' value='{{icon}}' />
+</div>
+
+<hr>
+
+<div class="custom-system-form-field">
+    <label class="custom-system-field-title" for='labelRollMessage-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.RollMessage'}}
+        {{> icon-formula}}
+    </label>
+</div>
+
+<div class='custom-system-form-field'>
+    <div class='custom-system-form-field-label custom-system-form-field-multiline'>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRichTextRollMessage-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.UseRichTextEditor'}}</label>
+            <input type='checkbox' id='labelRichTextRollMessage-{{appId}}' name='labelRichTextRollMessage' data-action='toggleEditor' data-editor='rollMessage' />
+        </div>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRollMessageToChat-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.SendRollMessageToChat'}}</label>
+            <input type='checkbox' id='labelRollMessageToChat-{{appId}}' name='rollMessageToChat' {{checked
+                rollMessageToChat}} />
+        </div>
+    </div>
+    <textarea id='labelRollMessage-{{appId}}' data-key='rollMessage' name='rollMessage'>{{rollMessage}}</textarea>
+    <prose-mirror id='labelRollMessageEditor-{{appId}}' data-key='rollMessage' name='rollMessageEditor' value='{{rollMessage}}' style='display: none;'></prose-mirror>
+</div>
+
+<div class="custom-system-form-field">
+    <label class="custom-system-field-title" for='labelAltRollMessage-{{appId}}'>{{localize 'CSB.ComponentProperties.Label.AltRollMessage'}}
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.Label.AltRollMessageDescription')}}
+    </label>
+</div>
+
+<div class='custom-system-form-field'>
+    <div class='custom-system-form-field-label custom-system-form-field-multiline'>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelRichTextAltRollMessage-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.UseRichTextEditor'}}</label>
+            <input type='checkbox' id='labelRichTextAltRollMessage-{{appId}}' name='labelRichTextAltRollMessage' data-action='toggleEditor' data-editor='altRollMessage' />
+        </div>
+        <div class='custom-system-rich-text-toggle'>
+            <label for='labelAltRollMessageToChat-{{appId}}'>{{localize
+                'CSB.ComponentProperties.Label.SendRollMessageToChat'}}</label>
+            <input type='checkbox' id='labelAltRollMessageToChat-{{appId}}' name='altRollMessageToChat' {{checked
+                altRollMessageToChat}} />
+        </div>
+    </div>
+    <textarea id='labelAltRollMessage-{{appId}}' data-key='altRollMessage' name='altRollMessage'>{{altRollMessage}}</textarea>
+    <prose-mirror id='labelAltRollMessageEditor-{{appId}}' data-key='altRollMessage' name='altRollMessageEditor' value='{{altRollMessage}}' style='display: none;'></prose-mirror>
+</div>

@@ -1,0 +1,61 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='panelFlow-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.PanelLayout.SectionTitle'}}*</label>
+    <select id='panelFlow-{{appId}}' data-key='flow' name='flow'>
+        {{selectOptions LAYOUTS selected=flow localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='panelAlign-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.PanelAlign.SectionTitle'}}*</label>
+    <select id='panelAlign-{{appId}}' data-key='align' name='align'>
+        {{selectOptions ALIGNMENTS selected=align localize=true}}
+    </select>
+</div>
+
+<div class='custom-system-form-field'>
+    <label>{{localize 'CSB.ComponentProperties.Panel.Collapsible.SectionTitle'}}</label>
+    <span>
+        <label for='panelCollapsibleYes-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.Collapsible.Yes'}}</label>
+        <input type='radio' id='panelCollapsibleYes-{{appId}}' name='collapsible' value='true' {{checked collapsible}} />
+    </span>
+    <span>
+        <label for='panelCollapsibleNo-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.Collapsible.No'}}</label>
+        <input type='radio' id='panelCollapsibleNo-{{appId}}' name='collapsible' value='false' {{#unless collapsible}}{{checked true}}{{/unless}} />
+    </span>
+</div>
+
+<div class='custom-system-form-field custom-system-form-field-multiline collapsiblePanelOptions' id='collapsiblePanelOptions-{{appId}}'>
+    <div class='custom-system-form-field'>
+        <label>{{localize 'CSB.ComponentProperties.Panel.Collapsible.SectionTitleDefault'}}</label>
+        <span>
+            <label for='panelDefaultCollapsed-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.Panel.Collapsible.Yes'
+                }}</label>
+            <input type='radio' id='panelDefaultCollapsed-{{appId}}' name='defaultCollapsed' value='true' {{checked defaultCollapsed}} />
+        </span>
+        <span>
+            <label for='panelDefaultExpanded-{{appId}}'>{{localize
+                    'CSB.ComponentProperties.Panel.Collapsible.No'
+                }}</label>
+            <input type='radio' id='panelDefaultExpanded-{{appId}}' name='defaultCollapsed' value='false' {{#unless defaultCollapsed}}{{checked true}}{{/unless}} />
+        </span>
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='panelTitle-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.PanelTitle'}}</label>
+        <input id='panelTitle-{{appId}}' type='text' data-key='title' name='title' value='{{title}}' />
+    </div>
+
+    <div class='custom-system-form-field'>
+        <label for='panelTitleStyle-{{appId}}'>{{localize 'CSB.ComponentProperties.Panel.PanelTitleStyle'}}*</label>
+        <select id='panelTitleStyle-{{appId}}' data-key='titleStyle' name='titleStyle'>
+            {{selectOptions TITLE_STYLES selected=titleStyle localize=true}}
+        </select>
+    </div>
+</div>

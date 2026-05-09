@@ -1,0 +1,48 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+<div class='custom-system-reload-templates'>
+    <h1>{{localize 'CSB.ReloadTemplates.SelectReloadPlaces' DOCUMENT_TYPE=documentTypeLocalized}}</h1>
+
+    <div class='form-group'>
+        <div class='form-fields'>
+            <span><label for='gameDirectory'>{{localize
+                        'CSB.ReloadTemplates.GameDirectory'
+                        DOCUMENT_TYPE=documentTypeLocalized
+                    }}</label></span>
+            <span><input type='checkbox' name='gameDirectory' checked disabled /></span>
+        </div>
+    </div>
+
+    {{#if (eq documentType 'item')}}
+        <div class='form-group'>
+            <div class='form-fields'>
+                <span>
+                    <label for='actorsInGameDirectory'>{{localize
+                            'CSB.ReloadTemplates.ActorsInGameDirectory'
+                        }}</label></span>
+                <span> <input type='checkbox' name='actorsInGameDirectory' /></span>
+            </div>
+        </div>
+    {{/if}}
+
+    <div class='form-group'>
+        <div class='form-fields'>
+            <span>
+                <label for='tokensInScenes'>
+                    {{#if (eq documentType 'item')}}
+                        {{localize 'CSB.ReloadTemplates.ItemScenes'}}
+                    {{else}}
+                        {{localize 'CSB.ReloadTemplates.Scenes'}}
+                    {{/if}}</label></span>
+            <span>
+                <select name='tokensInScenes'>{{selectOptions
+                        SCENE_SELECTION_OPTIONS
+                        selected='none'
+                        localize=true
+                    }}</select></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<table class="custom-system-user-inputs">
+    <thead>
+        <tr>
+            <th>{{localize 'CSB.UserInput.Variable'}}</th>
+            <th>{{localize 'CSB.UserInput.Value'}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each allUserVars}}
+            <tr>
+                <td>
+                    <label for="{{this.name}}-{{../appId}}">{{this.displayName}}</label>
+                </td>
+                <td>
+                    <span class="custom-system-user-input-block">
+                        {{#if (eq this.type "number")}}
+                            <button class="custom-system-user-input-button" data-inputref="{{this.name}}-{{../appId}}" data-inputaction="sub-10">-10</button>
+                            <button class="custom-system-user-input-button" data-inputref="{{this.name}}-{{../appId}}" data-inputaction="sub-1">-1</button>
+                            <input type="number" id="{{this.name}}-{{../appId}}" name="{{this.name}}" class="custom-system-user-input" value="{{#if this.defaultValue}}{{this.defaultValue}}{{else}}0{{/if}}" />
+                            <button class="custom-system-user-input-button" data-inputref="{{this.name}}-{{../appId}}" data-inputaction="add-1">+1</button>
+                            <button class="custom-system-user-input-button" data-inputref="{{this.name}}-{{../appId}}" data-inputaction="add-10">+10</button>
+                        {{else if (eq this.type "check")}}
+                            {{#if this.choices}}
+                                {{#each this.values}}
+                                    <label for="{{../this.name}}-{{this.name}}-{{../appId}}">{{this.displayValue}}</label>
+                                    <input type="radio" id="{{../this.name}}-{{this.name}}-{{../appId}}" value="{{this.name}}" name="{{../this.name}}" class="custom-system-user-input" {{#unless @index}}checked="checked" {{/unless}}>
+                                {{/each}}
+                            {{else}}
+                                <input type="checkbox" id="{{this.name}}-{{../appId}}" name="{{this.name}}" class="custom-system-user-input" {{#if this.defaultValue}}checked="checked" {{/if}} />
+                            {{/if}}
+                        {{else}}
+                            {{#if this.choices}}
+                                <select id="{{this.name}}-{{../appId}}" name="{{this.name}}" class="custom-system-user-input">
+                                    {{#each this.values}}
+                                        <option value="{{this.name}}">{{this.displayValue}}</option>
+                                    {{/each}}
+                                </select>
+                            {{else}}
+                                <input type="text" id="{{this.name}}-{{../appId}}" name="{{this.name}}" class="custom-system-user-input" value="{{this.defaultValue}}" />
+                            {{/if}}
+                        {{/if}}
+                    </span>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>

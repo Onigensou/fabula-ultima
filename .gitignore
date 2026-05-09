@@ -1,11 +1,12 @@
 # Ignore everything in Foundry Data by default
 /*
 
-# Keep this gitignore file
+# Keep repo meta files
 !/.gitignore
+!/.gitattributes
 
 # -----------------------------
-# Track only this module
+# Track custom module
 # -----------------------------
 
 !/modules/
@@ -17,7 +18,16 @@
 /modules/fabula-ultima-companion/.git_BACKUP/
 
 # -----------------------------
-# Track only this world
+# Track game system
+# -----------------------------
+
+!/systems/
+/systems/*
+!/systems/custom-system-builder/
+!/systems/custom-system-builder/**
+
+# -----------------------------
+# Track world
 # -----------------------------
 
 !/worlds/
@@ -25,32 +35,33 @@
 !/worlds/fabula-ultima-2/
 !/worlds/fabula-ultima-2/**
 
-# Do not track world assets (large binary files)
-/worlds/fabula-ultima-2/assets/
-
-# Do not track live world session data (LevelDB - binary, always changing)
-# This covers actors, items, scenes, fog, combat, chat, etc. in the live world.
-# Track game objects via JSON-format compendium packs instead (see below).
-/worlds/fabula-ultima-2/data/
-
 # -----------------------------
-# Ignore LevelDB runtime files everywhere in world packs
-# Packs should use "format": "json" in world.json so only .json files appear here.
+# Track repo docs and scripts
 # -----------------------------
 
-**/*.ldb
-**/MANIFEST-*
-**/CURRENT
+!/README.md
+!/required-modules.json
+!/setup.ps1
+
+# -----------------------------
+# LevelDB runtime files — never commit these.
+# .ldb, MANIFEST-*, CURRENT are the actual data and SHOULD be committed.
+# LOCK, LOG are process-level state that must NOT be committed.
+# Rule: always close Foundry cleanly before git add/commit.
+# -----------------------------
+
 **/LOCK
 **/LOG
 **/LOG.old
 
-# Numbered LevelDB write-ahead logs (e.g. 001234.log)
-# Note: does NOT ignore module script .js files
-worlds/fabula-ultima-2/packs/**/*.log
+# Numbered write-ahead logs (e.g. 000001.log) — empty after clean shutdown.
+# Excluding them avoids stale WAL conflicts when a peer opens the DB.
+/worlds/fabula-ultima-2/data/**/*.log
+/worlds/fabula-ultima-2/packs/**/*.log
+/systems/custom-system-builder/packs/**/*.log
 
 # -----------------------------
-# Ignore archive/temp files
+# Ignore archive / temp files
 # -----------------------------
 
 *.zip

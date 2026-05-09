@@ -1,0 +1,133 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='tableHead-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.ColumnNameBold'}}</label>
+    <input type='checkbox' id='tableHead-{{appId}}' data-key='head' name='head' {{checked head}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='tableDeleteWarning-{{appId}}'>{{localize 'CSB.ComponentProperties.DynamicTable.ConfirmDialogOnDelete'}}</label>
+    <input type='checkbox' id='tableDeleteWarning-{{appId}}' data-key='deleteWarning' name='deleteWarning' {{checked deleteWarning}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='tableCanPlayerAdd-{{appId}}'>{{localize 'CSB.ComponentProperties.DynamicTable.CanAddRow'}}</label>
+    <input type='checkbox' id='tableCanPlayerAdd-{{appId}}' data-key='canPlayerAdd' name='canPlayerAdd' {{checked canPlayerAdd}} />
+</div>
+
+<div class="custom-system-form-field"><h3>{{localize 'CSB.ComponentProperties.ExtensibleTable.HiddenColumn.Title'}}</h3></div>
+<div class="custom-system-form-field">
+    <table class="custom-system-table-hidden-columns">
+        <thead>
+            <tr>
+                <td>{{localize 'CSB.ComponentProperties.ExtensibleTable.HiddenColumn.Key'}}*</td>
+                <td>{{localize 'CSB.ComponentProperties.ExtensibleTable.HiddenColumn.Value'}}* {{> icon-formula}}</td>
+                <td style="display: none"></td>
+                <td> <a class='custom-system-add-hidden-column'><i class='fas fa-plus-circle'></i></a></td>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each hiddenColumns}}
+            <tr class="custom-system-table-hidden-column" data-index='{{@index}}'>
+                <td><input type="text" name="hiddenColumnKey.{{@index}}" style="width: 130px;" value="{{this.key}}" {{disabled this.isPredefined}}/></td>
+                <td><textarea name="hiddenColumnFormula.{{@index}}" {{disabled this.isPredefined}}>{{this.formula}}</textarea></td>
+                <td style="display: none;"><input type="hidden" name="hiddenColumnIsPredefined.{{@index}}" {{checked this.isPredefined}}></td>
+                <td>
+                    {{#unless this.isPredefined}}
+                        <a class="custom-system-delete-hidden-column"><i class="fas fa-trash"></i></a>
+                    {{/unless}}
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class='custom-system-form-field'>
+    <h3>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Title'}}</h3>
+</div>
+<div class='custom-system-form-field'>
+    <label>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.SortOptions'}}*</label>
+    <div class='custom-system-form-field'>
+        <div>
+            <label for='sortAuto-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Auto'}}</label>
+            <input type='radio' id='sortAuto-{{appId}}' value='auto' name='tableSortOption' {{checked (eq sortOption 'auto')}} />
+        </div>
+        <div>
+            <label for='sortManual-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Manual'}}</label>
+            <input type='radio' id='sortManual-{{appId}}' value='manual' name='tableSortOption' {{checked (eq sortOption 'manual')}} />
+        </div>
+        <div>
+            <label for='sortDisabled-{{appId}}'>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Disabled'}}</label>
+            <input type='radio' id='sortDisabled-{{appId}}' value='disabled' name='tableSortOption' {{checked (eq sortOption 'disabled')}} />
+        </div>
+    </div>
+</div>
+
+<div class='custom-system-sort-auto' style='{{#unless (eq sortOption 'auto')}}display: none;{{/unless}}'>
+    <div class='custom-system-form-field'>
+        <h4>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.AddSortingCriteria'}}:</h4>
+    </div>
+    <div class='custom-system-form-field'>
+        <table class='custom-system-table-sort-predicates'>
+            <thead>
+                <tr>
+                    <td>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.ColumnKey'}}*</td>
+                    <td>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Operator'}}*</td>
+                    <td>{{localize 'CSB.ComponentProperties.ExtensibleTable.Sort.Value'}}</td>
+                    <td> <a class='custom-system-add-sort-predicate'><i class='fas fa-plus-circle'></i></a></td>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each sortPredicates}}
+                    <tr class='custom-system-table-sort-predicate' data-index='{{@index}}'>
+                        <td><input type='text' name='tableSortProp.{{@index}}' value='{{this.prop}}' /></td>
+                        <td>
+                            <select name='tableSortOp.{{@index}}'>
+                                {{selectOptions ../SORT_OPERATORS selected=this.operator localize=true}}
+                            </select>
+                        </td>
+                        <td><input type='text' name='tableSortValue.{{@index}}' value='{{this.value}}' /></td>
+                        <td>
+                            <a class='custom-system-delete-sort-predicate'><i class='fas fa-trash'></i></a>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class='custom-system-sort-column' style='{{#unless (eq sortOption 'column')}}display: none;{{/unless}}'></div>
+<div class='custom-system-sort-manual' style='{{#unless (eq sortOption 'manual')}}display: none;{{/unless}}'></div>
+<div class='custom-system-sort-disabled' style='{{#unless (eq sortOption 'disabled')}}display: none;{{/unless}}'></div>
+
+<template class='custom-system-table-hidden-column-template'>
+    <tr class='custom-system-table-hidden-column'>
+        <td><input type="text" class="custom-system-table-hidden-column-key" data-key="hiddenColumnKey" style="width: 130px;"/></td>
+        <td><textarea class="custom-system-table-hidden-column-formula" data-key="hiddenColumnFormula"></textarea></td>
+        <td style="display: none;"><input type="hidden" class="custom-system-table-hidden-column-is-predefined" data-key="hiddenColumnIsPredefined"></td>
+        <td>
+            <a class="custom-system-delete-hidden-column"><i class="fas fa-trash"></i></a>
+        </td>
+    </tr>
+</template>
+
+<template class='custom-system-table-sort-predicate-template'>
+    <tr class='custom-system-table-sort-predicate'>
+        <td><input type='text' class='custom-system-table-sort-predicate-property' data-key='tableSortProp' /></td>
+        <td>
+            <select class='custom-system-table-sort-predicate-operation' data-key='tableSortOp'>
+                {{selectOptions SORT_OPERATORS selected=this.operator localize=true}}
+            </select>
+        </td>
+        <td><input type='text' class='custom-system-table-sort-predicate-value' data-key='tableSortValue' /></td>
+        <td>
+            <a class='custom-system-delete-sort-predicate'><i class='fas fa-trash'></i></a>
+        </td>
+    </tr>
+</template>

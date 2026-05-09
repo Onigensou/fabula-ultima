@@ -1,0 +1,35 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='custom-system-form-field'>
+    <label for='pictureLabel-{{appId}}'>{{localize 'CSB.ComponentProperties.InputComponent.Label'}}</label>
+    <input id='pictureLabel-{{appId}}' type='text' data-key='label' name='label' value='{{label}}' />
+</div>
+
+<ul>
+    <li>{{localize 'CSB.ComponentProperties.Picture.Sizing.NoDimension'}}</li>
+    <li>{{localize 'CSB.ComponentProperties.Picture.Sizing.OneDimension'}}</li>
+    <li>{{localize 'CSB.ComponentProperties.Picture.Sizing.TwoDimensions'}}</li>
+</ul>
+
+<div class='custom-system-form-field'>
+    <label for='pictureWidth-{{appId}}'>{{localize 'CSB.ComponentProperties.Picture.Width'}}</label>
+    <input id='pictureWidth-{{appId}}' type='number' data-key='width' name='width' value={{width}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='pictureHeight-{{appId}}'>{{localize 'CSB.ComponentProperties.Picture.Height'}}</label>
+    <input id='pictureHeight-{{appId}}' type='number' data-key='height' name='height' value={{height}} />
+</div>
+
+<div class='custom-system-form-field'>
+    <label for='pictureDefaultValue-{{appId}}'>{{localize 'CSB.ComponentProperties.DefaultValue'}}
+        {{> icon-formula}}
+        {{> icon-info title=(localize 'CSB.ComponentProperties.AllowFormulaCreateTimeOnly')}}
+    </label>
+    <input id='pictureDefaultValue-{{appId}}' type='text' data-key='defaultValue' name='defaultValue' value="{{defaultValue}}" />
+    <button id='pictureOpenFilePicker-{{appId}}' class="fa-solid fa-file-import fa-fw" data-tooltip="{{localize FILES.BrowseTooltip}}" aria-label="{{localize FILES.BrowseTooltip}}" type="button" data-configAction="openFilePicker"></button>
+</div>

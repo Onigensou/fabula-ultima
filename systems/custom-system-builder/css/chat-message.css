@@ -1,0 +1,53 @@
+/*
+ * Author: Jean-Baptiste Louvet-Daniel
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+.custom-system-roll {
+    background: #ddd;
+    padding: 1px 4px;
+    border: 1px solid #4b4a44;
+    border-radius: 2px;
+    white-space: normal;
+    word-break: break-word;
+    cursor: pointer;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.custom-system-roll:hover {
+    text-shadow: 0 0 8px var(--color-shadow-primary);
+}
+
+.custom-system-roll-tooltip-dice {
+    float: none !important;
+    display: inline-block;
+}
+
+.custom-system-hidden-roll {
+    border: 1px dotted #646464;
+}
+
+.part-total {
+    margin-left: 8px;
+}
+
+.custom-system-arg-tooltip {
+    color: var(--color-text-light-6);
+}
+
+.custom-system-dice-pool {
+    margin-right: 3px;
+    padding-top: 4px;
+}
+
+.custom-system-dice-pool-multiple {
+    border: 1px solid black;
+}
+
+.custom-system-dice-tooltip .dice-rolls {
+    padding-top: 1px;
+}

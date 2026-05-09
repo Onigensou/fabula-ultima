@@ -1,0 +1,61 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class='inline-roll'>
+    <div class='dice-tooltip'>
+        <section class='tooltip-part'>
+            <div class='dice'>
+                <header class='part-header flexrow'>
+                    <span class='part-formula'>{{raw}}</span>
+
+                    <span class='part-total'>{{result}}</span>
+                </header>
+                {{#if arrayExplanation.length}}
+                    <ol class='dice-rolls'>
+                        {{#each arrayExplanation}}
+                            <li>{{{this.offset}}}<b>{{{this.name}}}</b> = {{this.value}}</li>
+                            {{#if this.dice}}
+                                {{!-- 
+                                {{#each this.dice}}
+                                    <div>
+                                        <header class='part-header flexrow'>
+                                            {{#if this.icon}}
+                                                <span
+                                                    class='part-method'
+                                                    data-tooltip='{{this.method}}'
+                                                    aria-label='{{localize this.method}}'
+                                                >
+                                                    {{{this.icon}}}
+                                                </span>
+                                            {{/if}}
+                                            <span class='part-formula'>{{this.formula}}</span>
+                                            {{#if this.flavor}}<span class='part-flavor'>{{this.flavor}}</span>{{/if}}
+                                            <span class='part-total'>{{this.total}}</span>
+                                        </header>
+
+                                        {{#each this.dice}}
+                                            <span
+                                                class='roll {{this.classes}} custom-system-roll-tooltip-dice'
+                                            >{{{this.result}}}</span>
+                                        {{/each}}
+                                    </div>
+
+                                {{/each}} --}}
+
+                                <div>
+                                    {{#each this.dice}}
+                                        <span class='custom-system-dice-pool  {{#if (gt ../this.dice.length 1)}}custom-system-dice-pool-multiple{{/if}}' title='{{#if this.flavor}}{{this.flavor}}&#013;{{/if}}{{this.formula}} = {{this.total}}'>{{#each this.dice}}<span
+                                                    class='roll {{this.classes}} custom-system-roll-tooltip-dice'>{{{this.result}}}</span>{{/each}}</span>
+                                    {{/each}}
+                                </div>
+                            {{/if}}
+                        {{/each}}
+                    </ol>
+                {{/if}}
+            </div>
+        </section>
+    </div>
+</div>

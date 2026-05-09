@@ -1,0 +1,81 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+<div>
+    <header class="table-header flexrow">
+            <label>{{localize 'CSB.Settings.CustomStatusEffects.Id'}}</label>
+            <label>{{localize 'CSB.Settings.CustomStatusEffects.EffectName'}}</label>
+            <label>{{localize 'CSB.Settings.CustomStatusEffects.Icon'}}</label>
+            <label>{{localize 'CSB.Settings.CustomStatusEffects.LinkedActiveEffect'}}</label>
+            <span class="custom-system-statusEffectConfigActions"><label><a class="custom-system-clickable" data-action="addEffect"><i class="far fa-plus-square"></i></a></label></span>
+
+    </header>
+    <ul class="statusEffectList">
+        {{#each statusEffects}}
+            <li class="form-group statusEffect" data-index="{{@index}}">
+                <div class="form-fields">
+                    <input type="text" class="custom-system-effect-id" name="effects.{{@index}}.id" value="{{this.id}}" data-previous-value="{{this.id}}" />
+                    <input type="text" class="custom-system-effect-name" name="effects.{{@index}}.name" value="{{this.name}}" />
+                    <span class="custom-system-statusEffectConfigIcon" data-action="editImage"><input type="hidden" class="custom-system-effect-img" name="effects.{{@index}}.img" value="{{this.img}}" /><img src="{{this.img}}" width="50px"></img></span>
+                    <span>
+                        {{#if this.linkedEffect}}
+                            <input type="hidden" class="custom-system-effect-linkedEffectId" name="effects.{{@index}}.linkedEffectId" value="{{this.linkedEffectId}}" />
+                            <a class="content-link" data-type="ActiveEffect" data-entity="ActiveEffect" data-id="{{this.linkedEffect.id}}" data-uuid="{{this.linkedEffect.uuid}}" data-tooltip="{{this.linkedEffect.name}}" data-action="openEffect" draggable="false"><img src="{{this.linkedEffect.img}}" alt="{{this.linkedEffect.name}} image" draggable="false" class="custom-system-active-effect-container-image">{{this.linkedEffect.name}}</a>
+                            <a class="custom-system-clickable" data-action="removeLinkedEffect"><i class="far fa-xmark-square"></i></a>
+                        {{else}}
+                            <select class="custom-system-effect-linkedEffect-select">
+                                {{selectOptions ../PREDEFINED_EFFECTS valueAttr="id" labelAttr="name"}}
+                            </select>
+                        {{/if}}
+                    </span>
+                    <span class="custom-system-statusEffectConfigActions"><a class="custom-system-clickable" data-action="removeEffect"><i class="fas fa-trash"></i></a></span>
+                </div>
+            </li>
+        {{/each}}
+    </ul>
+
+    <h1>{{localize 'CSB.Settings.CustomStatusEffects.SpecialStatusEffects.Title'}}</h1>
+    <p>{{localize 'CSB.Settings.CustomStatusEffects.SpecialStatusEffects.Caption'}}</p>
+
+    <div class="specialStatusEffects">
+        {{#each specialStatusEffects}}
+            <div class="specialStatusEffectBox">
+                <h3>{{this.localizedName}}</h3>
+                <select class="custom-system-special-effect" name="specialStatusEffect.{{this.name}}">
+                    {{selectOptions ../statusEffects valueAttr="id" labelAttr="id" selected=this.statusEffectId}}
+                </select>
+            </div>
+        {{/each}}
+    </div>
+
+    <template class="statusEffect-template">
+        <li class="form-group statusEffect">
+            <div class="form-fields">
+                <input type="text" class="custom-system-effect-id" />
+                <input type="text" class="custom-system-effect-name" />
+                <span class="custom-system-statusEffectConfigIcon" data-action="editImage"><input type="hidden" class="custom-system-effect-img" /><img src="" width="50px"></img></span>
+                <span>
+                    <select class="custom-system-effect-linkedEffect-select">
+                        {{selectOptions PREDEFINED_EFFECTS valueAttr="id" labelAttr="name"}}
+                    </select>
+                </span>
+                <span class="custom-system-statusEffectConfigActions"><a class="custom-system-clickable" data-action="removeEffect"><i class="fas fa-trash"></i></a></span>
+            </div>
+        </li>
+    </template>
+    
+    <template class="statusEffect-linkedEffect-template">
+        <input type="hidden" class="custom-system-effect-linkedEffectId" />
+        <a class="content-link" data-type="ActiveEffect" data-entity="ActiveEffect" data-action="openEffect" draggable="false"><img src="" alt="ActiveEffect image" draggable="false" class="custom-system-active-effect-container-image"></a>
+        <a class="custom-system-clickable" data-action="removeLinkedEffect"><i class="far fa-xmark-square"></i></a>
+    </template>
+
+    <template class="statusEffect-linkedEffect-select-template">
+        <select class="custom-system-effect-linkedEffect-select">
+            {{selectOptions PREDEFINED_EFFECTS valueAttr="id" labelAttr="name"}}
+        </select>
+    </template>
+</div>
+

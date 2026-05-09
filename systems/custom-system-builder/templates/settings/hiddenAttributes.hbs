@@ -1,0 +1,38 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div>
+    <div class='custom-system-attributes'>
+        <header class='table-header flexrow'>
+            <label>{{localize 'CSB.Attributes.Name'}}</label>
+            <label>{{localize 'CSB.Attributes.Formula'}}</label>
+            <span class='custom-system-dialog-actions'><label><a class='custom-system-clickable' data-action='addAttribute'><i class='far fa-plus-square'></i></a></label></span>
+
+        </header>
+        <ul class='hiddenAttributesList'>
+            {{#each attributes}}
+                <li class='form-group custom-system-hidden-attribute' data-index='{{@index}}'>
+                    <div class='form-fields'>
+                        <input type='text' class='custom-system-attribute-name' name='attributes.{{@index}}.name' value='{{this.name}}' />
+                        <textarea class='custom-system-attribute-formula' name='attributes.{{@index}}.value'>{{this.value}}</textarea>
+                        <span class='custom-system-dialog-actions'><a class='custom-system-clickable' data-action='removeAttribute'><i class='fas fa-trash'></i></a></span>
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
+
+    </div>
+
+    <template class='custom-system-hidden-attribute-template'>
+        <li class='form-group custom-system-hidden-attribute' data-index='{{@index}}'>
+            <div class='form-fields'>
+                <input type='text' class='custom-system-attribute-name' />
+                <textarea class='custom-system-attribute-formula'></textarea>
+                <span class='custom-system-dialog-actions'><a class='custom-system-clickable' data-action='removeAttribute'><i class='fas fa-trash'></i></a></span>
+            </div>
+        </li>
+    </template>
+</div>

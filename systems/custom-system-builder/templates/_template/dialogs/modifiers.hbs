@@ -1,0 +1,98 @@
+{{! Author: Jean-Baptiste Louvet-Daniel
+   -
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. }}
+
+<div class="notification warning csb-warning">{{localize 'CSB.Modifier.EditDialog.DeprecationWarning'}}</div>
+
+{{#each blocks}}
+    <div class="custom-system-block-title" id="title_{{this.id}}" data-block-id="{{this.id}}">
+        <i class="fas {{#if this.visible}}fa-caret-down{{else}}fa-caret-right{{/if}}"></i>
+        <p>{{this.label}} ({{localize 'CSB.Modifier.EditDialog.ModifierCount' COUNT=this.modifiers.length}})</p>
+    </div>
+    <div class="custom-system-modifiers" style="{{#unless this.visible}}display:none{{/unless}}" id="modifiers_{{this.id}}" data-block-id="{{this.id}}" {{#if this.editable}} data-block-editable="{{this.editable}}" {{/if}}>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{localize 'CSB.Modifier.Group'}}</th>
+                    <th>{{localize 'CSB.Modifier.Priority'}}</th>
+                    <th>{{localize 'CSB.Modifier.Key'}}</th>
+                    <th>{{localize 'CSB.Modifier.Operator'}}</th>
+                    <th>{{localize 'CSB.Modifier.Formula'}}</th>
+                    <th>{{localize 'CSB.Modifier.Description'}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each this.modifiers}}
+                    <tr class="custom-system-modifier">
+                        <input type="hidden" class="custom-system-modifier-id" value="{{this.id}}" {{#unless ../editable}}disabled="disabled" {{/unless}}>
+                        <td>
+                            <input type="text" class="custom-system-modifier-conditionalGroup" value="{{this.conditionalGroup}}" {{#unless ../editable}}disabled="disabled" {{/unless}}>
+                        </td>
+                        <td>
+                            <input type="number" class="custom-system-modifier-priority" value="{{this.priority}}" {{#unless ../editable}}disabled="disabled" {{/unless}} />
+                        </td>
+                        <td>
+                            <textarea class="custom-system-modifier-key" {{#unless ../editable}}disabled="disabled" {{/unless}}>{{this.key}}</textarea>
+                        </td>
+                        <td>
+                            <select class="custom-system-modifier-operator">
+                                {{selectOptions ../../MODIFIER_OPERATORS selected=this.operator localize=true}}
+                            </select>
+                        </td>
+                        <td>
+                            <textarea class="custom-system-modifier-formula" {{#unless ../editable}}disabled="disabled" {{/unless}}>{{this.formula}}</textarea>
+                        </td>
+                        <td>
+                            <textarea class="custom-system-modifier-description" {{#unless ../editable}}disabled="disabled" {{/unless}}>{{this.description}}</textarea>
+                        </td>
+                        <td class="custom-system-modifier-controls">
+                            {{#if ../editable}}
+                                <a class="custom-system-delete-modifier"><i class="fas fa-trash"></i></a>
+                            {{/if}}
+                        </td>
+                    </tr>
+                {{/each}}
+                {{#if this.editable}}
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>
+                            <a><i class="fas fa-plus-circle" id="addModifier"></i></a>
+                        </td>
+                    </tr>
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+{{/each}}
+
+<template id="custom-system-modifier-template">
+    <tr class="custom-system-modifier">
+        <input type="hidden" class="custom-system-modifier-id">
+        <td>
+            <input type="text" class="custom-system-modifier-conditionalGroup">
+        </td>
+        <td>
+            <input type="number" class="custom-system-modifier-priority" />
+        </td>
+        <td>
+            <textarea class="custom-system-modifier-key"></textarea>
+        </td>
+        <td>
+            <select class="custom-system-modifier-operator">
+                {{selectOptions MODIFIER_OPERATORS localize=true}}
+            </select>
+        </td>
+        <td>
+            <textarea class="custom-system-modifier-formula"></textarea>
+        </td>
+        <td>
+            <textarea class="custom-system-modifier-description"></textarea>
+        </td>
+        <td class="custom-system-modifier-controls">
+            <a class="custom-system-delete-modifier"><i class="fas fa-trash"></i></a>
+        </td>
+    </tr>
+</template>
