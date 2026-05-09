@@ -165,6 +165,8 @@
 
   "esmodules": [
     "scripts/shop-system/shopOpen-bootstrap.js",
+    "scripts/shop-system/shopPurchase-handler.js",
+    "scripts/shop-system/shopWindow-app.js",
     "scripts/action-reader/actionReader-bootstrap.js",
     "scripts/warehouse-system/warehouse-debug.js",
     "scripts/warehouse-system/warehouse-payloadManager.js",

@@ -8,6 +8,8 @@ export const SHOPOPEN = {
     OPEN_REQ:   "FU_SHOP_OPEN_REQ_V1",
     OPEN_GRANT: "FU_SHOP_OPEN_GRANT_V1",
     CLOSE_REQ:  "FU_SHOP_CLOSE_REQ_V1",
+    BUY_REQ:    "FU_SHOP_BUY_REQ_V1",
+    BUY_RESULT: "FU_SHOP_BUY_RESULT_V1",
   },
 
   // Animation
