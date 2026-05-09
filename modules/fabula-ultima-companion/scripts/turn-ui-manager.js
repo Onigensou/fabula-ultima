@@ -34,7 +34,7 @@
   // Expose on globalThis so other scripts (like ActionAnimationHandler) can see it
   // as globalThis.TurnUI.
   globalThis.TurnUI = TurnUI;
-  console.log("[Turn UI Manager] Initialized. Global TurnUI exposed on globalThis.");
+  console.debug("[Turn UI Manager] Initialized. Global TurnUI exposed on globalThis.");
 
   // --- Config --------------------------------------------------------------
     const SFX_URL = {
@@ -979,5 +979,5 @@
     }
   });
 
-  console.log("[Turn UI Manager] Installed.");
+  console.debug("[Turn UI Manager] Installed.");
 })();

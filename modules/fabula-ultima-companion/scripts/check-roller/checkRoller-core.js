@@ -251,5 +251,5 @@
 
     return { payload: p, result: p.result };
   });
-  console.log(`${TAG} Adapter installed: computeRoll`);
+  console.debug(`${TAG} Adapter installed: computeRoll`);
 })();

@@ -10,7 +10,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.PhaseHandler";
     if (globalThis[KEY]) {
-      console.log("[PhaseHandler] Already installed.");
+      console.debug("[PhaseHandler] Already installed.");
       return;
     }
     globalThis[KEY] = true;
@@ -587,7 +587,7 @@ Hooks.once("ready", () => {
       );
     });
 
-    console.log("[PhaseHandler] oni:reactionPhase logger installed.");
+    console.debug("[PhaseHandler] oni:reactionPhase logger installed.");
   }
   })();
 });

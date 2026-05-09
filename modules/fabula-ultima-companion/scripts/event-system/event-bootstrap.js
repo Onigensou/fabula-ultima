@@ -28,7 +28,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.Bootstrap?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -70,12 +70,12 @@
     logStatus() {
       const status = this.getStatus();
 
-      console.log(INSTALL_TAG, "Status:", status);
+      console.debug(INSTALL_TAG, "Status:", status);
 
       if (!status.ok) {
         console.warn(INSTALL_TAG, "Missing Event System pieces:", status.missing);
       } else {
-        console.log(INSTALL_TAG, "All Event System pieces loaded correctly.");
+        console.debug(INSTALL_TAG, "All Event System pieces loaded correctly.");
       }
 
       return status;
@@ -95,7 +95,7 @@
       loaded: status.loaded
     });
   } else {
-    console.log(INSTALL_TAG, "Installed successfully.", {
+    console.debug(INSTALL_TAG, "Installed successfully.", {
       loaded: status.loaded
     });
   }

@@ -344,5 +344,5 @@ export function registerActionReaderBuildContext(moduleId) {
     buildActionReaderContext
   };
 
-  console.log(`[ActionReader] Build Context registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Build Context registered to module API for "${moduleId}".`);
 }

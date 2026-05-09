@@ -427,5 +427,5 @@ export function registerActionReaderParseTargetRule(moduleId) {
     parseActionReaderTargetRule
   };
 
-  console.log(`[ActionReader] Parse Target Rule registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Parse Target Rule registered to module API for "${moduleId}".`);
 }

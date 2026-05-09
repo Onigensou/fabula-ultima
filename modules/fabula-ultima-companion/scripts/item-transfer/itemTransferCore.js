@@ -939,5 +939,5 @@
     getActorZenit
   };
 
-  console.log('[ItemTransferCore] Installed as window["oni.ItemTransferCore"].');
+  console.debug('[ItemTransferCore] Installed as window["oni.ItemTransferCore"].');
 })();

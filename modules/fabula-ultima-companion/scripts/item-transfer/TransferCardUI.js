@@ -282,7 +282,7 @@
   });
 
   TransferCardUI._socketInstalled = true;
-  console.log("[TransferCardUI] Socket listener installed.");
+  console.debug("[TransferCardUI] Socket listener installed.");
 }
 
 // If this script is run AFTER ready (macro/manual), install immediately.
@@ -345,5 +345,5 @@ if (game.ready) {
 };
 
 
-  console.log(`[TransferCardUI] Installed as window["${NSKEY}"].`);
+  console.debug(`[TransferCardUI] Installed as window["${NSKEY}"].`);
 })();

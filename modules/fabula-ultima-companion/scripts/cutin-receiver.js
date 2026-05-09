@@ -416,7 +416,7 @@
       };
 
       window[FLAG] = true;
-      console.log("[FU Cut-In] Receiver+Cache installed.");
+      console.debug("[FU Cut-In] Receiver+Cache installed.");
     } catch (err) {
       console.error("[FU Cut-In] Receiver failed to install:", err);
     }

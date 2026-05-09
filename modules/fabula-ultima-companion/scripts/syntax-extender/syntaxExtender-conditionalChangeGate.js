@@ -1702,6 +1702,6 @@ function getBaseValueForChange(actor, change) {
       patchActiveEffectApply({ force: true });
     }
 
-    console.log(TAG, "Ready.", globalThis.FUCompanion.api.activeEffectConditionalGate.status());
+    console.debug(TAG, "Ready.", globalThis.FUCompanion.api.activeEffectConditionalGate.status());
   });
 })();

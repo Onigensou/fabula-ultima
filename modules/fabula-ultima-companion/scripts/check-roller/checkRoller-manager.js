@@ -487,7 +487,7 @@
         throw new Error(`${TAG} Adapter ${name} must be a function or null`);
       }
       adapters[name] = fn;
-      console.log(`${TAG} Adapter registered: ${name}`, fn ? "(function)" : "(null)");
+      console.debug(`${TAG} Adapter registered: ${name}`, fn ? "(function)" : "(null)");
     },
 
     // steps
@@ -511,7 +511,7 @@
         steps.push(step);
       }
 
-      console.log(`${TAG} Step registered: ${step.id}`);
+      console.debug(`${TAG} Step registered: ${step.id}`);
     },
 
     listSteps() {
@@ -700,7 +700,7 @@
 
   ROOT.ONI.CheckRoller = api;
 
-  console.log(`${TAG} Ready v${VERSION}`, {
+  console.debug(`${TAG} Ready v${VERSION}`, {
     FLAG_SCOPE: CONST.FLAG_SCOPE,
     FLAG_KEY_CARD: CONST.FLAG_KEY_CARD,
     lockMode: api.config.lockMode,

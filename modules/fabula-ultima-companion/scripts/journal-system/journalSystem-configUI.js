@@ -28,7 +28,7 @@ function installJournalConfigUI() {
   // ------------------------------------------------------------
   const GLOBAL_KEY = "oni.JournalConfigUI";
   if (window[GLOBAL_KEY]?.installed) {
-    console.log("[ONI][JournalConfigUI]", "Already installed; skipping.");
+    console.debug("[ONI][JournalConfigUI]", "Already installed; skipping.");
     return;
   }
   window[GLOBAL_KEY] = { installed: true };

@@ -1490,7 +1490,7 @@ nextPayload.meta.__suppressActionDeclarationEvents = true;
     });
   }
 
-  console.log(`${TAG} Ready`, {
+  console.debug(`${TAG} Ready`, {
     version: API_VERSION,
     moduleId: MODULE_ID,
     debug: ACTION_CARD_REBUILDER_DEBUG

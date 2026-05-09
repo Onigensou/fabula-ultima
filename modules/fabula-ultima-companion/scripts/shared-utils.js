@@ -21,28 +21,137 @@
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
   
   // ─────────────────────────────────────────────────────────────────────────────
-  // LOGGER: Centralized logging with consistent formatting
+  // LOGGER: Centralized logging with level + per-tag override support
+  //
+  // Levels:  silent(0) < error(1) < warn(2) < info(3) < debug(4)
+  //   log()/info() emit at info; debug() at debug; warn()/err()/error() as named.
+  //
+  // Sources of the active level (highest priority first):
+  //   1. Per-tag override map (game.settings "logTags" JSON, substring match,
+  //      longest matching key wins)
+  //   2. Global level (game.settings "logLevel")
+  //   3. Pre-init fallback constant DEFAULT_LEVEL
+  //
+  // Legacy 2-arg form `createLogger(tag, false)` still suppresses everything
+  // unconditionally for callers that want a hard kill switch.
   // ─────────────────────────────────────────────────────────────────────────────
-  
+
+  const MODULE_ID = "fabula-ultima-companion";
+  const LOG_LEVELS = Object.freeze({ silent: 0, error: 1, warn: 2, info: 3, debug: 4 });
+  const DEFAULT_LEVEL = "info";
+
+  let _cachedLevel = null;
+  let _cachedTagOverrides = null;
+
+  function _readGlobalLevel() {
+    if (_cachedLevel !== null) return _cachedLevel;
+    if (typeof game === "undefined" || !game?.settings) return DEFAULT_LEVEL;
+    try {
+      _cachedLevel = game.settings.get(MODULE_ID, "logLevel") || DEFAULT_LEVEL;
+    } catch {
+      // Settings not registered yet (called inside Hooks.once("init") before our register runs).
+      return DEFAULT_LEVEL;
+    }
+    return _cachedLevel;
+  }
+
+  function _readTagOverrides() {
+    if (_cachedTagOverrides !== null) return _cachedTagOverrides;
+    if (typeof game === "undefined" || !game?.settings) return {};
+    try {
+      const raw = game.settings.get(MODULE_ID, "logTags");
+      _cachedTagOverrides = raw ? (JSON.parse(raw) ?? {}) : {};
+    } catch {
+      _cachedTagOverrides = {};
+    }
+    return _cachedTagOverrides;
+  }
+
+  function _resolveLevelFor(tag) {
+    const overrides = _readTagOverrides();
+    let bestKey = null;
+    for (const key of Object.keys(overrides)) {
+      if (!key) continue;
+      if (tag.includes(key) && (bestKey === null || key.length > bestKey.length)) bestKey = key;
+    }
+    if (bestKey !== null) return overrides[bestKey];
+    return _readGlobalLevel();
+  }
+
+  function _enabled(tag, levelName) {
+    const cur = _resolveLevelFor(tag);
+    return (LOG_LEVELS[cur] ?? LOG_LEVELS[DEFAULT_LEVEL]) >= (LOG_LEVELS[levelName] ?? 0);
+  }
+
   /**
-   * Create a logger with consistent formatting
-   * 
+   * Create a logger gated by global + per-tag log levels.
+   *
    * @param {string} tag - Logger tag (e.g., "[ONI][ActionFetch]")
-   * @param {boolean} debug - Enable/disable logging (default: true)
-   * @returns {Object} { log, warn, err, tag, debug }
-   * 
+   * @param {boolean} [legacyDebug=true] - If false, suppresses everything regardless of level.
+   * @returns {{ log:Function, info:Function, debug:Function, warn:Function, err:Function, error:Function, tag:string, isEnabled:(level:string)=>boolean }}
+   *
    * @example
    * const { log, warn, err } = FUCompanion.createLogger("[ONI][MyMacro]");
    * log("Starting macro", { data });
    * if (error) err("Failed:", error);
    */
-  FUCompanion.createLogger = function(tag, debug = true) {
-    const log  = (...a) => debug && console.log(tag, ...a);
-    const warn = (...a) => debug && console.warn(tag, ...a);
-    const err  = (...a) => debug && console.error(tag, ...a);
-    
-    return { log, warn, err, tag, debug };
+  FUCompanion.createLogger = function(tag, legacyDebug = true) {
+    const respect = legacyDebug !== false;
+    const gate = (lvl) => respect && _enabled(tag, lvl);
+
+    const debug = (...a) => { if (gate("debug")) console.debug(tag, ...a); };
+    const info  = (...a) => { if (gate("info"))  console.log(tag, ...a); };
+    const log   = info;
+    const warn  = (...a) => { if (gate("warn"))  console.warn(tag, ...a); };
+    const error = (...a) => { if (gate("error")) console.error(tag, ...a); };
+    const err   = error;
+
+    return { log, info, debug, warn, err, error, tag, isEnabled: gate };
   };
+
+  // Allow other code (and the settings onChange) to drop the cache so the
+  // next call re-reads from game.settings.
+  FUCompanion.invalidateLogCache = () => {
+    _cachedLevel = null;
+    _cachedTagOverrides = null;
+  };
+
+  // Settings registration. Must run in "init" — settings are not yet available
+  // at file-load time, and game.settings.register itself errors before "init".
+  if (typeof Hooks !== "undefined") {
+    Hooks.once("init", () => {
+      try {
+        game.settings.register(MODULE_ID, "logLevel", {
+          name: "FU Companion: console log level",
+          hint: "Console verbosity for FabulaUltimaCompanion. silent < error < warn < info < debug.",
+          scope: "client",
+          config: true,
+          type: String,
+          choices: {
+            silent: "Silent",
+            error:  "Error only",
+            warn:   "Warn + Error",
+            info:   "Info (default)",
+            debug:  "Debug (verbose)"
+          },
+          default: DEFAULT_LEVEL,
+          onChange: () => FUCompanion.invalidateLogCache()
+        });
+        game.settings.register(MODULE_ID, "logTags", {
+          name: "FU Companion: per-tag log overrides",
+          hint: 'JSON object mapping tag substrings to levels. Example: {"[ActionReader]":"debug","[FU Dialog]":"warn"}. Substring match; longest matching key wins.',
+          scope: "client",
+          config: true,
+          type: String,
+          default: "{}",
+          onChange: () => FUCompanion.invalidateLogCache()
+        });
+      } catch (e) {
+        // Don't let a settings registration failure break script loading.
+        console.error("[FUCompanion] Failed to register log settings:", e);
+      }
+    });
+  }
   
   // ─────────────────────────────────────────────────────────────────────────────
   // NO HEADLESS-CONTEXT HELPER ON PURPOSE
@@ -373,5 +482,8 @@
     }
   };
   
-  console.log("[FUCompanion] Shared utilities loaded successfully");
+  // File-load banner: emit at debug level so default startup stays quiet.
+  // Bypasses createLogger because the cache resolver is fine here, but we want
+  // a stable single line that uses the same gating as the rest of the codebase.
+  FUCompanion.createLogger("[FUCompanion]").debug("Shared utilities loaded");
 })();

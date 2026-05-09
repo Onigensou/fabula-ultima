@@ -9,7 +9,7 @@
   const MODULE_NS = "fabula-ultima-companion";
   const CARD_FLAG = "actionCard";
 
-  console.log("[fu-invokeButtons] script file loaded");
+  console.debug("[fu-invokeButtons] script file loaded");
 
   // ---------- helpers (shared) ----------
   const esc = (v) => {
@@ -802,7 +802,7 @@ if (lock(btn)) return;
       }
     }, { capture: false });
 
-    console.log("[fu-invokeButtons] ready — installed chat listener");
+    console.debug("[fu-invokeButtons] ready — installed chat listener");
   }
 
   // Bind even if loaded after 'ready'

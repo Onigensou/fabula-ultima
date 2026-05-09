@@ -18,7 +18,7 @@
 Hooks.once("ready", () => {
   const KEY = "oni.ReactionManager";
   if (window[KEY]) {
-    console.log("[ReactionManager] Already installed.");
+    console.debug("[ReactionManager] Already installed.");
     return;
   }
 
@@ -529,7 +529,7 @@ Hooks.once("ready", () => {
     _currentPhaseBucket = null;
   });
 
-  console.log("[ReactionManager] Installed (registry-driven, helpers-extracted). Listening for oni:reactionPhase.");
+  console.debug("[ReactionManager] Installed (registry-driven, helpers-extracted). Listening for oni:reactionPhase.");
 
   // ---------------------------------------------------------------------------
   // Debug API

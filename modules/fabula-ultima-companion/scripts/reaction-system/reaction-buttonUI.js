@@ -35,7 +35,7 @@ Hooks.once("ready", () => {
     const KEY = "oni.ReactionButtonUI";
 
     if (window[KEY]) {
-      console.log("[ReactionButtonUI] Already installed.");
+      console.debug("[ReactionButtonUI] Already installed.");
       return;
     }
 
@@ -584,6 +584,6 @@ const rec = {
       clearAll
     };
 
-    console.log("[ReactionButtonUI] Installed. Provides oni.ReactionButtonUI API.");
+    console.debug("[ReactionButtonUI] Installed. Provides oni.ReactionButtonUI API.");
   })();
 });

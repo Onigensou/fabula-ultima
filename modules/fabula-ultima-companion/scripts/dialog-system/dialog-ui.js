@@ -50,7 +50,7 @@
   });
 
   const boot = (...args) => {
-    if (BOOT_LOG_ALWAYS) console.log("%c[FU Dialog:UI][BOOT]", "color:#7dd3fc", ...args);
+    if (BOOT_LOG_ALWAYS) console.debug("%c[FU Dialog:UI][BOOT]", "color:#7dd3fc", ...args);
   };
   const debug = (...args) => {
     const d = globalThis?.FU?.Dialog?.DEBUG;

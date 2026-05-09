@@ -78,7 +78,7 @@
     };
 
     state.consoleWarnSpyInstalled = true;
-    console.log(TAG, "console.warn spy installed.");
+    console.debug(TAG, "console.warn spy installed.");
     return true;
   }
 
@@ -480,5 +480,5 @@
     }, 1200);
   });
 
-  console.log(TAG, "Probe V2 loaded. API: FUCompanion.api.aeLibWrapperProbe.report()");
+  console.debug(TAG, "Probe V2 loaded. API: FUCompanion.api.aeLibWrapperProbe.report()");
 })();

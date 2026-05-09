@@ -37,7 +37,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.ReactionRebuildActionCard";
     if (window[KEY]) {
-      console.log("[ReactionRebuildActionCard] Already installed.");
+      console.debug("[ReactionRebuildActionCard] Already installed.");
       return;
     }
 

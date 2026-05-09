@@ -46,7 +46,7 @@
 
     // Avoid double-install on same client
     if (globalThis[NS]?.installed) {
-      console.log("[OniTrade] Module listener already installed on user", game.user.id);
+      console.debug("[OniTrade] Module listener already installed on user", game.user.id);
       ui.notifications?.info?.("OniTrade module listener already installed on this client.");
       return;
     }

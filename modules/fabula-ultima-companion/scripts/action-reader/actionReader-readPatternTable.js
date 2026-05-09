@@ -296,5 +296,5 @@ export function registerActionReaderReadPatternTable(moduleId) {
     readActionReaderPatternTable
   };
 
-  console.log(`[ActionReader] Read Pattern Table registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Read Pattern Table registered to module API for "${moduleId}".`);
 }

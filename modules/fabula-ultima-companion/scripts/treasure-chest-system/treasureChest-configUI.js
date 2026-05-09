@@ -17,7 +17,7 @@ function installTreasureConfigUI() {
   // ---- Guard: prevent double install (module reload / dev hot reload) ----
   const GLOBAL_KEY = "oni.TreasureConfigUI";
   if (window[GLOBAL_KEY]?.installed) {
-    console.log("[ONI][TreasureConfigUI]", "Already installed; skipping.");
+    console.debug("[ONI][TreasureConfigUI]", "Already installed; skipping.");
     return;
   }
   window[GLOBAL_KEY] = { installed: true };

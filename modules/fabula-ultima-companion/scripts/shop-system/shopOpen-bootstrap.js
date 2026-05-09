@@ -58,7 +58,7 @@ Hooks.once("ready", async () => {
   window.FUCompanion.shopPurchase = purchaseHandler;
   window.FUCompanion.shopSound    = soundManager;
 
-  console.log(SHOPOPEN.TAG, "Module bootstrap loaded (ShopOpen v2 — player self-service).");
+  console.debug(SHOPOPEN.TAG, "Module bootstrap loaded (ShopOpen v2 — player self-service).");
 });
 
 // ──────────────────────────────────────────────────────────────────────────────

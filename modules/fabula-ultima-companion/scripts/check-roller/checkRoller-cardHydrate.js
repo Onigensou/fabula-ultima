@@ -323,7 +323,7 @@
   // Idempotent hook install guard
   // ----------------------------------------------------------------------------
   if (globalThis.ONI.__CheckRollerHydrateHookInstalled) {
-    console.log(`${TAG} Hook already installed. (Re-run ignored)`);
+    console.debug(`${TAG} Hook already installed. (Re-run ignored)`);
     ui?.notifications?.info("Check Roller Hydrate already installed.");
     return;
   }
@@ -386,5 +386,5 @@
   });
 
   globalThis.ONI.__CheckRollerHydrateHookInstalled = true;
-  console.log(`${TAG} Installed (renderChatMessage hook).`);
+  console.debug(`${TAG} Installed (renderChatMessage hook).`);
 })();

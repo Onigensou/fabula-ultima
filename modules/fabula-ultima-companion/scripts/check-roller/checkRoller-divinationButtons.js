@@ -41,7 +41,7 @@
   }
 
   if (globalThis.ONI.__CheckRollerDivinationInstalled) {
-    console.log(`${TAG} Already installed. (Re-run ignored)`);
+    console.debug(`${TAG} Already installed. (Re-run ignored)`);
     return;
   }
 
@@ -501,5 +501,5 @@
   $(document).on("click.oni-cr-divination", "[data-oni-cr-divination-cancelpass]", onClickCancelPass);
 
   globalThis.ONI.__CheckRollerDivinationInstalled = true;
-  console.log(`${TAG} Installed.`);
+  console.debug(`${TAG} Installed.`);
 })();

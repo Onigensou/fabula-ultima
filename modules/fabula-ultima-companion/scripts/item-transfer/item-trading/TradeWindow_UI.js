@@ -743,6 +743,6 @@
   GLOBAL.uiInstalled = true;
   GLOBAL.installed = true;
 
-  console.log("[OniTradeWindow_UI] AppClass registered into __OniTradeWindow__.");
+  console.debug("[OniTradeWindow_UI] AppClass registered into __OniTradeWindow__.");
   });
 })();

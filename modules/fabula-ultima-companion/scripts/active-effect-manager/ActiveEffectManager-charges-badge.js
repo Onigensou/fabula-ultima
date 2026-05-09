@@ -292,6 +292,6 @@ Hooks.once("ready", () => {
       collectChargedEffects
     });
 
-    console.log(TAG, "Installed. Console handle: FUCompanion.api.chargesBadge");
+    console.debug(TAG, "Installed. Console handle: FUCompanion.api.chargesBadge");
   })();
 });

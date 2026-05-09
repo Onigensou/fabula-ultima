@@ -148,5 +148,5 @@
 
   window[KEY] = { promptQuantity };
 
-  console.log('[ItemTransferQuantityUI] Installed as window["oni.ItemTransferQuantityUI"].');
+  console.debug('[ItemTransferQuantityUI] Installed as window["oni.ItemTransferQuantityUI"].');
 })();

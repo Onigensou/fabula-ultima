@@ -397,5 +397,5 @@ export function registerActionReaderDebug(moduleId) {
   module.api.ActionReader ??= {};
   module.api.ActionReader.Debug = ActionReaderDebug;
 
-  console.log(`[ActionReader] Debug registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Debug registered to module API for "${moduleId}".`);
 }

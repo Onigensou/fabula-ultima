@@ -328,5 +328,5 @@ export function registerActionReaderResolvePerformer(moduleId) {
     resolveActionReaderPerformer
   };
 
-  console.log(`[ActionReader] Resolve Performer registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Resolve Performer registered to module API for "${moduleId}".`);
 }

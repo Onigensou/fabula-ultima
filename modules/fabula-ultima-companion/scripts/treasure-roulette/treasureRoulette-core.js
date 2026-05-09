@@ -837,7 +837,7 @@ console.log("[TreasureRoulette][Core] Locked + broadcast packet:", packet);
       }
     });
 
-    console.log("[TreasureRoulette][Core] Socket listener installed.");
+    console.debug("[TreasureRoulette][Core] Socket listener installed.");
   }
 
   // --------------------------------------------------------------------------
@@ -858,5 +858,5 @@ console.log("[TreasureRoulette][Core] Locked + broadcast packet:", packet);
     _requests
   };
 
-  console.log(`[TreasureRoulette][Core] Installed as window["${KEY}"].`);
+  console.debug(`[TreasureRoulette][Core] Installed as window["${KEY}"].`);
 })();

@@ -705,5 +705,5 @@
 
     return message;
   });
-  console.log(`${TAG} Adapter installed: renderCard + updateMessage`);
+  console.debug(`${TAG} Adapter installed: renderCard + updateMessage`);
 })();

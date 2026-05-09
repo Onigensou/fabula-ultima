@@ -307,11 +307,11 @@
 
   Hooks.once("ready", () => {
     if (!isResponsibleGM()) {
-      console.log(TAG, "Loaded, but inactive on this client because it is not the responsible GM.");
+      console.debug(TAG, "Loaded, but inactive on this client because it is not the responsible GM.");
       return;
     }
 
-    console.log(TAG, "Ready. Responsible GM watcher active.");
+    console.debug(TAG, "Ready. Responsible GM watcher active.");
 
     for (const actor of game.actors ?? []) {
       scheduleSync(actor, "ready world actor scan");
@@ -403,5 +403,5 @@
     ui.notifications.info("Queued Swift Swimmer V2 sync.");
   };
 
-  console.log(`${TAG} Installed.`);
+  console.debug(`${TAG} Installed.`);
 })();

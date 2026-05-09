@@ -35,7 +35,7 @@
   const FLAG_KEY     = "chargeKey";
 
   if (globalThis.FUCompanion?.api?.charges) {
-    console.log(`${TAG} Already installed.`);
+    console.debug(`${TAG} Already installed.`);
     return;
   }
 

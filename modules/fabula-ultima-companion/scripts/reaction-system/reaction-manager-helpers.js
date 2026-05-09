@@ -13,7 +13,7 @@
 Hooks.once("ready", () => {
   const KEY = "oni.ReactionManagerHelpers";
   if (window[KEY]) {
-    console.log("[ReactionManagerHelpers] Already installed.");
+    console.debug("[ReactionManagerHelpers] Already installed.");
     return;
   }
 
@@ -356,5 +356,5 @@ Hooks.once("ready", () => {
     buildPassiveSourceEvent
   };
 
-  console.log("[ReactionManagerHelpers] Installed.");
+  console.debug("[ReactionManagerHelpers] Installed.");
 });

@@ -566,5 +566,5 @@ await setChatFlagNoRender(chatMsg, MODULE_NS, "actionApplied", {
     await runConfirm(chatMsg, args, game.userId);
   }, { capture: false });
 
-  console.log(`[${MODULE_ID}] ready — global Confirm listener installed on this client`);
+  console.debug(`[${MODULE_ID}] ready — global Confirm listener installed on this client`);
 });
