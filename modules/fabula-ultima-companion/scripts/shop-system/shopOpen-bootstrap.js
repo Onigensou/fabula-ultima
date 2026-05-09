@@ -3,6 +3,7 @@ import { ShopOpenBackend }     from "./shopopen-backend.js";
 import { ShopOpenUI }          from "./shopopen-ui.js";
 import { SHOPOPEN }            from "./shopopen-const.js";
 import { ShopPurchaseHandler } from "./shopPurchase-handler.js";
+import { ShopSoundManager }    from "./shopSound-manager.js";
 
 Hooks.once("ready", async () => {
   const ui = new ShopOpenUI({
@@ -18,6 +19,7 @@ Hooks.once("ready", async () => {
   });
 
   const purchaseHandler = new ShopPurchaseHandler();
+  const soundManager    = new ShopSoundManager();
 
   // Wire purchase handler into backend (BUY_REQ/BUY_RESULT route through backend._onSocket)
   backend._purchaseHandler = purchaseHandler;
@@ -51,8 +53,9 @@ Hooks.once("ready", async () => {
     stop: async () => { await backend.stop(); ui.destroy(); },
     const: SHOPOPEN,
   };
-  // Shorthand used by ShopWindowApp
+  // Shorthands used by ShopWindowApp
   window.FUCompanion.shopPurchase = purchaseHandler;
+  window.FUCompanion.shopSound    = soundManager;
 
   console.log(SHOPOPEN.TAG, "Module bootstrap loaded (ShopOpen v2 — player self-service).");
 });

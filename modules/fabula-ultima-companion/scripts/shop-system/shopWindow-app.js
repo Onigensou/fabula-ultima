@@ -810,6 +810,7 @@ export class ShopWindowApp {
         });
 
         if (result.ok) {
+          window.FUCompanion?.shopSound?.playPurchase();
           const costStr = result.totalCost > 0 ? ` for 🪙 ${result.totalCost.toLocaleString()}` : "";
           ui.notifications?.info?.(`Purchased ×${result.quantity} ${itemName}${costStr}.`);
 
