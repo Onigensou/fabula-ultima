@@ -67,6 +67,7 @@
   "scripts/passive-system/passive-rules-setup.js",
   "scripts/applyDamage-button.js",
   "scripts/invokeButtons.js",
+  "scripts/itemRefresh.js",
   "scripts/fu-card-hydrate.js",
   "scripts/action-system/action-card-editor.js",
   "scripts/create-damage-card.js",
