@@ -94,6 +94,18 @@ export class ShopWindowApp {
   static _itemType(item)  { return this._str(item, "system.props.item_type", "").toLowerCase(); }
   static _itemCost(item)  { return Math.max(0, this._num(item, "system.props.item_cost", 0)); }
   static _itemQty(item)   { return Math.max(0, this._num(item, "system.props.item_quantity", 0)); }
+
+  static _buyerMult(actor) {
+    if (!actor) return 1;
+    const v = Number(gp(actor, "system.props.shop_buy_multiplier", 100));
+    return (Number.isFinite(v) && v > 0) ? v / 100 : 1;
+  }
+
+  static _sellerMult(actor) {
+    if (!actor) return 0.5;
+    const v = Number(gp(actor, "system.props.shop_sell_multiplier", 50));
+    return (Number.isFinite(v) && v > 0) ? v / 100 : 0.5;
+  }
   // Plain-text snippet for item list rows (no HTML)
   static _itemDesc(item)  {
     const raw = gp(item, "system.props.description", "") || "";
@@ -534,17 +546,18 @@ export class ShopWindowApp {
   // HTML builders
   // ──────────────────────────────────────────────────────────────
 
-  static _buildRow(item, buyerZenit, hasBuyer) {
-    const cost       = this._itemCost(item);
-    const qty        = this._itemQty(item);
-    const desc       = this._itemDesc(item);
-    const outOfStock = qty <= 0;
-    const cantAfford = !outOfStock && hasBuyer && cost > 0 && Number.isFinite(buyerZenit) && buyerZenit < cost;
-    const disabled   = outOfStock || cantAfford || !hasBuyer;
+  static _buildRow(item, buyerZenit, hasBuyer, buyerPriceMult = 1) {
+    const baseCost      = this._itemCost(item);
+    const effectiveCost = baseCost > 0 ? Math.round(baseCost * buyerPriceMult) : 0;
+    const qty           = this._itemQty(item);
+    const desc          = this._itemDesc(item);
+    const outOfStock    = qty <= 0;
+    const cantAfford    = !outOfStock && hasBuyer && effectiveCost > 0 && Number.isFinite(buyerZenit) && buyerZenit < effectiveCost;
+    const disabled      = outOfStock || cantAfford || !hasBuyer;
 
     const tip = outOfStock ? "Out of stock" : cantAfford ? "Not enough Zenit" : !hasBuyer ? "No linked character" : "";
-    const costHtml = cost > 0
-      ? `<span class="fu-shop-cost">${GP_ICON}${cost.toLocaleString()}</span>`
+    const costHtml = effectiveCost > 0
+      ? `<span class="fu-shop-cost">${GP_ICON}${effectiveCost.toLocaleString()}</span>`
       : `<span class="fu-shop-cost free">Free</span>`;
     const stockHtml = outOfStock
       ? `<span class="fu-shop-stock" style="color:#8b4513">Sold Out</span>`
@@ -555,7 +568,7 @@ export class ShopWindowApp {
       <div class="fu-shop-row${outOfStock ? " sold-out" : ""}"
            data-item-uuid="${this._esc(item.uuid)}"
            data-item-name="${this._esc(item.name)}"
-           data-item-cost="${cost}"
+           data-item-cost="${effectiveCost}"
            data-item-qty="${qty}">
         <div class="fu-shop-icon-wrap">
           <img class="fu-shop-icon" src="${this._esc(item.img || "icons/svg/item-bag.svg")}" alt="">
@@ -571,7 +584,7 @@ export class ShopWindowApp {
       </div>`;
   }
 
-  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set() }) {
+  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set(), buyerPriceMult = 1 }) {
     // Tabs
     const tabs = SHOP_CATEGORIES.map(c => {
       const items   = itemsByCategory[c.key] ?? [];
@@ -587,7 +600,7 @@ export class ShopWindowApp {
     const panels = SHOP_CATEGORIES.map(c => {
       const items = itemsByCategory[c.key] ?? [];
       const rows = items.length
-        ? items.map(it => this._buildRow(it, buyerZenit, hasBuyer)).join("")
+        ? items.map(it => this._buildRow(it, buyerZenit, hasBuyer, buyerPriceMult)).join("")
         : `<div class="fu-shop-empty">Nothing in stock.</div>`;
       return `<div class="fu-shop-panel${activeTab === c.key ? " active" : ""}" data-panel="${c.key}">
                 <div class="fu-shop-list">${rows}</div>
@@ -709,11 +722,13 @@ export class ShopWindowApp {
       return byCat;
     };
     const readZenit = () => hasBuyer ? Math.max(0, Number(buyerActor.system?.props?.zenit ?? 0)) : 0;
+    const readMult  = () => hasBuyer ? ShopWindowApp._buyerMult(buyerActor) : 1;
 
     const state = {
       activeTab:       null,
       itemsByCategory: readItems(),
       buyerZenit:      readZenit(),
+      buyerPriceMult:  readMult(),
     };
 
     // Auto-pick first non-empty category
@@ -735,11 +750,13 @@ export class ShopWindowApp {
       itemsByCategory: state.itemsByCategory,
       activeTab: state.activeTab,
       newItemIds: readNewItemIds(),
+      buyerPriceMult: state.buyerPriceMult,
     });
 
     const redraw = async () => {
       state.itemsByCategory = readItems();
       state.buyerZenit      = readZenit();
+      state.buyerPriceMult  = readMult();
 
       const dialogEl = dlg?.element?.[0];
       if (!dialogEl) return;
