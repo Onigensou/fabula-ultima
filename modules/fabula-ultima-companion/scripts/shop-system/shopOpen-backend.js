@@ -9,6 +9,7 @@ import {
   getCenterPx,
   distPxCenters
 } from "./shopopen-const.js";
+import { ShopWindowApp } from "./shopWindow-app.js";
 
 export class ShopOpenBackend {
   constructor(cfg = {}) {
@@ -33,6 +34,9 @@ export class ShopOpenBackend {
 
     // click handler callable by UI: open shop for this tokenId
     this.openShopByTokenId = this.openShopByTokenId.bind(this);
+
+    // Purchase handler — set by bootstrap after construction
+    this._purchaseHandler = null;
 
     // internal
     this._cachedPartyActorIds = new Set();
@@ -419,6 +423,33 @@ export class ShopOpenBackend {
         return;
       }
 
+      // ── Shop purchase (GM executes, result sent back to requester) ──
+      if (game.user.isGM && msg.type === SHOPOPEN.MSG.BUY_REQ) {
+        // Only primary active GM to avoid duplicate execution
+        const gms = (game.users?.contents ?? []).filter(u => u?.isGM && u?.active);
+        if (gms[0]?.id !== game.user.id) return;
+
+        const { purchaseId, ...rest } = msg.payload ?? {};
+        this.log("BUY_REQ received, executing purchase:", purchaseId);
+
+        const handler = this._purchaseHandler;
+        if (!handler) { this.warn("No purchaseHandler set on backend."); return; }
+
+        handler.executePurchase(rest)
+          .then(result => this._emitSocket({ type: SHOPOPEN.MSG.BUY_RESULT, payload: { purchaseId, ...result } }))
+          .catch(e => {
+            this.err("BUY_REQ execution error:", e);
+            this._emitSocket({ type: SHOPOPEN.MSG.BUY_RESULT, payload: { purchaseId, ok: false, reason: "server_error" } });
+          });
+        return;
+      }
+
+      if (msg.type === SHOPOPEN.MSG.BUY_RESULT) {
+        const handler = this._purchaseHandler;
+        if (handler) handler.onBuyResult(msg.payload ?? {});
+        return;
+      }
+
       if (msg.type === SHOPOPEN.MSG.OPEN_GRANT) {
         const { actorUuid, requesterId } = msg.payload ?? {};
         if (requesterId !== game.user.id) return;
@@ -426,7 +457,19 @@ export class ShopOpenBackend {
         fromUuid(actorUuid).then(actor => {
           if (!actor) return;
           this._openedByActorUuidLocal.add(actorUuid);
-          actor.sheet?.render(true, { focus: true });
+
+          if (game.user.isGM) {
+            // GM opens the full NPC sheet for shop management
+            actor.sheet?.render(true, { focus: true });
+          } else {
+            // Players get the custom shop window (no NPC data exposed)
+            ShopWindowApp.open(actorUuid, {
+              onClose: () => {
+                this._openedByActorUuidLocal.delete(actorUuid);
+                this._requestCloseShop(actorUuid);
+              },
+            });
+          }
         }).catch(e => this.err("OPEN_GRANT fromUuid failed:", e));
       }
     } catch (e) {

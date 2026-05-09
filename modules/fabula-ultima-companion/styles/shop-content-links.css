@@ -1,0 +1,534 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   shop-content-links.css
+   Styles for a.content-link elements rendered inside ShopWindowApp panels.
+   Scoped to .fu-preview-desc and .fu-skill-desc so it doesn't leak globally.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base reset: strip the grey Foundry pill, make keywords bold + underlined ── */
+.fu-preview-desc a.content-link[data-uuid],
+.fu-skill-desc   a.content-link[data-uuid] {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  color: inherit;
+  font-weight: bold;
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  position: relative;
+  top: 1px;
+}
+
+/* Hide Foundry's default book icon */
+.fu-preview-desc a.content-link[data-uuid] i.fas,
+.fu-skill-desc   a.content-link[data-uuid] i.fas {
+  display: none !important;
+}
+
+/* ── Keyword / Quality icons (JournalEntry UUIDs) ─────────────────────────── */
+
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.N1c190b6J1kKS6Vf"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.N1c190b6J1kKS6Vf"]::before { /* Benign */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/04_WHM/holy_III.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Gm3upxgpUVoLSK5u"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Gm3upxgpUVoLSK5u"]::before { /* Multi */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_SAM/way_of_the_samurai.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.noUOPxPoZq65yYxV"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.noUOPxPoZq65yYxV"]::before { /* Chain */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/14_SMN/gouge.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.YojfVwJv8ABa45c6"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.YojfVwJv8ABa45c6"]::before { /* Exploit */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_VPR/Flanksbane_Fang.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.NUaxIAIPUu5Qnk8l"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.NUaxIAIPUu5Qnk8l"]::before { /* Overflow */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/15_RDM/verflare.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.2hNU23YLpCcZCCmf"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.2hNU23YLpCcZCCmf"]::before { /* Pierce */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/GNB/sonic_break.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.CRPjA4dHUYLSAh0M"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.CRPjA4dHUYLSAh0M"]::before { /* Drain */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/blood_drain.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.OMu8IfxHBIMXJseJ"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.OMu8IfxHBIMXJseJ"]::before { /* Feint */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_VPR/Steel_Fangs.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.P7eaFojxra2gTRTG"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.P7eaFojxra2gTRTG"]::before { /* Trigger */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/GNB/abdomen_tear.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.NI69hHt2XDbzuxGV"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.NI69hHt2XDbzuxGV"]::before { /* Mana Burn */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/water_cannon.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.qXBYN6c9FMZzmS2n"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.qXBYN6c9FMZzmS2n"]::before { /* Cripple */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_VPR/Reaving_Fangs.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.U76k25jMlkIFIVB9"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.U76k25jMlkIFIVB9"]::before { /* Crush */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/02_WAR/primal_rend.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.1jxZfHZ3dh5grylN"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.1jxZfHZ3dh5grylN"]::before { /* Channel */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/13_BLM/manafont.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.7PQDwyX0RPf0djPL"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.7PQDwyX0RPf0djPL"]::before { /* Backstab */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/09_NIN/assassinate.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.vBUBQbu92bWBozgN"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.vBUBQbu92bWBozgN"]::before { /* Blitz */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_SAM/tenka_goken.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.tQE9WGDt0bNhgxXw"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.tQE9WGDt0bNhgxXw"]::before { /* Homing */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/12_MCH/spread_shot.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.1v5xrozP0fHlnjQj"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.1v5xrozP0fHlnjQj"]::before { /* Trick */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/09_NIN/trick_attack.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.VCBaZfA3PZzN4sx3"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.VCBaZfA3PZzN4sx3"]::before { /* Massive */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/magic_hammer.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.1TyH5hsRlBx4xYDs"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.1TyH5hsRlBx4xYDs"]::before { /* Roulette */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/level_5_petrify.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.UqXGUQM31kWc7BTc"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.UqXGUQM31kWc7BTc"]::before { /* Unleash */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/02_WAR/inner_release.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.0XjR7LzG6oiU74Lj"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.0XjR7LzG6oiU74Lj"]::before { /* Desperation */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/basic_instinct.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.FbwTycwFuAdCfXi7"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.FbwTycwFuAdCfXi7"]::before { /* Innate */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/07_MNK/purification.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.IBN7DtvWLFDo8jNh"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.IBN7DtvWLFDo8jNh"]::before { /* Stagger */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Dark.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.MM2SvLRyVhazkNq3"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.MM2SvLRyVhazkNq3"]::before { /* Disarmed */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/dismantle.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.q6keqwDWUsEgSWDw"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.q6keqwDWUsEgSWDw"]::before { /* Flying */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/14_SMN/summon_garuda_II.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.DMaL1B3Z5Y5AUrvC"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.DMaL1B3Z5Y5AUrvC"]::before { /* Hidden */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/09_NIN/shade_shift.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.c8cDHzP0hJzChgz6"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.c8cDHzP0hJzChgz6"]::before { /* Quicken */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/14_SMN/summon_topaz.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.HHmYmj7xffQMqtzT"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.HHmYmj7xffQMqtzT"]::before { /* Slow */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/DEF%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.3nmUvPei3zrOJkEt"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.3nmUvPei3zrOJkEt"]::before { /* Dazed */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/MAGICDEFENSE%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.KYehgac3Pw1fKC9S"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.KYehgac3Pw1fKC9S"]::before { /* Weak */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/ATK%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.ImFKpNNGjstom7Q9"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.ImFKpNNGjstom7Q9"]::before { /* Shaken */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/MAGIC%20ATTACK%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.XkuOy0BFvKJTewGS"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.XkuOy0BFvKJTewGS"]::before { /* Enraged */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/DEFENSE%20DOUBLE%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.JltwIqzHbBKhkD45"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.JltwIqzHbBKhkD45"]::before { /* Poisoned */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/ATK%20DOUBLE%20DOWN.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.SNK1IJTKfxjAy2NS"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.SNK1IJTKfxjAy2NS"]::before { /* Bane */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/basic_instinct.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.aPF9gzkqnUkcQmIC"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.aPF9gzkqnUkcQmIC"]::before { /* Berserk */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/02_WAR/infuriate.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.GePNxftPupElcCWp"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.GePNxftPupElcCWp"]::before { /* Bleed */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/RPR/cross_reaping.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.rBnvYhLfmrVZDdoW"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.rBnvYhLfmrVZDdoW"]::before { /* Blind */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Blind.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.MziQo5K1cu829GIU"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.MziQo5K1cu829GIU"]::before { /* Break */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/faze.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.MSRXG4jUMPFpM9sN"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.MSRXG4jUMPFpM9sN"]::before { /* Burn */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Burn.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.x6ByoJnflDAuVn9r"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.x6ByoJnflDAuVn9r"]::before { /* Charm */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Heart.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.e9wABGGGFg7b9OMD"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.e9wABGGGFg7b9OMD"]::before { /* Confused */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Wet.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.GJevbCPM8cffm1QM"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.GJevbCPM8cffm1QM"]::before { /* Crisis */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/08_DRG/blood_for_blood.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.V8mKI3BdXusfSBLq"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.V8mKI3BdXusfSBLq"]::before { /* Curse */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/doom.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.1OVRzhqPZpnm89s9"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.1OVRzhqPZpnm89s9"]::before { /* Death */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Death.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.0RscV9vkJNM9dVKQ"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.0RscV9vkJNM9dVKQ"]::before { /* Delay */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/14_SMN/summon_carbuncle.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.mINm5XmNcnbSzgrN"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.mINm5XmNcnbSzgrN"]::before { /* Despair */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/condensed_libra.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Do0VLf6wW9uCSLwD"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Do0VLf6wW9uCSLwD"]::before { /* Doom */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/level_5_death.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.XRlyg27yLgoQUOXZ"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.XRlyg27yLgoQUOXZ"]::before { /* Envenomed */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Poison.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.J4fv0XKFy678UIn8"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.J4fv0XKFy678UIn8"]::before { /* Fatigue */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/feculent_flood.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.TOF8epes1eGHwx5J"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.TOF8epes1eGHwx5J"]::before { /* Frightened */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Fear.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.p0XupN5rieyjMNaI"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.p0XupN5rieyjMNaI"]::before { /* Frozen */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/13_BLM/blizzard.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.FV8JefaHsehzgXR7"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.FV8JefaHsehzgXR7"]::before { /* Grappled */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Bludgeon.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.QgECPH7ZhbRhag3K"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.QgECPH7ZhbRhag3K"]::before { /* Hypothermia */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/northerlies.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.yE84jvVXyebDulAP"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.yE84jvVXyebDulAP"]::before { /* Isolate */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/RPR/enshroud.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Fes171ebnXnTSVdd"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Fes171ebnXnTSVdd"]::before { /* KO */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Incapacitate.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.ZdBbIFKzxQQcY71T"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.ZdBbIFKzxQQcY71T"]::before { /* Obscure */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/cold_fog.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Vnd1QB9lYQMYvIDF"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Vnd1QB9lYQMYvIDF"]::before { /* Oil */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/self-destruct.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.vf421bQSPCjLAvBW"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.vf421bQSPCjLAvBW"]::before { /* Panic */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Stun.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.c4sYPClmvld4TEK8"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.c4sYPClmvld4TEK8"]::before { /* Provoked */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/02_WAR/TankRollAction/provoke.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.GqqgHkKOs0hkghdG"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.GqqgHkKOs0hkghdG"]::before { /* Paralyzed */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Paralyze.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.thBevyZDOURijH8I"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.thBevyZDOURijH8I"]::before { /* Petrify */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/peripheral_synthesis.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Q8FTFPsXVpNj2zxT"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Q8FTFPsXVpNj2zxT"]::before { /* Silence */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Silence.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.NTvswy65a5N2fh09"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.NTvswy65a5N2fh09"]::before { /* Suppress */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/05_SCH/art_of_war.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.vzkQ7MNkmqRDJIXV"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.vzkQ7MNkmqRDJIXV"]::before { /* Turbulence */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/alpine_draft.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.2rh5lyMNU5yL8Btk"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.2rh5lyMNU5yL8Btk"]::before { /* Wet */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/flying_sardine.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.7nqnFPcHG5ZzNfC0"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.7nqnFPcHG5ZzNfC0"]::before { /* Wither */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/BLU/ink_jet.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.RZIAnKw95vY6yh2W"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.RZIAnKw95vY6yh2W"]::before { /* Zombie */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff Icon/Zombie.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.zbanoQNAsE8pxhSu"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.zbanoQNAsE8pxhSu"]::before { /* Super Heat */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Fire_in_Red.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.rXZqaRSx0ctgqepa"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.rXZqaRSx0ctgqepa"]::before { /* Sleep */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Sleep.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.2JlZwoTU5Ql7sUyS"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.2JlZwoTU5Ql7sUyS"]::before { /* Snipe */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heartbreak.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.RJqcUnjSTQeMiA7Z"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.RJqcUnjSTQeMiA7Z"]::before { /* Versatile */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/throwing_dagger.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.scBCSpHipSeXcOYa"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.scBCSpHipSeXcOYa"]::before { /* Quickchange */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Second_Generation.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.ljKBtlzPVvhhmdHW"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.ljKBtlzPVvhhmdHW"]::before { /* Weighted */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/butcher%27s_block.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.T8FOTz5J8Ys7sbya"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.T8FOTz5J8Ys7sbya"]::before { /* Double Strike */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Twinfang.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.EYcZ6QkAqiGBAxLB"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.EYcZ6QkAqiGBAxLB"]::before { /* Transform */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/lightning_shot.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Cz6U0ps98sYN8jMH"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Cz6U0ps98sYN8jMH"]::before { /* Conquer */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/unleash.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.NtSCsFcZNQfUbSBn"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.NtSCsFcZNQfUbSBn"]::before { /* Snared */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/eerie_soundwave.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.KHCaZjNmClkp7yfM"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.KHCaZjNmClkp7yfM"]::before { /* Execute */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Swiftskin%27s_Sting.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.KjziTkOpdzd99KZa"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.KjziTkOpdzd99KZa"]::before { /* Pillage */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/mug.png") center/contain no-repeat;
+}
+
+/* ── Status buff icons (Item UUIDs) ─────────────────────────────────────── */
+.fu-preview-desc a.content-link[data-uuid="Item.1ruFh69np3Bf6oVn"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.1ruFh69np3Bf6oVn"]::before { /* Awake */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20UP.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="Item.s3nsO9JLyxAorium"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.s3nsO9JLyxAorium"]::before { /* Clarity */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="Item.VKDyQXm0Tsxtt3t2"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.VKDyQXm0Tsxtt3t2"]::before { /* Energized */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="Item.vuYJUldWW07uFudt"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.vuYJUldWW07uFudt"]::before { /* Focus */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="Item.Gg1ot3L3XPuiGkym"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.Gg1ot3L3XPuiGkym"]::before { /* Strong */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="Item.PXO8X5beH1JQHuz9"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.PXO8X5beH1JQHuz9"]::before { /* Swift */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png") center/contain no-repeat;
+}
+
+/* ── Special keyword colours ─────────────────────────────────────────────── */
+/* Strike Damage → orange */
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.ZunRGiMDSgAapm5G"],
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.ZunRGiMDSgAapm5G"] {
+  color: #eb4b07 !important;
+}
+/* Magic Damage → blue */
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.XYQUsuXPU0CQjEYa"],
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.XYQUsuXPU0CQjEYa"] {
+  color: #3da6ff !important;
+}
+
+/* ── Weapon range icons (FA5 glyphs) ──────────────────────────────────────── */
+/* Melee */
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.10LjF01NAYNKpRvn"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.10LjF01NAYNKpRvn"]::before {
+  content: "\f71c"; font-family: "Font Awesome 5 Free"; font-weight: 900;
+  font-size: 0.9em; margin-right: 4px;
+}
+/* Range */
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.Fcq1HgCEh3jxxELa"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.Fcq1HgCEh3jxxELa"]::before {
+  content: "\f140"; font-family: "Font Awesome 5 Free"; font-weight: 900;
+  font-size: 0.9em; margin-right: 4px;
+}
+
+/* ── Damage type Item UUIDs: colour + FA icon ─────────────────────────────── */
+.fu-preview-desc a.content-link[data-uuid^="Item."]::before,
+.fu-skill-desc   a.content-link[data-uuid^="Item."]::before {
+  font-family: "Font Awesome 5 Free"; font-size: 0.9em; margin-right: 4px; line-height: 1;
+}
+/* Physical */
+.fu-preview-desc a.content-link[data-uuid="Item.XpKZuGo3VmT0TlTu"],
+.fu-skill-desc   a.content-link[data-uuid="Item.XpKZuGo3VmT0TlTu"] { color: #444 !important; text-shadow: 0 0 4px #999; }
+.fu-preview-desc a.content-link[data-uuid="Item.XpKZuGo3VmT0TlTu"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.XpKZuGo3VmT0TlTu"]::before { content: "\f71c"; font-weight: 900; }
+/* Fire */
+.fu-preview-desc a.content-link[data-uuid="Item.0sFCVCoM6FRrQP2f"],
+.fu-skill-desc   a.content-link[data-uuid="Item.0sFCVCoM6FRrQP2f"] { color: #e25822 !important; text-shadow: 0 0 4px #ffae00; }
+.fu-preview-desc a.content-link[data-uuid="Item.0sFCVCoM6FRrQP2f"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.0sFCVCoM6FRrQP2f"]::before { content: "\f06d"; font-weight: 900; }
+/* Ice */
+.fu-preview-desc a.content-link[data-uuid="Item.Osq3NN3QCtiW7otU"],
+.fu-skill-desc   a.content-link[data-uuid="Item.Osq3NN3QCtiW7otU"] { color: #5ab3d4 !important; text-shadow: 0 0 4px #a6e3ff; }
+.fu-preview-desc a.content-link[data-uuid="Item.Osq3NN3QCtiW7otU"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.Osq3NN3QCtiW7otU"]::before { content: "\f2dc"; font-weight: 400; }
+/* Air */
+.fu-preview-desc a.content-link[data-uuid="Item.imkMQLnCLaFbaS6Y"],
+.fu-skill-desc   a.content-link[data-uuid="Item.imkMQLnCLaFbaS6Y"] { color: #48c774 !important; text-shadow: 0 0 4px #a8ffbb; }
+.fu-preview-desc a.content-link[data-uuid="Item.imkMQLnCLaFbaS6Y"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.imkMQLnCLaFbaS6Y"]::before { content: "\f72e"; font-weight: 900; }
+/* Earth */
+.fu-preview-desc a.content-link[data-uuid="Item.ZyOMe6IkUTlBzfjw"],
+.fu-skill-desc   a.content-link[data-uuid="Item.ZyOMe6IkUTlBzfjw"] { color: #8b5e3c !important; text-shadow: 0 0 4px #d2b48c; }
+.fu-preview-desc a.content-link[data-uuid="Item.ZyOMe6IkUTlBzfjw"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.ZyOMe6IkUTlBzfjw"]::before { content: "\f6fc"; font-weight: 900; }
+/* Bolt */
+.fu-preview-desc a.content-link[data-uuid="Item.5XAuMMbDPlLzhJLw"],
+.fu-skill-desc   a.content-link[data-uuid="Item.5XAuMMbDPlLzhJLw"] { color: #9b59b6 !important; text-shadow: 0 0 4px #d7a9ff; }
+.fu-preview-desc a.content-link[data-uuid="Item.5XAuMMbDPlLzhJLw"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.5XAuMMbDPlLzhJLw"]::before { content: "\f0e7"; font-weight: 900; }
+/* Light */
+.fu-preview-desc a.content-link[data-uuid="Item.IQaK3IzvfFp4I1xB"],
+.fu-skill-desc   a.content-link[data-uuid="Item.IQaK3IzvfFp4I1xB"] { color: #a38b50 !important; text-shadow: 0 0 4px #cabd9a; }
+.fu-preview-desc a.content-link[data-uuid="Item.IQaK3IzvfFp4I1xB"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.IQaK3IzvfFp4I1xB"]::before { content: "\f185"; font-weight: 400; }
+/* Dark */
+.fu-preview-desc a.content-link[data-uuid="Item.vKU8UYT6DBhgOjtE"],
+.fu-skill-desc   a.content-link[data-uuid="Item.vKU8UYT6DBhgOjtE"] { color: #4b0082 !important; text-shadow: 0 0 4px #b666d2; }
+.fu-preview-desc a.content-link[data-uuid="Item.vKU8UYT6DBhgOjtE"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.vKU8UYT6DBhgOjtE"]::before { content: "\f186"; font-weight: 900; }
+/* Poison */
+.fu-preview-desc a.content-link[data-uuid="Item.tDcCWc67Ary9nVxe"],
+.fu-skill-desc   a.content-link[data-uuid="Item.tDcCWc67Ary9nVxe"] { color: #2e8b57 !important; text-shadow: 0 0 4px #66ff99; }
+.fu-preview-desc a.content-link[data-uuid="Item.tDcCWc67Ary9nVxe"]::before,
+.fu-skill-desc   a.content-link[data-uuid="Item.tDcCWc67Ary9nVxe"]::before { content: "\f714"; font-weight: 900; }
