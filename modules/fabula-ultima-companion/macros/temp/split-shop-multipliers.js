@@ -1,19 +1,14 @@
 /**
- * One-shot migration: split `shop_price_multiplier` into two separate fields:
- *   • shop_buy_multiplier  — multiplier when buying from a shop (default 1.0)
- *   • shop_sell_multiplier — multiplier when selling to a shop  (default 0.5)
+ * Migration: split shop_price_multiplier into shop_buy_multiplier + shop_sell_multiplier.
  *
- * Steps performed:
- *   1. Renames the existing `shop_price_multiplier` field to `shop_buy_multiplier`
- *      and updates its label to "Shop Buy ×".
- *   2. Inserts `shop_sell_multiplier` into the same row (next null slot).
+ * Handles all states cleanly — safe to re-run at any point:
+ *   • Renames shop_price_multiplier → shop_buy_multiplier (if old key still present)
+ *   • Adds shop_sell_multiplier as a label field (default 0.5) if missing
+ *   • Patches shop_sell_multiplier type to "label" if it was previously added as numberField
  *
- * After running: open _FabU Char Template v3.fire and click CSB
- * "Reload from Template" to propagate to all characters.
- * Also update any Active Effects that used key `shop_price_multiplier` to
- * use `shop_buy_multiplier` instead.
- *
- * Idempotent — safe to re-run.
+ * After running: close and reopen _FabU Char Template v3.fire to see both
+ * fields, then click CSB "Reload from Template" to propagate to all characters.
+ * Update any Active Effects using key "shop_price_multiplier" to "shop_buy_multiplier".
  */
 (async () => {
   const TAG           = "[split-shop-multipliers]";
@@ -32,125 +27,142 @@
 
   const sys = foundry.utils.deepClone(template.system);
 
-  // ── 2. Idempotency check ──────────────────────────────────────────────────
-  let buyExists  = false;
-  let sellExists = false;
+  // ── 2. Scan current state ─────────────────────────────────────────────────
+  let oldBuyNode  = null;  // the shop_price_multiplier node, if still present
+  let buyNode     = null;  // the shop_buy_multiplier node, if already renamed
+  let sellNode    = null;  // the shop_sell_multiplier node, if present
+
   (function scan(node) {
     if (!node || typeof node !== "object") return;
     if (Array.isArray(node)) { node.forEach(scan); return; }
-    if (node.key === BUY_KEY)  buyExists  = true;
-    if (node.key === SELL_KEY) sellExists = true;
+    if (node.key === OLD_KEY)  oldBuyNode = node;
+    if (node.key === BUY_KEY)  buyNode    = node;
+    if (node.key === SELL_KEY) sellNode   = node;
     for (const v of Object.values(node)) scan(v);
   })(sys);
 
-  if (buyExists && sellExists) {
-    ui.notifications.info(`${TAG} Already up to date — both fields exist.`);
+  const sellIsWrongType = sellNode && sellNode.type !== "label";
+  const alreadyDone = buyNode && sellNode && !oldBuyNode && !sellIsWrongType;
+
+  if (alreadyDone) {
+    ui.notifications.info(`${TAG} Already up to date — nothing to do.`);
     console.log(`${TAG} No-op.`);
     return;
   }
 
-  // ── 3. Sell field definition ──────────────────────────────────────────────
-  const SELL_FIELD = {
+  // ── 3. Label field definitions ────────────────────────────────────────────
+  const NUMBER_FIELD_EXTRAS = ["allowDecimal","minVal","maxVal","allowRelative","showControls","controlsStyle","inputStyle"];
+
+  function toLabelField(node, key, label, tooltip, defaultValue) {
+    node.key               = key;
+    node.type              = "label";
+    node.label             = label;
+    node.tooltip           = tooltip;
+    node.defaultValue      = defaultValue;
+    node.size              ??= "small";
+    node.colSpan           ??= 1;
+    node.rowSpan           ??= 1;
+    node.cssClass          ??= "";
+    node.role              ??= "0";
+    node.editRole          ??= 0;
+    node.permission        ??= "0";
+    node.visibilityFormula ??= "";
+    for (const k of NUMBER_FIELD_EXTRAS) delete node[k];
+  }
+
+  const SELL_FIELD_TEMPLATE = () => ({
     key:               SELL_KEY,
+    type:              "label",
+    label:             "Shop Sell ×",
+    tooltip:           "Base sell price multiplier. Default 0.5 (half price). Active Effects only.",
+    defaultValue:      "0.5",
+    size:              "small",
     colSpan:           1,
     rowSpan:           1,
     cssClass:          "",
     role:              "0",
     editRole:          0,
     permission:        "0",
-    tooltip:           "Base sell price multiplier. Default 0.5 (half the item price). Active Effects can modify this.",
     visibilityFormula: "",
-    type:              "numberField",
-    size:              "small",
-    label:             "Shop Sell ×",
-    defaultValue:      "0.5",
-    allowDecimal:      true,
-    minVal:            "0",
-    maxVal:            "",
-    allowRelative:     false,
-    showControls:      false,
-    controlsStyle:     "hover",
-    inputStyle:        "text",
-  };
+  });
 
-  // ── 4. Walk tree: rename buy field and inject sell field ──────────────────
-  let renamed  = false;
+  // ── 4. Phase A — rename old buy key in-place ──────────────────────────────
+  if (oldBuyNode) {
+    toLabelField(
+      oldBuyNode,
+      BUY_KEY,
+      "Shop Buy ×",
+      "Shop purchase price multiplier. Default 1. Active Effects only.",
+      oldBuyNode.defaultValue ?? "1"
+    );
+    console.log(`${TAG} Renamed "${OLD_KEY}" → "${BUY_KEY}".`);
+  }
+
+  // ── 5. Phase B — patch sell field type if it's a numberField ─────────────
+  if (sellIsWrongType) {
+    toLabelField(
+      sellNode,
+      SELL_KEY,
+      "Shop Sell ×",
+      "Base sell price multiplier. Default 0.5 (half price). Active Effects only.",
+      "0.5"
+    );
+    console.log(`${TAG} Patched "${SELL_KEY}" type to label.`);
+  }
+
+  // ── 6. Phase C — inject sell field if still missing ───────────────────────
   let injected = false;
 
-  (function walk(node) {
-    if (!node || typeof node !== "object") return;
+  if (!sellNode) {
+    // Walk: find the row array that now contains shop_buy_multiplier and insert sell
+    (function walk(node) {
+      if (!node || typeof node !== "object" || injected) return;
 
-    if (Array.isArray(node)) {
-      for (let i = 0; i < node.length; i++) {
-        const cell = node[i];
-        if (!cell || typeof cell !== "object" || Array.isArray(cell)) {
-          // node[i] is a row array — recurse into it
-          walk(cell);
-          continue;
-        }
-
-        // Rename shop_price_multiplier → shop_buy_multiplier in-place
-        if (cell.key === OLD_KEY && !buyExists) {
-          cell.key     = BUY_KEY;
-          cell.label   = "Shop Buy ×";
-          cell.tooltip = "Shop purchase price multiplier. Default 1. Active Effects only.";
-          renamed = true;
-          console.log(`${TAG} Renamed "${OLD_KEY}" → "${BUY_KEY}" at array index ${i}.`);
-        }
-
-        walk(cell);
-      }
-
-      // After processing all cells, if this row contains the buy field and
-      // sell field is missing, insert sell in the next null slot.
-      if (!injected && !sellExists) {
-        const hasBuy  = node.some(c => c?.key === BUY_KEY);
-        const hasSell = node.some(c => c?.key === SELL_KEY);
-        if (hasBuy && !hasSell) {
-          const buyIdx  = node.findIndex(c => c?.key === BUY_KEY);
-          const nullIdx = node.findIndex((c, idx) => idx > buyIdx && c === null);
+      if (Array.isArray(node)) {
+        // Check if this array IS the row containing the buy field
+        const buyIdx = node.findIndex(c => c?.key === BUY_KEY);
+        if (buyIdx >= 0 && !node.some(c => c?.key === SELL_KEY)) {
+          const nullIdx = node.findIndex((c, i) => i > buyIdx && c === null);
           if (nullIdx >= 0) {
-            node[nullIdx] = foundry.utils.deepClone(SELL_FIELD);
-            injected = true;
-            console.log(`${TAG} Inserted "${SELL_KEY}" at row index ${nullIdx}.`);
+            node[nullIdx] = SELL_FIELD_TEMPLATE();
+            console.log(`${TAG} Inserted "${SELL_KEY}" at row slot ${nullIdx}.`);
           } else {
-            // No null slot — push at end of row
-            node.push(foundry.utils.deepClone(SELL_FIELD));
-            injected = true;
+            node.push(SELL_FIELD_TEMPLATE());
             console.log(`${TAG} Appended "${SELL_KEY}" to row.`);
           }
+          injected = true;
+          return;
         }
+        node.forEach(walk);
+        return;
       }
+
+      for (const v of Object.values(node)) walk(v);
+    })(sys);
+
+    if (!injected) {
+      ui.notifications.error(
+        `${TAG} Could not locate the row containing "${BUY_KEY}" to insert the sell field. ` +
+        `Check browser console for a full system dump.`
+      );
+      console.warn(`${TAG} Full system dump:`, JSON.stringify(sys, null, 2));
       return;
     }
-
-    for (const v of Object.values(node)) walk(v);
-  })(sys);
-
-  if (!renamed && !buyExists) {
-    ui.notifications.error(
-      `${TAG} Could not find "${OLD_KEY}" field to rename. ` +
-      `Check console for the full system dump.`
-    );
-    console.warn(`${TAG} Full system dump:`, JSON.stringify(sys, null, 2));
-    return;
   }
 
-  if (!injected && !sellExists) {
-    ui.notifications.error(
-      `${TAG} Renamed buy field but could not find a slot for "${SELL_KEY}". ` +
-      `Check console for the full system dump.`
-    );
-    console.warn(`${TAG} Full system dump:`, JSON.stringify(sys, null, 2));
-    return;
-  }
-
-  // ── 5. Persist ───────────────────────────────────────────────────────────
+  // ── 7. Persist ───────────────────────────────────────────────────────────
   await template.update({ system: sys });
+
+  const msgs = [];
+  if (oldBuyNode)     msgs.push(`renamed "${OLD_KEY}" → "${BUY_KEY}"`);
+  if (sellIsWrongType) msgs.push(`patched "${SELL_KEY}" to label type`);
+  if (injected)        msgs.push(`added "${SELL_KEY}" (default 0.5)`);
+
   ui.notifications.info(
-    `${TAG} ✓ Done. "${BUY_KEY}" and "${SELL_KEY}" are now separate fields. ` +
-    `Click CSB "Reload from Template" to propagate, then update any Active Effects ` +
-    `that used "${OLD_KEY}" to use "${BUY_KEY}" instead.`
+    `${TAG} ✓ Done: ${msgs.join("; ")}. ` +
+    `Close and reopen the template sheet to see both fields, ` +
+    `then click CSB "Reload from Template". ` +
+    `Update any Active Effects using "${OLD_KEY}" to "${BUY_KEY}".`
   );
-  console.log(`${TAG} Done.`, { renamed, injected });
+  console.log(`${TAG} Done.`, { oldBuyNode: !!oldBuyNode, sellIsWrongType, injected });
 })();
