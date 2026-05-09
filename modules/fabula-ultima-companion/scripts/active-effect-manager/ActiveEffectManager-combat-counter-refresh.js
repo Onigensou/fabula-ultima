@@ -611,6 +611,6 @@ Hooks.once("ready", () => {
     exposeApi();
     installHooks();
 
-    console.log(TAG, "Installed. Round-based effects applied before combat will receive native counters when combat starts.");
+    console.debug(TAG, "Installed. Round-based effects applied before combat will receive native counters when combat starts.");
   })();
 });

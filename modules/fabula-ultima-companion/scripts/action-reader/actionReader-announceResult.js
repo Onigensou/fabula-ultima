@@ -238,5 +238,5 @@ export function registerActionReaderAnnounceResult(moduleId) {
     announceActionReaderResult
   };
 
-  console.log(`[ActionReader] Announce Result registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Announce Result registered to module API for "${moduleId}".`);
 }

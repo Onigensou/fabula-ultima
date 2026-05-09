@@ -226,7 +226,7 @@ Hooks.once("ready", () => {
       }
     });
 
-    console.log("[TreasureRoulette][AwardDispatcher] Silent award chat hook installed.");
+    console.debug("[TreasureRoulette][AwardDispatcher] Silent award chat hook installed.");
   }
 
   function buildItemIconHtml(itemImg, itemName) {
@@ -807,7 +807,7 @@ Hooks.once("ready", () => {
       }
     });
 
-    console.log("[TreasureRoulette][AwardDispatcher] Socket listener installed on:", SOCKET_CHANNEL);
+    console.debug("[TreasureRoulette][AwardDispatcher] Socket listener installed on:", SOCKET_CHANNEL);
   }
 
   // ----------------------------

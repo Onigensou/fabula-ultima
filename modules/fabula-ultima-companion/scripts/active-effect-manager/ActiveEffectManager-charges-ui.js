@@ -26,7 +26,7 @@
   const PANEL_MARKER_CLASS = "oni-ae-charges-panel";
 
   if (globalThis.__ONI_AE_CHARGES_UI_INSTALLED__) {
-    console.log(`${TAG} Already installed.`);
+    console.debug(`${TAG} Already installed.`);
     return;
   }
   globalThis.__ONI_AE_CHARGES_UI_INSTALLED__ = true;
@@ -179,5 +179,5 @@
     Hooks.on(hookName, onRenderConfig);
   }
 
-  console.log(`${TAG} Installed; will inject on:`, HOOK_NAMES.join(", "));
+  console.debug(`${TAG} Installed; will inject on:`, HOOK_NAMES.join(", "));
 })();

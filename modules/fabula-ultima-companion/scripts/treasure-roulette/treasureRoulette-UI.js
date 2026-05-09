@@ -677,5 +677,5 @@
   }
 
   window[KEY] = { play };
-  console.log(`[TreasureRoulette][UI] Installed as window["${KEY}"].`);
+  console.debug(`[TreasureRoulette][UI] Installed as window["${KEY}"].`);
 })();

@@ -372,5 +372,5 @@
     console.warn(TAG, "Could not patch Actor.applyActiveEffects.");
   }
 
-  console.log(`${TAG} Ready.`);
+  console.debug(`${TAG} Ready.`);
 })();

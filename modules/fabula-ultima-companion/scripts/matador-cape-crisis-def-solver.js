@@ -223,7 +223,7 @@
       scheduleRefresh(actor, "startup scan");
     }
 
-    console.log(`${TAG} Ready. Temporary solver active.`);
+    console.debug(`${TAG} Ready. Temporary solver active.`);
   });
 
   Hooks.on("canvasReady", () => {

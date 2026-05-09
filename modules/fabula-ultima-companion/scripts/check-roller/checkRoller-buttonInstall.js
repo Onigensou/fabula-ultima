@@ -240,7 +240,7 @@ Hooks.once("ready", () => {
   ensureStyle();
   const btn = buildButton();
 
-  console.log(`${TAG} Installed`, {
+  console.debug(`${TAG} Installed`, {
     user: game.user?.name,
     showForGM: CFG.showForGM,
     right: CFG.offsetRightPx,

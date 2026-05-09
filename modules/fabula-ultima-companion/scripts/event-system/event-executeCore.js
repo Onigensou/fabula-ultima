@@ -35,7 +35,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.Core?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -900,5 +900,5 @@
     boot();
   });
 
-  console.log(INSTALL_TAG, "Installed. API: window.oni.EventSystem.Core");
+  console.debug(INSTALL_TAG, "Installed. API: window.oni.EventSystem.Core");
 })();

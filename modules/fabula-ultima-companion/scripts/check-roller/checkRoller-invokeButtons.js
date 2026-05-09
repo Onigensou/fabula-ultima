@@ -920,7 +920,7 @@ const newB = (choice === "B" || choice === "AB")
   // Install click handlers (idempotent)
   // ---------------------------------------------------------------------------
   if (globalThis.ONI.__CheckRollerInvokeButtonsHookInstalled) {
-    console.log(`${TAG} Hook already installed. (Re-run ignored)`);
+    console.debug(`${TAG} Hook already installed. (Re-run ignored)`);
     ui?.notifications?.info("Check Roller InvokeButtons already installed.");
     return;
   }
@@ -966,5 +966,5 @@ const newB = (choice === "B" || choice === "AB")
   $(document).on("click.oni-cr-invoke", "[data-oni-cr-bond]", clickBond);
 
   globalThis.ONI.__CheckRollerInvokeButtonsHookInstalled = true;
-  console.log(`${TAG} Installed (delegated click handlers).`, { READ_SCOPES, WRITE_SCOPE });
+  console.debug(`${TAG} Installed (delegated click handlers).`, { READ_SCOPES, WRITE_SCOPE });
 })();

@@ -33,7 +33,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.ConfigUI?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -868,5 +868,5 @@
     installed: true
   };
 
-  console.log(INSTALL_TAG, "Installed.");
+  console.debug(INSTALL_TAG, "Installed.");
 })();

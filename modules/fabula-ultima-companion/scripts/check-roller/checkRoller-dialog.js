@@ -1056,5 +1056,5 @@ if (adv) {
       d.render(true);
     });
   });
-  console.log(`${TAG} Adapter installed: openDialog (New UI integrated)`);
+  console.debug(`${TAG} Adapter installed: openDialog (New UI integrated)`);
 })();

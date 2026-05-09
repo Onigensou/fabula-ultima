@@ -35,7 +35,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.RuntimeUI?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -348,5 +348,5 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.RuntimeUI = RuntimeUI;
 
-  console.log(INSTALL_TAG, "Installed. API: window.oni.EventSystem.RuntimeUI");
+  console.debug(INSTALL_TAG, "Installed. API: window.oni.EventSystem.RuntimeUI");
 })();

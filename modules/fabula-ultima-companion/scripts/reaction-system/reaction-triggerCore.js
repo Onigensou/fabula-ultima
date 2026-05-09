@@ -38,7 +38,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.ReactionTriggerCore";
     if (window[KEY]) {
-      console.log("[ReactionTriggerCore] Already installed.");
+      console.debug("[ReactionTriggerCore] Already installed.");
       return;
     }
 
@@ -590,6 +590,6 @@ Hooks.once("ready", () => {
       reactionDebuffCountMatchesRow
     };
 
-    console.log("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");
+    console.debug("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");
   })();
 });

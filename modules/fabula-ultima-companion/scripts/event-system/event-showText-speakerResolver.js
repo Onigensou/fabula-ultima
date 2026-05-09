@@ -37,7 +37,7 @@
   window.oni.EventSystem.ShowText = window.oni.EventSystem.ShowText || {};
 
   if (window.oni.EventSystem.ShowText.SpeakerResolver?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -502,5 +502,5 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.ShowText.SpeakerResolver = SpeakerResolver;
 
-  console.log(INSTALL_TAG, "Installed.");
+  console.debug(INSTALL_TAG, "Installed.");
 })();

@@ -37,7 +37,7 @@
   }
 
   if (globalThis.ONI.__ActionCardDivinationInstalled) {
-    console.log(`${TAG} Already installed. (Re-run ignored)`);
+    console.debug(`${TAG} Already installed. (Re-run ignored)`);
     return;
   }
 
@@ -488,5 +488,5 @@
   $(document).on("click.oni-ac-divination", "[data-oni-ac-divination-btn]", onClickDivination);
 
   globalThis.ONI.__ActionCardDivinationInstalled = true;
-  console.log(`${TAG} Installed.`);
+  console.debug(`${TAG} Installed.`);
 })();

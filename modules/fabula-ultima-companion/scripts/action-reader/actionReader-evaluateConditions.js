@@ -501,5 +501,5 @@ export function registerActionReaderEvaluateConditions(moduleId) {
     evaluateActionReaderConditions
   };
 
-  console.log(`[ActionReader] Evaluate Conditions registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Evaluate Conditions registered to module API for "${moduleId}".`);
 }

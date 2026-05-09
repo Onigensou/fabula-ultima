@@ -50,7 +50,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.ReactionRedirectPendingAction";
     if (window[KEY]) {
-      console.log("[ReactionRedirectPendingAction] Already installed.");
+      console.debug("[ReactionRedirectPendingAction] Already installed.");
       return;
     }
 

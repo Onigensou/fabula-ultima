@@ -22,7 +22,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.Constants?.installed) {
-    console.log(TAG, "Already installed; skipping.");
+    console.debug(TAG, "Already installed; skipping.");
     return;
   }
 
@@ -149,7 +149,7 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.Constants = CONSTANTS;
 
-  console.log(TAG, "Installed.", {
+  console.debug(TAG, "Installed.", {
     FLAG_SCOPE: CONSTANTS.FLAG_SCOPE,
     EVENT_TYPES: CONSTANTS.EVENT_TYPES
   });

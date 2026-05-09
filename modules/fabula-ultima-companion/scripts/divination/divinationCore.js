@@ -17,7 +17,7 @@
   const CHARGE_KEY = "divination";
 
   if (globalThis.ONI?.Divination) {
-    console.log(`${TAG} Already installed.`);
+    console.debug(`${TAG} Already installed.`);
     return;
   }
 
@@ -315,5 +315,5 @@
     isAccuracyAgainstMagic
   });
 
-  console.log(`${TAG} Installed at ONI.Divination.`);
+  console.debug(`${TAG} Installed at ONI.Divination.`);
 })();

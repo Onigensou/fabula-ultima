@@ -30,7 +30,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.EventRegistry?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -287,7 +287,7 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.EventRegistry = EventRegistry;
 
-  console.log(INSTALL_TAG, "Installed.", {
+  console.debug(INSTALL_TAG, "Installed.", {
     registeredTypes: EventRegistry.getDropdownOptions()
   });
 })();

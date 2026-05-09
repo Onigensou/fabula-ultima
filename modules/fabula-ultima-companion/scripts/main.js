@@ -103,7 +103,7 @@ async function gmRunMacroWithPlayerContext({
  * ================================ */
 
 Hooks.once("socketlib.ready", () => {
-  console.log("[FU Companion] SocketLib ready");
+  console.debug("[FU Companion] SocketLib ready");
   socket = socketlib.registerModule("fabula-ultima-companion");
 
   // --- Existing demo handlers ---
@@ -122,7 +122,7 @@ Hooks.once("socketlib.ready", () => {
   // Run a macro as GM while selecting the player's token (no per-macro edits)
   socket.register("runMacroAsGMWithPlayerContext", async (payload) => gmRunMacroWithPlayerContext(payload));
 
-  console.log("[FU Companion] Registered handlers: hello, add, decreaseHP, relayDecreaseHP, invokeWorldMacro, runMacroAsGMWithPlayerContext");
+  console.debug("[FU Companion] Registered handlers: hello, add, decreaseHP, relayDecreaseHP, invokeWorldMacro, runMacroAsGMWithPlayerContext");
 });
 
 /* ================================
@@ -130,7 +130,12 @@ Hooks.once("socketlib.ready", () => {
  * ================================ */
 
 Hooks.once("ready", async () => {
-  console.log("[FU Companion] World ready");
+  // Single info-level startup banner. Everything else FU emits during boot is
+  // gated to debug — flip the "FU Companion: console log level" setting to
+  // Debug to see the per-subsystem registration banners.
+  const ver = game.modules.get("fabula-ultima-companion")?.version ?? "?";
+  console.log(`[FU Companion] ready (v${ver})`);
+
   if (!socket) {
     console.warn("[FU Companion] Socket not ready yet.");
     return;
@@ -141,7 +146,7 @@ Hooks.once("ready", async () => {
     socket.executeForEveryone("hello", game.user.name);
     socket.executeForEveryone(showHelloMessage, game.user.name);
     const result = await socket.executeAsGM("add", 5, 3);
-    console.log(`[FU Companion] GM calculated: ${result}`);
+    console.debug(`[FU Companion] GM calculated: ${result}`);
   } catch (e) {
     console.warn("[FU Companion] Demo calls failed:", e);
   }

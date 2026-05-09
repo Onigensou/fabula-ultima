@@ -616,7 +616,7 @@
       game.socket.on(CHANNEL, handler);
       GLOBAL.socketInstalled = true;
 
-      console.log("[OniTradeWindow_Core] Socket listener installed on", CHANNEL, "for user", game.user.id);
+      console.debug("[OniTradeWindow_Core] Socket listener installed on", CHANNEL, "for user", game.user.id);
     }
 
     // Hook: re-render trade windows when scene flags change
@@ -636,7 +636,7 @@
       });
 
       GLOBAL.hookInstalled = true;
-      console.log("[OniTradeWindow_Core] updateScene hook installed.");
+      console.debug("[OniTradeWindow_Core] updateScene hook installed.");
     }
 
     // Public API: openTradeWindowForSession(payload)
@@ -712,6 +712,6 @@
     GLOBAL.coreInstalled = true;
     GLOBAL.installed = true;
 
-    console.log("[OniTradeWindow_Core] API installed at globalThis.__OniTradeWindow__.");
+    console.debug("[OniTradeWindow_Core] API installed at globalThis.__OniTradeWindow__.");
   });
 })();

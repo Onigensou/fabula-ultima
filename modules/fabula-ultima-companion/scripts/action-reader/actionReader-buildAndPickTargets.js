@@ -396,5 +396,5 @@ export function registerActionReaderBuildAndPickTargets(moduleId) {
     buildAndPickActionReaderTargets
   };
 
-  console.log(`[ActionReader] Build And Pick Targets registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Build And Pick Targets registered to module API for "${moduleId}".`);
 }

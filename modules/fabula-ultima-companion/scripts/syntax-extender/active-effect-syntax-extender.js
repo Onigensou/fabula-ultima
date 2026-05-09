@@ -1232,6 +1232,6 @@
       patchCustomActiveEffectApply();
     }
 
-    console.log(TAG, "Ready.", globalThis.FUCompanion.api.activeEffectSyntax.status());
+    console.debug(TAG, "Ready.", globalThis.FUCompanion.api.activeEffectSyntax.status());
   });
 })();

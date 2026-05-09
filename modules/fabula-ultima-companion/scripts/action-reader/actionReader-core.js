@@ -573,5 +573,5 @@ export function registerActionReaderCore(moduleId) {
   module.api.ActionReader ??= {};
   module.api.ActionReader.Core = ActionReaderCore;
 
-  console.log(`[ActionReader] Core registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Core registered to module API for "${moduleId}".`);
 }

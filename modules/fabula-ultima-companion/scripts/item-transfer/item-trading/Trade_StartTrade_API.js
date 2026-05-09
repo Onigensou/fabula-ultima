@@ -227,5 +227,5 @@
     startTrade
   };
 
-  console.log('[Trade_StartTrade_API] Installed as window["oni.TradeStartTrade"].');
+  console.debug('[Trade_StartTrade_API] Installed as window["oni.TradeStartTrade"].');
 })();

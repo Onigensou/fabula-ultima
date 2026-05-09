@@ -9,7 +9,7 @@
 (() => {
   const MODULE_ID = "fabula-ultima-companion";
 
-  console.log("%c[FU Dialog:Core][BOOT] dialog-core.js loaded", "color:#a7f3d0", {
+  console.debug("%c[FU Dialog:Core][BOOT] dialog-core.js loaded", "color:#a7f3d0", {
   user: game?.user?.name,
   userId: game?.user?.id
 });

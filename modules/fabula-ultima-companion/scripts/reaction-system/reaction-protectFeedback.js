@@ -26,7 +26,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.ReactionProtectFeedback";
     if (window[KEY]) {
-      console.log("[ReactionProtectFeedback] Already installed.");
+      console.debug("[ReactionProtectFeedback] Already installed.");
       return;
     }
 

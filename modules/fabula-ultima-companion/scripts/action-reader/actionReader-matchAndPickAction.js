@@ -517,5 +517,5 @@ export function registerActionReaderMatchAndPickAction(moduleId) {
     matchAndPickActionReaderAction
   };
 
-  console.log(`[ActionReader] Match And Pick Action registered to module API for "${moduleId}".`);
+  console.debug(`[ActionReader] Match And Pick Action registered to module API for "${moduleId}".`);
 }

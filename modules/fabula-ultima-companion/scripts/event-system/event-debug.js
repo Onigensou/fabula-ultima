@@ -26,7 +26,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.Debug?.installed) {
-    console.log(TAG, "Already installed; skipping.");
+    console.debug(TAG, "Already installed; skipping.");
     return;
   }
 
@@ -154,7 +154,7 @@
         default: false
       });
 
-      console.log(TAG, "Debug settings registered.", {
+      console.debug(TAG, "Debug settings registered.", {
         moduleId: MODULE_ID,
         debugEnabledKey: SETTING_KEYS.DEBUG_ENABLED,
         debugVerboseKey: SETTING_KEYS.DEBUG_VERBOSE
@@ -169,5 +169,5 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.Debug = Debug;
 
-  console.log(TAG, "Installed.");
+  console.debug(TAG, "Installed.");
 })();

@@ -34,7 +34,7 @@
   window.oni.EventSystem.ShowText = window.oni.EventSystem.ShowText || {};
 
   if (window.oni.EventSystem.ShowText.Execute?.installed) {
-    console.log(INSTALL_TAG, "Already installed; skipping.");
+    console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
 
@@ -459,5 +459,5 @@
   // ------------------------------------------------------------
   window.oni.EventSystem.ShowText.Execute = Execute;
 
-  console.log(INSTALL_TAG, "Installed.");
+  console.debug(INSTALL_TAG, "Installed.");
 })();
