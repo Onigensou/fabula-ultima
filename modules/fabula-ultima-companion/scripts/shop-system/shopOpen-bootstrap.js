@@ -20,6 +20,7 @@ Hooks.once("ready", async () => {
 
   const purchaseHandler = new ShopPurchaseHandler();
   const soundManager    = new ShopSoundManager();
+  soundManager.preloadAll(); // warm CDN cache so first-use audio is instant
 
   // Wire purchase handler into backend (BUY_REQ/BUY_RESULT route through backend._onSocket)
   backend._purchaseHandler = purchaseHandler;

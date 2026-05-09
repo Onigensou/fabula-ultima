@@ -245,7 +245,8 @@ export class ShopWindowApp {
   // ──────────────────────────────────────────────────────────────
 
   static _css() {
-    return `<style id="fu-shop-style">
+    // CSS never changes at runtime — build once and reuse.
+    return (ShopWindowApp._cssCache ??= `<style id="fu-shop-style">
       /* ── Root ── */
       .fu-shop { display:flex; flex-direction:column; gap:0;
                  background:#f0e6cc; color:#2c1f0e; font-family:inherit; }
@@ -526,7 +527,7 @@ export class ShopWindowApp {
         border-radius:999px; padding:1px 4px;
         line-height:12px; white-space:nowrap;
       }
-    </style>`;
+    </style>`);
   }
 
   // ──────────────────────────────────────────────────────────────
@@ -630,9 +631,12 @@ export class ShopWindowApp {
   // ──────────────────────────────────────────────────────────────
 
   static _bindRoot(root, ctx) {
+    const snd = () => window.FUCompanion?.shopSound;
+
     // Tab switching
     root.querySelectorAll(".fu-shop-tab").forEach(btn => {
       btn.addEventListener("click", () => {
+        snd()?.playTabSwitch();
         ctx.state.activeTab = btn.dataset.tab;
         root.querySelectorAll(".fu-shop-tab").forEach(b =>
           b.classList.toggle("active", b.dataset.tab === ctx.state.activeTab));
@@ -653,6 +657,7 @@ export class ShopWindowApp {
     root.querySelectorAll(".fu-shop-row").forEach(row => {
       row.addEventListener("click", (e) => {
         if (e.target.closest("[data-action='buy']")) return;
+        snd()?.playItemSelect();
         root.querySelectorAll(".fu-shop-row").forEach(r => r.classList.toggle("fu-selected", r === row));
 
         const preview = root.querySelector(".fu-shop-preview");
@@ -858,6 +863,7 @@ export class ShopWindowApp {
           ShopWindowApp._bindRoot(root, ctx);
         },
         close: () => {
+          window.FUCompanion?.shopSound?.playCancel();
           _openWindows.delete(shopActorUuid);
           onClose?.();
         },
