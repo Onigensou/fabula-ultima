@@ -348,6 +348,78 @@ async function chooseBondDialog(bondCandidates, attacker) {
   }).render(true));
 }
 
+  // ---------- reaction emit: creature_check_outcome_flipped ----------
+  // Mirrors checkRoller-invokeButtons.js so passive reactions on
+  // "When a creature changes the outcome of a check" fire from the
+  // Action Card invoke path too. Action Card rolls don't track pass/fail
+  // at this layer (decided per-target downstream), so `pass` is null.
+  function snapshotAccuracy(acc) {
+    return {
+      rollA: Number(acc?.rA?.total ?? 0) || 0,
+      rollB: Number(acc?.rB?.total ?? 0) || 0,
+      total: Number(acc?.total ?? 0) || 0,
+      hr:    Number(acc?.hr ?? 0) || 0,
+      isCrit:   !!acc?.isCrit,
+      isFumble: !!acc?.isFumble,
+      pass: null
+    };
+  }
+
+  function emitCheckOutcomeFlipped({ actor, mechanism, before, after }) {
+    if (!actor) return;
+
+    const tokens = (typeof actor.getActiveTokens === "function")
+      ? actor.getActiveTokens(true, true)
+      : [];
+    const token = Array.isArray(tokens) && tokens[0] ? tokens[0] : null;
+    const tokenUuid = token?.document?.uuid ?? null;
+
+    const reactionPayload = {
+      kind: "check_outcome_flipped",
+      trigger: "creature_check_outcome_flipped",
+      timestamp: Date.now(),
+
+      actorUuid: actor.uuid ?? null,
+      tokenUuid,
+      sourceUuid: tokenUuid,
+      subjectTokenUuid: tokenUuid,
+      subjectActorUuid: actor.uuid ?? null,
+
+      flipMechanism: mechanism,
+      before: { ...before },
+      after: { ...after },
+
+      requestedByUserId: game.user?.id ?? null,
+      requestedByUserName: game.user?.name ?? null
+    };
+
+    const channel = `module.${MODULE_NS}`;
+
+    if (game.user?.isGM) {
+      if (globalThis.ONI?.emit) {
+        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
+      }
+    } else {
+      if (game.socket) {
+        game.socket.emit(channel, {
+          type: "OniReactionPhaseRequest",
+          payload: reactionPayload
+        });
+      } else {
+        console.warn("[fu-invokeButtons] game.socket unavailable; cannot forward reaction phase to GM.", reactionPayload);
+      }
+      if (globalThis.ONI?.emit) {
+        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
+      }
+    }
+
+    console.log("[fu-invokeButtons] Emitted creature_check_outcome_flipped", {
+      actorName: actor.name,
+      mechanism,
+      totalDelta: (after?.total ?? 0) - (before?.total ?? 0)
+    });
+  }
+
   // ---------- actions ----------
    async function handleInvokeTrait(btn, chatMsg) {
     const payload = await getPayload(chatMsg);
@@ -586,7 +658,15 @@ const choice = await new Promise((resolve) => new Dialog({
       next.advPayload.baseValue = declaresHealing ? `+${baseNoHR}` : String(newCombined);
     }
 
+    const beforeSnap = snapshotAccuracy(payload.accuracy);
     await rebuildCard(next, chatMsg);
+
+    emitCheckOutcomeFlipped({
+      actor: attacker,
+      mechanism: "trait",
+      before: beforeSnap,
+      after:  snapshotAccuracy(next.accuracy)
+    });
   }
 
     async function handleInvokeBond(btn, chatMsg) {
@@ -665,7 +745,15 @@ const choice = await new Promise((resolve) => new Dialog({
     total: newTotal
   };
 
+  const beforeSnap = snapshotAccuracy(payload.accuracy);
   await rebuildCard(next, chatMsg);
+
+  emitCheckOutcomeFlipped({
+    actor: attacker,
+    mechanism: "bond",
+    before: beforeSnap,
+    after:  snapshotAccuracy(next.accuracy)
+  });
 }
 
   // ---------- binder (single listener handles both buttons) ----------

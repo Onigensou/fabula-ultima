@@ -45,16 +45,18 @@
     return;
   }
 
+  if (!globalThis.ONI?.Divination) {
+    console.error(`${TAG} ONI.Divination not loaded. divinationCore.js must run before this script.`);
+    return;
+  }
+
+  const Div = globalThis.ONI.Divination;
+
   const { CONST } = MANAGER;
   const MODULE_SCOPE = "fabula-ultima-companion";
   const READ_SCOPES = Array.from(new Set([CONST.FLAG_SCOPE, MODULE_SCOPE].filter(Boolean)));
   const WRITE_SCOPE = game.modules?.has(CONST.FLAG_SCOPE) ? CONST.FLAG_SCOPE : MODULE_SCOPE;
-  const DIVINATION_CHARGE_KEY = "divination";
   const PASS_LS_PREFIX = "oni.divinationPassed";
-
-  function chargesApi() {
-    return globalThis?.FUCompanion?.api?.charges ?? null;
-  }
 
   // ---------------------------------------------------------------------------
   // Tiny helpers
@@ -75,12 +77,6 @@
     : 0;
   const deepClone = (obj) => foundry.utils.deepClone(obj);
 
-  const computeCritFumble = (rA, rB) => {
-    const isFumble = (rA === 1 && rB === 1);
-    const isCrit = (!isFumble && rA === rB && rA >= 6);
-    return { isCrit, isFumble };
-  };
-
   const getPayload = (message) => {
     for (const scope of READ_SCOPES) {
       try {
@@ -95,18 +91,6 @@
     const p = getPayload(message);
     return Boolean(p && p.kind === "fu_check");
   };
-
-  // ---------------------------------------------------------------------------
-  // AE detection — delegated to FUCompanion.api.charges
-  // ---------------------------------------------------------------------------
-  function findOwnedDivinationActor() {
-    const api = chargesApi();
-    if (!api) {
-      console.warn(`${TAG} FUCompanion.api.charges unavailable; Divination disabled.`);
-      return null;
-    }
-    return api.findFirstOwned({ key: DIVINATION_CHARGE_KEY });
-  }
 
   // ---------------------------------------------------------------------------
   // Pass-state (per-viewer, per-card, per-actor) — local only
@@ -163,67 +147,6 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Reaction emit (mirrors checkRoller-invokeButtons.js)
-  // ---------------------------------------------------------------------------
-  function snapshotResult(res) {
-    return {
-      rollA: safeInt(res?.rollA, 0),
-      rollB: safeInt(res?.rollB, 0),
-      total: safeInt(res?.total, 0),
-      hr:    safeInt(res?.hr, 0),
-      isCrit:   !!res?.isCrit,
-      isFumble: !!res?.isFumble,
-      pass: (res?.pass === true || res?.pass === false) ? res.pass : null
-    };
-  }
-
-  function emitCheckOutcomeFlipped({ actor, before, after }) {
-    if (!actor) return;
-    const tokens = (typeof actor.getActiveTokens === "function")
-      ? actor.getActiveTokens(true, true)
-      : [];
-    const token = Array.isArray(tokens) && tokens[0] ? tokens[0] : null;
-    const tokenUuid = token?.document?.uuid ?? null;
-
-    const reactionPayload = {
-      kind: "check_outcome_flipped",
-      trigger: "creature_check_outcome_flipped",
-      timestamp: Date.now(),
-
-      actorUuid: actor.uuid ?? null,
-      tokenUuid,
-      sourceUuid: tokenUuid,
-      subjectTokenUuid: tokenUuid,
-      subjectActorUuid: actor.uuid ?? null,
-
-      flipMechanism: "divination",
-      before: { ...before },
-      after: { ...after },
-
-      requestedByUserId: game.user?.id ?? null,
-      requestedByUserName: game.user?.name ?? null
-    };
-
-    const channel = `module.${MODULE_SCOPE}`;
-
-    if (game.user?.isGM) {
-      if (globalThis.ONI?.emit) {
-        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
-      }
-    } else {
-      if (game.socket) {
-        game.socket.emit(channel, {
-          type: "OniReactionPhaseRequest",
-          payload: reactionPayload
-        });
-      }
-      if (globalThis.ONI?.emit) {
-        ONI.emit("oni:reactionPhase", reactionPayload, { local: true, world: false });
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------
   // Apply Divination to a CheckRoller message
   // ---------------------------------------------------------------------------
   async function applyDivination(message) {
@@ -237,12 +160,18 @@
       return;
     }
 
-    const owned = findOwnedDivinationActor();
+    // RAW: a Critical or Fumble is a locked outcome and cannot be rerolled.
+    if (Div.isLockedByCritOrFumble(payload.result)) {
+      ui.notifications?.warn("Critical and Fumble results cannot be rerolled.");
+      return;
+    }
+
+    const owned = Div.findOwnedCaster();
     if (!owned) {
       ui.notifications?.warn("No owned actor with Divination charges remaining.");
       return;
     }
-    const { actor, effect, charges } = owned;
+    const { actor, effect } = owned;
 
     const check = payload.check || {};
     const dieA = safeInt(check?.dice?.A, 0);
@@ -252,7 +181,7 @@
       return;
     }
 
-    const before = snapshotResult(payload.result);
+    const before = Div.snapshotCheckResult(payload.result);
 
     const newA = (await (new Roll(`1d${dieA}`)).evaluate()).total;
     const newB = (await (new Roll(`1d${dieB}`)).evaluate()).total;
@@ -280,18 +209,13 @@
     next.result.modifierTotal = modTotal;
     next.result.total = next.result.base + modTotal;
 
-    const cf = computeCritFumble(newA, newB);
+    const cf = Div.computeOpenCheckResult(newA, newB);
     next.result.isCrit = cf.isCrit;
     next.result.isFumble = cf.isFumble;
 
     // Consume one charge first; if that fails, abort the reroll write so the
     // user isn't charged for nothing.
-    const api = chargesApi();
-    if (!api) {
-      ui.notifications?.error("Divination: charges API unavailable.");
-      return;
-    }
-    const consumeRes = await api.consume(effect, { count: 1, deleteWhenEmpty: true });
+    const consumeRes = await Div.consumeOneCharge(effect);
     if (!consumeRes?.ok) {
       console.error(`${TAG} Failed to consume Divination charge; aborting.`, consumeRes);
       ui.notifications?.error("Divination: could not update Active Effect; reroll aborted.");
@@ -320,11 +244,19 @@
       newTotal: next.result.total
     });
 
-    emitCheckOutcomeFlipped({
-      actor,
-      before,
-      after: snapshotResult(next.result)
-    });
+    // Gate the reaction emit on actual outcome change (Hina's Foresight Zero
+    // Trigger requires the rerolled outcome to differ from the original).
+    // When DL isn't set, outcomeFlippedOpenCheck returns false — GM grants
+    // Zero Power manually in that case (per design decision).
+    const after = Div.snapshotCheckResult(next.result);
+    const flipped = Div.outcomeFlippedOpenCheck(before, after, payload?.check?.dl);
+    if (flipped) {
+      Div.emitOutcomeFlipped({ actor, before, after, mechanism: "divination" });
+    } else {
+      console.log(`${TAG} Outcome unchanged; not emitting creature_check_outcome_flipped.`, {
+        dl: payload?.check?.dl ?? null, before, after
+      });
+    }
 
     ui.notifications?.info(
       remaining > 0
@@ -432,7 +364,10 @@
 
     if (payload?.meta?.invoked?.divination) return;
 
-    const owned = findOwnedDivinationActor();
+    // RAW: Crit/Fumble are locked outcomes — don't even offer the buttons.
+    if (Div.isLockedByCritOrFumble(payload?.result)) return;
+
+    const owned = Div.findOwnedCaster();
     if (!owned) return;
 
     const anchor = findInjectionAnchor(rootEl);
@@ -487,7 +422,7 @@
       const msg = getMessageFromClick(ev);
       if (!msg) return;
 
-      const owned = findOwnedDivinationActor();
+      const owned = Div.findOwnedCaster();
       if (!owned) return;
 
       setPassed(msg.id, owned.actor.id, true);
@@ -505,7 +440,7 @@
       const msg = getMessageFromClick(ev);
       if (!msg) return;
 
-      const owned = findOwnedDivinationActor();
+      const owned = Div.findOwnedCaster();
       if (!owned) return;
 
       setPassed(msg.id, owned.actor.id, false);
@@ -548,12 +483,12 @@
   }
 
   function effectTouchesUs(effect) {
-    const api = chargesApi();
+    const api = globalThis?.FUCompanion?.api?.charges;
     if (!api) return false;
     if (!api.isOwnedChargedEvent(effect)) return false;
     const info = api.read(effect);
     if (!info) return false;
-    return !info.key || info.key === DIVINATION_CHARGE_KEY;
+    return !info.key || info.key === Div.CHARGE_KEY;
   }
 
   Hooks.on("createActiveEffect", (eff) => { if (effectTouchesUs(eff)) refreshAllVisibleCards(); });
