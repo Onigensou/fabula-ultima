@@ -61,14 +61,19 @@ export class ShopPurchaseHandler {
     try {
       console.log("[ShopPurchase] executePurchase →", { shopActorUuid, itemUuid, quantity, buyerActorUuid });
 
-      const shopActor  = await fromUuid(shopActorUuid);
-      const buyerActor = await fromUuid(buyerActorUuid);
+      // World actors are always in-memory — use sync resolution to avoid async overhead.
+      // Fall back to async fromUuid only if sync isn't available or returns null.
+      const _resolve = (uuid) => (typeof fromUuidSync === "function" ? fromUuidSync(uuid) : null) ?? fromUuid(uuid);
+
+      // Resolve shop actor, buyer actor, and item in parallel (all independent lookups).
+      const [shopActor, buyerActor, item] = await Promise.all([
+        _resolve(shopActorUuid),
+        _resolve(buyerActorUuid),
+        _resolve(itemUuid),
+      ]);
 
       if (!shopActor)  return { ok: false, reason: "shop_not_found" };
       if (!buyerActor) return { ok: false, reason: "buyer_not_found" };
-
-      // Embedded item UUID: "Actor.shopId.Item.itemId"
-      const item = await fromUuid(itemUuid);
       if (!item || item.parent?.uuid !== shopActorUuid) {
         console.warn("[ShopPurchase] Item not found or parent mismatch", { itemUuid, shopActorUuid, parentUuid: item?.parent?.uuid });
         return { ok: false, reason: "item_not_found" };
@@ -103,9 +108,12 @@ export class ShopPurchaseHandler {
 
       if (!xfer.ok) return { ok: false, reason: "transfer_failed" };
 
+      // Run both Zenit adjustments in parallel — they touch different actors.
       if (total > 0) {
-        await tc.adjustZenit({ actorUuid: buyerActor.uuid, delta: -total, requestedByUserId: requesterUserId });
-        await tc.adjustZenit({ actorUuid: shopActor.uuid,  delta:  total, requestedByUserId: requesterUserId });
+        await Promise.all([
+          tc.adjustZenit({ actorUuid: buyerActor.uuid, delta: -total, requestedByUserId: requesterUserId }),
+          tc.adjustZenit({ actorUuid: shopActor.uuid,  delta:  total, requestedByUserId: requesterUserId }),
+        ]);
       }
 
       console.log("[ShopPurchase] Success →", { qty, total, itemName: item.name });

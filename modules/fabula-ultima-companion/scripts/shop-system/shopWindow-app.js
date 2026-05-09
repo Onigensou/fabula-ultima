@@ -512,9 +512,11 @@ export class ShopWindowApp {
       .fu-skill-desc p  { margin:2px 0; }
       .fu-skill-desc strong { font-weight:700; }
 
-      /* ── Empty tabs: truly greyed out via full desaturation ── */
+      /* ── Empty tabs: fully desaturated + darkened, clicks blocked ── */
       .fu-shop-tab.fu-tab-empty {
-        filter:saturate(0) brightness(0.75);
+        filter:saturate(0) brightness(0.5);
+        pointer-events:none;
+        cursor:default;
       }
       /* "New!" badge on tabs */
       .fu-tab-new-badge {
@@ -810,7 +812,20 @@ export class ShopWindowApp {
         if (result.ok) {
           const costStr = result.totalCost > 0 ? ` for 🪙 ${result.totalCost.toLocaleString()}` : "";
           ui.notifications?.info?.(`Purchased ×${result.quantity} ${itemName}${costStr}.`);
-          await new Promise(r => setTimeout(r, 180)); // let Foundry sync actor data
+
+          // Optimistically update local Zenit state so the header reflects the
+          // new balance immediately — the full redraw syncs from the actor after.
+          if (result.totalCost > 0) {
+            state.buyerZenit = Math.max(0, state.buyerZenit - result.totalCost);
+            const zenitBar = dlg?.element?.[0]?.querySelector?.(".fu-shop-zenit-bar");
+            if (zenitBar) {
+              zenitBar.innerHTML = `Your Zenit: <span class="zv">${GP_ICON}${state.buyerZenit.toLocaleString()}</span>`;
+            }
+          }
+
+          // By the time BUY_RESULT arrives the GM has finished all DB writes,
+          // so Foundry's reactive sync has already pushed actor changes to this client.
+          // No artificial delay needed.
           await redraw();
         } else {
           const MSGS = {
