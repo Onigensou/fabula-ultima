@@ -97,8 +97,14 @@ export class ShopWindowApp {
 
   static _buyerMult(actor) {
     if (!actor) return 1;
-    const v = Number(gp(actor, "system.props.shop_price_multiplier", 1));
+    const v = Number(gp(actor, "system.props.shop_buy_multiplier", 1));
     return (Number.isFinite(v) && v > 0) ? v : 1;
+  }
+
+  static _sellerMult(actor) {
+    if (!actor) return 0.5;
+    const v = Number(gp(actor, "system.props.shop_sell_multiplier", 0.5));
+    return (Number.isFinite(v) && v > 0) ? v : 0.5;
   }
   // Plain-text snippet for item list rows (no HTML)
   static _itemDesc(item)  {
