@@ -3,8 +3,9 @@
  *
  * Handles all states cleanly — safe to re-run at any point:
  *   • Renames shop_price_multiplier → shop_buy_multiplier (if old key still present)
- *   • Adds shop_sell_multiplier as a label field (default 0.5) if missing
+ *   • Adds shop_sell_multiplier as a label field (default 50) if missing
  *   • Patches shop_sell_multiplier type to "label" if it was previously added as numberField
+ *   • Updates defaultValues to percentage-based (100 = full price, 50 = half price)
  *
  * After running: close and reopen _FabU Char Template v3.fire to see both
  * fields, then click CSB "Reload from Template" to propagate to all characters.
@@ -73,9 +74,9 @@
   const SELL_FIELD_TEMPLATE = () => ({
     key:               SELL_KEY,
     type:              "label",
-    label:             "Shop Sell ×",
-    tooltip:           "Base sell price multiplier. Default 0.5 (half price). Active Effects only.",
-    defaultValue:      "0.5",
+    label:             "Shop Sell %",
+    tooltip:           "Sell price multiplier as percentage. 50 = half price (default). Active Effects only.",
+    defaultValue:      "50",
     size:              "small",
     colSpan:           1,
     rowSpan:           1,
@@ -86,28 +87,36 @@
     visibilityFormula: "",
   });
 
-  // ── 4. Phase A — rename old buy key in-place ──────────────────────────────
+  // ── 4. Phase A — rename old buy key in-place, set percentage default ──────
   if (oldBuyNode) {
     toLabelField(
       oldBuyNode,
       BUY_KEY,
-      "Shop Buy ×",
-      "Shop purchase price multiplier. Default 1. Active Effects only.",
-      oldBuyNode.defaultValue ?? "1"
+      "Shop Buy %",
+      "Buy price multiplier as percentage. 100 = full price (default). Active Effects only.",
+      "100"
     );
-    console.log(`${TAG} Renamed "${OLD_KEY}" → "${BUY_KEY}".`);
+    console.log(`${TAG} Renamed "${OLD_KEY}" → "${BUY_KEY}", default → 100.`);
   }
 
-  // ── 5. Phase B — patch sell field type if it's a numberField ─────────────
-  if (sellIsWrongType) {
+  // Also update defaultValue if buy field already exists with old decimal default
+  if (buyNode && (buyNode.defaultValue === "1" || buyNode.defaultValue === "1.0")) {
+    buyNode.defaultValue = "100";
+    buyNode.label        = "Shop Buy %";
+    buyNode.tooltip      = "Buy price multiplier as percentage. 100 = full price (default). Active Effects only.";
+    console.log(`${TAG} Updated "${BUY_KEY}" default from decimal to 100.`);
+  }
+
+  // ── 5. Phase B — patch sell field (type fix + percentage default) ─────────
+  if (sellIsWrongType || (sellNode && (sellNode.defaultValue === "0.5" || sellNode.defaultValue === "0.50"))) {
     toLabelField(
       sellNode,
       SELL_KEY,
-      "Shop Sell ×",
-      "Base sell price multiplier. Default 0.5 (half price). Active Effects only.",
-      "0.5"
+      "Shop Sell %",
+      "Sell price multiplier as percentage. 50 = half price (default). Active Effects only.",
+      "50"
     );
-    console.log(`${TAG} Patched "${SELL_KEY}" type to label.`);
+    console.log(`${TAG} Patched "${SELL_KEY}" to label type, default → 50.`);
   }
 
   // ── 6. Phase C — inject sell field if still missing ───────────────────────
