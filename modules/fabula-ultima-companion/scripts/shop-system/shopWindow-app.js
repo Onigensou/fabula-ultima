@@ -60,13 +60,15 @@ export class ShopWindowApp {
     return (d.textContent || d.innerText || "").trim();
   }
 
-  // Sanitize rich HTML: keep structural tags, strip inline styles/attrs,
-  // convert content-links to plain <span class="fu-link">.
+  // Sanitize rich HTML: keep structural tags + content-link <a> elements
+  // (preserving data-uuid so CSS keyword rules can target them),
+  // strip all inline styles and other unsafe attributes.
   static _sanitizeHTML(raw) {
     if (!raw) return "";
     const tmp = document.createElement("div");
     tmp.innerHTML = String(raw);
     const KEEP = new Set(["ul","ol","li","p","strong","em","b","i"]);
+    function esc(s) { return String(s ?? "").replace(/"/g, "&quot;"); }
     function walk(node) {
       if (node.nodeType === Node.TEXT_NODE) return node.textContent;
       if (node.nodeType !== Node.ELEMENT_NODE) return "";
@@ -74,7 +76,12 @@ export class ShopWindowApp {
       const inner = Array.from(node.childNodes).map(walk).join("");
       if (tag === "br") return "<br>";
       if (tag === "hr") return `<hr class="fu-hr">`;
-      if (tag === "a")  return `<span class="fu-link">${inner}</span>`;
+      // Preserve content-link anchors with only data-uuid and class — CSS targets these
+      if (tag === "a") {
+        const uuid = node.getAttribute("data-uuid") ?? "";
+        if (uuid) return `<a class="content-link" data-uuid="${esc(uuid)}">${inner}</a>`;
+        return inner; // plain links: just text
+      }
       if (KEEP.has(tag)) return `<${tag}>${inner}</${tag}>`;
       return inner;
     }
@@ -186,26 +193,47 @@ export class ShopWindowApp {
   // ──────────────────────────────────────────────────────────────
 
   static _buildSkillsContent(item) {
-    const skillsObj  = gp(item, "system.props.item_skill_active",  null) ?? {};
-    const relatedObj = gp(item, "system.props.related_item_list",  null) ?? {};
+    const skillsObj = gp(item, "system.props.item_skill_active", null) ?? {};
 
-    // Deduplicate by name (a skill can appear under multiple level-keys)
+    // Deduplicate by name (a skill can appear under multiple tier-keys)
     const seen    = new Set();
     const entries = [];
-    for (const [key, skill] of Object.entries(skillsObj)) {
+    for (const skill of Object.values(skillsObj)) {
       if (!skill?.name) continue;
       if (seen.has(skill.name)) continue;
       seen.add(skill.name);
-      const descRaw = relatedObj[key]?.related_item_description ?? "";
-      entries.push({ name: skill.name, descHTML: this._sanitizeHTML(descRaw) });
+
+      // Resolve skill icon: try UUID first, then name search.
+      // CSB itemContainer UUIDs are often stale/mismatched with the actual world item _id,
+      // so name lookup is the reliable fallback.
+      const shortId  = String(skill.uuid ?? "").split(".").pop();
+      const skillDoc = (shortId ? game.items?.get(shortId) : null)
+                    ?? (skill.name ? game.items?.find(i => i.name === skill.name) : null);
+      const img      = skillDoc?.img || "icons/svg/book.svg";
+
+      entries.push({
+        name:     skill.name,
+        cost:     String(skill.skill_cost ?? "").trim(),
+        img,
+        descHTML: this._sanitizeHTML(String(skill.skill_description ?? "")),
+      });
     }
 
     if (!entries.length) return null;
 
     let html = `<div class="fu-skills-label">Active Skills</div>`;
     for (const e of entries) {
+      const costBadge = e.cost
+        ? `<span class="fu-skill-cost">${this._esc(e.cost)}</span>`
+        : "";
       html += `<div class="fu-skill-entry">
-        <div class="fu-skill-name">✨ ${this._esc(e.name)}</div>
+        <div class="fu-skill-header">
+          <div class="fu-skill-icon-wrap">
+            <img class="fu-skill-icon" src="${this._esc(e.img)}" alt="">
+          </div>
+          <span class="fu-skill-name">${this._esc(e.name)}</span>
+          ${costBadge}
+        </div>
         ${e.descHTML ? `<div class="fu-skill-desc">${e.descHTML}</div>` : ""}
       </div>`;
     }
@@ -430,7 +458,6 @@ export class ShopWindowApp {
       .fu-preview-desc li { margin:2px 0; }
       .fu-preview-desc p  { margin:2px 0; }
       .fu-preview-desc .fu-hr { border:none; border-top:1px solid rgba(184,153,64,0.35); margin:4px 0; }
-      .fu-preview-desc .fu-link { font-weight:700; color:#3a2408; }
       .fu-preview-empty {
         font-size:11px; font-style:italic; color:#6b4c2a; opacity:0.55;
       }
@@ -454,11 +481,28 @@ export class ShopWindowApp {
       }
       .fu-skill-entry {
         padding:6px 8px; border-radius:7px; margin-bottom:5px;
-        background:rgba(255,255,255,0.6); border:1px solid rgba(184,153,64,0.4);
+        background:rgba(255,255,255,0.6);
+        border:1px solid rgba(184,153,64,0.4);
       }
       .fu-skill-entry:last-child { margin-bottom:0; }
+      .fu-skill-header {
+        display:flex; align-items:center; gap:8px; margin-bottom:5px;
+      }
+      .fu-skill-icon-wrap {
+        width:26px; height:26px; border-radius:5px;
+        border:1px solid rgba(184,153,64,0.5); background:#e8d5a3;
+        overflow:hidden; flex-shrink:0;
+        display:flex; align-items:center; justify-content:center;
+      }
+      .fu-skill-icon { width:100%; height:100%; object-fit:contain; display:block; }
       .fu-skill-name {
-        font-size:12px; font-weight:800; color:#3a2408; margin-bottom:4px;
+        font-size:13px; font-weight:800; color:#3a2408; flex:1;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      }
+      .fu-skill-cost {
+        font-size:11px; font-weight:700; color:#5a3800;
+        background:rgba(184,153,64,0.22); border:1px solid rgba(184,153,64,0.45);
+        border-radius:10px; padding:2px 8px; flex-shrink:0; white-space:nowrap;
       }
       .fu-skill-desc {
         font-size:11px; color:#5a3800; line-height:1.45;
@@ -467,7 +511,19 @@ export class ShopWindowApp {
       .fu-skill-desc li { margin:1px 0; }
       .fu-skill-desc p  { margin:2px 0; }
       .fu-skill-desc strong { font-weight:700; }
-      .fu-skill-desc .fu-link { font-weight:700; color:#3a2408; }
+
+      /* ── Empty tabs: truly greyed out via full desaturation ── */
+      .fu-shop-tab.fu-tab-empty {
+        filter:saturate(0) brightness(0.75);
+      }
+      /* "New!" badge on tabs */
+      .fu-tab-new-badge {
+        position:absolute; top:-4px; right:-4px;
+        background:#c0392b; color:#fff;
+        font-size:8px; font-weight:900; letter-spacing:0.02em;
+        border-radius:999px; padding:1px 4px;
+        line-height:12px; white-space:nowrap;
+      }
     </style>`;
   }
 
@@ -512,14 +568,14 @@ export class ShopWindowApp {
       </div>`;
   }
 
-  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab }) {
+  static _buildHTML({ portrait, shopTitle, quote, buyerZenit, hasBuyer, itemsByCategory, activeTab, newItemIds = new Set() }) {
     // Tabs
     const tabs = SHOP_CATEGORIES.map(c => {
-      const cnt = (itemsByCategory[c.key] ?? []).length;
-      const badge = cnt > 0
-        ? `<span style="position:absolute;top:-3px;right:-3px;background:#8b4513;color:#fff;font-size:9px;border-radius:999px;padding:0 4px;min-width:14px;text-align:center;line-height:14px;">${cnt}</span>`
-        : "";
-      return `<div class="fu-shop-tab${activeTab === c.key ? " active" : ""}"
+      const items   = itemsByCategory[c.key] ?? [];
+      const isEmpty = items.length === 0;
+      const hasNew  = items.some(it => newItemIds.has(it.uuid));
+      const badge   = hasNew ? `<span class="fu-tab-new-badge">New!</span>` : "";
+      return `<div class="fu-shop-tab${activeTab === c.key ? " active" : ""}${isEmpty ? " fu-tab-empty" : ""}"
                    data-tab="${c.key}" data-tooltip="${this._esc(c.label)}"
                    title="${this._esc(c.label)}">${c.emoji}${badge}</div>`;
     }).join("");
@@ -630,6 +686,12 @@ export class ShopWindowApp {
     const buyerActor = game.user.character ?? null;
     const hasBuyer   = !!buyerActor;
 
+    // Snapshot: remember which items were in stock when the shop opened (for "New!" badge)
+    const initialItemIds = new Set(actor.items.contents.map(i => i.uuid));
+    const readNewItemIds = () => new Set(
+      actor.items.contents.filter(i => !initialItemIds.has(i.uuid)).map(i => i.uuid)
+    );
+
     // Snapshot helpers
     const readItems = () => {
       const byCat = Object.fromEntries(SHOP_CATEGORIES.map(c => [c.key, []]));
@@ -665,6 +727,7 @@ export class ShopWindowApp {
       hasBuyer,
       itemsByCategory: state.itemsByCategory,
       activeTab: state.activeTab,
+      newItemIds: readNewItemIds(),
     });
 
     const redraw = async () => {
