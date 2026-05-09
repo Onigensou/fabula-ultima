@@ -85,8 +85,10 @@ export class ShopPurchaseHandler {
       if (stock <= 0)  return { ok: false, reason: "out_of_stock" };
       if (stock < qty) return { ok: false, reason: "insufficient_stock", available: stock };
 
+      const multRaw  = Number(buyerActor.system?.props?.shop_buy_multiplier ?? 100);
+      const mult     = (Number.isFinite(multRaw) && multRaw > 0) ? multRaw / 100 : 1;
       const costPer  = Math.max(0, Number(item.system?.props?.item_cost ?? 0));
-      const total    = costPer * qty;
+      const total    = costPer > 0 ? Math.round(costPer * qty * mult) : 0;
       const buyerZ   = Math.max(0, Number(buyerActor.system?.props?.zenit ?? 0));
 
       if (total > 0 && buyerZ < total) {
