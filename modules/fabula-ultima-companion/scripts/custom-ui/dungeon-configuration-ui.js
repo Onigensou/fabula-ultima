@@ -43,7 +43,8 @@
 
   // General settings stored inside oniFabula.general
   const GENERAL_KEY       = "general";
-  const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const CAMERA_FOLLOW_KEY = "cameraFollowToken"; // legacy — kept for backward-compat read
+  const SCENE_MODE_KEY    = "sceneMode";          // new: "none" | "exploration" | "dungeon"
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -496,11 +497,19 @@
           <h3>General</h3>
 
           <div class="form-group">
-            <label>Camera Follow Token</label>
+            <label>Scene Mode</label>
             <div class="form-fields">
-              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}" />
+              <select name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}">
+                <option value="none">None (Normal Foundry movement)</option>
+                <option value="exploration">Exploration (Camera Follow Token)</option>
+                <option value="dungeon">Dungeon (Tile-Based Movement)</option>
+              </select>
             </div>
-            <p class="notes">If enabled, your future camera script can follow the selected token on this map.</p>
+            <p class="notes">
+              <b>None</b> — standard Foundry V12 token movement.<br>
+              <b>Exploration</b> — camera locks and follows the party token; right-click to walk.<br>
+              <b>Dungeon</b> — tile-based movement: click highlighted tiles to move the party token along the laid-out path.
+            </p>
           </div>
 
           <p class="notes">Remember: data is saved only when you press <b>Save Changes</b>.</p>
@@ -633,10 +642,15 @@
     // Prefill General fields
     try {
       const generalPanel = tabPanel.querySelector(`.oni-fabula-subpanel[data-subtab="${SUBTAB_GENERAL_ID}"]`);
-      const cb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}"]`);
-      if (cb) {
-        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
-        cb.checked = normalizeBoolean(raw, false);
+      const sel = generalPanel?.querySelector(`select[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}"]`);
+      if (sel) {
+        // Read new sceneMode value, or migrate from legacy cameraFollowToken boolean
+        let mode = safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+          const legacy = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+          mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
+        }
+        sel.value = mode;
       }
     } catch (e) {
       warn("General prefill failed:", e);
@@ -796,9 +810,15 @@
       },
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);
-        const raw = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+        let mode = safeGet(fabula, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+          const legacy = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+          mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
+        }
         return {
-          [CAMERA_FOLLOW_KEY]: normalizeBoolean(raw, false)
+          sceneMode: mode,
+          // backward-compat alias
+          [CAMERA_FOLLOW_KEY]: (mode === "exploration")
         };
       },
       readSceneNetwork(scene = canvas.scene) {
