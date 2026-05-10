@@ -41,7 +41,7 @@ Hooks.once("ready", () => {
   (() => {
     const KEY = "oni.ReactionChooseSkill";
     if (window[KEY]) {
-      console.log("[ReactionChooseSkill] Already installed.");
+      console.debug("[ReactionChooseSkill] Already installed.");
       return;
     }
 
@@ -622,18 +622,32 @@ Hooks.once("ready", () => {
       // Dispatch declarative effects (looked up by reaction_effect_ref) for
       // every matched row of the chosen reaction. Fires once per matched row
       // with a non-blank effect ref, before the skill runs through the
-      // action pipeline.
+      // action pipeline. A row that returns `{ abort: true }` (e.g. a
+      // `consume_charge` gate that found no charges) stops dispatch AND
+      // skips the skill body entirely.
+      let dispatchAborted = false;
       try {
         const grantApi = window["oni.ReactionGrant"]
           ?? globalThis.FUCompanion?.api?.reactionGrant
           ?? null;
         if (grantApi?.applyEffectsForGroup) {
           const reactToken = token ?? actor?.getActiveTokens?.(true, true)?.[0] ?? null;
-          await grantApi.applyEffectsForGroup(chosenGroup, reactToken, game.combat);
+          // Pass the chosen-skill payload so action-mutation effect_kinds
+          // (redirect_target, etc.) can find the source action card and the
+          // reactor identity. Resource-only kinds ignore it.
+          const dispatchResult = await grantApi.applyEffectsForGroup(chosenGroup, reactToken, game.combat, payload);
+          if (dispatchResult?.aborted) {
+            dispatchAborted = true;
+            console.warn("[ReactionChooseSkill] Reaction aborted by effect-table gate.", dispatchResult.abortInfo);
+            const label = dispatchResult.abortInfo?.itemName ?? "Reaction";
+            ui.notifications?.warn(`${label} could not fire (no resource available).`);
+          }
         }
       } catch (grantErr) {
         console.warn("[ReactionChooseSkill] Reaction effect dispatch threw; continuing with skill execution.", grantErr);
       }
+
+      if (dispatchAborted) return;
 
       window.__PAYLOAD = payload;
       await ADF.execute({ __AUTO: true, __PAYLOAD: payload });
@@ -643,6 +657,6 @@ Hooks.once("ready", () => {
       openReactionDialog
     };
 
-    console.log("[ReactionChooseSkill] Installed. Use window['oni.ReactionChooseSkill'].openReactionDialog(ctx)");
+    console.debug("[ReactionChooseSkill] Installed. Use window['oni.ReactionChooseSkill'].openReactionDialog(ctx)");
   })();
 });

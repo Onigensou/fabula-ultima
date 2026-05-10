@@ -38,7 +38,7 @@
 Hooks.once("ready", () => {
   const KEY = "oni.ReactionTriggers";
   if (window[KEY]) {
-    console.log("[ReactionTriggers] Already installed.");
+    console.debug("[ReactionTriggers] Already installed.");
     return;
   }
 
@@ -205,14 +205,14 @@ Hooks.once("ready", () => {
       label: "When a creature deals damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_DAMAGE_SOURCE,
-      filters: ["source", "damage_type"]
+      filters: ["source", "damage_type", "damage_amount"]
     },
     {
       key: "creature_takes_damage",
       label: "When a creature takes damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
-      filters: ["source", "damage_type"]
+      filters: ["source", "damage_type", "damage_amount"]
     },
     {
       key: "creature_takes_vulnerable_damage",
@@ -384,5 +384,5 @@ Hooks.once("ready", () => {
     subjectShapeFor
   };
 
-  console.log("[ReactionTriggers] Installed. %d triggers registered.", TRIGGERS.length);
+  console.debug("[ReactionTriggers] Installed. %d triggers registered.", TRIGGERS.length);
 });
