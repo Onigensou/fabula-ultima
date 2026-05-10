@@ -609,19 +609,27 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
       // trigger row's reaction_effect_ref names which effect to dispatch.
       // Independent of the reaction skill's own ACE/logic — fires once per
       // matched row, before the skill goes through the action pipeline.
+      // A row that returns `{ abort: true }` (e.g. a `consume_charge` gate
+      // with no charges left) skips the rest of this passive run.
       let grantApplied = false;
+      let grantAborted = false;
       try {
         const grantApi = window["oni.ReactionGrant"]
           ?? globalThis.FUCompanion?.api?.reactionGrant
           ?? null;
         const effectRef = row?.reaction_effect_ref;
         if (grantApi?.applyEffectByLabel && effectRef) {
-          const grantResult = await grantApi.applyEffectByLabel(item, effectRef, token, game.combat);
+          // Thread the trigger's phase payload so action-mutation effect_kinds
+          // (redirect_target, future damage_change, ...) can find the source
+          // action card. Resource-only kinds ignore it.
+          const dispatchPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);
+          const grantResult = await grantApi.applyEffectByLabel(item, effectRef, token, game.combat, dispatchPayload);
           grantApplied =
             !!grantResult?.ok &&
             !grantResult?.skipped &&
             Array.isArray(grantResult?.applied) &&
             grantResult.applied.some(a => a?.ok && !a?.noop);
+          grantAborted = !!grantResult?.abort;
         }
       } catch (grantErr) {
         warn("Reaction effect dispatch threw; continuing with skill execution.", {
@@ -631,6 +639,29 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
           rowIndex,
           err: String(grantErr?.message ?? grantErr)
         });
+      }
+
+      if (grantAborted) {
+        log("Passive run gated by reaction-effect abort; skipping action pipeline.", {
+          actorName: actor?.name,
+          itemName: item?.name,
+          triggerKey,
+          rowIndex
+        });
+        return {
+          ok: false,
+          reason: "gated_by_effect",
+          executionKey,
+          rootKey,
+          passiveIdentity,
+          actor,
+          token,
+          item,
+          row,
+          rowIndex,
+          triggerKey,
+          passiveTargetMode
+        };
       }
 
       // Broadcast a passive UI card only when a grant actually landed.

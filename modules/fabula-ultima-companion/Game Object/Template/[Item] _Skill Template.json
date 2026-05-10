@@ -1496,7 +1496,7 @@
                       "permission": 0,
                       "tooltip": "",
                       "visibilityFormula": "",
-                      "type": "dynamicTable",
+                      "type": "compactDynamicTable",
                       "contents": [],
                       "rowLayout": [
                         {
@@ -1640,8 +1640,8 @@
                           "role": 0,
                           "editRole": 0,
                           "permission": 0,
-                          "tooltip": "",
-                          "visibilityFormula": "",
+                          "tooltip": "Whose actions/events should this reaction listen to. Hidden for triggers that have no per-creature subject (conflict/round lifecycle).",
+                          "visibilityFormula": "triggerHasSubject(sameRow(\"reaction_trigger\",''))",
                           "type": "select",
                           "size": "full-size",
                           "label": "",
@@ -1682,7 +1682,7 @@
                           "editRole": 0,
                           "permission": 0,
                           "tooltip": "",
-                          "visibilityFormula": "or(or(or(or(or(or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"creature_targeted_by_action\"), equalText(sameRow(\"reaction_trigger\",''), \"creature_hit_by_action\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_deals_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_vulnerable_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_weak_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_resists_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_absorbs_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_immune_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_shield_break\"))",
+                          "visibilityFormula": "triggerNeeds(sameRow(\"reaction_trigger\",''), \"damage_type\")",
                           "type": "select",
                           "size": "m-large",
                           "label": "",
@@ -1739,7 +1739,7 @@
                           "editRole": 0,
                           "permission": 0,
                           "tooltip": "",
-                          "visibilityFormula": "or(equalText(sameRow(\"reaction_trigger\",''), \"creature_deals_damage\"), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_damage\"))",
+                          "visibilityFormula": "triggerNeeds(sameRow(\"reaction_trigger\",''), \"damage_amount\")",
                           "type": "numberField",
                           "size": "full-size",
                           "label": "",
@@ -1765,7 +1765,7 @@
                           "editRole": 0,
                           "permission": 0,
                           "tooltip": "Whose tokens to scan for debuffs (relative to the reactor). Leave blank to disable.",
-                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "visibilityFormula": "triggerNeeds(sameRow(\"reaction_trigger\",''), \"debuff_count\")",
                           "type": "select",
                           "size": "full-size",
                           "label": "",
@@ -1806,7 +1806,7 @@
                           "editRole": 0,
                           "permission": 0,
                           "tooltip": "Minimum total debuffs across the chosen group (blank = filter off)",
-                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "visibilityFormula": "triggerNeeds(sameRow(\"reaction_trigger\",''), \"debuff_count\")",
                           "type": "numberField",
                           "size": "full-size",
                           "label": "",
@@ -1914,7 +1914,7 @@
                       "permission": 0,
                       "tooltip": "Effects fired by trigger rows that reference an entry here by label. Each row defines one effect.",
                       "visibilityFormula": "",
-                      "type": "dynamicTable",
+                      "type": "compactDynamicTable",
                       "contents": [],
                       "rowLayout": [
                         {
@@ -1954,6 +1954,22 @@
                             {
                               "key": "grant",
                               "value": "Grant Resource"
+                            },
+                            {
+                              "key": "apply_ae",
+                              "value": "Apply AE"
+                            },
+                            {
+                              "key": "consume_charge",
+                              "value": "Consume Charge"
+                            },
+                            {
+                              "key": "redirect_target",
+                              "value": "Redirect Target"
+                            },
+                            {
+                              "key": "chain",
+                              "value": "Chain (sequence)"
                             }
                           ],
                           "align": "left",
@@ -2070,6 +2086,64 @@
                           ],
                           "align": "left",
                           "colName": "Recipient",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "target_select",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Which target slot of the pending action card to redirect. Today only \"first\" is implemented.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"redirect_target\")",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "first",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            { "key": "first", "value": "First" }
+                          ],
+                          "align": "left",
+                          "colName": "Slot",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "rebuild_card",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Re-render the redirected action card so viewers see the new target.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"redirect_target\")",
+                          "type": "checkbox",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultChecked": true,
+                          "align": "left",
+                          "colName": "Rebuild Card",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "chain_steps",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Comma-separated effect_label values to invoke in order. Stops at the first step that aborts or fails.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"chain\")",
+                          "type": "textField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "align": "left",
+                          "colName": "Steps",
                           "readonlyPredefined": false
                         }
                       ],
