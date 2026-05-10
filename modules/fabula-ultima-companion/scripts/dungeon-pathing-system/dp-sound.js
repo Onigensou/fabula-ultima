@@ -6,7 +6,16 @@
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Sound]";
 
-  const VOLUME = { HOVER: 0.45, FOOTSTEP: 0.6, CONFIRM: 0.5, CANCEL: 0.55 };
+  const VOLUME = {
+    HOVER:      0.45,
+    FOOTSTEP:   0.6,
+    CONFIRM:    0.5,
+    CANCEL:     0.55,
+    SCAN_ON:    0.5,
+    SCAN_OFF:   0.45,
+    HELPER_ON:  0.5,
+    HELPER_OFF: 0.45,
+  };
 
   function play(src, volume) {
     if (!src) return;
@@ -44,6 +53,11 @@
     playCancel() {
       play(DP.SOUNDS.CANCEL, VOLUME.CANCEL);
     },
+
+    playScanOn()    { play(DP.SOUNDS.SCAN_ON,    VOLUME.SCAN_ON);    },
+    playScanOff()   { play(DP.SOUNDS.SCAN_OFF,   VOLUME.SCAN_OFF);   },
+    playHelperOn()  { play(DP.SOUNDS.HELPER_ON,  VOLUME.HELPER_ON);  },
+    playHelperOff() { play(DP.SOUNDS.HELPER_OFF, VOLUME.HELPER_OFF); },
 
     /**
      * Play footstep sound twice to simulate walking.

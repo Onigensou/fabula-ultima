@@ -106,6 +106,14 @@
       FONT_SIZE:      "28px", // emoji size
       DEFAULT_RADIUS: 600,   // world units — fallback when scene flag is unset
     },
+
+    // Helper Mode button — placed to the right of the Scan button
+    HELPER_BUTTON: {
+      SIZE:      64,         // diameter in px (matches SCAN_BUTTON.SIZE)
+      BOTTOM:    80,         // px from bottom (same row as scan button)
+      LEFT:      94,         // 20 (scan left) + 64 (scan size) + 10 (gap)
+      FONT_SIZE: "28px",
+    },
   };
 
   // Flag key for per-scene scan radius (read by dp-scan-mode.js)
@@ -123,10 +131,14 @@
 
   // Sound URLs
   DP.SOUNDS = Object.freeze({
-    HOVER:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
-    FOOTSTEP: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_FootStepNormal_1.ogg",
-    CONFIRM:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
-    CANCEL:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    HOVER:      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+    FOOTSTEP:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_FootStepNormal_1.ogg",
+    CONFIRM:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+    CANCEL:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    SCAN_ON:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+    SCAN_OFF:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    HELPER_ON:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+    HELPER_OFF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
   });
 
   // Blank tile asset

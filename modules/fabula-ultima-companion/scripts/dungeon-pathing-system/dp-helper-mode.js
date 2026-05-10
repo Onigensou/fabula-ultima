@@ -99,11 +99,15 @@
     _enabled = !_enabled;
     if (_enabled) {
       show(_currentNeighbors);
+      DP.Sound?.playHelperOn?.();
       ui.notifications?.info?.("Helper mode ON — walkable tiles highlighted. Press H to toggle.");
     } else {
       hide();
+      DP.Sound?.playHelperOff?.();
       ui.notifications?.info?.("Helper mode OFF.");
     }
+    // Keep the helper button in sync regardless of whether it was H or the button
+    DP.ScanMode?.syncHelperBtn?.();
   }
 
   function installKeyListener() {

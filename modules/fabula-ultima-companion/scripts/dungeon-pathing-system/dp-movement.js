@@ -37,7 +37,12 @@ async function clone(token){
   const tex  = base?.texture ?? await loadTexture(token.document.texture.src);
   const s    = new PIXI.Sprite(tex);
   s.anchor.set(0.5); s.x=fromX; s.y=fromY;
-  if(base){s.width=base.width;s.height=base.height;s.rotation=base.rotation??0;s.alpha=base.alpha??1;}
+  if(base){
+    s.width=base.width;s.height=base.height;s.rotation=base.rotation??0;s.alpha=base.alpha??1;
+    // Preserve horizontal/vertical flip set by token config or external scripts
+    if((base.scale?.x??1)<0) s.scale.x=-Math.abs(s.scale.x);
+    if((base.scale?.y??1)<0) s.scale.y=-Math.abs(s.scale.y);
+  }
   else{s.width=token.w;s.height=token.h;}
   s.zIndex=500000;
   canvas.stage.sortableChildren=true; canvas.stage.addChild(s); canvas.stage.sortChildren();
