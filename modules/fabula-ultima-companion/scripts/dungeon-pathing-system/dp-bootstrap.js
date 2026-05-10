@@ -88,8 +88,19 @@
       state.forcedNodeId = null;
     }
     if (!currentNode) {
-      const center = token.center ?? { x: Number(token.document.x), y: Number(token.document.y) };
-      currentNode  = DP.Graph.findNodeForPoint(center, graph.nodes);
+      // Always derive from document coords (always current on all clients).
+      // Reverse TOKEN_OFFSET so we seek the tile's logical centre, not the
+      // offset display position — this keeps GM and player in sync.
+      const gSize = Number(canvas?.grid?.size ?? 100) || 100;
+      const offX  = Number(DP.UI?.TOKEN_OFFSET?.x ?? 0);
+      const offY  = Number(DP.UI?.TOKEN_OFFSET?.y ?? 0);
+      const tw    = Number(token.document?.width  ?? 1) * gSize;
+      const th    = Number(token.document?.height ?? 1) * gSize;
+      const seek  = {
+        x: Number(token.document.x) + tw / 2 - offX,
+        y: Number(token.document.y) + th / 2 - offY,
+      };
+      currentNode = DP.Graph.findNodeForPoint(seek, graph.nodes);
     }
 
     state.currentNode = currentNode;
@@ -358,6 +369,17 @@
       const id = Hooks.on(hookName, rebuildIfActive);
       state.hookIds.push([hookName, id]);
     });
+
+    // Sync currentNode across all clients when the party token moves.
+    // The local client has state.busy = true during its own turn loop,
+    // so this only triggers a rebuild on OTHER clients (GM / spectators).
+    const hUpdateToken = Hooks.on("updateToken", async (tokenDoc) => {
+      if (!state.active || state.busy) return;
+      // If we know the party token, only rebuild for that token's moves.
+      if (state.partyToken && state.partyToken.document?.id !== tokenDoc.id) return;
+      await rebuild();
+    });
+    state.hookIds.push(["updateToken", hUpdateToken]);
 
     Hooks.once("socketlib.ready", () => {
       try {

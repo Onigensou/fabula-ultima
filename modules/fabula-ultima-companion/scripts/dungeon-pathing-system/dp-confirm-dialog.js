@@ -289,6 +289,8 @@
       this.isOpen = false;
       const fn = _resolveFn;
       _resolveFn = null;
+      if (result) DP.Sound?.playConfirm?.();
+      else        DP.Sound?.playCancel?.();
       removePanel(true);
       fn?.(result);
     },

@@ -6,7 +6,7 @@
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Sound]";
 
-  const VOLUME = { HOVER: 0.45, FOOTSTEP: 0.6 };
+  const VOLUME = { HOVER: 0.45, FOOTSTEP: 0.6, CONFIRM: 0.5, CANCEL: 0.55 };
 
   function play(src, volume) {
     if (!src) return;
@@ -33,6 +33,16 @@
     /** Play cursor hover sound (once per new tile entered). */
     playHover() {
       play(DP.SOUNDS.HOVER, VOLUME.HOVER);
+    },
+
+    /** Play cursor-confirm sound when the Confirm button is clicked. */
+    playConfirm() {
+      play(DP.SOUNDS.CONFIRM, VOLUME.CONFIRM);
+    },
+
+    /** Play cancel/close sound when the Go Back button is clicked. */
+    playCancel() {
+      play(DP.SOUNDS.CANCEL, VOLUME.CANCEL);
     },
 
     /**
