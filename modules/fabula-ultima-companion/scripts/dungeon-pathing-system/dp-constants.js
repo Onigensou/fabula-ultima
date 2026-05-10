@@ -93,6 +93,11 @@
       CORNER_R: 6,          // rounded-rect corner radius in world units
     },
 
+    // Camera follow behaviour (player clients only)
+    CAMERA: {
+      LERP: 0.25,   // fraction of remaining distance closed per frame (~250 ms to settle at 60 fps)
+    },
+
     // Scan Mode button (HTML DOM, fixed to viewport)
     SCAN_BUTTON: {
       SIZE:           64,    // diameter in px

@@ -152,8 +152,19 @@
       const scale = canvas.stage.scale.x;
 
       if (!_scanning) {
-        // Hard lock: snap pivot to token center every frame
-        canvas.pan({ x: center.x, y: center.y, scale });
+        // Smooth follow: lerp pivot toward token center each frame.
+        // Snaps when already within 1 world unit to avoid infinite micro-drift.
+        const lerp = DP.UI?.CAMERA?.LERP ?? 0.25;
+        const px   = canvas.stage.pivot.x;
+        const py   = canvas.stage.pivot.y;
+        const dx   = center.x - px;
+        const dy   = center.y - py;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= 1) {
+          canvas.pan({ x: center.x, y: center.y, scale });
+        } else {
+          canvas.pan({ x: px + dx * lerp, y: py + dy * lerp, scale });
+        }
       } else {
         // Clamp mode: allow free pan but not beyond the scan radius
         const maxR = getScanRadius();
