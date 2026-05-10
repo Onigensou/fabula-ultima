@@ -318,6 +318,7 @@
     installClickListener();
     installHoverHandler();
     DP.HelperMode.activate();
+    DP.ScanMode?.attachTicker();
     await rebuild();
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
@@ -335,6 +336,7 @@
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();
+    DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
     console.debug(TAG, "Deactivated.");
   }

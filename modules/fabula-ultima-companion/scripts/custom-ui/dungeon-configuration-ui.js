@@ -42,9 +42,10 @@
   const SCENE_NET_KEY     = "sceneNetwork"; // stored inside oniFabula as JSON string
 
   // General settings stored inside oniFabula.general
-  const GENERAL_KEY       = "general";
-  const CAMERA_FOLLOW_KEY = "cameraFollowToken"; // legacy — kept for backward-compat read
-  const SCENE_MODE_KEY    = "sceneMode";          // new: "none" | "exploration" | "dungeon"
+  const GENERAL_KEY        = "general";
+  const CAMERA_FOLLOW_KEY  = "cameraFollowToken"; // legacy — kept for backward-compat read
+  const SCENE_MODE_KEY     = "sceneMode";          // new: "none" | "exploration" | "dungeon"
+  const SCAN_RADIUS_KEY    = "scanRadius";          // world-unit clamp radius for scan mode
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -512,6 +513,18 @@
             </p>
           </div>
 
+          <div class="form-group">
+            <label>Scan Mode Radius</label>
+            <div class="form-fields">
+              <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_RADIUS_KEY}"
+                     placeholder="600" min="100" max="10000" step="50" />
+            </div>
+            <p class="notes">
+              How far (in world units) the player can pan the camera from the party token while Scan Mode is active.
+              Only applies to <b>Dungeon</b> scene mode. Default: 600.
+            </p>
+          </div>
+
           <p class="notes">Remember: data is saved only when you press <b>Save Changes</b>.</p>
         </div>
 
@@ -651,6 +664,14 @@
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
         sel.value = mode;
+      }
+
+      // Scan radius prefill
+      const radiusInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_RADIUS_KEY}"]`);
+      if (radiusInput) {
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${SCAN_RADIUS_KEY}`, "");
+        const n = Number(raw);
+        radiusInput.value = (Number.isFinite(n) && n > 0) ? String(n) : "";
       }
     } catch (e) {
       warn("General prefill failed:", e);

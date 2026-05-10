@@ -1,16 +1,23 @@
 // ============================================================================
-// Dungeon Pathing System — Scan Mode
+// Dungeon Pathing System — Scan Mode + Camera Lock
 //
-// During standby phase a circular "🔍" button is anchored to the bottom-left
-// of the viewport (position:fixed HTML overlay).
+// Camera behaviour while dungeon pathing is active (player clients only):
 //
-// Viewport rules while dungeon pathing is active (player clients only):
-//   Scan mode OFF : viewport is locked — right-click pan is blocked, camera
-//                   snaps back to the party token on each rebuild.
-//   Scan mode ON  : viewport is free — right-click drag pans normally.
-//                   Token left-click drag is still blocked (see dp-bootstrap).
+//   Scan mode OFF (standby / movement):
+//     A PIXI ticker calls canvas.pan() every frame to hard-lock the viewport
+//     on the party token.  As the token moves during a turn the camera follows
+//     it in real-time — no additional wiring needed.
 //
-// Exit scan mode by clicking the button again or pressing ESC.
+//   Scan mode ON (user toggled via 🔍 button or keyboard):
+//     The ticker switches to clamp mode.  Right-click drag pans normally but
+//     the pivot is clamped within a configurable world-unit radius around the
+//     token center.  Exiting scan mode snaps the camera back and re-engages
+//     the hard lock.
+//
+// Scan radius is saved per scene (Fabula Configuration → General → Scan Mode
+// Radius).  Default: DP.UI.SCAN_BUTTON.DEFAULT_RADIUS world units.
+//
+// Exit scan mode: click the 🔍 button again or press ESC.
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing ??= {};
@@ -71,27 +78,21 @@
   border-color: rgba(100,170,255,0.75);
   color: #a8d8ff;
 }
-#oni-dp-scan-btn:hover {
-  filter: brightness(1.15);
-}
-#oni-dp-scan-btn:active {
-  filter: brightness(0.9);
-  transform: scale(0.94);
-}
+#oni-dp-scan-btn:hover { filter: brightness(1.15); }
+#oni-dp-scan-btn:active { filter: brightness(0.9); transform: scale(0.94); }
     `;
     document.head.appendChild(s);
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let _btn             = null;
-  let _scanning        = false;
-  let _escHandler      = null;
-  let _rightClickBlock = null;  // pointerdown capture handler
-  let _ctxMenuBlock    = null;  // contextmenu capture handler
+  let _btn        = null;
+  let _scanning   = false;
+  let _tickerFn   = null;
+  let _escHandler = null;
 
-  // ── Config ─────────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────────
   function cfg() {
-    return DP.UI?.SCAN_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 20, FONT_SIZE: "28px" };
+    return DP.UI?.SCAN_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 20, FONT_SIZE: "28px", DEFAULT_RADIUS: 600 };
   }
 
   function isGM() {
@@ -102,69 +103,84 @@
     return !!globalThis.__ONI_DUNGEON_PATHING__?.state?.active;
   }
 
-  // ── Camera helpers ─────────────────────────────────────────────────────────
   function getPartyToken() {
     return globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
   }
 
-  function snapCameraToToken() {
+  function getTokenCenter() {
     const token = getPartyToken();
-    if (!token || !canvas?.ready) return;
+    if (!token) return null;
     const gSize = Number(canvas?.grid?.size ?? 100) || 100;
     const tw = Number(token.w ?? (Number(token.document?.width  ?? 1) * gSize));
     const th = Number(token.h ?? (Number(token.document?.height ?? 1) * gSize));
-    const cx = Number(token.document.x) + tw / 2;
-    const cy = Number(token.document.y) + th / 2;
-    canvas.animatePan({ x: cx, y: cy, duration: 600 });
+    return {
+      x: Number(token.document.x) + tw / 2,
+      y: Number(token.document.y) + th / 2,
+    };
   }
 
-  // ── Viewport lock ──────────────────────────────────────────────────────────
-  // Blocks right-click pan on the canvas whenever dungeon mode is active AND
-  // scan mode is NOT active.  GM clients are always exempt.
-
-  function getCanvasView() {
-    return canvas?.app?.view
-        ?? canvas?.app?.renderer?.view
-        ?? document.querySelector("#board canvas");
+  function getScanRadius() {
+    const raw = canvas?.scene?.flags?.[DP.MODULE_ID]?.[DP.FABULA_ROOT_KEY]
+                  ?.[DP.GENERAL_KEY]?.[DP.PATHING_SCAN_RADIUS_KEY];
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : (cfg().DEFAULT_RADIUS ?? 600);
   }
 
-  function installViewportLock() {
-    if (_rightClickBlock) return;
+  function snapCameraToToken() {
+    const center = getTokenCenter();
+    if (!center || !canvas?.ready) return;
+    canvas.animatePan({ x: center.x, y: center.y, duration: 600 });
+  }
 
-    const view = getCanvasView();
-    if (!view) return;
+  // ── PIXI Ticker — core camera lock ─────────────────────────────────────────
+  // The ticker is the only reliable way to lock the viewport in Foundry:
+  // calling canvas.pan() every frame from a ticker overrides any user input.
 
-    // Block right-click drag (viewport pan) when scan mode is off
-    _rightClickBlock = (ev) => {
-      if (ev.button !== 2) return;
+  function attachTicker() {
+    if (_tickerFn) return;
+    if (!canvas?.app?.ticker) return;
+    if (isGM()) return; // GM is always free to pan
+
+    _tickerFn = () => {
+      if (!canvas?.ready) return;
       if (isGM()) return;
       if (!isDungeonActive()) return;
-      if (_scanning) return; // scan mode ON → allow pan
-      ev.preventDefault();
-      ev.stopPropagation();
+
+      const center = getTokenCenter();
+      if (!center) return;
+
+      const scale = canvas.stage.scale.x;
+
+      if (!_scanning) {
+        // Hard lock: snap pivot to token center every frame
+        canvas.pan({ x: center.x, y: center.y, scale });
+      } else {
+        // Clamp mode: allow free pan but not beyond the scan radius
+        const maxR = getScanRadius();
+        const px   = canvas.stage.pivot.x;
+        const py   = canvas.stage.pivot.y;
+        const dx   = px - center.x;
+        const dy   = py - center.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > maxR) {
+          const ratio = maxR / dist;
+          canvas.pan({ x: center.x + dx * ratio, y: center.y + dy * ratio, scale });
+        }
+      }
     };
 
-    // Block the browser right-click context menu on the canvas too
-    _ctxMenuBlock = (ev) => {
-      if (isGM()) return;
-      if (!isDungeonActive()) return;
-      if (_scanning) return;
-      ev.preventDefault();
-      ev.stopPropagation();
-    };
-
-    view.addEventListener("pointerdown",  _rightClickBlock, { capture: true });
-    view.addEventListener("contextmenu",  _ctxMenuBlock,    { capture: true });
+    canvas.app.ticker.add(_tickerFn);
+    console.debug(TAG, "Camera lock ticker attached.");
   }
 
-  function removeViewportLock() {
-    const view = getCanvasView();
-    if (view) {
-      if (_rightClickBlock) view.removeEventListener("pointerdown",  _rightClickBlock, true);
-      if (_ctxMenuBlock)    view.removeEventListener("contextmenu",  _ctxMenuBlock,    true);
-    }
-    _rightClickBlock = null;
-    _ctxMenuBlock    = null;
+  function detachTicker() {
+    try {
+      if (_tickerFn && canvas?.app?.ticker) {
+        canvas.app.ticker.remove(_tickerFn);
+      }
+    } catch {}
+    _tickerFn = null;
+    console.debug(TAG, "Camera lock ticker detached.");
   }
 
   // ── Scan mode on/off ───────────────────────────────────────────────────────
@@ -173,7 +189,7 @@
     _scanning = true;
     _btn?.classList.add("dp-scan-active");
     if (_btn) _btn.title = "Exit Scan Mode (ESC)";
-    console.debug(TAG, "Scan mode ON — free pan enabled.");
+    console.debug(TAG, "Scan mode ON — clamp pan active.");
   }
 
   function exitScan() {
@@ -181,7 +197,7 @@
     _scanning = false;
     _btn?.classList.remove("dp-scan-active");
     if (_btn) _btn.title = "Scan Mode — explore the map";
-    snapCameraToToken();
+    snapCameraToToken(); // animate back; ticker will then hard-lock
     console.debug(TAG, "Scan mode OFF — viewport returned to token.");
   }
 
@@ -211,12 +227,7 @@
   // ── Button lifecycle ───────────────────────────────────────────────────────
   function show() {
     injectStyles();
-    installViewportLock();
-
-    // Snap camera to token on every standby start (unless player is scanning)
-    if (!_scanning && !isGM()) snapCameraToToken();
-
-    if (_btn) return; // button already visible
+    if (_btn) return; // already visible
 
     const c = cfg();
     const btn = document.createElement("div");
@@ -240,23 +251,21 @@
     document.body.appendChild(btn);
     _btn = btn;
     installEsc();
-
     requestAnimationFrame(() => btn.classList.add("dp-scan-visible"));
   }
 
   function hide() {
-    // Quietly clear scan state — no camera snap (snap is user-initiated only).
+    // Cancel scan state without snapping (ticker stays attached; camera
+    // transitions back to locked mode naturally on the next frame).
     if (_scanning) {
       _scanning = false;
       _btn?.classList.remove("dp-scan-active");
     }
     removeEsc();
-    removeViewportLock();
 
     if (!_btn) return;
     const btn = _btn;
     _btn = null;
-
     btn.classList.remove("dp-scan-visible");
     setTimeout(() => btn.remove(), 280);
   }
@@ -264,6 +273,8 @@
   // ── Public API ─────────────────────────────────────────────────────────────
   DP.ScanMode = {
     get active() { return _scanning; },
+    attachTicker,
+    detachTicker,
     show,
     hide,
     toggle,

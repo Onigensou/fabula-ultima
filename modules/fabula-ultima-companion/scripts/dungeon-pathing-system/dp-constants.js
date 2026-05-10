@@ -95,12 +95,16 @@
 
     // Scan Mode button (HTML DOM, fixed to viewport)
     SCAN_BUTTON: {
-      SIZE:      64,        // diameter in px
-      BOTTOM:    80,        // px from bottom of viewport
-      LEFT:      20,        // px from left of viewport
-      FONT_SIZE: "28px",    // emoji size
+      SIZE:           64,    // diameter in px
+      BOTTOM:         80,    // px from bottom of viewport
+      LEFT:           20,    // px from left of viewport
+      FONT_SIZE:      "28px", // emoji size
+      DEFAULT_RADIUS: 600,   // world units — fallback when scene flag is unset
     },
   };
+
+  // Flag key for per-scene scan radius (read by dp-scan-mode.js)
+  DP.PATHING_SCAN_RADIUS_KEY = "scanRadius";
 
   // Convenience aliases kept for backward compatibility with movement.js
   // (DP.TOKEN_OFFSET is read directly from DP.UI.TOKEN_OFFSET at runtime)
