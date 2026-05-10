@@ -7,6 +7,22 @@
   const DP = globalThis.DungeonPathing ??= {};
 
   DP.Events = {
+    /**
+     * Fired when the graph is ready and the system is waiting for the player
+     * to choose a destination tile.  This is the "standby" phase.
+     */
+    standbyStart(tokenDoc, currentNode, neighborNodes) {
+      Hooks.callAll(DP.HOOKS.STANDBY_START, { tokenDoc, currentNode, neighborNodes });
+    },
+
+    /**
+     * Fired when the player has chosen a tile and movement is about to begin,
+     * ending the standby phase.
+     */
+    standbyEnd(tokenDoc, currentNode, chosenNode) {
+      Hooks.callAll(DP.HOOKS.STANDBY_END, { tokenDoc, currentNode, chosenNode });
+    },
+
     /** Fired at the start of a player's movement turn. */
     turnStart(tokenDoc, currentNode) {
       Hooks.callAll(DP.HOOKS.TURN_START, { tokenDoc, currentNode });

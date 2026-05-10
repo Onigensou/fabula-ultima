@@ -125,6 +125,7 @@
   "scripts/dungeon-pathing-system/tile-events/tile-event-blank.js",
   "scripts/dungeon-pathing-system/tile-events/tile-event-random-battle.js",
   "scripts/dungeon-pathing-system/tile-events/tile-event-treasure.js",
+  "scripts/dungeon-pathing-system/dp-scan-mode.js",
   "scripts/dungeon-pathing-system/dp-bootstrap.js",
   "scripts/check-roller/checkRoller-manager.js",
   "scripts/check-roller/checkRoller-core.js",

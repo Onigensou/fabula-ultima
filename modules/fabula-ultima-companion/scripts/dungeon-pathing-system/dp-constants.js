@@ -17,6 +17,8 @@
   });
 
   DP.HOOKS = Object.freeze({
+    STANDBY_START:   "dungeonPathing.standbyStart",
+    STANDBY_END:     "dungeonPathing.standbyEnd",
     TURN_START:      "dungeonPathing.turnStart",
     TOKEN_MOVED:     "dungeonPathing.tokenMoved",
     TURN_CONFIRMED:  "dungeonPathing.turnConfirmed",
@@ -89,6 +91,14 @@
       COLOR: 0xffd966,      // golden yellow
       ALPHA: 0.22,
       CORNER_R: 6,          // rounded-rect corner radius in world units
+    },
+
+    // Scan Mode button (HTML DOM, fixed to viewport)
+    SCAN_BUTTON: {
+      SIZE:      64,        // diameter in px
+      BOTTOM:    80,        // px from bottom of viewport
+      LEFT:      20,        // px from left of viewport
+      FONT_SIZE: "28px",    // emoji size
     },
   };
 

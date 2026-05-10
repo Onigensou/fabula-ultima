@@ -121,6 +121,10 @@
     DP.Overlay.clearHover?.();
     DP.Events.graphRebuilt(graph, token);
 
+    // Enter standby: system is ready, waiting for the player to pick a tile.
+    DP.Events.standbyStart(token.document, currentNode, neighbors);
+    DP.ScanMode?.show();
+
     console.debug(TAG, "Graph ready →", currentNode.name, `(${neighbors.length} neighbour(s))`);
     return true;
   }
@@ -205,6 +209,10 @@
 
     ev.preventDefault();
     ev.stopPropagation();
+
+    // Standby ends — player has chosen a destination.
+    DP.Events.standbyEnd(token.document, state.currentNode, clicked);
+    DP.ScanMode?.hide();
 
     state.busy = true;
     DP.HelperMode.hide();
@@ -325,6 +333,7 @@
     removeHoverHandler();
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
+    DP.ScanMode?.hide();
     DP.ConfirmDialog?.forceClose?.();
     console.debug(TAG, "Deactivated.");
   }
