@@ -211,7 +211,8 @@
     ev.stopPropagation();
 
     // Standby ends — player has chosen a destination.
-    DP.Events.standbyEnd(token.document, state.currentNode, clicked);
+    // NOTE: use state.partyToken here; const token is declared later in this scope.
+    DP.Events.standbyEnd(state.partyToken?.document, state.currentNode, clicked);
     DP.ScanMode?.hide();
 
     state.busy = true;

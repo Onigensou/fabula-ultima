@@ -147,6 +147,11 @@
   }
 
   // ── Button lifecycle ───────────────────────────────────────────────────────
+  /**
+   * Remove the scan button from the DOM.
+   * Does NOT snap the camera — snap only happens when the user explicitly
+   * exits scan mode (button click or ESC) via exitScan().
+   */
   function show() {
     injectStyles();
     if (_btn) return; // already visible
@@ -179,14 +184,17 @@
   }
 
   function hide() {
-    // Exit scan mode first (snaps camera back)
-    if (_scanning) exitScan();
+    // Quietly clear scan state without snapping the camera.
+    // Camera snap only happens when the user explicitly exits via the button or ESC.
+    if (_scanning) {
+      _scanning = false;
+      _btn?.classList.remove("dp-scan-active");
+    }
     removeEsc();
 
     if (!_btn) return;
     const btn = _btn;
     _btn = null;
-    _scanning = false;
 
     btn.classList.remove("dp-scan-visible");
     setTimeout(() => btn.remove(), 280);

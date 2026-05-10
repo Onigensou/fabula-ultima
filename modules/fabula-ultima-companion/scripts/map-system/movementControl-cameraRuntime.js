@@ -32,6 +32,7 @@
   const FABULA_ROOT_KEY = "oniFabula";
   const GENERAL_KEY = "general";
   const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const SCENE_MODE_KEY    = "sceneMode";
 
   const WORLD_LOCK_SCOPE = "world";
   const WORLD_LOCK_KEY = "oniMovementControlCameraLocked";
@@ -141,6 +142,15 @@
 
   function getSceneCameraFollowEnabled(scene) {
     const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+
+    // sceneMode takes precedence over the legacy cameraFollowToken boolean.
+    // Dungeon mode explicitly disables camera follow (and right-click movement).
+    const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (sceneMode === "dungeon")     return false;
+    if (sceneMode === "exploration") return true;
+    if (sceneMode === "none")        return false;
+
+    // Legacy fallback: read the old boolean flag directly.
     const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     return normalizeBoolean(raw, false);
   }
