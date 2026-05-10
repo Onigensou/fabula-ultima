@@ -151,6 +151,99 @@
   }
 
     // --------------------------------------------------------------------------
+  // Sub-item helpers (CSB itemContainer linkage)
+  // --------------------------------------------------------------------------
+  //
+  // CSB links a child item to its parent via `child.system.container = parent.id`
+  // (see CustomItem.items getter). An itemContainer component on the parent
+  // (e.g. `related_item_list` on the _Item Template) shows those children and
+  // stores per-row column data at `parent.system.props.<containerKey>[childId]`.
+  //
+  // When we clone a parent across actors, the children don't follow and the
+  // container rows on the new parent point at sender-side ids. The helpers
+  // below find the children, clone them onto the receiver with the
+  // container link rewritten to the new parent id, and re-key the parent's
+  // itemContainer prop dicts old-id → new-id.
+
+  /**
+   * Direct children of `parentItem` in whichever collection it lives in.
+   * For an actor-owned parent that's `parent.parent.items`; for a world
+   * item it's `game.items`. We only handle one level of nesting — recursive
+   * containers can be added later if needed.
+   */
+  function getSourceChildItems(parentItem) {
+    if (!parentItem?.id) return [];
+    const collection = parentItem.parent?.items ?? game.items;
+    if (!collection) return [];
+    const list = collection.contents ?? Array.from(collection);
+    return list.filter((i) => i?.system?.container === parentItem.id);
+  }
+
+  /**
+   * Re-key any object-shaped prop on `parentItem.system.props` whose row
+   * keys match an entry in `idMap` (old child id → new child id). Only
+   * touches props where at least one key actually maps; others are left
+   * alone. Done as delete-then-set to avoid Foundry's mergeObject merging
+   * the renamed row dict with the original.
+   */
+  async function rekeyItemContainerProps(parentItem, idMap) {
+    const oldIds = Object.keys(idMap);
+    if (!oldIds.length) return;
+    const oldIdSet = new Set(oldIds);
+    const props = parentItem.system?.props ?? {};
+    const deletes = {};
+    const sets = {};
+    for (const [propKey, propValue] of Object.entries(props)) {
+      if (!propValue || typeof propValue !== "object" || Array.isArray(propValue)) continue;
+      const rowKeys = Object.keys(propValue);
+      if (!rowKeys.some((k) => oldIdSet.has(k))) continue;
+      const rekeyed = {};
+      for (const [rowKey, rowData] of Object.entries(propValue)) {
+        rekeyed[idMap[rowKey] ?? rowKey] = rowData;
+      }
+      deletes[`-=${propKey}`] = null;
+      sets[propKey] = rekeyed;
+    }
+    if (!Object.keys(sets).length) return;
+    await parentItem.update({ system: { props: deletes } });
+    await parentItem.update({ system: { props: sets } });
+  }
+
+  /**
+   * Clone `childItems` onto `receiverActor`, rewriting `system.container` on
+   * each clone to point at `receiverParent.id`, then rekey the new parent's
+   * itemContainer prop dicts. Returns the old-id → new-id map.
+   */
+  async function cloneChildrenToReceiver(childItems, receiverActor, receiverParent) {
+    if (!childItems.length || !receiverActor || !receiverParent?.id) return {};
+    const cloneData = childItems.map((c) => {
+      const data = c.toObject();
+      delete data._id;
+      data.system = data.system ?? {};
+      data.system.container = receiverParent.id;
+      return data;
+    });
+    const created = await receiverActor.createEmbeddedDocuments("Item", cloneData);
+    const idMap = {};
+    childItems.forEach((c, i) => {
+      const newId = created[i]?.id;
+      if (c.id && newId) idMap[c.id] = newId;
+    });
+    await rekeyItemContainerProps(receiverParent, idMap);
+    return idMap;
+  }
+
+  /**
+   * Delete `childItems` from `senderActor` (only after a full transfer
+   * where the parent itself was deleted on the sender side).
+   */
+  async function deleteChildrenFromSender(childItems, senderActor) {
+    if (!childItems.length || !senderActor) return;
+    const ids = childItems.map((i) => i.id).filter(Boolean);
+    if (ids.length) await senderActor.deleteEmbeddedDocuments("Item", ids);
+  }
+
+    // --------------------------------------------------------------------------
   // Transfer Card UI (multi-client emit helpers)
   // --------------------------------------------------------------------------
 
@@ -422,6 +515,13 @@
     // 1) Update sender: decrease quantity or delete item
     const senderRemaining = senderCurrentQty - transferQty;
 
+    // Snapshot sender-side children BEFORE deleting the parent — once the
+    // parent is gone we'd lose the system.container linkage we use to find
+    // them. Only relevant for full transfers (senderRemaining === 0).
+    const childItemsToMove = senderRemaining <= 0
+      ? getSourceChildItems(sourceItem)
+      : [];
+
     if (senderRemaining > 0) {
       await sourceItem.update(makeQuantityUpdate(senderRemaining));
       console.log("[ItemTransferCore] Updated sender item quantity.", {
@@ -442,6 +542,7 @@
     const stackTarget = findStackableItemOnActor(receiverActor, sourceItem);
     let receiverItemUuid = null;
     let receiverNewQty = null;
+    let createdParent = null;
 
     if (stackTarget) {
       const receiverCurrentQty = getItemQuantity(stackTarget);
@@ -464,8 +565,8 @@
       itemData.system.props.item_quantity = transferQty;
 
       const created = await receiverActor.createEmbeddedDocuments("Item", [itemData]);
-      const createdItem = created[0];
-      receiverItemUuid = createdItem.uuid;
+      createdParent = created[0];
+      receiverItemUuid = createdParent.uuid;
       receiverNewQty = transferQty;
 
       console.log("[ItemTransferCore] Created new receiver item with transferred quantity.", {
@@ -473,6 +574,22 @@
         itemUuid: receiverItemUuid,
         qty: receiverNewQty
       });
+    }
+
+    // 3) Carry sub-items along on a full transfer that minted a fresh
+    // receiver item. Stacking onto an existing target is skipped — that
+    // target already has its own children. Partial transfers
+    // (senderRemaining > 0) are also skipped: the sender keeps the parent
+    // and its children, and we don't duplicate them on the receiver.
+    if (createdParent && childItemsToMove.length) {
+      const idMap = await cloneChildrenToReceiver(childItemsToMove, receiverActor, createdParent);
+      console.log("[ItemTransferCore] Cloned sub-items to receiver.", {
+        receiverActorUuid: receiverActor.uuid,
+        parentUuid: createdParent.uuid,
+        count: childItemsToMove.length,
+        idMap
+      });
+      await deleteChildrenFromSender(childItemsToMove, senderActor);
     }
 
        const result = {
@@ -735,6 +852,7 @@
     const stackTarget = findStackableItemOnActor(receiverActor, templateItem);
     let receiverItemUuid = null;
     let receiverNewQty = null;
+    let createdParent = null;
 
     if (stackTarget) {
       const receiverCurrentQty = getItemQuantity(stackTarget);
@@ -757,8 +875,8 @@
       itemData.system.props.item_quantity = grantQty;
 
       const created = await receiverActor.createEmbeddedDocuments("Item", [itemData]);
-      const createdItem = created[0];
-      receiverItemUuid = createdItem.uuid;
+      createdParent = created[0];
+      receiverItemUuid = createdParent.uuid;
       receiverNewQty = grantQty;
 
       console.log("[ItemTransferCore] Created new receiver item from template (gmToActor).", {
@@ -766,6 +884,22 @@
         itemUuid: receiverItemUuid,
         qty: receiverNewQty
       });
+    }
+
+    // Carry sub-items along — only when we minted a fresh receiver item.
+    // For gmToActor the source is not consumed, so we never delete from
+    // the source side; we just clone children onto the receiver.
+    if (createdParent) {
+      const childItemsToCopy = getSourceChildItems(templateItem);
+      if (childItemsToCopy.length) {
+        const idMap = await cloneChildrenToReceiver(childItemsToCopy, receiverActor, createdParent);
+        console.log("[ItemTransferCore] Cloned sub-items from template to receiver.", {
+          receiverActorUuid: receiverActor.uuid,
+          parentUuid: createdParent.uuid,
+          count: childItemsToCopy.length,
+          idMap
+        });
+      }
     }
 
         const result = {
@@ -869,11 +1003,21 @@
         newQty: senderRemaining
       });
     } else {
+      // Snapshot children before the parent's deletion breaks the
+      // system.container linkage we use to find them.
+      const childItemsToRemove = getSourceChildItems(sourceItem);
       await senderActor.deleteEmbeddedDocuments("Item", [sourceItem.id]);
       console.log("[ItemTransferCore] Deleted sender item (quantity reached 0) in actorToGm.", {
         actorUuid: senderActor.uuid,
         itemId: sourceItem.id
       });
+      if (childItemsToRemove.length) {
+        await deleteChildrenFromSender(childItemsToRemove, senderActor);
+        console.log("[ItemTransferCore] Deleted sender sub-items along with parent (actorToGm).", {
+          actorUuid: senderActor.uuid,
+          count: childItemsToRemove.length
+        });
+      }
     }
 
     return {
