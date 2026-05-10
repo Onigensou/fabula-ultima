@@ -38,8 +38,9 @@
   }
 
   function containsPoint(bounds, pt) {
-    return N(pt?.x) >= N(bounds?.left) && N(pt?.x) <= N(bounds?.right)
-        && N(pt?.y) >= N(bounds?.top)  && N(pt?.y) <= N(bounds?.bottom);
+    const px = N(pt?.x), py = N(pt?.y);
+    return px >= N(bounds?.left) && px <= N(bounds?.right)
+        && py >= N(bounds?.top)  && py <= N(bounds?.bottom);
   }
 
   function nearestNode(point, nodes, maxDist = null) {
@@ -170,10 +171,9 @@
         containing.sort((a, b) => N(a.width) * N(a.height) - N(b.width) * N(b.height));
         return containing[0];
       }
-      const t = threshold ?? Math.max(120, getGridSize());
-      return nearestNode(point, nodes, t)?.accepted
-        ? nearestNode(point, nodes, t).node
-        : null;
+      const t    = threshold ?? Math.max(120, getGridSize());
+      const hit  = nearestNode(point, nodes, t);
+      return hit?.accepted ? hit.node : null;
     },
 
     /** Get neighbour node objects for a given node ID. */

@@ -87,11 +87,12 @@
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let _scanBtn    = null;   // 🔍 DOM element
-  let _helperBtn  = null;   // 🗺️ DOM element
-  let _scanning   = false;
-  let _tickerFn   = null;
-  let _escHandler = null;
+  let _scanBtn       = null;   // 🔍 DOM element
+  let _helperBtn     = null;   // 🗺️ DOM element
+  let _scanning      = false;
+  let _cameraSettled = false;  // true once pivot is within 1wu of token and no pan needed
+  let _tickerFn      = null;
+  let _escHandler    = null;
 
   // ── Config helpers ─────────────────────────────────────────────────────────
   function cfgScan() {
@@ -146,6 +147,7 @@
     if (_tickerFn) return;
     if (!canvas?.app?.ticker) return;
     if (isGM()) return; // GM is always free to pan
+    _cameraSettled = false; // force one snap on attach (new scene / first load)
 
     _tickerFn = () => {
       if (!canvas?.ready) return;
@@ -159,27 +161,36 @@
 
       if (!_scanning) {
         // Smooth follow: lerp pivot toward token center each frame.
-        // Snaps when already within 1 world unit to avoid infinite micro-drift.
-        const lerp = DP.UI?.CAMERA?.LERP ?? 0.25;
-        const px   = canvas.stage.pivot.x;
-        const py   = canvas.stage.pivot.y;
-        const dx   = center.x - px;
-        const dy   = center.y - py;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist <= 1) {
-          canvas.pan({ x: center.x, y: center.y, scale });
+        // Once settled (within 1wu), skip canvas.pan() entirely — avoids firing
+        // the canvasPan hook 60×/s when nothing has changed.
+        const px = canvas.stage.pivot.x;
+        const py = canvas.stage.pivot.y;
+        const dx = center.x - px;
+        const dy = center.y - py;
+        // Use squared distance to avoid sqrt in the common settled case.
+        const dSq = dx * dx + dy * dy;
+        if (dSq <= 1) {
+          if (!_cameraSettled) {
+            canvas.pan({ x: center.x, y: center.y, scale });
+            _cameraSettled = true;
+          }
+          // else: already snapped — nothing to do this frame
         } else {
+          _cameraSettled = false;
+          const lerp = DP.UI?.CAMERA?.LERP ?? 0.25;
           canvas.pan({ x: px + dx * lerp, y: py + dy * lerp, scale });
         }
       } else {
-        // Clamp mode: allow free pan but not beyond the scan radius
-        const maxR = getScanRadius();
-        const px   = canvas.stage.pivot.x;
-        const py   = canvas.stage.pivot.y;
-        const dx   = px - center.x;
-        const dy   = py - center.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > maxR) {
+        // Clamp mode: allow free pan but not beyond the scan radius.
+        // Compare squared distances to skip sqrt when inside the radius.
+        const maxR  = getScanRadius();
+        const px    = canvas.stage.pivot.x;
+        const py    = canvas.stage.pivot.y;
+        const dx    = px - center.x;
+        const dy    = py - center.y;
+        const dSq   = dx * dx + dy * dy;
+        if (dSq > maxR * maxR) {
+          const dist  = Math.sqrt(dSq);
           const ratio = maxR / dist;
           canvas.pan({ x: center.x + dx * ratio, y: center.y + dy * ratio, scale });
         }
@@ -204,6 +215,7 @@
   function enterScan() {
     if (_scanning) return;
     _scanning = true;
+    _cameraSettled = false; // pivot will drift; re-evaluate every frame until re-locked
     _scanBtn?.classList.add("dp-scan-active");
     if (_scanBtn) _scanBtn.title = "Exit Scan Mode (ESC)";
     DP.Sound?.playScanOn?.();
@@ -213,6 +225,7 @@
   function exitScan() {
     if (!_scanning) return;
     _scanning = false;
+    _cameraSettled = false; // pivot is away from token; must lerp back
     _scanBtn?.classList.remove("dp-scan-active");
     if (_scanBtn) _scanBtn.title = "Scan Mode — explore the map";
     DP.Sound?.playScanOff?.();

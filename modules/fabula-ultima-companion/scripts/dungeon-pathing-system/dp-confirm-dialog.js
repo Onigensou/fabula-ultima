@@ -161,14 +161,15 @@
   /**
    * Convert a world-space point to client (viewport) px using the PIXI stage
    * worldTransform.  Matches actual rendered position at any zoom/pan.
+   * Accepts a pre-computed canvas rect to avoid getBoundingClientRect() each frame.
    */
-  function worldToClient(worldX, worldY) {
-    const t    = canvas?.stage?.worldTransform;
+  function worldToClient(worldX, worldY, cachedRect) {
+    const t = canvas?.stage?.worldTransform;
     if (!t) return { x: 0, y: 0 };
     const rx   = t.a * worldX + t.c * worldY + t.tx;
     const ry   = t.b * worldX + t.d * worldY + t.ty;
     const el   = canvas?.app?.view ?? canvas?.app?.renderer?.view;
-    const rect = el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
+    const rect = cachedRect ?? el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
     const elW  = el?.width  || rect.width  || 1;
     const elH  = el?.height || rect.height || 1;
     return {
@@ -178,7 +179,7 @@
   }
 
   /** Position the panel each RAF frame so it tracks token through pan/zoom. */
-  function trackPosition(panel, token) {
+  function trackPosition(panel, token, cachedRect) {
     const cfg = DP.UI?.BUTTON ?? { WIDTH: 130, HEIGHT: 42, GAP: 5, OFFSET_X: 14 };
 
     const docX = Number(token.document?.x ?? 0);
@@ -187,12 +188,7 @@
     const tokH = Number(token.h ?? token.document?.height * (canvas?.grid?.size ?? 100) ?? 100);
 
     // Anchor point: right edge of token, vertically centred
-    const anchorWorld = {
-      x: docX + tokW,
-      y: docY + tokH / 2,
-    };
-    const anchorClient = worldToClient(anchorWorld.x, anchorWorld.y);
-
+    const anchorClient = worldToClient(docX + tokW, docY + tokH / 2, cachedRect);
     const panelH = cfg.HEIGHT * 2 + cfg.GAP;
 
     panel.style.left = `${Math.round(anchorClient.x + cfg.OFFSET_X)}px`;
@@ -201,9 +197,20 @@
 
   function startTracking(panel, token) {
     if (_rafId) cancelAnimationFrame(_rafId);
+
+    // Cache the canvas element's bounding rect — it only changes on window resize,
+    // not on pan/zoom.  Avoids a potential reflow on every RAF frame.
+    const el = canvas?.app?.view ?? canvas?.app?.renderer?.view;
+    let _rect = el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
+    const onResize = () => { _rect = el?.getBoundingClientRect?.() ?? _rect; };
+    window.addEventListener("resize", onResize, { passive: true });
+
     function tick() {
-      if (!_panel) return;
-      trackPosition(panel, token);
+      if (!_panel) {
+        window.removeEventListener("resize", onResize);
+        return;
+      }
+      trackPosition(panel, token, _rect);
       _rafId = requestAnimationFrame(tick);
     }
     _rafId = requestAnimationFrame(tick);
