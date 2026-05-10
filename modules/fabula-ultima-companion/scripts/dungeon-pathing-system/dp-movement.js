@@ -103,10 +103,10 @@ try{
         });
 
         await wait(DP.MOVE_MS - DP.REAL_UPDATE_BEFORE_END);
-        await token.document.update({ x: realX, y: realY }, { animate: false });
+        await token.document.update({ x: realX, y: realY }, { animate: false, dungeonPathing: true });
         await wait(DP.REAL_UPDATE_BEFORE_END + DP.REBUILD_AFTER_MOVE_MS);
       } else {
-        await token.document.update({ x: realX, y: realY }, { animate: true });
+        await token.document.update({ x: realX, y: realY }, { animate: true, dungeonPathing: true });
         await wait(DP.REBUILD_AFTER_MOVE_MS);
       }
 
@@ -116,7 +116,7 @@ try{
     /** Revert to a previously saved position (top-left doc coords). */
     async revertToPosition(token, savedPos) {
       if (!token?.document) return;
-      await token.document.update({ x: savedPos.x, y: savedPos.y }, { animate: false });
+      await token.document.update({ x: savedPos.x, y: savedPos.y }, { animate: false, dungeonPathing: true });
       await wait(DP.REBUILD_AFTER_MOVE_MS);
     },
 

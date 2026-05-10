@@ -4,9 +4,11 @@
 // During standby phase a circular "🔍" button is anchored to the bottom-left
 // of the viewport (position:fixed HTML overlay).
 //
-// Inactive (default):  viewport is snapped to the party token.
-// Scan mode ON:        player can freely pan/zoom via right-click drag.
-// Scan mode OFF again: viewport animates back to the party token.
+// Viewport rules while dungeon pathing is active (player clients only):
+//   Scan mode OFF : viewport is locked — right-click pan is blocked, camera
+//                   snaps back to the party token on each rebuild.
+//   Scan mode ON  : viewport is free — right-click drag pans normally.
+//                   Token left-click drag is still blocked (see dp-bootstrap).
 //
 // Exit scan mode by clicking the button again or pressing ESC.
 // ============================================================================
@@ -81,28 +83,88 @@
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let _btn       = null;
-  let _scanning  = false;
-  let _escHandler = null;
+  let _btn             = null;
+  let _scanning        = false;
+  let _escHandler      = null;
+  let _rightClickBlock = null;  // pointerdown capture handler
+  let _ctxMenuBlock    = null;  // contextmenu capture handler
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  // ── Config ─────────────────────────────────────────────────────────────────
   function cfg() {
     return DP.UI?.SCAN_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 20, FONT_SIZE: "28px" };
   }
 
+  function isGM() {
+    try { return !!game?.user?.isGM; } catch { return false; }
+  }
+
+  function isDungeonActive() {
+    return !!globalThis.__ONI_DUNGEON_PATHING__?.state?.active;
+  }
+
+  // ── Camera helpers ─────────────────────────────────────────────────────────
   function getPartyToken() {
     return globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
   }
 
   function snapCameraToToken() {
     const token = getPartyToken();
-    if (!token) return;
+    if (!token || !canvas?.ready) return;
     const gSize = Number(canvas?.grid?.size ?? 100) || 100;
     const tw = Number(token.w ?? (Number(token.document?.width  ?? 1) * gSize));
     const th = Number(token.h ?? (Number(token.document?.height ?? 1) * gSize));
     const cx = Number(token.document.x) + tw / 2;
     const cy = Number(token.document.y) + th / 2;
     canvas.animatePan({ x: cx, y: cy, duration: 600 });
+  }
+
+  // ── Viewport lock ──────────────────────────────────────────────────────────
+  // Blocks right-click pan on the canvas whenever dungeon mode is active AND
+  // scan mode is NOT active.  GM clients are always exempt.
+
+  function getCanvasView() {
+    return canvas?.app?.view
+        ?? canvas?.app?.renderer?.view
+        ?? document.querySelector("#board canvas");
+  }
+
+  function installViewportLock() {
+    if (_rightClickBlock) return;
+
+    const view = getCanvasView();
+    if (!view) return;
+
+    // Block right-click drag (viewport pan) when scan mode is off
+    _rightClickBlock = (ev) => {
+      if (ev.button !== 2) return;
+      if (isGM()) return;
+      if (!isDungeonActive()) return;
+      if (_scanning) return; // scan mode ON → allow pan
+      ev.preventDefault();
+      ev.stopPropagation();
+    };
+
+    // Block the browser right-click context menu on the canvas too
+    _ctxMenuBlock = (ev) => {
+      if (isGM()) return;
+      if (!isDungeonActive()) return;
+      if (_scanning) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+    };
+
+    view.addEventListener("pointerdown",  _rightClickBlock, { capture: true });
+    view.addEventListener("contextmenu",  _ctxMenuBlock,    { capture: true });
+  }
+
+  function removeViewportLock() {
+    const view = getCanvasView();
+    if (view) {
+      if (_rightClickBlock) view.removeEventListener("pointerdown",  _rightClickBlock, true);
+      if (_ctxMenuBlock)    view.removeEventListener("contextmenu",  _ctxMenuBlock,    true);
+    }
+    _rightClickBlock = null;
+    _ctxMenuBlock    = null;
   }
 
   // ── Scan mode on/off ───────────────────────────────────────────────────────
@@ -147,14 +209,14 @@
   }
 
   // ── Button lifecycle ───────────────────────────────────────────────────────
-  /**
-   * Remove the scan button from the DOM.
-   * Does NOT snap the camera — snap only happens when the user explicitly
-   * exits scan mode (button click or ESC) via exitScan().
-   */
   function show() {
     injectStyles();
-    if (_btn) return; // already visible
+    installViewportLock();
+
+    // Snap camera to token on every standby start (unless player is scanning)
+    if (!_scanning && !isGM()) snapCameraToToken();
+
+    if (_btn) return; // button already visible
 
     const c = cfg();
     const btn = document.createElement("div");
@@ -179,18 +241,17 @@
     _btn = btn;
     installEsc();
 
-    // Trigger entrance animation on next paint
     requestAnimationFrame(() => btn.classList.add("dp-scan-visible"));
   }
 
   function hide() {
-    // Quietly clear scan state without snapping the camera.
-    // Camera snap only happens when the user explicitly exits via the button or ESC.
+    // Quietly clear scan state — no camera snap (snap is user-initiated only).
     if (_scanning) {
       _scanning = false;
       _btn?.classList.remove("dp-scan-active");
     }
     removeEsc();
+    removeViewportLock();
 
     if (!_btn) return;
     const btn = _btn;
@@ -207,5 +268,6 @@
     hide,
     toggle,
     exitScan,
+    snapCameraToToken,
   };
 })();

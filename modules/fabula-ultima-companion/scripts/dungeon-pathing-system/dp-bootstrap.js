@@ -380,6 +380,18 @@
       state.hookIds.push([hookName, id]);
     });
 
+    // Block token drag (left-click drag-drop) while dungeon mode is active.
+    // Allows only updates flagged dungeonPathing:true (from dp-movement.js).
+    // GM clients are exempt so the GM can still manually correct positions.
+    Hooks.on("preUpdateToken", (tokenDoc, change, options) => {
+      if (!state.active) return;
+      if (game.user?.isGM) return;
+      if (options?.dungeonPathing) return;
+      if (!("x" in change || "y" in change)) return;
+      delete change.x;
+      delete change.y;
+    });
+
     // Sync currentNode across all clients when the party token moves.
     // The local client has state.busy = true during its own turn loop,
     // so this only triggers a rebuild on OTHER clients (GM / spectators).
