@@ -61,10 +61,43 @@
   DP.REAL_UPDATE_BEFORE_END = 90;
   DP.REBUILD_AFTER_MOVE_MS  = 180;
 
-  // Token offset — applied when placing the token on a tile so the
-  // character's feet align with the tile graphic rather than the center.
-  // Increase negative Y to push the token further up.
-  DP.TOKEN_OFFSET = { x: 0, y: -40 };
+  // ── Developer UX Tuning ────────────────────────────────────────────────────
+  // All visual/UX constants live here for easy adjustment without hunting
+  // through individual files. Values are in world-space units unless noted.
+  DP.UI = {
+    // Token offset — shifts where the token document ends up relative to the
+    // tile centre. Negative Y moves the token upward (feet align with tile).
+    TOKEN_OFFSET: { x: 0, y: -20 },
+
+    // Hand-cursor indicator shown on walkable (neighbour) tiles in helper mode
+    CURSOR: {
+      SIZE: 36,             // sprite size in world units
+      EDGE_INSET: 0.35,     // fraction of SIZE pulled back from right edge
+    },
+
+    // Confirm / Go-Back panel (HTML overlay, dimensions in CSS px)
+    BUTTON: {
+      WIDTH:     130,       // px — panel width
+      HEIGHT:    42,        // px — height of each button
+      GAP:       5,         // px — gap between the two buttons
+      OFFSET_X:  14,        // px — panel right offset from token right edge
+      FONT_SIZE: "13px",
+    },
+
+    // Hover highlight drawn over walkable tiles when cursor enters them
+    HOVER_HIGHLIGHT: {
+      COLOR: 0xffd966,      // golden yellow
+      ALPHA: 0.22,
+      CORNER_R: 6,          // rounded-rect corner radius in world units
+    },
+  };
+
+  // Convenience aliases kept for backward compatibility with movement.js
+  // (DP.TOKEN_OFFSET is read directly from DP.UI.TOKEN_OFFSET at runtime)
+  Object.defineProperty(DP, "TOKEN_OFFSET", {
+    get() { return DP.UI.TOKEN_OFFSET; },
+    configurable: true,
+  });
 
   // Helper mode
   DP.HAND_CURSOR_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/23478023.png";

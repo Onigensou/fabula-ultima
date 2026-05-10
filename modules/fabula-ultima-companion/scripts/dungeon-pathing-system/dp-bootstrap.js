@@ -107,6 +107,7 @@
     DP.HelperMode.update(neighbors);
 
     state.lastHoveredNodeId = null; // reset hover tracking after rebuild
+    DP.Overlay.clearHover?.();
     DP.Events.graphRebuilt(graph, token);
 
     console.debug(TAG, "Graph ready →", currentNode.name, `(${neighbors.length} neighbour(s))`);
@@ -150,8 +151,10 @@
       if (hovered && hovered.nodeId !== state.lastHoveredNodeId) {
         state.lastHoveredNodeId = hovered.nodeId;
         DP.Sound.playHover();
-      } else if (!hovered) {
+        DP.Overlay.setHoverNode(hovered);
+      } else if (!hovered && state.lastHoveredNodeId !== null) {
         state.lastHoveredNodeId = null;
+        DP.Overlay.clearHover();
       }
     };
 
@@ -194,6 +197,7 @@
 
     state.busy = true;
     DP.HelperMode.hide();
+    DP.Overlay.clearHover?.();
 
     const fromNode = state.currentNode;
     const token    = state.partyToken;
@@ -309,6 +313,7 @@
     removeClickListener();
     removeHoverHandler();
     DP.HelperMode.deactivate();
+    DP.Overlay.clearHover?.();
     DP.ConfirmDialog?.forceClose?.();
     console.debug(TAG, "Deactivated.");
   }

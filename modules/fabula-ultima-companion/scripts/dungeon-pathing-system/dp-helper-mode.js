@@ -9,8 +9,10 @@
   const DP   = globalThis.DungeonPathing ??= {};
   const TAG  = "[DungeonPathing][HelperMode]";
 
-  // Size of the hand-cursor sprite in canvas pixels
-  const CURSOR_SIZE = 52;
+  // Size read from DP.UI at runtime so the tuning block in dp-constants takes effect
+  function getCursorCfg() {
+    return DP.UI?.CURSOR ?? { SIZE: 36, EDGE_INSET: 0.35 };
+  }
 
   let _container  = null;
   let _texture    = null;
@@ -49,6 +51,8 @@
     root.name  = "ONI DungeonPathing HelperMode";
     root.zIndex = 999998;
 
+    const cfg = getCursorCfg();
+
     for (const node of neighborNodes) {
       // Place the sprite on the right side of the tile, vertically centred
       const sprite = tex
@@ -56,13 +60,13 @@
         : buildFallbackMarker();
 
       if (tex) {
-        sprite.width  = CURSOR_SIZE;
-        sprite.height = CURSOR_SIZE;
+        sprite.width  = cfg.SIZE;
+        sprite.height = cfg.SIZE;
         sprite.anchor.set(0, 0.5); // anchor left-centre
       }
 
       // Position: right edge of tile, vertically centred
-      sprite.x = node.bounds.right  - CURSOR_SIZE * 0.35;
+      sprite.x = node.bounds.right  - cfg.SIZE * cfg.EDGE_INSET;
       sprite.y = node.center.y;
 
       root.addChild(sprite);
