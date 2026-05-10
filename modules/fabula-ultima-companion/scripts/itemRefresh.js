@@ -26,16 +26,224 @@
     return !!(game.user?.isGM || actor?.isOwner);
   }
 
+  // Dynamic-table-style components: their authored content lives on the
+  // component definition itself (`predefinedLines` in the body JSON), NOT in
+  // `template.system.props`. CSB's render-time `_synchronizePredefinedLines`
+  // only adds new lines and merges existing ones — it never overwrites a
+  // row's data with the template's newer values, so authored edits like
+  // changed cell content or removed rows would otherwise stay stale on the
+  // player's copy.
+  const PREDEFINED_LINE_TYPES = new Set([
+    "dynamicTable",
+    "compactDynamicTable" // FU companion extension; same storage as dynamicTable
+  ]);
+
+  // Components whose data DOES live in `template.system.props[key]` and
+  // should be copied verbatim from there. Item-container rows (lists of
+  // referenced items) sit here.
+  const TPL_PROP_TYPES = new Set([
+    "itemContainer"
+  ]);
+
+  // Plain scalar prop keys that are template-authored even though the
+  // component is a textArea/textField/etc. CSB preserves player-edited
+  // scalars by default, which would strand older script content on the
+  // copy. Refresh forces these to follow the template. Add keys as the
+  // skill template grows.
+  const TEMPLATE_OWNED_KEYS = new Set([
+    "custom_logic_action",
+    "custom_logic_resolution"
+  ]);
+
+  function buildPredefinedRows(predefinedLines) {
+    // Materialize predefinedLines (array on body component) into the row-dict
+    // shape CSB stores in entity.system.props[tableKey] — numeric string keys
+    // mapping to row objects. Each line carries its own $predefinedIdx so
+    // CSB's later sync logic can match rows back to their template source.
+    const rows = {};
+    let idx = 0;
+    for (const line of predefinedLines) {
+      if (!line || line.$deleted) continue;
+      rows[String(idx++)] = foundry.utils.deepClone(line);
+    }
+    return rows;
+  }
+
+  async function applyTemplateOwnedOverwrites(item, tpl) {
+    // Use the instantiated component tree rather than walking raw JSON: it
+    // gives us reliable type names via constructor.getTechnicalName() and
+    // exposes `predefinedLines` / `defaultValue` directly on the instance.
+    try { tpl.templateSystem?.prepareData?.(); } catch (e) { /* non-fatal */ }
+    const ts = tpl.templateSystem;
+    const componentMap = {
+      ...(ts?.customHeader?.getComponentMap?.() ?? {}),
+      ...(ts?.customBody?.getComponentMap?.() ?? {})
+    };
+
+    const tplProps = tpl.system?.props ?? {};
+    const overwrites = {};
+
+    for (const [key, comp] of Object.entries(componentMap)) {
+      if (!key) continue;
+      const techName = comp?.constructor?.getTechnicalName?.();
+
+      if (PREDEFINED_LINE_TYPES.has(techName)) {
+        // Two valid authoring patterns for table rows on the master skill:
+        //   a) Opened in applied mode, "+ Add row" → rows live in
+        //      tpl.system.props[key] as {rowIdx: rowObj}.
+        //   b) Opened in builder mode (or template type) → rows live as
+        //      `predefinedLines` on the component definition.
+        // Prefer (a) when present and non-empty, since it represents the
+        // actual authored data on this specific skill.
+        const fromProps = tplProps[key];
+        const propsHasRows = fromProps && typeof fromProps === "object"
+          && !Array.isArray(fromProps) && Object.keys(fromProps).length > 0;
+        if (propsHasRows) {
+          overwrites[key] = foundry.utils.deepClone(fromProps);
+          continue;
+        }
+        const lines = (Array.isArray(comp?.predefinedLines) ? comp.predefinedLines : [])
+          .filter((l) => l && !l.$deleted);
+        if (lines.length) {
+          overwrites[key] = buildPredefinedRows(lines);
+        }
+        // Both sources empty → leave the copy alone, don't wipe its rows.
+        continue;
+      }
+
+      if (TPL_PROP_TYPES.has(techName)) {
+        if (tplProps[key] !== undefined) {
+          overwrites[key] = foundry.utils.deepClone(tplProps[key]);
+        }
+        continue;
+      }
+    }
+
+    // Allowlist scalars (textArea / textField / etc. that are
+    // template-authored rather than player-edited).
+    for (const key of TEMPLATE_OWNED_KEYS) {
+      if (overwrites[key] !== undefined) continue;
+      const fromProps = tplProps[key];
+      if (fromProps !== undefined && fromProps !== null && fromProps !== "") {
+        overwrites[key] = foundry.utils.deepClone(fromProps);
+        continue;
+      }
+      // Fallback: textArea/textField components carry a `defaultValue` on
+      // the body component itself — that's where a script lives if the
+      // template was authored in builder mode.
+      const dv = componentMap[key]?.defaultValue;
+      if (typeof dv === "string" && dv.length) {
+        overwrites[key] = dv;
+      }
+    }
+
+    if (!Object.keys(overwrites).length) return;
+
+    // Phase-1 deletes run in their own update before phase-2 writes.
+    // Without this, Foundry's mergeObject merges numeric-keyed row
+    // sub-objects instead of replacing them, leaving stale rows behind.
+    const deletes = {};
+    const sets = {};
+    for (const [k, v] of Object.entries(overwrites)) {
+      deletes[`-=${k}`] = null;
+      sets[k] = v;
+    }
+    await item.update({ system: { props: deletes } });
+    await item.update({ system: { props: sets } });
+  }
+
+  // FU companion convention:
+  //   system.template = structural definition (e.g. "_Skill Template",
+  //                     an _equippableItemTemplate)
+  //   system.uniqueId = content master for this specific skill (e.g. the
+  //                     world's authored "Protect", an equippableItem)
+  // Refresh pulls structure (body/header/prop schema) from the structural
+  // template via CSB's reloadTemplate, then pulls authored content (table
+  // rows, scripts, active effects) from the per-skill master via custom
+  // sync logic. system.template is left untouched — pointing it at the
+  // master would trigger CSB's "Item template has been deleted" warning,
+  // since CSB only accepts _equippableItemTemplate as a valid template.
+  function resolveRefreshSources(item) {
+    const tplId = item.system?.template;
+    if (!tplId) return null;
+    const tpl = game.items?.get(tplId);
+    if (!tpl) return null;
+
+    let contentSource = tpl;
+    const masterId = item.system?.uniqueId;
+    if (masterId) {
+      const master = game.items?.get(masterId);
+      if (master && master.id !== item.id) contentSource = master;
+    }
+    return { tpl, tplId, contentSource };
+  }
+
+  // Mirror of CSB's reloadTemplate effect-sync block (TemplateSystem.js
+  // ~702-732), but sourced from `source` instead of system.template's
+  // entity. Effects on `source` carry an originalUuid flag set when they
+  // were first created (CustomActiveEffect._onCreateOperation); copies
+  // previously synced from `source` carry that same originalUuid, plus
+  // an originalParentId === source.id so we can identify them for delete.
+  async function syncTemplateEffects(item, source) {
+    if (!source?.effects?.size) {
+      // No effects on source: only delete copies that originated from
+      // this source but were since removed. (No-op if there are none.)
+    }
+    const sysId = game.system.id;
+    const effectsToCreate = [];
+    const effectsToUpdate = [];
+    const effectsToDelete = [];
+
+    const existingByOriginal = new Map();
+    for (const e of item.effects) {
+      const orig = e.getFlag(sysId, "originalUuid");
+      if (orig) existingByOriginal.set(orig, e);
+    }
+
+    for (const effect of source.effects) {
+      const matched = existingByOriginal.get(effect.uuid);
+      if (matched) {
+        effectsToUpdate.push({ ...effect.toJSON(), _id: matched.id });
+      } else {
+        effectsToCreate.push(effect.toJSON());
+      }
+    }
+
+    for (const e of item.effects) {
+      const originalParentId = e.getFlag(sysId, "originalParentId");
+      if (originalParentId !== source.id) continue;
+      const originalId = e.getFlag(sysId, "originalId");
+      const stillExists = Array.from(source.effects).some(
+        (se) => se.getFlag(sysId, "originalId") === originalId
+      );
+      if (!stillExists) effectsToDelete.push(e.id);
+    }
+
+    await Promise.allSettled([
+      effectsToUpdate.length ? item.updateEmbeddedDocuments("ActiveEffect", effectsToUpdate) : null,
+      effectsToCreate.length ? item.createEmbeddedDocuments("ActiveEffect", effectsToCreate) : null,
+      effectsToDelete.length ? item.deleteEmbeddedDocuments("ActiveEffect", effectsToDelete) : null
+    ].filter(Boolean));
+  }
+
   async function refreshOne(item) {
     if (!item) return { ok: false, reason: "no_item" };
     const ts = item.templateSystem;
     if (!ts) return { ok: false, reason: "no_template_system" };
-    const tplId = item.system?.template;
-    if (!tplId) return { ok: false, reason: "no_template_id" };
-    const tpl = game.items?.get(tplId);
-    if (!tpl) return { ok: false, reason: "template_missing", tplId };
+    const sources = resolveRefreshSources(item);
+    if (!sources) return { ok: false, reason: "no_template_id" };
+    const { tpl, contentSource } = sources;
     try {
+      // Structure: body/header/prop-schema/display from _Skill Template.
+      // CSB also syncs effects from this template (typically none on the
+      // structural template itself).
       await ts.reloadTemplate();
+      // Content: table rows, scripts, active effects from the per-skill
+      // master. Skipped if there's no separate master (uniqueId absent).
+      if (contentSource !== tpl) {
+        await syncTemplateEffects(item, contentSource);
+      }
+      await applyTemplateOwnedOverwrites(item, contentSource);
       return { ok: true };
     } catch (e) {
       console.warn(TAG, "reloadTemplate failed for", item.uuid, e);
@@ -74,7 +282,7 @@
     const ok = await Dialog.confirm({
       title: "Refresh Owned Items",
       content: `<p>Refresh <b>${items.length}</b> item${items.length === 1 ? "" : "s"} on <b>${actor.name}</b> from their world templates?</p>
-                <p style="color:#666;font-size:12px;margin-top:.4rem;">Existing prop values (quantity, equipped, etc.) are preserved. Props newly added to the template get default values; props removed from the template are cleared.</p>`,
+                <p style="color:#666;font-size:12px;margin-top:.4rem;">Player-edited fields (name, quantity, equipped, etc.) are preserved. Dynamic tables and item-container lists are replaced with the template's contents. Props newly added to the template get default values; props removed from the template are cleared.</p>`,
       defaultYes: false
     });
     if (!ok) return;
@@ -94,16 +302,16 @@
       ui.notifications?.warn("Refresh Item: you don't own this item.");
       return;
     }
-    const tplId = item.system?.template;
-    if (!tplId) {
+    const sources = resolveRefreshSources(item);
+    if (!sources) {
       ui.notifications?.warn(`${item.name}: no template assigned.`);
       return;
     }
-    const tplName = game.items?.get(tplId)?.name ?? tplId;
+    const tplName = sources.contentSource?.name ?? sources.tpl.name ?? sources.tplId;
     const ok = await Dialog.confirm({
       title: "Refresh Item",
-      content: `<p>Refresh <b>${item.name}</b> from template <b>${tplName}</b>?</p>
-                <p style="color:#666;font-size:12px;margin-top:.4rem;">Existing prop values (quantity, equipped, etc.) are preserved.</p>`,
+      content: `<p>Refresh <b>${item.name}</b> from <b>${tplName}</b>?</p>
+                <p style="color:#666;font-size:12px;margin-top:.4rem;">Player-edited fields (name, quantity, equipped, etc.) are preserved. Dynamic tables and item-container lists are replaced with the template's contents.</p>`,
       defaultYes: false
     });
     if (!ok) return;
@@ -217,5 +425,5 @@
   if (document.head) installStyles();
   else Hooks.once("ready", installStyles);
 
-  console.log(TAG, "ready");
+  console.debug(TAG, "ready");
 })();
