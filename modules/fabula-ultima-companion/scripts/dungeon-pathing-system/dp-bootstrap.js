@@ -1,17 +1,16 @@
 // ============================================================================
 // Dungeon Pathing System — Bootstrap / Main Controller
 //
-// Lifecycle (per turn):
-//   1. Turn Start    – graph built, overlay drawn, party token located
-//   2. Player Choice – player clicks a neighbour tile
-//   3. Token Moved   – token animates to destination (preview)
-//   4. Confirmation  – dialog: "Land here?" / "Go back"
-//   5a. Confirmed    – emit turn-confirmed, dispatch tile event, clear if needed
-//   5b. Reverted     – token returns to previous position
-//   6. Turn End      – emit turn-end, rebuild for next turn
-//   Repeat
+// Turn lifecycle:
+//   1. Turn Start    — graph built, helper mode updated
+//   2. Player Choice — player clicks a walkable tile
+//   3. Token Moved   — pseudo-animation + real update (with TOKEN_OFFSET)
+//   4. Confirmation  — in-canvas ✔/⟲ buttons beside the token
+//   5a. Confirmed    — tile event dispatched, tile cleared if needed
+//   5b. Reverted     — token returns to previous position
+//   6. Turn End      — graph rebuilt for next turn
 //
-// Only activates when the scene's sceneMode flag === "dungeon".
+// Active only when scene's sceneMode flag === "dungeon".
 // ============================================================================
 (() => {
   const DP      = globalThis.DungeonPathing ??= {};
@@ -19,41 +18,39 @@
   const TAG     = "[DungeonPathing][Bootstrap]";
   const GLOBAL  = "__ONI_DUNGEON_PATHING__";
 
-  // Prevent double-install
   if (globalThis[GLOBAL]?.state?.installed) return;
 
   // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
   const state = {
-    installed:       true,
-    active:          false,   // system is running on this scene
-    busy:            false,   // mid-turn (block re-entry)
-    graph:           null,
-    partyToken:      null,
-    currentNode:     null,
-    neighborIds:     new Set(),
-    forcedNodeId:    null,    // forces current node after pseudo-move (prototype technique)
-    clickHandler:    null,
-    hookIds:         [],
+    installed:    true,
+    active:       false,
+    busy:         false,
+    graph:        null,
+    partyToken:   null,
+    currentNode:  null,
+    neighborIds:  new Set(),
+    forcedNodeId: null,
+    clickHandler: null,
+    hoverHandler: null,
+    hoverTimer:   null,
+    lastHoveredNodeId: null,
+    hookIds:      [],
   };
 
   // ---------------------------------------------------------------------------
   // Scene mode detection
   // ---------------------------------------------------------------------------
   function getSceneMode(scene) {
-    const fab = scene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
+    const fab  = scene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
     const mode = fab?.[DP.SCENE_MODE_KEY];
     if (mode === DP.SCENE_MODE.DUNGEON || mode === DP.SCENE_MODE.EXPLORATION || mode === DP.SCENE_MODE.NONE) return mode;
-    // backward-compat: old boolean cameraFollowToken flag
     const legacy = fab?.cameraFollowToken;
     if (legacy === true || legacy === "true" || legacy === 1) return DP.SCENE_MODE.EXPLORATION;
     return DP.SCENE_MODE.NONE;
   }
 
-  // ---------------------------------------------------------------------------
-  // Canvas coordinate helper
-  // ---------------------------------------------------------------------------
   function getCanvasView() {
     return canvas?.app?.view ?? canvas?.app?.renderer?.view
         ?? document.querySelector("#board canvas") ?? document.querySelector("canvas");
@@ -69,7 +66,6 @@
     const graph = DP.Graph.build();
     state.graph = graph;
 
-    // Ensure every tile has a state entry (GM only; no-op for players)
     if (game.user?.isGM) {
       for (const node of graph.nodes) {
         const tileDoc = scene.tiles.get(node.nodeId);
@@ -77,33 +73,29 @@
       }
     }
 
-    // Resolve party token
     const token = await DP.Graph.resolvePartyToken();
     state.partyToken = token;
 
     if (!token) {
-      DP.Overlay.clear();
-      ui.notifications?.warn?.("Dungeon Pathing: party token not found. Select the party token.");
+      DP.HelperMode.hide();
+      ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
       return false;
     }
 
-    // Determine current node
     let currentNode = null;
-
     if (state.forcedNodeId) {
       currentNode = graph.nodeMap.get(state.forcedNodeId) ?? null;
       state.forcedNodeId = null;
     }
-
     if (!currentNode) {
       const center = token.center ?? { x: Number(token.document.x), y: Number(token.document.y) };
       currentNode  = DP.Graph.findNodeForPoint(center, graph.nodes);
     }
 
-    state.currentNode  = currentNode;
+    state.currentNode = currentNode;
 
     if (!currentNode) {
-      DP.Overlay.clear();
+      DP.HelperMode.hide();
       ui.notifications?.warn?.("Dungeon Pathing: party token is not on a recognised tile node.");
       return false;
     }
@@ -111,7 +103,10 @@
     const neighbors = DP.Graph.getNeighbors(currentNode.nodeId, graph);
     state.neighborIds = new Set(neighbors.map(n => n.nodeId));
 
-    DP.Overlay.draw(currentNode, neighbors);
+    // Update helper mode with current neighbours (shows hand cursors if mode is ON)
+    DP.HelperMode.update(neighbors);
+
+    state.lastHoveredNodeId = null; // reset hover tracking after rebuild
     DP.Events.graphRebuilt(graph, token);
 
     console.debug(TAG, "Graph ready →", currentNode.name, `(${neighbors.length} neighbour(s))`);
@@ -119,12 +114,67 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Hover sound detection
+  // ---------------------------------------------------------------------------
+  function installHoverHandler() {
+    if (state.hoverHandler) return;
+    const view = getCanvasView();
+    if (!view) return;
+
+    state.hoverHandler = (ev) => {
+      if (!state.active || state.busy) return;
+      if (state.neighborIds.size === 0) return;
+      if (DP.ConfirmDialog?.isOpen) return;
+
+      // Throttle: only evaluate every ~80 ms
+      if (state.hoverTimer) return;
+      state.hoverTimer = setTimeout(() => { state.hoverTimer = null; }, 80);
+
+      const worldPt = DP.Graph.clientToWorld(ev.clientX, ev.clientY);
+      const graph   = state.graph;
+      if (!graph) return;
+
+      // Find which neighbour (if any) the pointer is currently over
+      let hovered = null;
+      for (const nodeId of state.neighborIds) {
+        const node = graph.nodeMap.get(nodeId);
+        if (!node) continue;
+        const b = node.bounds;
+        if (worldPt.x >= b.left && worldPt.x <= b.right &&
+            worldPt.y >= b.top  && worldPt.y <= b.bottom) {
+          hovered = node;
+          break;
+        }
+      }
+
+      if (hovered && hovered.nodeId !== state.lastHoveredNodeId) {
+        state.lastHoveredNodeId = hovered.nodeId;
+        DP.Sound.playHover();
+      } else if (!hovered) {
+        state.lastHoveredNodeId = null;
+      }
+    };
+
+    view.addEventListener("pointermove", state.hoverHandler, { passive: true });
+  }
+
+  function removeHoverHandler() {
+    const view = getCanvasView();
+    if (view && state.hoverHandler) view.removeEventListener("pointermove", state.hoverHandler);
+    state.hoverHandler = null;
+    if (state.hoverTimer) { clearTimeout(state.hoverTimer); state.hoverTimer = null; }
+  }
+
+  // ---------------------------------------------------------------------------
   // Turn loop
   // ---------------------------------------------------------------------------
   async function handleClick(ev) {
     if (!state.active) return;
-    if (state.busy)    { ui.notifications?.info?.("Movement in progress…"); return; }
+    if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
     if (ev.button !== 0) return;
+
+    // If the in-canvas confirm buttons are showing, let PIXI handle pointer events
+    if (DP.ConfirmDialog?.isOpen) return;
 
     const graph = state.graph;
     if (!graph) return;
@@ -137,13 +187,13 @@
     const isNeighbor = state.neighborIds.has(clicked.nodeId);
 
     if (isCurrent)   { ui.notifications?.info?.("You are already on this tile."); return; }
-    if (!isNeighbor) { ui.notifications?.warn?.(`${clicked.name} is not connected to your current tile.`); return; }
+    if (!isNeighbor) { ui.notifications?.warn?.(`${clicked.name} is not a connected tile.`); return; }
 
     ev.preventDefault();
     ev.stopPropagation();
 
     state.busy = true;
-    DP.Overlay.clear();
+    DP.HelperMode.hide();
 
     const fromNode = state.currentNode;
     const token    = state.partyToken;
@@ -153,25 +203,28 @@
       // — Turn Start —
       DP.Events.turnStart(token.document, fromNode);
 
-      // — Save position for potential revert —
+      // — Save position for revert —
       const savedPos = DP.Movement.savePosition(token);
 
-      // — Move token to destination (preview) —
+      // — Footstep sound —
+      DP.Sound.playFootstep();
+
+      // — Move (preview with offset) —
       state.forcedNodeId = clicked.nodeId;
       const moved = await DP.Movement.moveToNode(token, clicked);
       if (!moved) { state.forcedNodeId = null; return; }
 
-      // Refresh token reference after the real document update
+      // Refresh token reference after real doc update
       const freshToken = canvas.tokens?.get?.(token.id)
         ?? canvas.tokens?.placeables?.find(t => t.document?.id === token.document.id)
         ?? token;
       state.partyToken = freshToken;
 
-      // — Emit token moved event —
+      // — Token moved event —
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
-      // — Player confirmation —
-      const confirmed = await DP.ConfirmDialog.ask(clicked.name);
+      // — In-canvas confirmation buttons —
+      const confirmed = await DP.ConfirmDialog.ask(freshToken);
 
       if (!confirmed) {
         // — Revert —
@@ -179,20 +232,17 @@
         await DP.Movement.revertToPosition(freshToken, savedPos);
         DP.Events.turnReverted(freshToken.document, fromNode, clicked);
         await rebuild();
-        ui.notifications?.info?.("Movement cancelled — returned to previous tile.");
         return;
       }
 
       // — Confirmed —
-      const tileDoc = scene.tiles.get(clicked.nodeId) ?? null;
+      const tileDoc  = scene.tiles.get(clicked.nodeId) ?? null;
       DP.Events.turnConfirmed(freshToken.document, fromNode, clicked, tileDoc);
 
-      // Resolve tile type (registry state → fallback to node's inferred type)
       const tileType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
         ?? clicked.tileType
         ?? DP.TILE_TYPES.UNKNOWN;
 
-      // — Tile Event —
       DP.Events.tileEvent(freshToken.document, clicked, tileDoc, tileType);
 
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
@@ -209,6 +259,7 @@
       ui.notifications?.error?.("Dungeon Pathing: unexpected error. See console.");
     } finally {
       state.busy = false;
+      DP.ConfirmDialog.forceClose?.();
       await rebuild();
     }
   }
@@ -219,7 +270,6 @@
   function installClickListener() {
     const view = getCanvasView();
     if (!view) return false;
-
     const handler = ev => { handleClick(ev).catch(e => console.error(TAG, "click handler", e)); };
     view.addEventListener("pointerdown", handler, true);
     state.clickHandler = handler;
@@ -235,15 +285,17 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Activate / deactivate per scene
+  // Activate / deactivate
   // ---------------------------------------------------------------------------
   async function activate() {
     if (state.active) return;
     state.active = true;
+    DP.Sound.preloadAll();
     installClickListener();
+    installHoverHandler();
+    DP.HelperMode.activate();
     await rebuild();
-    ui.notifications?.info?.("Dungeon Pathing active. Click a highlighted tile to move.");
-    console.debug(TAG, "Activated.");
+    console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
 
   function deactivate() {
@@ -255,7 +307,9 @@
     state.neighborIds.clear();
     state.forcedNodeId = null;
     removeClickListener();
-    DP.Overlay.clear();
+    removeHoverHandler();
+    DP.HelperMode.deactivate();
+    DP.ConfirmDialog?.forceClose?.();
     console.debug(TAG, "Deactivated.");
   }
 
@@ -285,12 +339,10 @@
 
     const hUpdateScene = Hooks.on("updateScene", async (scene) => {
       if (!canvas?.scene || scene.id !== canvas.scene.id) return;
-      // Scene mode may have changed → re-evaluate
       await applyForScene(scene);
     });
     state.hookIds.push(["updateScene", hUpdateScene]);
 
-    // Rebuild graph if tiles or drawings change while dungeon mode is active
     const rebuildIfActive = async () => {
       if (!state.active || state.busy) return;
       await rebuild();
@@ -302,16 +354,11 @@
       state.hookIds.push([hookName, id]);
     });
 
-    // Hook into socketlib.ready to register our own socket handlers on the shared module socket.
-    // socketlib allows multiple register() calls on the same module socket — this is safe
-    // even though main.js also calls socketlib.registerModule().
     Hooks.once("socketlib.ready", () => {
       try {
         const socket = socketlib.registerModule(MOD);
         DP.Socket.register(socket);
       } catch (e) {
-        // If socketlib isn't present (not a hard dependency), degrade gracefully.
-        // Tile state mutations from non-GM clients will log a warning instead.
         console.warn(TAG, "socketlib not available — socket handlers skipped.", e?.message ?? e);
       }
     });
@@ -326,31 +373,27 @@
     deactivate,
     rebuild,
 
-    /** Developer helper: reset all dungeon tiles to initial state. */
     async resetDungeon() {
       await DP.Socket.resetDungeon(canvas.scene);
       if (state.active) await rebuild();
     },
 
-    /** Developer helper: force a specific tile type on a tile. */
     async mutateTile(tileId, newType, newTexture = null) {
       await DP.Socket.mutateTile(canvas.scene, tileId, newType, newTexture);
       if (state.active) await rebuild();
     },
 
-    /** Read current graph snapshot. */
-    get graph() { return state.graph; },
+    get graph()       { return state.graph; },
     get currentNode() { return state.currentNode; }
   };
 
-  // Boot when Foundry is ready
   Hooks.once("ready", () => {
     installHooks();
     if (canvas?.ready) applyForScene(canvas?.scene);
     console.debug(TAG, "Dungeon Pathing System loaded.");
     console.debug(TAG, "Dev API: window.__ONI_DUNGEON_PATHING__");
+    console.debug(TAG, "  H key — toggle helper mode (walkable tile indicators)");
     console.debug(TAG, "  .resetDungeon()  — reset all tiles to initial state");
-    console.debug(TAG, "  .mutateTile(id, type, texture?)  — transform a tile");
-    console.debug(TAG, "  .rebuild()  — rebuild graph manually");
+    console.debug(TAG, "  .mutateTile(id, type, texture?)");
   });
 })();

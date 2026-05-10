@@ -117,6 +117,8 @@
   "scripts/dungeon-pathing-system/dp-graph.js",
   "scripts/dungeon-pathing-system/dp-overlay.js",
   "scripts/dungeon-pathing-system/dp-movement.js",
+  "scripts/dungeon-pathing-system/dp-sound.js",
+  "scripts/dungeon-pathing-system/dp-helper-mode.js",
   "scripts/dungeon-pathing-system/dp-confirm-dialog.js",
   "scripts/dungeon-pathing-system/dp-events.js",
   "scripts/dungeon-pathing-system/dp-socket.js",
