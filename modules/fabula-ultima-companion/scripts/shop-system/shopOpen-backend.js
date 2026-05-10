@@ -38,6 +38,9 @@ export class ShopOpenBackend {
     // Purchase handler — set by bootstrap after construction
     this._purchaseHandler = null;
 
+    // Sell handler — set by bootstrap after construction
+    this._sellHandler = null;
+
     // internal
     this._cachedPartyActorIds = new Set();
     this._lastDbResolveTs = 0;
@@ -447,6 +450,32 @@ export class ShopOpenBackend {
       if (msg.type === SHOPOPEN.MSG.BUY_RESULT) {
         const handler = this._purchaseHandler;
         if (handler) handler.onBuyResult(msg.payload ?? {});
+        return;
+      }
+
+      // ── Shop sell (GM executes, result sent back to requester) ──
+      if (game.user.isGM && msg.type === SHOPOPEN.MSG.SELL_REQ) {
+        const gms = (game.users?.contents ?? []).filter(u => u?.isGM && u?.active);
+        if (gms[0]?.id !== game.user.id) return;
+
+        const { sellId, ...rest } = msg.payload ?? {};
+        this.log("SELL_REQ received, executing sell:", sellId);
+
+        const sellHandler = this._sellHandler;
+        if (!sellHandler) { this.warn("No sellHandler set on backend."); return; }
+
+        sellHandler.executeSell(rest)
+          .then(result => this._emitSocket({ type: SHOPOPEN.MSG.SELL_RESULT, payload: { sellId, ...result } }))
+          .catch(e => {
+            this.err("SELL_REQ execution error:", e);
+            this._emitSocket({ type: SHOPOPEN.MSG.SELL_RESULT, payload: { sellId, ok: false, reason: "server_error" } });
+          });
+        return;
+      }
+
+      if (msg.type === SHOPOPEN.MSG.SELL_RESULT) {
+        const sellHandler = this._sellHandler;
+        if (sellHandler) sellHandler.onSellResult(msg.payload ?? {});
         return;
       }
 

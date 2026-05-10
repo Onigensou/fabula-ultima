@@ -7,6 +7,7 @@
 // Call preloadAll() once on ready so CDN assets are cached before first use.
 
 const SOUNDS = {
+  shopOpen:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Shop_Open.wav",
   purchase:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/UI_SEWorldDollar.wav",
   tabSwitch:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
   itemSelect: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
@@ -14,6 +15,7 @@ const SOUNDS = {
 };
 
 const VOLUME = {
+  shopOpen:   0.65,
   purchase:   0.75,
   tabSwitch:  0.55,
   itemSelect: 0.45,
@@ -36,6 +38,9 @@ export class ShopSoundManager {
       } catch (_) {}
     }
   }
+
+  // Called when the buy window first opens (buy window only).
+  playShopOpen()   { this._play(SOUNDS.shopOpen,   VOLUME.shopOpen);   }
 
   // Called on successful item purchase.
   playPurchase()   { this._play(SOUNDS.purchase,   VOLUME.purchase);   }
