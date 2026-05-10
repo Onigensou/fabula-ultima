@@ -138,6 +138,8 @@
   "scripts/reaction-system/reaction-triggerCore.js",
   "scripts/reaction-system/reaction-grant.js",
   "scripts/csb-extensions/CompactDynamicTable.js",
+  "scripts/csb-extensions/visibilityPresetPicker.js",
+  "scripts/csb-extensions/csb-formula-compat.js",
   "scripts/reaction-system/reaction-buttonUI.js",
   "scripts/reaction-system/reaction-chooseSkill.js",
   "scripts/reaction-system/reaction-rebuildActionCard.js",
