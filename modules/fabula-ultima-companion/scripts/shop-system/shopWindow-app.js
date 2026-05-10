@@ -539,6 +539,16 @@ export class ShopWindowApp {
         border-radius:999px; padding:1px 4px;
         line-height:12px; white-space:nowrap;
       }
+
+      /* ── Sell button (injected into .dialog-buttons row) ── */
+      .fu-shop-sell-dlg-btn {
+        background: #9a7aba !important; border-color: #7a5a9a !important;
+        color: #fff !important; font-weight: 700;
+        text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+        transition: background 0.12s, transform 0.08s;
+      }
+      .fu-shop-sell-dlg-btn:hover { background: #7a5a9a !important; }
+      .fu-shop-sell-dlg-btn:active { transform: scale(0.96); }
     </style>`);
   }
 
@@ -782,6 +792,9 @@ export class ShopWindowApp {
         const item = actor.items.find(i => i.uuid === uuid);
         return item ? ShopWindowApp._buildSkillsContent(item) : null;
       },
+      onOpenSell: () => {
+        window.FUCompanion?.shopSellApp?.open?.(shopActorUuid, { sellerActorUuid: buyerActor?.uuid });
+      },
       onBuy: async (btn) => {
         const row = btn.closest(".fu-shop-row");
         if (!row) return;
@@ -878,6 +891,19 @@ export class ShopWindowApp {
         render: (html) => {
           const root = (html instanceof jQuery ? html[0] : html).querySelector?.(".fu-shop") ?? (html instanceof jQuery ? html[0] : html);
           ShopWindowApp._bindRoot(root, ctx);
+
+          // Inject Sell button into the dialog-buttons row (left of Leave Shop)
+          if (hasBuyer) {
+            Promise.resolve().then(() => {
+              const btnRow = dlg?.element?.[0]?.querySelector?.(".dialog-buttons");
+              if (!btnRow || btnRow.querySelector(".fu-shop-sell-dlg-btn")) return;
+              const btn = document.createElement("button");
+              btn.className = "fu-shop-sell-dlg-btn";
+              btn.innerHTML = `<i class="fas fa-coins"></i> Sell`;
+              btn.addEventListener("click", () => ctx.onOpenSell?.());
+              btnRow.prepend(btn);
+            });
+          }
         },
         close: () => {
           window.FUCompanion?.shopSound?.playCancel();
@@ -890,6 +916,7 @@ export class ShopWindowApp {
 
     _openWindows.set(shopActorUuid, dlg);
     dlg.render(true);
+    window.FUCompanion?.shopSound?.playShopOpen?.();
     return dlg;
   }
 }

@@ -5,11 +5,13 @@ export const SHOPOPEN = {
   CHANNELS: ["fabula-ultima-companion", "module.fabula-ultima-companion"],
 
   MSG: {
-    OPEN_REQ:   "FU_SHOP_OPEN_REQ_V1",
-    OPEN_GRANT: "FU_SHOP_OPEN_GRANT_V1",
-    CLOSE_REQ:  "FU_SHOP_CLOSE_REQ_V1",
-    BUY_REQ:    "FU_SHOP_BUY_REQ_V1",
-    BUY_RESULT: "FU_SHOP_BUY_RESULT_V1",
+    OPEN_REQ:    "FU_SHOP_OPEN_REQ_V1",
+    OPEN_GRANT:  "FU_SHOP_OPEN_GRANT_V1",
+    CLOSE_REQ:   "FU_SHOP_CLOSE_REQ_V1",
+    BUY_REQ:     "FU_SHOP_BUY_REQ_V1",
+    BUY_RESULT:  "FU_SHOP_BUY_RESULT_V1",
+    SELL_REQ:    "FU_SHOP_SELL_REQ_V1",
+    SELL_RESULT: "FU_SHOP_SELL_RESULT_V1",
   },
 
   // Animation
