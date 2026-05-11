@@ -23,7 +23,7 @@
 
 (() => {
   const TAG = "[ONI][JournalSystem]";
-  const DEBUG = true;
+  const DEBUG = false;
 
   // ─────────────────────────────────────────────────────────────
   // Global namespace + guard
@@ -831,10 +831,15 @@
         const moved = ("x" in changes) || ("y" in changes);
         if (!moved) return;
 
+        // Fast synchronous pre-check: controlled token is the party token in all normal play.
+        // Avoids starting the async resolve for every non-party token update.
+        const quickCheck = canvas?.tokens?.controlled?.[0];
+        if (quickCheck && tokenDoc.id !== quickCheck.id) return;
+
         const afterX = ("x" in changes) ? changes.x : tokenDoc.x;
         const afterY = ("y" in changes) ? changes.y : tokenDoc.y;
 
-        const partyTok = await resolvePartyToken();
+        const partyTok = quickCheck ?? await resolvePartyToken();
         if (!partyTok) return;
         if (tokenDoc.id !== partyTok.id) return;
 

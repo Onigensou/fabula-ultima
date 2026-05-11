@@ -45,7 +45,7 @@ async function clone(token){
   }
   else{s.width=token.w;s.height=token.h;}
   s.zIndex=500000;
-  canvas.stage.sortableChildren=true; canvas.stage.addChild(s); canvas.stage.sortChildren();
+  canvas.stage.sortableChildren=true; canvas.stage.addChild(s);
   return s;
 }
 const base = casterToken.mesh ?? casterToken.icon;
