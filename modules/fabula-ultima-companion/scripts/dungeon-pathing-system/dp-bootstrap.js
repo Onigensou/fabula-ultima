@@ -188,6 +188,7 @@
   // ---------------------------------------------------------------------------
   async function handleClick(ev) {
     if (!state.active) return;
+    if (DP.FastTravel?.active) return; // FT mode owns the canvas while active
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
     if (ev.button !== 0) return;
 
@@ -205,7 +206,7 @@
     const isNeighbor = state.neighborIds.has(clicked.nodeId);
 
     if (isCurrent)   { ui.notifications?.info?.("You are already on this tile."); return; }
-    if (!isNeighbor) { ui.notifications?.warn?.(`${clicked.name} is not a connected tile.`); return; }
+    if (!isNeighbor) return; // tile out of range — correct behaviour, no need to notify
 
     ev.preventDefault();
     ev.stopPropagation();
@@ -381,14 +382,21 @@
     });
     state.hookIds.push(["updateScene", hUpdateScene]);
 
-    const rebuildIfActive = async () => {
-      if (!state.active || state.busy) return;
-      await rebuild();
+    // Debounce rapid tile/drawing mutations (e.g. multiple flag updates in one turn)
+    // so only a single rebuild fires after the burst settles.
+    let _rebuildTimer = null;
+    const debouncedRebuild = () => {
+      if (_rebuildTimer) clearTimeout(_rebuildTimer);
+      _rebuildTimer = setTimeout(() => {
+        _rebuildTimer = null;
+        if (!state.active || state.busy) return;
+        rebuild().catch(() => {});
+      }, 100);
     };
 
     ["createTile", "updateTile", "deleteTile",
      "createDrawing", "updateDrawing", "deleteDrawing"].forEach(hookName => {
-      const id = Hooks.on(hookName, rebuildIfActive);
+      const id = Hooks.on(hookName, debouncedRebuild);
       state.hookIds.push([hookName, id]);
     });
 

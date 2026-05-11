@@ -12,8 +12,8 @@
     return Number(canvas?.grid?.size ?? canvas?.scene?.grid?.size ?? 100) || 100;
   }
 
-  function buildPseudoScriptSource() {
-    return `
+  // Static pseudo-script source — built once at module load, never changes.
+  const _PSEUDO_SCRIPT = `
 const { casterToken, params } = ctx;
 if (!casterToken) throw new Error("DungeonPathing pseudo movement requires casterToken.");
 const fromX = Number(params.fromX), fromY = Number(params.fromY);
@@ -60,7 +60,6 @@ try{
   if(sp){try{canvas.stage.removeChild(sp);}catch(_){}sp.destroy();}
   if(base) base.visible=origMesh; casterToken.visible=origVis;
 }`;
-  }
 
   DP.Movement = {
     /**
@@ -95,7 +94,7 @@ try{
       if (typeof pseudoApi === "function") {
         pseudoApi({
           scriptId:         "dungeonPathing.move",
-          scriptSource:     buildPseudoScriptSource(),
+          scriptSource:     _PSEUDO_SCRIPT,
           casterTokenUuid:  token.document.uuid,
           targetTokenUuids: [],
           params: {

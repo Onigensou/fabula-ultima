@@ -87,13 +87,14 @@
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
-  let _scanBtn       = null;   // 🔍 DOM element
-  let _helperBtn     = null;   // 🗺️ DOM element
-  let _ftBtn         = null;   // 🦅 DOM element
-  let _scanning      = false;
-  let _cameraSettled = false;  // true once pivot is within 1wu of token and no pan needed
-  let _tickerFn      = null;
-  let _escHandler    = null;
+  let _scanBtn          = null;   // 🔍 DOM element
+  let _helperBtn        = null;   // 🗺️ DOM element
+  let _ftBtn            = null;   // 🦅 DOM element
+  let _scanning         = false;
+  let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
+  let _tickerFn         = null;
+  let _escHandler       = null;
+  let _cachedScanRadius = null;   // cached per scan-mode activation; cleared on enterScan()
 
   // ── Config helpers ─────────────────────────────────────────────────────────
   function cfgScan() {
@@ -131,10 +132,12 @@
   }
 
   function getScanRadius() {
+    if (_cachedScanRadius !== null) return _cachedScanRadius;
     const raw = canvas?.scene?.flags?.[DP.MODULE_ID]?.[DP.FABULA_ROOT_KEY]
                   ?.[DP.GENERAL_KEY]?.[DP.PATHING_SCAN_RADIUS_KEY];
     const n = Number(raw);
-    return Number.isFinite(n) && n > 0 ? n : (cfgScan().DEFAULT_RADIUS ?? 600);
+    _cachedScanRadius = Number.isFinite(n) && n > 0 ? n : (cfgScan().DEFAULT_RADIUS ?? 600);
+    return _cachedScanRadius;
   }
 
   function snapCameraToToken() {
@@ -219,6 +222,7 @@
   function enterScan() {
     if (_scanning) return;
     _scanning = true;
+    _cachedScanRadius = null; // re-read from flags in case scene config changed
     _cameraSettled = false; // pivot will drift; re-evaluate every frame until re-locked
     _scanBtn?.classList.add("dp-scan-active");
     if (_scanBtn) _scanBtn.title = "Exit Scan Mode (ESC)";

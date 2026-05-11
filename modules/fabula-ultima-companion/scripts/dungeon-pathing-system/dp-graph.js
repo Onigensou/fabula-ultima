@@ -72,7 +72,8 @@
   DP.Graph = {
     /** Extract all non-hidden tiles as graph nodes. */
     getTileNodes() {
-      const scene  = canvas?.scene;
+      const scene      = canvas?.scene;
+      const tileStates = scene?.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY]?.tileStates ?? {};
       return (canvas?.tiles?.placeables ?? [])
         .filter(t => t?.document && !t.document.hidden)
         .map((t, idx) => {
@@ -83,7 +84,7 @@
             nodeId:   d.id,
             uuid:     d.uuid,
             name:     String(d.name || `Tile ${idx}`),
-            tileType: scene ? (DP.TileState?.getCurrentType(scene, d.id) ?? null) : null,
+            tileType: scene ? (tileStates[d.id]?.currentType ?? null) : null,
             texture:  d.texture?.src ?? null,
             x: round2(d.x), y: round2(d.y),
             width: round2(d.width), height: round2(d.height),

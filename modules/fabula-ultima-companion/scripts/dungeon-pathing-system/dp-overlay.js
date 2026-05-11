@@ -2,54 +2,53 @@
 // Dungeon Pathing System — Overlay
 // Hover highlight: when the cursor enters a walkable tile, a semi-transparent
 // golden rectangle is drawn over it using PIXI.Graphics on the canvas stage.
+//
+// Performance: a single PIXI.Graphics instance is kept alive for the session.
+// Instead of creating/destroying objects on each hover, we just call g.clear()
+// and redraw — no stage add/remove, no sortChildren() per hover event.
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing ??= {};
-  const TAG = "[DungeonPathing][Overlay]";
 
-  let _hoverContainer = null;
+  // Single persistent graphics object — created once, reused across hovers.
+  let _g = null;
 
-  function destroyHover() {
-    try { _hoverContainer?.destroy({ children: true }); } catch {}
-    _hoverContainer = null;
+  function ensureGraphics() {
+    if (_g && !_g.destroyed) return _g;
+    if (!canvas?.stage) return null;
+    const g = new PIXI.Graphics();
+    g.name   = "ONI DungeonPathing HoverHighlight";
+    g.zIndex = 999997;
+    canvas.stage.sortableChildren = true;
+    canvas.stage.addChild(g);
+    _g = g;
+    return g;
   }
 
   DP.Overlay = {
-    // Legacy stubs — called from bootstrap after graph rebuild (no-op)
-    draw(_currentNode, _neighborNodes) {},
-    clear() { destroyHover(); },
+    draw(_currentNode, _neighborNodes) {}, // legacy stub
 
-    /** Highlight the given tile node (world-space bounds) when hovered. */
+    clear() {
+      if (_g && !_g.destroyed) _g.clear();
+    },
+
     setHoverNode(node) {
-      destroyHover();
-      if (!node || !canvas?.stage) return;
+      if (!node || !canvas?.stage) { this.clearHover(); return; }
+
+      const g = ensureGraphics();
+      if (!g) return;
 
       const cfg = DP.UI?.HOVER_HIGHLIGHT ?? { COLOR: 0xffd966, ALPHA: 0.22, CORNER_R: 6 };
       const b   = node.bounds;
 
-      const root = new PIXI.Container();
-      root.name   = "ONI DungeonPathing HoverHighlight";
-      root.zIndex = 999997;
-
-      const g = new PIXI.Graphics();
+      g.clear();
       g.beginFill(cfg.COLOR, cfg.ALPHA);
       g.drawRoundedRect(b.left, b.top, b.right - b.left, b.bottom - b.top, cfg.CORNER_R);
       g.endFill();
-      root.addChild(g);
-
-      try {
-        canvas.stage.sortableChildren = true;
-        canvas.stage.addChild(root);
-        canvas.stage.sortChildren();
-      } catch (e) {
-        console.warn(TAG, "Could not add hover highlight to stage", e);
-      }
-
-      _hoverContainer = root;
     },
 
     clearHover() {
-      destroyHover();
+      if (_g && !_g.destroyed) _g.clear();
     },
   };
 })();
