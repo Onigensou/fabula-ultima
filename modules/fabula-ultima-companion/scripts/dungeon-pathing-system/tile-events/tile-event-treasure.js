@@ -15,26 +15,27 @@
     return;
   }
 
-  // All loot tile types share the same handler — type detection is done
-  // inside TreasureRoulette's detectTileType() via the tile's texture.src.
-  async function lootHandler(tileDoc, tokenDoc, scene) {
-    const FE = window["oni.TreasureRoulette.TileFrontEnd"];
-    if (!FE?.onDbEnterTile) {
-      console.warn(TAG, "TreasureRoulette TileFrontEnd not found. Showing fallback.");
-      await ChatMessage.create({
-        speaker: { alias: "System" },
-        content: `<div style="text-align:center;font-size:1.4rem;padding:8px;">
-          🎁 <b>Treasure!</b> (TreasureRoulette not loaded)
-        </div>`
-      });
-      return;
-    }
+  function makeLootHandler(dpTypeKey) {
+    return async function lootHandler(tileDoc, tokenDoc, scene) {
+      const FE = window["oni.TreasureRoulette.TileFrontEnd"];
+      if (!FE?.onDbEnterTile) {
+        console.warn(TAG, "TreasureRoulette TileFrontEnd not found. Showing fallback.");
+        await ChatMessage.create({
+          speaker: { alias: "System" },
+          content: `<div style="text-align:center;font-size:1.4rem;padding:8px;">
+            🎁 <b>Treasure!</b> (TreasureRoulette not loaded)
+          </div>`
+        });
+        return;
+      }
 
-    // Route to GM — isAuthorityClient() inside onDbEnterTile requires GM.
-    const result = await DP.Socket.triggerTreasure(scene, tileDoc.id, tokenDoc.id);
-    if (result && !result.ok) {
-      console.warn(TAG, "triggerTreasure returned not-ok:", result.error);
-    }
+      // Pass the DP type key so TreasureRoulette uses registry-based config, not image detection.
+      // Routes to GM if caller is a player (isAuthorityClient() gate in onDbEnterTile).
+      const result = await DP.Socket.triggerTreasure(scene, tileDoc.id, tokenDoc.id, dpTypeKey);
+      if (result && !result.ok) {
+        console.warn(TAG, "triggerTreasure returned not-ok:", result.error);
+      }
+    };
   }
 
   const LOOT_TYPES = [
@@ -51,7 +52,7 @@
     DP.TileEventRegistry.register(key, {
       label,
       clearAfterTrigger: false,
-      handler: lootHandler,
+      handler: makeLootHandler(key),
     });
   }
 })();

@@ -63,7 +63,7 @@
         }
       });
 
-      socket.register(HANDLERS.TRIGGER_TREASURE, async ({ sceneId, tileId, tokenId }) => {
+      socket.register(HANDLERS.TRIGGER_TREASURE, async ({ sceneId, tileId, tokenId, tileType }) => {
         if (!game.user?.isGM) return { ok: false, error: "Not GM" };
         const scene = game.scenes.get(sceneId);
         if (!scene) return { ok: false, error: "Scene not found" };
@@ -74,7 +74,7 @@
         const FE = window["oni.TreasureRoulette.TileFrontEnd"];
         if (!FE?.onDbEnterTile) return { ok: false, error: "TileFrontEnd not loaded" };
         try {
-          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc });
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType });
           return { ok: true };
         } catch (e) {
           console.error(TAG, "triggerTreasure socket handler failed", e);
@@ -114,14 +114,14 @@
       return socket.executeAsGM(HANDLERS.RESET_DUNGEON, { sceneId: scene.id });
     },
 
-    async triggerTreasure(scene, tileId, tokenId) {
+    async triggerTreasure(scene, tileId, tokenId, tileType) {
       if (game.user?.isGM) {
         const FE = window["oni.TreasureRoulette.TileFrontEnd"];
         if (!FE?.onDbEnterTile) { console.warn(TAG, "TileFrontEnd not loaded"); return { ok: false, error: "TileFrontEnd not loaded" }; }
         const tileDoc  = scene.tiles.get(tileId);
         const tokenDoc = scene.tokens.get(tokenId);
         try {
-          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc });
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType });
           return { ok: true };
         } catch (e) {
           console.error(TAG, "triggerTreasure failed", e);
@@ -130,7 +130,7 @@
       }
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for triggerTreasure"); return { ok: false, error: "Socket not ready" }; }
-      return socket.executeAsGM(HANDLERS.TRIGGER_TREASURE, { sceneId: scene.id, tileId, tokenId });
+      return socket.executeAsGM(HANDLERS.TRIGGER_TREASURE, { sceneId: scene.id, tileId, tokenId, tileType });
     }
   };
 })();
