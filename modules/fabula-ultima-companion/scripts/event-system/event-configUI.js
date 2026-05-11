@@ -664,10 +664,21 @@
         return;
       }
 
-      // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
+          // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
       // If so, inject as a named section inside it instead of creating a separate tab.
+      // dp-tile-config must register its hook BEFORE us (it uses IIFE at module.json line 128;
+      // we are an IIFE at line 180) for fabulaMode to be true here.
       const fabulaPanel = sheetBody.querySelector('[data-tab="oni-fabula-config"]');
       const fabulaMode  = !!fabulaPanel;
+
+      DBG.log(DEBUG_SCOPE, "fabulaMode detection", {
+        fabulaMode,
+        fabulaPanelFound: !!fabulaPanel,
+        sheetBodyTabPanels: sheetBody
+          ? [...sheetBody.querySelectorAll("[data-tab]")].map(p => p.dataset.tab).join(", ")
+          : "(none)",
+        rootHasFabulaAttr: root.hasAttribute("data-oni-fabula-config"),
+      });
 
       grouped = !!DBG.group?.(DEBUG_SCOPE, `Render TileConfig [${tileDoc?.id ?? "unknown"}]`, true);
       DBG.log(DEBUG_SCOPE, "Injecting Event Config tab.", {
