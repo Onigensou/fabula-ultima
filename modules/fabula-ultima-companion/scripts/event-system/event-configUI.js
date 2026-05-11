@@ -664,28 +664,38 @@
         return;
       }
 
+      // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
+      // If so, inject as a named section inside it instead of creating a separate tab.
+      const fabulaPanel = sheetBody.querySelector('[data-tab="oni-fabula-config"]');
+      const fabulaMode  = !!fabulaPanel;
+
       grouped = !!DBG.group?.(DEBUG_SCOPE, `Render TileConfig [${tileDoc?.id ?? "unknown"}]`, true);
       DBG.log(DEBUG_SCOPE, "Injecting Event Config tab.", {
         appId: app?.appId,
         tileId: tileDoc?.id,
-        tileName: tileDoc?.name
+        tileName: tileDoc?.name,
+        fabulaMode,
       });
 
       // --------------------------------------------------------
-      // Tab button
+      // Tab button — only when creating our own standalone tab
       // --------------------------------------------------------
-      const tabButton = document.createElement("a");
-      tabButton.className = "item";
-      tabButton.dataset.tab = TAB_ID;
-      tabButton.innerHTML = C.TAB_ICON_HTML || `<i class="fas fa-bolt"></i> Event Config`;
-      tabsNav.appendChild(tabButton);
+      if (!fabulaMode) {
+        const tabButton = document.createElement("a");
+        tabButton.className = "item";
+        tabButton.dataset.tab = TAB_ID;
+        tabButton.innerHTML = C.TAB_ICON_HTML || `<i class="fas fa-bolt"></i> Event Config`;
+        tabsNav.appendChild(tabButton);
+      }
 
       // --------------------------------------------------------
-      // Tab panel
+      // Tab panel (own tab) or plain section div (fabula mode)
       // --------------------------------------------------------
       const tabPanel = document.createElement("div");
-      tabPanel.className = "tab";
-      tabPanel.dataset.tab = TAB_ID;
+      if (!fabulaMode) {
+        tabPanel.className = "tab";
+        tabPanel.dataset.tab = TAB_ID;
+      }
 
       tabPanel.innerHTML = `
         <div class="oni-event-wrap">
@@ -761,12 +771,21 @@
         </div>
       `;
 
-      sheetBody.appendChild(tabPanel);
-
-      const bound = bindTabs(app, root);
-      if (!bound.ok) DBG.warn(DEBUG_SCOPE, "bindTabs failed.", bound.reason);
-
-      resizeTileConfigForTabs(app, root);
+      if (fabulaMode) {
+        const hr = document.createElement("hr");
+        hr.className = "oni-fabula-section-divider";
+        fabulaPanel.appendChild(hr);
+        const hdr = document.createElement("h3");
+        hdr.className = "oni-fabula-section-header";
+        hdr.innerHTML = `<i class="fas fa-bolt"></i> Event Config`;
+        fabulaPanel.appendChild(hdr);
+        fabulaPanel.appendChild(tabPanel);
+      } else {
+        sheetBody.appendChild(tabPanel);
+        const bound = bindTabs(app, root);
+        if (!bound.ok) DBG.warn(DEBUG_SCOPE, "bindTabs failed.", bound.reason);
+        resizeTileConfigForTabs(app, root);
+      }
 
       // --------------------------------------------------------
       // Prefill

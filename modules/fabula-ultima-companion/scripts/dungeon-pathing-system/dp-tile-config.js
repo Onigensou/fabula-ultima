@@ -1,29 +1,55 @@
 // ============================================================================
 // Dungeon Pathing System — Tile Configuration Tab
-// Injects a "Dungeon Configuration" tab into Foundry's Tile Config window.
+// Injects a "Fabula Configuration" tab into Foundry's Tile Config window.
+// Other oni scripts (Treasure Config, Journal Config, Event Config) detect
+// this tab and inject their own sections into it rather than creating separate
+// tabs.
+//
+// Tab visibility is managed manually — the panel does NOT use class="tab"
+// so Foundry's Tabs system never touches it.  We register a click handler on
+// the Fabula button BEFORE calling bindTabs() so stopImmediatePropagation()
+// prevents Foundry from trying (and failing) to activate a non-.tab panel.
 //
 // Per-tile flag stored at:
-//   flags.fabula-ultima-companion.dungeonPathing.clearAfterTrigger
-//   "" | undefined → system default (use registry clearAfterTrigger)
-//   "true"         → always clear after trigger
-//   "false"        → never clear after trigger (tile stays active)
+//   flags.fabula-ultima-companion.dungeonPathing.persistAfterTrigger
 // ============================================================================
-(() => {
-  const DP        = globalThis.DungeonPathing ??= {};
-  const MODULE_ID = "fabula-ultima-companion";
-  const TAG       = "[DungeonPathing][TileConfig]";
-  const STYLE_ID  = "oni-dp-tile-config-style";
-  const MARKER    = "data-oni-dp-tile";
+
+function installDungeonTileConfig() {
+  const GLOBAL_KEY = "oni.DungeonTileConfig";
+  if (window[GLOBAL_KEY]?.installed) return;
+  window[GLOBAL_KEY] = { installed: true };
+
+  const DP          = globalThis.DungeonPathing ??= {};
+  const MODULE_ID   = "fabula-ultima-companion";
+  const TAG         = "[DungeonPathing][TileConfig]";
+  const STYLE_ID    = "oni-fabula-tile-config-style";
+  const MARKER_ATTR = "data-oni-fabula-config";
+  const TAB_ID      = "oni-fabula-config";
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) return;
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
-      .oni-dp-tile-wrap { padding: 10px 8px; }
-      .oni-dp-tile-wrap h3 { margin: 10px 0 6px; font-size: 1rem; }
-      .oni-dp-tile-wrap h3:first-child { margin-top: 0; }
-      .oni-dp-tile-wrap .form-group { margin-bottom: 10px; }
+      /* Flex-wrap nav so tabs never overflow the window */
+      [data-oni-fabula-config="1"] nav.sheet-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 4px;
+        column-gap: 8px;
+        align-items: center;
+      }
+      [data-oni-fabula-config="1"] nav.sheet-tabs .item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+
+      .oni-fabula-section { padding: 10px 8px; }
+      .oni-fabula-section h3 { margin: 10px 0 6px; font-size: 1rem; }
+      .oni-fabula-section h3:first-child { margin-top: 0; }
+      .oni-fabula-section .form-group { margin-bottom: 10px; }
+      .oni-fabula-section-divider { margin: 4px 8px 0; border-color: rgba(255,255,255,0.15); }
+      .oni-fabula-section-header  { margin: 0 8px 6px; font-size: 1rem; }
       .oni-dp-tile-info {
         font-family: monospace;
         font-size: 12px;
@@ -46,70 +72,84 @@
     return null;
   }
 
-  function inject(app, html) {
-    const root = getRoot(html, app);
-    if (!root) return;
-    if (root.querySelector(`[${MARKER}]`)) return;
+  function bindTabs(app, root) {
+    try {
+      const tabs = app?._tabs;
+      if (!tabs) return;
+      if (Array.isArray(tabs)) tabs.forEach(t => t?.bind?.(root));
+      else Object.values(tabs).forEach(t => t?.bind?.(root));
+    } catch {}
+  }
 
-    const tileDoc = app.object ?? app.document ?? null;
+  function resizeTileConfigForTabs(app, root) {
+    try {
+      const nav = root?.querySelector("nav.sheet-tabs");
+      if (!nav) return;
+      const tabCount = nav.querySelectorAll(".item").length;
+      app.setPosition({
+        width:  Math.min(Math.max(760, tabCount * 96), 1180),
+        height: "auto",
+      });
+    } catch {}
+  }
 
-    const nav =
-      root.querySelector(`nav.sheet-tabs.tabs[data-group="main"]`) ||
-      root.querySelector(`nav.sheet-tabs.tabs`) ||
-      root.querySelector(`nav.sheet-tabs`);
-    if (!nav) { console.warn(TAG, "No nav found in TileConfig"); return; }
+  Hooks.on("renderTileConfig", async (app, html) => {
+    try {
+      ensureStyle();
 
-    const existingTab = root.querySelector(`.tab[data-group="main"]`) || root.querySelector(`.tab[data-tab]`);
-    const tabParent   = existingTab?.parentElement
-      ?? root.querySelector(".sheet-body")
-      ?? root.querySelector("form");
-    if (!tabParent) { console.warn(TAG, "No tab parent found"); return; }
+      const root = getRoot(html, app);
+      if (!root) return;
+      if (root.hasAttribute(MARKER_ATTR)) return;
+      root.setAttribute(MARKER_ATTR, "1");
 
-    ensureStyle();
+      const tileDoc   = app?.document ?? app?.object;
+      const tabsNav   = root.querySelector("nav.sheet-tabs");
+      const sheetBody = root.querySelector(".sheet-body") || root.querySelector(".window-content form");
+      if (!tabsNav || !sheetBody) {
+        console.warn(TAG, "No tabsNav or sheetBody found.");
+        return;
+      }
 
-    const groupName = nav.dataset.group || "main";
-    const TAB_ID    = "oni-dp-dungeon-config";
+      // ── Tab button ──────────────────────────────────────────────
+      const tabButton = document.createElement("a");
+      tabButton.className = "item";
+      tabButton.dataset.tab = TAB_ID;
+      tabButton.innerHTML = `<i class="fas fa-book-open"></i> Fabula Configuration`;
+      tabsNav.appendChild(tabButton);
 
-    // Nav button
-    const tabBtn = document.createElement("a");
-    tabBtn.className = "item";
-    tabBtn.dataset.tab = TAB_ID;
-    tabBtn.setAttribute(MARKER, "1");
-    tabBtn.innerHTML = `<i class="fas fa-dungeon"></i> Dungeon`;
-    nav.appendChild(tabBtn);
+      // ── Tab panel ───────────────────────────────────────────────
+      // Intentionally does NOT have class="tab" — Foundry's Tabs system
+      // must not touch this panel.  We control visibility manually below.
+      const tabPanel = document.createElement("div");
+      tabPanel.dataset.tab = TAB_ID;
+      tabPanel.style.display = "none";
 
-    // Read current flag values for prefill
-    const scene        = tileDoc?.parent ?? null;
-    const tileId       = tileDoc?.id ?? null;
-    const persistFlag  = tileDoc?.getFlag(MODULE_ID, `${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.persistAfterTrigger`) ?? false;
-    const initialType  = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
-    const currentType  = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
-    const visitedTile  = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
+      // ── Dungeon section content ─────────────────────────────────
+      const scene       = tileDoc?.parent ?? null;
+      const tileId      = tileDoc?.id ?? null;
+      const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
+      const persistFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
+      const initialType = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
+      const currentType = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
+      const visitedTile = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
+      const persists    = persistFlag === true || persistFlag === "true";
 
-    const persists = persistFlag === true || persistFlag === "true";
-
-    // Tab content
-    const tabPanel = document.createElement("div");
-    tabPanel.className = "tab";
-    tabPanel.dataset.tab = TAB_ID;
-    tabPanel.dataset.group = groupName;
-
-    tabPanel.innerHTML = `
-      <div class="oni-dp-tile-wrap">
+      const dungeonSection = document.createElement("div");
+      dungeonSection.className = "oni-fabula-section";
+      dungeonSection.innerHTML = `
         <h3><i class="fas fa-dungeon"></i> Dungeon Configuration</h3>
 
         <div class="form-group">
           <label>Persist after trigger</label>
           <div class="form-fields">
             <input type="checkbox"
-                   name="flags.${MODULE_ID}.${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.persistAfterTrigger"
+                   name="flags.${MODULE_ID}.${pathingKey}.persistAfterTrigger"
                    data-dtype="Boolean"
                    ${persists ? "checked" : ""} />
           </div>
           <p class="notes">
             When checked, this tile stays active after its event fires and will not be blanked out.
             Use for persistent locations like camp sites or recurring encounters.
-            Default: tile is cleared after triggering (one-shot).
           </p>
         </div>
 
@@ -132,7 +172,6 @@
           </div>
           <p class="notes">
             Reflects the tile's live state. Changes to <b>blank</b> after the event is consumed.
-            Use <b>Reset Dungeon</b> in Scene Config to restore all tiles.
           </p>
         </div>
 
@@ -144,25 +183,50 @@
           </div>
           <p class="notes">
             Landmark tiles (Camp, Event, Story, Final) become fast travel destinations
-            once the party has stepped on them.
+            once the party steps on them.
           </p>
         </div>
-      </div>
-    `;
+      `;
 
-    tabParent.appendChild(tabPanel);
+      tabPanel.appendChild(dungeonSection);
+      sheetBody.appendChild(tabPanel);
 
-    // Rebind Foundry tab system
-    try {
-      const tabs = app?._tabs;
-      if (Array.isArray(tabs)) tabs.forEach(t => t?.bind?.(root));
-      else if (tabs) Object.values(tabs).forEach(t => t?.bind?.(root));
-    } catch {}
-  }
+      // ── Manual tab switching ────────────────────────────────────
+      // Register BEFORE bindTabs() so our listener is first in queue and
+      // stopImmediatePropagation() prevents Foundry from trying to activate
+      // a panel that isn't a .tab element.
+      tabButton.addEventListener("click", (ev) => {
+        ev.stopImmediatePropagation();
 
-  Hooks.once("ready", () => {
-    Hooks.on("renderTileConfig", (app, html) => {
-      try { inject(app, html); } catch (e) { console.warn(TAG, "inject failed:", e); }
-    });
+        tabsNav.querySelectorAll(".item[data-tab]").forEach(i => i.classList.remove("active"));
+        tabButton.classList.add("active");
+
+        sheetBody.querySelectorAll(".tab").forEach(p => p.classList.remove("active"));
+
+        tabPanel.style.display = "";
+        try { app.setPosition({ height: "auto" }); } catch {}
+      });
+
+      // When a native tab is clicked: hide our panel
+      tabsNav.addEventListener("click", (ev) => {
+        const btn = ev.target.closest(".item[data-tab]");
+        if (!btn || btn === tabButton) return;
+        tabPanel.style.display = "none";
+      });
+
+      // Let Foundry manage the native tabs; our button is already handled above
+      bindTabs(app, root);
+
+      resizeTileConfigForTabs(app, root);
+      console.debug(TAG, "Fabula Configuration tab injected.");
+    } catch (e) {
+      console.warn(TAG, "inject failed:", e);
+    }
   });
-})();
+}
+
+Hooks.once("ready", () => {
+  try { installDungeonTileConfig(); } catch (e) {
+    console.error("[DungeonPathing][TileConfig] install failed:", e);
+  }
+});
