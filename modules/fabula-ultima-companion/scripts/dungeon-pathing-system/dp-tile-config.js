@@ -168,8 +168,13 @@
 
       // ── Tab panel ───────────────────────────────────────────────
       // Does NOT have class="tab" — Foundry's Tabs system must not touch it.
+      // data-oni-fabula-panel distinguishes the PANEL from the nav button;
+      // both share data-tab="oni-fabula-config" but only the panel has this attr.
+      // Other scripts (event/treasure/journal) query [data-oni-fabula-panel="1"]
+      // instead of [data-tab="oni-fabula-config"] to avoid matching the nav button.
       const tabPanel = document.createElement("div");
       tabPanel.dataset.tab = TAB_ID;
+      tabPanel.setAttribute("data-oni-fabula-panel", "1");
       tabPanel.style.display = "none";
 
       // ── Dungeon section ─────────────────────────────────────────
@@ -239,13 +244,22 @@
       `;
 
       tabPanel.appendChild(dungeonSection);
-      sheetBody.appendChild(tabPanel);
 
-      dbg("Tab panel appended to sheetBody", {
-        tabPanelDisplay: tabPanel.style.display,
-        parentTag:       tabPanel.parentElement?.tagName,
-        parentClass:     tabPanel.parentElement?.className,
-        panelDataTab:    tabPanel.dataset.tab,
+      // Insert BEFORE the footer so the panel sits alongside other tab panels,
+      // not after the "Update Tile" submit button.
+      const formFooter = sheetBody.querySelector("footer, .sheet-footer");
+      if (formFooter) {
+        sheetBody.insertBefore(tabPanel, formFooter);
+      } else {
+        sheetBody.appendChild(tabPanel);
+      }
+
+      dbg("Tab panel inserted into sheetBody", {
+        tabPanelDisplay:  tabPanel.style.display,
+        parentTag:        tabPanel.parentElement?.tagName,
+        parentClass:      tabPanel.parentElement?.className,
+        panelDataTab:     tabPanel.dataset.tab,
+        insertedBefore:   formFooter?.tagName ?? "(appended — no footer found)",
       });
 
       // ── Manual tab switching ────────────────────────────────────

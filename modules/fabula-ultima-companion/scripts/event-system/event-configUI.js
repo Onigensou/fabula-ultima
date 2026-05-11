@@ -694,10 +694,9 @@
       }
 
           // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
-      // If so, inject as a named section inside it instead of creating a separate tab.
-      // dp-tile-config must register its hook BEFORE us (it uses IIFE at module.json line 128;
-      // we are an IIFE at line 180) for fabulaMode to be true here.
-      const fabulaPanel = sheetBody.querySelector('[data-tab="oni-fabula-config"]');
+      // Query by [data-oni-fabula-panel="1"] — NOT by [data-tab="oni-fabula-config"] which
+      // would match the nav button BEFORE the panel (both share data-tab).
+      const fabulaPanel = sheetBody.querySelector('[data-oni-fabula-panel="1"]');
       const fabulaMode  = !!fabulaPanel;
 
       DBG.log(DEBUG_SCOPE, "fabulaMode detection", {

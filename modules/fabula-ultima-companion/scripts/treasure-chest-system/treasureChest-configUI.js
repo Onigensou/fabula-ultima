@@ -166,8 +166,10 @@ function installTreasureConfigUI() {
         return;
       }
 
-      // Detect whether dp-tile-config already injected the shared Fabula tab
-      const fabulaPanel = sheetBody.querySelector('[data-tab="oni-fabula-config"]');
+      // Detect whether dp-tile-config already created the shared Fabula Configuration panel.
+      // Query by [data-oni-fabula-panel="1"] to target the PANEL, not the nav button
+      // (both share data-tab="oni-fabula-config"; querySelector would find the button first).
+      const fabulaPanel = sheetBody.querySelector('[data-oni-fabula-panel="1"]');
       const fabulaMode  = !!fabulaPanel;
 
       if (!fabulaMode) {
