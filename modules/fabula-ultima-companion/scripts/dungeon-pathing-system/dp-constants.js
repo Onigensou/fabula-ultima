@@ -31,8 +31,14 @@
   DP.TILE_TYPES = Object.freeze({
     BLANK:          "blank",
     RANDOM_BATTLE:  "random_battle",
+    // Loot tile sub-types (each maps to a different TreasureRoulette table)
     TREASURE:       "treasure",
     GOLD:           "gold",
+    WEAPON:         "weapon",
+    ARMOR:          "armor",
+    ACCESSORY:      "accessory",
+    CONSUMABLE:     "consumable",
+    ITEM:           "item",
     STEALTH:        "stealth",
     CHAOS:          "chaos",
     ADVANTAGE:      "advantage",

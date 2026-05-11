@@ -11,9 +11,10 @@
 
   // Socket handler names
   const HANDLERS = {
-    CLEAR_TILE:    "dungeonPathing.clearTile",
-    MUTATE_TILE:   "dungeonPathing.mutateTile",
-    RESET_DUNGEON: "dungeonPathing.resetDungeon",
+    CLEAR_TILE:       "dungeonPathing.clearTile",
+    MUTATE_TILE:      "dungeonPathing.mutateTile",
+    RESET_DUNGEON:    "dungeonPathing.resetDungeon",
+    TRIGGER_TREASURE: "dungeonPathing.triggerTreasure",
   };
 
   DP.Socket = {
@@ -62,6 +63,25 @@
         }
       });
 
+      socket.register(HANDLERS.TRIGGER_TREASURE, async ({ sceneId, tileId, tokenId }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const scene = game.scenes.get(sceneId);
+        if (!scene) return { ok: false, error: "Scene not found" };
+        const tileDoc  = scene.tiles.get(tileId);
+        const tokenDoc = scene.tokens.get(tokenId);
+        if (!tileDoc)  return { ok: false, error: "Tile not found" };
+        if (!tokenDoc) return { ok: false, error: "Token not found" };
+        const FE = window["oni.TreasureRoulette.TileFrontEnd"];
+        if (!FE?.onDbEnterTile) return { ok: false, error: "TileFrontEnd not loaded" };
+        try {
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc });
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "triggerTreasure socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       console.debug(TAG, "Socket handlers registered.");
     },
 
@@ -92,6 +112,25 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for resetDungeon"); return; }
       return socket.executeAsGM(HANDLERS.RESET_DUNGEON, { sceneId: scene.id });
+    },
+
+    async triggerTreasure(scene, tileId, tokenId) {
+      if (game.user?.isGM) {
+        const FE = window["oni.TreasureRoulette.TileFrontEnd"];
+        if (!FE?.onDbEnterTile) { console.warn(TAG, "TileFrontEnd not loaded"); return { ok: false, error: "TileFrontEnd not loaded" }; }
+        const tileDoc  = scene.tiles.get(tileId);
+        const tokenDoc = scene.tokens.get(tokenId);
+        try {
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc });
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "triggerTreasure failed", e);
+          return { ok: false, error: e?.message };
+        }
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for triggerTreasure"); return { ok: false, error: "Socket not ready" }; }
+      return socket.executeAsGM(HANDLERS.TRIGGER_TREASURE, { sceneId: scene.id, tileId, tokenId });
     }
   };
 })();
