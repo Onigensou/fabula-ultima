@@ -101,11 +101,13 @@
         ? `font-size:2rem;font-weight:bold;text-align:center;padding:10px;border:3px solid #000;color:#fff;background:${bgColor};`
         : `font-size:1.4rem;font-style:italic;text-align:center;padding:6px;`;
 
-      await ChatMessage.create({ speaker: { alias: "System" }, content: `<div style="${style}">${outcome}</div>` });
+      // Fire-and-forget: don't block the turn flow waiting for the chat message
+      ChatMessage.create({ speaker: { alias: "System" }, content: `<div style="${style}">${outcome}</div>` })
+        .catch(e => console.warn(TAG, "ChatMessage.create failed:", e));
 
       if (sfx) {
         try {
-          if (game.modules.get("sequencer")?.active) await new Sequence().sound(sfx).play();
+          if (game.modules.get("sequencer")?.active) new Sequence().sound(sfx).play();
           else AudioHelper.play({ src: sfx, volume: 0.8, autoplay: true });
         } catch (e) { console.warn(TAG, "SFX error", e); }
       }
@@ -118,11 +120,13 @@
         newPct = Math.max(pctMinimum, Math.round(pctEnc * 0.5));
       }
 
-      if (newPct !== pctEnc && dbWriteTarget) {
-        await dbWriteTarget.update({ "system.props.random_battle_percentage": String(Math.round(newPct)) });
-      }
-
       console.debug(TAG, appear ? "Encounter!" : "No encounter", `Old%:${pctEnc} → New%:${newPct}`);
+
+      // Fire-and-forget: encounter % persists asynchronously; turn flow continues immediately
+      if (newPct !== pctEnc && dbWriteTarget) {
+        dbWriteTarget.update({ "system.props.random_battle_percentage": String(Math.round(newPct)) })
+          .catch(e => console.warn(TAG, "encounter % update failed:", e));
+      }
     }
   });
 })();

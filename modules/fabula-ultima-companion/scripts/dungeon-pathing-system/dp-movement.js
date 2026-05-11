@@ -106,9 +106,29 @@ try{
           meta: { source: "DungeonPathing", toNodeId: destNode.nodeId }
         });
 
-        await wait(DP.MOVE_MS - DP.REAL_UPDATE_BEFORE_END);
+        const expW1 = DP.MOVE_MS - DP.REAL_UPDATE_BEFORE_END;
+        const expW2 = DP.REAL_UPDATE_BEFORE_END + DP.REBUILD_AFTER_MOVE_MS;
+
+        const tW1 = performance.now();
+        await wait(expW1);
+        const dtW1 = performance.now() - tW1;
+
+        const tUpd = performance.now();
         await token.document.update({ x: realX, y: realY }, { animate: false, dungeonPathing: true });
-        await wait(DP.REAL_UPDATE_BEFORE_END + DP.REBUILD_AFTER_MOVE_MS);
+        const dtUpd = performance.now() - tUpd;
+
+        const tW2 = performance.now();
+        await wait(expW2);
+        const dtW2 = performance.now() - tW2;
+
+        if (window.__DP_PERF__) {
+          const slow = v => v > 50 ? ` ⚠` : "";
+          console.info("[DungeonPathing][Perf]",
+            `moveToNode | wait1 ${dtW1.toFixed(0)}ms (exp ${expW1})${slow(dtW1 - expW1)}` +
+            ` | docUpdate ${dtUpd.toFixed(0)}ms${slow(dtUpd - 150)}` +
+            ` | wait2 ${dtW2.toFixed(0)}ms (exp ${expW2})${slow(dtW2 - expW2)}`
+          );
+        }
       } else {
         await token.document.update({ x: realX, y: realY }, { animate: true, dungeonPathing: true });
         await wait(DP.REBUILD_AFTER_MOVE_MS);
