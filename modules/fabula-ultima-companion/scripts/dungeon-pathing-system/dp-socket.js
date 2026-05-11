@@ -74,7 +74,7 @@
         const FE = window["oni.TreasureRoulette.TileFrontEnd"];
         if (!FE?.onDbEnterTile) return { ok: false, error: "TileFrontEnd not loaded" };
         try {
-          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType });
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType, fromDungeonPathing: true });
           return { ok: true };
         } catch (e) {
           console.error(TAG, "triggerTreasure socket handler failed", e);
@@ -121,7 +121,7 @@
         const tileDoc  = scene.tiles.get(tileId);
         const tokenDoc = scene.tokens.get(tokenId);
         try {
-          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType });
+          await FE.onDbEnterTile({ tileDocument: tileDoc, tokenDocument: tokenDoc, tileType, fromDungeonPathing: true });
           return { ok: true };
         } catch (e) {
           console.error(TAG, "triggerTreasure failed", e);

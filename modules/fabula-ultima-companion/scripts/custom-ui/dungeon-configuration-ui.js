@@ -525,6 +525,22 @@
             </p>
           </div>
 
+          <div class="oni-dp-reset-section" style="display:none; margin-top:16px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.15);">
+            <h3 style="margin:0 0 8px;">Dungeon Management</h3>
+            <div class="form-group">
+              <label>Reset Dungeon</label>
+              <div class="form-fields">
+                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;">
+                  <i class="fas fa-redo"></i> Reset All Tiles to Initial State
+                </button>
+              </div>
+              <p class="notes" style="color:#e05252;">
+                Restores every tile in this scene to its original state — undoes all pickups,
+                clearings, and mutations. Cannot be undone.
+              </p>
+            </div>
+          </div>
+
           <p class="notes">Remember: data is saved only when you press <b>Save Changes</b>.</p>
         </div>
 
@@ -792,6 +808,46 @@
       log("Scene:", scene?.name, "Scene Network =", rows);
       ui.notifications?.info?.("Logged to console: Scene Network");
     });
+
+    // -----------------------------
+    // Reset Dungeon button (GM only, dungeon mode only)
+    // -----------------------------
+    if (game.user?.isGM) {
+      const resetSection = tabPanel.querySelector(".oni-dp-reset-section");
+      const modeSel      = tabPanel.querySelector(`select[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}"]`);
+
+      function syncResetVisibility() {
+        const mode = modeSel?.value ?? "";
+        resetSection.style.display = (mode === "dungeon") ? "" : "none";
+      }
+
+      // Show if currently dungeon mode
+      syncResetVisibility();
+      modeSel?.addEventListener("change", syncResetVisibility);
+
+      tabPanel.querySelector(".oni-reset-dungeon-btn")?.addEventListener("click", async (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+
+        const confirmed = await Dialog.confirm({
+          title: "Reset Dungeon",
+          content: `<p>Reset <b>all tiles</b> in <b>${scene?.name ?? "this scene"}</b> back to their
+                    initial state?</p><p>This cannot be undone.</p>`,
+          yes: () => true,
+          no:  () => false,
+          defaultYes: false,
+        });
+
+        if (!confirmed) return;
+
+        try {
+          await globalThis.__ONI_DUNGEON_PATHING__?.resetDungeon?.();
+          ui.notifications?.info?.("Dungeon tiles reset to initial state.");
+        } catch (e) {
+          console.error("[FabulaConfigUI] resetDungeon failed:", e);
+          ui.notifications?.error?.("Reset failed — see console.");
+        }
+      });
+    }
 
     // -----------------------------
     // Bind tabs + move Save button

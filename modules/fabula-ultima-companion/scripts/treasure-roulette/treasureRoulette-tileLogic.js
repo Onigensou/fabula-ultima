@@ -355,11 +355,14 @@ log("Tile consumed:", tileUuid);
         return;
       }
 
-      // Only DB token should create prompts
-      const okDb = await isDbToken(tokenDoc);
-      if (!okDb) {
-        log("Trigger ignored: token is not DB token", { token: tokenDoc?.uuid, actor: tokenDoc?.actor?.uuid || tokenDoc?.actorUuid || null });
-        return;
+      // Skip DB-token check when triggered from the Dungeon Pathing system — DP already
+      // validated the party token before dispatching the tile event.
+      if (!context.fromDungeonPathing) {
+        const okDb = await isDbToken(tokenDoc);
+        if (!okDb) {
+          log("Trigger ignored: token is not DB token", { token: tokenDoc?.uuid, actor: tokenDoc?.actor?.uuid || tokenDoc?.actorUuid || null });
+          return;
+        }
       }
 
       // Already consumed/prompted?

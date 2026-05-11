@@ -271,7 +271,14 @@
 
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
 
-      if (cleared && tileDoc) {
+      // Per-tile override: tile's own Dungeon Configuration flag takes precedence over the
+      // registry default.  "" or undefined → fall back to the registry clearAfterTrigger value.
+      const tileOverride = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.clearAfterTrigger`);
+      const shouldClear = (tileOverride === "false" || tileOverride === false) ? false
+        : (tileOverride === "true"  || tileOverride === true)  ? true
+        : cleared;
+
+      if (shouldClear && tileDoc) {
         await DP.Socket.clearTile(scene, tileDoc.id);
       }
 
