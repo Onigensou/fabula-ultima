@@ -26,6 +26,11 @@
 (() => {
   const INSTALL_TAG = "[ONI][EventSystem][ConfigUI]";
 
+  // Raw bypass log — always visible regardless of DBG gate or group state
+  const RAW = (...a) => console.log(INSTALL_TAG, ...a);
+
+  RAW("IIFE start");
+
   // ------------------------------------------------------------
   // Global namespace + guard
   // ------------------------------------------------------------
@@ -33,6 +38,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.ConfigUI?.installed) {
+    RAW("Already installed; skipping (double-load guard).");
     console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
@@ -40,6 +46,8 @@
   const C = window.oni.EventSystem.Constants;
   const D = window.oni.EventSystem.Debug;
   const EventRegistry = window.oni.EventSystem.EventRegistry;
+
+  RAW("Dependency check", { C: !!C, EventRegistry: !!EventRegistry, D: !!D });
 
   if (!C) {
     console.error(INSTALL_TAG, "Missing Constants. Load event-constants.js first.");
@@ -636,7 +644,10 @@
   // ------------------------------------------------------------
   // Main injection
   // ------------------------------------------------------------
+  RAW("renderTileConfig hook registered.");
+
   Hooks.on("renderTileConfig", async (app, html) => {
+    RAW("renderTileConfig FIRED", { appId: app?.appId, tileId: app?.document?.id ?? app?.object?.id });
     let grouped = false;
 
     try {
@@ -644,11 +655,18 @@
 
       const root = getRoot(html, app);
       if (!root) {
+        RAW("No root found — aborting.");
         DBG.warn(DEBUG_SCOPE, "No TileConfig root found.");
         return;
       }
 
+      RAW("root check", {
+        hasEventMarker:  root.hasAttribute(MARKER_ATTR),
+        hasFabulaMarker: root.hasAttribute("data-oni-fabula-config"),
+      });
+
       if (root.hasAttribute(MARKER_ATTR)) {
+        RAW("Already injected (marker set) — skipping.");
         DBG.verboseLog(DEBUG_SCOPE, "Already injected; skipping.");
         return;
       }
@@ -657,9 +675,20 @@
 
       const tileDoc = app?.document ?? app?.object;
       const tabsNav = root.querySelector("nav.sheet-tabs");
-      const sheetBody = root.querySelector(".sheet-body") || root.querySelector(".window-content form");
+      // Same sheetBody logic as dp-tile-config: walk up from first native .tab panel
+      const firstNativeTab = root.querySelector(".tab[data-tab]");
+      const sheetBody = firstNativeTab?.parentElement
+        ?? root.querySelector(".sheet-body")
+        ?? root.querySelector(".window-content form");
+
+      RAW("sheetBody resolved", {
+        sheetBodyTag:   sheetBody?.tagName,
+        sheetBodyClass: sheetBody?.className,
+        firstNativeTab: firstNativeTab?.dataset?.tab,
+      });
 
       if (!tabsNav || !sheetBody) {
+        RAW("Missing tabsNav or sheetBody — aborting.");
         DBG.warn(DEBUG_SCOPE, "Could not find tabsNav or sheetBody.", { tabsNav, sheetBody });
         return;
       }

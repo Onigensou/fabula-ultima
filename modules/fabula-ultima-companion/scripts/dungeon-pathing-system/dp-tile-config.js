@@ -95,15 +95,11 @@
   }
 
   function resizeTileConfigForTabs(app, root) {
+    // Only adjust HEIGHT — changing width triggers a full Foundry re-render
+    // which fires renderTileConfig again with a fresh DOM (breaking markers).
     try {
-      const nav = root?.querySelector("nav.sheet-tabs");
-      if (!nav) return;
-      const tabCount = nav.querySelectorAll(".item").length;
-      app.setPosition({
-        width:  Math.min(Math.max(760, tabCount * 96), 1180),
-        height: "auto",
-      });
-      dbg("resizeTileConfigForTabs", { tabCount, targetWidth: Math.min(Math.max(760, tabCount * 96), 1180) });
+      app.setPosition({ height: "auto" });
+      dbg("resizeTileConfigForTabs — height:auto applied");
     } catch (e) {
       warn("resizeTileConfigForTabs failed:", e);
     }
@@ -134,7 +130,12 @@
 
       const tileDoc   = app?.document ?? app?.object;
       const tabsNav   = root.querySelector("nav.sheet-tabs");
-      const sheetBody = root.querySelector(".sheet-body") || root.querySelector(".window-content form");
+      // Locate where native tab panels actually live — some apps (e.g. Monks Active Tiles)
+      // do not wrap panels in a .sheet-body div, so we walk up from the first .tab panel.
+      const firstNativeTab = root.querySelector(".tab[data-tab]");
+      const sheetBody = firstNativeTab?.parentElement
+        ?? root.querySelector(".sheet-body")
+        ?? root.querySelector(".window-content form");
 
       dbg("DOM query results", {
         tabsNavFound:   !!tabsNav,
