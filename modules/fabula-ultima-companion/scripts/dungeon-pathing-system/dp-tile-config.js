@@ -81,11 +81,12 @@
     // Read current flag values for prefill
     const scene        = tileDoc?.parent ?? null;
     const tileId       = tileDoc?.id ?? null;
-    const clearFlag    = tileDoc?.getFlag(MODULE_ID, `${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.clearAfterTrigger`) ?? "";
+    const persistFlag  = tileDoc?.getFlag(MODULE_ID, `${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.persistAfterTrigger`) ?? false;
     const initialType  = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
     const currentType  = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
+    const visitedTile  = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
 
-    const cleared = String(clearFlag);
+    const persists = persistFlag === true || persistFlag === "true";
 
     // Tab content
     const tabPanel = document.createElement("div");
@@ -98,19 +99,17 @@
         <h3><i class="fas fa-dungeon"></i> Dungeon Configuration</h3>
 
         <div class="form-group">
-          <label>Clear tile after trigger</label>
+          <label>Persist after trigger</label>
           <div class="form-fields">
-            <select name="flags.${MODULE_ID}.${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.clearAfterTrigger">
-              <option value=""   ${cleared === ""      ? "selected" : ""}>Default (set by tile type)</option>
-              <option value="true"  ${cleared === "true"  ? "selected" : ""}>Yes — clear after trigger</option>
-              <option value="false" ${cleared === "false" ? "selected" : ""}>No — keep tile active</option>
-            </select>
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${DP.PATHING_ROOT_KEY ?? "dungeonPathing"}.persistAfterTrigger"
+                   data-dtype="Boolean"
+                   ${persists ? "checked" : ""} />
           </div>
           <p class="notes">
-            When set to <b>Yes</b>, this tile becomes blank after its event fires (one-shot pickup).
-            Set to <b>No</b> for tiles that should stay active across the whole dungeon run
-            (e.g. a camp site or a repeating encounter spawn).
-            <b>Default</b> uses the tile type's built-in behaviour.
+            When checked, this tile stays active after its event fires and will not be blanked out.
+            Use for persistent locations like camp sites or recurring encounters.
+            Default: tile is cleared after triggering (one-shot).
           </p>
         </div>
 
@@ -134,6 +133,18 @@
           <p class="notes">
             Reflects the tile's live state. Changes to <b>blank</b> after the event is consumed.
             Use <b>Reset Dungeon</b> in Scene Config to restore all tiles.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Visited (Fast Travel)</label>
+          <div class="form-fields">
+            <input class="oni-dp-tile-info" type="text" readonly
+                   value="${visitedTile ? "Yes — eligible for fast travel" : "No — not yet visited"}" />
+          </div>
+          <p class="notes">
+            Landmark tiles (Camp, Event, Story, Final) become fast travel destinations
+            once the party has stepped on them.
           </p>
         </div>
       </div>

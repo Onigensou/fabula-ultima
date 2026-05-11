@@ -89,6 +89,7 @@
   // ── State ──────────────────────────────────────────────────────────────────
   let _scanBtn       = null;   // 🔍 DOM element
   let _helperBtn     = null;   // 🗺️ DOM element
+  let _ftBtn         = null;   // 🦅 DOM element
   let _scanning      = false;
   let _cameraSettled = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn      = null;
@@ -100,6 +101,9 @@
   }
   function cfgHelper() {
     return DP.UI?.HELPER_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 94,  FONT_SIZE: "28px" };
+  }
+  function cfgFT() {
+    return DP.UI?.FAST_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 168, FONT_SIZE: "28px" };
   }
 
   function isGM() {
@@ -239,7 +243,6 @@
   }
 
   // ── Helper button visual sync ──────────────────────────────────────────────
-  // Called after any helper mode state change (button click or H key).
   function syncHelperBtn() {
     if (!_helperBtn) return;
     const on = DP.HelperMode?.enabled ?? false;
@@ -247,6 +250,16 @@
     _helperBtn.title = on
       ? "Helper Mode ON — press H or click to toggle"
       : "Helper Mode — show walkable tiles";
+  }
+
+  // ── Fast Travel button visual sync ─────────────────────────────────────────
+  function syncFtBtn() {
+    if (!_ftBtn) return;
+    const on = DP.FastTravel?.active ?? false;
+    _ftBtn.classList.toggle("dp-scan-active", on);
+    _ftBtn.title = on
+      ? "Fast Travel ON — click a landmark to travel there (ESC to cancel)"
+      : "Fast Travel — teleport to a visited landmark";
   }
 
   // ── ESC key ────────────────────────────────────────────────────────────────
@@ -317,8 +330,21 @@
     );
     document.body.appendChild(_helperBtn);
 
-    // Sync initial helper button state
+    // Fast Travel button
+    _ftBtn = makeBtn(
+      "oni-dp-ft-btn",
+      "🦅",
+      "Fast Travel — teleport to a visited landmark",
+      cfgFT(),
+      () => {
+        DP.FastTravel?.toggle?.();
+      },
+    );
+    document.body.appendChild(_ftBtn);
+
+    // Sync initial button states
     syncHelperBtn();
+    syncFtBtn();
 
     installEsc();
 
@@ -326,6 +352,7 @@
     requestAnimationFrame(() => {
       _scanBtn?.classList.add("dp-scan-visible");
       _helperBtn?.classList.add("dp-scan-visible");
+      _ftBtn?.classList.add("dp-scan-visible");
     });
   }
 
@@ -337,13 +364,14 @@
     }
     removeEsc();
 
-    for (const btn of [_scanBtn, _helperBtn]) {
+    for (const btn of [_scanBtn, _helperBtn, _ftBtn]) {
       if (!btn) continue;
       btn.classList.remove("dp-scan-visible");
       setTimeout(() => btn.remove(), 280);
     }
     _scanBtn   = null;
     _helperBtn = null;
+    _ftBtn     = null;
   }
 
   // ── Public API ─────────────────────────────────────────────────────────────
@@ -358,5 +386,7 @@
     snapCameraToToken,
     /** Call after any external helper-mode state change to keep the button in sync. */
     syncHelperBtn,
+    /** Call after any fast travel state change to keep the button in sync. */
+    syncFtBtn,
   };
 })();

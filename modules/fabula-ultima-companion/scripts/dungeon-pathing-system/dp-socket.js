@@ -11,10 +11,12 @@
 
   // Socket handler names
   const HANDLERS = {
-    CLEAR_TILE:       "dungeonPathing.clearTile",
-    MUTATE_TILE:      "dungeonPathing.mutateTile",
-    RESET_DUNGEON:    "dungeonPathing.resetDungeon",
-    TRIGGER_TREASURE: "dungeonPathing.triggerTreasure",
+    CLEAR_TILE:             "dungeonPathing.clearTile",
+    MUTATE_TILE:            "dungeonPathing.mutateTile",
+    RESET_DUNGEON:          "dungeonPathing.resetDungeon",
+    TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
+    MARK_VISITED:           "dungeonPathing.markVisited",
+    FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
   };
 
   DP.Socket = {
@@ -82,6 +84,34 @@
         }
       });
 
+      socket.register(HANDLERS.MARK_VISITED, async ({ sceneId, tileId }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const scene = game.scenes.get(sceneId);
+        if (!scene) return { ok: false, error: "Scene not found" };
+        try {
+          await DP.TileState.markVisited(scene, tileId);
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "markVisited socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
+      socket.register(HANDLERS.FAST_TRAVEL_TELEPORT, async ({ sceneId, tokenId, x, y }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const scene = game.scenes.get(sceneId);
+        if (!scene) return { ok: false, error: "Scene not found" };
+        const tokenDoc = scene.tokens.get(tokenId);
+        if (!tokenDoc) return { ok: false, error: "Token not found" };
+        try {
+          await tokenDoc.update({ x, y }, { dungeonPathing: true });
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "fastTravelTeleport socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       console.debug(TAG, "Socket handlers registered.");
     },
 
@@ -112,6 +142,27 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for resetDungeon"); return; }
       return socket.executeAsGM(HANDLERS.RESET_DUNGEON, { sceneId: scene.id });
+    },
+
+    async markVisited(scene, tileId) {
+      if (game.user?.isGM) {
+        return DP.TileState.markVisited(scene, tileId);
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for markVisited"); return; }
+      return socket.executeAsGM(HANDLERS.MARK_VISITED, { sceneId: scene.id, tileId });
+    },
+
+    async fastTravelTeleport(scene, tokenId, x, y) {
+      if (game.user?.isGM) {
+        const tokenDoc = scene.tokens.get(tokenId);
+        if (!tokenDoc) return { ok: false, error: "Token not found" };
+        await tokenDoc.update({ x, y }, { dungeonPathing: true });
+        return { ok: true };
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for fastTravelTeleport"); return; }
+      return socket.executeAsGM(HANDLERS.FAST_TRAVEL_TELEPORT, { sceneId: scene.id, tokenId, x, y });
     },
 
     async triggerTreasure(scene, tileId, tokenId, tileType) {

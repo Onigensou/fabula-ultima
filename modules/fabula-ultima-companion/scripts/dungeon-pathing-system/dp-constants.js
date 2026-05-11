@@ -120,6 +120,14 @@
       LEFT:      94,         // 20 (scan left) + 64 (scan size) + 10 (gap)
       FONT_SIZE: "28px",
     },
+
+    // Fast Travel button — placed to the right of the Helper button
+    FAST_TRAVEL_BUTTON: {
+      SIZE:      64,         // diameter in px
+      BOTTOM:    80,         // px from bottom (same row)
+      LEFT:      168,        // 94 (helper left) + 64 (helper size) + 10 (gap)
+      FONT_SIZE: "28px",
+    },
   };
 
   // Flag key for per-scene scan radius (read by dp-scan-mode.js)
@@ -145,6 +153,8 @@
     SCAN_OFF:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
     HELPER_ON:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
     HELPER_OFF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    FT_OPEN:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Eagle%20Sound.mp3",
+    FT_CLOSE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
   });
 
   // Blank tile asset

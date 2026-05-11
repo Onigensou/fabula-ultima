@@ -271,12 +271,14 @@
 
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
 
-      // Per-tile override: tile's own Dungeon Configuration flag takes precedence over the
-      // registry default.  "" or undefined → fall back to the registry clearAfterTrigger value.
-      const tileOverride = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.clearAfterTrigger`);
-      const shouldClear = (tileOverride === "false" || tileOverride === false) ? false
-        : (tileOverride === "true"  || tileOverride === true)  ? true
-        : cleared;
+      // Mark tile visited for Fast Travel eligibility (fire-and-forget).
+      if (tileDoc) {
+        DP.Socket.markVisited(scene, tileDoc.id).catch(e => console.warn(TAG, "markVisited:", e));
+      }
+
+      // Per-tile override: "Persist after trigger" checkbox overrides registry default.
+      const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
+      const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
 
       if (shouldClear && tileDoc) {
         await DP.Socket.clearTile(scene, tileDoc.id);
@@ -340,6 +342,7 @@
     state.forcedNodeId = null;
     removeClickListener();
     removeHoverHandler();
+    DP.FastTravel?.exit?.();
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();

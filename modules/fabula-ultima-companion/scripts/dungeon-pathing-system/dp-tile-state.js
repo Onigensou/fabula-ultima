@@ -26,6 +26,14 @@
     await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates`, states);
   }
 
+  function getVisited(scene) {
+    return scene?.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY]?.visitedTiles ?? {};
+  }
+
+  async function setVisited(scene, visited) {
+    await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`, visited);
+  }
+
   // Infer tile type from name + texture path (legacy fallback, same as prototype)
   function inferType(tileDoc) {
     const name    = String(tileDoc?.name ?? "").toLowerCase();
@@ -165,12 +173,36 @@
       }
 
       await setStates(scene, updated).catch(e => console.warn(TAG, "resetDungeon setFlag failed", e));
+      await setVisited(scene, {}).catch(e => console.warn(TAG, "resetDungeon clearVisited failed", e));
       ui.notifications?.info?.("Dungeon tiles reset to initial state.");
+    },
+
+    /**
+     * Mark a tile as visited by the party (enables fast travel eligibility).
+     * Must run as GM.
+     */
+    async markVisited(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const visited = getVisited(scene);
+      if (visited[tileId]) return;
+      await setVisited(scene, { ...visited, [tileId]: true })
+        .catch(e => console.warn(TAG, "markVisited failed", e));
+    },
+
+    /** Returns true if the party has previously stepped on this tile. */
+    isVisited(scene, tileId) {
+      return !!getVisited(scene)[tileId];
+    },
+
+    /** Returns all tileIds the party has visited. */
+    getVisitedTileIds(scene) {
+      return Object.keys(getVisited(scene));
     },
 
     /** Raw dump of all tile states for debugging. */
     dump(scene) {
-      return getStates(scene);
+      return { states: getStates(scene), visited: getVisited(scene) };
     }
   };
 })();
