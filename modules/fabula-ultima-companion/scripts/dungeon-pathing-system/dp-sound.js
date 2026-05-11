@@ -17,6 +17,7 @@
     HELPER_OFF: 0.45,
     FT_OPEN:    0.6,
     FT_CLOSE:   0.45,
+    FT_CYCLE:   0.55,
   };
 
   function play(src, volume) {
@@ -62,6 +63,7 @@
     playHelperOff() { play(DP.SOUNDS.HELPER_OFF, VOLUME.HELPER_OFF); },
     playFastTravelOpen()  { play(DP.SOUNDS.FT_OPEN,  VOLUME.FT_OPEN);  },
     playFastTravelClose() { play(DP.SOUNDS.FT_CLOSE, VOLUME.FT_CLOSE); },
+    playFastTravelCycle() { play(DP.SOUNDS.FT_CYCLE, VOLUME.FT_CYCLE); },
 
     /**
      * Play footstep sound twice to simulate walking.

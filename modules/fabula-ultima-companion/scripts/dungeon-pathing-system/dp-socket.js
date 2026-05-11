@@ -9,7 +9,7 @@
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Socket]";
 
-  // Socket handler names
+  // Socket handler names (socketlib — used where timing allows)
   const HANDLERS = {
     CLEAR_TILE:             "dungeonPathing.clearTile",
     MUTATE_TILE:            "dungeonPathing.mutateTile",
@@ -19,8 +19,36 @@
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
   };
 
+  // Raw game.socket channel — used for markVisited to avoid socketlib.ready timing race.
+  // socketlib fires its ready hook before our module's ready hook, so Hooks.once("socketlib.ready")
+  // registered inside installHooks() is always missed.  game.socket has no such race.
+  const RAW_CH    = `module.${DP.MODULE_ID ?? "fabula-ultima-companion"}`;
+  const MSG_MV    = "DP_MARK_VISITED";
+  const MV_GUARD  = "__ONI_DP_MV_SOCKET__";
+
   DP.Socket = {
     _socket: null,
+
+    /**
+     * Install a raw game.socket listener for markVisited requests from player clients.
+     * Called on Hooks.once("ready") — game.socket is guaranteed available by then.
+     */
+    setupRawListener() {
+      if (window[MV_GUARD]) return;
+      window[MV_GUARD] = true;
+
+      game.socket.on(RAW_CH, async (msg) => {
+        if (msg?.type !== MSG_MV) return;
+        if (!game.user?.isGM) return;
+        const { sceneId, tileId } = msg.payload ?? {};
+        const scene = game.scenes.get(sceneId);
+        if (!scene || !tileId) { console.warn(TAG, "raw markVisited: bad payload", msg.payload); return; }
+        await DP.TileState.markVisited(scene, tileId)
+          .catch(e => console.warn(TAG, "raw markVisited failed:", e));
+      });
+
+      console.debug(TAG, "Raw socket listener installed (markVisited).");
+    },
 
     /** Called from dp-bootstrap once socketlib is ready. */
     register(socket) {
@@ -112,7 +140,7 @@
         }
       });
 
-      console.debug(TAG, "Socket handlers registered.");
+      console.debug(TAG, "Socketlib handlers registered.");
     },
 
     // ----- Client-side helpers (non-GM clients call these) -------------------
@@ -148,9 +176,8 @@
       if (game.user?.isGM) {
         return DP.TileState.markVisited(scene, tileId);
       }
-      const socket = this._socket ?? window.FUCompanionSocket;
-      if (!socket) { console.warn(TAG, "Socket not ready for markVisited"); return; }
-      return socket.executeAsGM(HANDLERS.MARK_VISITED, { sceneId: scene.id, tileId });
+      // Bypass socketlib — emit directly on game.socket so the GM's raw listener handles it.
+      game.socket.emit(RAW_CH, { type: MSG_MV, payload: { sceneId: scene.id, tileId } });
     },
 
     async fastTravelTeleport(scene, tokenId, x, y) {
@@ -184,4 +211,9 @@
       return socket.executeAsGM(HANDLERS.TRIGGER_TREASURE, { sceneId: scene.id, tileId, tokenId, tileType });
     }
   };
+
+  // Install the raw socket listener as soon as game.socket is available.
+  Hooks.once("ready", () => {
+    DP.Socket.setupRawListener();
+  });
 })();

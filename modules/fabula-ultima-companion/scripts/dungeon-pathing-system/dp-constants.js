@@ -155,6 +155,7 @@
     HELPER_OFF: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
     FT_OPEN:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Eagle%20Sound.mp3",
     FT_CLOSE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    FT_CYCLE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
   });
 
   // Blank tile asset

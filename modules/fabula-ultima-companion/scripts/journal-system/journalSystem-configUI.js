@@ -229,22 +229,30 @@ function installJournalConfigUI() {
         return;
       }
 
-      // --------------------------------------------------------
-      // Tab button
-      // --------------------------------------------------------
-      const tabButton = document.createElement("a");
-      tabButton.className = "item";
-      tabButton.dataset.tab = TAB_ID;
-      tabButton.innerHTML = `<i class="fas fa-book-open"></i> Journal Config`;
-      tabsNav.appendChild(tabButton);
-      log("Tab button injected:", TAB_ID);
+      // Detect whether dp-tile-config already injected the shared Fabula tab
+      const fabulaPanel = sheetBody.querySelector('[data-tab="oni-fabula-config"]');
+      const fabulaMode  = !!fabulaPanel;
+
+      if (!fabulaMode) {
+        // --------------------------------------------------------
+        // Tab button — only when creating own tab
+        // --------------------------------------------------------
+        const tabButton = document.createElement("a");
+        tabButton.className = "item";
+        tabButton.dataset.tab = TAB_ID;
+        tabButton.innerHTML = `<i class="fas fa-book-open"></i> Journal Config`;
+        tabsNav.appendChild(tabButton);
+        log("Tab button injected:", TAB_ID);
+      }
 
       // --------------------------------------------------------
-      // Tab panel
+      // Tab panel (own tab) or plain section div (fabula mode)
       // --------------------------------------------------------
       const tabPanel = document.createElement("div");
-      tabPanel.className = "tab";
-      tabPanel.dataset.tab = TAB_ID;
+      if (!fabulaMode) {
+        tabPanel.className = "tab";
+        tabPanel.dataset.tab = TAB_ID;
+      }
 
       tabPanel.innerHTML = `
         <div class="oni-journal-wrap">
@@ -332,12 +340,23 @@ function installJournalConfigUI() {
         </div>
       `;
 
-      sheetBody.appendChild(tabPanel);
-      log("Tab panel injected into sheet body.");
-
-      const bound = bindTabs(app, root);
-      if (!bound.ok) warn("bindTabs failed:", bound.reason);
-      else log("bindTabs ok.");
+      if (fabulaMode) {
+        const hr = document.createElement("hr");
+        hr.className = "oni-fabula-section-divider";
+        fabulaPanel.appendChild(hr);
+        const hdr = document.createElement("h3");
+        hdr.className = "oni-fabula-section-header";
+        hdr.innerHTML = `<i class="fas fa-book-open"></i> Journal Config`;
+        fabulaPanel.appendChild(hdr);
+        fabulaPanel.appendChild(tabPanel);
+        log("Tab panel injected into Fabula Configuration tab.");
+      } else {
+        sheetBody.appendChild(tabPanel);
+        log("Tab panel injected into sheet body.");
+        const bound = bindTabs(app, root);
+        if (!bound.ok) warn("bindTabs failed:", bound.reason);
+        else log("bindTabs ok.");
+      }
 
       // --------------------------------------------------------
       // Prefill

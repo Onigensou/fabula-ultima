@@ -79,21 +79,40 @@
   let _container    = null; // PIXI container with cursor sprites
   let _leftBtn      = null; // DOM ◀ button
   let _rightBtn     = null; // DOM ▶ button
-  let _escHandler   = null;
-  let _clickHandler = null;
+  let _escHandler    = null;
+  let _clickHandler  = null;
+  let _wheelHandler  = null;
 
   // ── Build eligible node list ─────────────────────────────────────────────────
   // Scans all tiles in the current scene for FT-eligible initial type + visited.
   function resolveEligibleNodes() {
     const scene = canvas?.scene;
-    if (!scene) return [];
+    if (!scene) { console.debug(TAG, "resolveEligibleNodes: no scene"); return []; }
+
+    const tileDocs = scene.tiles?.contents ?? [];
+    console.debug(TAG, `resolveEligibleNodes: scanning ${tileDocs.length} tile(s)`);
 
     const result = [];
-    for (const tileDoc of (scene.tiles?.contents ?? [])) {
-      const tileId      = tileDoc.id;
-      const initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
+    for (const tileDoc of tileDocs) {
+      const tileId = tileDoc.id;
+
+      // Primary: read type from TileState flags (set when graph was built)
+      let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
+
+      // Fallback: infer from tile name when TileState hasn't been ensured yet
+      if (!initialType && tileDoc.name) {
+        const low = String(tileDoc.name).toLowerCase();
+        if      (low.includes("camp"))  initialType = "camp";
+        else if (low.includes("event")) initialType = "event";
+        else if (low.includes("final")) initialType = "final";
+        else if (low.includes("story")) initialType = "story";
+      }
+
+      const isVisited = DP.TileState?.isVisited(scene, tileId) ?? false;
+      console.debug(TAG, `  tile ${tileId} (${tileDoc.name}): type="${initialType}", visited=${isVisited}`);
+
       if (!FT_TYPES.has(initialType)) continue;
-      if (!DP.TileState?.isVisited(scene, tileId)) continue;
+      if (!isVisited) continue;
 
       const x = Number(tileDoc.x ?? 0);
       const y = Number(tileDoc.y ?? 0);
@@ -108,6 +127,8 @@
         bounds:   { left: x, right: x + w, top: y, bottom: y + h },
       });
     }
+
+    console.debug(TAG, `resolveEligibleNodes: ${result.length} eligible node(s)`);
     return result;
   }
 
@@ -248,6 +269,7 @@
   function navigate(delta) {
     if (!_eligible.length) return;
     _focusedIdx = ((_focusedIdx + delta) % _eligible.length + _eligible.length) % _eligible.length;
+    DP.Sound?.playFastTravelCycle?.();
     panToFocused();
   }
 
@@ -301,6 +323,30 @@
       if (view && _clickHandler) view.removeEventListener("pointerdown", _clickHandler, true);
     } catch {}
     _clickHandler = null;
+  }
+
+  // ── Scroll-wheel navigation ───────────────────────────────────────────────────
+  function installWheelListener() {
+    if (_wheelHandler) return;
+    const view = getCanvasView();
+    if (!view) return;
+
+    _wheelHandler = (ev) => {
+      if (!_active) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      navigate(ev.deltaY > 0 ? 1 : -1);
+    };
+
+    view.addEventListener("wheel", _wheelHandler, { passive: false, capture: true });
+  }
+
+  function removeWheelListener() {
+    try {
+      const view = getCanvasView();
+      if (view && _wheelHandler) view.removeEventListener("wheel", _wheelHandler, true);
+    } catch {}
+    _wheelHandler = null;
   }
 
   // ── Travel confirmation + teleport ────────────────────────────────────────────
@@ -361,17 +407,20 @@
 
     // Only the Main Controller can use Fast Travel
     const api = globalThis.__ONI_MOVEMENT_CONTROL_API__;
+    console.debug(TAG, "enter(): checking controller status. api=", !!api);
     if (!api?.isCurrentUserMainController) {
       ui.notifications?.warn?.("Movement Control system not ready.");
       return;
     }
     const isController = await api.isCurrentUserMainController();
+    console.debug(TAG, "enter(): isController=", isController);
     if (!isController) {
       ui.notifications?.warn?.("Fast Travel is only available to the Main Controller.");
       return;
     }
 
     _eligible = resolveEligibleNodes();
+    console.debug(TAG, "enter(): eligible nodes=", _eligible.length, _eligible.map(n => n.name));
     if (!_eligible.length) {
       ui.notifications?.info?.("No visited landmarks to travel to. Explore the dungeon first!");
       return;
@@ -392,6 +441,7 @@
     await showSprites(_eligible);
     showNavButtons();
     installClickListener();
+    installWheelListener();
     installEsc();
 
     // Pan immediately to first eligible tile and sync all viewports
@@ -411,6 +461,7 @@
     hideSprites();
     hideNavButtons();
     removeClickListener();
+    removeWheelListener();
     removeEsc();
 
     broadcastExit();
