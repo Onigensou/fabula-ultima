@@ -21,6 +21,16 @@
   if (globalThis[GLOBAL]?.state?.installed) return;
 
   // ---------------------------------------------------------------------------
+  // Perf logger — enable with: window.__DP_PERF__ = true
+  // ---------------------------------------------------------------------------
+  const PERF_TAG = "[DungeonPathing][Perf]";
+  const perf = (...args) => { if (window.__DP_PERF__) console.info(PERF_TAG, ...args); };
+
+  // Yield to the browser event loop so any pending paint/layout completes
+  // before we run a synchronous CPU-heavy pass like the graph build.
+  const yieldFrame = () => new Promise(r => requestAnimationFrame(r));
+
+  // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
   const state = {
@@ -59,29 +69,53 @@
   // ---------------------------------------------------------------------------
   // Graph + overlay rebuild
   // ---------------------------------------------------------------------------
+  let _rebuildCount = 0;
   async function rebuild() {
+    const t0    = performance.now();
     const scene = canvas?.scene;
     if (!scene) return false;
 
-    const graph = DP.Graph.build();
-    state.graph = graph;
+    const idx = ++_rebuildCount;
 
+    // Yield before the synchronous graph traversal so any pending browser
+    // paint completes first — avoids hitching a frame that's already in flight.
+    await yieldFrame();
+
+    // ── 1. Graph build ──────────────────────────────────────────────────────
+    const tGraph = performance.now();
+    const graph  = DP.Graph.build();
+    state.graph  = graph;
+    const dtGraph = performance.now() - tGraph;
+
+    // ── 2. TileState.ensure — GM only, skip tiles already initialised ───────
+    const tEnsure = performance.now();
+    let newTileCount = 0;
     if (game.user?.isGM) {
+      const existingStates = scene?.flags?.[MOD]?.[DP.PATHING_ROOT_KEY]?.tileStates ?? {};
       for (const node of graph.nodes) {
+        if (existingStates[node.nodeId]) continue; // already initialised → skip
+        newTileCount++;
         const tileDoc = scene.tiles.get(node.nodeId);
         if (tileDoc) await DP.TileState.ensure(scene, tileDoc).catch(() => {});
       }
     }
+    const dtEnsure = performance.now() - tEnsure;
 
-    const token = await DP.Graph.resolvePartyToken();
+    // ── 3. Resolve party token ──────────────────────────────────────────────
+    const tToken = performance.now();
+    const token  = await DP.Graph.resolvePartyToken();
     state.partyToken = token;
+    const dtToken = performance.now() - tToken;
 
     if (!token) {
       DP.HelperMode.hide();
       ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
+      perf(`rebuild #${idx} ABORTED (no token) | graph ${dtGraph.toFixed(1)}ms | total ${(performance.now()-t0).toFixed(1)}ms`);
       return false;
     }
 
+    // ── 4. Locate current node ──────────────────────────────────────────────
+    const tLocate = performance.now();
     let currentNode = null;
     if (state.forcedNodeId) {
       currentNode = graph.nodeMap.get(state.forcedNodeId) ?? null;
@@ -102,20 +136,22 @@
       };
       currentNode = DP.Graph.findNodeForPoint(seek, graph.nodes);
     }
-
     state.currentNode = currentNode;
+    const dtLocate = performance.now() - tLocate;
 
     if (!currentNode) {
       DP.HelperMode.hide();
       ui.notifications?.warn?.("Dungeon Pathing: party token is not on a recognised tile node.");
+      perf(`rebuild #${idx} ABORTED (no node) | graph ${dtGraph.toFixed(1)}ms | total ${(performance.now()-t0).toFixed(1)}ms`);
       return false;
     }
 
-    const neighbors = DP.Graph.getNeighbors(currentNode.nodeId, graph);
+    // ── 5. Neighbors + helper mode ──────────────────────────────────────────
+    const tNeighbors = performance.now();
+    const neighbors  = DP.Graph.getNeighbors(currentNode.nodeId, graph);
     state.neighborIds = new Set(neighbors.map(n => n.nodeId));
-
-    // Update helper mode with current neighbours (shows hand cursors if mode is ON)
     DP.HelperMode.update(neighbors);
+    const dtNeighbors = performance.now() - tNeighbors;
 
     state.lastHoveredNodeId = null; // reset hover tracking after rebuild
     DP.Overlay.clearHover?.();
@@ -125,7 +161,15 @@
     DP.Events.standbyStart(token.document, currentNode, neighbors);
     DP.ScanMode?.show();
 
+    const dtTotal = performance.now() - t0;
     console.debug(TAG, "Graph ready →", currentNode.name, `(${neighbors.length} neighbour(s))`);
+    perf(
+      `rebuild #${idx} | graph ${dtGraph.toFixed(1)}ms (${graph.nodes.length} tiles)` +
+      ` | ensure ${dtEnsure.toFixed(1)}ms (${newTileCount} new)` +
+      ` | token ${dtToken.toFixed(1)}ms | locate ${dtLocate.toFixed(1)}ms` +
+      ` | neighbors ${dtNeighbors.toFixed(1)}ms (${neighbors.length})` +
+      ` | TOTAL ${dtTotal.toFixed(1)}ms`
+    );
     return true;
   }
 
@@ -220,9 +264,10 @@
     DP.HelperMode.hide();
     DP.Overlay.clearHover?.();
 
-    const fromNode = state.currentNode;
-    const token    = state.partyToken;
-    const scene    = canvas.scene;
+    const fromNode  = state.currentNode;
+    const token     = state.partyToken;
+    const scene     = canvas.scene;
+    const tTurnStart = performance.now();
 
     try {
       // — Turn Start —
@@ -235,9 +280,12 @@
       DP.Sound.playFootstep();
 
       // — Move (preview with offset) —
+      perf(`turn | pre-anim setup: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
+      const tAnim = performance.now();
       state.forcedNodeId = clicked.nodeId;
       const moved = await DP.Movement.moveToNode(token, clicked);
       if (!moved) { state.forcedNodeId = null; return; }
+      perf(`turn | animation: ${(performance.now()-tAnim).toFixed(1)}ms`);
 
       // Refresh token reference after real doc update
       const freshToken = canvas.tokens?.get?.(token.id)
@@ -249,13 +297,17 @@
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
       // — In-canvas confirmation buttons —
+      const tConfirm  = performance.now();
       const confirmed = await DP.ConfirmDialog.ask(freshToken);
+      perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed ? "CONFIRMED" : "REVERTED"}`);
 
       if (!confirmed) {
         // — Revert —
+        const tRevert = performance.now();
         state.forcedNodeId = fromNode.nodeId;
         await DP.Movement.revertToPosition(freshToken, savedPos);
         DP.Events.turnReverted(freshToken.document, fromNode, clicked);
+        perf(`turn | revert: ${(performance.now()-tRevert).toFixed(1)}ms`);
         await rebuild();
         return;
       }
@@ -270,7 +322,9 @@
 
       DP.Events.tileEvent(freshToken.document, clicked, tileDoc, tileType);
 
+      const tEvent = performance.now();
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
+      perf(`turn | tileEvent dispatch (${tileType}): ${(performance.now()-tEvent).toFixed(1)}ms`);
 
       // Mark tile visited for Fast Travel eligibility (fire-and-forget).
       if (tileDoc) {
@@ -282,7 +336,9 @@
       const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
 
       if (shouldClear && tileDoc) {
+        const tClear = performance.now();
         await DP.Socket.clearTile(scene, tileDoc.id);
+        perf(`turn | clearTile: ${(performance.now()-tClear).toFixed(1)}ms`);
       }
 
       // — Turn End —
@@ -294,7 +350,9 @@
     } finally {
       state.busy = false;
       DP.ConfirmDialog.forceClose?.();
+      const tRebuild = performance.now();
       await rebuild();
+      perf(`turn | final rebuild: ${(performance.now()-tRebuild).toFixed(1)}ms | TURN TOTAL: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
     }
   }
 
@@ -464,5 +522,6 @@
     console.debug(TAG, "  H key — toggle helper mode (walkable tile indicators)");
     console.debug(TAG, "  .resetDungeon()  — reset all tiles to initial state");
     console.debug(TAG, "  .mutateTile(id, type, texture?)");
+    console.debug(TAG, "Perf logging: window.__DP_PERF__ = true  (set in browser console)");
   });
 })();
