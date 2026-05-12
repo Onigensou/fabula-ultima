@@ -283,6 +283,7 @@
     // NOTE: use state.partyToken here; const token is declared later in this scope.
     DP.Events.standbyEnd(state.partyToken?.document, state.currentNode, clicked);
     DP.ScanMode?.hide();
+    DP.ScanMode?.hideTravelBtn?.();
 
     state.busy = true;
     let _deferredVisitTileId = null; // set after confirm; fired after rebuild
