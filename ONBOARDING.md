@@ -143,13 +143,81 @@ Main entry points:
 
 Per-skill authoring lives in the skill item's `system.props`:
 - `reaction_config_table` — declares which triggers the skill subscribes to.
+- `reaction_effect_table` — sibling table; each row defines what fires
+  when a trigger matches (grant resource, apply AE, consume charge,
+  redirect target, chain).
 - `custom_logic_action` — author script run mid-pipeline.
 - Charges are a separate concern at `FUCompanion.api.charges`.
+
+**Canonical schema reference:**
+`modules/fabula-ultima-companion/docs/reaction-config-schema.md`
+documents every column of both tables, all 29 trigger keys grouped by
+phase bucket, all 5 effect_kinds (`grant`, `apply_ae`, `consume_charge`,
+`redirect_target`, `chain`) with per-kind fields, a subject/filter
+matrix, and a worked Protect example. Read it before authoring
+reaction-bearing skills.
 
 If you're building a new reaction kind, the worked example is the
 "Protect" skill (`Item.gTXdzJjV4Lmwfm7i`); it covers
 trigger-registration, declarative grants, and the action-card
 re-invocation flow.
+
+## Skill authoring — use `CreateSkillFromSpec`
+
+When you want a new skill — especially anything with a non-trivial
+`reaction_config_table` — produce a JSON spec and run the
+`CreateSkillFromSpec` macro. **Don't** ask the user to duplicate-and-edit
+in the CSB UI.
+
+**Why:** each reaction_config row is ~60-90s of CSB dynamic-table UI
+clicking, and a complex reaction skill has 4-8 rows. Hand-clicking is
+also typo-prone (a misspelled `reaction_trigger` is a silent runtime
+bug). The macro accepts a single JSON, creates a fresh
+`equippableItem` linked to `_Skill Template`
+(`Item.j0F5Msw5RZ8aIB3j`, the structural `_equippableItemTemplate`),
+calls CSB's `reloadTemplate()` to materialize the body, writes
+`spec.props` on top of the defaults, and adds embedded AEs. It also
+warns on unknown trigger keys / effect_kinds / dangling
+`reaction_effect_ref` pointers so typos surface immediately.
+
+**Invocation:**
+
+```js
+await game.macros.getName("CreateSkillFromSpec").execute({
+  __AUTO: true,
+  __PAYLOAD: {
+    spec: {
+      name: "Soulshield",
+      img: "icons/svg/aura.svg",
+      // templateUuid defaults to _Skill Template; omit unless you have
+      // a custom CSB template.
+      // actorUuid: "Actor.xxx",  // optional: create on a specific actor
+      props: {
+        skill_type: "Passive",
+        isPassive: true,
+        isReaction: true,
+        reaction_config_table: { "0": { reaction_trigger: "...", reaction_effect_ref: "..." } },
+        reaction_effect_table: { "0": { effect_label: "...", effect_kind: "grant", ... } }
+      }
+      // activeEffects: [...]  // optional embedded AEs
+    }
+  }
+});
+// → { ok, uuid, id, name, warnings: [...] }
+```
+
+**Source + JSDoc:**
+`modules/fabula-ultima-companion/macros/Authoring/CreateSkillFromSpec.js`.
+
+**Important detail:** the macro forces `system.uniqueId: ""` by default
+— the new skill is its own content master. Without this, a future Item
+Refresh would overwrite the skill's customizations back to whatever the
+template defines. Override via `spec.uniqueId` only if you explicitly
+want copy-of-master semantics.
+
+**Limit:** the macro creates the skill but does NOT register it into
+any actor's `skill_active_list` / `attack_list`. That's still a manual
+drag-and-drop step (or future tooling if it becomes painful).
 
 ## Common recipes
 
@@ -157,10 +225,16 @@ re-invocation flow.
   `dryRunReport.damagePlan`.
 - **"Why isn't this AE applying?"** — `runActionDryRun`, inspect
   `dryRunReport.aeWouldApply` per trigger (`on_attack` / `on_hit`).
+- **Authoring a new skill (especially reaction-bearing)** — produce a
+  JSON spec, run `CreateSkillFromSpec` (see "Skill authoring" section
+  above). The macro defaults to `_Skill Template`; you only need
+  `name` and `props` in the spec for the simplest case.
 - **Adding a new payload field** — write it from the earliest stage
   (ADF or ADC), update `docs/action-payload-shape.md` in the same
   change, mirror to `meta` if downstream code shouldn't have to know
   where it lives.
+- **Adding a new reaction trigger or effect_kind** — see the "Adding a
+  new field" checklist at the bottom of `docs/reaction-config-schema.md`.
 - **Adding a new macro** — drop the source file under
   `macros/<category>/`, add an entry to `macros/_manifest.json`. Next
   boot, `_module-boot.js` will upsert it into the world.
