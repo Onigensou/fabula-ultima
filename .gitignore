@@ -45,6 +45,15 @@
 !/setup.ps1
 
 # -----------------------------
+# Track local tooling
+# -----------------------------
+
+!/tools/
+/tools/*
+!/tools/safe-edit/
+!/tools/safe-edit/**
+
+# -----------------------------
 # LevelDB runtime files — never commit these.
 # .ldb, MANIFEST-*, CURRENT are the actual data and SHOULD be committed.
 # LOCK, LOG are process-level state that must NOT be committed.
