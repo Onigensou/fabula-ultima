@@ -405,9 +405,16 @@
     // Capture source scene BEFORE any scene switch
     const fromSceneId = canvas?.scene?.id ?? null;
     const dpState     = globalThis.__ONI_DUNGEON_PATHING__?.state ?? null;
-    const token       = dpState?.partyToken ?? null;
-    const spawn       = getSpawnPoint(destScene);
-    const actorId     = token?.actor?.id ?? token?.document?.actorId ?? null;
+
+    // Resolve party token: dungeon state first, then canvas fallback for exploration/town mode
+    // (in non-dungeon scenes, bootstrap calls deactivate() which nulls state.partyToken)
+    let token = dpState?.partyToken ?? null;
+    if (!token && canvas?.ready) {
+      token = await DP.Graph?.resolvePartyToken?.().catch(() => null) ?? null;
+    }
+
+    const spawn   = getSpawnPoint(destScene);
+    const actorId = token?.actor?.id ?? token?.document?.actorId ?? null;
 
     // Play gryphon pick-up animation if there is a party token on the current canvas
     if (token && canvas?.ready) {
@@ -424,10 +431,21 @@
       await DP.FastTravel?.runGryphonAnimation?.(token).catch(() => null);
     }
 
+    // Install drawToken guard BEFORE the scene switch so the destination token is hidden
+    // the instant Foundry draws it — prevents any flash of the visible token during loading.
+    let drawGuardId = null;
+    if (actorId) {
+      drawGuardId = Hooks.on("drawToken", (tp) => {
+        if (tp.document?.actorId !== actorId) return;
+        tp.alpha = 0;
+        Hooks.off("drawToken", drawGuardId);
+      });
+    }
+
     // Prime drop-off animation on all clients before scene switch
-    const dropOffData = { sceneId: destScene.id, actorId };
-    window.__ONI_DP_DROPOFF_SCENE__ = dropOffData;
-    game.socket.emit(SOCKET_CH, { type: "DP_TRAVEL_ARRIVING", payload: dropOffData });
+    const dropOffPayload = { sceneId: destScene.id, actorId };
+    window.__ONI_DP_DROPOFF_SCENE__ = { ...dropOffPayload, guardId: drawGuardId };
+    game.socket.emit(SOCKET_CH, { type: "DP_TRAVEL_ARRIVING", payload: dropOffPayload });
 
     if (game.user?.isGM) {
       await setupTokenAndActivate(destScene, actorId, spawn.x, spawn.y, fromSceneId);
@@ -448,33 +466,32 @@
     if (actorId) {
       const actor = game.actors.get(actorId);
       if (actor) {
-        const existing = destScene.tokens.find(t => t.actorId === actorId);
-        if (existing) {
-          const tw = Number(existing.width  ?? 1) * gSize;
-          const th = Number(existing.height ?? 1) * gSize;
-          await existing.update(
-            { x: Math.round(spawnX - tw / 2), y: Math.round(spawnY - th / 2) },
-            { animate: false }
-          ).catch(e => console.warn(TAG, "token reposition failed:", e));
-        } else {
-          const tokenData = actor.prototypeToken.toObject();
-          tokenData.x = Math.round(spawnX - (tokenData.width  ?? 1) * gSize / 2);
-          tokenData.y = Math.round(spawnY - (tokenData.height ?? 1) * gSize / 2);
-          tokenData.actorId = actorId;
-          await destScene.createEmbeddedDocuments("Token", [tokenData])
-            .catch(e => console.warn(TAG, "token create failed:", e));
+        // Cleanup-first: delete any stale token for this actor at destination before creating fresh.
+        // This guarantees a clean single-token state regardless of how many times you travel.
+        const existingAtDest = destScene.tokens.find(t => t.actorId === actorId);
+        if (existingAtDest) {
+          await existingAtDest.delete()
+            .catch(e => console.warn(TAG, "cleanup dest stale token:", e));
         }
+
+        // Always create a fresh token at the spawn position
+        const tokenData  = actor.prototypeToken.toObject();
+        tokenData.x      = Math.round(spawnX - (tokenData.width  ?? 1) * gSize / 2);
+        tokenData.y      = Math.round(spawnY - (tokenData.height ?? 1) * gSize / 2);
+        tokenData.actorId = actorId;
+        await destScene.createEmbeddedDocuments("Token", [tokenData])
+          .catch(e => console.warn(TAG, "token create failed:", e));
       }
     }
 
     await destScene.activate().catch(e => console.error(TAG, "scene activate failed:", e));
 
-    // Silent background cleanup: remove the party token from the source scene
+    // Background cleanup: delete party token from source scene after we've already switched
     if (fromSceneId && actorId && fromSceneId !== destScene.id) {
       const fromScene = game.scenes.get(fromSceneId);
       const oldToken  = fromScene?.tokens?.find?.(t => t.actorId === actorId);
       if (oldToken) {
-        oldToken.delete().catch(e => console.warn(TAG, "cleanup old token:", e));
+        oldToken.delete().catch(e => console.warn(TAG, "cleanup source token:", e));
       }
     }
   }
@@ -489,16 +506,18 @@
   }
 
   // ── Drop-off animation trigger (called from canvasReady) ────────────────────
+  // By the time this runs, the drawToken guard installed in executeTravelTo has already fired
+  // and set token.alpha = 0 as the token was drawn.  This function reinforces that hiding,
+  // pans the camera, and then plays the drop-off animation.
   async function triggerDropOff(actorId, sceneMode) {
-    // Immediately hide the token to prevent any visibility flash before animation
-    let token = null;
-    if (actorId) {
-      token = canvas.tokens?.placeables?.find?.(t => t.document?.actorId === actorId) ?? null;
-      if (token) token.alpha = 0;
-    }
+    if (!actorId) return;
+
+    // Re-apply hiding in case the token was drawn before our guard was installed
+    let token = canvas.tokens?.placeables?.find?.(t => t.document?.actorId === actorId) ?? null;
+    if (token) token.alpha = 0;
 
     if (sceneMode === "dungeon") {
-      // Wait for dungeon pathing standby (graph rebuilt + party token assigned)
+      // Wait for dungeon pathing standby (graph rebuilt + party token assigned, max 5 s)
       await new Promise(resolve => {
         let done = false;
         const timer = setTimeout(() => { if (!done) { done = true; resolve(); } }, 5000);
@@ -506,42 +525,26 @@
           if (!done) { done = true; clearTimeout(timer); resolve(); }
         });
       });
+      // Prefer the dp-state token reference (most current after rebuild)
       const dpToken = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
-      if (dpToken) {
-        token = dpToken;
-        token.alpha = 0; // re-apply after dungeon pathing may have refreshed the token ref
-      }
+      if (dpToken) { token = dpToken; }
+      if (token) token.alpha = 0; // re-apply in case rebuild refreshed the token ref
+
       if (token && canvas?.ready) {
         const gSize = Number(canvas?.grid?.size ?? 100) || 100;
-        const tw = Number(token.document?.width  ?? 1) * gSize;
-        const th = Number(token.document?.height ?? 1) * gSize;
-        canvas.animatePan?.({
-          x: Number(token.document.x) + tw / 2,
-          y: Number(token.document.y) + th / 2,
-          duration: 300,
-        });
+        const tw    = Number(token.document?.width  ?? 1) * gSize;
+        const th    = Number(token.document?.height ?? 1) * gSize;
+        canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 300 });
         await new Promise(r => setTimeout(r, 350));
-        token.alpha = 0; // ensure still hidden right before animation fires
+        token.alpha = 0;
         await DP.FastTravel?.runDropOffAnimation?.(token).catch(() => { if (token) token.alpha = 1; });
       }
     } else {
-      // Non-dungeon scene: if token wasn't found yet, give Foundry time to render then retry
-      if (!token) {
-        await new Promise(r => setTimeout(r, 500));
-        if (actorId) {
-          token = canvas.tokens?.placeables?.find?.(t => t.document?.actorId === actorId) ?? null;
-          if (token) token.alpha = 0;
-        }
-      }
       if (token && canvas?.ready) {
         const gSize = Number(canvas?.grid?.size ?? 100) || 100;
-        const tw = Number(token.document?.width  ?? 1) * gSize;
-        const th = Number(token.document?.height ?? 1) * gSize;
-        canvas.animatePan?.({
-          x: Number(token.document.x) + tw / 2,
-          y: Number(token.document.y) + th / 2,
-          duration: 400,
-        });
+        const tw    = Number(token.document?.width  ?? 1) * gSize;
+        const th    = Number(token.document?.height ?? 1) * gSize;
+        canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 400 });
         await new Promise(r => setTimeout(r, 450));
         token.alpha = 0;
         await DP.FastTravel?.runDropOffAnimation?.(token).catch(() => { if (token) token.alpha = 1; });
@@ -576,7 +579,17 @@
 
       // Prime drop-off animation on non-initiating clients
       if (msg?.type === "DP_TRAVEL_ARRIVING") {
-        window.__ONI_DP_DROPOFF_SCENE__ = msg.payload;
+        const { sceneId, actorId: aId } = msg.payload ?? {};
+        // Install drawToken guard so the token is hidden the instant Foundry draws it
+        let gId = null;
+        if (aId) {
+          gId = Hooks.on("drawToken", (tp) => {
+            if (tp.document?.actorId !== aId) return;
+            tp.alpha = 0;
+            Hooks.off("drawToken", gId);
+          });
+        }
+        window.__ONI_DP_DROPOFF_SCENE__ = { sceneId, actorId: aId, guardId: gId };
         return;
       }
 
@@ -616,10 +629,12 @@
     Hooks.on("canvasReady", async () => {
       const scene = canvas?.scene;
 
-      // Drop-off animation — check early so token can be hidden before first render
+      // Drop-off animation — token should already be hidden by the pre-installed drawToken guard.
       const dropOff = window.__ONI_DP_DROPOFF_SCENE__;
       if (dropOff?.sceneId === scene?.id) {
         window.__ONI_DP_DROPOFF_SCENE__ = null;
+        // Clean up the drawToken guard (it has already fired or is no longer needed)
+        if (dropOff.guardId != null) Hooks.off("drawToken", dropOff.guardId);
         triggerDropOff(dropOff.actorId, general(scene).sceneMode).catch(() => null);
       }
 
