@@ -29,8 +29,8 @@ export class ShopSoundManager {
   preloadAll() {
     for (const src of Object.values(SOUNDS)) {
       try {
-        if (typeof AudioHelper?.preloadSound === "function") {
-          AudioHelper.preloadSound(src);
+        if (typeof foundry.audio?.AudioHelper?.preloadSound === "function") {
+          foundry.audio.AudioHelper.preloadSound(src);
         } else {
           // Fallback: warm the browser HTTP cache silently
           fetch(src, { cache: "force-cache" }).catch(() => {});

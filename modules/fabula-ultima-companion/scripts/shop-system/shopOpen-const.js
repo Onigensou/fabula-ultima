@@ -20,7 +20,7 @@ export const SHOPOPEN = {
 };
 
 export const gp = (obj, path, fallback = undefined) => {
-  try { return getProperty(obj, path) ?? fallback; } catch { return fallback; }
+  try { return foundry.utils.getProperty(obj, path) ?? fallback; } catch { return fallback; }
 };
 
 export const normActorId = (v) => {
