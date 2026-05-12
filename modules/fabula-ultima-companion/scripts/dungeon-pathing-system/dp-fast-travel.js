@@ -34,71 +34,6 @@
   const ANIM_SWOOP_MS  = 800;
   const ANIM_FLYOUT_MS = 700;
 
-  // ── Alpha debug helpers ──────────────────────────────────────────────────────
-  // Set window.__DP_ANIM_DEBUG__ = true in the browser console to enable.
-  const isAnimDbg = () => !!window.__DP_ANIM_DEBUG__;
-  const DBG = "[DP][AnimDebug]";
-
-  /** Log the full token visibility state at a named checkpoint. */
-  function probeToken(label, token) {
-    if (!isAnimDbg() || !token) return;
-    console.log(
-      `${DBG} [${label}]`,
-      `container.alpha=${token.alpha?.toFixed(3)}`,
-      `mesh.alpha=${token.mesh?.alpha?.toFixed(3)}`,
-      `visible=${token.visible}`,
-      `_alpha=${token._alpha?.toFixed(3)}`,
-      `destroyed=${token.destroyed}`,
-      token,
-    );
-  }
-
-  /**
-   * Install an instance-level property on `token` that intercepts every write to
-   * `token.alpha` and logs the old→new value with a call stack.
-   * Returns an unwatch() function that removes the interceptor.
-   */
-  function watchToken(token, tag) {
-    if (!isAnimDbg() || !token) return () => {};
-
-    // Walk prototype chain to find the real alpha getter/setter (usually on PIXI.DisplayObject)
-    let desc = null;
-    let proto = Object.getPrototypeOf(token);
-    while (proto && proto !== Object.prototype) {
-      const d = Object.getOwnPropertyDescriptor(proto, 'alpha');
-      if (d?.get && d?.set) { desc = d; break; }
-      proto = Object.getPrototypeOf(proto);
-    }
-    if (!desc) {
-      console.warn(DBG, `[${tag}] could not find alpha descriptor on prototype chain`);
-      return () => {};
-    }
-
-    const origGet = desc.get;
-    const origSet = desc.set;
-
-    Object.defineProperty(token, 'alpha', {
-      get() { return origGet.call(this); },
-      set(v) {
-        const cur = origGet.call(this);
-        const stk = new Error().stack
-          ?.split('\n').slice(1, 7)
-          .map(s => s.trim().replace(/^at /, ''))
-          .join(' → ');
-        console.log(`${DBG} [${tag}] alpha ${cur?.toFixed(3)} → ${v?.toFixed(3)} | ${stk}`);
-        origSet.call(this, v);
-      },
-      configurable: true,
-      enumerable:   false,
-    });
-
-    console.log(`${DBG} [${tag}] watchToken installed. current alpha=${origGet.call(token)?.toFixed(3)}`);
-    return function unwatch() {
-      try { delete token.alpha; } catch {}
-      console.log(`${DBG} [${tag}] watchToken removed.`);
-    };
-  }
-
   const SOCKET_GUARD = "__ONI_DP_FT_SOCKET__";
 
   function setupSocketListener() {
@@ -130,9 +65,10 @@
         const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state ?? null;
         const tkn = dpState?.partyToken ?? null;
         if (tkn) {
-          runGryphonAnimation(tkn, { waitForUpdate: true }).catch(() => {
-            showMesh(tkn);
-          });
+          (DP.Sound?.playFastTravelEagle?.() ?? Promise.resolve())
+            .catch(() => {})
+            .then(() => runGryphonAnimation(tkn, { waitForUpdate: true }))
+            .catch(() => { showMesh(tkn); });
         }
         return;
       }
@@ -234,31 +170,24 @@
     });
   }
 
-  // Hide token visually: set mesh.alpha (what PrimaryCanvasGroup renders) and install
-  // a refreshToken guard so Foundry's _refreshAlpha() can't reset it until we release.
+  // Hide/show token visually via mesh.alpha (PrimaryCanvasGroup) + container.alpha (nameplates etc.)
   function hideMesh(token) {
     if (!token) return;
     if (token.mesh) token.mesh.alpha = 0;
-    token.alpha = 0; // belt-and-suspenders for standard PIXI children (nameplate etc.)
-    probeToken("hideMesh", token);
+    token.alpha = 0;
   }
 
   function showMesh(token) {
     if (!token) return;
     if (token.mesh) token.mesh.alpha = 1;
     token.alpha = 1;
-    probeToken("showMesh", token);
   }
 
   async function runDropOffAnimation(token, { refreshGuardId = null } = {}) {
     if (!canvas?.stage || !token) return;
 
-    const unwatch = watchToken(token, "dropOff");
-    probeToken("dropOff:enter", token);
-
     // Token must be invisible before the gryphon arrives
     hideMesh(token);
-    probeToken("dropOff:hidden-set", token);
 
     const gSize   = Number(canvas?.grid?.size ?? 100) || 100;
     const docX    = Number(token.document?.x ?? 0);
@@ -273,10 +202,9 @@
     const halfW  = canvas.app.renderer.width / scaleX / 2;
 
     const tex = await ensureGryphonTexture().catch(() => null);
-    probeToken("dropOff:after-textureLoad", token);
     if (!tex) {
       if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
-      showMesh(token); unwatch(); return;
+      showMesh(token); return;
     }
 
     const natW    = _gryphonNatW || 480;
@@ -300,36 +228,27 @@
     canvas.stage.addChild(sprite);
 
     DP.Sound?.playFastTravelWind?.();
-    probeToken("dropOff:before-swoop (mesh.alpha must be 0)", token);
 
     await tween(startX + spriteW, arrivedX + spriteW, arrivedY, arrivedY, ANIM_SWOOP_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
-    probeToken("dropOff:swoop-arrived", token);
     await new Promise(r => setTimeout(r, 200));
 
     // Release the refreshToken guard, then reveal the token
     if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
     showMesh(token);
-    probeToken("dropOff:revealed", token);
     DP.Sound?.playFastTravelLand?.();
     await new Promise(r => setTimeout(r, 150));
 
-    probeToken("dropOff:before-flyout", token);
     await tween(arrivedX + spriteW, exitX + spriteW, arrivedY, arrivedY, ANIM_FLYOUT_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
-    probeToken("dropOff:done", token);
-    unwatch();
     try { canvas.stage.removeChild(sprite); } catch {}
     try { sprite.destroy({ texture: false }); } catch {}
   }
 
   async function runGryphonAnimation(token, { waitForUpdate = false } = {}) {
     if (!canvas?.stage || !token) return null;
-
-    const unwatch = watchToken(token, "pickup");
-    probeToken("pickup:enter", token);
 
     const gSize   = Number(canvas?.grid?.size ?? 100) || 100;
     const docX    = Number(token.document?.x ?? 0);
@@ -344,8 +263,7 @@
     const halfW  = canvas.app.renderer.width / scaleX / 2;
 
     const tex = await ensureGryphonTexture().catch(() => null);
-    probeToken("pickup:after-textureLoad", token);
-    if (!tex) { unwatch(); return null; }
+    if (!tex) return null;
 
     // Derive sprite size from natural video dimensions — no squash/stretch
     const natW    = _gryphonNatW || 480;
@@ -369,12 +287,10 @@
     canvas.stage.addChild(sprite);
 
     DP.Sound?.playFastTravelWind?.();
-    probeToken("pickup:before-swoop (token should be VISIBLE)", token);
 
     await tween(startX + spriteW, arrivedX + spriteW, arrivedY, arrivedY, ANIM_SWOOP_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
-    probeToken("pickup:swoop-arrived (about to HIDE token)", token);
     await new Promise(r => setTimeout(r, 150));
 
     // Install refreshToken guard THEN hide — guard fires after _refreshAlpha() on every render
@@ -384,19 +300,16 @@
       if (tp.mesh) tp.mesh.alpha = 0;
     });
     hideMesh(token);
-    probeToken("pickup:alpha=0-set (token should be HIDDEN)", token);
 
     await tween(arrivedX + spriteW, exitX + spriteW, arrivedY, arrivedY, ANIM_FLYOUT_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
-    probeToken("pickup:flyout-done", token);
     try { canvas.stage.removeChild(sprite); } catch {}
     try { sprite.destroy({ texture: false }); } catch {} // preserve shared texture
 
     if (waitForUpdate) {
       // Non-controller: hold token invisible until the position broadcast arrives,
       // so it appears at the new location rather than flashing at the old one.
-      probeToken("pickup:waitForUpdate-start", token);
       await new Promise(resolve => {
         let resolved = false;
         const timeout = setTimeout(() => {
@@ -411,15 +324,12 @@
           resolve();
         });
       });
-      probeToken("pickup:waitForUpdate-done (revealing token)", token);
       Hooks.off("refreshToken", pickupGuardId);
       showMesh(token);
-      unwatch();
       return null;
     }
 
     // Controller path: return token + guard so caller releases the guard after teleport
-    unwatch();
     return { token, pickupGuardId };
   }
 
@@ -741,8 +651,9 @@
       canvas?.animatePan?.({ x: tokenCX, y: tokenCY, duration: 400 });
       await new Promise(r => setTimeout(r, 450));
 
-      // Broadcast animation to non-controller clients, then play locally
+      // Broadcast to non-controller clients; everyone plays eagle sound then gryphon together
       game.socket.emit(SOCKET_CH, { type: MSG_FT_ANIM, payload: {} });
+      await DP.Sound?.playFastTravelEagle?.().catch(() => {});
       const meshInfo = await runGryphonAnimation(token).catch(e => {
         console.warn(TAG, "gryphon anim:", e);
         return null;
@@ -826,7 +737,7 @@
     _isController = true;
     _focusedIdx   = 0;
 
-    DP.Sound?.playFastTravelOpen?.();
+    DP.Sound?.playConfirm?.();
     broadcastEnter();
 
     // Free our own camera from the scan ticker so we can pan freely

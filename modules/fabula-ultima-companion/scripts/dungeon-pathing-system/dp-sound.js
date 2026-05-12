@@ -18,6 +18,8 @@
     FT_OPEN:    0.6,
     FT_CLOSE:   0.45,
     FT_CYCLE:   0.55,
+    FT_WIND:    0.7,
+    FT_LAND:    0.75,
   };
 
   function play(src, volume) {
@@ -63,7 +65,31 @@
     playHelperOff() { play(DP.SOUNDS.HELPER_OFF, VOLUME.HELPER_OFF); },
     playFastTravelOpen()  { play(DP.SOUNDS.FT_OPEN,  VOLUME.FT_OPEN);  },
     playFastTravelClose() { play(DP.SOUNDS.FT_CLOSE, VOLUME.FT_CLOSE); },
+
+    /**
+     * Play Eagle sound and return a Promise that resolves when it finishes (max 4 s).
+     * Awaiting this before runGryphonAnimation syncs the visual pickup to the sound.
+     */
+    playFastTravelEagle() {
+      return new Promise(resolve => {
+        const timeout = setTimeout(resolve, 4000);
+        let sound;
+        try {
+          sound = AudioHelper.play({ src: DP.SOUNDS.FT_OPEN, volume: VOLUME.FT_OPEN, autoplay: true, loop: false }, false);
+        } catch {
+          clearTimeout(timeout);
+          resolve();
+          return;
+        }
+        if (!sound?.on) return; // fallback timeout handles it
+        const onDone = () => { clearTimeout(timeout); resolve(); };
+        sound.on("end",  onDone);
+        sound.on("stop", onDone);
+      });
+    },
     playFastTravelCycle() { play(DP.SOUNDS.FT_CYCLE, VOLUME.FT_CYCLE); },
+    playFastTravelWind()  { play(DP.SOUNDS.FT_WIND,  VOLUME.FT_WIND);  },
+    playFastTravelLand()  { play(DP.SOUNDS.FT_LAND,  VOLUME.FT_LAND);  },
 
     /**
      * Play footstep sound twice to simulate walking.

@@ -35,19 +35,6 @@
   const MSG_TRAVEL  = "DP_SCENE_TRAVEL";
   const GUARD       = "__ONI_DP_ST_SOCKET__";
 
-  // Debug helpers — enable with: window.__DP_ANIM_DEBUG__ = true in the browser console
-  const isDbg = () => !!window.__DP_ANIM_DEBUG__;
-  const DBTAG = "[DP][SceneTravel][DBG]";
-  function dbToken(label, token) {
-    if (!isDbg() || !token) return;
-    console.log(`${DBTAG} [${label}]`,
-      `alpha=${token.alpha?.toFixed(3)}`,
-      `mesh.alpha=${token.mesh?.alpha?.toFixed(3)}`,
-      `visible=${token.visible}`,
-      `actorId=${token.document?.actorId}`,
-      token);
-  }
-
   // ── Scene-flag helpers ──────────────────────────────────────────────────────
   function general(scene) {
     return scene?.flags?.[MODULE_ID]?.[FABULA_ROOT]?.[GEN_KEY] ?? {};
@@ -290,7 +277,7 @@
       return;
     }
 
-    DP.Sound?.playFastTravelOpen?.();
+    DP.Sound?.playConfirm?.();
 
     let content = `<div class="oni-travel-list" style="padding:2px 0;">`;
 
@@ -422,19 +409,15 @@
     // Resolve party token: dungeon state first, then canvas fallback for exploration/town mode
     // (in non-dungeon scenes, bootstrap calls deactivate() which nulls state.partyToken)
     let token = dpState?.partyToken ?? null;
-    if (isDbg()) console.log(DBTAG, "executeTravelTo: dpState.partyToken=", token?.document?.actorId ?? "null");
     if (!token && canvas?.ready) {
       token = await DP.Graph?.resolvePartyToken?.().catch(() => null) ?? null;
-      if (isDbg()) console.log(DBTAG, "executeTravelTo: resolvePartyToken fallback=", token?.document?.actorId ?? "null");
     }
 
     const spawn   = getSpawnPoint(destScene);
     const actorId = token?.actor?.id ?? token?.document?.actorId ?? null;
-    if (isDbg()) console.log(DBTAG, "executeTravelTo: actorId=", actorId, "dest=", destScene.name);
 
     // Play gryphon pick-up animation if there is a party token on the current canvas
     if (token && canvas?.ready) {
-      dbToken("executeTravelTo:before-pickup", token);
       const gSize = Number(canvas?.grid?.size ?? 100) || 100;
       const tw    = Number(token.document?.width  ?? 1) * gSize;
       const th    = Number(token.document?.height ?? 1) * gSize;
@@ -444,13 +427,12 @@
       game.socket.emit(SOCKET_CH, { type: "DP_FT_PAN", payload: { x: tkCX, y: tkCY } });
       await new Promise(r => setTimeout(r, 450));
 
+      // Broadcast to non-controller clients; everyone plays eagle sound then gryphon together
       game.socket.emit(SOCKET_CH, { type: "DP_ST_ANIM", payload: { userId: game.user?.id } });
+      await DP.Sound?.playFastTravelEagle?.().catch(() => {});
       const pickupResult = await DP.FastTravel?.runGryphonAnimation?.(token).catch(() => null);
       // Source token will be deleted by setupTokenAndActivate; release its guard now
       if (pickupResult?.pickupGuardId != null) Hooks.off("refreshToken", pickupResult.pickupGuardId);
-      dbToken("executeTravelTo:after-pickup (source guard released, transitioning)", token);
-    } else {
-      if (isDbg()) console.warn(DBTAG, "executeTravelTo: SKIPPING pickup animation — token=", !!token, "canvas.ready=", !!canvas?.ready);
     }
 
     // Install guards BEFORE the scene switch so the destination token is hidden from the start.
@@ -462,7 +444,6 @@
     if (actorId) {
       drawGuardId = Hooks.on("drawToken", (tp) => {
         if (tp.document?.actorId !== actorId) return;
-        if (isDbg()) console.log(DBTAG, "drawToken GUARD fired — actorId=", actorId);
         if (tp.mesh) tp.mesh.alpha = 0;
         Hooks.off("drawToken", drawGuardId);
       });
@@ -470,7 +451,6 @@
         if (tp.document?.actorId !== actorId) return;
         if (tp.mesh) tp.mesh.alpha = 0;
       });
-      if (isDbg()) console.log(DBTAG, "guards installed: drawGuardId=", drawGuardId, "refreshGuardId=", refreshGuardId, "actorId=", actorId);
     }
 
     // Prime drop-off animation on all clients before scene switch
@@ -541,44 +521,26 @@
   // and set token.alpha = 0 as the token was drawn.  This function reinforces that hiding,
   // pans the camera, and then plays the drop-off animation.
   async function triggerDropOff(actorId, sceneMode, refreshGuardId = null) {
-    if (!actorId) {
-      if (isDbg()) console.warn(DBTAG, "triggerDropOff: actorId is null — aborting");
-      return;
-    }
-
-    if (isDbg()) console.log(DBTAG, `triggerDropOff: actorId=${actorId} sceneMode=${sceneMode} refreshGuardId=${refreshGuardId}`);
+    if (!actorId) return;
 
     // Reinforce mesh hiding — the refreshToken guard should already be keeping mesh.alpha=0,
-    // but we belt-and-suspenders here in case of any timing gap.
+    // but belt-and-suspenders here in case of any timing gap.
     let token = canvas.tokens?.placeables?.find?.(t => t.document?.actorId === actorId) ?? null;
-    if (isDbg()) console.log(DBTAG, "triggerDropOff: token found on canvas=", !!token);
-    if (token) {
-      dbToken("triggerDropOff:found", token);
-      if (token.mesh) token.mesh.alpha = 0;
-    } else {
-      if (isDbg()) console.warn(DBTAG, "triggerDropOff: token NOT found at canvasReady — all placeables:", canvas.tokens?.placeables?.map(t => t.document?.actorId));
-    }
+    if (token?.mesh) token.mesh.alpha = 0;
 
     if (sceneMode === "dungeon") {
-      if (isDbg()) console.log(DBTAG, "triggerDropOff: DUNGEON mode — waiting for standbyStart");
       // Wait for dungeon pathing standby (graph rebuilt + party token assigned, max 5 s)
       await new Promise(resolve => {
         let done = false;
-        const timer = setTimeout(() => {
-          if (!done) { done = true; if (isDbg()) console.warn(DBTAG, "triggerDropOff: standbyStart TIMED OUT"); resolve(); }
-        }, 5000);
+        const timer = setTimeout(() => { if (!done) { done = true; resolve(); } }, 5000);
         Hooks.once("dungeonPathing.standbyStart", () => {
-          if (!done) { done = true; clearTimeout(timer); if (isDbg()) console.log(DBTAG, "triggerDropOff: standbyStart fired"); resolve(); }
+          if (!done) { done = true; clearTimeout(timer); resolve(); }
         });
       });
       // Prefer the dp-state token reference (most current after rebuild)
       const dpToken = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
-      if (isDbg()) console.log(DBTAG, "triggerDropOff: dp partyToken after standby=", !!dpToken);
       if (dpToken) { token = dpToken; }
-      if (token) {
-        dbToken("triggerDropOff:dungeon-pre-anim", token);
-        if (token.mesh) token.mesh.alpha = 0;
-      }
+      if (token?.mesh) token.mesh.alpha = 0;
 
       if (token && canvas?.ready) {
         const gSize = Number(canvas?.grid?.size ?? 100) || 100;
@@ -586,15 +548,12 @@
         const th    = Number(token.document?.height ?? 1) * gSize;
         canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 300 });
         await new Promise(r => setTimeout(r, 350));
-        dbToken("triggerDropOff:dungeon-before-runDropOff (mesh.alpha should be 0)", token);
         if (token.mesh) token.mesh.alpha = 0;
         await DP.FastTravel?.runDropOffAnimation?.(token, { refreshGuardId }).catch(() => {
           if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
           if (token?.mesh) token.mesh.alpha = 1;
         });
-        dbToken("triggerDropOff:dungeon-after-runDropOff", token);
       } else {
-        if (isDbg()) console.warn(DBTAG, "triggerDropOff: no token or canvas not ready after standby — skipping animation");
         if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
       }
     } else {
@@ -604,15 +563,12 @@
         const th    = Number(token.document?.height ?? 1) * gSize;
         canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 400 });
         await new Promise(r => setTimeout(r, 450));
-        dbToken("triggerDropOff:town-before-runDropOff (mesh.alpha should be 0)", token);
         if (token.mesh) token.mesh.alpha = 0;
         await DP.FastTravel?.runDropOffAnimation?.(token, { refreshGuardId }).catch(() => {
           if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
           if (token?.mesh) token.mesh.alpha = 1;
         });
-        dbToken("triggerDropOff:town-after-runDropOff", token);
       } else {
-        if (isDbg()) console.warn(DBTAG, "triggerDropOff: no token or canvas not ready — skipping animation. token=", !!token);
         if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
       }
     }
@@ -646,14 +602,12 @@
       // Prime drop-off animation on non-initiating clients
       if (msg?.type === "DP_TRAVEL_ARRIVING") {
         const { sceneId, actorId: aId } = msg.payload ?? {};
-        if (isDbg()) console.log(DBTAG, "DP_TRAVEL_ARRIVING received: sceneId=", sceneId, "actorId=", aId);
         // Install guards so the destination token is hidden from the moment it is drawn.
         let drawGId = null;
         let refreshGId = null;
         if (aId) {
           drawGId = Hooks.on("drawToken", (tp) => {
             if (tp.document?.actorId !== aId) return;
-            if (isDbg()) console.log(DBTAG, "drawToken GUARD (remote) fired — actorId=", aId);
             if (tp.mesh) tp.mesh.alpha = 0;
             Hooks.off("drawToken", drawGId);
           });
@@ -661,7 +615,6 @@
             if (tp.document?.actorId !== aId) return;
             if (tp.mesh) tp.mesh.alpha = 0;
           });
-          if (isDbg()) console.log(DBTAG, "guards (remote) installed: drawGId=", drawGId, "refreshGId=", refreshGId);
         }
         window.__ONI_DP_DROPOFF_SCENE__ = { sceneId, actorId: aId, drawGuardId: drawGId, refreshGuardId: refreshGId };
         return;
@@ -672,9 +625,10 @@
         if (msg.payload?.userId === game.user?.id) return;
         const tkn = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
         if (tkn) {
-          DP.FastTravel?.runGryphonAnimation?.(tkn, { waitForUpdate: true }).catch(() => {
-            if (tkn.mesh) tkn.mesh.alpha = 1;
-          });
+          (DP.Sound?.playFastTravelEagle?.() ?? Promise.resolve())
+            .catch(() => {})
+            .then(() => DP.FastTravel?.runGryphonAnimation?.(tkn, { waitForUpdate: true }))
+            .catch(() => { if (tkn.mesh) tkn.mesh.alpha = 1; });
         }
         return;
       }
@@ -703,22 +657,13 @@
     Hooks.on("canvasReady", async () => {
       const scene = canvas?.scene;
 
-      // Drop-off animation — token should already be hidden by the pre-installed drawToken guard.
+      // Drop-off animation — token is hidden by the pre-installed guards.
       const dropOff = window.__ONI_DP_DROPOFF_SCENE__;
-      if (isDbg()) console.log(DBTAG, "canvasReady: scene=", scene?.name, "dropOff=", dropOff);
       if (dropOff?.sceneId === scene?.id) {
         window.__ONI_DP_DROPOFF_SCENE__ = null;
         // drawToken guard is one-shot — clean up defensively in case it never fired
-        if (dropOff.drawGuardId != null) {
-          if (isDbg()) console.log(DBTAG, "canvasReady: cleaning up drawToken guard", dropOff.drawGuardId);
-          Hooks.off("drawToken", dropOff.drawGuardId);
-        }
+        if (dropOff.drawGuardId != null) Hooks.off("drawToken", dropOff.drawGuardId);
         // refreshToken guard is handed to triggerDropOff → runDropOffAnimation — do NOT release here
-        if (isDbg()) {
-          const allTokens = canvas.tokens?.placeables ?? [];
-          console.log(DBTAG, "canvasReady: tokens on canvas at dropOff trigger:",
-            allTokens.map(t => `actorId=${t.document?.actorId} mesh.alpha=${t.mesh?.alpha?.toFixed(3)}`));
-        }
         triggerDropOff(dropOff.actorId, general(scene).sceneMode, dropOff.refreshGuardId).catch(() => null);
       }
 
