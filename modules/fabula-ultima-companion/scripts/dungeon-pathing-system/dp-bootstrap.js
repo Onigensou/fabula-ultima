@@ -283,6 +283,7 @@
     // NOTE: use state.partyToken here; const token is declared later in this scope.
     DP.Events.standbyEnd(state.partyToken?.document, state.currentNode, clicked);
     DP.ScanMode?.hide();
+    DP.ScanMode?.hideTravelBtn?.();
 
     state.busy = true;
     let _deferredVisitTileId = null; // set after confirm; fired after rebuild
@@ -506,11 +507,28 @@
       }, 100);
     };
 
-    ["createTile", "updateTile", "deleteTile",
-     "createDrawing", "updateDrawing", "deleteDrawing"].forEach(hookName => {
+    ["createTile", "deleteTile",
+     "createDrawing", "deleteDrawing"].forEach(hookName => {
       const id = Hooks.on(hookName, debouncedRebuild);
       state.hookIds.push([hookName, id]);
     });
+
+    // updateTile / updateDrawing: skip DP-internal updates (clearTile, mutateTile)
+    // to prevent a second debouncedRebuild from firing after the main walk rebuild.
+    {
+      const id = Hooks.on("updateTile", (_doc, _change, options) => {
+        if (options?.dungeonPathing) return;
+        debouncedRebuild();
+      });
+      state.hookIds.push(["updateTile", id]);
+    }
+    {
+      const id = Hooks.on("updateDrawing", (_doc, _change, options) => {
+        if (options?.dungeonPathing) return;
+        debouncedRebuild();
+      });
+      state.hookIds.push(["updateDrawing", id]);
+    }
 
     // Block token drag (left-click drag-drop) while dungeon mode is active.
     // Allows only updates flagged dungeonPathing:true (from dp-movement.js).

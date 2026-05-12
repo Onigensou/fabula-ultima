@@ -68,23 +68,37 @@
 
     /**
      * Play Eagle sound and return a Promise that resolves when it finishes (max 4 s).
-     * Awaiting this before runGryphonAnimation syncs the visual pickup to the sound.
+     * earlyMs: resolve this many ms before the sound's natural end so the gryphon
+     * animation can overlap with the tail of the eagle cry.
      */
-    playFastTravelEagle() {
+    playFastTravelEagle(earlyMs = 0) {
       return new Promise(resolve => {
-        const timeout = setTimeout(resolve, 4000);
+        let resolved = false;
+        const done = () => { if (!resolved) { resolved = true; resolve(); } };
+        const fallback = setTimeout(done, 4000);
         let sound;
         try {
           sound = AudioHelper.play({ src: DP.SOUNDS.FT_OPEN, volume: VOLUME.FT_OPEN, autoplay: true, loop: false }, false);
         } catch {
-          clearTimeout(timeout);
-          resolve();
+          clearTimeout(fallback);
+          done();
           return;
         }
         if (!sound?.on) return; // fallback timeout handles it
-        const onDone = () => { clearTimeout(timeout); resolve(); };
-        sound.on("end",  onDone);
-        sound.on("stop", onDone);
+        sound.on("end",  done);
+        sound.on("stop", done);
+        if (earlyMs > 0) {
+          const tryEarly = () => {
+            const durMs = (sound.duration ?? 0) * 1000;
+            if (durMs > earlyMs) {
+              clearTimeout(fallback);
+              setTimeout(done, Math.max(0, durMs - earlyMs));
+            }
+            // else: duration unknown or shorter than earlyMs — "end" listener handles it
+          };
+          if ((sound.duration ?? 0) > 0) tryEarly();
+          else sound.on("start", tryEarly);
+        }
       });
     },
     playFastTravelCycle() { play(DP.SOUNDS.FT_CYCLE, VOLUME.FT_CYCLE); },

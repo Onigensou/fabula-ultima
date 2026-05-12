@@ -429,7 +429,7 @@
 
       // Broadcast to non-controller clients; everyone plays eagle sound then gryphon together
       game.socket.emit(SOCKET_CH, { type: "DP_ST_ANIM", payload: { userId: game.user?.id } });
-      await DP.Sound?.playFastTravelEagle?.().catch(() => {});
+      await DP.Sound?.playFastTravelEagle?.(450).catch(() => {});
       const pickupResult = await DP.FastTravel?.runGryphonAnimation?.(token).catch(() => null);
       // Source token will be deleted by setupTokenAndActivate; release its guard now
       if (pickupResult?.pickupGuardId != null) Hooks.off("refreshToken", pickupResult.pickupGuardId);
@@ -461,10 +461,16 @@
     if (game.user?.isGM) {
       await setupTokenAndActivate(destScene, actorId, spawn.x, spawn.y, fromSceneId);
     } else {
-      game.socket.emit(SOCKET_CH, {
-        type:    MSG_TRAVEL,
-        payload: { toSceneId: destScene.id, actorId, spawnX: spawn.x, spawnY: spawn.y, fromSceneId },
-      });
+      const travelPayload = { toSceneId: destScene.id, actorId, spawnX: spawn.x, spawnY: spawn.y, fromSceneId };
+      game.socket.emit(SOCKET_CH, { type: MSG_TRAVEL, payload: travelPayload });
+      // Watchdog: if the canvas hasn't switched after 3 s, the GM may have missed the
+      // first message (rare near startup). Re-emit once — setupTokenAndActivate is idempotent.
+      const departingId = canvas?.scene?.id ?? null;
+      await new Promise(r => setTimeout(r, 3000));
+      if (canvas?.scene?.id === departingId && canvas?.scene?.id !== destScene.id) {
+        console.warn(TAG, "MSG_TRAVEL watchdog: destination not active after 3 s — re-emitting.");
+        game.socket.emit(SOCKET_CH, { type: MSG_TRAVEL, payload: travelPayload });
+      }
     }
   }
 
@@ -474,28 +480,42 @@
 
     const gSize = destScene.grid?.size ?? 100;
 
-    if (actorId) {
-      const actor = game.actors.get(actorId);
-      if (actor) {
-        // Cleanup-first: delete any stale token for this actor at destination before creating fresh.
-        // This guarantees a clean single-token state regardless of how many times you travel.
-        const existingAtDest = destScene.tokens.find(t => t.actorId === actorId);
-        if (existingAtDest) {
-          await existingAtDest.delete()
-            .catch(e => console.warn(TAG, "cleanup dest stale token:", e));
+    // Token setup — wrapped so any unexpected throw never prevents scene activation.
+    try {
+      if (actorId) {
+        const actor = game.actors.get(actorId);
+        if (actor) {
+          // Cleanup-first: delete any stale token for this actor at destination before creating fresh.
+          const existingAtDest = destScene.tokens?.find?.(t => t.actorId === actorId) ?? null;
+          if (existingAtDest) {
+            await existingAtDest.delete()
+              .catch(e => console.warn(TAG, "cleanup dest stale token:", e));
+          }
+          const tokenData   = actor.prototypeToken.toObject();
+          tokenData.x       = Math.round(spawnX - (tokenData.width  ?? 1) * gSize / 2);
+          tokenData.y       = Math.round(spawnY - (tokenData.height ?? 1) * gSize / 2);
+          tokenData.actorId = actorId;
+          await destScene.createEmbeddedDocuments("Token", [tokenData])
+            .catch(e => console.warn(TAG, "token create failed:", e));
         }
-
-        // Always create a fresh token at the spawn position
-        const tokenData  = actor.prototypeToken.toObject();
-        tokenData.x      = Math.round(spawnX - (tokenData.width  ?? 1) * gSize / 2);
-        tokenData.y      = Math.round(spawnY - (tokenData.height ?? 1) * gSize / 2);
-        tokenData.actorId = actorId;
-        await destScene.createEmbeddedDocuments("Token", [tokenData])
-          .catch(e => console.warn(TAG, "token create failed:", e));
       }
+    } catch (e) {
+      console.warn(TAG, "token setup failed (non-fatal — activate will still proceed):", e);
     }
 
-    await destScene.activate().catch(e => console.error(TAG, "scene activate failed:", e));
+    // Activate scene. If the first attempt throws or the canvas hasn't switched
+    // after 2 s (rare near startup), retry once.
+    try {
+      await destScene.activate();
+    } catch (e) {
+      console.error(TAG, "scene activate attempt 1 threw:", e);
+    }
+    await new Promise(r => setTimeout(r, 2000));
+    if (canvas?.scene?.id !== destScene.id) {
+      console.warn(TAG, "scene not active 2 s after attempt 1 — retrying activate…");
+      await destScene.activate()
+        .catch(e => console.error(TAG, "scene activate attempt 2 threw:", e));
+    }
 
     // Background cleanup: delete party token from source scene after we've already switched
     if (fromSceneId && actorId && fromSceneId !== destScene.id) {
@@ -625,7 +645,7 @@
         if (msg.payload?.userId === game.user?.id) return;
         const tkn = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
         if (tkn) {
-          (DP.Sound?.playFastTravelEagle?.() ?? Promise.resolve())
+          (DP.Sound?.playFastTravelEagle?.(450) ?? Promise.resolve())
             .catch(() => {})
             .then(() => DP.FastTravel?.runGryphonAnimation?.(tkn, { waitForUpdate: true }))
             .catch(() => { if (tkn.mesh) tkn.mesh.alpha = 1; });
