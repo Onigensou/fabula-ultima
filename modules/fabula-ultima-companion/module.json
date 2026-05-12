@@ -35,6 +35,7 @@
   "scripts/turn-ui-manager.js",
   "scripts/action-animation/animation-asset-cache.js",
   "scripts/action-execution-core.js",
+  "scripts/_test-harness.js",
   "scripts/gm-executor.js",
   "scripts/action-editor/actionEditor-CardFinder.js",
   "scripts/action-editor/actionEditor-PatchEngine.js",

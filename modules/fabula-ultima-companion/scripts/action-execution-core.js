@@ -1148,7 +1148,8 @@ async function consumeItemIfNeeded(actionContext, runId) {
     chatMsgId = null,
     executionMode = "manualCard",
     confirmingUserId = null,
-    skipVisualFeedback = false
+    skipVisualFeedback = false,
+    dryRun = false
   } = {}) {
     const runId = `AX-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
@@ -1164,6 +1165,26 @@ async function consumeItemIfNeeded(actionContext, runId) {
       ui.notifications?.error("Action execution: Missing action payload.");
       return { ok: false, reason: "missing_payload" };
     }
+
+    // Dry-run mode: skip every world-mutating call (spend, consume, AE apply,
+    // AdvanceDamage, Miss, animations, reaction emits, chat cards) and record
+    // what WOULD have happened into this report. Returned in the summary.
+    // Set by FUCompanion.api.test.runActionDryRun via meta.__dryRun + dryRun arg.
+    dryRun = !!dryRun || !!payload?.meta?.__dryRun;
+    const dryRunReport = dryRun ? {
+      runId,
+      executionMode,
+      skipped: [],
+      resourceSpendPlan: null,
+      itemConsumePlan: null,
+      customLogicResolutionWouldRun: false,
+      passiveLogicResolutionWouldRun: false,
+      aeWouldApply: [],
+      missPlan: null,
+      damagePlan: null,
+      animationPlan: null,
+      reactionEmitsPlan: []
+    } : null;
 
         // Damage Card batch state for this execution.
     // We start it later after the passive gate allows execution.
@@ -1264,7 +1285,11 @@ args.rootDamageBatchId = args.rootDamageBatchId || damageBatchId;
 
     // Begin / enter the Damage Card batch only after passive gate passes.
     // This prevents blocked auto-passives from opening empty batches.
-    if (damageBatchApi?.begin) {
+    // Skipped in dry-run — we don't want an empty card opening in chat.
+    if (dryRun) {
+      dryRunReport.skipped.push("damageBatch.begin");
+      log(runId, "DRY-RUN: skipping damage batch begin");
+    } else if (damageBatchApi?.begin) {
       try {
 const batchBegin = damageBatchApi.begin({
   batchId: damageBatchId,
@@ -1323,8 +1348,16 @@ const batchBegin = damageBatchApi.begin({
     }
 
     try {
-      await executeCustomLogicResolution(payload, mergedArgs, chatMsg, runId);
-      await executePassiveLogicResolution(payload, mergedArgs, chatMsg, runId);
+      if (dryRun) {
+        dryRunReport.customLogicResolutionWouldRun = !!payload?.meta?.hasCustomLogicResolution;
+        dryRunReport.passiveLogicResolutionWouldRun = Array.isArray(payload?.meta?.activeEffects)
+          && payload.meta.activeEffects.length > 0;
+        dryRunReport.skipped.push("customLogicResolution", "passiveLogicResolution");
+        log(runId, "DRY-RUN: skipping resolution-phase author scripts");
+      } else {
+        await executeCustomLogicResolution(payload, mergedArgs, chatMsg, runId);
+        await executePassiveLogicResolution(payload, mergedArgs, chatMsg, runId);
+      }
 
       if (mergedArgs.__abortConfirm) {
         const abortReason = safeString(
@@ -1347,20 +1380,52 @@ const batchBegin = damageBatchApi.begin({
         };
       }
 
-      const spendResult = await spendNormalizedCosts(payload, runId);
-      if (!spendResult.ok) return { ok: false, reason: spendResult.reason ?? "resource_spend_failed" };
-
-      const consumeResult = await consumeItemIfNeeded(payload, runId);
-      if (consumeResult.ok === false) {
-        warn(runId, "ITEM CONSUME soft-failed; continuing", consumeResult);
+      let spendResult;
+      if (dryRun) {
+        dryRunReport.resourceSpendPlan = Array.isArray(payload?.meta?.costsNormalized)
+          ? cloneArray(payload.meta.costsNormalized)
+          : [];
+        dryRunReport.skipped.push("spendNormalizedCosts");
+        log(runId, "DRY-RUN: skipping resource spend", {
+          plan: dryRunReport.resourceSpendPlan
+        });
+        spendResult = { ok: true, spent: [] };
+      } else {
+        spendResult = await spendNormalizedCosts(payload, runId);
+        if (!spendResult.ok) return { ok: false, reason: spendResult.reason ?? "resource_spend_failed" };
       }
 
-      await runVisualFeedback({
-        actionContext: payload,
-        executionMode,
-        skipVisualFeedback,
-        runId
-      });
+      if (dryRun) {
+        const usage = payload?.meta?.itemUsage ?? payload?.itemUsage ?? null;
+        dryRunReport.itemConsumePlan = usage ? {
+          mode: usage.mode ?? null,
+          consumeQuantity: !!usage.consumeQuantity,
+          itemUuid: usage.itemUuid ?? null,
+          itemName: usage.itemName ?? null,
+          quantity: usage.quantity ?? null,
+          isUnique: !!usage.isUnique
+        } : null;
+        dryRunReport.skipped.push("consumeItemIfNeeded");
+        log(runId, "DRY-RUN: skipping item consume", {
+          plan: dryRunReport.itemConsumePlan
+        });
+      } else {
+        const consumeResult = await consumeItemIfNeeded(payload, runId);
+        if (consumeResult.ok === false) {
+          warn(runId, "ITEM CONSUME soft-failed; continuing", consumeResult);
+        }
+      }
+
+      if (dryRun) {
+        dryRunReport.skipped.push("runVisualFeedback");
+      } else {
+        await runVisualFeedback({
+          actionContext: payload,
+          executionMode,
+          skipVisualFeedback,
+          runId
+        });
+      }
 
       const adv = game.macros.getName(mergedArgs.advMacroName);
       const miss = game.macros.getName(mergedArgs.missMacroName);
@@ -1444,29 +1509,45 @@ log(runId, "HIT/MISS split", {
   accTotal
 });
 
-      const prevTargets = Array.from(game.user?.targets ?? []).map(t => t.id);
+      const prevTargets = dryRun ? null : Array.from(game.user?.targets ?? []).map(t => t.id);
 
       try {
         if (ae && mergedArgs.aeDirectives.length && savedUUIDs.length) {
-          log(runId, "AE on_attack begin", {
-            directives: mergedArgs.aeDirectives.length,
-            targets: savedUUIDs.length
-          });
-
-          await ae.execute({
-            __AUTO: true,
-            __PAYLOAD: {
-              directives: mergedArgs.aeDirectives,
-              attackerUuid: mergedArgs.attackerUuid,
-              targetUUIDs: savedUUIDs,
+          if (dryRun) {
+            dryRunReport.aeWouldApply.push({
               trigger: "on_attack",
-              accTotal,
+              directives: mergedArgs.aeDirectives.length,
+              targetUUIDs: [...savedUUIDs],
+              attackerUuid: mergedArgs.attackerUuid,
               isSpellish: !!mergedArgs.isSpellish,
-              weaponType: mergedArgs.weaponType
-            }
-          });
+              weaponType: mergedArgs.weaponType,
+              accTotal
+            });
+            log(runId, "DRY-RUN: skipping AE on_attack", {
+              directives: mergedArgs.aeDirectives.length,
+              targets: savedUUIDs.length
+            });
+          } else {
+            log(runId, "AE on_attack begin", {
+              directives: mergedArgs.aeDirectives.length,
+              targets: savedUUIDs.length
+            });
 
-          log(runId, "AE on_attack done");
+            await ae.execute({
+              __AUTO: true,
+              __PAYLOAD: {
+                directives: mergedArgs.aeDirectives,
+                attackerUuid: mergedArgs.attackerUuid,
+                targetUUIDs: savedUUIDs,
+                trigger: "on_attack",
+                accTotal,
+                isSpellish: !!mergedArgs.isSpellish,
+                weaponType: mergedArgs.weaponType
+              }
+            });
+
+            log(runId, "AE on_attack done");
+          }
         }
 
         if (missUUIDs.length && miss) {
@@ -1475,7 +1556,17 @@ log(runId, "HIT/MISS split", {
             .map(s => s?.tokenId ?? null)
             .filter(Boolean);
 
-          if (missIds.length) {
+          if (missIds.length && dryRun) {
+            dryRunReport.missPlan = {
+              missUUIDs: [...missUUIDs],
+              missIds: [...missIds],
+              elementType: elemKey,
+              accuracyTotal: accTotal
+            };
+            log(runId, "DRY-RUN: skipping Miss macro", {
+              missCount: missIds.length
+            });
+          } else if (missIds.length) {
             const sourceSnapshot = await buildSourceSnapshot(payload, mergedArgs);
             const missDefenseUsed =
               (missUUIDs.length === 1)
@@ -1570,28 +1661,46 @@ log(runId, "HIT/MISS split", {
 
           if (hitIds.length) {
             log(runId, "HIT targeting", { hitIdsCount: hitIds.length });
-            await game.user.updateTokenTargets(hitIds, { releaseOthers: true });
+            if (!dryRun) {
+              await game.user.updateTokenTargets(hitIds, { releaseOthers: true });
+            }
 
             if (ae && mergedArgs.aeDirectives.length && hitUUIDs.length) {
-              log(runId, "AE on_hit begin", {
-                directives: mergedArgs.aeDirectives.length,
-                targets: hitUUIDs.length
-              });
-
-              await ae.execute({
-                __AUTO: true,
-                __PAYLOAD: {
-                  directives: mergedArgs.aeDirectives,
-                  attackerUuid: mergedArgs.attackerUuid,
-                  targetUUIDs: hitUUIDs,
+              if (dryRun) {
+                dryRunReport.aeWouldApply.push({
                   trigger: "on_hit",
-                  accTotal,
+                  directives: mergedArgs.aeDirectives.length,
+                  targetUUIDs: [...hitUUIDs],
+                  attackerUuid: mergedArgs.attackerUuid,
                   isSpellish: !!mergedArgs.isSpellish,
-                  weaponType: mergedArgs.weaponType
-                }
-              });
+                  weaponType: mergedArgs.weaponType,
+                  accTotal
+                });
+                log(runId, "DRY-RUN: skipping AE on_hit", {
+                  directives: mergedArgs.aeDirectives.length,
+                  targets: hitUUIDs.length
+                });
+              } else {
+                log(runId, "AE on_hit begin", {
+                  directives: mergedArgs.aeDirectives.length,
+                  targets: hitUUIDs.length
+                });
 
-              log(runId, "AE on_hit done");
+                await ae.execute({
+                  __AUTO: true,
+                  __PAYLOAD: {
+                    directives: mergedArgs.aeDirectives,
+                    attackerUuid: mergedArgs.attackerUuid,
+                    targetUUIDs: hitUUIDs,
+                    trigger: "on_hit",
+                    accTotal,
+                    isSpellish: !!mergedArgs.isSpellish,
+                    weaponType: mergedArgs.weaponType
+                  }
+                });
+
+                log(runId, "AE on_hit done");
+              }
             }
 
             if (mergedArgs.hasDamageSection) {
@@ -1710,8 +1819,20 @@ log(runId, "AdvanceDamage begin", {
   mergedAdvElement: mergedArgs.advPayload?.elementType ?? null
 });
 
-await adv.execute({ __AUTO: true, __PAYLOAD: advUniversalPayload });
+if (dryRun) {
+  const { actionContext: _ctx, __actionEditorResolutionDebug: _dbg, ...damagePlanFields } = advUniversalPayload;
+  dryRunReport.damagePlan = {
+    ...damagePlanFields,
+    hitUUIDs: [...hitUUIDs]
+  };
+  log(runId, "DRY-RUN: skipping AdvanceDamage", {
+    targets: hitIds.length,
+    elementType: advUniversalPayload.elementType
+  });
+} else {
+  await adv.execute({ __AUTO: true, __PAYLOAD: advUniversalPayload });
               log(runId, "AdvanceDamage done");
+}
             } else {
               const animPrecheck = getRunnableAnimationPrecheck(
   mergedArgs.advPayload?.animationScriptRaw,
@@ -1753,6 +1874,17 @@ if (!animPrecheck.hasRunnableScript) {
     reason: animPrecheck.reason,
     macro: mergedArgs.animMacroName
   });
+} else if (dryRun) {
+  dryRunReport.animationPlan = {
+    purpose: "vfx_only",
+    targetUUIDs: [...hitUUIDs],
+    timingOpt: animTimingOpt,
+    timingOffset: animTimingOffset,
+    scriptLen: animScriptRaw.length
+  };
+  log(runId, "DRY-RUN: skipping VFX-only animation", {
+    targets: hitUUIDs.length
+  });
 } else if (anim) {
   const vfxPayload = {
     ...mergedArgs.advPayload,
@@ -1783,7 +1915,9 @@ if (!animPrecheck.hasRunnableScript) {
           }
         }
       } finally {
-        await game.user.updateTokenTargets(prevTargets, { releaseOthers: true });
+        if (!dryRun) {
+          await game.user.updateTokenTargets(prevTargets, { releaseOthers: true });
+        }
       }
 
       const summary = {
@@ -1839,21 +1973,34 @@ if (!animPrecheck.hasRunnableScript) {
               requestedByUserName: game.user?.name ?? null
             };
 
-            globalThis.ONI?.emit?.(
-              "oni:reactionPhase",
-              reactionPayload,
-              { local: true, world: false }
-            );
-            log(runId, "EMIT creature_unleashes_zero_power", {
-              skillName: reactionPayload.skillName,
-              attackerActorUuid
-            });
+            if (dryRun) {
+              dryRunReport.reactionEmitsPlan.push(reactionPayload);
+              log(runId, "DRY-RUN: skipping reaction emit", {
+                kind: reactionPayload.kind,
+                skillName: reactionPayload.skillName
+              });
+            } else {
+              globalThis.ONI?.emit?.(
+                "oni:reactionPhase",
+                reactionPayload,
+                { local: true, world: false }
+              );
+              log(runId, "EMIT creature_unleashes_zero_power", {
+                skillName: reactionPayload.skillName,
+                attackerActorUuid
+              });
+            }
           }
         } catch (zpEmitErr) {
           warn(runId, "creature_unleashes_zero_power emit failed (non-fatal).", {
             error: String(zpEmitErr?.message ?? zpEmitErr)
           });
         }
+      }
+
+      if (dryRun) {
+        summary.dryRun = true;
+        summary.dryRunReport = dryRunReport;
       }
 
       log(runId, "COMPLETE", summary);
@@ -1863,7 +2010,9 @@ if (!animPrecheck.hasRunnableScript) {
       ui.notifications?.error("Action execution failed. See console.");
       return { ok: false, reason: "exception", error: e };
     } finally {
-      if (damageBatchEntered && damageBatchApi?.end) {
+      if (dryRun) {
+        // We never opened a batch in dry-run; nothing to end.
+      } else if (damageBatchEntered && damageBatchApi?.end) {
         try {
           const endResult = await damageBatchApi.end(damageBatchId, {
             flushWhenReady: true,

@@ -40,6 +40,7 @@
 # -----------------------------
 
 !/README.md
+!/ONBOARDING.md
 !/required-modules.json
 !/setup.ps1
 
