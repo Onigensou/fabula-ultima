@@ -26,6 +26,8 @@
 (() => {
   const INSTALL_TAG = "[ONI][EventSystem][ConfigUI]";
 
+  const RAW = () => {};
+
   // ------------------------------------------------------------
   // Global namespace + guard
   // ------------------------------------------------------------
@@ -33,6 +35,7 @@
   window.oni.EventSystem = window.oni.EventSystem || {};
 
   if (window.oni.EventSystem.ConfigUI?.installed) {
+    RAW("Already installed; skipping (double-load guard).");
     console.debug(INSTALL_TAG, "Already installed; skipping.");
     return;
   }
@@ -40,6 +43,8 @@
   const C = window.oni.EventSystem.Constants;
   const D = window.oni.EventSystem.Debug;
   const EventRegistry = window.oni.EventSystem.EventRegistry;
+
+  RAW("Dependency check", { C: !!C, EventRegistry: !!EventRegistry, D: !!D });
 
   if (!C) {
     console.error(INSTALL_TAG, "Missing Constants. Load event-constants.js first.");
@@ -636,7 +641,10 @@
   // ------------------------------------------------------------
   // Main injection
   // ------------------------------------------------------------
+  RAW("renderTileConfig hook registered.");
+
   Hooks.on("renderTileConfig", async (app, html) => {
+    RAW("renderTileConfig FIRED", { appId: app?.appId, tileId: app?.document?.id ?? app?.object?.id });
     let grouped = false;
 
     try {
@@ -644,11 +652,18 @@
 
       const root = getRoot(html, app);
       if (!root) {
+        RAW("No root found — aborting.");
         DBG.warn(DEBUG_SCOPE, "No TileConfig root found.");
         return;
       }
 
+      RAW("root check", {
+        hasEventMarker:  root.hasAttribute(MARKER_ATTR),
+        hasFabulaMarker: root.hasAttribute("data-oni-fabula-config"),
+      });
+
       if (root.hasAttribute(MARKER_ATTR)) {
+        RAW("Already injected (marker set) — skipping.");
         DBG.verboseLog(DEBUG_SCOPE, "Already injected; skipping.");
         return;
       }
@@ -657,35 +672,66 @@
 
       const tileDoc = app?.document ?? app?.object;
       const tabsNav = root.querySelector("nav.sheet-tabs");
-      const sheetBody = root.querySelector(".sheet-body") || root.querySelector(".window-content form");
+      // Same sheetBody logic as dp-tile-config: walk up from first native .tab panel
+      const firstNativeTab = root.querySelector(".tab[data-tab]");
+      const sheetBody = firstNativeTab?.parentElement
+        ?? root.querySelector(".sheet-body")
+        ?? root.querySelector(".window-content form");
+
+      RAW("sheetBody resolved", {
+        sheetBodyTag:   sheetBody?.tagName,
+        sheetBodyClass: sheetBody?.className,
+        firstNativeTab: firstNativeTab?.dataset?.tab,
+      });
 
       if (!tabsNav || !sheetBody) {
+        RAW("Missing tabsNav or sheetBody — aborting.");
         DBG.warn(DEBUG_SCOPE, "Could not find tabsNav or sheetBody.", { tabsNav, sheetBody });
         return;
       }
+
+          // Detect whether dp-tile-config already created the shared Fabula Configuration tab.
+      // Query by [data-oni-fabula-panel="1"] — NOT by [data-tab="oni-fabula-config"] which
+      // would match the nav button BEFORE the panel (both share data-tab).
+      const fabulaPanel = sheetBody.querySelector('[data-oni-fabula-panel="1"]');
+      const fabulaMode  = !!fabulaPanel;
+
+      DBG.log(DEBUG_SCOPE, "fabulaMode detection", {
+        fabulaMode,
+        fabulaPanelFound: !!fabulaPanel,
+        sheetBodyTabPanels: sheetBody
+          ? [...sheetBody.querySelectorAll("[data-tab]")].map(p => p.dataset.tab).join(", ")
+          : "(none)",
+        rootHasFabulaAttr: root.hasAttribute("data-oni-fabula-config"),
+      });
 
       grouped = !!DBG.group?.(DEBUG_SCOPE, `Render TileConfig [${tileDoc?.id ?? "unknown"}]`, true);
       DBG.log(DEBUG_SCOPE, "Injecting Event Config tab.", {
         appId: app?.appId,
         tileId: tileDoc?.id,
-        tileName: tileDoc?.name
+        tileName: tileDoc?.name,
+        fabulaMode,
       });
 
       // --------------------------------------------------------
-      // Tab button
+      // Tab button — only when creating our own standalone tab
       // --------------------------------------------------------
-      const tabButton = document.createElement("a");
-      tabButton.className = "item";
-      tabButton.dataset.tab = TAB_ID;
-      tabButton.innerHTML = C.TAB_ICON_HTML || `<i class="fas fa-bolt"></i> Event Config`;
-      tabsNav.appendChild(tabButton);
+      if (!fabulaMode) {
+        const tabButton = document.createElement("a");
+        tabButton.className = "item";
+        tabButton.dataset.tab = TAB_ID;
+        tabButton.innerHTML = C.TAB_ICON_HTML || `<i class="fas fa-bolt"></i> Event Config`;
+        tabsNav.appendChild(tabButton);
+      }
 
       // --------------------------------------------------------
-      // Tab panel
+      // Tab panel (own tab) or plain section div (fabula mode)
       // --------------------------------------------------------
       const tabPanel = document.createElement("div");
-      tabPanel.className = "tab";
-      tabPanel.dataset.tab = TAB_ID;
+      if (!fabulaMode) {
+        tabPanel.className = "tab";
+        tabPanel.dataset.tab = TAB_ID;
+      }
 
       tabPanel.innerHTML = `
         <div class="oni-event-wrap">
@@ -761,12 +807,40 @@
         </div>
       `;
 
-      sheetBody.appendChild(tabPanel);
+      if (fabulaMode) {
+        const subNav     = fabulaPanel.querySelector('[data-oni-fabula-sub-nav="1"]');
+        const subContent = fabulaPanel.querySelector('[data-oni-fabula-sub-content="1"]');
 
-      const bound = bindTabs(app, root);
-      if (!bound.ok) DBG.warn(DEBUG_SCOPE, "bindTabs failed.", bound.reason);
+        if (subNav && subContent) {
+          // Add sub-tab button to the secondary nav
+          const subBtn = document.createElement("a");
+          subBtn.className = "item";
+          subBtn.dataset.subTab = "event";
+          subBtn.innerHTML = `<i class="fas fa-bolt"></i> Event`;
+          subNav.appendChild(subBtn);
 
-      resizeTileConfigForTabs(app, root);
+          // Wrap content in a sub-panel and add it hidden (dungeon is active by default)
+          tabPanel.className = "oni-fabula-sub-panel";
+          tabPanel.dataset.subTab = "event";
+          tabPanel.style.display = "none";
+          subContent.appendChild(tabPanel);
+        } else {
+          // Fallback: flat section with divider header
+          const hr = document.createElement("hr");
+          hr.className = "oni-fabula-section-divider";
+          fabulaPanel.appendChild(hr);
+          const hdr = document.createElement("h3");
+          hdr.className = "oni-fabula-section-header";
+          hdr.innerHTML = `<i class="fas fa-bolt"></i> Event Config`;
+          fabulaPanel.appendChild(hdr);
+          fabulaPanel.appendChild(tabPanel);
+        }
+      } else {
+        sheetBody.appendChild(tabPanel);
+        const bound = bindTabs(app, root);
+        if (!bound.ok) DBG.warn(DEBUG_SCOPE, "bindTabs failed.", bound.reason);
+        resizeTileConfigForTabs(app, root);
+      }
 
       // --------------------------------------------------------
       // Prefill

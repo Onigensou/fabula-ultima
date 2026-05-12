@@ -166,18 +166,28 @@ function installTreasureConfigUI() {
         return;
       }
 
-      // Tab button
-      const tabButton = document.createElement("a");
-      tabButton.className = "item";
-      tabButton.dataset.tab = TAB_ID;
-      tabButton.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure Config`;
-      tabsNav.appendChild(tabButton);
-      log("Tab button injected:", TAB_ID);
+      // Detect whether dp-tile-config already created the shared Fabula Configuration panel.
+      // Query by [data-oni-fabula-panel="1"] to target the PANEL, not the nav button
+      // (both share data-tab="oni-fabula-config"; querySelector would find the button first).
+      const fabulaPanel = sheetBody.querySelector('[data-oni-fabula-panel="1"]');
+      const fabulaMode  = !!fabulaPanel;
 
-      // Tab panel
+      if (!fabulaMode) {
+        // Tab button — only when creating own tab
+        const tabButton = document.createElement("a");
+        tabButton.className = "item";
+        tabButton.dataset.tab = TAB_ID;
+        tabButton.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure Config`;
+        tabsNav.appendChild(tabButton);
+        log("Tab button injected:", TAB_ID);
+      }
+
+      // Tab panel (own tab) or plain section div (fabula mode)
       const tabPanel = document.createElement("div");
-      tabPanel.className = "tab";
-      tabPanel.dataset.tab = TAB_ID;
+      if (!fabulaMode) {
+        tabPanel.className = "tab";
+        tabPanel.dataset.tab = TAB_ID;
+      }
 
       tabPanel.innerHTML = `
         <div class="oni-treasure-wrap">
@@ -246,12 +256,40 @@ function installTreasureConfigUI() {
         </div>
       `;
 
-      sheetBody.appendChild(tabPanel);
-      log("Tab panel injected into sheetBody.");
+      if (fabulaMode) {
+        const subNav     = fabulaPanel.querySelector('[data-oni-fabula-sub-nav="1"]');
+        const subContent = fabulaPanel.querySelector('[data-oni-fabula-sub-content="1"]');
 
-      const bound = bindTabs(app, root);
-      if (!bound.ok) warn("bindTabs failed:", bound.reason);
-      else log("bindTabs ok.");
+        if (subNav && subContent) {
+          const subBtn = document.createElement("a");
+          subBtn.className = "item";
+          subBtn.dataset.subTab = "treasure";
+          subBtn.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure`;
+          subNav.appendChild(subBtn);
+
+          tabPanel.className = "oni-fabula-sub-panel";
+          tabPanel.dataset.subTab = "treasure";
+          tabPanel.style.display = "none";
+          subContent.appendChild(tabPanel);
+          log("Tab panel injected as sub-tab into Fabula Configuration.");
+        } else {
+          const hr = document.createElement("hr");
+          hr.className = "oni-fabula-section-divider";
+          fabulaPanel.appendChild(hr);
+          const hdr = document.createElement("h3");
+          hdr.className = "oni-fabula-section-header";
+          hdr.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure Config`;
+          fabulaPanel.appendChild(hdr);
+          fabulaPanel.appendChild(tabPanel);
+          log("Tab panel injected into Fabula Configuration tab (fallback).");
+        }
+      } else {
+        sheetBody.appendChild(tabPanel);
+        log("Tab panel injected into sheetBody.");
+        const bound = bindTabs(app, root);
+        if (!bound.ok) warn("bindTabs failed:", bound.reason);
+        else log("bindTabs ok.");
+      }
 
       // Prefill
       const data = readTreasureFlags(tileDoc);

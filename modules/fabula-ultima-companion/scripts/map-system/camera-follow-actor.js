@@ -47,7 +47,8 @@
   const MODULE_ID = "fabula-ultima-companion";
   const FABULA_ROOT_KEY = "oniFabula";
   const GENERAL_KEY = "general";
-  const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const CAMERA_FOLLOW_KEY = "cameraFollowToken"; // legacy key (backward-compat)
+  const SCENE_MODE_KEY    = "sceneMode";          // new key: "none"|"exploration"|"dungeon"
 
   // Smooth follow tuning
   const SMOOTHING = 0.18; // 0.05–0.35 (higher = snappier)
@@ -85,7 +86,12 @@
   }
 
   function getSceneCameraFollowEnabled(scene) {
-    const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+    const fab  = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+    // New: sceneMode selector takes precedence
+    const mode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (mode === "exploration") return true;
+    if (mode === "dungeon" || mode === "none") return false;
+    // Backward-compat: old boolean flag
     const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     return normalizeBoolean(raw, false);
   }

@@ -48,39 +48,19 @@ Hooks.once("ready", () => {
   // If true, we also set a "consumed" flag on the Tile so re-entering does nothing.
   const MARK_TILE_CONSUMED_FLAG = true;
 
-  // Tile → Roulette Type detection by image source (exact matches)
-  const TILE_SRC = {
-    Weapon:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Weapon_Tile.png",
-    Accessories:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Accessory_Tile.png",
-    IP:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png",
-    Zenit:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png",
-    Treasure:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Treasure_Tile.png",
-    Consumable:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png",
-    Armor:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Armor_Tile.png",
-    Status:
-      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Status_Tile.png",
+  // DP tile type key → roulette config.
+  // rouletteType is passed to TreasureRoulette Core.request.
+  // lootKey maps to scene flag: flags.<MODULE_ID>.oniDungeon.loot.<lootKey>
+  const DP_TYPE_CONFIG = {
+    treasure:   { rouletteType: "Treasure",   lootKey: "treasure",   label: "Treasure"   },
+    gold:       { rouletteType: "Zenit",       lootKey: "zenit",      label: "Zenit"      },
+    weapon:     { rouletteType: "Weapon",      lootKey: "weapon",     label: "Weapon"     },
+    armor:      { rouletteType: "Armor",       lootKey: "armor",      label: "Armor"      },
+    accessory:  { rouletteType: "Accessories", lootKey: "accessory",  label: "Accessory"  },
+    consumable: { rouletteType: "Consumable",  lootKey: "consumable", label: "Consumable" },
+    item:       { rouletteType: "IP",          lootKey: "item",       label: "Item (IP)"  },
   };
 
-  // RollTables are read from the CURRENT SCENE's Dungeon Configuration flags.
-  // This matches your Scene Config UI fields (Dungeon Configuration → Loot):
-  //   flags.fabula-ultima-companion.oniDungeon.loot.weapon
-  //   flags.fabula-ultima-companion.oniDungeon.loot.armor
-  //   flags.fabula-ultima-companion.oniDungeon.loot.accessory
-  //   flags.fabula-ultima-companion.oniDungeon.loot.consumable
-  //   flags.fabula-ultima-companion.oniDungeon.loot.item
-  //   flags.fabula-ultima-companion.oniDungeon.loot.treasure
-  //
-  // Optional / forward-compatible keys (if you add them later):
-  //   flags.fabula-ultima-companion.oniDungeon.loot.zenit
-  //   flags.fabula-ultima-companion.oniDungeon.loot.status
-  //
   // Fallback order (same as your Dungeon Config UI):
   //   1) flags.<MODULE_ID>.oniDungeon
   //   2) flags.world.oniDungeon
@@ -99,43 +79,19 @@ Hooks.once("ready", () => {
     return {};
   };
   
-  const getLootTableUuidFromScene = (tileType, scene = canvas.scene) => {
-    const data = readDungeonData(scene);
-    const loot = data?.loot || {};
-  
-    // Normalize tileType → key
-    const key = (() => {
-      if (tileType === "Weapon") return "weapon";
-      if (tileType === "Armor") return "armor";
-      if (tileType === "Accessories") return "accessory";
-      if (tileType === "Consumable") return "consumable";
-      if (tileType === "Treasure") return "treasure";
-      // Your rule: IP tile uses the Item table
-      if (tileType === "IP") return "item";
-
-      // NEW: Zenit tile reads from Dungeon Configuration → Loot → Zenit
-      if (tileType === "Zenit") return "zenit";
-
-      // (Optional) if you ever add a Status loot field later:
-      if (tileType === "Status") return "status";
-
-      return null;
-    })();
-  
-    if (key && typeof loot[key] === "string" && loot[key].trim()) return loot[key].trim();
-  
-    // Backward/compat fallbacks:
-    // - Status: if no loot.status field exists, we fall back to treasure to avoid hard failure.
-    if (tileType === "Status" && typeof loot.treasure === "string" && loot.treasure.trim()) return loot.treasure.trim();
-  
-    return "";
+  // dpTypeKey: canonical DP tile type key (e.g. "weapon", "gold")
+  const getLootTableUuidFromScene = (dpTypeKey, scene = canvas.scene) => {
+    const cfg = DP_TYPE_CONFIG[dpTypeKey];
+    if (!cfg) return "";
+    const loot = readDungeonData(scene)?.loot || {};
+    const uuid = loot[cfg.lootKey];
+    return (typeof uuid === "string" && uuid.trim()) ? uuid.trim() : "";
   };
-  
-    // If you want some tile types to ALWAYS consume results differently:
-  // (If omitted, DEFAULT_CONSUME_RESULTS is used.)
+
+  // Per-type consume behaviour override (uses DP keys). Falls back to DEFAULT_CONSUME_RESULTS.
   const CONSUME_RESULTS_BY_TYPE = {
-    // Zenit: false,
-    // IP: false,
+    // gold: false,
+    // item: false,
   };
 
   // ---------------------------------------------------------------------------
@@ -157,9 +113,6 @@ Hooks.once("ready", () => {
   const log = (...a) => console.log("[TR TileFE]", ...a);
   const warn = (...a) => console.warn("[TR TileFE]", ...a);
 
-  const stripQuery = (src) => String(src ?? "").split("?")[0];
-  const isTruthy = (v) => !!v;
-
   const getActiveGM = () => game.users?.contents?.find((u) => u.isGM && u.active) || null;
   const isAuthorityClient = () => {
     const gm = getActiveGM();
@@ -167,35 +120,7 @@ Hooks.once("ready", () => {
     return game.user?.id === gm.id;
   };
 
-  const safeGetTileSrc = (tileDoc) => {
-    // TileDocument in v12 uses texture.src
-    return stripQuery(tileDoc?.texture?.src ?? tileDoc?.img ?? "");
-  };
-
-  const detectTileType = (tileDoc) => {
-    const src = safeGetTileSrc(tileDoc);
-
-    if (src === TILE_SRC.Weapon) return "Weapon";
-    if (src === TILE_SRC.Armor) return "Armor";
-    if (src === TILE_SRC.Accessories) return "Accessories";
-    if (src === TILE_SRC.Consumable) return "Consumable";
-    if (src === TILE_SRC.Treasure) return "Treasure";
-    if (src === TILE_SRC.Status) return "Status";
-    if (src === TILE_SRC.Zenit) return "Zenit";
-    if (src === TILE_SRC.IP) return "IP";
-
-    return null;
-  };
-
-  const rouletteTypeFromTileType = (tileType) => {
-    // Your rule: Zenit tile = Zenit, Item tile = IP, rest are "normal treasure mode"
-    // We still keep the label for clarity in UI + logging.
-    if (tileType === "Zenit") return "Zenit";
-    if (tileType === "IP") return "IP";
-    return tileType; // Weapon / Armor / Accessories / Consumable / Treasure / Status
-  };
-
-  const tableUuidFromTileType = (tileType) => getLootTableUuidFromScene(tileType, canvas.scene);
+  const tableUuidFromTileType = (dpTypeKey) => getLootTableUuidFromScene(dpTypeKey, canvas.scene);
   const canStartRouletteForTile = async (tileDoc) => {
     if (!tileDoc) return false;
 
@@ -430,38 +355,41 @@ log("Tile consumed:", tileUuid);
         return;
       }
 
-      // Only DB token should create prompts
-      const okDb = await isDbToken(tokenDoc);
-      if (!okDb) {
-        log("Trigger ignored: token is not DB token", { token: tokenDoc?.uuid, actor: tokenDoc?.actor?.uuid || tokenDoc?.actorUuid || null });
-        return;
+      // Skip DB-token check when triggered from the Dungeon Pathing system — DP already
+      // validated the party token before dispatching the tile event.
+      if (!context.fromDungeonPathing) {
+        const okDb = await isDbToken(tokenDoc);
+        if (!okDb) {
+          log("Trigger ignored: token is not DB token", { token: tokenDoc?.uuid, actor: tokenDoc?.actor?.uuid || tokenDoc?.actorUuid || null });
+          return;
+        }
       }
 
       // Already consumed/prompted?
       const can = await canStartRouletteForTile(tileDoc);
       if (!can) return;
 
-      // Detect which tile type
-      const tileType = detectTileType(tileDoc);
-      if (!tileType) {
-        log("Trigger ignored: tile image not recognized as a TR tile", { tile: tileDoc?.uuid, src: safeGetTileSrc(tileDoc) });
+      // Tile type is passed by the Dungeon Pathing tile event system (context.tileType = DP key)
+      const dpTypeKey = context?.tileType || null;
+      const cfg = dpTypeKey ? DP_TYPE_CONFIG[dpTypeKey] : null;
+      if (!cfg) {
+        log("Trigger ignored: unrecognized or missing tileType in context", { tile: tileDoc?.uuid, dpTypeKey });
         return;
       }
 
-      const rouletteType = rouletteTypeFromTileType(tileType);
-      const tableUuid = tableUuidFromTileType(tileType);
+      const tileType    = dpTypeKey;
+      const rouletteType = cfg.rouletteType;
+      const tableUuid   = getLootTableUuidFromScene(dpTypeKey);
 
       if (!tableUuid) {
         ui.notifications.warn(
-          `[TreasureRoulette] TileFrontEnd: No RollTable UUID configured for "${tileType}" on this Scene (Dungeon Configuration → Loot).`
+          `[TreasureRoulette] TileFrontEnd: No RollTable UUID configured for "${cfg.label}" on this Scene (Dungeon Configuration → Loot).`
         );
         return;
       }
 
-      // Try to use RollTable img (you asked "rollabletable image icon")
-      const iconSrc = (await tryGetRollTableImg(tableUuid)) || safeGetTileSrc(tileDoc);
-
-      const titleText = `${rouletteType} Tile`;
+      const iconSrc  = await tryGetRollTableImg(tableUuid) || null;
+      const titleText = `${cfg.label} Tile`;
 
       const content = buildPromptHtml({
         titleText,
@@ -545,8 +473,8 @@ await tileDoc.setFlag(MODULE_ID, "trPromptMessageId", msg.id);
 
       // Pull the tableUuid stored on the prompt (created from Scene Dungeon Configuration)
       // Fallback: re-resolve from current scene flags using tileType.
-      const tableUuid = data.tableUuid || tableUuidFromTileType(data.tileType);
-      const rouletteType = data.rouletteType || rouletteTypeFromTileType(data.tileType);
+      const tableUuid    = data.tableUuid    || tableUuidFromTileType(data.tileType);
+      const rouletteType = data.rouletteType || DP_TYPE_CONFIG[data.tileType]?.rouletteType || data.tileType;
 
       if (!tableUuid) {
         ui.notifications.error(
@@ -848,8 +776,7 @@ await tileDoc.setFlag(MODULE_ID, "trPromptMessageId", msg.id);
   window[KEY] = {
     onDbEnterTile,
     _debug: {
-      detectTileType,
-      rouletteTypeFromTileType,
+      DP_TYPE_CONFIG,
       tableUuidFromTileType,
       clearTileVisualAndDisable,
       tileByRequestId,

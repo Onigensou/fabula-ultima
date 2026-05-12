@@ -32,6 +32,7 @@
   const FABULA_ROOT_KEY = "oniFabula";
   const GENERAL_KEY = "general";
   const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const SCENE_MODE_KEY    = "sceneMode";
 
   const WORLD_LOCK_SCOPE = "world";
   const WORLD_LOCK_KEY = "oniMovementControlCameraLocked";
@@ -141,6 +142,15 @@
 
   function getSceneCameraFollowEnabled(scene) {
     const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+
+    // sceneMode takes precedence over the legacy cameraFollowToken boolean.
+    // Dungeon mode explicitly disables camera follow (and right-click movement).
+    const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (sceneMode === "dungeon")     return false;
+    if (sceneMode === "exploration") return true;
+    if (sceneMode === "none")        return false;
+
+    // Legacy fallback: read the old boolean flag directly.
     const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     return normalizeBoolean(raw, false);
   }
@@ -627,7 +637,12 @@
       if (state.mode === "waiting") {
         const x = state.lockX ?? canvas.stage.pivot.x;
         const y = state.lockY ?? canvas.stage.pivot.y;
-        canvas.pan({ x, y, scale });
+        // Only pan if the viewport has drifted from the lock point (user panned, etc.)
+        const ldx = canvas.stage.pivot.x - x;
+        const ldy = canvas.stage.pivot.y - y;
+        if (ldx * ldx + ldy * ldy > 0.01 || canvas.stage.scale.x !== scale) {
+          canvas.pan({ x, y, scale });
+        }
         return;
       }
 
@@ -648,14 +663,28 @@
         }
 
         const targetCenter = token.center;
-        const alpha = smoothingAlpha(delta);
 
         state.curX = state.curX ?? canvas.stage.pivot.x;
         state.curY = state.curY ?? canvas.stage.pivot.y;
 
-        state.curX = state.curX + (targetCenter.x - state.curX) * alpha;
-        state.curY = state.curY + (targetCenter.y - state.curY) * alpha;
+        const dx  = targetCenter.x - state.curX;
+        const dy  = targetCenter.y - state.curY;
+        const dSq = dx * dx + dy * dy;
 
+        if (dSq <= 1) {
+          // Within 1wu of target — snap to exact position once, then stop panning
+          // until the token moves again.  Mirrors dp-scan-mode.js settled logic.
+          if (dSq > 0.0001) {
+            state.curX = targetCenter.x;
+            state.curY = targetCenter.y;
+            canvas.pan({ x: state.curX, y: state.curY, scale });
+          }
+          return;
+        }
+
+        const alpha = smoothingAlpha(delta);
+        state.curX += dx * alpha;
+        state.curY += dy * alpha;
         canvas.pan({ x: state.curX, y: state.curY, scale });
       }
     };

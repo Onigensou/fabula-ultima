@@ -42,8 +42,17 @@
   const SCENE_NET_KEY     = "sceneNetwork"; // stored inside oniFabula as JSON string
 
   // General settings stored inside oniFabula.general
-  const GENERAL_KEY       = "general";
-  const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const GENERAL_KEY        = "general";
+  const CAMERA_FOLLOW_KEY  = "cameraFollowToken"; // legacy — kept for backward-compat read
+  const SCENE_MODE_KEY     = "sceneMode";          // new: "none" | "exploration" | "dungeon"
+  const SCAN_RADIUS_KEY    = "scanRadius";          // world-unit clamp radius for scan mode
+  const FT_ENABLED_KEY     = "fastTravelEnabled";   // boolean: allow fast travel in dungeon mode
+  const IS_OVERWORLD_KEY   = "isOverworld";         // boolean: scene is an overworld map
+  const IS_TOWN_KEY        = "isTown";              // boolean: scene is a town map
+  const IS_DUNGEON_KEY     = "isDungeon";           // boolean: scene is a dungeon map
+  const SCENE_VISITED_KEY  = "sceneVisited";         // boolean: set true when scene activated once
+  const SPAWN_POINT_KEY    = "spawnPoint";           // { x, y } — manual spawn for scene travel
+  const NAV_NAME_KEY       = "navigationName";       // string: display name in Travel dialog
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -57,7 +66,7 @@
   const MARKER_ATTR = "data-oni-fabula-config";
   const SAVE_MOVED_ATTR = "data-oni-save-moved";
 
-  const DEBUG = true;
+  const DEBUG = false;
   const log  = (...a) => DEBUG && console.log("[FabulaConfigUI]", ...a);
   const warn = (...a) => DEBUG && console.warn("[FabulaConfigUI]", ...a);
 
@@ -419,6 +428,35 @@
   }
 
   // -----------------------------
+  // Spawnpoint helpers
+  // -----------------------------
+  function clientToWorld(clientX, clientY) {
+    if (!canvas?.stage) return { x: clientX, y: clientY };
+    const canvasEl = canvas.app?.view ?? document.querySelector("#board canvas");
+    if (!canvasEl) return { x: clientX, y: clientY };
+    const rect   = canvasEl.getBoundingClientRect();
+    const pivot  = canvas.stage.pivot;
+    const scale  = canvas.stage.scale.x || 1;
+    return {
+      x: pivot.x + (clientX - rect.left  - rect.width  / 2) / scale,
+      y: pivot.y + (clientY - rect.top   - rect.height / 2) / scale,
+    };
+  }
+
+  function updateSpawnpointStatus(generalPanel, scene) {
+    const statusEl = generalPanel?.querySelector?.(".oni-spawnpoint-status");
+    if (!statusEl) return;
+    const sp = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY]?.[GENERAL_KEY]?.[SPAWN_POINT_KEY];
+    if (sp && typeof sp.x === "number" && typeof sp.y === "number") {
+      statusEl.textContent = `✓ Manual spawn set at (${Math.round(sp.x)}, ${Math.round(sp.y)})`;
+      statusEl.style.color = "#5aaa5a";
+    } else {
+      statusEl.textContent = "Using auto-generated spawn (scene center)";
+      statusEl.style.color = "";
+    }
+  }
+
+  // -----------------------------
   // Inject UI
   // -----------------------------
   function inject(app, html) {
@@ -496,11 +534,108 @@
           <h3>General</h3>
 
           <div class="form-group">
-            <label>Camera Follow Token</label>
+            <label>Scene Mode</label>
             <div class="form-fields">
-              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}" />
+              <select name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}">
+                <option value="none">None (Normal Foundry movement)</option>
+                <option value="exploration">Exploration (Camera Follow Token)</option>
+                <option value="dungeon">Dungeon (Tile-Based Movement)</option>
+              </select>
             </div>
-            <p class="notes">If enabled, your future camera script can follow the selected token on this map.</p>
+            <p class="notes">
+              <b>None</b> — standard Foundry V12 token movement.<br>
+              <b>Exploration</b> — camera locks and follows the party token; right-click to walk.<br>
+              <b>Dungeon</b> — tile-based movement: click highlighted tiles to move the party token along the laid-out path.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label>Scan Mode Radius</label>
+            <div class="form-fields">
+              <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_RADIUS_KEY}"
+                     placeholder="600" min="100" max="10000" step="50" />
+            </div>
+            <p class="notes">
+              How far (in world units) the player can pan the camera from the party token while Scan Mode is active.
+              Only applies to <b>Dungeon</b> scene mode. Default: 600.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label>Fast Travel Enabled</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${FT_ENABLED_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Allow the Main Controller to use Fast Travel and Scene Travel. Applies in Dungeon and Exploration modes.</p>
+          </div>
+
+          <h3 style="margin:12px 0 6px;"><i class="fas fa-tag"></i> Scene Type</h3>
+          <p class="notes" style="margin:0 0 8px;">Tag this scene for the Travel system. Used to categorise destinations in the Travel dialog.</p>
+
+          <div class="form-group">
+            <label>Overworld</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_OVERWORLD_KEY}" data-dtype="Boolean" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Town</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_TOWN_KEY}" data-dtype="Boolean" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Dungeon</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_DUNGEON_KEY}" data-dtype="Boolean" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Navigation Name</label>
+            <div class="form-fields">
+              <input type="text" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"
+                     placeholder="Display name in Travel dialog (defaults to Scene Name)" />
+            </div>
+            <p class="notes">Custom name shown in the Travel dialog. Leave blank to use the scene name.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Visited</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Auto-set when the scene is first activated. Toggle to manually include or exclude this scene from Travel destinations.</p>
+          </div>
+
+          <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
+            <h3 style="margin:0 0 6px;">Dungeon Management</h3>
+            <div class="form-group" style="align-items:center;">
+              <label>Reset Dungeon</label>
+              <div class="form-fields" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;flex-shrink:0;">
+                  <i class="fas fa-redo"></i> Reset All Tiles
+                </button>
+                <span class="notes" style="margin:0;color:#e05252;">Restores all tiles to initial state. Cannot be undone.</span>
+              </div>
+            </div>
+
+            <div class="form-group" style="align-items:flex-start;margin-top:8px;">
+              <label>Spawn Point</label>
+              <div class="form-fields" style="flex-direction:column;gap:6px;align-items:flex-start;">
+                <button type="button" class="oni-set-spawnpoint-btn">
+                  <i class="fas fa-crosshairs"></i> Set Spawnpoint
+                </button>
+                <span class="oni-spawnpoint-status notes" style="margin:0;font-style:italic;"></span>
+              </div>
+              <p class="notes">
+                Click to arm spawn-point mode — then click anywhere on the map.
+                Used as the landing position when players Travel to this scene.
+                If unset, the scene center is used.
+              </p>
+            </div>
           </div>
 
           <p class="notes">Remember: data is saved only when you press <b>Save Changes</b>.</p>
@@ -633,11 +768,54 @@
     // Prefill General fields
     try {
       const generalPanel = tabPanel.querySelector(`.oni-fabula-subpanel[data-subtab="${SUBTAB_GENERAL_ID}"]`);
-      const cb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}"]`);
-      if (cb) {
-        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
-        cb.checked = normalizeBoolean(raw, false);
+      const sel = generalPanel?.querySelector(`select[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}"]`);
+      if (sel) {
+        // Read new sceneMode value, or migrate from legacy cameraFollowToken boolean
+        let mode = safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+          const legacy = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+          mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
+        }
+        sel.value = mode;
       }
+
+      // Scan radius prefill
+      const radiusInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_RADIUS_KEY}"]`);
+      if (radiusInput) {
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${SCAN_RADIUS_KEY}`, "");
+        const n = Number(raw);
+        radiusInput.value = (Number.isFinite(n) && n > 0) ? String(n) : "";
+      }
+
+      // Fast Travel enabled prefill (default: true when not yet set)
+      const ftCheckbox = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${FT_ENABLED_KEY}"]`);
+      if (ftCheckbox) {
+        const ftRaw = safeGet(fabulaData, `${GENERAL_KEY}.${FT_ENABLED_KEY}`, null);
+        ftCheckbox.checked = (ftRaw === null) ? true : normalizeBoolean(ftRaw, true);
+      }
+
+      // Scene type checkboxes prefill
+      const overworldCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_OVERWORLD_KEY}"]`);
+      const townCb      = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_TOWN_KEY}"]`);
+      const dungeonCb   = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${IS_DUNGEON_KEY}"]`);
+      if (overworldCb) overworldCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_OVERWORLD_KEY}`, false), false);
+      if (townCb)      townCb.checked      = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_TOWN_KEY}`,      false), false);
+      if (dungeonCb)   dungeonCb.checked   = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_DUNGEON_KEY}`,   false), false);
+
+      // Navigation Name prefill
+      const navNameInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"]`);
+      if (navNameInput) {
+        navNameInput.value = safeGet(fabulaData, `${GENERAL_KEY}.${NAV_NAME_KEY}`, "");
+      }
+
+      // Scene Visited prefill
+      const visitedCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}"]`);
+      if (visitedCb) {
+        visitedCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_VISITED_KEY}`, false), false);
+      }
+
+      // Spawnpoint status display
+      updateSpawnpointStatus(generalPanel, scene);
     } catch (e) {
       warn("General prefill failed:", e);
     }
@@ -759,6 +937,97 @@
     });
 
     // -----------------------------
+    // Reset Dungeon button (GM only, dungeon mode only)
+    // -----------------------------
+    if (game.user?.isGM) {
+      const resetSection = tabPanel.querySelector(".oni-dp-reset-section");
+      const modeSel      = tabPanel.querySelector(`select[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_MODE_KEY}"]`);
+      const generalPanel = tabPanel.querySelector(`.oni-fabula-subpanel[data-subtab="${SUBTAB_GENERAL_ID}"]`);
+
+      function syncResetVisibility() {
+        const mode = modeSel?.value ?? "";
+        resetSection.style.display = (mode === "dungeon" || mode === "exploration") ? "" : "none";
+      }
+
+      syncResetVisibility();
+      modeSel?.addEventListener("change", syncResetVisibility);
+
+      // Spawnpoint arm mode
+      tabPanel.querySelector(".oni-set-spawnpoint-btn")?.addEventListener("click", async (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+
+        app.minimize();
+        ui.notifications?.info?.("Click anywhere on the map to set the spawn point. Press Escape to cancel.");
+
+        const view = canvas?.app?.view ?? document.querySelector("#board canvas");
+        if (!view) { app.maximize(); return; }
+
+        let cleaned = false;
+        const cleanUp = () => {
+          if (cleaned) return; cleaned = true;
+          view.removeEventListener("pointerdown", clickHandler, true);
+          window.removeEventListener("keydown",   escHandler,   true);
+        };
+
+        const escHandler = (keyEv) => {
+          if (keyEv.key !== "Escape") return;
+          keyEv.preventDefault(); keyEv.stopPropagation();
+          cleanUp();
+          app.maximize();
+          ui.notifications?.info?.("Spawn point setting cancelled.");
+        };
+
+        const clickHandler = async (pointerEv) => {
+          if (pointerEv.button !== 0) return;
+          pointerEv.preventDefault(); pointerEv.stopPropagation();
+          cleanUp();
+
+          const worldPt = globalThis.DungeonPathing?.Graph?.clientToWorld?.(pointerEv.clientX, pointerEv.clientY)
+                       ?? clientToWorld(pointerEv.clientX, pointerEv.clientY);
+
+          try {
+            await scene.setFlag(MODULE_ID, `${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SPAWN_POINT_KEY}`, {
+              x: Math.round(worldPt.x),
+              y: Math.round(worldPt.y),
+            });
+            updateSpawnpointStatus(generalPanel, scene);
+            ui.notifications?.info?.(`Spawn point set to (${Math.round(worldPt.x)}, ${Math.round(worldPt.y)}).`);
+          } catch (e) {
+            console.error("[FabulaConfigUI] setSpawnpoint failed:", e);
+            ui.notifications?.error?.("Failed to save spawn point — see console.");
+          }
+          app.maximize();
+        };
+
+        window.addEventListener("keydown",   escHandler,   true);
+        view.addEventListener("pointerdown", clickHandler, true);
+      });
+
+      tabPanel.querySelector(".oni-reset-dungeon-btn")?.addEventListener("click", async (ev) => {
+        ev.preventDefault(); ev.stopPropagation();
+
+        const confirmed = await Dialog.confirm({
+          title: "Reset Dungeon",
+          content: `<p>Reset <b>all tiles</b> in <b>${scene?.name ?? "this scene"}</b> back to their
+                    initial state?</p><p>This cannot be undone.</p>`,
+          yes: () => true,
+          no:  () => false,
+          defaultYes: false,
+        });
+
+        if (!confirmed) return;
+
+        try {
+          await globalThis.__ONI_DUNGEON_PATHING__?.resetDungeon?.();
+          ui.notifications?.info?.("Dungeon tiles reset to initial state.");
+        } catch (e) {
+          console.error("[FabulaConfigUI] resetDungeon failed:", e);
+          ui.notifications?.error?.("Reset failed — see console.");
+        }
+      });
+    }
+
+    // -----------------------------
     // Bind tabs + move Save button
     // -----------------------------
     const bindRes = bindTabs(app, root);
@@ -796,9 +1065,15 @@
       },
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);
-        const raw = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+        let mode = safeGet(fabula, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+          const legacy = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
+          mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
+        }
         return {
-          [CAMERA_FOLLOW_KEY]: normalizeBoolean(raw, false)
+          sceneMode: mode,
+          // backward-compat alias
+          [CAMERA_FOLLOW_KEY]: (mode === "exploration")
         };
       },
       readSceneNetwork(scene = canvas.scene) {
