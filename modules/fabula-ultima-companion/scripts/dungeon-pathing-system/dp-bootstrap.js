@@ -348,7 +348,9 @@
 
       const tEvent = performance.now();
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
-      perf(`turn | tileEvent dispatch (${tileType}): ${(performance.now()-tEvent).toFixed(1)}ms`);
+      const dtEvent = performance.now() - tEvent;
+      perf(`turn | tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms`);
+      walkDbg(`tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms${dtEvent > 500 ? " ⚠ slow handler — check for deferred updates or heavy async work" : ""}`);
 
       // Capture tileId; markVisited fires 300 ms after rebuild (see finally) to
       // avoid congesting the server socket queue before the next turn's doc update.

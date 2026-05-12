@@ -122,10 +122,20 @@
 
       console.debug(TAG, appear ? "Encounter!" : "No encounter", `Old%:${pctEnc} → New%:${newPct}`);
 
-      // Fire-and-forget: encounter % persists asynchronously; turn flow continues immediately
+      // Defer the encounter % write well past the next turn's animation window
+      // (wait1 ~560ms + docUpdate ~150ms + wait2 ~150ms ≈ 860ms total).
+      // 500ms (old value) fired during the next turn's wait1 phase; Foundry's
+      // preUpdateActor/updateActor hooks on the DB actor can stall the JS event
+      // loop for several seconds, making wait1 take 4+ seconds instead of 560ms.
+      // 3000ms ensures the write fires while the player is reading the confirm
+      // dialog of the next turn — no animation is running at that point.
       if (newPct !== pctEnc && dbWriteTarget) {
-        dbWriteTarget.update({ "system.props.random_battle_percentage": String(Math.round(newPct)) })
-          .catch(e => console.warn(TAG, "encounter % update failed:", e));
+        const _target = dbWriteTarget;
+        const _pct    = String(Math.round(newPct));
+        setTimeout(() => {
+          _target.update({ "system.props.random_battle_percentage": _pct })
+            .catch(e => console.warn(TAG, "encounter % update failed:", e));
+        }, 3000);
       }
     }
   });
