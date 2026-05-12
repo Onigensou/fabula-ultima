@@ -367,6 +367,86 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // reaction_subject_kind matching
+    // -------------------------------------------------------------------------
+    //
+    // Filter "the subject creature is of kind X" by checking truthiness of
+    // `subject.actor.system.props[<rowKind>]`. Blank row value disables the
+    // filter. Triggers without a per-creature subject (conflict/round) make
+    // the filter inert (matches anything).
+    //
+    // Conventional kind keys:
+    //   isPhantasm   — the Phantasm summon family (see scripts/phantasm-api.js)
+    //   isSummon     — any summoned creature
+    // Authors can introduce new kind keys by setting the corresponding flag
+    // on actors; no code change needed.
+    function reactionSubjectKindMatchesRow(rowKindRaw, triggerKey, phasePayload, combat) {
+      const rowKind = (rowKindRaw ?? "").toString().trim();
+      if (!rowKind) return true; // empty = filter inactive
+
+      const shape = registry.subjectShapeFor(triggerKey);
+      if (!shape) return true; // subject-less trigger → filter inert
+
+      const subjects = getSubjectTokensForTrigger(triggerKey, phasePayload, combat);
+      if (!subjects.length) return false; // active filter + no subject = no match
+
+      const matchOne = (subjectToken) => {
+        const actor = subjectToken?.actor;
+        if (!actor) return false;
+        const props = actor?.system?.props ?? {};
+        return !!props[rowKind];
+      };
+      return subjects.some(matchOne);
+    }
+
+    // -------------------------------------------------------------------------
+    // reaction_ownership matching
+    // -------------------------------------------------------------------------
+    //
+    // Filter on a summon-ownership relationship between the subject token and
+    // the reactor. Currently one value: "own_summon" — the subject token's
+    // `flags["fabula-ultima-companion"].summonedBy` matches the reactor's
+    // actor UUID. Blank row value = filter inactive.
+    //
+    // The flag is written by FUCompanion.api.phantasm.markSummon() when a
+    // summon is spawned, but the matcher reads the raw flag directly so it
+    // works even if the phantasm helper isn't loaded yet.
+    function reactionOwnershipMatchesRow(rowOwnershipRaw, reactionToken, triggerKey, phasePayload, combat) {
+      const rowOwnership = (rowOwnershipRaw ?? "").toString().trim();
+      if (!rowOwnership) return true; // empty = filter inactive
+
+      const shape = registry.subjectShapeFor(triggerKey);
+      if (!shape) return true;
+
+      const reactActorUuid = reactionToken?.actor?.uuid;
+      if (!reactActorUuid) return false;
+
+      const subjects = getSubjectTokensForTrigger(triggerKey, phasePayload, combat);
+      if (!subjects.length) return false;
+
+      const MODULE_ID = "fabula-ultima-companion";
+      const FLAG_KEY = "summonedBy";
+
+      const matchOne = (subjectToken) => {
+        const tokenDoc = subjectToken?.document;
+        if (!tokenDoc) return false;
+        const summonedBy = tokenDoc.getFlag?.(MODULE_ID, FLAG_KEY)
+          ?? tokenDoc.flags?.[MODULE_ID]?.[FLAG_KEY]
+          ?? null;
+        if (!summonedBy) return false;
+
+        switch (rowOwnership) {
+          case "own_summon":
+            return summonedBy === reactActorUuid;
+          default:
+            console.warn("[ReactionTriggerCore] reaction_ownership: unknown value, treating as no-match.", rowOwnership);
+            return false;
+        }
+      };
+      return subjects.some(matchOne);
+    }
+
+    // -------------------------------------------------------------------------
     // reaction_debuff_count_* matching
     // -------------------------------------------------------------------------
     // Off semantics: an empty/zero `_min` always matches (filter inactive).
@@ -534,6 +614,23 @@ Hooks.once("ready", () => {
               combat
             )) continue;
 
+            // Subject-kind filter (subject.actor.system.props[<kind>] truthy).
+            if (!reactionSubjectKindMatchesRow(
+              row.reaction_subject_kind,
+              normalizedTriggerKey,
+              phasePayload,
+              combat
+            )) continue;
+
+            // Ownership filter (e.g. subject was summoned by reactor).
+            if (!reactionOwnershipMatchesRow(
+              row.reaction_ownership,
+              token,
+              normalizedTriggerKey,
+              phasePayload,
+              combat
+            )) continue;
+
             matchingRows.push(row);
           }
 
@@ -587,7 +684,9 @@ Hooks.once("ready", () => {
       extractReactionTriggers,
       reactionSourceMatchesRow,
       reactionDamageTypeMatchesRow,
-      reactionDebuffCountMatchesRow
+      reactionDebuffCountMatchesRow,
+      reactionSubjectKindMatchesRow,
+      reactionOwnershipMatchesRow
     };
 
     console.debug("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");

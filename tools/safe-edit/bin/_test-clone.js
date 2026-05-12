@@ -35,6 +35,11 @@ function newId(len = 16) {
     if (clone.system && typeof clone.system === "object" && "uniqueId" in clone.system) {
       clone.system.uniqueId = fresh;
     }
+    // Reset embedded-children lists so the clone starts isolated from the source's
+    // embedded entries (those live under the source's key prefix, not the clone's).
+    for (const f of ["items", "effects", "combatants"]) {
+      if (Array.isArray(clone[f])) clone[f] = [];
+    }
     const now = Date.now();
     clone._stats = { ...(clone._stats || {}), createdTime: now, modifiedTime: now };
     const newKey = `!${collection}!${fresh}`;
