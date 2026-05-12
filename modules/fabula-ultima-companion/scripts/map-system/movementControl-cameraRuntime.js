@@ -637,7 +637,12 @@
       if (state.mode === "waiting") {
         const x = state.lockX ?? canvas.stage.pivot.x;
         const y = state.lockY ?? canvas.stage.pivot.y;
-        canvas.pan({ x, y, scale });
+        // Only pan if the viewport has drifted from the lock point (user panned, etc.)
+        const ldx = canvas.stage.pivot.x - x;
+        const ldy = canvas.stage.pivot.y - y;
+        if (ldx * ldx + ldy * ldy > 0.01 || canvas.stage.scale.x !== scale) {
+          canvas.pan({ x, y, scale });
+        }
         return;
       }
 
@@ -658,14 +663,28 @@
         }
 
         const targetCenter = token.center;
-        const alpha = smoothingAlpha(delta);
 
         state.curX = state.curX ?? canvas.stage.pivot.x;
         state.curY = state.curY ?? canvas.stage.pivot.y;
 
-        state.curX = state.curX + (targetCenter.x - state.curX) * alpha;
-        state.curY = state.curY + (targetCenter.y - state.curY) * alpha;
+        const dx  = targetCenter.x - state.curX;
+        const dy  = targetCenter.y - state.curY;
+        const dSq = dx * dx + dy * dy;
 
+        if (dSq <= 1) {
+          // Within 1wu of target — snap to exact position once, then stop panning
+          // until the token moves again.  Mirrors dp-scan-mode.js settled logic.
+          if (dSq > 0.0001) {
+            state.curX = targetCenter.x;
+            state.curY = targetCenter.y;
+            canvas.pan({ x: state.curX, y: state.curY, scale });
+          }
+          return;
+        }
+
+        const alpha = smoothingAlpha(delta);
+        state.curX += dx * alpha;
+        state.curY += dy * alpha;
         canvas.pan({ x: state.curX, y: state.curY, scale });
       }
     };
