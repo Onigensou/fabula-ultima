@@ -131,7 +131,7 @@
         const tkn = dpState?.partyToken ?? null;
         if (tkn) {
           runGryphonAnimation(tkn, { waitForUpdate: true }).catch(() => {
-            tkn.alpha = 1;
+            showMesh(tkn);
           });
         }
         return;
@@ -234,15 +234,31 @@
     });
   }
 
-  async function runDropOffAnimation(token) {
+  // Hide token visually: set mesh.alpha (what PrimaryCanvasGroup renders) and install
+  // a refreshToken guard so Foundry's _refreshAlpha() can't reset it until we release.
+  function hideMesh(token) {
+    if (!token) return;
+    if (token.mesh) token.mesh.alpha = 0;
+    token.alpha = 0; // belt-and-suspenders for standard PIXI children (nameplate etc.)
+    probeToken("hideMesh", token);
+  }
+
+  function showMesh(token) {
+    if (!token) return;
+    if (token.mesh) token.mesh.alpha = 1;
+    token.alpha = 1;
+    probeToken("showMesh", token);
+  }
+
+  async function runDropOffAnimation(token, { refreshGuardId = null } = {}) {
     if (!canvas?.stage || !token) return;
 
     const unwatch = watchToken(token, "dropOff");
     probeToken("dropOff:enter", token);
 
     // Token must be invisible before the gryphon arrives
-    token.alpha = 0;
-    probeToken("dropOff:alpha=0-set", token);
+    hideMesh(token);
+    probeToken("dropOff:hidden-set", token);
 
     const gSize   = Number(canvas?.grid?.size ?? 100) || 100;
     const docX    = Number(token.document?.x ?? 0);
@@ -258,7 +274,10 @@
 
     const tex = await ensureGryphonTexture().catch(() => null);
     probeToken("dropOff:after-textureLoad", token);
-    if (!tex) { token.alpha = 1; unwatch(); return; }
+    if (!tex) {
+      if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
+      showMesh(token); unwatch(); return;
+    }
 
     const natW    = _gryphonNatW || 480;
     const natH    = _gryphonNatH || 270;
@@ -281,7 +300,7 @@
     canvas.stage.addChild(sprite);
 
     DP.Sound?.playFastTravelWind?.();
-    probeToken("dropOff:before-swoop", token);
+    probeToken("dropOff:before-swoop (mesh.alpha must be 0)", token);
 
     await tween(startX + spriteW, arrivedX + spriteW, arrivedY, arrivedY, ANIM_SWOOP_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
@@ -289,9 +308,10 @@
     probeToken("dropOff:swoop-arrived", token);
     await new Promise(r => setTimeout(r, 200));
 
-    // Token reappears when gryphon arrives
-    token.alpha = 1;
-    probeToken("dropOff:alpha=1-set", token);
+    // Release the refreshToken guard, then reveal the token
+    if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
+    showMesh(token);
+    probeToken("dropOff:revealed", token);
     DP.Sound?.playFastTravelLand?.();
     await new Promise(r => setTimeout(r, 150));
 
@@ -357,9 +377,13 @@
     probeToken("pickup:swoop-arrived (about to HIDE token)", token);
     await new Promise(r => setTimeout(r, 150));
 
-    // Hide token after gryphon arrives — token stays hidden during flyout
-    const prevAlpha = token.alpha ?? 1;
-    token.alpha = 0;
+    // Install refreshToken guard THEN hide — guard fires after _refreshAlpha() on every render
+    // cycle and re-applies mesh.alpha=0, so Foundry's refresh pipeline can never undo our hide.
+    const pickupGuardId = Hooks.on("refreshToken", (tp) => {
+      if (tp !== token && tp.document?.actorId !== token.document?.actorId) return;
+      if (tp.mesh) tp.mesh.alpha = 0;
+    });
+    hideMesh(token);
     probeToken("pickup:alpha=0-set (token should be HIDDEN)", token);
 
     await tween(arrivedX + spriteW, exitX + spriteW, arrivedY, arrivedY, ANIM_FLYOUT_MS,
@@ -387,15 +411,16 @@
           resolve();
         });
       });
-      probeToken("pickup:waitForUpdate-done (restoring alpha)", token);
-      token.alpha = prevAlpha;
+      probeToken("pickup:waitForUpdate-done (revealing token)", token);
+      Hooks.off("refreshToken", pickupGuardId);
+      showMesh(token);
       unwatch();
       return null;
     }
 
-    // Controller path: return token ref so the caller restores alpha after teleport
+    // Controller path: return token + guard so caller releases the guard after teleport
     unwatch();
-    return { token, prevAlpha };
+    return { token, pickupGuardId };
   }
 
   // ── Build eligible node list ─────────────────────────────────────────────────
@@ -729,13 +754,16 @@
         { animate: false, dungeonPathing: true }
       );
       DP.Sound?.playFastTravelLand?.();
-      if (meshInfo?.token) meshInfo.token.alpha = meshInfo.prevAlpha ?? 1;
+      if (meshInfo?.token) {
+        if (meshInfo.pickupGuardId != null) Hooks.off("refreshToken", meshInfo.pickupGuardId);
+        showMesh(meshInfo.token);
+      }
 
     } catch (e) {
       console.error(TAG, "teleportTo error:", e);
     } finally {
       // Safety net: never leave the token invisible if something threw
-      try { if (token.alpha === 0) token.alpha = 1; } catch {}
+      try { if (!token.destroyed) showMesh(token); } catch {}
       _traveling = false;
       exit({ silent: true }); // land sound already played; suppress the close sfx
       setTimeout(() => {
@@ -858,6 +886,8 @@
     runGryphonAnimation,
     /** Exposed for reuse by SceneTravel — plays the gryphon drop-off animation. */
     runDropOffAnimation,
+    hideMesh,
+    showMesh,
   };
 
   Hooks.once("ready", () => {

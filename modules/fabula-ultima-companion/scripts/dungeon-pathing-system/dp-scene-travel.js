@@ -445,28 +445,37 @@
       await new Promise(r => setTimeout(r, 450));
 
       game.socket.emit(SOCKET_CH, { type: "DP_ST_ANIM", payload: { userId: game.user?.id } });
-      await DP.FastTravel?.runGryphonAnimation?.(token).catch(() => null);
-      dbToken("executeTravelTo:after-pickup (token.alpha should be 0)", token);
+      const pickupResult = await DP.FastTravel?.runGryphonAnimation?.(token).catch(() => null);
+      // Source token will be deleted by setupTokenAndActivate; release its guard now
+      if (pickupResult?.pickupGuardId != null) Hooks.off("refreshToken", pickupResult.pickupGuardId);
+      dbToken("executeTravelTo:after-pickup (source guard released, transitioning)", token);
     } else {
       if (isDbg()) console.warn(DBTAG, "executeTravelTo: SKIPPING pickup animation — token=", !!token, "canvas.ready=", !!canvas?.ready);
     }
 
-    // Install drawToken guard BEFORE the scene switch so the destination token is hidden
-    // the instant Foundry draws it — prevents any flash of the visible token during loading.
-    let drawGuardId = null;
+    // Install guards BEFORE the scene switch so the destination token is hidden from the start.
+    // drawToken (one-shot): fires during Token._draw() — sets mesh.alpha=0 immediately.
+    // refreshToken (persistent): fires after _refreshAlpha() on every render cycle —
+    //   keeps mesh.alpha=0 until runDropOffAnimation releases it at the reveal moment.
+    let drawGuardId   = null;
+    let refreshGuardId = null;
     if (actorId) {
       drawGuardId = Hooks.on("drawToken", (tp) => {
         if (tp.document?.actorId !== actorId) return;
-        if (isDbg()) console.log(DBTAG, "drawToken GUARD fired — setting alpha=0 on", tp.document?.actorId, "alpha was", tp.alpha);
-        tp.alpha = 0;
+        if (isDbg()) console.log(DBTAG, "drawToken GUARD fired — actorId=", actorId);
+        if (tp.mesh) tp.mesh.alpha = 0;
         Hooks.off("drawToken", drawGuardId);
       });
-      if (isDbg()) console.log(DBTAG, "drawToken guard installed, guardId=", drawGuardId, "actorId=", actorId);
+      refreshGuardId = Hooks.on("refreshToken", (tp) => {
+        if (tp.document?.actorId !== actorId) return;
+        if (tp.mesh) tp.mesh.alpha = 0;
+      });
+      if (isDbg()) console.log(DBTAG, "guards installed: drawGuardId=", drawGuardId, "refreshGuardId=", refreshGuardId, "actorId=", actorId);
     }
 
     // Prime drop-off animation on all clients before scene switch
     const dropOffPayload = { sceneId: destScene.id, actorId };
-    window.__ONI_DP_DROPOFF_SCENE__ = { ...dropOffPayload, guardId: drawGuardId };
+    window.__ONI_DP_DROPOFF_SCENE__ = { ...dropOffPayload, drawGuardId, refreshGuardId };
     game.socket.emit(SOCKET_CH, { type: "DP_TRAVEL_ARRIVING", payload: dropOffPayload });
 
     if (game.user?.isGM) {
@@ -531,21 +540,21 @@
   // By the time this runs, the drawToken guard installed in executeTravelTo has already fired
   // and set token.alpha = 0 as the token was drawn.  This function reinforces that hiding,
   // pans the camera, and then plays the drop-off animation.
-  async function triggerDropOff(actorId, sceneMode) {
+  async function triggerDropOff(actorId, sceneMode, refreshGuardId = null) {
     if (!actorId) {
       if (isDbg()) console.warn(DBTAG, "triggerDropOff: actorId is null — aborting");
       return;
     }
 
-    if (isDbg()) console.log(DBTAG, `triggerDropOff: actorId=${actorId} sceneMode=${sceneMode}`);
+    if (isDbg()) console.log(DBTAG, `triggerDropOff: actorId=${actorId} sceneMode=${sceneMode} refreshGuardId=${refreshGuardId}`);
 
-    // Re-apply hiding in case the token was drawn before our guard was installed
+    // Reinforce mesh hiding — the refreshToken guard should already be keeping mesh.alpha=0,
+    // but we belt-and-suspenders here in case of any timing gap.
     let token = canvas.tokens?.placeables?.find?.(t => t.document?.actorId === actorId) ?? null;
     if (isDbg()) console.log(DBTAG, "triggerDropOff: token found on canvas=", !!token);
     if (token) {
-      dbToken("triggerDropOff:found (applying alpha=0)", token);
-      token.alpha = 0;
-      dbToken("triggerDropOff:after-alpha=0", token);
+      dbToken("triggerDropOff:found", token);
+      if (token.mesh) token.mesh.alpha = 0;
     } else {
       if (isDbg()) console.warn(DBTAG, "triggerDropOff: token NOT found at canvasReady — all placeables:", canvas.tokens?.placeables?.map(t => t.document?.actorId));
     }
@@ -567,8 +576,8 @@
       if (isDbg()) console.log(DBTAG, "triggerDropOff: dp partyToken after standby=", !!dpToken);
       if (dpToken) { token = dpToken; }
       if (token) {
-        dbToken("triggerDropOff:dungeon-pre-anim (re-applying alpha=0)", token);
-        token.alpha = 0;
+        dbToken("triggerDropOff:dungeon-pre-anim", token);
+        if (token.mesh) token.mesh.alpha = 0;
       }
 
       if (token && canvas?.ready) {
@@ -577,12 +586,16 @@
         const th    = Number(token.document?.height ?? 1) * gSize;
         canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 300 });
         await new Promise(r => setTimeout(r, 350));
-        dbToken("triggerDropOff:dungeon-before-runDropOff (alpha should be 0)", token);
-        token.alpha = 0;
-        await DP.FastTravel?.runDropOffAnimation?.(token).catch(() => { if (token) token.alpha = 1; });
+        dbToken("triggerDropOff:dungeon-before-runDropOff (mesh.alpha should be 0)", token);
+        if (token.mesh) token.mesh.alpha = 0;
+        await DP.FastTravel?.runDropOffAnimation?.(token, { refreshGuardId }).catch(() => {
+          if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
+          if (token?.mesh) token.mesh.alpha = 1;
+        });
         dbToken("triggerDropOff:dungeon-after-runDropOff", token);
       } else {
         if (isDbg()) console.warn(DBTAG, "triggerDropOff: no token or canvas not ready after standby — skipping animation");
+        if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
       }
     } else {
       if (token && canvas?.ready) {
@@ -591,12 +604,16 @@
         const th    = Number(token.document?.height ?? 1) * gSize;
         canvas.animatePan?.({ x: Number(token.document.x) + tw / 2, y: Number(token.document.y) + th / 2, duration: 400 });
         await new Promise(r => setTimeout(r, 450));
-        dbToken("triggerDropOff:town-before-runDropOff (alpha should be 0)", token);
-        token.alpha = 0;
-        await DP.FastTravel?.runDropOffAnimation?.(token).catch(() => { if (token) token.alpha = 1; });
+        dbToken("triggerDropOff:town-before-runDropOff (mesh.alpha should be 0)", token);
+        if (token.mesh) token.mesh.alpha = 0;
+        await DP.FastTravel?.runDropOffAnimation?.(token, { refreshGuardId }).catch(() => {
+          if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
+          if (token?.mesh) token.mesh.alpha = 1;
+        });
         dbToken("triggerDropOff:town-after-runDropOff", token);
       } else {
         if (isDbg()) console.warn(DBTAG, "triggerDropOff: no token or canvas not ready — skipping animation. token=", !!token);
+        if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
       }
     }
   }
@@ -630,18 +647,23 @@
       if (msg?.type === "DP_TRAVEL_ARRIVING") {
         const { sceneId, actorId: aId } = msg.payload ?? {};
         if (isDbg()) console.log(DBTAG, "DP_TRAVEL_ARRIVING received: sceneId=", sceneId, "actorId=", aId);
-        // Install drawToken guard so the token is hidden the instant Foundry draws it
-        let gId = null;
+        // Install guards so the destination token is hidden from the moment it is drawn.
+        let drawGId = null;
+        let refreshGId = null;
         if (aId) {
-          gId = Hooks.on("drawToken", (tp) => {
+          drawGId = Hooks.on("drawToken", (tp) => {
             if (tp.document?.actorId !== aId) return;
-            if (isDbg()) console.log(DBTAG, "drawToken GUARD (remote) fired — actorId=", aId, "alpha was", tp.alpha);
-            tp.alpha = 0;
-            Hooks.off("drawToken", gId);
+            if (isDbg()) console.log(DBTAG, "drawToken GUARD (remote) fired — actorId=", aId);
+            if (tp.mesh) tp.mesh.alpha = 0;
+            Hooks.off("drawToken", drawGId);
           });
-          if (isDbg()) console.log(DBTAG, "drawToken guard (remote) installed, guardId=", gId);
+          refreshGId = Hooks.on("refreshToken", (tp) => {
+            if (tp.document?.actorId !== aId) return;
+            if (tp.mesh) tp.mesh.alpha = 0;
+          });
+          if (isDbg()) console.log(DBTAG, "guards (remote) installed: drawGId=", drawGId, "refreshGId=", refreshGId);
         }
-        window.__ONI_DP_DROPOFF_SCENE__ = { sceneId, actorId: aId, guardId: gId };
+        window.__ONI_DP_DROPOFF_SCENE__ = { sceneId, actorId: aId, drawGuardId: drawGId, refreshGuardId: refreshGId };
         return;
       }
 
@@ -651,7 +673,7 @@
         const tkn = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken ?? null;
         if (tkn) {
           DP.FastTravel?.runGryphonAnimation?.(tkn, { waitForUpdate: true }).catch(() => {
-            tkn.alpha = 1;
+            if (tkn.mesh) tkn.mesh.alpha = 1;
           });
         }
         return;
@@ -686,17 +708,18 @@
       if (isDbg()) console.log(DBTAG, "canvasReady: scene=", scene?.name, "dropOff=", dropOff);
       if (dropOff?.sceneId === scene?.id) {
         window.__ONI_DP_DROPOFF_SCENE__ = null;
-        // Clean up the drawToken guard (it has already fired or is no longer needed)
-        if (dropOff.guardId != null) {
-          if (isDbg()) console.log(DBTAG, "canvasReady: cleaning up drawToken guard", dropOff.guardId);
-          Hooks.off("drawToken", dropOff.guardId);
+        // drawToken guard is one-shot — clean up defensively in case it never fired
+        if (dropOff.drawGuardId != null) {
+          if (isDbg()) console.log(DBTAG, "canvasReady: cleaning up drawToken guard", dropOff.drawGuardId);
+          Hooks.off("drawToken", dropOff.drawGuardId);
         }
+        // refreshToken guard is handed to triggerDropOff → runDropOffAnimation — do NOT release here
         if (isDbg()) {
           const allTokens = canvas.tokens?.placeables ?? [];
           console.log(DBTAG, "canvasReady: tokens on canvas at dropOff trigger:",
-            allTokens.map(t => `actorId=${t.document?.actorId} alpha=${t.alpha?.toFixed(3)}`));
+            allTokens.map(t => `actorId=${t.document?.actorId} mesh.alpha=${t.mesh?.alpha?.toFixed(3)}`));
         }
-        triggerDropOff(dropOff.actorId, general(scene).sceneMode).catch(() => null);
+        triggerDropOff(dropOff.actorId, general(scene).sceneMode, dropOff.refreshGuardId).catch(() => null);
       }
 
       // Auto-mark scene as visited when it becomes the active scene.
