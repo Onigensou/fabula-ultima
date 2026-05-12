@@ -38,7 +38,7 @@ function installJournalConfigUI() {
   const STYLE_ID = "oni-journal-config-style";
   const MARKER_ATTR = "data-oni-journal-config";
 
-  const DEBUG = true;
+  const DEBUG = false;
   const TAG = "[ONI][JournalConfigUI]";
   const log = (...a) => DEBUG && console.log(TAG, ...a);
   const warn = (...a) => DEBUG && console.warn(TAG, ...a);
@@ -222,7 +222,11 @@ function installJournalConfigUI() {
       });
 
       const tabsNav = root.querySelector("nav.sheet-tabs");
-      const sheetBody = root.querySelector(".sheet-body") || root.querySelector(".window-content form");
+      // Walk up from first native .tab panel — Monks Active Tiles has no .sheet-body wrapper
+      const firstNativeTab = root.querySelector(".tab[data-tab]");
+      const sheetBody = firstNativeTab?.parentElement
+        ?? root.querySelector(".sheet-body")
+        ?? root.querySelector(".window-content form");
 
       if (!tabsNav || !sheetBody) {
         warn("Could not find tabsNav or sheetBody.", { tabsNav, sheetBody });
@@ -343,15 +347,32 @@ function installJournalConfigUI() {
       `;
 
       if (fabulaMode) {
-        const hr = document.createElement("hr");
-        hr.className = "oni-fabula-section-divider";
-        fabulaPanel.appendChild(hr);
-        const hdr = document.createElement("h3");
-        hdr.className = "oni-fabula-section-header";
-        hdr.innerHTML = `<i class="fas fa-book-open"></i> Journal Config`;
-        fabulaPanel.appendChild(hdr);
-        fabulaPanel.appendChild(tabPanel);
-        log("Tab panel injected into Fabula Configuration tab.");
+        const subNav     = fabulaPanel.querySelector('[data-oni-fabula-sub-nav="1"]');
+        const subContent = fabulaPanel.querySelector('[data-oni-fabula-sub-content="1"]');
+
+        if (subNav && subContent) {
+          const subBtn = document.createElement("a");
+          subBtn.className = "item";
+          subBtn.dataset.subTab = "journal";
+          subBtn.innerHTML = `<i class="fas fa-book-open"></i> Journal`;
+          subNav.appendChild(subBtn);
+
+          tabPanel.className = "oni-fabula-sub-panel";
+          tabPanel.dataset.subTab = "journal";
+          tabPanel.style.display = "none";
+          subContent.appendChild(tabPanel);
+          log("Tab panel injected as sub-tab into Fabula Configuration.");
+        } else {
+          const hr = document.createElement("hr");
+          hr.className = "oni-fabula-section-divider";
+          fabulaPanel.appendChild(hr);
+          const hdr = document.createElement("h3");
+          hdr.className = "oni-fabula-section-header";
+          hdr.innerHTML = `<i class="fas fa-book-open"></i> Journal Config`;
+          fabulaPanel.appendChild(hdr);
+          fabulaPanel.appendChild(tabPanel);
+          log("Tab panel injected into Fabula Configuration tab (fallback).");
+        }
       } else {
         sheetBody.appendChild(tabPanel);
         log("Tab panel injected into sheet body.");

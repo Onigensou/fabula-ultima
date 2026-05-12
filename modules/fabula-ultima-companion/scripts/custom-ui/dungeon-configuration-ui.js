@@ -50,8 +50,9 @@
   const IS_OVERWORLD_KEY   = "isOverworld";         // boolean: scene is an overworld map
   const IS_TOWN_KEY        = "isTown";              // boolean: scene is a town map
   const IS_DUNGEON_KEY     = "isDungeon";           // boolean: scene is a dungeon map
-  const SCENE_VISITED_KEY  = "sceneVisited";        // boolean: set true when scene activated once
-  const SPAWN_POINT_KEY    = "spawnPoint";          // { x, y } — manual spawn for scene travel
+  const SCENE_VISITED_KEY  = "sceneVisited";         // boolean: set true when scene activated once
+  const SPAWN_POINT_KEY    = "spawnPoint";           // { x, y } — manual spawn for scene travel
+  const NAV_NAME_KEY       = "navigationName";       // string: display name in Travel dialog
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -592,6 +593,23 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>Navigation Name</label>
+            <div class="form-fields">
+              <input type="text" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"
+                     placeholder="Display name in Travel dialog (defaults to Scene Name)" />
+            </div>
+            <p class="notes">Custom name shown in the Travel dialog. Leave blank to use the scene name.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Visited</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Auto-set when the scene is first activated. Toggle to manually include or exclude this scene from Travel destinations.</p>
+          </div>
+
           <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
             <h3 style="margin:0 0 6px;">Dungeon Management</h3>
             <div class="form-group" style="align-items:center;">
@@ -783,6 +801,18 @@
       if (overworldCb) overworldCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_OVERWORLD_KEY}`, false), false);
       if (townCb)      townCb.checked      = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_TOWN_KEY}`,      false), false);
       if (dungeonCb)   dungeonCb.checked   = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_DUNGEON_KEY}`,   false), false);
+
+      // Navigation Name prefill
+      const navNameInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"]`);
+      if (navNameInput) {
+        navNameInput.value = safeGet(fabulaData, `${GENERAL_KEY}.${NAV_NAME_KEY}`, "");
+      }
+
+      // Scene Visited prefill
+      const visitedCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}"]`);
+      if (visitedCb) {
+        visitedCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_VISITED_KEY}`, false), false);
+      }
 
       // Spawnpoint status display
       updateSpawnpointStatus(generalPanel, scene);

@@ -257,15 +257,32 @@ function installTreasureConfigUI() {
       `;
 
       if (fabulaMode) {
-        const hr = document.createElement("hr");
-        hr.className = "oni-fabula-section-divider";
-        fabulaPanel.appendChild(hr);
-        const hdr = document.createElement("h3");
-        hdr.className = "oni-fabula-section-header";
-        hdr.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure Config`;
-        fabulaPanel.appendChild(hdr);
-        fabulaPanel.appendChild(tabPanel);
-        log("Tab panel injected into Fabula Configuration tab.");
+        const subNav     = fabulaPanel.querySelector('[data-oni-fabula-sub-nav="1"]');
+        const subContent = fabulaPanel.querySelector('[data-oni-fabula-sub-content="1"]');
+
+        if (subNav && subContent) {
+          const subBtn = document.createElement("a");
+          subBtn.className = "item";
+          subBtn.dataset.subTab = "treasure";
+          subBtn.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure`;
+          subNav.appendChild(subBtn);
+
+          tabPanel.className = "oni-fabula-sub-panel";
+          tabPanel.dataset.subTab = "treasure";
+          tabPanel.style.display = "none";
+          subContent.appendChild(tabPanel);
+          log("Tab panel injected as sub-tab into Fabula Configuration.");
+        } else {
+          const hr = document.createElement("hr");
+          hr.className = "oni-fabula-section-divider";
+          fabulaPanel.appendChild(hr);
+          const hdr = document.createElement("h3");
+          hdr.className = "oni-fabula-section-header";
+          hdr.innerHTML = `<i class="fas fa-treasure-chest"></i> Treasure Config`;
+          fabulaPanel.appendChild(hdr);
+          fabulaPanel.appendChild(tabPanel);
+          log("Tab panel injected into Fabula Configuration tab (fallback).");
+        }
       } else {
         sheetBody.appendChild(tabPanel);
         log("Tab panel injected into sheetBody.");

@@ -26,10 +26,7 @@
 (() => {
   const INSTALL_TAG = "[ONI][EventSystem][ConfigUI]";
 
-  // Raw bypass log — always visible regardless of DBG gate or group state
-  const RAW = (...a) => console.log(INSTALL_TAG, ...a);
-
-  RAW("IIFE start");
+  const RAW = () => {};
 
   // ------------------------------------------------------------
   // Global namespace + guard
@@ -811,14 +808,33 @@
       `;
 
       if (fabulaMode) {
-        const hr = document.createElement("hr");
-        hr.className = "oni-fabula-section-divider";
-        fabulaPanel.appendChild(hr);
-        const hdr = document.createElement("h3");
-        hdr.className = "oni-fabula-section-header";
-        hdr.innerHTML = `<i class="fas fa-bolt"></i> Event Config`;
-        fabulaPanel.appendChild(hdr);
-        fabulaPanel.appendChild(tabPanel);
+        const subNav     = fabulaPanel.querySelector('[data-oni-fabula-sub-nav="1"]');
+        const subContent = fabulaPanel.querySelector('[data-oni-fabula-sub-content="1"]');
+
+        if (subNav && subContent) {
+          // Add sub-tab button to the secondary nav
+          const subBtn = document.createElement("a");
+          subBtn.className = "item";
+          subBtn.dataset.subTab = "event";
+          subBtn.innerHTML = `<i class="fas fa-bolt"></i> Event`;
+          subNav.appendChild(subBtn);
+
+          // Wrap content in a sub-panel and add it hidden (dungeon is active by default)
+          tabPanel.className = "oni-fabula-sub-panel";
+          tabPanel.dataset.subTab = "event";
+          tabPanel.style.display = "none";
+          subContent.appendChild(tabPanel);
+        } else {
+          // Fallback: flat section with divider header
+          const hr = document.createElement("hr");
+          hr.className = "oni-fabula-section-divider";
+          fabulaPanel.appendChild(hr);
+          const hdr = document.createElement("h3");
+          hdr.className = "oni-fabula-section-header";
+          hdr.innerHTML = `<i class="fas fa-bolt"></i> Event Config`;
+          fabulaPanel.appendChild(hdr);
+          fabulaPanel.appendChild(tabPanel);
+        }
       } else {
         sheetBody.appendChild(tabPanel);
         const bound = bindTabs(app, root);

@@ -122,43 +122,32 @@
 
       console.debug(TAG, appear ? "Encounter!" : "No encounter", `Old%:${pctEnc} → New%:${newPct}`);
 
-      // Write encounter % only when the DP system is between turns (state.busy
-      // false) AND the browser has spare idle time.  A fixed timer can't work
-      // here: the Foundry hook cascade triggered by actor.update() stalls the
-      // JS event loop for ~3.8 s, and any fixed delay can coincide with the
-      // next turn's animation phase (wait1/wait2) if the player walks quickly.
-      //
-      // Strategy: poll every 250 ms until state.busy is false, then fire during
-      // the next browser idle slot.  Give up and force-fire after 30 retries
-      // (~7.5 s) so the write is never lost.
       if (newPct !== pctEnc && dbWriteTarget) {
-        const _target   = dbWriteTarget;
-        const _pct      = String(Math.round(newPct));
-        let   _attempts = 0;
+        const _target = dbWriteTarget;
+        const _pct    = String(Math.round(newPct));
+        let   _done   = false;
 
-        const doUpdate = () => {
+        const applyUpdate = () => {
+          if (_done) return;
+          const dpBusy = globalThis.__ONI_DUNGEON_PATHING__?.state?.busy ?? false;
+          if (dpBusy) {
+            // Turn still in progress — defer to end of next turn
+            Hooks.once(DP.HOOKS.GRAPH_REBUILT, () => setTimeout(applyUpdate, 0));
+            return;
+          }
+          _done = true;
           _target.update(
             { "system.props.random_battle_percentage": _pct },
-            { render: false }   // suppress sheet re-renders during the write
+            { render: false }
           ).catch(e => console.warn(TAG, "encounter % update failed:", e));
         };
 
-        const scheduleWhenIdle = () => {
-          const dpBusy = globalThis.__ONI_DUNGEON_PATHING__?.state?.busy ?? false;
-          if (dpBusy && _attempts++ < 30) {
-            setTimeout(scheduleWhenIdle, 250);
-            return;
-          }
-          if (typeof requestIdleCallback === "function") {
-            requestIdleCallback(doUpdate, { timeout: 8000 });
-          } else {
-            doUpdate();
-          }
-        };
+        // Wait for current turn to finish: graphRebuilt fires at end of rebuild(),
+        // then setTimeout(0) defers past the microtask chain so state.busy=false.
+        Hooks.once(DP.HOOKS.GRAPH_REBUILT, () => setTimeout(applyUpdate, 0));
 
-        // Initial 600 ms lets the current docUpdate socket message clear before
-        // the first busy-state check.
-        setTimeout(scheduleWhenIdle, 600);
+        // Fallback: player leaves dungeon and graphRebuilt never fires again
+        setTimeout(() => { if (!_done) applyUpdate(); }, 30_000);
       }
     }
   });

@@ -323,7 +323,8 @@
   }
 
   function getTravelEmoji() {
-    return DP.SceneTravel?.getTravelEmoji?.(canvas?.scene) ?? "🗺️";
+    // Delegates to SceneTravel which reads scene type flags + sceneMode fallback
+    return DP.SceneTravel?.getTravelEmoji?.(canvas?.scene) ?? "⛰️";
   }
 
   // ── Button lifecycle ───────────────────────────────────────────────────────
@@ -394,7 +395,7 @@
     _ftBtn     = null;
   }
 
-  // Show/hide the FT button when the scene config fastTravelEnabled flag changes.
+  // Show/hide the FT + travel buttons when the scene config fastTravelEnabled flag changes.
   function updateFtBtnVisibility() {
     const enabled = isFtEnabled();
 
@@ -417,9 +418,14 @@
       _ftBtn = null;
     }
 
-    // Reposition travel button if it's in dungeon mode
-    if (_travelBtn && _travelBtnMode === "dungeon") {
-      _travelBtn.style.left = getTravelLeft("dungeon") + "px";
+    // Travel button obeys the same FT gate.
+    // Exploration mode is handled by applyForScene in bootstrap;
+    // here we only manage the dungeon-mode case.
+    if (!enabled) {
+      hideTravelBtn();
+    } else if (_scanBtn) {
+      // FT enabled while dungeon mode is active — ensure travel button is shown/repositioned
+      showTravelBtn("dungeon");
     }
   }
 
