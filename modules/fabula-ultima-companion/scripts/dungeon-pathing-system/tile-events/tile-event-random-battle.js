@@ -122,20 +122,43 @@
 
       console.debug(TAG, appear ? "Encounter!" : "No encounter", `Old%:${pctEnc} → New%:${newPct}`);
 
-      // Defer the encounter % write well past the next turn's animation window
-      // (wait1 ~560ms + docUpdate ~150ms + wait2 ~150ms ≈ 860ms total).
-      // 500ms (old value) fired during the next turn's wait1 phase; Foundry's
-      // preUpdateActor/updateActor hooks on the DB actor can stall the JS event
-      // loop for several seconds, making wait1 take 4+ seconds instead of 560ms.
-      // 3000ms ensures the write fires while the player is reading the confirm
-      // dialog of the next turn — no animation is running at that point.
+      // Write encounter % only when the DP system is between turns (state.busy
+      // false) AND the browser has spare idle time.  A fixed timer can't work
+      // here: the Foundry hook cascade triggered by actor.update() stalls the
+      // JS event loop for ~3.8 s, and any fixed delay can coincide with the
+      // next turn's animation phase (wait1/wait2) if the player walks quickly.
+      //
+      // Strategy: poll every 250 ms until state.busy is false, then fire during
+      // the next browser idle slot.  Give up and force-fire after 30 retries
+      // (~7.5 s) so the write is never lost.
       if (newPct !== pctEnc && dbWriteTarget) {
-        const _target = dbWriteTarget;
-        const _pct    = String(Math.round(newPct));
-        setTimeout(() => {
-          _target.update({ "system.props.random_battle_percentage": _pct })
-            .catch(e => console.warn(TAG, "encounter % update failed:", e));
-        }, 3000);
+        const _target   = dbWriteTarget;
+        const _pct      = String(Math.round(newPct));
+        let   _attempts = 0;
+
+        const doUpdate = () => {
+          _target.update(
+            { "system.props.random_battle_percentage": _pct },
+            { render: false }   // suppress sheet re-renders during the write
+          ).catch(e => console.warn(TAG, "encounter % update failed:", e));
+        };
+
+        const scheduleWhenIdle = () => {
+          const dpBusy = globalThis.__ONI_DUNGEON_PATHING__?.state?.busy ?? false;
+          if (dpBusy && _attempts++ < 30) {
+            setTimeout(scheduleWhenIdle, 250);
+            return;
+          }
+          if (typeof requestIdleCallback === "function") {
+            requestIdleCallback(doUpdate, { timeout: 8000 });
+          } else {
+            doUpdate();
+          }
+        };
+
+        // Initial 600 ms lets the current docUpdate socket message clear before
+        // the first busy-state check.
+        setTimeout(scheduleWhenIdle, 600);
       }
     }
   });
