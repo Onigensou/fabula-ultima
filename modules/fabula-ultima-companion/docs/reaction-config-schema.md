@@ -1,0 +1,298 @@
+# Reaction Config Schema
+
+Schema reference for the **two sibling tables** that drive declarative
+reaction behavior on a skill item:
+
+- `system.props.reaction_config_table` — *trigger* rows. Each row says
+  "when this trigger matches under these filters, fire effect X."
+- `system.props.reaction_effect_table` — *effect* rows. Each row defines
+  what to do (grant a resource, apply an AE, consume a charge, redirect
+  a pending action card, or chain other effects).
+
+Rows are stored as objects keyed by row id (CSB numeric rowKeys), e.g.
+`{ "0": {...}, "1": {...} }`. Order within the object is the row order in
+the editor. Deleted rows carry `$deleted: true`.
+
+When writing a skill spec, you populate these two tables. The matching
+runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
+(trigger registry) and `scripts/reaction-system/reaction-grant.js`
+(effect dispatch).
+
+---
+
+## `reaction_config_table` — trigger row fields
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `reaction_trigger` | string (canonical trigger key, see list below) | yes | What event the row listens for. |
+| `reaction_source` | `"self" \| "ally" \| "enemy" \| "neutral" \| "all"` | when trigger has a subject | Whose actions/events to listen to, relative to the reactor. Hidden in the UI for global lifecycle triggers (conflict/round). |
+| `reaction_damage_type` | `"physical" \| "air" \| "bolt" \| "dark" \| "earth" \| "fire" \| "ice" \| "light" \| "poison"` | when trigger has `damage_type` filter | Filter to a specific element. Blank = match any. |
+| `reaction_damage_amount` | number (≥0) | when trigger has `damage_amount` filter | Minimum damage amount to match. Blank = match any. |
+| `reaction_debuff_count_target` | `"self" \| "ally" \| "enemy" \| "all" \| ""` | when trigger has `debuff_count` filter | Whose tokens to scan for debuffs. Blank disables the filter. |
+| `reaction_debuff_count_min` | number (≥0) | when trigger has `debuff_count` filter | Minimum total debuffs across the chosen group. Blank disables the filter. |
+| `reaction_subject_kind` | string (a `system.props.*` boolean flag, e.g. `"isPhantasm"`) | no | Subject-creature kind filter. When non-blank, the subject's `actor.system.props[<value>]` must be truthy. Available on any trigger whose subject is a creature (i.e. `subjectFrom !== null`). Blank disables the filter. |
+| `reaction_ownership` | `"" \| "own_summon"` | no | Subject/reactor relationship filter. `own_summon` requires the subject token's `flags["fabula-ultima-companion"].summonedBy` to equal the reactor's actor UUID — i.e. "I summoned this creature." Available on any trigger with a creature subject. Blank disables the filter. |
+| `reaction_effect_ref` | string (an `effect_label` from `reaction_effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
+| `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
+| `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
+
+### Canonical trigger keys
+
+29 triggers, grouped by phase bucket. The bucket determines when the
+reaction window opens/closes. Reactions in the same bucket coexist in a
+single merged window (e.g. damage + crisis + defeat all stay available
+in `resolution_phase`).
+
+| Bucket | Trigger keys |
+|--------|--------------|
+| `conflict_start` | `conflict_start` |
+| `round_start` | `round_start` |
+| `round_end` | `round_end` |
+| `turn_start` | `turn_start` |
+| `turn_end` | `turn_end` |
+| `action_phase` | `creature_performs_check`, `creature_performs_action`, `creature_targeted_by_action`, `creature_fumbles_check`, `creature_check_outcome_flipped` |
+| `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_unleashes_zero_power` |
+
+### Subject + filter matrix
+
+This table determines which row fields are *relevant* for a given
+trigger. UI hides irrelevant fields via `visibilityFormula`, but you can
+write them in JSON regardless — they just won't be evaluated.
+
+| Trigger key | Subject side | `source` filter | `damage_type` | `damage_amount` | `debuff_count` |
+|---|---|---|---|---|---|
+| `conflict_start` | — | — | — | — | — |
+| `round_start` | — | — | — | — | yes |
+| `round_end` | — | — | — | — | yes |
+| `turn_start` | turn actor | yes | — | — | yes |
+| `turn_end` | turn actor | yes | — | — | yes |
+| `creature_performs_check` | performer | yes | — | — | — |
+| `creature_performs_action` | performer | yes | — | — | — |
+| `creature_targeted_by_action` | target | yes | yes | — | — |
+| `creature_fumbles_check` | performer | yes | — | — | — |
+| `creature_check_outcome_flipped` | performer | yes | — | — | — |
+| `creature_hit_by_action` | target | yes | yes | — | — |
+| `creature_critical_hit` | damage source | yes | — | — | — |
+| `creature_miss_action` | damage source | yes | — | — | — |
+| `creature_deals_damage` | damage source | yes | yes | yes | — |
+| `creature_takes_damage` | target | yes | yes | yes | — |
+| `creature_takes_vulnerable_damage` | target | yes | yes | — | — |
+| `creature_takes_weak_damage` | target | yes | yes | — | — |
+| `creature_resists_damage` | target | yes | yes | — | — |
+| `creature_absorbs_damage` | target | yes | yes | — | — |
+| `creature_immune_damage` | target | yes | yes | — | — |
+| `creature_shield_break` | target | yes | yes | — | — |
+| `creature_recovers_hp` | target | yes | — | — | — |
+| `creature_lose_mp` | target | yes | — | — | — |
+| `creature_recovers_mp` | target | yes | — | — | — |
+| `creature_status_applied` | target | yes | — | — | yes |
+| `creature_enter_crisis` | state-changed | yes | — | — | — |
+| `creature_exit_crisis` | state-changed | yes | — | — | — |
+| `creature_defeated` | state-changed | yes | — | — | — |
+| `creature_unleashes_zero_power` | performer | yes | — | — | — |
+
+(The `_Skill Template`'s dropdown options list omits
+`creature_unleashes_zero_power` — that trigger was added later and the
+template UI is one behind. It still works correctly at runtime; just
+type the key directly.)
+
+**`reaction_subject_kind` and `reaction_ownership` are universal across all
+subject-bearing triggers** (any trigger whose Subject side is not `—`), so
+they're omitted from the matrix above. The runtime matchers self-skip when
+the trigger has no per-creature subject, so authoring them on
+`conflict_start` / `round_start` / `round_end` is a no-op (the rows still
+match).
+
+### `reaction_source` semantics (relative to the reactor)
+
+| Value | Match condition |
+|-------|-----------------|
+| `self` | Subject is the reactor itself. |
+| `ally` | Subject is on the reactor's disposition side (incl. reactor). |
+| `enemy` | Subject is on the opposite disposition. |
+| `neutral` | Subject has disposition 0 (treated as Neutral; -2 / Secret normalizes to 0). |
+| `all` | Any subject. |
+
+---
+
+## `reaction_effect_table` — effect row fields
+
+Common to every row:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `effect_label` | string | Unique identifier; trigger rows reference this in their `reaction_effect_ref` column. Must be non-blank for the row to be findable. |
+| `effect_kind` | `"grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain"` | Default: `"grant"`. Dispatches to the matching handler in `reaction-grant.js`. |
+
+Per-kind fields below. Fields irrelevant to the chosen kind are hidden
+in the UI but harmless in JSON.
+
+### `effect_kind: "grant"` — grant or drain a resource
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `grant_resource` | `"hp" \| "mp" \| "ip" \| "zero_power" \| "zenit" \| "enmity"` | Required. Blank = effect disabled. |
+| `grant_amount` | number | Positive grants; negative drains. Blank or 0 = effect disabled. |
+| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. `"ally"` includes the reactor. |
+
+Resource caps: `hp/mp/ip` clamp to actor's `max_*`; `zero_power` clamps
+to [0, 6]; `zenit/enmity` are uncapped. Floor is always 0.
+
+### `effect_kind: "apply_ae"` — apply an Active Effect
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `ae_template_ref` | string | An effect identifier — registry id, an `Item.x.ActiveEffect.y` UUID, or a name registered in the AEM. Forwarded to `FUCompanion.api.activeEffectManager.applyEffects` as-is. |
+| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. |
+| `ae_duplicate_mode` | `"skip" \| "replace" \| "stack" \| "remove" \| "ask"` | Default `"replace"`. How to handle when the target already has the AE. |
+
+The AE itself must exist somewhere the AEM can resolve (on a skill item
+or registered globally). Inline AE JSON authoring was removed — keep the
+single source of truth in the AE document.
+
+### `effect_kind: "consume_charge"` — gate-and-consume one charged AE
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `charge_key` | string | The `chargeKey` to find on the target actor. |
+| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. Typically `"self"` (the reactor's own charge). |
+| `on_empty` | `"abort" \| "skip"` | Default `"abort"`. With `abort`, an empty charge cancels the chain *and* signals callers to skip the skill body. |
+| `count` | number | Charges to consume per target. Default 1. |
+
+Returns `abort: true` when nothing could be consumed and `on_empty:
+"abort"`. The manual-reaction dispatcher and autoPassive runner both
+respect this — the skill body never runs.
+
+### `effect_kind: "redirect_target"` — rewrite the pending action card's target
+
+Action-mutation verb. Wraps `oni.ReactionRedirectPendingAction` so
+authors don't write JS for "intercept the incoming attack and aim it at
+me instead" (Protect, Cover, Bodyguard).
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `target_select` | `"first"` | Which target slot to redirect. Today only `"first"` is implemented. |
+| `rebuild_card` | boolean | Default `true`. Re-render the redirected card so viewers see the new target. |
+
+Always returns `abort: true` on success — a successful redirect means
+the reactor's own skill body must NOT continue (no Protect card created).
+
+### `effect_kind: "chain"` — invoke other effect labels in order
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `chain_steps` | string | Comma- or newline-separated `effect_label` values to invoke in order. |
+
+Stops at the first step that returns `abort: true` OR `ok: false`.
+Aborts the whole chain (and the skill body) when any step does.
+
+---
+
+## Worked example — "Protect"
+
+Reaction-skill that intercepts a single-target attack on an ally, redirects
+it onto the reactor, and consumes one Protect charge.
+
+```jsonc
+"reaction_config_table": {
+  "0": {
+    "reaction_trigger": "creature_targeted_by_action",
+    "reaction_source": "ally",
+    "reaction_damage_type": "",
+    "reaction_effect_ref": "do_protect",
+    "reaction_isPassive": false
+  }
+},
+"reaction_effect_table": {
+  "0": {
+    "effect_label": "do_protect",
+    "effect_kind": "chain",
+    "chain_steps": "consume_one, redirect"
+  },
+  "1": {
+    "effect_label": "consume_one",
+    "effect_kind": "consume_charge",
+    "charge_key": "protect",
+    "grant_target": "self",
+    "on_empty": "abort",
+    "count": 1
+  },
+  "2": {
+    "effect_label": "redirect",
+    "effect_kind": "redirect_target",
+    "target_select": "first",
+    "rebuild_card": true
+  }
+}
+```
+
+Flow: when an ally is targeted, the reactor can choose Protect from the
+reaction picker. The chosen-skill dispatcher calls
+`applyEffectsForGroup` for the matched row → fires the `do_protect`
+chain → first `consume_one` (aborts the chain if no charge) → then
+`redirect` (which aborts the chain because redirect always aborts on
+success, suppressing the Protect skill body so no Protect card posts).
+
+---
+
+## Worked example — "Phantasmal Echo" (kind + ownership)
+
+Passive reaction-skill that auto-fires when one of the reactor's own
+Phantasms is defeated. Uses the universal `reaction_subject_kind` /
+`reaction_ownership` filters instead of a `custom_logic_action` gate.
+
+```jsonc
+"reaction_config_table": {
+  "0": {
+    "reaction_trigger":      "creature_defeated",
+    "reaction_source":       "all",
+    "reaction_subject_kind": "isPhantasm",   // subject.actor.system.props.isPhantasm == true
+    "reaction_ownership":    "own_summon",   // subject token's summonedBy flag == reactor.actor.uuid
+    "reaction_effect_ref":   "",             // skill body itself runs the MP restore
+    "reaction_isPassive":    true,
+    "reaction_passive_target": "self"
+  }
+}
+```
+
+Setup outside the reaction config:
+
+- Phantasm NPC actors carry `system.props.isPhantasm = true`.
+- The summoner skill (e.g. *Create Phantasm: Dread*) stamps the spawned
+  TokenDocument with `flags["fabula-ultima-companion"].summonedBy =
+  <reactor actor UUID>` via `FUCompanion.api.phantasm.markSummon`.
+
+When the matched row fires, the autoPassive runner executes Phantasmal
+Echo's normal skill body (MP restore), with no custom JS in the skill.
+
+---
+
+## Adding a new field — checklist
+
+If you extend either table with a new column:
+
+1. Add the column to the `rowLayout` of the relevant table in
+   `Game Object/Template/[Item] _Skill Template.json` AND in the
+   running world's template (CSB stores a copy of the layout per item).
+2. Wire the runtime read in `scripts/reaction-system/reaction-grant.js`
+   (effect side) or `reaction-triggers.config.js` / `reaction-triggerCore.js`
+   (trigger side).
+3. Update this doc.
+4. If the new field is a filter, also update the subject/filter matrix
+   table above.
+
+If you add a new `effect_kind`:
+
+1. Add the option key/value in the template's `effect_kind` select
+   options.
+2. Add the handler function in `reaction-grant.js`.
+3. Add the kind to the switch in `applyEffectByLabel`.
+4. Document the per-kind fields here.
+
+If you add a new trigger key:
+
+1. Add the entry to the `TRIGGERS` array in `reaction-triggers.config.js`
+   (subject, bucket, filters).
+2. Add it to the template's `reaction_trigger` select options.
+3. Emit it from the appropriate phase handler.
+4. Add the row to the subject/filter matrix table above.

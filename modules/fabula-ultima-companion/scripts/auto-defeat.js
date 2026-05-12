@@ -55,36 +55,6 @@
     }
   }
 
-  function toNumber(value, fallback = null) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : fallback;
-  }
-
-  function getHpSnapshot(actor) {
-    if (!actor) return { cur: null, max: null };
-
-    const sys = actor.system ?? {};
-    const props = sys.props ?? {};
-
-    const cur = toNumber(
-      props.current_hp ??
-      sys.current_hp ??
-      sys.attributes?.hp?.value ??
-      sys.hp?.value,
-      null
-    );
-
-    const max = toNumber(
-      props.max_hp ??
-      sys.max_hp ??
-      sys.attributes?.hp?.max ??
-      sys.hp?.max,
-      null
-    );
-
-    return { cur, max };
-  }
-
   function parseDbOption(value) {
     if (typeof value === "boolean") return value;
     if (value == null) return false;
@@ -162,44 +132,6 @@
   }
 
   // -------------------------
-  // Reaction System Integration
-  // -------------------------
-  function emitReactionPhase(payload) {
-    try {
-      if (globalThis?.ONI?.emit) {
-        globalThis.ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
-        return;
-      }
-    } catch (_e) {}
-
-    try {
-      Hooks.callAll?.("oni:reactionPhase", payload);
-    } catch (_e) {
-      warn("Could not emit oni:reactionPhase (no ONI.emit or Hooks.callAll).", payload);
-    }
-  }
-
-  function buildDefeatReactionPayload(tokenDoc, actor, extra = {}) {
-    return {
-      trigger: "creature_defeated",
-      tokenUuid: tokenDoc?.uuid ?? null,
-      targetUuid: tokenDoc?.uuid ?? null,
-      targets: tokenDoc?.uuid ? [tokenDoc.uuid] : [],
-      actorUuid: actor?.uuid ?? null,
-      targetActorUuid: actor?.uuid ?? null,
-      defeatedTokenUuid: tokenDoc?.uuid ?? null,
-      defeatedActorUuid: actor?.uuid ?? null,
-      hpCur: extra?.hpCur ?? null,
-      hpMax: extra?.hpMax ?? null,
-      source: "auto-defeat",
-      sceneId: tokenDoc?.parent?.id ?? null,
-      tokenId: tokenDoc?.id ?? null,
-      actorId: actor?.id ?? null,
-      timestamp: Date.now()
-    };
-  }
-
-  // -------------------------
   // DB Resolver
   // -------------------------
   async function resolveDatabaseActor() {
@@ -274,20 +206,10 @@
       tokenId: tokenDoc.id,
     });
 
-    // Emit Reaction trigger BEFORE the token is removed from combat / scene.
-    // This lets creature_defeated share the same resolution window as damage/crisis.
-    try {
-      const hp = getHpSnapshot(actor);
-      const reactionPayload = buildDefeatReactionPayload(tokenDoc, actor, {
-        hpCur: hp.cur,
-        hpMax: hp.max
-      });
-
-      emitReactionPhase(reactionPayload);
-      log("Emitted Reaction trigger: creature_defeated", reactionPayload);
-    } catch (e) {
-      warn("Failed to emit creature_defeated Reaction trigger (continuing auto-defeat):", e);
-    }
+    // Note: creature_defeated reaction emit is now owned by
+    // scripts/creature-defeated-emitter.js, which fires on the universal
+    // HP->0 transition (regardless of disposition/rank). Auto-defeat keeps
+    // only the physical-removal pipeline below.
 
     // --- Combat detection + removeTokenFromCombatIfNeeded (copied behavior style from Defeated.js) ---
     const getActiveCombatOnActiveScene = () => {

@@ -45,6 +45,15 @@
 !/setup.ps1
 
 # -----------------------------
+# Track local tooling
+# -----------------------------
+
+!/tools/
+/tools/*
+!/tools/safe-edit/
+!/tools/safe-edit/**
+
+# -----------------------------
 # LevelDB runtime files — never commit these.
 # .ldb, MANIFEST-*, CURRENT are the actual data and SHOULD be committed.
 # LOCK, LOG are process-level state that must NOT be committed.
@@ -60,6 +69,13 @@
 /worlds/fabula-ultima-2/data/**/*.log
 /worlds/fabula-ultima-2/packs/**/*.log
 /systems/custom-system-builder/packs/**/*.log
+
+# -----------------------------
+# Test bridge — file-based IPC between Claude and the running world.
+# Inbox/outbox/state/secret are session-local and should never be committed.
+# -----------------------------
+
+/worlds/fabula-ultima-2/test-bridge/
 
 # -----------------------------
 # Ignore archive / temp files
