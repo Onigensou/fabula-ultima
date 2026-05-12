@@ -11,7 +11,9 @@
  *   - Requests:  inbox/req-<id>.json
  *   - Responses: outbox/res-<id>.json
  *   - Heartbeat: state.json (bootId + timestamp; tells Claude the watcher is alive)
- *   - Secret:    .secret (32-char token, generated on first boot, required for evalGM)
+ *   - Secret:    bridge-secret.txt (32-char token, generated on first boot,
+ *                required for evalGM). Was `.secret` historically, renamed
+ *                because Foundry's upload validator rejects leading-dot names.
  *
  * Request shape
  *   {
@@ -30,9 +32,28 @@
  *     "bootId": "...", "tookMs": number, "completedAt": iso
  *   }
  *
- * Watcher state is in-memory (Set<processedFileUrl>). Reload clears it, so
- * unconsumed requests get re-run on next boot — keep iteration tight or
- * sweep stale files from the inbox before reloading.
+ * Watcher state is in-memory (bounded Map<processedFileUrl, ts>, capped at
+ * PROCESSED_MAX with FIFO eviction). Reload clears it, so unconsumed requests
+ * get re-run on next boot — keep iteration tight or sweep stale files from
+ * the inbox before reloading.
+ *
+ * Polling is adaptive: ACTIVE rate (500ms) while requests are arriving, IDLE
+ * rate (2s) after IDLE_AFTER_MS of quiet. This prevents the bridge from
+ * hammering FilePicker.browse during long idle sessions.
+ *
+ * Activation: the bridge is DORMANT on boot unless `bridge-activate.txt`
+ * exists in the world dir. Sentinel is consumed on read (overwritten empty),
+ * so a one-shot activation only covers the next boot. The reload command
+ * re-arms the sentinel before reloading, so a Claude-driven reload chain
+ * keeps the bridge running. A normal user reload finds no sentinel and the
+ * bridge stays asleep — no polling, no heartbeats, no FilePicker traffic.
+ *
+ * To wake a dormant bridge from a Claude session: write a non-empty
+ * `bridge-activate.txt` to the world dir from disk, then reload Foundry.
+ * From inside Foundry: `FUCompanion.api.testBridge.activate()` arms the
+ * sentinel and triggers a reload; `FUCompanion.api.testBridge.start()`
+ * activates in-place without reloading (use if the page is responsive but
+ * you want to skip the reload).
  *
  * GM only. Watcher self-disables for non-GM users so multiple browsers
  * don't race on the same inbox.
@@ -40,8 +61,19 @@
 (() => {
   const TAG = "[FUCompanion][TestBridge]";
   const SOURCE = "data";
-  const POLL_INTERVAL_MS = 500;
-  const HEARTBEAT_EVERY_N_POLLS = 6;
+  // Adaptive polling: hit FilePicker.browse fast (500ms) only while requests
+  // are actively arriving; back off to 2s after IDLE_AFTER_MS of quiet so an
+  // unattended GM session doesn't hammer the server.
+  const POLL_INTERVAL_ACTIVE_MS = 500;
+  const POLL_INTERVAL_IDLE_MS = 2000;
+  const IDLE_AFTER_MS = 60_000;
+  // Heartbeat: time-based (not poll-count-based), so changing poll rate doesn't
+  // change heartbeat cadence. Each heartbeat is a FilePicker.upload Foundry
+  // logs unconditionally — keep rate low.
+  const HEARTBEAT_INTERVAL_MS = 30_000;
+  // Cap the dedup Map so a long session (or churning request IDs) can't grow
+  // it unbounded. 200 entries is far more than any realistic concurrent batch.
+  const PROCESSED_MAX = 200;
   const MAX_REQUEST_BYTES = 256 * 1024;
   const DEFAULT_TIMEOUT_MS = 30000;
   const MAX_TIMEOUT_MS = 5 * 60 * 1000;
@@ -49,8 +81,17 @@
   let bootId = null;
   let secret = null;
   let pollTimer = null;
-  let pollTick = 0;
-  const processed = new Set();
+  let lastActivityAt = 0;
+  let lastHeartbeatAt = 0;
+  // Map preserves insertion order, so FIFO eviction is just keys().next().
+  const processed = new Map();
+
+  function markProcessed(fileUrl) {
+    processed.set(fileUrl, Date.now());
+    while (processed.size > PROCESSED_MAX) {
+      processed.delete(processed.keys().next().value);
+    }
+  }
 
   function worldDir()  { return `worlds/${game.world.id}/test-bridge`; }
   function inboxDir()  { return `${worldDir()}/inbox`; }
@@ -87,8 +128,91 @@
     return JSON.parse(text);
   }
 
+  // ------------------------------------------------------------------------
+  // Activation sentinel — file-based one-shot wake-up.
+  // ------------------------------------------------------------------------
+  // The bridge consumes the sentinel by overwriting it with empty content.
+  // We can't truly delete via FilePicker (no public delete API), so "empty"
+  // means "already consumed". `armActivationSentinel()` writes a non-empty
+  // value; `consumeActivationSentinel()` returns true (and clears it) only
+  // when content is non-empty.
+
+  async function consumeActivationSentinel() {
+    const url = `/${worldDir()}/bridge-activate.txt`;
+    let token = "";
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      token = (await res.text()).trim();
+    } catch { return null; }
+    if (!token) return null;
+    // Best-effort clear: upload an empty file with the same name. If the
+    // upload fails, the next boot would see the same token — that's OK,
+    // it's idempotent (same activation re-fires).
+    try {
+      const blob = new Blob([""], { type: "text/plain" });
+      const file = new File([blob], "bridge-activate.txt", { type: "text/plain" });
+      await FilePicker.upload(SOURCE, worldDir(), file, {}, { notify: false });
+    } catch (e) {
+      console.warn(`${TAG} failed to clear activation sentinel`, e);
+    }
+    return token;
+  }
+
+  async function armActivationSentinel(reason = "manual") {
+    const token = `${foundry.utils.randomID(12)}@${new Date().toISOString()}#${reason}`;
+    const blob = new Blob([token], { type: "text/plain" });
+    const file = new File([blob], "bridge-activate.txt", { type: "text/plain" });
+    await FilePicker.upload(SOURCE, worldDir(), file, {}, { notify: false });
+    return token;
+  }
+
+  // Suppress Foundry's "Leave site?" prompt and reload. DEFENSIVE: if the
+  // navigation doesn't fire within RELOAD_WATCHDOG_MS, undo the tampering so
+  // we don't poison the session. Background: previously the kill-listener +
+  // `window.onbeforeunload = null` were permanent. If a bridge reload failed
+  // to navigate (see reference_bridge_reload_pathology), Foundry's Electron
+  // shell would refuse to close because its close handshake depends on the
+  // renderer's beforeunload — required end-task to exit the desktop app.
+  const RELOAD_WATCHDOG_MS = 5000;
+  function suppressBeforeUnloadAndReload() {
+    const prevOnBeforeUnload = window.onbeforeunload;
+    const killOthers = (e) => {
+      try {
+        e.stopImmediatePropagation();
+        delete e.returnValue;
+        e.returnValue = undefined;
+      } catch {}
+    };
+    const restore = () => {
+      try { window.removeEventListener("beforeunload", killOthers, { capture: true }); } catch {}
+      try { window.onbeforeunload = prevOnBeforeUnload; } catch {}
+    };
+    try { window.onbeforeunload = null; } catch {}
+    window.addEventListener("beforeunload", killOthers, { capture: true });
+    // pagehide fires once navigation actually commits — that's our signal the
+    // reload "took" and the watchdog isn't needed.
+    const watchdog = setTimeout(() => {
+      restore();
+      console.warn(`${TAG} reload watchdog fired — restored beforeunload state (navigation didn't commit)`);
+    }, RELOAD_WATCHDOG_MS);
+    window.addEventListener("pagehide", () => { clearTimeout(watchdog); }, { once: true, capture: true });
+    try {
+      location.reload();
+    } catch (e) {
+      clearTimeout(watchdog);
+      restore();
+      throw e;
+    }
+  }
+
   async function loadOrCreateSecret() {
-    const url = `/${worldDir()}/.secret`;
+    // Foundry's upload validator rejects filenames starting with `.` (the
+    // historical `.secret` produced a "disallowed extension" error every boot,
+    // and the file was never persisted — so a fresh secret was generated each
+    // reload, silently breaking evalGM auth for any cached token). Use a `.txt`
+    // name so the upload succeeds and the secret survives across boots.
+    const url = `/${worldDir()}/bridge-secret.txt`;
     try {
       const res = await fetch(url, { cache: "no-store" });
       if (res.ok) {
@@ -99,7 +223,7 @@
     // Generate fresh secret.
     const fresh = foundry.utils.randomID(32);
     const blob = new Blob([fresh], { type: "text/plain" });
-    const file = new File([blob], ".secret", { type: "text/plain" });
+    const file = new File([blob], "bridge-secret.txt", { type: "text/plain" });
     await FilePicker.upload(SOURCE, worldDir(), file, {}, { notify: false });
     console.info(`${TAG} generated new secret token`);
     return fresh;
@@ -112,7 +236,8 @@
       lastHeartbeat: new Date().toISOString(),
       gmUserId: game.user?.id ?? null,
       worldId: game.world.id,
-      pollIntervalMs: POLL_INTERVAL_MS,
+      pollIntervalActiveMs: POLL_INTERVAL_ACTIVE_MS,
+      pollIntervalIdleMs: POLL_INTERVAL_IDLE_MS,
       processedThisSession: processed.size
     };
     try {
@@ -134,6 +259,11 @@
       .filter(f => /\/req-[A-Za-z0-9_-]+\.json$/.test(f))
       .filter(f => !processed.has(f));
 
+    // Any unprocessed request — even one we'll skip due to outbox dedup —
+    // counts as activity, so the bridge stays on the fast poll rate while the
+    // user is interacting with it.
+    if (reqFiles.length > 0) lastActivityAt = Date.now();
+
     // Cross-session dedup: if outbox already has res-<id>.json, a previous
     // bridge instance handled this request. Skip — otherwise a `reload`
     // command would re-fire on every boot. Claude is expected to delete both
@@ -148,7 +278,7 @@
     }
 
     for (const fileUrl of reqFiles) {
-      processed.add(fileUrl);
+      markProcessed(fileUrl);
       const idMatch = /\/req-([A-Za-z0-9_-]+)\.json$/.exec(fileUrl);
       const id = idMatch ? idMatch[1] : null;
       if (id && outboxIds.has(id)) {
@@ -312,7 +442,11 @@
 
       case "evalGM": {
         if (!secret) throw new Error("evalGM: no secret loaded (watcher init bug?)");
-        if (!args.auth || args.auth !== secret) {
+        // The doc comment at the top of this file shows `auth` at the top
+        // level of the request envelope; accept either there or inside `args`
+        // (some early callers wrote it inside args). Either form works.
+        const auth = req.auth ?? args.auth;
+        if (!auth || auth !== secret) {
           throw new Error("evalGM: missing or invalid auth token");
         }
         const code = String(args.code ?? "");
@@ -329,32 +463,19 @@
         // Schedule reload AFTER the response is written. Watcher's caller
         // (handleRequest) writes the response after dispatch returns, so
         // we set the timer here and let dispatch return immediately.
-        //
-        // Foundry registers a beforeunload handler that prompts "Leave site?".
-        // Suppress it three ways before reloading:
-        //   1) null out window.onbeforeunload
-        //   2) install a capture-phase listener that stops the event from
-        //      reaching other (addEventListener-registered) handlers
-        //   3) call location.reload() — capture listener clears returnValue
-        // The user said autonomous reload is fine during dev — this is the
-        // tradeoff for not prompting them on every iteration.
-        setTimeout(() => {
+        // beforeunload tampering + reload are wrapped in
+        // suppressBeforeUnloadAndReload() which self-restores via watchdog
+        // if the navigation doesn't actually commit.
+        setTimeout(async () => {
           try {
-            try { window.onbeforeunload = null; } catch {}
-            const killOthers = (e) => {
-              try {
-                e.stopImmediatePropagation();
-                delete e.returnValue;
-                e.returnValue = undefined;
-              } catch {}
-            };
-            window.addEventListener("beforeunload", killOthers, { capture: true });
-            location.reload();
+            try { await armActivationSentinel("reload"); }
+            catch (e) { console.warn(`${TAG} failed to arm activation sentinel pre-reload`, e); }
+            suppressBeforeUnloadAndReload();
           } catch (e) {
             console.warn(`${TAG} reload failed`, e);
           }
         }, delayMs);
-        return { reloading: true, delayMs };
+        return { reloading: true, delayMs, sentinelArmed: true };
       }
 
       default:
@@ -417,36 +538,76 @@
     }
   }
 
-  async function boot() {
+  // Gate the bridge boot on the activation sentinel so a normal world reload
+  // doesn't spin up file-polling / heartbeats unless Claude explicitly armed it.
+  async function bootIfActivated() {
     if (!game.user?.isGM) {
       console.info(`${TAG} bridge inactive (not GM).`);
       return;
     }
-
+    // Ensure the world dir exists so we can read the sentinel from a known path.
+    // We deliberately DON'T ensure inbox/outbox here — those only get created
+    // when the bridge actually activates (and only the bridge writes there).
     await ensureDir(worldDir());
+    const token = await consumeActivationSentinel();
+    if (!token) {
+      console.info(
+        `${TAG} dormant. To activate the next boot, write a non-empty ` +
+        `bridge-activate.txt to the world dir, or call ` +
+        `FUCompanion.api.testBridge.activate() / .start().`
+      );
+      return;
+    }
+    console.info(`${TAG} activation sentinel consumed (${token.slice(0, 24)}...). Starting bridge.`);
+    await boot();
+  }
+
+  async function boot() {
     await ensureDir(inboxDir());
     await ensureDir(outboxDir());
 
     bootId = foundry.utils.randomID(16);
     secret = await loadOrCreateSecret();
+    lastActivityAt = Date.now();
+    lastHeartbeatAt = Date.now();
 
     await writeHeartbeat();
 
-    pollTimer = setInterval(async () => {
-      pollTick++;
+    scheduleNextPoll();
+
+    console.info(
+      `${TAG} bridge ready. bootId=${bootId} dir=${worldDir()} ` +
+      `poll=${POLL_INTERVAL_ACTIVE_MS}ms (idle ${POLL_INTERVAL_IDLE_MS}ms after ${IDLE_AFTER_MS}ms)`
+    );
+  }
+
+  function scheduleNextPoll() {
+    const idle = (Date.now() - lastActivityAt) > IDLE_AFTER_MS;
+    const intervalMs = idle ? POLL_INTERVAL_IDLE_MS : POLL_INTERVAL_ACTIVE_MS;
+    pollTimer = setTimeout(async () => {
       try { await pollInbox(); }
       catch (e) { console.warn(`${TAG} poll error`, e); }
-      if (pollTick % HEARTBEAT_EVERY_N_POLLS === 0) {
-        try { await writeHeartbeat(); } catch {}
+      if (Date.now() - lastHeartbeatAt >= HEARTBEAT_INTERVAL_MS) {
+        try {
+          await writeHeartbeat();
+          lastHeartbeatAt = Date.now();
+        } catch {}
       }
-    }, POLL_INTERVAL_MS);
-
-    console.info(`${TAG} bridge ready. bootId=${bootId} dir=${worldDir()} poll=${POLL_INTERVAL_MS}ms`);
+      scheduleNextPoll();
+    }, intervalMs);
   }
 
   Hooks.once("ready", () => {
-    boot().catch(e => console.error(`${TAG} boot failed`, e));
+    bootIfActivated().catch(e => console.error(`${TAG} boot failed`, e));
   });
+
+  // Stop the poller as early as possible during shutdown so in-flight
+  // FilePicker.browse / upload calls don't race the Electron close handshake.
+  // pagehide fires reliably on both reload and window-close; the listener
+  // is idempotent and safe to call even when the bridge is dormant.
+  window.addEventListener("pagehide", () => {
+    if (pollTimer) { try { clearTimeout(pollTimer); } catch {} pollTimer = null; }
+  }, { capture: true });
 
   // Expose a tiny inspection API for the console / other modules.
   const API_ROOT = (globalThis.FUCompanion = globalThis.FUCompanion || {});
@@ -454,10 +615,26 @@
   API_ROOT.api.testBridge = {
     get bootId()    { return bootId; },
     get worldDir()  { return worldDir(); },
-    get processed() { return Array.from(processed); },
+    get processed() { return Array.from(processed.keys()); },
+    get running()   { return !!pollTimer; },
     forceHeartbeat: writeHeartbeat,
+    // Arm the sentinel and reload. Use this if you intentionally want the
+    // bridge running on the *next* boot (e.g. starting a Claude session).
+    async activate() {
+      if (!game.user?.isGM) { console.warn(`${TAG} GM only.`); return; }
+      const token = await armActivationSentinel("api.activate");
+      console.info(`${TAG} sentinel armed (${token.slice(0, 24)}...). Reloading...`);
+      suppressBeforeUnloadAndReload();
+    },
+    // Activate the bridge in-place without reloading. Use this when the page
+    // is responsive and you don't want to lose UI state.
+    async start() {
+      if (!game.user?.isGM) { console.warn(`${TAG} GM only.`); return; }
+      if (pollTimer) { console.info(`${TAG} already running.`); return; }
+      await boot();
+    },
     stop() {
-      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
       console.info(`${TAG} stopped.`);
     }
   };
