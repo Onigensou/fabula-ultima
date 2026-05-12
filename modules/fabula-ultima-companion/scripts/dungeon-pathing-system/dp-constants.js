@@ -67,7 +67,7 @@
   // Animation timing
   DP.MOVE_MS                = 650;
   DP.REAL_UPDATE_BEFORE_END = 90;
-  DP.REBUILD_AFTER_MOVE_MS  = 180;
+  DP.REBUILD_AFTER_MOVE_MS  = 60;
 
   // ── Developer UX Tuning ────────────────────────────────────────────────────
   // All visual/UX constants live here for easy adjustment without hunting

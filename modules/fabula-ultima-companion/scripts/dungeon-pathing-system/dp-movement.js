@@ -131,13 +131,15 @@ try{
           );
         }
         if (window.__DP_WALK_DBG__) {
-          const overBudget = Math.max(0, dtTotal - (expW1 + expW2));
+          // "post-anim wait" = dead time the player sees after token visually arrives
+          const postAnimWait = Math.max(0, dtTotal - DP.MOVE_MS);
           console.info("[DP][Walk]",
-            `move | wait1 ${dtW1.toFixed(0)}ms` +
-            ` | docUpdate ${dtUpd.toFixed(0)}ms${slow(dtUpd - 150)}` +
+            `move | anim ${DP.MOVE_MS}ms` +
+            ` | docUpdate ${dtUpd.toFixed(0)}ms${slow(dtUpd - 100)}` +
             ` | wait2 ${dtW2.toFixed(0)}ms` +
             ` | TOTAL ${dtTotal.toFixed(0)}ms` +
-            (overBudget > 10 ? ` | +${overBudget.toFixed(0)}ms over budget ⚠` : "")
+            ` | post-anim wait ${postAnimWait.toFixed(0)}ms` +
+            (postAnimWait > 250 ? " ⚠" : "")
           );
         }
       } else {
