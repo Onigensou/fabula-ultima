@@ -304,6 +304,13 @@ Hooks.once("ready", () => {
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_STATE_CHANGED,
       filters: ["source"]
+    },
+    {
+      key: "creature_unleashes_zero_power",
+      label: "When a creature unleashes Zero Power",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_PERFORMER,
+      filters: ["source"]
     }
   ];
 

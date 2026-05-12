@@ -1799,6 +1799,63 @@ if (!animPrecheck.hasRunnableScript) {
         spentCosts: spendResult.spent ?? []
       };
 
+      // -----------------------------------------------------------------------
+      // Reaction emit: creature_unleashes_zero_power
+      // -----------------------------------------------------------------------
+      // Fires when the user confirms an Action Card for a skill whose item has
+      // `system.props.isZeroPower: true`. Mirrors the emit shape in
+      // divinationCore.js for creature_check_outcome_flipped. Subject is the
+      // unleasher (SUBJECT_PERFORMER resolves it via attackerActorUuid).
+      //
+      // Gated to executionMode === "manualCard" — auto-passive re-invocations
+      // of execute() are not "the user unleashing Zero Power".
+      if (executionMode === "manualCard") {
+        try {
+          const skillUuid = payload?.meta?.skillUuid ?? payload?.skillUuid ?? null;
+          const item = skillUuid ? await fromUuid(skillUuid).catch(() => null) : null;
+          if (item?.system?.props?.isZeroPower) {
+            const attackerActorUuid =
+              payload?.meta?.attackerActorUuid ?? payload?.meta?.attackerUuid ?? null;
+            const attackerTokenUuid =
+              payload?.meta?.attackerTokenUuid ?? payload?.meta?.attackerUuid ?? null;
+
+            const reactionPayload = {
+              kind: "creature_unleashes_zero_power",
+              trigger: "creature_unleashes_zero_power",
+              timestamp: Date.now(),
+
+              actorUuid: attackerActorUuid,
+              tokenUuid: attackerTokenUuid,
+              sourceUuid: attackerTokenUuid,
+              subjectTokenUuid: attackerTokenUuid,
+              subjectActorUuid: attackerActorUuid,
+              attackerUuid: attackerTokenUuid,
+              attackerActorUuid,
+
+              skillUuid,
+              skillName: payload?.core?.skillName ?? item?.name ?? null,
+
+              requestedByUserId:   game.user?.id   ?? null,
+              requestedByUserName: game.user?.name ?? null
+            };
+
+            globalThis.ONI?.emit?.(
+              "oni:reactionPhase",
+              reactionPayload,
+              { local: true, world: false }
+            );
+            log(runId, "EMIT creature_unleashes_zero_power", {
+              skillName: reactionPayload.skillName,
+              attackerActorUuid
+            });
+          }
+        } catch (zpEmitErr) {
+          warn(runId, "creature_unleashes_zero_power emit failed (non-fatal).", {
+            error: String(zpEmitErr?.message ?? zpEmitErr)
+          });
+        }
+      }
+
       log(runId, "COMPLETE", summary);
       return summary;
         } catch (e) {

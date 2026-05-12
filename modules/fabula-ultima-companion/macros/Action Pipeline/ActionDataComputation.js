@@ -1348,6 +1348,7 @@ const totalFlatBonus =
         ignoreHR,
 
         attackerUuid : attackerMetaUuid,
+        skillUuid    : skillUuid,
         ownerUserId  : ownerUserIdSeed,
         ownerUserName: ownerUserNameSeed,
         invoked: { trait:false, bond:false },
