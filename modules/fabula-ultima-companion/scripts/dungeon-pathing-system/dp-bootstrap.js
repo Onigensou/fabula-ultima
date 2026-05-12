@@ -26,6 +26,10 @@
   const PERF_TAG = "[DungeonPathing][Perf]";
   const perf = (...args) => { if (window.__DP_PERF__) console.info(PERF_TAG, ...args); };
 
+  // Granular walk logger — enable with: window.__DP_WALK_DBG__ = true
+  const WALK_TAG = "[DP][Walk]";
+  const walkDbg  = (...args) => { if (window.__DP_WALK_DBG__) console.info(WALK_TAG, ...args); };
+
   // Yield to the browser event loop so any pending paint/layout completes
   // before we run a synchronous CPU-heavy pass like the graph build.
   const yieldFrame = () => new Promise(r => requestAnimationFrame(r));
@@ -79,7 +83,9 @@
 
     // Yield before the synchronous graph traversal so any pending browser
     // paint completes first — avoids hitching a frame that's already in flight.
+    const tYield = performance.now();
     await yieldFrame();
+    const dtYield = performance.now() - tYield;
 
     // ── 1. Graph build ──────────────────────────────────────────────────────
     const tGraph = performance.now();
@@ -103,8 +109,14 @@
 
     // ── 3. Resolve party token ──────────────────────────────────────────────
     const tToken = performance.now();
-    const token  = await DP.Graph.resolvePartyToken();
-    state.partyToken = token;
+    let tokenCached = false;
+    let token = state.partyToken;
+    if (token && !token.destroyed && canvas.tokens?.get(token.id)) {
+      tokenCached = true;
+    } else {
+      token = await DP.Graph.resolvePartyToken();
+      state.partyToken = token;
+    }
     const dtToken = performance.now() - tToken;
 
     if (!token) {
@@ -167,8 +179,19 @@
     perf(
       `rebuild #${idx} | graph ${dtGraph.toFixed(1)}ms (${graph.nodes.length} tiles)` +
       ` | ensure ${dtEnsure.toFixed(1)}ms (${newTileCount} new)` +
-      ` | token ${dtToken.toFixed(1)}ms | locate ${dtLocate.toFixed(1)}ms` +
+      ` | token ${dtToken.toFixed(1)}ms${tokenCached ? " (cached)" : " (async)"}` +
+      ` | locate ${dtLocate.toFixed(1)}ms` +
       ` | neighbors ${dtNeighbors.toFixed(1)}ms (${neighbors.length})` +
+      ` | TOTAL ${dtTotal.toFixed(1)}ms`
+    );
+    walkDbg(
+      `rebuild #${idx}` +
+      ` | yield ${dtYield.toFixed(1)}ms` +
+      ` | graph ${dtGraph.toFixed(1)}ms (${graph.nodes.length} tiles)` +
+      ` | ensure ${dtEnsure.toFixed(1)}ms (${newTileCount} new)` +
+      ` | token ${dtToken.toFixed(1)}ms ${tokenCached ? "(cached)" : "(async)"}` +
+      ` | locate ${dtLocate.toFixed(1)}ms` +
+      ` | neighbors+helper ${dtNeighbors.toFixed(1)}ms (${neighbors.length})` +
       ` | TOTAL ${dtTotal.toFixed(1)}ms`
     );
     return true;
@@ -552,5 +575,6 @@
     console.debug(TAG, "  .resetDungeon()  — reset all tiles to initial state");
     console.debug(TAG, "  .mutateTile(id, type, texture?)");
     console.debug(TAG, "Perf logging: window.__DP_PERF__ = true  (set in browser console)");
+    console.debug(TAG, "Walk debug:   window.__DP_WALK_DBG__ = true  (per-move + per-rebuild timing)");
   });
 })();

@@ -121,12 +121,23 @@ try{
         await wait(expW2);
         const dtW2 = performance.now() - tW2;
 
+        const slow    = v => v > 50 ? " ⚠" : "";
+        const dtTotal = dtW1 + dtUpd + dtW2;
         if (window.__DP_PERF__) {
-          const slow = v => v > 50 ? ` ⚠` : "";
           console.info("[DungeonPathing][Perf]",
             `moveToNode | wait1 ${dtW1.toFixed(0)}ms (exp ${expW1})${slow(dtW1 - expW1)}` +
             ` | docUpdate ${dtUpd.toFixed(0)}ms${slow(dtUpd - 150)}` +
             ` | wait2 ${dtW2.toFixed(0)}ms (exp ${expW2})${slow(dtW2 - expW2)}`
+          );
+        }
+        if (window.__DP_WALK_DBG__) {
+          const overBudget = Math.max(0, dtTotal - (expW1 + expW2));
+          console.info("[DP][Walk]",
+            `move | wait1 ${dtW1.toFixed(0)}ms` +
+            ` | docUpdate ${dtUpd.toFixed(0)}ms${slow(dtUpd - 150)}` +
+            ` | wait2 ${dtW2.toFixed(0)}ms` +
+            ` | TOTAL ${dtTotal.toFixed(0)}ms` +
+            (overBudget > 10 ? ` | +${overBudget.toFixed(0)}ms over budget ⚠` : "")
           );
         }
       } else {

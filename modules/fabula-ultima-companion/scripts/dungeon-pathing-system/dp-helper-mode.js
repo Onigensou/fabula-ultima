@@ -21,6 +21,7 @@
 
   // Cached current neighbor list so toggling ON re-shows them without a rebuild
   let _currentNeighbors = [];
+  let _currentNeighborKey = "";
 
   async function ensureTexture() {
     if (_texture) return _texture;
@@ -33,13 +34,28 @@
     return _texture;
   }
 
+  function getNeighborKey(nodes) {
+    return nodes.map(n => n.nodeId).sort().join(",");
+  }
+
   function destroyContainer() {
     try { _container?.destroy({ children: true }); } catch {}
     _container = null;
+    _currentNeighborKey = "";
   }
 
   async function show(neighborNodes) {
+    const newKey = neighborNodes?.length ? getNeighborKey(neighborNodes) : "";
+
+    // Skip PIXI rebuild when same neighbors are already displayed on canvas
+    if (newKey && newKey === _currentNeighborKey && _container?.parent) {
+      _currentNeighbors = neighborNodes;
+      return;
+    }
+
     destroyContainer();
+    _currentNeighborKey = newKey;
+
     if (!neighborNodes?.length) return;
     if (!canvas?.stage) return;
 
