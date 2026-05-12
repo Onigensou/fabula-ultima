@@ -120,7 +120,7 @@
 
       if (newTexture) {
         const tileDoc = scene.tiles.get(tileId);
-        if (tileDoc) await tileDoc.update({ "texture.src": newTexture }).catch(() => {});
+        if (tileDoc) await tileDoc.update({ "texture.src": newTexture }, { dungeonPathing: true }).catch(() => {});
       }
     },
 
@@ -134,7 +134,7 @@
       if (updateTexture) {
         const tileDoc = scene.tiles.get(tileId);
         if (tileDoc) {
-          await tileDoc.update({ "texture.src": DP.BLANK_TILE_SRC }).catch(() => {});
+          await tileDoc.update({ "texture.src": DP.BLANK_TILE_SRC }, { dungeonPathing: true }).catch(() => {});
         }
       }
     },
