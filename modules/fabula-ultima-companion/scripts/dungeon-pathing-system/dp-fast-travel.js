@@ -66,8 +66,7 @@
         const tkn = dpState?.partyToken ?? null;
         if (tkn) {
           runGryphonAnimation(tkn, { waitForUpdate: true }).catch(() => {
-            const mesh = tkn.mesh ?? tkn.icon ?? null;
-            if (mesh) mesh.alpha = 1;
+            tkn.alpha = 1;
           });
         }
         return;
@@ -113,11 +112,29 @@
   function tween(fromX, toX, fromY, toY, durationMs, onFrame) {
     return new Promise(resolve => {
       const start = performance.now();
+      let done = false;
+
+      // Safety net: if rAF is throttled (minimised window, background tab),
+      // snap to the final frame and resolve so the animation chain never stalls.
+      const safetyTimer = setTimeout(() => {
+        if (done) return;
+        done = true;
+        onFrame(toX, toY);
+        resolve();
+      }, durationMs + 300);
+
       function tick() {
+        if (done) return;
         const elapsed = Math.min(performance.now() - start, durationMs);
         const t = easeInOut(elapsed / durationMs);
         onFrame(fromX + (toX - fromX) * t, fromY + (toY - fromY) * t);
-        if (elapsed < durationMs) { requestAnimationFrame(tick); } else { resolve(); }
+        if (elapsed < durationMs) {
+          requestAnimationFrame(tick);
+        } else {
+          done = true;
+          clearTimeout(safetyTimer);
+          resolve();
+        }
       }
       requestAnimationFrame(tick);
     });
@@ -152,6 +169,64 @@
     });
   }
 
+  async function runDropOffAnimation(token) {
+    if (!canvas?.stage || !token) return;
+
+    // Use container alpha — prevents Foundry re-renders from overriding visibility
+    token.alpha = 0;
+
+    const gSize   = Number(canvas?.grid?.size ?? 100) || 100;
+    const docX    = Number(token.document?.x ?? 0);
+    const docY    = Number(token.document?.y ?? 0);
+    const docW    = Number(token.document?.width  ?? 1) * gSize;
+    const docH    = Number(token.document?.height ?? 1) * gSize;
+    const tokenCX = docX + docW / 2;
+    const tokenCY = docY + docH / 2;
+
+    const pivot  = canvas.stage.pivot;
+    const scaleX = canvas.stage.scale.x || 1;
+    const halfW  = canvas.app.renderer.width / scaleX / 2;
+
+    const tex = await ensureGryphonTexture().catch(() => null);
+    if (!tex) { token.alpha = 1; return; }
+
+    const natW    = _gryphonNatW || 480;
+    const natH    = _gryphonNatH || 270;
+    const spriteH = gSize * 2;
+    const spriteW = spriteH * (natW / natH);
+
+    const arrivedX = tokenCX - spriteW / 2;
+    const arrivedY = tokenCY - spriteH / 2;
+    const startX   = pivot.x - halfW - spriteW;
+    const exitX    = pivot.x + halfW + spriteW;
+
+    const sprite = new PIXI.Sprite(tex);
+    sprite.width   = spriteW;
+    sprite.height  = spriteH;
+    sprite.scale.x *= -1; // flip horizontally (preserves scale magnitude from width setter)
+    sprite.x       = startX + spriteW;
+    sprite.y       = arrivedY;
+    sprite.zIndex  = 999998;
+    canvas.stage.sortableChildren = true;
+    canvas.stage.addChild(sprite);
+
+    DP.Sound?.playFastTravelWind?.();
+
+    await tween(startX + spriteW, arrivedX + spriteW, arrivedY, arrivedY, ANIM_SWOOP_MS,
+      (x, y) => { sprite.x = x; sprite.y = y; });
+
+    await new Promise(r => setTimeout(r, 200));
+    token.alpha = 1; // token reappears after gryphon arrives
+    DP.Sound?.playFastTravelLand?.();
+    await new Promise(r => setTimeout(r, 150));
+
+    await tween(arrivedX + spriteW, exitX + spriteW, arrivedY, arrivedY, ANIM_FLYOUT_MS,
+      (x, y) => { sprite.x = x; sprite.y = y; });
+
+    try { canvas.stage.removeChild(sprite); } catch {}
+    try { sprite.destroy({ texture: false }); } catch {}
+  }
+
   async function runGryphonAnimation(token, { waitForUpdate = false } = {}) {
     if (!canvas?.stage || !token) return null;
 
@@ -182,32 +257,33 @@
     const exitX    = pivot.x + halfW + spriteW;
 
     const sprite = new PIXI.Sprite(tex);
-    sprite.width  = spriteW;
-    sprite.height = spriteH;
-    sprite.x      = startX;
-    sprite.y      = arrivedY;
-    sprite.zIndex = 999998;
+    sprite.width   = spriteW;
+    sprite.height  = spriteH;
+    sprite.scale.x *= -1; // flip horizontally (preserves scale magnitude from width setter)
+    sprite.x       = startX + spriteW;
+    sprite.y       = arrivedY;
+    sprite.zIndex  = 999998;
     canvas.stage.sortableChildren = true;
     canvas.stage.addChild(sprite);
 
     DP.Sound?.playFastTravelWind?.();
 
-    await tween(startX, arrivedX, arrivedY, arrivedY, ANIM_SWOOP_MS,
+    await tween(startX + spriteW, arrivedX + spriteW, arrivedY, arrivedY, ANIM_SWOOP_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
     await new Promise(r => setTimeout(r, 150));
 
-    const tokenMesh = token.mesh ?? token.icon ?? null;
-    const prevAlpha = tokenMesh ? (tokenMesh.alpha ?? 1) : 1;
-    if (tokenMesh) tokenMesh.alpha = 0;
+    // Hide token after gryphon arrives — use container alpha so Foundry re-renders can't override it
+    const prevAlpha = token.alpha ?? 1;
+    token.alpha = 0;
 
-    await tween(arrivedX, exitX, arrivedY, arrivedY, ANIM_FLYOUT_MS,
+    await tween(arrivedX + spriteW, exitX + spriteW, arrivedY, arrivedY, ANIM_FLYOUT_MS,
       (x, y) => { sprite.x = x; sprite.y = y; });
 
     try { canvas.stage.removeChild(sprite); } catch {}
     try { sprite.destroy({ texture: false }); } catch {} // preserve shared texture
 
-    if (waitForUpdate && tokenMesh) {
+    if (waitForUpdate) {
       // Non-controller: hold token invisible until the position broadcast arrives,
       // so it appears at the new location rather than flashing at the old one.
       await new Promise(resolve => {
@@ -224,12 +300,12 @@
           resolve();
         });
       });
-      tokenMesh.alpha = prevAlpha;
+      token.alpha = prevAlpha;
       return null;
     }
 
-    // Controller path: return mesh info so the caller restores alpha after teleport
-    return { tokenMesh, prevAlpha };
+    // Controller path: return token ref so the caller restores alpha after teleport
+    return { token, prevAlpha };
   }
 
   // ── Build eligible node list ─────────────────────────────────────────────────
@@ -563,16 +639,13 @@
         { animate: false, dungeonPathing: true }
       );
       DP.Sound?.playFastTravelLand?.();
-      if (meshInfo?.tokenMesh) meshInfo.tokenMesh.alpha = meshInfo.prevAlpha ?? 1;
+      if (meshInfo?.token) meshInfo.token.alpha = meshInfo.prevAlpha ?? 1;
 
     } catch (e) {
       console.error(TAG, "teleportTo error:", e);
     } finally {
       // Safety net: never leave the token invisible if something threw
-      try {
-        const safetyMesh = token.mesh ?? token.icon ?? null;
-        if (safetyMesh && safetyMesh.alpha === 0) safetyMesh.alpha = 1;
-      } catch {}
+      try { if (token.alpha === 0) token.alpha = 1; } catch {}
       _traveling = false;
       exit({ silent: true }); // land sound already played; suppress the close sfx
       setTimeout(() => {
@@ -691,12 +764,16 @@
     enter,
     exit,
     toggle,
-    /** Exposed for reuse by SceneTravel — plays the gryphon fly-in/fly-out animation. */
+    /** Exposed for reuse by SceneTravel — plays the gryphon pick-up animation. */
     runGryphonAnimation,
+    /** Exposed for reuse by SceneTravel — plays the gryphon drop-off animation. */
+    runDropOffAnimation,
   };
 
   Hooks.once("ready", () => {
     setupSocketListener();
+    // Pre-warm gryphon texture so the first animation starts without a load stall
+    setTimeout(() => ensureGryphonTexture().catch(() => {}), 2500);
     console.debug(TAG, "Fast Travel System loaded.");
   });
 })();
