@@ -71,6 +71,13 @@
 /systems/custom-system-builder/packs/**/*.log
 
 # -----------------------------
+# Test bridge — file-based IPC between Claude and the running world.
+# Inbox/outbox/state/secret are session-local and should never be committed.
+# -----------------------------
+
+/worlds/fabula-ultima-2/test-bridge/
+
+# -----------------------------
 # Ignore archive / temp files
 # -----------------------------
 

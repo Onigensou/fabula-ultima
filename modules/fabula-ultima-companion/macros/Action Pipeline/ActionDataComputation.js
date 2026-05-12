@@ -469,6 +469,191 @@ return {
 };
   }
 
+  // Snapshot per-target state at dry-run time so the report shows what would
+  // *change*. Pairs with execute()'s damagePlan to give before/after diffing.
+  async function captureTargetSnapshotsForDryRun(uuidList = []) {
+    const out = [];
+    for (const uuid of (uuidList ?? [])) {
+      try {
+        const doc = await fromUuid(uuid);
+        const actor = doc?.actor ?? (doc?.type === "Actor" ? doc : null);
+        if (!actor) { out.push({ uuid, name: "", err: "no_actor" }); continue; }
+        const props = actor.system?.props ?? actor.system ?? {};
+        const statuses = Array.from(actor?.statuses ?? []);
+        const aeNames = Array.from(actor?.effects ?? [])
+          .filter(e => !e.disabled)
+          .map(e => e?.name ?? e?.label ?? "(unnamed)");
+        out.push({
+          uuid,
+          name: actor.name ?? "",
+          currentHp: Number(props?.current_hp ?? 0) || 0,
+          maxHp:     Number(props?.max_hp ?? 0) || 0,
+          currentMp: Number(props?.current_mp ?? 0) || 0,
+          maxMp:     Number(props?.max_mp ?? 0) || 0,
+          statuses,
+          activeEffects: aeNames
+        });
+      } catch (e) {
+        out.push({ uuid, name: "", err: String(e?.message ?? e) });
+      }
+    }
+    return out;
+  }
+
+  // Inner timeout for author-script execution under dry-run. Scripts that
+  // open dialogs we can't trap (e.g. `new Dialog().render()` with external
+  // promise) would hang forever; this caps them. The script keeps running in
+  // the background but we mark the phase as timedOut and continue with the
+  // rest of the dry-run. Tuned for "fast feedback, not perfect simulation."
+  const DRY_RUN_AUTHOR_SCRIPT_TIMEOUT_MS = 5000;
+
+  function withTimeout(promise, ms, label) {
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(
+          () => reject(Object.assign(new Error(`${label} timed out after ${ms}ms`), { __timedOut: true })),
+          ms
+        );
+      })
+    ]).finally(() => { if (timer) clearTimeout(timer); });
+  }
+
+  // Install a dialog trap so author scripts (CustomLogic-Action /
+  // PassiveLogic-Action) running under dry-run never block on UI. Covers:
+  //   - Dialog.prompt / .confirm / .wait (static)
+  //   - DialogV2.prompt / .confirm / .wait / .input (static)
+  //   - Dialog.prototype.render / close — turns `new Dialog().render(true)`
+  //     into a no-op (legacy pattern; external promise still won't resolve,
+  //     so withTimeout above is the safety net)
+  // Each call increments dryRunExtras.dialogsSuppressed[kind].
+  function installDryRunDialogTrap(dryRunExtras) {
+    dryRunExtras.dialogsSuppressed = dryRunExtras.dialogsSuppressed ?? {
+      promptCount: 0,
+      confirmCount: 0,
+      waitCount: 0,
+      inputCount: 0,
+      total: 0
+    };
+    const counters = dryRunExtras.dialogsSuppressed;
+
+    const origDialog = (typeof Dialog !== "undefined") ? Dialog : null;
+    const dialogOrig = {};
+    const dialogProtoOrig = {};
+    if (origDialog) {
+      for (const k of ["prompt", "confirm", "wait"]) {
+        if (typeof origDialog[k] === "function") {
+          dialogOrig[k] = origDialog[k].bind(origDialog);
+        }
+      }
+      origDialog.prompt = async () => {
+        counters.promptCount++; counters.total++;
+        return null;
+      };
+      origDialog.confirm = async () => {
+        counters.confirmCount++; counters.total++;
+        return false;
+      };
+      origDialog.wait = async () => {
+        counters.waitCount++; counters.total++;
+        return null;
+      };
+      // Prototype patch for `new Dialog(...).render(true)` legacy pattern.
+      // Real Dialog instances are kept (other code may instanceof-check), but
+      // render() no longer opens the UI and close() is a no-op.
+      if (origDialog.prototype) {
+        if (typeof origDialog.prototype.render === "function") {
+          dialogProtoOrig.render = origDialog.prototype.render;
+          origDialog.prototype.render = function() {
+            counters.waitCount++; counters.total++;
+            return this;
+          };
+        }
+        if (typeof origDialog.prototype.close === "function") {
+          dialogProtoOrig.close = origDialog.prototype.close;
+          origDialog.prototype.close = async function() { return this; };
+        }
+      }
+    }
+
+    const dv2 = foundry?.applications?.api?.DialogV2 ?? null;
+    const dv2Orig = {};
+    if (dv2) {
+      for (const k of ["prompt", "confirm", "wait", "input"]) {
+        if (typeof dv2[k] === "function") {
+          dv2Orig[k] = dv2[k].bind(dv2);
+        }
+      }
+      dv2.prompt  = async () => { counters.promptCount++;  counters.total++; return null; };
+      dv2.confirm = async () => { counters.confirmCount++; counters.total++; return false; };
+      dv2.wait    = async () => { counters.waitCount++;    counters.total++; return null; };
+      dv2.input   = async () => { counters.inputCount++;   counters.total++; return null; };
+    }
+
+    return function dispose() {
+      if (origDialog) {
+        for (const [k, fn] of Object.entries(dialogOrig)) origDialog[k] = fn;
+        if (origDialog.prototype) {
+          for (const [k, fn] of Object.entries(dialogProtoOrig)) origDialog.prototype[k] = fn;
+        }
+      }
+      if (dv2) {
+        for (const [k, fn] of Object.entries(dv2Orig)) dv2[k] = fn;
+      }
+    };
+  }
+
+  // Apply forced-roll overrides from the test harness, so the dry-run can
+  // simulate "what if this crits / fumbles / misses" without re-running.
+  // Reads from cardPayload.meta.__dryRunForce; mutates accuracy + advPayload.
+  function applyDryRunRollOverrides(cardPayload, force) {
+    if (!force || typeof force !== "object") return null;
+    const applied = {};
+    cardPayload.accuracy  = cardPayload.accuracy  || {};
+    cardPayload.advPayload = cardPayload.advPayload || {};
+    cardPayload.meta      = cardPayload.meta      || {};
+
+    if (force.forceFumble === true) {
+      cardPayload.accuracy.isFumble  = true;
+      cardPayload.accuracy.isCrit    = false;
+      cardPayload.advPayload.isFumble = true;
+      cardPayload.advPayload.isCrit   = false;
+      cardPayload.advPayload.forceMiss = true;
+      cardPayload.advPayload.autoHit   = false;
+      cardPayload.meta.forceMiss      = true;
+      applied.forceFumble = true;
+    } else if (force.forceCrit === true) {
+      cardPayload.accuracy.isCrit    = true;
+      cardPayload.accuracy.isFumble  = false;
+      cardPayload.advPayload.isCrit   = true;
+      cardPayload.advPayload.isFumble = false;
+      cardPayload.advPayload.autoHit  = true;
+      cardPayload.advPayload.forceMiss = false;
+      cardPayload.meta.forceMiss     = false;
+      applied.forceCrit = true;
+    }
+
+    if (force.forceMiss === true && !applied.forceFumble) {
+      cardPayload.meta.forceMiss       = true;
+      cardPayload.advPayload.forceMiss = true;
+      cardPayload.advPayload.autoHit   = false;
+      applied.forceMiss = true;
+    }
+    if (force.forceHit === true && !applied.forceFumble && !applied.forceMiss) {
+      cardPayload.advPayload.autoHit   = true;
+      cardPayload.advPayload.forceMiss = false;
+      cardPayload.meta.forceMiss       = false;
+      applied.forceHit = true;
+    }
+    if (Number.isFinite(Number(force.forceAccTotal))) {
+      const t = Number(force.forceAccTotal);
+      cardPayload.accuracy.total = t;
+      applied.forceAccTotal = t;
+    }
+    return applied;
+  }
+
   async function executeDryRun(cardPayload) {
     const execApi = globalThis.FUCompanion?.api?.actionExecution?.execute ?? null;
     if (!execApi) {
@@ -490,14 +675,177 @@ return {
 
     await refreshCanonicalTargetsAndDefense(cardPayload);
 
-    // Compute cost plan into meta.costsNormalized so the dry-run report shows
-    // what WOULD spend. The actual spend is skipped inside execute(dryRun:true).
-    await normalizePassiveCostsOrAllow(cardPayload);
+    // Extras flow into action-execution-core via meta.__dryRunExtras, which
+    // copies the fields into dryRunReport at completion. Keeps the schema in
+    // one place (the report) without threading args through execute().
+    const dryRunExtras = {
+      actionPhaseScripts: {
+        customLogicAction:  { ran: false, aborted: false, error: null },
+        passiveLogicAction: { ran: false, error: null }
+      },
+      beforeAttackAeWouldApply: [],
+      resourceGate: null,
+      targetSnapshotsBefore: [],
+      forceApplied: null
+    };
+    cardPayload.meta.__dryRunExtras = dryRunExtras;
+
+    // Trap dialogs for the duration of author-script execution so a
+    // Dialog.prompt / DialogV2.confirm doesn't block the dry-run on user input.
+    // Calls auto-resolve with null/false; the count is reported in the report.
+    const disposeDialogTrap = installDryRunDialogTrap(dryRunExtras);
+
+    // 1) CustomLogic-Action — mutates cardPayload (damage tweaks, conditional
+    //    targets, etc.). Real flow runs this between Targeting and ResourceGate;
+    //    dry-run was skipping it, which is the #1 cause of "Claude said X but UI
+    //    did Y". Authors that mutate actor docs should gate on meta.__dryRun.
+    //    Wrapped in withTimeout so scripts that open unsuppressable dialogs
+    //    (e.g. `new Dialog(...).render(true)` awaiting external resolve) don't
+    //    hang the dry-run — they get marked timedOut and we move on.
+    if (cardPayload?.meta?.hasCustomLogicAction) {
+      try {
+        const customLogicOk = await withTimeout(
+          runActionPhaseCustomLogic(cardPayload, "dry-run / pre-execution"),
+          DRY_RUN_AUTHOR_SCRIPT_TIMEOUT_MS,
+          "CustomLogic-Action (dry-run)"
+        );
+        dryRunExtras.actionPhaseScripts.customLogicAction.ran = true;
+        if (!customLogicOk) {
+          dryRunExtras.actionPhaseScripts.customLogicAction.aborted = true;
+          adcWarn("DRY-RUN: CustomLogic-Action aborted pipeline");
+          disposeDialogTrap();
+          return {
+            ok: false,
+            reason: "dry_run_custom_logic_aborted",
+            dryRunReport: {
+              runId: "dry-run-prerun",
+              skipped: [],
+              ...dryRunExtras
+            }
+          };
+        }
+      } catch (e) {
+        dryRunExtras.actionPhaseScripts.customLogicAction.error = String(e?.message ?? e);
+        if (e?.__timedOut) {
+          dryRunExtras.actionPhaseScripts.customLogicAction.timedOut = true;
+          adcWarn("DRY-RUN: CustomLogic-Action timed out", { ms: DRY_RUN_AUTHOR_SCRIPT_TIMEOUT_MS });
+        } else {
+          adcWarn("DRY-RUN: CustomLogic-Action threw", { error: e });
+        }
+      }
+    }
+
+    // 2) BEFORE_ATTACK AE — real flow applies these directly via ApplyActiveEffect.
+    //    In dry-run we don't want to mutate actor docs, so just record the
+    //    directives that *would* fire. (Skill branch only — weapon BEFORE_ATTACK
+    //    uses weaponDoc which isn't reachable from here; less common case.)
+    try {
+      const skillUuid = cardPayload?.meta?.skillUuid ?? null;
+      if (skillUuid) {
+        const itemDoc = await fromUuid(skillUuid).catch(() => null);
+        if (itemDoc) {
+          const allDirectives = fuExtractAEDirectivesFromItem(itemDoc);
+          const beforeDirectives = allDirectives.filter(d =>
+            String(d?.trigger || "").toLowerCase() === "before_attack"
+          );
+          dryRunExtras.beforeAttackAeWouldApply = beforeDirectives.map(d => ({
+            trigger:    d?.trigger ?? null,
+            statusKey:  d?.statusKey ?? d?.status ?? null,
+            scope:      d?.scope ?? null,
+            duration:   d?.duration ?? null,
+            effectKind: d?.effect_kind ?? d?.effectKind ?? null
+          }));
+        }
+      }
+    } catch (e) {
+      adcWarn("DRY-RUN: BEFORE_ATTACK directive capture failed", {
+        error: String(e?.message ?? e)
+      });
+    }
+
+    // 3) PassiveLogic-Action — passive-skill modifiers mutate cardPayload
+    //    (HR bonus, affinity overrides, etc.). Same rationale as CustomLogic.
+    try {
+      await withTimeout(
+        applyPassiveModifiers(cardPayload),
+        DRY_RUN_AUTHOR_SCRIPT_TIMEOUT_MS,
+        "PassiveLogic-Action (dry-run)"
+      );
+      dryRunExtras.actionPhaseScripts.passiveLogicAction.ran = true;
+    } catch (e) {
+      dryRunExtras.actionPhaseScripts.passiveLogicAction.error = String(e?.message ?? e);
+      if (e?.__timedOut) {
+        dryRunExtras.actionPhaseScripts.passiveLogicAction.timedOut = true;
+        adcWarn("DRY-RUN: PassiveLogic-Action timed out", { ms: DRY_RUN_AUTHOR_SCRIPT_TIMEOUT_MS });
+      } else {
+        adcWarn("DRY-RUN: PassiveLogic-Action threw", { error: e });
+      }
+    }
+
+    // Author scripts done — restore dialog APIs for the rest of execute().
+    disposeDialogTrap();
+
+    await refreshCanonicalTargetsAndDefense(cardPayload);
+
+    // 4) Resource feasibility — record both the plan AND whether the actor can
+    //    actually pay. Real ResourceGate would block here; dry-run surfaces it
+    //    without aborting so the rest of the report still computes.
+    const gateResult = await normalizePassiveCostsOrAllow(cardPayload);
+    dryRunExtras.resourceGate = {
+      ok:         !!gateResult?.ok,
+      affordable: !!gateResult?.affordable,
+      reason:     gateResult?.reason ?? null,
+      plan:       Array.isArray(gateResult?.costs) ? gateResult.costs : [],
+      lacking:    Array.isArray(gateResult?.lacking) ? gateResult.lacking : []
+    };
+
+    // 5) Target snapshot BEFORE execution — HP/MP/statuses/AEs.
+    try {
+      dryRunExtras.targetSnapshotsBefore = await captureTargetSnapshotsForDryRun(
+        cardPayload.targets
+      );
+    } catch (e) {
+      adcWarn("DRY-RUN: target snapshot capture failed", {
+        error: String(e?.message ?? e)
+      });
+    }
+
+    // 6) Roll overrides from the test harness — applied AFTER author scripts so
+    //    the script can't override them back.
+    const force =
+      cardPayload?.meta?.__dryRunForce ??
+      PAYLOAD?.meta?.__dryRunForce ??
+      PAYLOAD?.__dryRunForce ??
+      null;
+    if (force) {
+      dryRunExtras.forceApplied = applyDryRunRollOverrides(cardPayload, force);
+    }
+
+    // Snapshot the pre-flight payload (post-author-scripts, post-overrides,
+    // pre-execute()) so diffLastAction can compare against a real action card
+    // flag without us shipping the whole cardPayload through the report.
+    dryRunExtras.payloadAfterPreflight = {
+      accuracy:  cloneObject(cardPayload?.accuracy   ?? {}, {}),
+      advPayload: cloneObject(cardPayload?.advPayload ?? {}, {}),
+      targets:   cloneArray(cardPayload?.targets ?? []),
+      originalTargetUUIDs: cloneArray(cardPayload?.originalTargetUUIDs ?? []),
+      meta: {
+        skillUuid:        cardPayload?.meta?.skillUuid ?? null,
+        attackerUuid:     cardPayload?.meta?.attackerUuid ?? null,
+        elementType:      cardPayload?.meta?.elementType ?? null,
+        isSpellish:       !!cardPayload?.meta?.isSpellish,
+        costsNormalized:  cloneArray(cardPayload?.meta?.costsNormalized ?? []),
+        activeEffects:    cloneArray(cardPayload?.meta?.activeEffects ?? []),
+        forceMiss:        !!cardPayload?.meta?.forceMiss
+      }
+    };
 
     adcLog("DRY-RUN EXECUTION CORE CALL", {
       skillName: cardPayload?.core?.skillName ?? null,
       targets: cardPayload?.originalTargetUUIDs ?? [],
-      costsNormalized: cardPayload?.meta?.costsNormalized ?? []
+      costsNormalized: cardPayload?.meta?.costsNormalized ?? [],
+      affordable: dryRunExtras.resourceGate?.affordable,
+      forceApplied: dryRunExtras.forceApplied
     });
 
     const result = await execApi({

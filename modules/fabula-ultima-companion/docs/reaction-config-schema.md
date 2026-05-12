@@ -30,6 +30,8 @@ runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
 | `reaction_damage_amount` | number (≥0) | when trigger has `damage_amount` filter | Minimum damage amount to match. Blank = match any. |
 | `reaction_debuff_count_target` | `"self" \| "ally" \| "enemy" \| "all" \| ""` | when trigger has `debuff_count` filter | Whose tokens to scan for debuffs. Blank disables the filter. |
 | `reaction_debuff_count_min` | number (≥0) | when trigger has `debuff_count` filter | Minimum total debuffs across the chosen group. Blank disables the filter. |
+| `reaction_subject_kind` | string (a `system.props.*` boolean flag, e.g. `"isPhantasm"`) | no | Subject-creature kind filter. When non-blank, the subject's `actor.system.props[<value>]` must be truthy. Available on any trigger whose subject is a creature (i.e. `subjectFrom !== null`). Blank disables the filter. |
+| `reaction_ownership` | `"" \| "own_summon"` | no | Subject/reactor relationship filter. `own_summon` requires the subject token's `flags["fabula-ultima-companion"].summonedBy` to equal the reactor's actor UUID — i.e. "I summoned this creature." Available on any trigger with a creature subject. Blank disables the filter. |
 | `reaction_effect_ref` | string (an `effect_label` from `reaction_effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
@@ -93,6 +95,13 @@ write them in JSON regardless — they just won't be evaluated.
 `creature_unleashes_zero_power` — that trigger was added later and the
 template UI is one behind. It still works correctly at runtime; just
 type the key directly.)
+
+**`reaction_subject_kind` and `reaction_ownership` are universal across all
+subject-bearing triggers** (any trigger whose Subject side is not `—`), so
+they're omitted from the matrix above. The runtime matchers self-skip when
+the trigger has no per-creature subject, so authoring them on
+`conflict_start` / `round_start` / `round_end` is a no-op (the rows still
+match).
 
 ### `reaction_source` semantics (relative to the reactor)
 
@@ -223,6 +232,38 @@ reaction picker. The chosen-skill dispatcher calls
 chain → first `consume_one` (aborts the chain if no charge) → then
 `redirect` (which aborts the chain because redirect always aborts on
 success, suppressing the Protect skill body so no Protect card posts).
+
+---
+
+## Worked example — "Phantasmal Echo" (kind + ownership)
+
+Passive reaction-skill that auto-fires when one of the reactor's own
+Phantasms is defeated. Uses the universal `reaction_subject_kind` /
+`reaction_ownership` filters instead of a `custom_logic_action` gate.
+
+```jsonc
+"reaction_config_table": {
+  "0": {
+    "reaction_trigger":      "creature_defeated",
+    "reaction_source":       "all",
+    "reaction_subject_kind": "isPhantasm",   // subject.actor.system.props.isPhantasm == true
+    "reaction_ownership":    "own_summon",   // subject token's summonedBy flag == reactor.actor.uuid
+    "reaction_effect_ref":   "",             // skill body itself runs the MP restore
+    "reaction_isPassive":    true,
+    "reaction_passive_target": "self"
+  }
+}
+```
+
+Setup outside the reaction config:
+
+- Phantasm NPC actors carry `system.props.isPhantasm = true`.
+- The summoner skill (e.g. *Create Phantasm: Dread*) stamps the spawned
+  TokenDocument with `flags["fabula-ultima-companion"].summonedBy =
+  <reactor actor UUID>` via `FUCompanion.api.phantasm.markSummon`.
+
+When the matched row fires, the autoPassive runner executes Phantasmal
+Echo's normal skill body (MP restore), with no custom JS in the skill.
 
 ---
 

@@ -1171,10 +1171,19 @@ async function consumeItemIfNeeded(actionContext, runId) {
     // what WOULD have happened into this report. Returned in the summary.
     // Set by FUCompanion.api.test.runActionDryRun via meta.__dryRun + dryRun arg.
     dryRun = !!dryRun || !!payload?.meta?.__dryRun;
+
+    // Extras stamped by ActionDataComputation.executeDryRun — covers what real
+    // play does pre-execute() (action-phase author scripts, BEFORE_ATTACK AE
+    // directives, ResourceGate affordability, pre-run target snapshots, roll
+    // overrides from the test harness).
+    const dryRunExtras = dryRun ? (payload?.meta?.__dryRunExtras ?? null) : null;
+
     const dryRunReport = dryRun ? {
       runId,
       executionMode,
       skipped: [],
+
+      // Plans that execute() fills in as it walks the pipeline.
       resourceSpendPlan: null,
       itemConsumePlan: null,
       customLogicResolutionWouldRun: false,
@@ -1183,7 +1192,15 @@ async function consumeItemIfNeeded(actionContext, runId) {
       missPlan: null,
       damagePlan: null,
       animationPlan: null,
-      reactionEmitsPlan: []
+      reactionEmitsPlan: [],
+
+      // Pre-execute() extras lifted from meta.__dryRunExtras.
+      actionPhaseScripts:       dryRunExtras?.actionPhaseScripts       ?? null,
+      beforeAttackAeWouldApply: dryRunExtras?.beforeAttackAeWouldApply ?? [],
+      resourceGate:             dryRunExtras?.resourceGate             ?? null,
+      targetSnapshotsBefore:    dryRunExtras?.targetSnapshotsBefore    ?? [],
+      forceApplied:             dryRunExtras?.forceApplied             ?? null,
+      payloadAfterPreflight:    dryRunExtras?.payloadAfterPreflight    ?? null
     } : null;
 
         // Damage Card batch state for this execution.

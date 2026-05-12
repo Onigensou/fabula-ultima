@@ -32,6 +32,9 @@ const CORE_REQUIRED_FIELDS = {
   Combat: ["_id"],
   Setting: ["_id", "key"],
   FogExploration: ["_id"],
+  // Embedded:
+  ActiveEffect: ["_id", "name"],
+  Combatant: ["_id"],
 };
 
 const IMMUTABLE_FIELDS = ["_id", "type"];
@@ -50,18 +53,28 @@ function flatten(obj, prefix = "", out = new Map()) {
   return out;
 }
 
-function validate({ collection, key, before, after, allowSystemKeyRemoval = false }) {
+function expectedIdFromKey(key, isEmbedded) {
+  // Top-level: `!collection!id`           → expectedId is the only segment after `!...!`
+  // Embedded:  `!coll.sub!parentId.childId` → expectedId is the LAST dot-separated segment
+  const tail = key.split("!").pop();
+  return isEmbedded ? tail.split(".").pop() : tail;
+}
+
+function validate({ collection, key, before, after, allowSystemKeyRemoval = false, isEmbedded = false, leafDocType = null, leafId = null }) {
   const errors = [];
   const warnings = [];
 
   if (!after || typeof after !== "object") {
-    errors.push("Patched document is not an object");
+    errors.push("Document is not an object");
     return { ok: false, errors, warnings };
   }
 
-  const docType = COLLECTION_TO_DOC_TYPE[collection];
+  // Determine the effective document type.
+  // - Top-level: derived from the collection name (actors → Actor, items → Item, etc.)
+  // - Embedded: passed in by the caller (leafDocType).
+  const docType = isEmbedded ? leafDocType : COLLECTION_TO_DOC_TYPE[collection];
   if (!docType) {
-    errors.push(`Unknown collection: ${collection}`);
+    errors.push(`Unknown document type for collection=${collection} isEmbedded=${isEmbedded} leafDocType=${leafDocType}`);
     return { ok: false, errors, warnings };
   }
 
@@ -71,7 +84,7 @@ function validate({ collection, key, before, after, allowSystemKeyRemoval = fals
     }
   }
 
-  const expectedId = key.split("!").pop();
+  const expectedId = leafId || expectedIdFromKey(key, isEmbedded);
   if (after._id !== expectedId) {
     errors.push(`_id mismatch: doc._id=${after._id} but key id=${expectedId}`);
   }
@@ -84,11 +97,17 @@ function validate({ collection, key, before, after, allowSystemKeyRemoval = fals
     }
   }
 
-  const sys = loadSystemJson();
-  const declared = sys.documentTypes?.[docType];
-  if (declared && after.type && !Object.prototype.hasOwnProperty.call(declared, after.type)) {
-    errors.push(`type "${after.type}" not declared in system.json for ${docType}. ` +
-                `Declared: ${Object.keys(declared).join(", ")}`);
+  // Top-level Actor/Item types must be declared in system.json.
+  // Embedded sub-types (ActiveEffect, Combatant, embedded Items) aren't gated this way
+  // — embedded Item types still come from CSB's documentTypes.Item, so we still check
+  // those, but ActiveEffect/Combatant `type` values are core Foundry sub-types.
+  if (!isEmbedded || docType === "Item" || docType === "Actor") {
+    const sys = loadSystemJson();
+    const declared = sys.documentTypes?.[docType];
+    if (declared && after.type && !Object.prototype.hasOwnProperty.call(declared, after.type)) {
+      errors.push(`type "${after.type}" not declared in system.json for ${docType}. ` +
+                  `Declared: ${Object.keys(declared).join(", ")}`);
+    }
   }
 
   if (before && before.system && typeof before.system === "object" && !allowSystemKeyRemoval) {

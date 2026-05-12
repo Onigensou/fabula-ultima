@@ -19,10 +19,19 @@
   };
 
   // =========================================================
-  // Summon filter helper
+  // Summon / Phantasm filter helpers
   // =========================================================
+  // Phantasms are summons that the user wants visible in the activation
+  // tracker (greyed out at 0 activations), so they're explicitly carved out
+  // of the summon-hide filter below.
+  const isPhantasmActor = (actor) => {
+    if (!actor) return false;
+    return !!foundry.utils.getProperty(actor, "system.props.isPhantasm");
+  };
+
   const isSummonActor = (actor) => {
     if (!actor) return false;
+    if (isPhantasmActor(actor)) return false; // show phantasms in the tracker
     const v =
       foundry.utils.getProperty(actor, "system.props.isSummon") ??
       foundry.utils.getProperty(actor, "system.isSummon");
@@ -486,7 +495,10 @@
           max = fb;
         }
 
-        if (!TUNER.includeDepletedAsGrey && remaining <= 0) continue;
+        // Phantasms are always shown (greyed) regardless of remaining, so the
+        // GM can see them in the tracker even at 0 activations.
+        const allowDepleted = TUNER.includeDepletedAsGrey || isPhantasmActor(tok.actor);
+        if (!allowDepleted && remaining <= 0) continue;
 
         const rawImg = tok.document?.texture?.src || tok.actor?.img || "icons/svg/mystery-man.svg";
         const disp = Number(tok.document?.disposition ?? 0);
