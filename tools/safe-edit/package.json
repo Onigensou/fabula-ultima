@@ -1,0 +1,19 @@
+{
+  "name": "safe-edit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Direct-LevelDB safe edit tool for Foundry world data. Requires the game to be closed.",
+  "main": "lib/index.js",
+  "bin": {
+    "safe-edit": "bin/safe-edit.js"
+  },
+  "scripts": {
+    "safe-edit": "node bin/safe-edit.js"
+  },
+  "dependencies": {
+    "classic-level": "^1.4.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
