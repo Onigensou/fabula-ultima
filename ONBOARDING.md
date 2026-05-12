@@ -219,6 +219,33 @@ want copy-of-master semantics.
 any actor's `skill_active_list` / `attack_list`. That's still a manual
 drag-and-drop step (or future tooling if it becomes painful).
 
+## Phantasm conventions
+
+Phantasms (creatures summoned by "Create Phantasm: ..." skills) follow
+two conventions:
+
+1. **Kind marker:** the Phantasm NPC actor template sets
+   `system.props.isPhantasm = true`. Parallels `system.props.isSummon`
+   used by the initiative system.
+2. **Ownership link:** when a Create Phantasm skill spawns a token, it
+   calls `FUCompanion.api.phantasm.markSummon(tokenDoc, summonerActorUuid)`,
+   which stamps `flags["fabula-ultima-companion"].summonedBy` on the
+   TokenDocument. Reactions like "Phantasmal Echo" that should only fire
+   for *the reactor's own* Phantasm read this flag and require it to
+   match the reactor's actor UUID.
+
+Helpers (`scripts/phantasm-api.js`):
+
+| API | Purpose |
+|-----|---------|
+| `FUCompanion.api.phantasm.isPhantasm(actor)` | True if `actor.system.props.isPhantasm`. |
+| `FUCompanion.api.phantasm.getSummoner(tokenOrDoc)` | Reads `summonedBy` flag; null if not set. |
+| `FUCompanion.api.phantasm.markSummon(tokenDoc, summonerActorUuid)` | Stamps the flag; call once at spawn. |
+
+When authoring reactions that should match "my own Phantasm shattered,"
+gate on `isPhantasm` AND `getSummoner === reactorActorUuid`. See the
+worked example in the `Phantasmal Echo` skill's custom_logic_action.
+
 ## Common recipes
 
 - **Iterating on skill numbers** — use `runActionDryRun`, inspect
