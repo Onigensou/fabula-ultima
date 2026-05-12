@@ -160,6 +160,7 @@
     // Enter standby: system is ready, waiting for the player to pick a tile.
     DP.Events.standbyStart(token.document, currentNode, neighbors);
     DP.ScanMode?.show();
+    DP.ScanMode?.showTravelBtn?.("dungeon");
 
     const dtTotal = performance.now() - t0;
     console.debug(TAG, "Graph ready →", currentNode.name, `(${neighbors.length} neighbour(s))`);
@@ -261,6 +262,7 @@
     DP.ScanMode?.hide();
 
     state.busy = true;
+    let _deferredVisitTileId = null; // set after confirm; fired after rebuild
     DP.HelperMode.hide();
     DP.Overlay.clearHover?.();
 
@@ -308,8 +310,7 @@
         await DP.Movement.revertToPosition(freshToken, savedPos);
         DP.Events.turnReverted(freshToken.document, fromNode, clicked);
         perf(`turn | revert: ${(performance.now()-tRevert).toFixed(1)}ms`);
-        await rebuild();
-        return;
+        return; // finally block handles rebuild and clears busy
       }
 
       // — Confirmed —
@@ -326,10 +327,9 @@
       const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
       perf(`turn | tileEvent dispatch (${tileType}): ${(performance.now()-tEvent).toFixed(1)}ms`);
 
-      // Mark tile visited for Fast Travel eligibility (fire-and-forget).
-      if (tileDoc) {
-        DP.Socket.markVisited(scene, tileDoc.id).catch(e => console.warn(TAG, "markVisited:", e));
-      }
+      // Capture tileId; markVisited fires 300 ms after rebuild (see finally) to
+      // avoid congesting the server socket queue before the next turn's doc update.
+      if (tileDoc) _deferredVisitTileId = tileDoc.id;
 
       // Per-tile override: "Persist after trigger" checkbox overrides registry default.
       const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
@@ -348,11 +348,23 @@
       console.error(TAG, "Turn loop error", e);
       ui.notifications?.error?.("Dungeon Pathing: unexpected error. See console.");
     } finally {
-      state.busy = false;
       DP.ConfirmDialog.forceClose?.();
       const tRebuild = performance.now();
       await rebuild();
       perf(`turn | final rebuild: ${(performance.now()-tRebuild).toFixed(1)}ms | TURN TOTAL: ${(performance.now()-tTurnStart).toFixed(1)}ms`);
+      // Keep busy=true through the full rebuild so no concurrent turn can start.
+      state.busy = false;
+
+      // Deferred markVisited — fires 300 ms after rebuild completes so the
+      // server socket queue is clear before the next turn's doc update.
+      if (_deferredVisitTileId) {
+        const _sceneRef = canvas.scene;
+        const _tid      = _deferredVisitTileId;
+        setTimeout(() => {
+          DP.Socket.markVisited(_sceneRef, _tid)
+            .catch(e => console.warn(TAG, "markVisited (deferred):", e));
+        }, 300);
+      }
     }
   }
 
@@ -405,6 +417,7 @@
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();
+    DP.ScanMode?.hideTravelBtn?.();
     DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
     console.debug(TAG, "Deactivated.");
@@ -412,11 +425,27 @@
 
   async function applyForScene(scene) {
     if (!canvas?.ready) return;
-    const mode = getSceneMode(scene ?? canvas.scene);
+    const effectiveScene = scene ?? canvas.scene;
+    const mode = getSceneMode(effectiveScene);
+
     if (mode === DP.SCENE_MODE.DUNGEON) {
       await activate();
+      // Sync FT button visibility (flag may have changed since last activate)
+      DP.ScanMode?.updateFtBtnVisibility?.();
     } else {
       if (state.active) deactivate();
+      // Exploration mode: show travel button if FT is enabled; hide otherwise
+      if (mode === DP.SCENE_MODE.EXPLORATION) {
+        const ftRaw = effectiveScene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY]?.fastTravelEnabled;
+        const ftEnabled = ftRaw !== false && ftRaw !== "false" && ftRaw !== 0;
+        if (ftEnabled) {
+          DP.ScanMode?.showTravelBtn?.("exploration");
+        } else {
+          DP.ScanMode?.hideTravelBtn?.();
+        }
+      } else {
+        DP.ScanMode?.hideTravelBtn?.();
+      }
     }
   }
 

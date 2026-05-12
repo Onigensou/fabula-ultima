@@ -128,6 +128,16 @@
       LEFT:      168,        // 94 (helper left) + 64 (helper size) + 10 (gap)
       FONT_SIZE: "28px",
     },
+
+    // Scene Travel button — placed to the right of the Fast Travel button
+    SCENE_TRAVEL_BUTTON: {
+      SIZE:      64,
+      BOTTOM:    80,
+      LEFT:      242,        // 168 (ft left) + 64 (ft size) + 10 (gap)
+      LEFT_NO_FT: 168,       // used when FT button is hidden (takes its slot)
+      LEFT_SOLO:  20,        // used in exploration mode (only button)
+      FONT_SIZE: "28px",
+    },
   };
 
   // Flag key for per-scene scan radius (read by dp-scan-mode.js)
@@ -156,6 +166,8 @@
     FT_OPEN:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Eagle%20Sound.mp3",
     FT_CLOSE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
     FT_CYCLE:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
+    FT_WIND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Wind1.ogg",
+    FT_LAND:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_Jump.wav",
   });
 
   // Blank tile asset

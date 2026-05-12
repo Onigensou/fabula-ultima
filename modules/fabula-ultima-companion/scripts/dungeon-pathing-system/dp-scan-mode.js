@@ -90,6 +90,8 @@
   let _scanBtn          = null;   // 🔍 DOM element
   let _helperBtn        = null;   // 🗺️ DOM element
   let _ftBtn            = null;   // 🦅 DOM element
+  let _travelBtn        = null;   // scene travel DOM element
+  let _travelBtnMode    = null;   // "dungeon" | "exploration"
   let _scanning         = false;
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
@@ -105,6 +107,14 @@
   }
   function cfgFT() {
     return DP.UI?.FAST_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 168, FONT_SIZE: "28px" };
+  }
+  function cfgTravel() {
+    return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
+  }
+
+  function isFtEnabled() {
+    const raw = canvas?.scene?.flags?.[DP.MODULE_ID]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY]?.fastTravelEnabled;
+    return raw !== false && raw !== "false" && raw !== 0;
   }
 
   function isGM() {
@@ -306,6 +316,16 @@
     return btn;
   }
 
+  // ── Travel button helpers ──────────────────────────────────────────────────
+  function getTravelLeft(mode) {
+    if (mode !== "dungeon") return cfgTravel().LEFT_SOLO; // 20 — only button in exploration
+    return isFtEnabled() ? cfgTravel().LEFT : cfgTravel().LEFT_NO_FT;
+  }
+
+  function getTravelEmoji() {
+    return DP.SceneTravel?.getTravelEmoji?.(canvas?.scene) ?? "🗺️";
+  }
+
   // ── Button lifecycle ───────────────────────────────────────────────────────
   function show() {
     injectStyles();
@@ -334,25 +354,22 @@
     );
     document.body.appendChild(_helperBtn);
 
-    // Fast Travel button
-    _ftBtn = makeBtn(
-      "oni-dp-ft-btn",
-      "🦅",
-      "Fast Travel — teleport to a visited landmark",
-      cfgFT(),
-      () => {
-        DP.FastTravel?.toggle?.();
-      },
-    );
-    document.body.appendChild(_ftBtn);
+    // Fast Travel button — only if enabled for this scene
+    if (isFtEnabled()) {
+      _ftBtn = makeBtn(
+        "oni-dp-ft-btn",
+        "🦅",
+        "Fast Travel — teleport to a visited landmark",
+        cfgFT(),
+        () => { DP.FastTravel?.toggle?.(); },
+      );
+      document.body.appendChild(_ftBtn);
+    }
 
-    // Sync initial button states
     syncHelperBtn();
     syncFtBtn();
-
     installEsc();
 
-    // Stagger the pop-in slightly so they don't overlap visually
     requestAnimationFrame(() => {
       _scanBtn?.classList.add("dp-scan-visible");
       _helperBtn?.classList.add("dp-scan-visible");
@@ -361,7 +378,6 @@
   }
 
   function hide() {
-    // Cancel scan state without snapping (ticker stays; camera re-locks naturally).
     if (_scanning) {
       _scanning = false;
       _scanBtn?.classList.remove("dp-scan-active");
@@ -378,6 +394,74 @@
     _ftBtn     = null;
   }
 
+  // Show/hide the FT button when the scene config fastTravelEnabled flag changes.
+  function updateFtBtnVisibility() {
+    const enabled = isFtEnabled();
+
+    if (enabled && !_ftBtn && _scanBtn) {
+      _ftBtn = makeBtn(
+        "oni-dp-ft-btn",
+        "🦅",
+        "Fast Travel — teleport to a visited landmark",
+        cfgFT(),
+        () => { DP.FastTravel?.toggle?.(); },
+      );
+      document.body.appendChild(_ftBtn);
+      syncFtBtn();
+      requestAnimationFrame(() => _ftBtn?.classList.add("dp-scan-visible"));
+    } else if (!enabled && _ftBtn) {
+      DP.FastTravel?.exit?.();
+      _ftBtn.classList.remove("dp-scan-visible");
+      const btn = _ftBtn;
+      setTimeout(() => btn.remove(), 280);
+      _ftBtn = null;
+    }
+
+    // Reposition travel button if it's in dungeon mode
+    if (_travelBtn && _travelBtnMode === "dungeon") {
+      _travelBtn.style.left = getTravelLeft("dungeon") + "px";
+    }
+  }
+
+  // Show the scene travel button (called from bootstrap for dungeon + exploration modes).
+  function showTravelBtn(mode) {
+    injectStyles();
+    if (!isFtEnabled()) { hideTravelBtn(); return; }
+
+    const emoji   = getTravelEmoji();
+    const leftPx  = getTravelLeft(mode);
+    const c       = { SIZE: cfgScan().SIZE, BOTTOM: cfgScan().BOTTOM, LEFT: leftPx, FONT_SIZE: cfgScan().FONT_SIZE };
+
+    if (_travelBtn && _travelBtnMode === mode) {
+      // Already shown — just refresh emoji and position
+      _travelBtn.textContent = emoji;
+      _travelBtn.style.left  = leftPx + "px";
+      return;
+    }
+
+    hideTravelBtn(); // remove if changing mode
+
+    _travelBtn = makeBtn(
+      "oni-dp-travel-btn",
+      emoji,
+      "Travel to Town/Dungeon",
+      c,
+      () => { DP.SceneTravel?.showDialog?.(); },
+    );
+    document.body.appendChild(_travelBtn);
+    _travelBtnMode = mode;
+    requestAnimationFrame(() => _travelBtn?.classList.add("dp-scan-visible"));
+  }
+
+  function hideTravelBtn() {
+    if (!_travelBtn) return;
+    _travelBtn.classList.remove("dp-scan-visible");
+    const btn = _travelBtn;
+    setTimeout(() => btn.remove(), 280);
+    _travelBtn     = null;
+    _travelBtnMode = null;
+  }
+
   // ── Public API ─────────────────────────────────────────────────────────────
   DP.ScanMode = {
     get active() { return _scanning; },
@@ -392,5 +476,11 @@
     syncHelperBtn,
     /** Call after any fast travel state change to keep the button in sync. */
     syncFtBtn,
+    /** Call when fastTravelEnabled flag changes to show/hide the FT button. */
+    updateFtBtnVisibility,
+    /** Show the scene travel button. mode: "dungeon" | "exploration" */
+    showTravelBtn,
+    /** Hide the scene travel button. */
+    hideTravelBtn,
   };
 })();

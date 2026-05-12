@@ -128,6 +128,7 @@
   "scripts/dungeon-pathing-system/dp-tile-config.js",
   "scripts/dungeon-pathing-system/dp-scan-mode.js",
   "scripts/dungeon-pathing-system/dp-fast-travel.js",
+  "scripts/dungeon-pathing-system/dp-scene-travel.js",
   "scripts/dungeon-pathing-system/dp-bootstrap.js",
   "scripts/check-roller/checkRoller-manager.js",
   "scripts/check-roller/checkRoller-core.js",

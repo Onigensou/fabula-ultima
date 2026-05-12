@@ -16,6 +16,7 @@
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
     MARK_VISITED:           "dungeonPathing.markVisited",
+    UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
   };
 
@@ -125,6 +126,19 @@
         }
       });
 
+      socket.register(HANDLERS.UNMARK_VISITED, async ({ sceneId, tileId }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const scene = game.scenes.get(sceneId);
+        if (!scene) return { ok: false, error: "Scene not found" };
+        try {
+          await DP.TileState.unmarkVisited(scene, tileId);
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "unmarkVisited socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       socket.register(HANDLERS.FAST_TRAVEL_TELEPORT, async ({ sceneId, tokenId, x, y }) => {
         if (!game.user?.isGM) return { ok: false, error: "Not GM" };
         const scene = game.scenes.get(sceneId);
@@ -132,7 +146,7 @@
         const tokenDoc = scene.tokens.get(tokenId);
         if (!tokenDoc) return { ok: false, error: "Token not found" };
         try {
-          await tokenDoc.update({ x, y }, { dungeonPathing: true });
+          await tokenDoc.update({ x, y }, { dungeonPathing: true, animate: false });
           return { ok: true };
         } catch (e) {
           console.error(TAG, "fastTravelTeleport socket handler failed", e);
@@ -180,11 +194,20 @@
       game.socket.emit(RAW_CH, { type: MSG_MV, payload: { sceneId: scene.id, tileId } });
     },
 
+    async unmarkVisited(scene, tileId) {
+      if (game.user?.isGM) {
+        return DP.TileState.unmarkVisited(scene, tileId);
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for unmarkVisited"); return; }
+      return socket.executeAsGM(HANDLERS.UNMARK_VISITED, { sceneId: scene.id, tileId });
+    },
+
     async fastTravelTeleport(scene, tokenId, x, y) {
       if (game.user?.isGM) {
         const tokenDoc = scene.tokens.get(tokenId);
         if (!tokenDoc) return { ok: false, error: "Token not found" };
-        await tokenDoc.update({ x, y }, { dungeonPathing: true });
+        await tokenDoc.update({ x, y }, { dungeonPathing: true, animate: false });
         return { ok: true };
       }
       const socket = this._socket ?? window.FUCompanionSocket;

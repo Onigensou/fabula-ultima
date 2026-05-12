@@ -17,6 +17,22 @@
 // the Fabula button BEFORE calling bindTabs() so stopImmediatePropagation()
 // prevents Foundry from trying (and failing) to activate a non-.tab panel.
 //
+// SUB-TABS ARCHITECTURE
+// =====================
+// The Fabula panel contains a secondary nav (data-oni-fabula-sub-nav="1") and
+// a content container (data-oni-fabula-sub-content="1").  Each system injects:
+//   • one <a class="item" data-sub-tab="…"> button into the sub-nav
+//   • one <div class="oni-fabula-sub-panel" data-sub-tab="…"> into sub-content
+// The click delegation handler (set up here, on the sub-nav element) handles
+// ALL sub-tab buttons, including those added later by event / treasure / journal.
+//
+// TRIGGERS BLANK BUG FIX
+// ======================
+// When the Fabula tab is clicked we must only strip .active from TOP-LEVEL
+// tab panels (direct children of sheetBody), NOT from sub-tab panels inside
+// the Triggers outer tab.  Using [...sheetBody.children].filter(…) instead of
+// sheetBody.querySelectorAll(".tab") prevents that corruption.
+//
 // Per-tile flag stored at:
 //   flags.fabula-ultima-companion.dungeonPathing.persistAfterTrigger
 // ============================================================================
@@ -32,10 +48,14 @@
   const MARKER_ATTR = "data-oni-fabula-config";
   const TAB_ID      = "oni-fabula-config";
 
-  // ── Debug flag — set false to silence ──────────────────────────
-  const DEBUG = true;
+  // ── Debug flag ─────────────────────────────────────────────────
+  const DEBUG = false;
   const dbg  = (...a) => DEBUG && console.log(TAG, ...a);
   const warn = (...a) => console.warn(TAG, ...a);
+
+  // Tile types that default to fast-travel eligible when the per-tile
+  // flag hasn't been explicitly set by the developer yet.
+  const FT_ELIGIBLE_TYPES = new Set(["camp", "event", "story", "final"]);
 
   // ── CSS ────────────────────────────────────────────────────────
   function ensureStyle() {
@@ -43,7 +63,7 @@
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
-      /* Flex-wrap nav so tabs never overflow the window */
+      /* Flex-wrap outer nav so tabs never overflow the window */
       [data-oni-fabula-config="1"] nav.sheet-tabs {
         display: flex;
         flex-wrap: wrap;
@@ -56,12 +76,60 @@
         white-space: nowrap;
       }
 
+      /* ── Sub-nav (secondary tab bar inside Fabula panel) ── */
+      .oni-fabula-sub-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 4px;
+        padding: 6px 8px 0;
+        margin-bottom: 1px;
+        border-bottom: 1px solid var(--color-border-light-primary, rgba(153,153,153,0.3));
+        list-style: none;
+      }
+      .oni-fabula-sub-nav .item {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px 5px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 4px 4px 0 0;
+        border: 1px solid transparent;
+        border-bottom: none;
+        cursor: pointer;
+        opacity: 0.65;
+        color: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: opacity 0.1s;
+        position: relative;
+        bottom: -1px;
+      }
+      .oni-fabula-sub-nav .item:hover {
+        opacity: 0.9;
+      }
+      .oni-fabula-sub-nav .item.active {
+        opacity: 1;
+        border-color: var(--color-border-light-primary, rgba(153,153,153,0.3));
+        background: var(--color-bg, rgba(0,0,0,0.04));
+      }
+
+      /* ── Sub-panels ── */
+      .oni-fabula-sub-content {
+        padding: 0;
+      }
+      .oni-fabula-sub-panel {
+        padding: 10px 8px;
+      }
+
+      /* ── Legacy section styles (kept for non-subTab fallback) ── */
       .oni-fabula-section { padding: 10px 8px; }
       .oni-fabula-section h3 { margin: 10px 0 6px; font-size: 1rem; }
       .oni-fabula-section h3:first-child { margin-top: 0; }
       .oni-fabula-section .form-group { margin-bottom: 10px; }
       .oni-fabula-section-divider { margin: 4px 8px 0; border-color: rgba(255,255,255,0.15); }
       .oni-fabula-section-header  { margin: 0 8px 6px; font-size: 1rem; }
+
       .oni-dp-tile-info {
         font-family: monospace;
         font-size: 12px;
@@ -94,7 +162,7 @@
     } catch {}
   }
 
-  function resizeTileConfigForTabs(app, root) {
+  function resizeTileConfigForTabs(app) {
     // Only adjust HEIGHT — changing width triggers a full Foundry re-render
     // which fires renderTileConfig again with a fresh DOM (breaking markers).
     try {
@@ -155,7 +223,7 @@
         return;
       }
 
-      // ── Tab button ──────────────────────────────────────────────
+      // ── Outer tab button ────────────────────────────────────────
       const tabButton = document.createElement("a");
       tabButton.className = "item";
       tabButton.dataset.tab = TAB_ID;
@@ -166,7 +234,7 @@
         navItemsAfter: [...tabsNav.querySelectorAll(".item")].map(i => i.dataset.tab || i.textContent.trim()).join(" | "),
       });
 
-      // ── Tab panel ───────────────────────────────────────────────
+      // ── Outer tab panel ─────────────────────────────────────────
       // Does NOT have class="tab" — Foundry's Tabs system must not touch it.
       // data-oni-fabula-panel distinguishes the PANEL from the nav button;
       // both share data-tab="oni-fabula-config" but only the panel has this attr.
@@ -177,7 +245,31 @@
       tabPanel.setAttribute("data-oni-fabula-panel", "1");
       tabPanel.style.display = "none";
 
-      // ── Dungeon section ─────────────────────────────────────────
+      // ── Sub-nav (secondary tab bar) ─────────────────────────────
+      // Other scripts append their own <a class="item" data-sub-tab="…"> here.
+      // The click delegation handler (below) fires for all of them.
+      const subNav = document.createElement("nav");
+      subNav.className = "oni-fabula-sub-nav";
+      subNav.setAttribute("data-oni-fabula-sub-nav", "1");
+
+      const dungeonBtn = document.createElement("a");
+      dungeonBtn.className = "item active";
+      dungeonBtn.dataset.subTab = "dungeon";
+      dungeonBtn.innerHTML = `<i class="fas fa-dungeon"></i> Dungeon`;
+      subNav.appendChild(dungeonBtn);
+
+      // ── Sub-content container ───────────────────────────────────
+      // Other scripts append their own .oni-fabula-sub-panel here.
+      const subContent = document.createElement("div");
+      subContent.className = "oni-fabula-sub-content";
+      subContent.setAttribute("data-oni-fabula-sub-content", "1");
+
+      // ── Dungeon sub-panel ───────────────────────────────────────
+      const dungeonSubPanel = document.createElement("div");
+      dungeonSubPanel.className = "oni-fabula-sub-panel";
+      dungeonSubPanel.dataset.subTab = "dungeon";
+      // Dungeon is the first tab — shown by default
+
       const scene       = tileDoc?.parent ?? null;
       const tileId      = tileDoc?.id ?? null;
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
@@ -187,13 +279,15 @@
       const visitedTile = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
       const persists    = persistFlag === true || persistFlag === "true";
 
-      dbg("Tile flags read", { persistFlag, initialType, currentType, visitedTile });
+      // eligibleForFastTravel: explicit tile flag, or type-based default when unset
+      const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
+      const isEligible  = (rawEligible === null || rawEligible === undefined)
+        ? FT_ELIGIBLE_TYPES.has(initialType)
+        : (rawEligible === true || rawEligible === "true" || rawEligible === 1);
 
-      const dungeonSection = document.createElement("div");
-      dungeonSection.className = "oni-fabula-section";
-      dungeonSection.innerHTML = `
-        <h3><i class="fas fa-dungeon"></i> Dungeon Configuration</h3>
+      dbg("Tile flags read", { persistFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
 
+      dungeonSubPanel.innerHTML = `
         <div class="form-group">
           <label>Persist after trigger</label>
           <div class="form-fields">
@@ -208,7 +302,21 @@
           </p>
         </div>
 
-        <h3><i class="fas fa-info-circle"></i> Tracked State</h3>
+        <div class="form-group">
+          <label>Eligible for Fast Travel</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.eligibleForFastTravel"
+                   data-dtype="Boolean"
+                   ${isEligible ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When ON and the tile has been visited, it appears as a Fast Travel destination.
+            Defaults to <b>ON</b> for Camp, Event, Story, and Final tiles.
+          </p>
+        </div>
+
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-info-circle"></i> Tracked State</h3>
 
         <div class="form-group">
           <label>Initial type</label>
@@ -231,19 +339,42 @@
         </div>
 
         <div class="form-group">
-          <label>Visited (Fast Travel)</label>
+          <label>Visited</label>
           <div class="form-fields">
-            <input class="oni-dp-tile-info" type="text" readonly
-                   value="${visitedTile ? "Yes — eligible for fast travel" : "No — not yet visited"}" />
+            <input type="checkbox" data-oni-visited-toggle="1" ${visitedTile ? "checked" : ""} ${!game.user?.isGM ? "disabled" : ""} />
           </div>
           <p class="notes">
-            Landmark tiles (Camp, Event, Story, Final) become fast travel destinations
-            once the party steps on them.
+            Set automatically when the party first steps on this tile.
+            Cleared by <b>Reset Dungeon</b>. Eligible tiles with this checked become Fast Travel destinations.
+            ${game.user?.isGM ? "GMs can manually toggle this." : ""}
           </p>
         </div>
       `;
 
-      tabPanel.appendChild(dungeonSection);
+      // GM-only: wire visited toggle to TileState directly (not a Foundry tile flag)
+      if (game.user?.isGM && scene && tileId) {
+        const visitedCb = dungeonSubPanel.querySelector("[data-oni-visited-toggle]");
+        if (visitedCb) {
+          visitedCb.addEventListener("change", async () => {
+            try {
+              if (visitedCb.checked) {
+                await DP.TileState.markVisited(scene, tileId);
+              } else {
+                await DP.TileState.unmarkVisited(scene, tileId);
+              }
+            } catch (e) {
+              warn("visited toggle failed:", e);
+              // Revert checkbox on failure
+              visitedCb.checked = !visitedCb.checked;
+            }
+          });
+        }
+      }
+
+      subContent.appendChild(dungeonSubPanel);
+
+      tabPanel.appendChild(subNav);
+      tabPanel.appendChild(subContent);
 
       // Insert BEFORE the footer so the panel sits alongside other tab panels,
       // not after the "Update Tile" submit button.
@@ -262,8 +393,27 @@
         insertedBefore:   formFooter?.tagName ?? "(appended — no footer found)",
       });
 
-      // ── Manual tab switching ────────────────────────────────────
-      // Register BEFORE bindTabs() — our listener is first in queue so
+      // ── Sub-nav click delegation ────────────────────────────────
+      // Registered on the sub-nav element so clicks on buttons added later
+      // by event / treasure / journal scripts are handled automatically.
+      subNav.addEventListener("click", (ev) => {
+        const btn = ev.target.closest(".item[data-sub-tab]");
+        if (!btn) return;
+        const subTabId = btn.dataset.subTab;
+        dbg("Sub-tab clicked:", subTabId);
+
+        subNav.querySelectorAll(".item[data-sub-tab]").forEach(i => i.classList.remove("active"));
+        btn.classList.add("active");
+
+        subContent.querySelectorAll(".oni-fabula-sub-panel").forEach(p => {
+          p.style.display = (p.dataset.subTab === subTabId) ? "" : "none";
+        });
+
+        try { app.setPosition({ height: "auto" }); } catch {}
+      });
+
+      // ── Outer tab click handler ─────────────────────────────────
+      // Registered BEFORE bindTabs() — our listener is first in queue so
       // stopImmediatePropagation() prevents Foundry from trying to activate
       // a panel that doesn't have class="tab".
       tabButton.addEventListener("click", (ev) => {
@@ -273,7 +423,12 @@
         tabsNav.querySelectorAll(".item[data-tab]").forEach(i => i.classList.remove("active"));
         tabButton.classList.add("active");
 
-        sheetBody.querySelectorAll(".tab").forEach(p => p.classList.remove("active"));
+        // TRIGGERS BUG FIX: only deactivate DIRECT-CHILD .tab panels of sheetBody.
+        // Using querySelectorAll(".tab") would also strip .active from sub-tab panels
+        // inside the Triggers outer tab, corrupting Foundry's sub-tab state there.
+        [...sheetBody.children]
+          .filter(el => el.classList.contains("tab"))
+          .forEach(p => p.classList.remove("active"));
 
         tabPanel.style.display = "";
         try { app.setPosition({ height: "auto" }); } catch {}
@@ -295,7 +450,7 @@
           : Object.values(app?._tabs ?? {}).map(t => t?.active).join(", "),
       });
 
-      resizeTileConfigForTabs(app, root);
+      resizeTileConfigForTabs(app);
       dbg("── Fabula Configuration tab injection complete ──");
     } catch (e) {
       warn("inject failed:", e);

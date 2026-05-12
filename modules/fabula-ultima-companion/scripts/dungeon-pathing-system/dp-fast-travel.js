@@ -19,16 +19,21 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG       = "[DungeonPathing][FastTravel]";
 
-  // Tile types eligible for fast travel
-  const FT_TYPES = new Set([
-    "camp", "event", "story", "final",
-  ]);
+  // Default eligible tile types — used only when the per-tile
+  // eligibleForFastTravel flag has not been explicitly set.
+  const FT_TYPES = new Set(["camp", "event", "story", "final"]);
 
   // ── Socket broadcast ─────────────────────────────────────────────────────────
   const SOCKET_CH    = `module.${MODULE_ID}`;
   const MSG_ENTER    = "DP_FT_ENTER";
   const MSG_PAN      = "DP_FT_PAN";
   const MSG_EXIT     = "DP_FT_EXIT";
+  const MSG_FT_ANIM  = "DP_FT_ANIM";
+
+  const GRYPHON_URL    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm";
+  const ANIM_SWOOP_MS  = 800;
+  const ANIM_FLYOUT_MS = 700;
+
   const SOCKET_GUARD = "__ONI_DP_FT_SOCKET__";
 
   function setupSocketListener() {
@@ -36,7 +41,7 @@
     window[SOCKET_GUARD] = true;
 
     game.socket.on(SOCKET_CH, (msg) => {
-      if (msg?.type !== MSG_ENTER && msg?.type !== MSG_PAN && msg?.type !== MSG_EXIT) return;
+      if (msg?.type !== MSG_ENTER && msg?.type !== MSG_PAN && msg?.type !== MSG_EXIT && msg?.type !== MSG_FT_ANIM) return;
       // Ignore our own broadcasts (we are the controller driving these)
       if (_active && _isController) return;
 
@@ -54,6 +59,17 @@
         // Non-controller: re-engage camera lock and snap back to party token
         DP.ScanMode?.attachTicker?.();
         DP.ScanMode?.snapCameraToToken?.();
+        return;
+      }
+      if (msg.type === MSG_FT_ANIM) {
+        const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state ?? null;
+        const tkn = dpState?.partyToken ?? null;
+        if (tkn) {
+          runGryphonAnimation(tkn, { waitForUpdate: true }).catch(() => {
+            const mesh = tkn.mesh ?? tkn.icon ?? null;
+            if (mesh) mesh.alpha = 1;
+          });
+        }
         return;
       }
     });
@@ -74,6 +90,7 @@
   // ── State ────────────────────────────────────────────────────────────────────
   let _active       = false;
   let _isController = false;
+  let _traveling    = false;   // true while a teleport sequence is in progress
   let _eligible     = [];   // node-like objects { nodeId, name, tileType, center, bounds }
   let _focusedIdx   = 0;
   let _container    = null; // PIXI container with cursor sprites
@@ -83,23 +100,178 @@
   let _clickHandler  = null;
   let _wheelHandler  = null;
 
+  // Gryphon texture cache — loaded once, shared across FT triggers
+  let _gryphonTex  = null;
+  let _gryphonNatW = 0;
+  let _gryphonNatH = 0;
+
+  // ── Animation helpers ────────────────────────────────────────────────────────
+  function easeInOut(t) {
+    return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
+  }
+
+  function tween(fromX, toX, fromY, toY, durationMs, onFrame) {
+    return new Promise(resolve => {
+      const start = performance.now();
+      function tick() {
+        const elapsed = Math.min(performance.now() - start, durationMs);
+        const t = easeInOut(elapsed / durationMs);
+        onFrame(fromX + (toX - fromX) * t, fromY + (toY - fromY) * t);
+        if (elapsed < durationMs) { requestAnimationFrame(tick); } else { resolve(); }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  async function ensureGryphonTexture() {
+    if (_gryphonTex) return _gryphonTex;
+
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.src = GRYPHON_URL;
+      video.loop = true;
+      video.muted = true;
+      video.crossOrigin = "anonymous";
+      video.style.cssText = "position:absolute;width:0;height:0;opacity:0;pointer-events:none;";
+      document.body.appendChild(video);
+
+      let resolved = false;
+      function onReady() {
+        if (resolved) return; resolved = true;
+        video.play().catch(() => {});
+        _gryphonNatW = video.videoWidth  || 0;
+        _gryphonNatH = video.videoHeight || 0;
+        _gryphonTex  = PIXI.Texture.from(video);
+        resolve(_gryphonTex);
+      }
+
+      if (video.readyState >= 2) { onReady(); return; }
+      video.addEventListener("loadeddata", onReady, { once: true });
+      video.load();
+      setTimeout(onReady, 2000);
+    });
+  }
+
+  async function runGryphonAnimation(token, { waitForUpdate = false } = {}) {
+    if (!canvas?.stage || !token) return null;
+
+    const gSize   = Number(canvas?.grid?.size ?? 100) || 100;
+    const docX    = Number(token.document?.x ?? 0);
+    const docY    = Number(token.document?.y ?? 0);
+    const docW    = Number(token.document?.width  ?? 1) * gSize;
+    const docH    = Number(token.document?.height ?? 1) * gSize;
+    const tokenCX = docX + docW / 2;
+    const tokenCY = docY + docH / 2;
+
+    const pivot  = canvas.stage.pivot;
+    const scaleX = canvas.stage.scale.x || 1;
+    const halfW  = canvas.app.renderer.width / scaleX / 2;
+
+    const tex = await ensureGryphonTexture().catch(() => null);
+    if (!tex) return null;
+
+    // Derive sprite size from natural video dimensions — no squash/stretch
+    const natW    = _gryphonNatW || 480;
+    const natH    = _gryphonNatH || 270;
+    const spriteH = gSize * 2;
+    const spriteW = spriteH * (natW / natH);
+
+    const arrivedX = tokenCX - spriteW / 2;
+    const arrivedY = tokenCY - spriteH / 2;
+    const startX   = pivot.x - halfW - spriteW;
+    const exitX    = pivot.x + halfW + spriteW;
+
+    const sprite = new PIXI.Sprite(tex);
+    sprite.width  = spriteW;
+    sprite.height = spriteH;
+    sprite.x      = startX;
+    sprite.y      = arrivedY;
+    sprite.zIndex = 999998;
+    canvas.stage.sortableChildren = true;
+    canvas.stage.addChild(sprite);
+
+    DP.Sound?.playFastTravelWind?.();
+
+    await tween(startX, arrivedX, arrivedY, arrivedY, ANIM_SWOOP_MS,
+      (x, y) => { sprite.x = x; sprite.y = y; });
+
+    await new Promise(r => setTimeout(r, 150));
+
+    const tokenMesh = token.mesh ?? token.icon ?? null;
+    const prevAlpha = tokenMesh ? (tokenMesh.alpha ?? 1) : 1;
+    if (tokenMesh) tokenMesh.alpha = 0;
+
+    await tween(arrivedX, exitX, arrivedY, arrivedY, ANIM_FLYOUT_MS,
+      (x, y) => { sprite.x = x; sprite.y = y; });
+
+    try { canvas.stage.removeChild(sprite); } catch {}
+    try { sprite.destroy({ texture: false }); } catch {} // preserve shared texture
+
+    if (waitForUpdate && tokenMesh) {
+      // Non-controller: hold token invisible until the position broadcast arrives,
+      // so it appears at the new location rather than flashing at the old one.
+      await new Promise(resolve => {
+        let resolved = false;
+        const timeout = setTimeout(() => {
+          if (!resolved) { resolved = true; Hooks.off("updateToken", hId); resolve(); }
+        }, 3000);
+        const hId = Hooks.on("updateToken", (doc) => {
+          if (doc.id !== token.document?.id) return;
+          if (resolved) return;
+          resolved = true;
+          clearTimeout(timeout);
+          Hooks.off("updateToken", hId);
+          resolve();
+        });
+      });
+      tokenMesh.alpha = prevAlpha;
+      return null;
+    }
+
+    // Controller path: return mesh info so the caller restores alpha after teleport
+    return { tokenMesh, prevAlpha };
+  }
+
   // ── Build eligible node list ─────────────────────────────────────────────────
-  // Scans all tiles in the current scene for FT-eligible initial type + visited.
+  // Scans all tiles in the current scene for FT-eligible + visited tiles.
+  // Eligibility is determined by the per-tile flag first, falling back to the
+  // hardcoded FT_TYPES set for tiles that haven't been configured yet.
   function resolveEligibleNodes() {
     const scene = canvas?.scene;
-    if (!scene) { console.debug(TAG, "resolveEligibleNodes: no scene"); return []; }
+    if (!scene) return [];
 
-    const tileDocs = scene.tiles?.contents ?? [];
-    console.debug(TAG, `resolveEligibleNodes: scanning ${tileDocs.length} tile(s)`);
+    const pathingKey = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
+    const tileDocs   = scene.tiles?.contents ?? [];
+    const result     = [];
 
-    const result = [];
     for (const tileDoc of tileDocs) {
       const tileId = tileDoc.id;
 
-      // Primary: read type from TileState flags (set when graph was built)
-      let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
+      // Must have been visited first
+      const isVisited = DP.TileState?.isVisited(scene, tileId) ?? false;
+      if (!isVisited) continue;
 
-      // Fallback: infer from tile name when TileState hasn't been ensured yet
+      // Read explicit eligibleForFastTravel flag; fall back to type-based default
+      const rawEligible = tileDoc.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
+      let isEligible;
+      if (rawEligible === null || rawEligible === undefined) {
+        // Flag not yet set — infer from tile type (backward compatibility)
+        let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
+        if (!initialType && tileDoc.name) {
+          const low = String(tileDoc.name).toLowerCase();
+          if      (low.includes("camp"))  initialType = "camp";
+          else if (low.includes("event")) initialType = "event";
+          else if (low.includes("final")) initialType = "final";
+          else if (low.includes("story")) initialType = "story";
+        }
+        isEligible = FT_TYPES.has(initialType);
+      } else {
+        isEligible = !!rawEligible;
+      }
+      if (!isEligible) continue;
+
+      // Read type for display label
+      let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
       if (!initialType && tileDoc.name) {
         const low = String(tileDoc.name).toLowerCase();
         if      (low.includes("camp"))  initialType = "camp";
@@ -107,12 +279,6 @@
         else if (low.includes("final")) initialType = "final";
         else if (low.includes("story")) initialType = "story";
       }
-
-      const isVisited = DP.TileState?.isVisited(scene, tileId) ?? false;
-      console.debug(TAG, `  tile ${tileId} (${tileDoc.name}): type="${initialType}", visited=${isVisited}`);
-
-      if (!FT_TYPES.has(initialType)) continue;
-      if (!isVisited) continue;
 
       const x = Number(tileDoc.x ?? 0);
       const y = Number(tileDoc.y ?? 0);
@@ -128,7 +294,6 @@
       });
     }
 
-    console.debug(TAG, `resolveEligibleNodes: ${result.length} eligible node(s)`);
     return result;
   }
 
@@ -156,10 +321,11 @@
       if (tex) {
         sprite.width  = cfg.SIZE * 1.2;
         sprite.height = cfg.SIZE * 1.2;
-        sprite.anchor.set(0.5, 0.5);
-        sprite.tint   = 0xffd966; // golden tint distinguishes from helper mode
+        sprite.anchor.set(0, 0.5);  // left-centre, same as helper mode
+        sprite.tint   = 0xffd966;  // golden tint distinguishes from helper mode
       }
-      sprite.x = node.center.x;
+      // Same edge-inset positioning formula as helper mode
+      sprite.x = node.bounds.right - cfg.SIZE * cfg.EDGE_INSET;
       sprite.y = node.center.y;
       root.addChild(sprite);
     }
@@ -293,7 +459,7 @@
     if (!view) return;
 
     _clickHandler = (ev) => {
-      if (!_active || ev.button !== 0) return;
+      if (!_active || _traveling || ev.button !== 0) return;
       ev.preventDefault();
       ev.stopPropagation();
 
@@ -364,24 +530,55 @@
     const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state ?? null;
     const token   = dpState?.partyToken ?? null;
     if (!token) { console.warn(TAG, "No party token for teleport."); return; }
+    if (_traveling) return;
 
-    const gSize = Number(canvas?.grid?.size ?? 100) || 100;
-    const offX  = Number(DP.UI?.TOKEN_OFFSET?.x ?? 0);
-    const offY  = Number(DP.UI?.TOKEN_OFFSET?.y ?? 0);
-    const tw    = Number(token.document?.width  ?? 1) * gSize;
-    const th    = Number(token.document?.height ?? 1) * gSize;
+    _traveling = true;
+    try {
+      const gSize = Number(canvas?.grid?.size ?? 100) || 100;
+      const offX  = Number(DP.UI?.TOKEN_OFFSET?.x ?? 0);
+      const offY  = Number(DP.UI?.TOKEN_OFFSET?.y ?? 0);
+      const tw    = Number(token.document?.width  ?? 1) * gSize;
+      const th    = Number(token.document?.height ?? 1) * gSize;
 
-    const targetX = node.center.x - tw / 2 + offX;
-    const targetY = node.center.y - th / 2 + offY;
+      const targetX = Math.round(node.center.x - tw / 2 + offX);
+      const targetY = Math.round(node.center.y - th / 2 + offY);
 
-    await DP.Socket.fastTravelTeleport(canvas.scene, token.document.id, targetX, targetY);
+      // Pan all viewports back to the party token before the animation plays
+      const tokenCX = Number(token.document.x) + tw / 2;
+      const tokenCY = Number(token.document.y) + th / 2;
+      broadcastPan(tokenCX, tokenCY);
+      canvas?.animatePan?.({ x: tokenCX, y: tokenCY, duration: 400 });
+      await new Promise(r => setTimeout(r, 450));
 
-    exit();
+      // Broadcast animation to non-controller clients, then play locally
+      game.socket.emit(SOCKET_CH, { type: MSG_FT_ANIM, payload: {} });
+      const meshInfo = await runGryphonAnimation(token).catch(e => {
+        console.warn(TAG, "gryphon anim:", e);
+        return null;
+      });
 
-    // Rebuild graph after teleport so neighbors are updated for the new position
-    setTimeout(() => {
-      globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
-    }, 250);
+      // Token is still hidden — update position, play land sound, then reveal at destination
+      await token.document.update(
+        { x: targetX, y: targetY },
+        { animate: false, dungeonPathing: true }
+      );
+      DP.Sound?.playFastTravelLand?.();
+      if (meshInfo?.tokenMesh) meshInfo.tokenMesh.alpha = meshInfo.prevAlpha ?? 1;
+
+    } catch (e) {
+      console.error(TAG, "teleportTo error:", e);
+    } finally {
+      // Safety net: never leave the token invisible if something threw
+      try {
+        const safetyMesh = token.mesh ?? token.icon ?? null;
+        if (safetyMesh && safetyMesh.alpha === 0) safetyMesh.alpha = 1;
+      } catch {}
+      _traveling = false;
+      exit({ silent: true }); // land sound already played; suppress the close sfx
+      setTimeout(() => {
+        globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
+      }, 250);
+    }
   }
 
   // ── ESC key ───────────────────────────────────────────────────────────────────
@@ -419,6 +616,14 @@
       return;
     }
 
+    // Check if Fast Travel is enabled for this scene (default: true)
+    const ftEnabledRaw = canvas.scene?.getFlag?.(MODULE_ID,
+      `${DP.FABULA_ROOT_KEY ?? "oniFabula"}.${DP.GENERAL_KEY ?? "general"}.fastTravelEnabled`);
+    if (ftEnabledRaw === false || ftEnabledRaw === "false" || ftEnabledRaw === 0) {
+      ui.notifications?.warn?.("Fast Travel is disabled for this scene.");
+      return;
+    }
+
     _eligible = resolveEligibleNodes();
     console.debug(TAG, "enter(): eligible nodes=", _eligible.length, _eligible.map(n => n.name));
     if (!_eligible.length) {
@@ -451,12 +656,13 @@
     console.debug(TAG, `Fast Travel active — ${_eligible.length} eligible landmark(s).`);
   }
 
-  function exit() {
+  function exit({ silent = false } = {}) {
     if (!_active) return;
     _active       = false;
     _isController = false;
+    _traveling    = false;
 
-    DP.Sound?.playFastTravelClose?.();
+    if (!silent) DP.Sound?.playFastTravelClose?.();
 
     hideSprites();
     hideNavButtons();
@@ -485,6 +691,8 @@
     enter,
     exit,
     toggle,
+    /** Exposed for reuse by SceneTravel — plays the gryphon fly-in/fly-out animation. */
+    runGryphonAnimation,
   };
 
   Hooks.once("ready", () => {

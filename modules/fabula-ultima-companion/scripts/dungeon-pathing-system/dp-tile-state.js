@@ -85,16 +85,12 @@
       const inferredType = inferType(tileDoc);
       const initialTexture = tileDoc.texture?.src ?? null;
 
-      const updated = {
-        ...states,
-        [id]: {
-          initialType:    inferredType,
-          currentType:    inferredType,
-          initialTexture,
-        }
-      };
-
-      await setStates(scene, updated).catch(e => console.warn(TAG, "ensure failed", e));
+      // Write only this tile's entry — avoids broadcasting the full 129-tile object.
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${id}`, {
+        initialType:    inferredType,
+        currentType:    inferredType,
+        initialTexture,
+      }).catch(e => console.warn(TAG, "ensure failed", e));
     },
 
     /** Get the CURRENT type of a tile (after any mutations). */
@@ -117,12 +113,10 @@
 
       const states  = getStates(scene);
       const current = states[tileId] ?? {};
-      const updated = {
-        ...states,
-        [tileId]: { ...current, currentType: String(newType) }
-      };
-
-      await setStates(scene, updated).catch(e => console.warn(TAG, "mutateTile setFlag failed", e));
+      // Write only this tile's entry — avoids broadcasting the full 129-tile object.
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileId}`, {
+        ...current, currentType: String(newType)
+      }).catch(e => console.warn(TAG, "mutateTile setFlag failed", e));
 
       if (newTexture) {
         const tileDoc = scene.tiles.get(tileId);
@@ -157,24 +151,33 @@
       }
       if (!scene) return;
 
-      const states = getStates(scene);
+      const states  = getStates(scene);
+      const visited = getVisited(scene);
+      const stateCount   = Object.keys(states).length;
+      const visitedCount = Object.keys(visited).length;
+      console.log(TAG, `resetDungeon — scene: ${scene.name} (${scene.id})`);
+      console.log(TAG, `resetDungeon — tile states: ${stateCount}, visited tiles: ${visitedCount}`);
+
+      // Restore tile states + textures
       const updated = {};
-
       for (const [id, entry] of Object.entries(states)) {
-        updated[id] = {
-          ...entry,
-          currentType: entry.initialType,
-        };
-
+        updated[id] = { ...entry, currentType: entry.initialType };
         if (entry.initialTexture) {
           const tileDoc = scene.tiles.get(id);
           if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
         }
       }
+      await setStates(scene, updated).catch(e => console.warn(TAG, "resetDungeon — setStates failed:", e));
+      console.log(TAG, `resetDungeon — tile states restored to initial (${stateCount} tile(s)).`);
 
-      await setStates(scene, updated).catch(e => console.warn(TAG, "resetDungeon setFlag failed", e));
-      await setVisited(scene, {}).catch(e => console.warn(TAG, "resetDungeon clearVisited failed", e));
-      ui.notifications?.info?.("Dungeon tiles reset to initial state.");
+      // Clear visited — setFlag with {} is a no-op due to Foundry's mergeObject semantics
+      // (merging {} into {tile1:true} leaves tile1 untouched).  unsetFlag sends a
+      // -=visitedTiles deletion instruction which actually removes the key.
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`)
+        .catch(e => console.warn(TAG, "resetDungeon — clearVisited failed:", e));
+      console.log(TAG, `resetDungeon — visited cleared. Post-reset visited:`, getVisited(scene));
+
+      ui.notifications?.info?.("Dungeon reset: all tiles restored and visited flags cleared.");
     },
 
     /**
@@ -186,7 +189,8 @@
       if (!scene || !tileId) return;
       const visited = getVisited(scene);
       if (visited[tileId]) return;
-      await setVisited(scene, { ...visited, [tileId]: true })
+      // Write only this tile's entry — avoids broadcasting the full visited-tiles object.
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles.${tileId}`, true)
         .catch(e => console.warn(TAG, "markVisited failed", e));
     },
 
@@ -198,6 +202,18 @@
     /** Returns all tileIds the party has visited. */
     getVisitedTileIds(scene) {
       return Object.keys(getVisited(scene));
+    },
+
+    /**
+     * Unmark a tile as visited. Must run as GM.
+     */
+    async unmarkVisited(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const visited = getVisited(scene);
+      if (!visited[tileId]) return;
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles.${tileId}`)
+        .catch(e => console.warn(TAG, "unmarkVisited failed", e));
     },
 
     /** Raw dump of all tile states for debugging. */
