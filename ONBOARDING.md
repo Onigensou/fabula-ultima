@@ -112,19 +112,87 @@ Source + JSDoc: `modules/fabula-ultima-companion/scripts/_test-harness.js`.
 ## Looking up skill / item / actor data
 
 Foundry stores world data as **locked LevelDB shards** under
-`worlds/fabula-ultima-2/data/`. They're not human-readable while the
-world is open. Recipe to inspect a specific skill/item/actor by id:
+`worlds/fabula-ultima-2/data/`. While the world is open, Foundry holds
+an exclusive `LOCK` on each collection.
 
-1. Grep the shard files in `worlds/fabula-ultima-2/data/items/` (or
-   `actors/`, etc.) for the id.
-2. Copy the matching `.ldb` shard to a temp location.
-3. Read it and run a balanced-brace JSON extract starting at the matched
-   id — LevelDB shards are concatenated JSON blobs with binary
-   separators.
+**Probe game state first** before deciding how to inspect/edit:
+
+```bash
+node tools/safe-edit/bin/safe-edit.js check
+```
+
+- **Game closed** → use `tools/safe-edit` directly (see "Direct-disk
+  edits" below).
+- **Game running** → ask the user to run a console one-liner or a
+  Foundry macro. (Direct disk writes are blocked by the LOCK — the tool
+  refuses to write while the game is open.)
+
+For read-only inspection while the world is open you can also fall back
+to the LevelDB shard recipe — grep the shard for the id, copy to temp,
+balanced-brace JSON extract — but expect Snappy-compressed values
+mid-string. Prefer the macro/console route over wrestling with that.
 
 Skills are stored as items with `type: "equippableItem"`. The actual
 behavior fields live under `system.props.*` (e.g. `system.props.cost`,
 `system.props.damage_bonus`, `system.props.custom_logic_action`).
+
+## Direct-disk edits — `tools/safe-edit/`
+
+A Node 18+ CLI and library for editing Foundry world data directly via
+`classic-level` (the same LevelDB binding Foundry uses). Lets you make
+surgical patches without opening Foundry, with backup + structural
+validation + journal + rollback baked in.
+
+**Hard requirement:** Foundry must be closed. The tool refuses to write
+if any collection holds a `LOCK`.
+
+**CLI:**
+
+```bash
+node tools/safe-edit/bin/safe-edit.js check
+node tools/safe-edit/bin/safe-edit.js get Item.gTXdzJjV4Lmwfm7i
+node tools/safe-edit/bin/safe-edit.js patch Item.gTXdzJjV4Lmwfm7i \
+  --patch '{"system.props.damage_bonus": 12}' \
+  --note "bump fire bolt damage"
+node tools/safe-edit/bin/safe-edit.js log --limit 10
+node tools/safe-edit/bin/safe-edit.js rollback 20260512-1430-abcd
+```
+
+**Library:**
+
+```js
+const { getDoc, safeEdit, rollback } = require("./tools/safe-edit/lib");
+const before = await getDoc("Item.xxx");
+const res = await safeEdit({
+  uuid: "Item.xxx",
+  patch: { "system.props.foo": 1 },
+  note: "...",
+  dryRun: false,
+});
+await rollback(res.entryId);
+```
+
+**Six safety layers per write:** LOCK check → backup → validate → write →
+read-back hash verify (auto-rollback on mismatch) → journal append.
+
+**Scope:**
+
+- Top-level world docs only (Actor, Item, Scene, Macro, JournalEntry,
+  RollTable, Playlist, Cards, Folder, User, ChatMessage, Combat, Setting,
+  FogExploration).
+- **Not supported:** true embedded documents (items on an actor, AEs on
+  an item, combatants on a combat — they have their own LevelDB keys,
+  use a Foundry macro), compendium packs (use Foundry CLI), runtime
+  hooks (won't fire — Foundry re-prepares the doc next boot).
+- "Embedded" vs "nested": nested JSON inside a `system.*` path on a
+  top-level doc IS editable via flat-dotted patches (e.g.
+  `{"system.props.reaction_config_table.0.reaction_trigger": "..."}`),
+  because it's just JSON inside the parent's LevelDB value. True
+  embedded Documents with their own `_id` are not.
+
+**Default behaviour:** when the user asks for a world-doc inspection or
+edit, probe `safe-edit check` up front. Don't reflexively prepare a
+console snippet — direct-disk is cleaner if the game's closed.
 
 ## Reaction system
 
