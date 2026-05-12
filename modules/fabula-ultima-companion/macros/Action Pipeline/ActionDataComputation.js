@@ -39,6 +39,10 @@ return (async () => {
     !!PAYLOAD?.meta?.isPassiveExecution ||
     rawSource === "AutoPassive";
 
+  const isDryRunExecution =
+    !!PAYLOAD?.__dryRun ||
+    !!PAYLOAD?.meta?.__dryRun;
+
   const source = (rawSource === "AutoPassive") ? "Skill" : rawSource;
 
   const { log: adcLog, warn: adcWarn, err: adcErr } =
@@ -49,6 +53,7 @@ return (async () => {
     source,
     executionModeSeed,
     isAutoPassiveExecution,
+    isDryRunExecution,
     attackerActorUuid: PAYLOAD?.attackerActorUuid ?? null
   });
 
@@ -301,7 +306,7 @@ return (async () => {
       return { ok: true, affordable: true, costs: [] };
     }
 
-    const actor = await resolveActorFromActorUuid(attackerUuid);
+    const actor = await FUCompanion.ActorResolver.fromUuid(attackerUuid);
     if (!actor) {
       ui.notifications?.error("ActionDataComputation: Could not resolve attacker actor for passive resource check.");
       return { ok: false, affordable: false, reason: "attacker_not_found" };
@@ -462,6 +467,74 @@ return {
   executionMode: "autoPassive",
   executionCoreResult: result
 };
+  }
+
+  async function executeDryRun(cardPayload) {
+    const execApi = globalThis.FUCompanion?.api?.actionExecution?.execute ?? null;
+    if (!execApi) {
+      ui.notifications?.error("ActionDataComputation: Action Execution Core API not found.");
+      adcErr("EXECUTION CORE missing (dry-run).");
+      return { ok: false, reason: "execute_api_missing" };
+    }
+
+    cardPayload.meta = cardPayload.meta || {};
+    cardPayload.meta.__dryRun = true;
+    cardPayload.meta.executionMode = "manualCard";
+    cardPayload.meta.isPassiveExecution = false;
+
+    cardPayload.targets = canonicalTargetUUIDsFromPayload(cardPayload);
+    cardPayload.originalTargetUUIDs = canonicalTargetUUIDsFromPayload(cardPayload);
+    cardPayload.originalTargetActorUUIDs = canonicalTargetActorUUIDsFromPayload(cardPayload);
+    cardPayload.meta.originalTargetUUIDs = [...cardPayload.originalTargetUUIDs];
+    cardPayload.meta.originalTargetActorUUIDs = [...cardPayload.originalTargetActorUUIDs];
+
+    await refreshCanonicalTargetsAndDefense(cardPayload);
+
+    // Compute cost plan into meta.costsNormalized so the dry-run report shows
+    // what WOULD spend. The actual spend is skipped inside execute(dryRun:true).
+    await normalizePassiveCostsOrAllow(cardPayload);
+
+    adcLog("DRY-RUN EXECUTION CORE CALL", {
+      skillName: cardPayload?.core?.skillName ?? null,
+      targets: cardPayload?.originalTargetUUIDs ?? [],
+      costsNormalized: cardPayload?.meta?.costsNormalized ?? []
+    });
+
+    const result = await execApi({
+      actionContext: cardPayload,
+      args: {},
+      chatMsgId: null,
+      executionMode: "manualCard",
+      confirmingUserId: null,
+      skipVisualFeedback: true,
+      dryRun: true
+    });
+
+    adcLog("DRY-RUN EXECUTION CORE RESULT", result);
+
+    if (!result?.ok) {
+      const reason = String(result?.reason ?? "unknown");
+      adcWarn("DRY-RUN execution failed.", {
+        skillName: cardPayload?.core?.skillName ?? null,
+        reason,
+        result
+      });
+
+      return {
+        ok: false,
+        reason: "dry_run_execution_failed",
+        executionCoreResult: result,
+        dryRunReport: result?.dryRunReport ?? null
+      };
+    }
+
+    return {
+      ok: true,
+      dryRun: true,
+      executionMode: "manualCard",
+      executionCoreResult: result,
+      dryRunReport: result?.dryRunReport ?? null
+    };
   }
 
   // ---------------- Defense helpers ----------------
@@ -1103,6 +1176,14 @@ accuracy: {
        console.log(actorProps);
     console.log(collectBondsSnapshot(actorProps));
 
+    if (isDryRunExecution) {
+      adcLog("DRY-RUN BRANCH (Weapon)", {
+        skillName: cardPayload?.core?.skillName ?? null,
+        originalTargetUUIDs: cardPayload?.originalTargetUUIDs ?? []
+      });
+      return await executeDryRun(cardPayload);
+    }
+
         if (isAutoPassiveExecution) {
       adcLog("TARGETING SKIPPED", {
         reason: "autoPassive",
@@ -1440,6 +1521,14 @@ const totalFlatBonus =
 
     console.log(actorProps);
     console.log(collectBondsSnapshot(actorProps));
+
+    if (isDryRunExecution) {
+      adcLog("DRY-RUN BRANCH (Skill)", {
+        skillName: cardPayload?.core?.skillName ?? null,
+        originalTargetUUIDs: cardPayload?.originalTargetUUIDs ?? []
+      });
+      return await executeDryRun(cardPayload);
+    }
 
        if (isAutoPassiveExecution) {
       adcLog("TARGETING SKIPPED", {
