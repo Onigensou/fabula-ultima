@@ -506,10 +506,11 @@
   function _tileOnPath(x1, y1, x2, y2) {
     for (const tileDoc of (canvas?.scene?.tiles ?? [])) {
       if (!isTeleporterEnabled(tileDoc)) continue;
-      if (_segCrossesRect(x1, y1, x2, y2,
-          tileDoc.x, tileDoc.y, tileDoc.width, tileDoc.height)) {
-        return tileDoc;
-      }
+      const { x: rx, y: ry, width: rw, height: rh } = tileDoc;
+      // Enter-only: if prevC was already inside this tile, skip it.
+      // The token must physically leave before the tile arms again.
+      if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) continue;
+      if (_segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh)) return tileDoc;
     }
     return null;
   }
@@ -528,7 +529,15 @@
   //                    walking past a confirm-tile does not pop the button.
 
   Hooks.on("updateToken", (tokenDoc, changes, options) => {
-    if (options?.teleporter) { hideTpHudButton(); return; }
+    if (options?.teleporter) {
+      // Update cache to the arrival position so the first real move from the
+      // destination tile uses correct prev coords and does not re-cross that tile.
+      if ("x" in changes || "y" in changes) {
+        _tokenPrevPos.set(tokenDoc.id, tokenCenter(tokenDoc));
+      }
+      hideTpHudButton();
+      return;
+    }
     if (!("x" in changes || "y" in changes)) return;
 
     // Always update the position cache so it stays accurate for every token.
