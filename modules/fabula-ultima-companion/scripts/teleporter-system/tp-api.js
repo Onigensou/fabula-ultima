@@ -64,8 +64,10 @@
   // ── SFX ───────────────────────────────────────────────────────────────────────
 
   async function playTeleportSfx(sfxUrl) {
-    const url = (typeof sfxUrl === "string" && sfxUrl.trim()) ? sfxUrl.trim() : TP.DEFAULT_SFX;
-    if (!url) return;
+    // Only play if an explicit non-empty URL is given.
+    // Never fall back to DEFAULT_SFX — empty sfxUrl means "no sound".
+    if (typeof sfxUrl !== "string" || !sfxUrl.trim()) return;
+    const url = sfxUrl.trim();
     try {
       await AudioHelper.play({ src: url, volume: 0.8, autoplay: true, loop: false }, true);
     } catch (e) {
