@@ -83,6 +83,16 @@
   let pollTimer = null;
   let lastActivityAt = 0;
   let lastHeartbeatAt = 0;
+  // Stamped at the START of each poll tick. The watchdog uses this to
+  // detect a broken polling chain or a setTimeout that got throttled into
+  // oblivion by Electron/Chromium background suspension.
+  let lastPollTickAt = 0;
+  let watchdogTimer = null;
+  // Watchdog cadence + the staleness threshold that triggers re-arming.
+  // 60s = 30× the idle poll interval, so we only re-arm on genuine breakage,
+  // never on normal cadence variation.
+  const WATCHDOG_INTERVAL_MS = 30_000;
+  const WATCHDOG_STALE_MS = 60_000;
   // Map preserves insertion order, so FIFO eviction is just keys().next().
   const processed = new Map();
 
@@ -570,14 +580,17 @@
     secret = await loadOrCreateSecret();
     lastActivityAt = Date.now();
     lastHeartbeatAt = Date.now();
+    lastPollTickAt = 0;
 
     await writeHeartbeat();
 
     scheduleNextPoll();
+    startWatchdog();
 
     console.info(
       `${TAG} bridge ready. bootId=${bootId} dir=${worldDir()} ` +
-      `poll=${POLL_INTERVAL_ACTIVE_MS}ms (idle ${POLL_INTERVAL_IDLE_MS}ms after ${IDLE_AFTER_MS}ms)`
+      `poll=${POLL_INTERVAL_ACTIVE_MS}ms (idle ${POLL_INTERVAL_IDLE_MS}ms after ${IDLE_AFTER_MS}ms) ` +
+      `watchdog=${WATCHDOG_INTERVAL_MS}ms (stale at ${WATCHDOG_STALE_MS}ms)`
     );
   }
 
@@ -585,16 +598,49 @@
     const idle = (Date.now() - lastActivityAt) > IDLE_AFTER_MS;
     const intervalMs = idle ? POLL_INTERVAL_IDLE_MS : POLL_INTERVAL_ACTIVE_MS;
     pollTimer = setTimeout(async () => {
-      try { await pollInbox(); }
-      catch (e) { console.warn(`${TAG} poll error`, e); }
-      if (Date.now() - lastHeartbeatAt >= HEARTBEAT_INTERVAL_MS) {
-        try {
-          await writeHeartbeat();
-          lastHeartbeatAt = Date.now();
-        } catch {}
+      lastPollTickAt = Date.now();
+      // try/finally guarantees scheduleNextPoll runs even if a future edit
+      // introduces a throw outside the inner try/catches. Previously, any
+      // unexpected exception between the catches and the recursive call would
+      // permanently break the polling chain — bridge would appear "dead" with
+      // no log line explaining why.
+      try {
+        try { await pollInbox(); }
+        catch (e) { console.warn(`${TAG} poll error`, e); }
+        if (Date.now() - lastHeartbeatAt >= HEARTBEAT_INTERVAL_MS) {
+          try {
+            await writeHeartbeat();
+            lastHeartbeatAt = Date.now();
+          } catch {}
+        }
+      } finally {
+        try { scheduleNextPoll(); }
+        catch (e) { console.error(`${TAG} scheduleNextPoll threw — watchdog will re-arm`, e); }
       }
-      scheduleNextPoll();
     }, intervalMs);
+  }
+
+  // Self-healing watchdog. If pollTimer is set but no tick has run in
+  // WATCHDOG_STALE_MS, the chain is broken (or setTimeout was throttled
+  // away by Chromium background-tab suspension). Clear the stale timer
+  // handle and reschedule. The watchdog itself is also subject to
+  // background throttling, but it resumes promptly when the window regains
+  // focus, which is exactly when we want recovery to fire.
+  function startWatchdog() {
+    if (watchdogTimer) return;
+    watchdogTimer = setInterval(() => {
+      if (!pollTimer) return;             // legitimately stopped
+      if (!lastPollTickAt) return;        // boot just happened, give it a cycle
+      const sinceLastTick = Date.now() - lastPollTickAt;
+      if (sinceLastTick <= WATCHDOG_STALE_MS) return;
+      console.warn(
+        `${TAG} watchdog: no poll tick for ${sinceLastTick}ms — re-arming polling`
+      );
+      try { clearTimeout(pollTimer); } catch {}
+      pollTimer = null;
+      try { scheduleNextPoll(); }
+      catch (e) { console.error(`${TAG} watchdog reschedule failed`, e); }
+    }, WATCHDOG_INTERVAL_MS);
   }
 
   Hooks.once("ready", () => {
@@ -607,6 +653,7 @@
   // is idempotent and safe to call even when the bridge is dormant.
   window.addEventListener("pagehide", () => {
     if (pollTimer) { try { clearTimeout(pollTimer); } catch {} pollTimer = null; }
+    if (watchdogTimer) { try { clearInterval(watchdogTimer); } catch {} watchdogTimer = null; }
   }, { capture: true });
 
   // Expose a tiny inspection API for the console / other modules.
@@ -617,6 +664,9 @@
     get worldDir()  { return worldDir(); },
     get processed() { return Array.from(processed.keys()); },
     get running()   { return !!pollTimer; },
+    get lastPollTickAt() { return lastPollTickAt; },
+    get sinceLastTickMs() { return lastPollTickAt ? Date.now() - lastPollTickAt : null; },
+    get watchdogRunning() { return !!watchdogTimer; },
     forceHeartbeat: writeHeartbeat,
     // Arm the sentinel and reload. Use this if you intentionally want the
     // bridge running on the *next* boot (e.g. starting a Claude session).
@@ -635,6 +685,7 @@
     },
     stop() {
       if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+      if (watchdogTimer) { clearInterval(watchdogTimer); watchdogTimer = null; }
       console.info(`${TAG} stopped.`);
     }
   };
