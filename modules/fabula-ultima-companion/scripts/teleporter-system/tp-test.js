@@ -227,6 +227,63 @@
     return data;
   }
 
+  // ── Bridge session helpers ─────────────────────────────────────────────────────
+  // Designed for evalGM calls via the test bridge so Claude can drive a full
+  // test cycle without manual console access.
+  //
+  // Typical bridge workflow:
+  //
+  //   Step 1 — arm bridge + reload (once per session):
+  //     FUCompanion.api.testBridge.activate()
+  //
+  //   Step 2 — read the bridge secret so evalGM auth works:
+  //     Read:  worlds/<worldId>/test-bridge/bridge-secret.txt
+  //
+  //   Step 3 — start capture (evalGM):
+  //     return await TeleporterSystem.test.sessionStart();
+  //     → returns initial diagnostics; Claude reads them inline from the response.
+  //
+  //   Step 4 — user plays / triggers teleporters
+  //
+  //   Step 5 — collect results (evalGM):
+  //     return await TeleporterSystem.test.sessionEnd();
+  //     → writes tp-test-results.json AND returns data inline.
+  //     Claude can read from the evalGM response directly, or fall back to
+  //     the Read tool on Data/modules/fabula-ultima-companion/tp-test-results.json.
+  //
+  //   Step 6 — mid-session snapshot without stopping capture (evalGM):
+  //     return await TeleporterSystem.test.sessionSnapshot();
+
+  async function sessionStart() {
+    if (!game.user?.isGM) { console.warn(TAG, "GM only."); return null; }
+    clearLog();
+    startCapture();
+    const diagnostics = await runDiagnostics();
+    console.debug(TAG, "Session started — capture active.");
+    return { sessionStarted: true, timestamp: new Date().toISOString(), diagnostics };
+  }
+
+  async function sessionEnd() {
+    if (!game.user?.isGM) { console.warn(TAG, "GM only."); return null; }
+    const log         = collectLog();
+    const diagnostics = await runDiagnostics();
+    stopCapture();
+    const data = { type: "session", timestamp: new Date().toISOString(), log, diagnostics };
+    await writeToFile("tp-test-results.json", data);
+    console.debug(TAG, `Session ended — ${log.captured} log entries written.`);
+    return data;
+  }
+
+  async function sessionSnapshot() {
+    if (!game.user?.isGM) { console.warn(TAG, "GM only."); return null; }
+    const log         = collectLog();          // does NOT stop capture
+    const diagnostics = await runDiagnostics();
+    const data = { type: "snapshot", timestamp: new Date().toISOString(), log, diagnostics };
+    await writeToFile("tp-test-results.json", data);
+    console.debug(TAG, `Snapshot written — ${log.captured} entries so far.`);
+    return data;
+  }
+
   // ── Public API ────────────────────────────────────────────────────────────────
 
   TP.test = {
@@ -242,12 +299,18 @@
     // Standalone file-based output (PATH B)
     runDiagnosticsToFile,
     flushLogToFile,
+
+    // Bridge session helpers (evalGM workflow)
+    sessionStart,
+    sessionEnd,
+    sessionSnapshot,
   };
 
   console.debug(TAG, "Test API loaded at TeleporterSystem.test");
-  console.debug(TAG, "  .runDiagnostics()        — static config check (returns object)");
-  console.debug(TAG, "  .startCapture()           — begin recording [TeleporterSystem] logs");
-  console.debug(TAG, "  .collectLog()             — return captured log entries");
-  console.debug(TAG, "  .runDiagnosticsToFile()   — write diagnostics to tp-test-results.json");
-  console.debug(TAG, "  .flushLogToFile()         — write captured log to tp-test-results.json");
+  console.debug(TAG, "  .sessionStart()    — clear log, begin capture, return initial diagnostics");
+  console.debug(TAG, "  .sessionEnd()      — collect log + diagnostics, write file, stop capture");
+  console.debug(TAG, "  .sessionSnapshot() — snapshot mid-session without stopping capture");
+  console.debug(TAG, "  .runDiagnostics()  — static config check (returns object)");
+  console.debug(TAG, "  .startCapture()    — begin recording [TeleporterSystem] logs");
+  console.debug(TAG, "  .collectLog()      — return captured log entries");
 })();

@@ -280,17 +280,22 @@
     };
   }
 
-  function teleporterTileAt(worldX, worldY, scene) {
-    const sc = scene ?? canvas?.scene;
-    for (const tileDoc of (sc?.tiles ?? [])) {
-      if (!isTeleporterEnabled(tileDoc)) continue;
-      if (worldX >= tileDoc.x && worldX <= tileDoc.x + tileDoc.width &&
-          worldY >= tileDoc.y && worldY <= tileDoc.y + tileDoc.height) {
-        return tileDoc;
-      }
-    }
-    return null;
+  // ── Cached scene mode ────────────────────────────────────────────────────────
+  // getSceneMode() traverses several nested scene-flag levels on every call.
+  // Cache the result; invalidate only when scene flags change or canvas changes.
+
+  let _cachedSceneMode = null;
+
+  function _getSceneMode() {
+    if (_cachedSceneMode !== null) return _cachedSceneMode;
+    return (_cachedSceneMode = getSceneMode());
   }
+
+  function _invalidateSceneMode() { _cachedSceneMode = null; }
+
+  Hooks.on("updateScene", (sceneDoc, changes) => {
+    if ("flags" in changes) _invalidateSceneMode();
+  });
 
   // ── World → viewport coordinate conversion ───────────────────────────────────
   // Used to position the floating HUD button over the token as the camera moves.
@@ -474,64 +479,98 @@
     }
   }
 
-  Hooks.on("canvasReady", _initPosCache);
+  Hooks.on("canvasReady", () => {
+    _initPosCache();
+    _invalidateTileCache();
+    _invalidateSceneMode();
+  });
 
-  // ── Path-vs-rectangle intersection ──────────────────────────────────────────
-  // Returns true if segment (x1,y1)→(x2,y2) enters or crosses the given rect.
-  // An endpoint inside the rect also counts (token stopped on the tile).
+  // ── Teleporter tile cache ─────────────────────────────────────────────────────
+  // Pre-filters enabled teleporter tiles into a plain array of POJOs so
+  // _tileOnPath never touches the Foundry Collection or reads per-tile flags
+  // during the hot path.  Rebuilt lazily after any tile mutation or scene load.
 
-  function _segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh) {
-    const inR = (px, py) => px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
-    if (inR(x1, y1) || inR(x2, y2)) return true;
+  let _tpTileCache = null;
 
-    const cross2 = (ax, ay, bx, by) => ax * by - ay * bx;
-    const edgeCross = (p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y) => {
-      const dx1 = p2x - p1x, dy1 = p2y - p1y;
-      const dx2 = p4x - p3x, dy2 = p4y - p3y;
-      const d   = cross2(dx1, dy1, dx2, dy2);
-      if (Math.abs(d) < 1e-9) return false;
-      const ex = p3x - p1x, ey = p3y - p1y;
-      const t  = cross2(ex, ey, dx2, dy2) / d;
-      const u  = cross2(ex, ey, dx1, dy1) / d;
-      return t >= 0 && t <= 1 && u >= 0 && u <= 1;
-    };
+  function _invalidateTileCache() { _tpTileCache = null; }
 
-    const x2r = rx + rw, y2r = ry + rh;
-    return edgeCross(x1, y1, x2, y2,  rx,  ry, x2r,  ry) ||
-           edgeCross(x1, y1, x2, y2, x2r,  ry, x2r, y2r) ||
-           edgeCross(x1, y1, x2, y2, x2r, y2r,  rx, y2r) ||
-           edgeCross(x1, y1, x2, y2,  rx, y2r,  rx,  ry);
+  function _buildTileCache() {
+    _tpTileCache = [];
+    for (const tileDoc of (canvas?.scene?.tiles ?? [])) {
+      const flags = tileDoc?.flags?.[MODULE_ID]?.[FLAG_ROOT];
+      if (flags?.enabled !== true && flags?.enabled !== "true") continue;
+      _tpTileCache.push({
+        tileDoc,
+        rx: tileDoc.x,         ry: tileDoc.y,
+        rw: tileDoc.width,     rh: tileDoc.height,
+        confirmMode: flags.confirmMode !== false && flags.confirmMode !== "false",
+      });
+    }
   }
 
+  function _getTileCache() {
+    if (_tpTileCache === null) _buildTileCache();
+    return _tpTileCache;
+  }
+
+  Hooks.on("createTile", _invalidateTileCache);
+  Hooks.on("deleteTile", _invalidateTileCache);
+  Hooks.on("updateTile", (tileDoc, changes) => {
+    if ("flags" in changes || "x" in changes || "y" in changes ||
+        "width" in changes || "height" in changes) _invalidateTileCache();
+  });
+
+  // ── Path-vs-rectangle intersection ──────────────────────────────────────────
+  // _edgesCross extracted as a named function — avoids allocating closure
+  // objects inside _segCrossesRect on every call.
+
+  function _edgesCross(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y) {
+    const dx1 = p2x - p1x, dy1 = p2y - p1y;
+    const dx2 = p4x - p3x, dy2 = p4y - p3y;
+    const d   = dx1 * dy2 - dy1 * dx2;
+    if (d > -1e-9 && d < 1e-9) return false;
+    const ex = p3x - p1x, ey = p3y - p1y;
+    const t  = (ex * dy2 - ey * dx2) / d;
+    const u  = (ex * dy1 - ey * dx1) / d;
+    return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+  }
+
+  function _segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh) {
+    if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) return true;
+    if (x2 >= rx && x2 <= rx + rw && y2 >= ry && y2 <= ry + rh) return true;
+    const x2r = rx + rw, y2r = ry + rh;
+    return _edgesCross(x1, y1, x2, y2,  rx,  ry, x2r,  ry) ||
+           _edgesCross(x1, y1, x2, y2, x2r,  ry, x2r, y2r) ||
+           _edgesCross(x1, y1, x2, y2, x2r, y2r,  rx, y2r) ||
+           _edgesCross(x1, y1, x2, y2,  rx, y2r,  rx,  ry);
+  }
+
+  // Returns the first tile-cache entry whose rect the movement path crosses.
+  // Enter-only: prevC inside the tile skips it — token must exit before re-arming.
   function _tileOnPath(x1, y1, x2, y2) {
-    for (const tileDoc of (canvas?.scene?.tiles ?? [])) {
-      if (!isTeleporterEnabled(tileDoc)) continue;
-      const { x: rx, y: ry, width: rw, height: rh } = tileDoc;
-      // Enter-only: if prevC was already inside this tile, skip it.
-      // The token must physically leave before the tile arms again.
+    for (const entry of _getTileCache()) {
+      const { rx, ry, rw, rh } = entry;
       if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) continue;
-      if (_segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh)) return tileDoc;
+      if (_segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh)) return entry;
     }
     return null;
   }
 
   // ── EXPLORATION MODE — hook on updateToken ───────────────────────────────────
-  // Runs on ALL clients (players + GM) so the floating button appears for whoever
-  // controls/views the party token.  The actual teleport execution routes through
-  // GM automatically via sameSceneTeleport's socket path.
+  // Runs on ALL clients (players + GM).
   //
-  // Detection: segment from previous token center to new token center is tested
-  // against each teleporter tile's bounding rect.  This catches the "walked-past"
-  // case where the click destination is beyond the tile — the path still crosses it.
+  // Hot path (cache warm, covers ~99 % of calls):
+  //   1. Mode + actor check FIRST — zero allocation for non-party/non-exploration moves.
+  //   2. tokenCenter + prevPos update only for the party token.
+  //   3. _detectExplore: pure sync — tile cache lookup + path-crossing math.
   //
-  // confirmMode=false: path crossing fires teleport immediately (JRPG tile trigger).
-  // confirmMode=true:  only show the 🚪 button when the token STOPS on the tile;
-  //                    walking past a confirm-tile does not pop the button.
+  // Cold path (db cache miss on first load or after actor update):
+  //   Async IIFE to warm cache, then calls _detectExplore.  Rare.
 
   Hooks.on("updateToken", (tokenDoc, changes, options) => {
     if (options?.teleporter) {
-      // Update cache to the arrival position so the first real move from the
-      // destination tile uses correct prev coords and does not re-cross that tile.
+      // Update arrival position so the first real move from the destination tile
+      // uses correct prev coords and does not immediately re-cross that tile.
       if ("x" in changes || "y" in changes) {
         _tokenPrevPos.set(tokenDoc.id, tokenCenter(tokenDoc));
       }
@@ -540,53 +579,58 @@
     }
     if (!("x" in changes || "y" in changes)) return;
 
-    // Always update the position cache so it stays accurate for every token.
+    // ── Cheap guards first — exit before any allocation ─────────────────────
+    const mode = _getSceneMode();                               // cached, no flag read
+    if (mode === "none" || mode === "dungeon") return;
+    if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
+
+    // ── Only now pay for tokenCenter + Map ops ───────────────────────────────
     const newC  = tokenCenter(tokenDoc);
     const prevC = _tokenPrevPos.get(tokenDoc.id) ?? { x: newC.x, y: newC.y };
     _tokenPrevPos.set(tokenDoc.id, { x: newC.x, y: newC.y });
 
-    const mode = getSceneMode();
-    if (mode === "none" || mode === "dungeon") return;
-
-    // Synchronous db actor check (cached) — skip non-party-token moves fast
-    if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
-
     // Quick-hide: token moved, check immediately if it left the active button tile
     if (_hudBtnToken?.id === tokenDoc.id && _hudBtnTile) {
-      const tile   = _hudBtnTile;
-      const onTile = newC.x >= tile.x && newC.x <= tile.x + tile.width &&
-                     newC.y >= tile.y && newC.y <= tile.y + tile.height;
-      if (!onTile) hideTpHudButton();
+      const tile = _hudBtnTile;
+      if (newC.x < tile.x || newC.x > tile.x + tile.width ||
+          newC.y < tile.y || newC.y > tile.y + tile.height) {
+        hideTpHudButton();
+      }
     }
 
-    // Path-crossing detection — async only for cache-miss fallback
+    // ── Hot path: fully synchronous ──────────────────────────────────────────
+    if (_cachedDbActorId !== null) {
+      _detectExplore(tokenDoc, prevC, newC);
+      return;
+    }
+
+    // ── Cold path: db cache miss (rare) ──────────────────────────────────────
     (async () => {
-      if (_cachedDbActorId === null) {
-        await warmDbCache();
-        if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
-      }
-
-      const tileDoc = _tileOnPath(prevC.x, prevC.y, newC.x, newC.y);
-      if (!tileDoc) return;
-
-      console.debug(TAG, "[exploration] path crossed tile:", tileDoc.id,
-        "| prev:", prevC, "→ new:", newC);
-
-      const flags       = getFlags(tileDoc);
-      const confirmMode = flags?.confirmMode !== false && flags?.confirmMode !== "false";
-
-      if (confirmMode) {
-        // Show button only when the token stopped on the tile, not just walked past.
-        const onTile = newC.x >= tileDoc.x && newC.x <= tileDoc.x + tileDoc.width &&
-                       newC.y >= tileDoc.y && newC.y <= tileDoc.y + tileDoc.height;
-        if (onTile && _hudBtnTile?.id !== tileDoc.id) showTpHudButton(tileDoc, tokenDoc);
-      } else {
-        // Auto-teleport: crossing the tile boundary is the trigger.
-        hideTpHudButton();
-        await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset: false, forcedNodeId: null });
-      }
+      await warmDbCache();
+      if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
+      _detectExplore(tokenDoc, prevC, newC);
     })().catch(e => console.warn(TAG, "exploration error:", e));
   });
+
+  function _detectExplore(tokenDoc, prevC, newC) {
+    const entry = _tileOnPath(prevC.x, prevC.y, newC.x, newC.y);
+    if (!entry) return;
+
+    const { tileDoc, rx, ry, rw, rh, confirmMode } = entry;
+    console.debug(TAG, "[exploration] path crossed tile:", tileDoc.id);
+
+    if (confirmMode) {
+      // Show button only when the token stopped on the tile, not just walked past.
+      if (newC.x >= rx && newC.x <= rx + rw && newC.y >= ry && newC.y <= ry + rh &&
+          _hudBtnTile?.id !== tileDoc.id) {
+        showTpHudButton(tileDoc, tokenDoc);
+      }
+    } else {
+      hideTpHudButton();
+      triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset: false, forcedNodeId: null })
+        .catch(e => console.error(TAG, "teleport error:", e));
+    }
+  }
 
   // Clean up button when the canvas is torn down (scene change, reload)
   Hooks.on("canvasTearDown", () => hideTpHudButton());
