@@ -143,6 +143,7 @@
   "scripts/teleporter-system/tp-socket.js",
   "scripts/teleporter-system/tp-tile-config.js",
   "scripts/teleporter-system/tp-bootstrap.js",
+  "scripts/teleporter-system/tp-test.js",
   "scripts/check-roller/checkRoller-manager.js",
   "scripts/check-roller/checkRoller-core.js",
   "scripts/check-roller/checkRoller-createCard.js",

@@ -8,9 +8,12 @@
 //   TP_CROSS_SCENE  — move token to a different scene
 //
 // TP_SAME_SCENE payload:
-//   { tokenId, sceneId, x, y, offX, offY }
-//   x, y   — center of destination (world coords)
-//   offX/Y — DP.UI.TOKEN_OFFSET values (pre-computed by client, 0 if none)
+//   { tokenId, sceneId, x, y, offX, offY, forcedNodeId }
+//   x, y         — center of destination (world coords)
+//   offX/Y       — DP.UI.TOKEN_OFFSET values (pre-computed by client, 0 if none)
+//   forcedNodeId — DP graph node ID of destination tile (null for coord targets)
+//                  passed to dpState.forcedNodeId before rebuild so DP resolves
+//                  the new node in O(1) instead of iterating the whole graph
 // ============================================================================
 (() => {
   const TP        = globalThis.TeleporterSystem ??= {};
@@ -29,7 +32,7 @@
       // ── Same-scene token move ───────────────────────────────────────────────
       if (msg.type === "TP_SAME_SCENE") {
         if (!game.user?.isGM) return;
-        const { tokenId, sceneId, x, y, offX = 0, offY = 0 } = msg.payload ?? {};
+        const { tokenId, sceneId, x, y, offX = 0, offY = 0, forcedNodeId = null } = msg.payload ?? {};
 
         const scene    = game.scenes.get(sceneId);
         const tokenDoc = scene?.tokens?.get?.(tokenId);
@@ -38,8 +41,9 @@
           return;
         }
 
-        // Wait for dungeon pathing to finish any active rebuild
-        const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state;
+        // Wait for any in-progress dungeon-pathing rebuild to finish.
+        const dpInternals = globalThis.__ONI_DUNGEON_PATHING__;
+        const dpState     = dpInternals?.state;
         if (dpState?.busy) {
           const deadline = performance.now() + 1200;
           while (dpState.busy && performance.now() < deadline) {
@@ -53,10 +57,21 @@
         const finalX = Math.round(x - tw / 2 + offX);
         const finalY = Math.round(y - th / 2 + offY);
 
+        // Suppress DP's updateToken rebuild → one controlled rebuild after.
+        const isDungeonActive = dpState?.active === true;
+        if (isDungeonActive) dpState.busy = true;
+
         await tokenDoc.update(
           { x: finalX, y: finalY },
           { animate: false, dungeonPathing: true, teleporter: true }
         ).catch(e => console.warn(TAG, "TP_SAME_SCENE update failed:", e));
+
+        if (isDungeonActive) {
+          dpState.busy = false;
+          if (forcedNodeId) dpState.forcedNodeId = forcedNodeId;
+          await dpInternals.rebuild()
+            .catch(e => console.warn(TAG, "TP_SAME_SCENE rebuild failed:", e));
+        }
         return;
       }
 

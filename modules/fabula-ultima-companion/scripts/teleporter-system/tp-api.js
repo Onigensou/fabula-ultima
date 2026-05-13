@@ -15,9 +15,19 @@
 //   { type: "tile",   tileId, sceneId }
 //
 // options:
-//   sfxUrl       string   — override SFX
-//   applyDpOffset boolean — apply DP.UI.TOKEN_OFFSET to arrival position
-//                           (use when teleporting to a tile in dungeon mode)
+//   sfxUrl        string   — override SFX (played fire-and-forget, never blocks)
+//   applyDpOffset boolean  — apply DP.UI.TOKEN_OFFSET to arrival position
+//                            (use when teleporting to a tile in dungeon mode)
+//   forcedNodeId  string   — DP graph node ID of destination tile; allows the
+//                            post-teleport rebuild to skip the positional search
+//                            and resolve the node in O(1) instead of O(n)
+//
+// PERF — Dungeon mode double-rebuild prevention:
+//   After waitForDpReady(), dpState.busy is false. A plain tokenDoc.update()
+//   at that point would trigger DP's updateToken hook → another full rebuild.
+//   We suppress it by temporarily setting dpState.busy=true around the update,
+//   then doing exactly ONE controlled rebuild with forcedNodeId already set.
+//   Net result: 1 rebuild instead of 2 per dungeon teleport.
 // ============================================================================
 (() => {
   const TP        = globalThis.TeleporterSystem ??= {};
@@ -96,10 +106,9 @@
   }
 
   // ── Wait for dungeon pathing busy state to clear ──────────────────────────────
-  // turnEnd fires while the finally-block rebuild() is still running (state.busy = true).
-  // If we update the token immediately, the DP updateToken hook sees busy=false only
-  // AFTER rebuild() finishes.  Waiting first guarantees ONE clean rebuild at the
-  // teleport destination instead of a race between two concurrent rebuilds.
+  // turnEnd fires while the finally-block rebuild() is still running (state.busy=true).
+  // Waiting first guarantees the final-rebuild completes before we modify the token,
+  // so we don't race two concurrent rebuilds over shared state.
 
   async function waitForDpReady(maxWaitMs = 1200) {
     const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state;
@@ -111,13 +120,13 @@
   }
 
   // ── Same-scene teleport ───────────────────────────────────────────────────────
-  // Always routed through GM so dp-bootstrap's preUpdateToken guard
-  // (which strips x/y from non-GM updates) never interferes.
+  // Always routed through GM so dp-bootstrap's preUpdateToken guard never strips x/y.
   //
-  // applyDpOffset: when true, applies DP.UI.TOKEN_OFFSET to the arrival
-  // position so the token's feet align with the tile graphic (dungeon mode).
+  // forcedNodeId: when the destination is a DP graph tile, pass its node ID here.
+  //   This lets the post-teleport rebuild resolve the current node in O(1) via
+  //   dpState.forcedNodeId rather than iterating the full graph to find the token.
 
-  async function sameSceneTeleport(tokenDoc, resolved, { applyDpOffset = false } = {}) {
+  async function sameSceneTeleport(tokenDoc, resolved, { applyDpOffset = false, forcedNodeId = null } = {}) {
     const scene = game.scenes.get(resolved.sceneId) ?? canvas?.scene;
     if (!scene) return;
 
@@ -135,21 +144,30 @@
         payload: {
           tokenId: tokenDoc.id,
           sceneId: resolved.sceneId,
-          // Send CENTER coords + separate offsets so the GM can compute the
-          // correct top-left after knowing the token's dimensions.
+          // Send CENTER coords + separate offsets so GM can compute correct top-left
           x: resolved.x, y: resolved.y,
           offX, offY,
+          forcedNodeId: forcedNodeId ?? null,
         },
       });
       return;
     }
 
-    // Wait for any in-progress dungeon-pathing rebuild to finish before touching
-    // the token — prevents a race between our update and the DP updateToken hook.
+    // Wait for any in-progress dungeon-pathing rebuild before touching the token.
     await waitForDpReady();
 
     const finalX = Math.round(resolved.x - tw / 2 + offX);
     const finalY = Math.round(resolved.y - th / 2 + offY);
+
+    // ── Dungeon mode: suppress the extra rebuild that DP's updateToken hook ──────
+    // would fire immediately after our update (busy=false at this point).
+    // We set busy=true, do the update, then call rebuild() exactly once with
+    // forcedNodeId so the graph resolves the new node in O(1).
+    const dpInternals     = globalThis.__ONI_DUNGEON_PATHING__;
+    const dpState         = dpInternals?.state;
+    const isDungeonActive = dpState?.active === true;
+
+    if (isDungeonActive) dpState.busy = true;
 
     await tokenDoc.update(
       { x: finalX, y: finalY },
@@ -158,6 +176,14 @@
       // teleporter     — signals our own updateToken handler to skip re-trigger
       { animate: false, dungeonPathing: true, teleporter: true }
     );
+
+    if (isDungeonActive) {
+      dpState.busy = false;
+      // O(1) node resolution: set forcedNodeId before rebuild so DP doesn't
+      // need to walk all graph nodes to locate the token's new tile.
+      if (forcedNodeId) dpState.forcedNodeId = forcedNodeId;
+      await dpInternals.rebuild();
+    }
   }
 
   // ── Cross-scene teleport ──────────────────────────────────────────────────────
@@ -221,19 +247,22 @@
 
   // ── Main teleport entry point ─────────────────────────────────────────────────
 
-  async function teleportToken(tokenDoc, destination, { sfxUrl, applyDpOffset = false } = {}) {
+  async function teleportToken(tokenDoc, destination, { sfxUrl, applyDpOffset = false, forcedNodeId = null } = {}) {
     if (!tokenDoc) return;
 
     const resolved = await resolveDestination(destination);
     if (!resolved) { console.warn(TAG, "Could not resolve destination:", destination); return; }
 
-    await playTeleportSfx(sfxUrl);
+    // Fire SFX without awaiting — the position change should be instant.
+    // AudioHelper.play() for a remote URL fetches+decodes before playing;
+    // awaiting it would stall the teleport by 300–800 ms unnecessarily.
+    playTeleportSfx(sfxUrl).catch(() => {});
 
     const currentSceneId = tokenDoc.parent?.id ?? canvas?.scene?.id;
     if (resolved.sceneId && resolved.sceneId !== currentSceneId) {
       await crossSceneTeleport(tokenDoc, resolved);
     } else {
-      await sameSceneTeleport(tokenDoc, resolved, { applyDpOffset });
+      await sameSceneTeleport(tokenDoc, resolved, { applyDpOffset, forcedNodeId });
     }
   }
 

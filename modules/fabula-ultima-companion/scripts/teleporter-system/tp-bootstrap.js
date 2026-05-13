@@ -4,6 +4,8 @@
 // DUNGEON MODE ("dungeon"):
 //   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node }.
 //   Fires after DP confirm dialog + tile event, when the turn is fully done.
+//   Passes forcedNodeId (destination tileId) so the post-teleport rebuild
+//   resolves the new node in O(1) via dpState.forcedNodeId.
 //   Applies DP.UI.TOKEN_OFFSET to tile-type destinations so the token stands
 //   on the tile correctly (same alignment as normal dungeon movement).
 //
@@ -136,7 +138,7 @@
 
   // ── Core trigger ──────────────────────────────────────────────────────────────
 
-  async function triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset = false } = {}) {
+  async function triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset = false, forcedNodeId = null } = {}) {
     // Loop safeguard — prevent A→B→A infinite teleport chains
     if (isOnCooldown(tokenDoc)) {
       console.debug(TAG, "Trigger skipped (cooldown active) for token:", tokenDoc.id);
@@ -151,7 +153,8 @@
       return;
     }
 
-    console.debug(TAG, "Trigger | tile:", tileDoc.id, "→", flags.destination, "| offset:", applyDpOffset);
+    console.debug(TAG, "Trigger | tile:", tileDoc.id, "→", flags.destination,
+      "| offset:", applyDpOffset, "| forcedNodeId:", forcedNodeId);
 
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode) {
@@ -164,7 +167,7 @@
 
     try {
       const sfxUrl = (typeof flags.sfxUrl === "string" && flags.sfxUrl.trim()) ? flags.sfxUrl.trim() : undefined;
-      await TP.api.teleportToken(tokenDoc, flags.destination, { sfxUrl, applyDpOffset });
+      await TP.api.teleportToken(tokenDoc, flags.destination, { sfxUrl, applyDpOffset, forcedNodeId });
     } catch (e) {
       console.error(TAG, "Teleportation failed:", e);
       ui.notifications?.error?.("Teleporter error — see console.");
@@ -174,6 +177,9 @@
   // ── DUNGEON MODE — hook on turnEnd ────────────────────────────────────────────
   // DP.Events.turnEnd fires: Hooks.callAll(HOOK, { tokenDoc, node })
   // → must destructure as a single object.
+  //
+  // forcedNodeId: for tile-type destinations, pass the destination tileId so
+  // the post-teleport rebuild resolves in O(1) instead of scanning all nodes.
 
   Hooks.on("dungeonPathing.turnEnd", async ({ tokenDoc, node } = {}) => {
     try {
@@ -188,11 +194,13 @@
 
       if (!tileDoc || !isTeleporterEnabled(tileDoc)) return;
 
+      const flags = getFlags(tileDoc);
       // Apply DP token offset only when destination is a tile (not raw coords)
-      const flags         = getFlags(tileDoc);
       const applyDpOffset = flags?.destination?.type === "tile";
+      // Pass destination tileId as forcedNodeId for O(1) graph resolution after teleport
+      const forcedNodeId  = flags?.destination?.type === "tile" ? (flags?.destination?.tileId ?? null) : null;
 
-      await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset });
+      await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset, forcedNodeId });
     } catch (e) {
       console.error(TAG, "dungeonPathing.turnEnd handler error:", e);
     }
@@ -241,8 +249,8 @@
 
     console.debug(TAG, "[exploration] hit teleporter tile:", tileDoc.id, "center:", center);
 
-    // No DP offset in exploration mode (no dungeon graph or TOKEN_OFFSET positioning)
-    await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset: false });
+    // No DP offset or forcedNodeId in exploration mode (no dungeon graph active)
+    await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset: false, forcedNodeId: null });
   }
 
   Hooks.once("ready", () => {
