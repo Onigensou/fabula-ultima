@@ -1,16 +1,16 @@
 // ============================================================================
 // Dungeon Pathing — Tile Effect Config UI
 //
-// Appends a "Tile Effects" sub-tab to the Fabula Configuration panel that
-// dp-tile-config.js creates in the Tile Document config dialog.
+// Appends a "Tile Effects" sub-tab to the Fabula Configuration panel built by
+// dp-tile-config.js.  Must load AFTER dp-tile-config.js.
 //
-// Load order requirement: this file MUST load AFTER dp-tile-config.js so
-// the sub-nav / sub-content containers already exist when renderTileConfig
-// fires.
+// Active Effects are stored as a JSON array in:
+//   flags.fabula-ultima-companion.dungeonPathing.effectConfig.activeEffectsJson
 //
-// Config is stored flat in tile flags (Foundry processes name="flags.X.Y"
-// inputs automatically on form submit, including nested dot-notation paths):
-//   flags.fabula-ultima-companion.dungeonPathing.effectConfig.*
+// Each element: { source: "registry"|"custom", id?: string, json?: string, label: string }
+//
+// All other config fields use native Foundry name="flags.*" form inputs so
+// they are saved automatically when the user clicks "Update Tile".
 // ============================================================================
 (() => {
   const GUARD     = "__ONI_DP_EFFECT_CONFIG__";
@@ -23,231 +23,283 @@
   const CFG_PATH  = `${PATHING}.effectConfig`;
   const STYLE_ID  = "oni-dp-effect-config-style";
 
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const sel = (val, match) => match === val ? "selected" : "";
+  const chk = bool => bool ? "checked" : "";
+  const fl  = key  => `flags.${MODULE_ID}.${CFG_PATH}.${key}`;
+
   // ── CSS ────────────────────────────────────────────────────────────────────
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) return;
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
-      .oni-ec-section {
-        margin: 10px 0 6px;
-        padding: 0 2px;
+      .oni-ec h3 {
+        font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+        opacity:.7;margin:12px 0 6px;padding-bottom:3px;
+        border-bottom:1px solid rgba(255,255,255,0.1);
       }
-      .oni-ec-section h3 {
-        font-size: .9rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        opacity: .7;
-        margin: 10px 0 6px;
-        padding-bottom: 3px;
-        border-bottom: 1px solid rgba(255,255,255,0.12);
-      }
-      .oni-ec-section h3:first-child { margin-top: 0; }
-      .oni-ec-section .form-group { margin-bottom: 8px; }
-      .oni-ec-section .form-group label { min-width: 130px; }
-      .oni-ec-section .notes {
-        font-size: 11px;
-        opacity: .65;
-        margin: 2px 0 0;
-      }
+      .oni-ec h3:first-child { margin-top:0; }
+      .oni-ec .form-group { margin-bottom:8px; }
+      .oni-ec .form-group label { min-width:130px; }
+      .oni-ec .notes { font-size:11px;opacity:.6;margin:2px 0 0; }
       .oni-ec-indent {
-        padding-left: 10px;
-        border-left: 2px solid rgba(255,255,255,0.08);
-        margin-left: 4px;
+        padding-left:10px;
+        border-left:2px solid rgba(255,255,255,0.08);
+        margin-left:4px;margin-bottom:4px;
       }
-      .oni-ec-row {
-        display: flex;
-        gap: 6px;
-        align-items: center;
+      .oni-ec-master {
+        display:flex;align-items:center;gap:8px;padding:6px 8px;
+        background:rgba(255,255,255,0.04);border-radius:5px;
+        border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;
       }
-      .oni-ec-row input[type="text"],
-      .oni-ec-row input[type="number"],
-      .oni-ec-row select { flex: 1; min-width: 0; }
-      .oni-ec-badge {
-        display: inline-block;
-        padding: 1px 7px;
-        border-radius: 10px;
-        font-size: 11px;
-        background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(255,255,255,0.18);
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        vertical-align: middle;
+      .oni-ec-master label { font-weight:700;font-size:.95rem;margin:0;flex:1; }
+
+      /* AE list */
+      .oni-ec-ae-list {
+        list-style:none;margin:6px 0;padding:0;
+        display:flex;flex-direction:column;gap:4px;
       }
-      .oni-ec-badge.has-value {
-        background: rgba(80,160,80,0.25);
-        border-color: rgba(80,200,80,0.35);
+      .oni-ec-ae-row {
+        display:flex;align-items:center;gap:6px;
+        background:rgba(255,255,255,0.05);border-radius:4px;
+        border:1px solid rgba(255,255,255,0.1);padding:4px 8px;
       }
-      .oni-ec-master-toggle {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 8px;
-        background: rgba(255,255,255,0.04);
-        border-radius: 5px;
-        border: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 8px;
+      .oni-ec-ae-row img { width:20px;height:20px;object-fit:contain;border-radius:2px;flex-shrink:0; }
+      .oni-ec-ae-row .oni-ec-ae-label { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem; }
+      .oni-ec-ae-row .oni-ec-ae-src { font-size:10px;opacity:.5;flex-shrink:0;padding:1px 4px;background:rgba(0,0,0,.15);border-radius:2px; }
+      .oni-ec-ae-row button { flex-shrink:0;padding:0 6px;min-height:22px; }
+      .oni-ec-ae-actions { display:flex;gap:6px;margin-top:4px;flex-wrap:wrap; }
+
+      /* Registry picker dialog */
+      .oni-ae-picker-search { width:100%;margin-bottom:8px;padding:4px 8px; }
+      .oni-ae-picker-list { max-height:300px;overflow-y:auto;border:1px solid rgba(255,255,255,0.15);border-radius:4px; }
+      .oni-ae-picker-item {
+        display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;
+        border-bottom:1px solid rgba(255,255,255,0.06);
       }
-      .oni-ec-master-toggle label {
-        font-weight: 700;
-        font-size: .95rem;
-        margin: 0;
-        flex: 1;
+      .oni-ae-picker-item:last-child { border-bottom:none; }
+      .oni-ae-picker-item:hover { background:rgba(255,255,255,0.08); }
+      .oni-ae-picker-item img { width:20px;height:20px;object-fit:contain;flex-shrink:0; }
+      .oni-ae-picker-item .oni-ae-name { flex:1;font-size:.9rem; }
+      .oni-ae-picker-item .oni-ae-cat {
+        font-size:10px;padding:1px 5px;border-radius:3px;flex-shrink:0;
+        background:rgba(255,255,255,0.1);
+      }
+      .oni-ae-picker-item .oni-ae-cat.Buff   { background:rgba(60,140,60,.3); }
+      .oni-ae-picker-item .oni-ae-cat.Debuff { background:rgba(160,40,40,.3); }
+      .oni-ae-picker-sep {
+        padding:3px 8px;font-size:11px;font-weight:700;text-transform:uppercase;
+        letter-spacing:.05em;opacity:.5;background:rgba(0,0,0,.1);
       }
     `;
     document.head.appendChild(s);
   }
 
-  // ── AE registry helper ─────────────────────────────────────────────────────
-  async function loadAeOptions() {
+  // ── Registry: deduplicated entries (no actor-embedded duplicates) ──────────
+  function getRegistryEntries() {
     const reg = window.FUCompanion?.api?.activeEffectRegistry;
-    if (reg?.getAll) {
-      try {
-        const all = reg.getAll({ cloneResult: false });
-        if (Array.isArray(all) && all.length) return all;
-      } catch {}
+    if (!reg?.getAll) return [];
+
+    const all = reg.getAll({ cloneResult: false }) ?? [];
+
+    // Source priority map — actor-embedded effects are the noisy duplicates
+    const PRIORITY = {
+      "world-item-effect":      100,
+      "compendium-item-effect":  90,
+      "config-status-effect":    80,
+      "world-actor-effect":      20,
+      "compendium-actor-effect": 10,
+      "unknown":                  0,
+    };
+
+    // Deduplicate: per normalised name, keep highest-priority source entry
+    const byNorm = new Map();
+    for (const entry of all) {
+      const norm = (entry.name ?? "").trim().toLowerCase();
+      if (!norm) continue;
+      const existing = byNorm.get(norm);
+      const myPri    = PRIORITY[entry.source] ?? 0;
+      const exPri    = PRIORITY[existing?.source] ?? -1;
+      if (!existing || myPri > exPri) byNorm.set(norm, entry);
     }
-    // Fallback: world-level active effects
-    return Array.from(game.effects ?? []).map(e => ({
-      id:   e.id,
-      name: e.name ?? e.label ?? e.id,
-    }));
+
+    return Array.from(byNorm.values()).sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  async function populateAeSelect(select, currentId) {
-    const entries = await loadAeOptions();
+  // ── Registry picker dialog ─────────────────────────────────────────────────
+  function openRegistryPicker(onPick) {
+    const entries  = getRegistryEntries();
+    const BLANK_IMG = "icons/svg/aura.svg";
 
-    // Group by source if available
-    const groups = new Map();
-    for (const entry of entries) {
-      const grp = entry.source ?? entry.sourceLabel ?? "World";
-      if (!groups.has(grp)) groups.set(grp, []);
-      groups.get(grp).push(entry);
+    // Group by category for display
+    const groups = {};
+    for (const e of entries) {
+      const cat = e.category ?? "Other";
+      (groups[cat] ??= []).push(e);
     }
+    const ORDER = ["Buff", "Debuff", "Other"];
 
-    // Clear existing options except the placeholder
-    while (select.options.length > 1) select.remove(1);
-
-    for (const [groupName, items] of groups) {
-      const optgroup = document.createElement("optgroup");
-      optgroup.label = groupName;
-      for (const item of items) {
-        const opt      = document.createElement("option");
-        opt.value      = item.id ?? item.name ?? "";
-        opt.textContent = item.name ?? item.label ?? opt.value;
-        if (opt.value === currentId) opt.selected = true;
-        optgroup.appendChild(opt);
+    let rows = "";
+    for (const cat of ORDER) {
+      const items = groups[cat];
+      if (!items?.length) continue;
+      rows += `<div class="oni-ae-picker-sep">${cat}</div>`;
+      for (const e of items) {
+        const id  = e.registryId ?? e.id ?? e.name ?? "";
+        const img = e.img ?? e.icon ?? BLANK_IMG;
+        const nm  = e.name ?? id;
+        rows += `<div class="oni-ae-picker-item" data-ae-id="${id}" data-ae-name="${nm.replace(/"/g,"&quot;")}" data-ae-img="${img.replace(/"/g,"&quot;")}" data-ae-cat="${cat}">
+          <img src="${img}" onerror="this.src='${BLANK_IMG}'" />
+          <span class="oni-ae-name">${nm}</span>
+          <span class="oni-ae-cat ${cat}">${cat}</span>
+        </div>`;
       }
-      select.appendChild(optgroup);
     }
 
-    // Restore current value if it wasn't in the list (manual ID entry)
-    if (currentId && !select.value) {
-      const opt      = document.createElement("option");
-      opt.value      = currentId;
-      opt.textContent = currentId;
-      opt.selected   = true;
-      select.appendChild(opt);
+    if (!rows) {
+      rows = `<div style="padding:12px;text-align:center;opacity:.6;">
+        No effects found. Try refreshing the registry:
+        <code>await FUCompanion.api.activeEffectRegistry.refresh()</code>
+      </div>`;
     }
-  }
 
-  // ── Custom effect builder dialog ───────────────────────────────────────────
-  function openCustomEffectBuilder(existingJson, onSave) {
-    let parsed = {};
-    try { parsed = JSON.parse(existingJson); } catch {}
-
-    const name       = parsed.name      ?? "";
-    const statusKey  = (parsed.statuses ?? [])[0] ?? "";
-    const img        = parsed.img       ?? "";
-    const rounds     = parsed.duration?.rounds ?? 0;
-
-    new Dialog({
-      title: "Create Custom Active Effect",
+    const dialog = new Dialog({
+      title: "Add Active Effect",
       content: `
-        <form style="display:flex;flex-direction:column;gap:10px;padding:4px 0;">
-          <div class="form-group">
-            <label>Effect Name <span style="color:#e44;">*</span></label>
-            <input type="text" name="name" value="${name}" placeholder="e.g. Poisoned" autofocus />
-          </div>
-          <div class="form-group">
-            <label>Status Key</label>
-            <input type="text" name="statusKey" value="${statusKey}"
-                   placeholder="e.g. poisoned (optional, links to status icon)" />
-            <p class="notes" style="font-size:11px;opacity:.65;margin:2px 0 0;">
-              If set, this effect is treated as a Foundry status condition.
-            </p>
-          </div>
-          <div class="form-group">
-            <label>Icon Path / URL</label>
-            <input type="text" name="img" value="${img}" placeholder="icons/svg/aura.svg" />
-          </div>
-          <div class="form-group">
-            <label>Duration (rounds)</label>
-            <input type="number" name="durationRounds" value="${rounds}" min="0"
-                   placeholder="0 = permanent" />
-          </div>
-        </form>
+        <div style="padding:4px 0;">
+          <input type="text" class="oni-ae-picker-search" placeholder="Search effects…" />
+          <div class="oni-ae-picker-list">${rows}</div>
+        </div>
       `,
-      buttons: {
-        save: {
-          icon: "<i class='fas fa-save'></i>",
-          label: "Save",
-          callback: (html) => {
-            const effectName = html.find("[name='name']").val()?.trim();
-            if (!effectName) {
-              ui.notifications?.warn("Effect name is required.");
-              return false;
+      buttons: { cancel: { label: "Cancel" } },
+      render: html => {
+        const root   = html[0] ?? html;
+        const search = root.querySelector(".oni-ae-picker-search");
+        const list   = root.querySelector(".oni-ae-picker-list");
+        if (!search || !list) return;
+
+        search.focus();
+        search.addEventListener("input", () => {
+          const q = search.value.toLowerCase();
+          list.querySelectorAll(".oni-ae-picker-item").forEach(el => {
+            el.style.display = el.dataset.aeName?.toLowerCase().includes(q) ? "" : "none";
+          });
+          // Also hide empty section headers
+          list.querySelectorAll(".oni-ae-picker-sep").forEach(sep => {
+            let next = sep.nextElementSibling;
+            let allHidden = true;
+            while (next && !next.classList.contains("oni-ae-picker-sep")) {
+              if (next.style.display !== "none") { allHidden = false; break; }
+              next = next.nextElementSibling;
             }
-            const key    = html.find("[name='statusKey']").val()?.trim();
-            const icon   = html.find("[name='img']").val()?.trim() || "icons/svg/aura.svg";
-            const dur    = parseInt(html.find("[name='durationRounds']").val()) || 0;
-            const data   = {
-              name:     effectName,
-              img:      icon,
-              statuses: key ? [key] : [],
-              duration: dur > 0 ? { rounds: dur } : {},
-              changes:  [],
-            };
-            onSave(JSON.stringify(data), effectName);
-          },
-        },
-        cancel: { icon: "<i class='fas fa-times'></i>", label: "Cancel" },
+            sep.style.display = allHidden ? "none" : "";
+          });
+        });
+
+        list.querySelectorAll(".oni-ae-picker-item").forEach(el => {
+          el.addEventListener("click", () => {
+            dialog.close();
+            onPick({
+              source: "registry",
+              id:     el.dataset.aeId,
+              label:  el.dataset.aeName,
+              img:    el.dataset.aeImg,
+            });
+          });
+        });
       },
-      default: "save",
-    }).render(true);
+    });
+    dialog.render(true);
   }
 
-  // ── Panel HTML builder ─────────────────────────────────────────────────────
-  function buildPanelHtml(cfg, mod) {
-    const sel = (val, check) => check === val ? "selected" : "";
-    const chk = (bool)        => bool ? "checked" : "";
-    const fl  = key           => `flags.${mod}.${CFG_PATH}.${key}`;
+  // ── Native builder (GM-only — creates temp draft on party actor) ───────────
+  async function openNativeBuilder(onAdd) {
+    if (!game.user?.isGM) {
+      ui.notifications?.warn?.("Creating custom Active Effects requires GM permissions.");
+      return;
+    }
 
+    const nativeBuilder = window.FUCompanion?.api?.activeEffectManager?.uiParts?.nativeBuilder;
+    if (!nativeBuilder?.openForQueue) {
+      ui.notifications?.warn?.("Active Effect Manager native builder not available.");
+      return;
+    }
+
+    // Resolve an actor to use as the draft host (party actor preferred)
+    let actorUuid = null;
+    try {
+      const api = window.FUCompanion?.api;
+      if (api?.getCurrentGameDb) {
+        const res = await api.getCurrentGameDb().catch(() => null);
+        actorUuid = res?.db?.uuid ?? null;
+      }
+    } catch {}
+
+    if (!actorUuid) {
+      // Fallback: any GM-owned actor
+      const fallback = game.actors.find(a => {
+        try { return game.user?.isGM || a.testUserPermission?.(game.user, "OWNER"); } catch { return false; }
+      });
+      actorUuid = fallback?.uuid ?? null;
+    }
+
+    nativeBuilder.openForQueue({
+      actorUuid,
+      onAddEffect: (effectData) => {
+        onAdd({
+          source: "custom",
+          json:   JSON.stringify(effectData),
+          label:  effectData.name ?? "Custom Effect",
+          img:    effectData.img ?? effectData.icon ?? "icons/svg/aura.svg",
+        });
+      },
+    });
+  }
+
+  // ── AE list renderer ───────────────────────────────────────────────────────
+  function renderAeList(listEl, activeEffects, onRemove) {
+    listEl.innerHTML = "";
+    if (!activeEffects.length) {
+      listEl.innerHTML = `<li style="opacity:.5;font-size:.85rem;padding:4px 2px;">No effects selected.</li>`;
+      return;
+    }
+    for (let i = 0; i < activeEffects.length; i++) {
+      const entry   = activeEffects[i];
+      const img     = entry.img ?? "icons/svg/aura.svg";
+      const srcTag  = entry.source === "custom" ? "custom" : "registry";
+      const li      = document.createElement("li");
+      li.className  = "oni-ec-ae-row";
+      li.innerHTML  = `
+        <img src="${img}" onerror="this.src='icons/svg/aura.svg'" />
+        <span class="oni-ec-ae-label">${entry.label ?? entry.id ?? "Effect"}</span>
+        <span class="oni-ec-ae-src">${srcTag}</span>
+        <button type="button" data-remove-idx="${i}" title="Remove">✕</button>
+      `;
+      li.querySelector("[data-remove-idx]").addEventListener("click", () => onRemove(i));
+      listEl.appendChild(li);
+    }
+  }
+
+  // ── Panel HTML ─────────────────────────────────────────────────────────────
+  function buildPanelHtml(cfg) {
     return `
-      <div class="oni-ec-section">
+      <div class="oni-ec">
 
-        <!-- ── Master toggle ── -->
-        <div class="oni-ec-master-toggle">
+        <!-- Master toggle -->
+        <div class="oni-ec-master">
           <label for="oni-ec-enabled">Use Effect Logic</label>
-          <input type="checkbox"
-                 id="oni-ec-enabled"
-                 name="${fl("enabled")}"
-                 data-dtype="Boolean"
-                 data-oni-ec="master"
-                 ${chk(cfg.enabled)} />
+          <input type="checkbox" id="oni-ec-enabled"
+                 name="${fl("enabled")}" data-dtype="Boolean"
+                 data-oni-ec="master" ${chk(cfg.enabled)} />
         </div>
-        <p class="notes" style="margin:-4px 0 10px;">
-          When enabled, this tile applies the configured resource changes and / or
-          active effects to party members when stepped on.
+        <p class="notes" style="margin:-6px 0 10px;">
+          When enabled this tile applies the configured changes to party members when stepped on.
         </p>
 
-        <!-- ── Conditional body (hidden when master is OFF) ── -->
-        <div data-oni-ec-body="1" ${cfg.enabled ? "" : 'style="display:none;"'}>
+        <div data-oni-ec-body="1" ${cfg.enabled ? "" : 'style="display:none"'}>
 
-          <!-- ── Targeting ── -->
+          <!-- Targeting -->
           <h3><i class="fas fa-users"></i> Targeting</h3>
           <div class="form-group">
             <label>Apply to</label>
@@ -258,18 +310,16 @@
             </select>
           </div>
 
-          <!-- ── Resource Change ── -->
+          <!-- Resource Change -->
           <h3><i class="fas fa-heartbeat"></i> Resource Change</h3>
           <div class="form-group">
             <label>Apply resource change</label>
-            <input type="checkbox"
-                   name="${fl("useResourceChange")}"
-                   data-dtype="Boolean"
-                   data-oni-ec="resource-toggle"
+            <input type="checkbox" name="${fl("useResourceChange")}"
+                   data-dtype="Boolean" data-oni-ec="resource-toggle"
                    ${chk(cfg.useResourceChange)} />
           </div>
           <div class="oni-ec-indent" data-oni-ec-resource="1"
-               ${cfg.useResourceChange ? "" : 'style="display:none;"'}>
+               ${cfg.useResourceChange ? "" : 'style="display:none"'}>
             <div class="form-group">
               <label>Type</label>
               <select name="${fl("resourceType")}">
@@ -293,123 +343,54 @@
             </div>
             <div class="form-group">
               <label>Amount</label>
-              <input type="number"
-                     name="${fl("resourceValue")}"
-                     data-dtype="Number"
-                     min="0"
-                     value="${cfg.resourceValue}" />
+              <input type="number" name="${fl("resourceValue")}"
+                     data-dtype="Number" min="0" value="${cfg.resourceValue}" />
             </div>
           </div>
 
-          <!-- ── Active Effect ── -->
-          <h3><i class="fas fa-magic"></i> Active Effect</h3>
+          <!-- Active Effects (array) -->
+          <h3><i class="fas fa-magic"></i> Active Effects</h3>
           <div class="form-group">
-            <label>Apply active effect</label>
-            <input type="checkbox"
-                   name="${fl("useActiveEffect")}"
-                   data-dtype="Boolean"
-                   data-oni-ec="ae-toggle"
+            <label>Apply active effect(s)</label>
+            <input type="checkbox" name="${fl("useActiveEffect")}"
+                   data-dtype="Boolean" data-oni-ec="ae-toggle"
                    ${chk(cfg.useActiveEffect)} />
           </div>
 
           <div class="oni-ec-indent" data-oni-ec-ae="1"
-               ${cfg.useActiveEffect ? "" : 'style="display:none;"'}>
-
-            <!-- Source radio -->
-            <div class="form-group">
-              <label>Source</label>
-              <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-                <label style="display:flex;align-items:center;gap:4px;font-weight:normal;min-width:0;">
-                  <input type="radio"
-                         name="${fl("aeSource")}"
-                         value="registry"
-                         data-oni-ec="ae-source"
-                         ${cfg.aeSource !== "custom" ? "checked" : ""} />
-                  From Registry
-                </label>
-                <label style="display:flex;align-items:center;gap:4px;font-weight:normal;min-width:0;">
-                  <input type="radio"
-                         name="${fl("aeSource")}"
-                         value="custom"
-                         data-oni-ec="ae-source"
-                         ${cfg.aeSource === "custom" ? "checked" : ""} />
-                  Custom Effect
-                </label>
-              </div>
+               ${cfg.useActiveEffect ? "" : 'style="display:none"'}>
+            <ul class="oni-ec-ae-list" data-oni-ae-list="1"></ul>
+            <div class="oni-ec-ae-actions">
+              <button type="button" data-oni-ae-add-registry="1">
+                <i class="fas fa-list"></i> Add from Registry
+              </button>
+              <button type="button" data-oni-ae-add-custom="1">
+                <i class="fas fa-plus"></i> Create Custom
+                ${!game.user?.isGM ? "<span style='opacity:.5;font-size:10px'>(GM only)</span>" : ""}
+              </button>
             </div>
-
-            <!-- Registry picker -->
-            <div data-oni-ec-ae-registry="1"
-                 ${cfg.aeSource === "custom" ? 'style="display:none;"' : ""}>
-              <div class="form-group">
-                <label>Effect</label>
-                <div class="oni-ec-row">
-                  <select name="${fl("activeEffectId")}"
-                          data-oni-ae-select="1">
-                    <option value="">— Loading effects… —</option>
-                  </select>
-                  <button type="button"
-                          data-oni-ae-refresh="1"
-                          title="Refresh effect list"
-                          style="flex:0 0 auto;padding:0 8px;">↺</button>
-                </div>
-                <p class="notes">
-                  Pulls from the Active Effect Registry (CONFIG.statusEffects, world actors, compendiums).
-                </p>
-              </div>
-            </div>
-
-            <!-- Custom effect -->
-            <div data-oni-ec-ae-custom="1"
-                 ${cfg.aeSource !== "custom" ? 'style="display:none;"' : ""}>
-              <div class="form-group">
-                <label>Custom Effect</label>
-                <div class="oni-ec-row">
-                  <span class="oni-ec-badge ${cfg.customEffectJson ? "has-value" : ""}"
-                        data-oni-ae-custom-label="1">
-                    ${cfg.customEffectJson
-                        ? (() => { try { return JSON.parse(cfg.customEffectJson).name ?? "Custom effect"; } catch { return "Custom effect"; } })()
-                        : "None defined"}
-                  </span>
-                  <button type="button"
-                          data-oni-ae-custom-open="1"
-                          style="flex:0 0 auto;">
-                    <i class="fas fa-edit"></i> ${cfg.customEffectJson ? "Edit" : "Create"}
-                  </button>
-                  ${cfg.customEffectJson
-                    ? `<button type="button" data-oni-ae-custom-clear="1"
-                               style="flex:0 0 auto;" title="Clear custom effect">
-                         <i class="fas fa-trash"></i>
-                       </button>`
-                    : ""}
-                </div>
-                <input type="hidden"
-                       name="${fl("customEffectJson")}"
-                       data-oni-ae-custom-json="1"
-                       value="${cfg.customEffectJson.replace(/"/g, "&quot;")}" />
-              </div>
-            </div>
-          </div><!-- end .oni-ec-indent AE -->
-
-          <!-- ── Output ── -->
-          <h3><i class="fas fa-volume-up"></i> Output</h3>
-
-          <div class="form-group">
-            <label>Silent mode</label>
-            <input type="checkbox"
-                   name="${fl("silent")}"
-                   data-dtype="Boolean"
-                   data-oni-ec="silent-toggle"
-                   ${chk(cfg.silent)} />
-            <p class="notes">
-              Suppresses chat card, VFX, and SFX.  Resource changes and active effects
-              still apply.
+            <p class="notes" style="margin-top:4px;">
+              Effects are applied in order.  Registry effects use the Active Effect Registry;
+              custom effects open the native Foundry AE sheet (GM only).
             </p>
+            <!-- Hidden input carries the JSON array — updated by JS on every change -->
+            <input type="hidden" name="${fl("activeEffectsJson")}"
+                   data-oni-ae-json="1"
+                   value="${(cfg.activeEffectsJson ?? "").replace(/"/g, "&quot;")}" />
           </div>
 
-          <div data-oni-ec-output="1" ${cfg.silent ? 'style="display:none;"' : ""}>
+          <!-- Output -->
+          <h3><i class="fas fa-volume-up"></i> Output</h3>
+          <div class="form-group">
+            <label>Silent mode</label>
+            <input type="checkbox" name="${fl("silent")}"
+                   data-dtype="Boolean" data-oni-ec="silent-toggle"
+                   ${chk(cfg.silent)} />
+            <p class="notes">Suppresses chat card, VFX, and SFX (resource/AE still apply).</p>
+          </div>
 
-            <!-- VFX -->
+          <div data-oni-ec-output="1" ${cfg.silent ? 'style="display:none"' : ""}>
+
             <div class="form-group">
               <label>Visual Effect</label>
               <select name="${fl("vfxType")}" data-oni-ec="vfx-type">
@@ -419,208 +400,130 @@
               </select>
             </div>
 
-            <!-- VFX file sub-fields -->
             <div class="oni-ec-indent" data-oni-ec-vfx-file="1"
-                 ${cfg.vfxType === "file" ? "" : 'style="display:none;"'}>
+                 ${cfg.vfxType === "file" ? "" : 'style="display:none"'}>
               <div class="form-group">
                 <label>VFX File URL</label>
-                <input type="text"
-                       name="${fl("vfxFile")}"
-                       value="${cfg.vfxFile}"
-                       placeholder="https://… or modules/…/file.webm" />
+                <input type="text" name="${fl("vfxFile")}"
+                       value="${cfg.vfxFile}" placeholder="https://… or modules/…/file.webm" />
                 <p class="notes">
-                  .webm/.gif/.png supported.  Uses Sequencer if installed, otherwise a
-                  PIXI sprite overlay on the party token.
+                  .webm / .gif / .png supported.  Uses Sequencer if installed; otherwise
+                  PIXI sprite overlay on the party token.  Synced to all clients.
                 </p>
               </div>
             </div>
 
-            <!-- Screen flash sub-fields -->
             <div class="oni-ec-indent" data-oni-ec-vfx-flash="1"
-                 ${cfg.vfxType === "screenflash" ? "" : 'style="display:none;"'}>
+                 ${cfg.vfxType === "screenflash" ? "" : 'style="display:none"'}>
               <div class="form-group">
                 <label>Flash Tint</label>
-                <input type="color"
-                       name="${fl("vfxFlashTint")}"
-                       value="${cfg.vfxFlashTint}" />
+                <input type="color" name="${fl("vfxFlashTint")}" value="${cfg.vfxFlashTint}" />
               </div>
               <div class="form-group">
                 <label>Flash Opacity (0–1)</label>
-                <input type="number"
-                       name="${fl("vfxFlashAlpha")}"
-                       data-dtype="Number"
-                       min="0" max="1" step="0.05"
+                <input type="number" name="${fl("vfxFlashAlpha")}"
+                       data-dtype="Number" min="0" max="1" step="0.05"
                        value="${cfg.vfxFlashAlpha}" />
               </div>
             </div>
 
-            <!-- SFX -->
             <div class="form-group" style="margin-top:6px;">
               <label>Sound Effect URL</label>
-              <input type="text"
-                     name="${fl("sfxUrl")}"
-                     value="${cfg.sfxUrl}"
-                     placeholder="https://… or modules/…/sound.ogg" />
-              <p class="notes">
-                Plays on the local client when the tile triggers.  Uses Sequencer if
-                installed.
-              </p>
+              <input type="text" name="${fl("sfxUrl")}"
+                     value="${cfg.sfxUrl}" placeholder="https://… or modules/…/sound.ogg" />
+              <p class="notes">Plays on all clients when tile triggers.  Uses Sequencer if installed.</p>
             </div>
 
-          </div><!-- end data-oni-ec-output -->
-        </div><!-- end data-oni-ec-body -->
-      </div><!-- end .oni-ec-section -->
+          </div><!-- /data-oni-ec-output -->
+        </div><!-- /data-oni-ec-body -->
+      </div><!-- /oni-ec -->
     `;
   }
 
-  // ── Wire interactivity ─────────────────────────────────────────────────────
-  function wirePanel(panel, tileDoc, app) {
+  // ── Wire panel interactivity ───────────────────────────────────────────────
+  function wirePanel(panel, cfg, app) {
     const $ = sel => panel.querySelector(sel);
-
-    // Helper: resize the config dialog when content changes
     const resize = () => { try { app.setPosition({ height: "auto" }); } catch {} };
+    const toggle = (el, show) => { if (el) el.style.display = show ? "" : "none"; };
 
-    // Toggle show/hide helpers
-    function toggle(el, show) {
-      if (el) el.style.display = show ? "" : "none";
+    // In-memory AE list (populated from saved JSON)
+    let activeEffects = cfg.activeEffects ?? [];
+    const jsonInput   = $("[data-oni-ae-json='1']");
+    const listEl      = $("[data-oni-ae-list='1']");
+
+    function syncJson() {
+      if (jsonInput) jsonInput.value = JSON.stringify(activeEffects);
+    }
+
+    function removeEffect(idx) {
+      activeEffects.splice(idx, 1);
+      syncJson();
+      renderAeList(listEl, activeEffects, removeEffect);
+      resize();
+    }
+
+    // Initial render of the AE list
+    if (listEl) renderAeList(listEl, activeEffects, removeEffect);
+
+    // "Add from Registry" button
+    const addRegistryBtn = $("[data-oni-ae-add-registry='1']");
+    if (addRegistryBtn) {
+      addRegistryBtn.addEventListener("click", () => {
+        openRegistryPicker(entry => {
+          activeEffects.push(entry);
+          syncJson();
+          renderAeList(listEl, activeEffects, removeEffect);
+          resize();
+        });
+      });
+    }
+
+    // "Create Custom" button → native builder
+    const addCustomBtn = $("[data-oni-ae-add-custom='1']");
+    if (addCustomBtn) {
+      addCustomBtn.addEventListener("click", () => {
+        openNativeBuilder(entry => {
+          activeEffects.push(entry);
+          syncJson();
+          renderAeList(listEl, activeEffects, removeEffect);
+          resize();
+        }).catch(e => console.warn(TAG, "Native builder error:", e));
+      });
     }
 
     // Master toggle
     const masterCb = $("[data-oni-ec='master']");
     const body     = $("[data-oni-ec-body='1']");
-    if (masterCb && body) {
-      masterCb.addEventListener("change", () => {
-        toggle(body, masterCb.checked);
-        resize();
-      });
-    }
+    masterCb?.addEventListener("change", () => { toggle(body, masterCb.checked); resize(); });
 
     // Resource toggle
     const resCb   = $("[data-oni-ec='resource-toggle']");
     const resBody = $("[data-oni-ec-resource='1']");
-    if (resCb && resBody) {
-      resCb.addEventListener("change", () => {
-        toggle(resBody, resCb.checked);
-        resize();
-      });
-    }
+    resCb?.addEventListener("change", () => { toggle(resBody, resCb.checked); resize(); });
 
     // AE toggle
     const aeCb   = $("[data-oni-ec='ae-toggle']");
     const aeBody = $("[data-oni-ec-ae='1']");
-    if (aeCb && aeBody) {
-      aeCb.addEventListener("change", () => {
-        toggle(aeBody, aeCb.checked);
-        resize();
-      });
-    }
-
-    // AE source radio (registry vs custom)
-    const aeRegistryDiv = $("[data-oni-ec-ae-registry='1']");
-    const aeCustomDiv   = $("[data-oni-ec-ae-custom='1']");
-    panel.querySelectorAll("[data-oni-ec='ae-source']").forEach(radio => {
-      radio.addEventListener("change", () => {
-        const isCustom = panel.querySelector("[data-oni-ec='ae-source']:checked")?.value === "custom";
-        toggle(aeRegistryDiv, !isCustom);
-        toggle(aeCustomDiv,    isCustom);
-        resize();
-      });
-    });
-
-    // AE select async load
-    const aeSelect = $("[data-oni-ae-select='1']");
-    if (aeSelect) {
-      const currentId = aeSelect.closest("[data-oni-ec-ae-registry='1']")
-        ? tileDoc?.flags?.[MODULE_ID]?.[PATHING]?.effectConfig?.activeEffectId ?? ""
-        : "";
-
-      populateAeSelect(aeSelect, currentId).catch(() => {});
-
-      const refreshBtn = $("[data-oni-ae-refresh='1']");
-      if (refreshBtn) {
-        refreshBtn.addEventListener("click", () => {
-          const reg = window.FUCompanion?.api?.activeEffectRegistry;
-          if (reg?.refresh) reg.refresh().then(() => populateAeSelect(aeSelect, aeSelect.value)).catch(() => {});
-          else populateAeSelect(aeSelect, aeSelect.value).catch(() => {});
-        });
-      }
-    }
-
-    // Custom effect builder
-    const openBtn   = $("[data-oni-ae-custom-open='1']");
-    const labelEl   = $("[data-oni-ae-custom-label='1']");
-    const jsonInput = $("[data-oni-ae-custom-json='1']");
-
-    if (openBtn && jsonInput) {
-      openBtn.addEventListener("click", () => {
-        openCustomEffectBuilder(jsonInput.value, (json, name) => {
-          jsonInput.value = json;
-          if (labelEl) {
-            labelEl.textContent = name ?? "Custom effect";
-            labelEl.classList.add("has-value");
-          }
-          // Swap Create → Edit
-          openBtn.innerHTML = `<i class="fas fa-edit"></i> Edit`;
-
-          // Add or update clear button
-          let clearBtn = $("[data-oni-ae-custom-clear='1']");
-          if (!clearBtn) {
-            clearBtn                      = document.createElement("button");
-            clearBtn.type                 = "button";
-            clearBtn.dataset.oniAeCustomClear = "1";
-            clearBtn.title                = "Clear custom effect";
-            clearBtn.style.flex           = "0 0 auto";
-            clearBtn.innerHTML            = `<i class="fas fa-trash"></i>`;
-            openBtn.after(clearBtn);
-            wireClearBtn(clearBtn, jsonInput, labelEl, openBtn);
-          }
-        });
-      });
-    }
-
-    // Clear custom effect
-    const clearBtn = $("[data-oni-ae-custom-clear='1']");
-    if (clearBtn && jsonInput) {
-      wireClearBtn(clearBtn, jsonInput, labelEl, openBtn);
-    }
+    aeCb?.addEventListener("change", () => { toggle(aeBody, aeCb.checked); resize(); });
 
     // Silent toggle
     const silentCb = $("[data-oni-ec='silent-toggle']");
     const outBody  = $("[data-oni-ec-output='1']");
-    if (silentCb && outBody) {
-      silentCb.addEventListener("change", () => {
-        toggle(outBody, !silentCb.checked);
-        resize();
-      });
-    }
+    silentCb?.addEventListener("change", () => { toggle(outBody, !silentCb.checked); resize(); });
 
-    // VFX type switcher
-    const vfxSel    = $("[data-oni-ec='vfx-type']");
-    const vfxFile   = $("[data-oni-ec-vfx-file='1']");
-    const vfxFlash  = $("[data-oni-ec-vfx-flash='1']");
-    if (vfxSel) {
-      vfxSel.addEventListener("change", () => {
-        toggle(vfxFile,  vfxSel.value === "file");
-        toggle(vfxFlash, vfxSel.value === "screenflash");
-        resize();
-      });
-    }
-  }
-
-  function wireClearBtn(btn, jsonInput, labelEl, openBtn) {
-    btn.addEventListener("click", () => {
-      jsonInput.value = "";
-      if (labelEl) {
-        labelEl.textContent = "None defined";
-        labelEl.classList.remove("has-value");
-      }
-      if (openBtn) openBtn.innerHTML = `<i class="fas fa-edit"></i> Create`;
-      btn.remove();
+    // VFX type
+    const vfxSel   = $("[data-oni-ec='vfx-type']");
+    const vfxFile  = $("[data-oni-ec-vfx-file='1']");
+    const vfxFlash = $("[data-oni-ec-vfx-flash='1']");
+    vfxSel?.addEventListener("change", () => {
+      toggle(vfxFile,  vfxSel.value === "file");
+      toggle(vfxFlash, vfxSel.value === "screenflash");
+      resize();
     });
   }
 
   // ── renderTileConfig hook ──────────────────────────────────────────────────
-  Hooks.on("renderTileConfig", async (app, html) => {
+  Hooks.on("renderTileConfig", (app, html) => {
     try {
       ensureStyle();
 
@@ -629,58 +532,65 @@
         : app?.element?.[0] ?? app?.element   ?? null;
       if (!root) return;
 
-      // Wait for dp-tile-config.js to have created the sub-nav/sub-content
       const subNav     = root.querySelector("[data-oni-fabula-sub-nav='1']");
       const subContent = root.querySelector("[data-oni-fabula-sub-content='1']");
-      if (!subNav || !subContent) {
-        console.warn(TAG, "Fabula sub-nav not found — dp-tile-config.js may not have run yet.");
-        return;
-      }
-
-      // Guard: only inject once
+      if (!subNav || !subContent) return;
       if (subNav.querySelector("[data-sub-tab='tile-effects']")) return;
 
       const tileDoc = app?.document ?? app?.object ?? null;
+      const raw     = tileDoc?.flags?.[MODULE_ID]?.[PATHING]?.effectConfig ?? {};
+      const bool    = v => v === true || v === "true" || v === 1;
 
-      // Read current config from flags
-      const raw = tileDoc?.flags?.[MODULE_ID]?.[PATHING]?.effectConfig ?? {};
-      const bool = v => v === true || v === "true" || v === 1;
+      // Parse the AE array from the saved JSON
+      let activeEffects = [];
+      if (raw.activeEffectsJson) {
+        try { activeEffects = JSON.parse(raw.activeEffectsJson); } catch {}
+      }
+      // Migrate from old single-AE format
+      if (!activeEffects.length && raw.activeEffectId) {
+        activeEffects.push({ source: "registry", id: raw.activeEffectId, label: raw.activeEffectId });
+      }
+      if (!activeEffects.length && raw.customEffectJson) {
+        try {
+          const d = JSON.parse(raw.customEffectJson);
+          activeEffects.push({ source: "custom", json: raw.customEffectJson, label: d.name ?? "Custom" });
+        } catch {}
+      }
+
       const cfg = {
         enabled:           bool(raw.enabled),
         useResourceChange: bool(raw.useResourceChange),
-        resourceType:      String(raw.resourceType      ?? "damage"),
-        resourceValue:     Number(raw.resourceValue     ?? 0),
+        resourceType:      String(raw.resourceType    ?? "damage"),
+        resourceValue:     Number(raw.resourceValue   ?? 0),
         useActiveEffect:   bool(raw.useActiveEffect),
-        aeSource:          String(raw.aeSource          ?? "registry"),
-        activeEffectId:    String(raw.activeEffectId    ?? ""),
-        customEffectJson:  String(raw.customEffectJson  ?? ""),
-        targetMode:        String(raw.targetMode        ?? "all"),
+        activeEffects,
+        activeEffectsJson: raw.activeEffectsJson ?? "",
+        targetMode:        String(raw.targetMode      ?? "all"),
         silent:            bool(raw.silent),
-        vfxType:           String(raw.vfxType           ?? "none"),
-        vfxFile:           String(raw.vfxFile           ?? ""),
-        vfxFlashTint:      String(raw.vfxFlashTint      ?? "#ff0000"),
-        vfxFlashAlpha:     Number(raw.vfxFlashAlpha     ?? 0.5),
-        sfxUrl:            String(raw.sfxUrl            ?? ""),
+        vfxType:           String(raw.vfxType         ?? "none"),
+        vfxFile:           String(raw.vfxFile         ?? ""),
+        vfxFlashTint:      String(raw.vfxFlashTint    ?? "#ff0000"),
+        vfxFlashAlpha:     Number(raw.vfxFlashAlpha   ?? 0.5),
+        sfxUrl:            String(raw.sfxUrl          ?? ""),
       };
 
-      // ── Sub-nav button ───────────────────────────────────────────────────
-      const navBtn = document.createElement("a");
-      navBtn.className        = "item";
-      navBtn.dataset.subTab   = "tile-effects";
-      navBtn.innerHTML        = `<i class="fas fa-bolt"></i> Tile Effects`;
+      // Sub-nav button
+      const navBtn             = document.createElement("a");
+      navBtn.className         = "item";
+      navBtn.dataset.subTab    = "tile-effects";
+      navBtn.innerHTML         = `<i class="fas fa-bolt"></i> Tile Effects`;
       if (cfg.enabled) navBtn.style.fontWeight = "700";
       subNav.appendChild(navBtn);
 
-      // ── Sub-panel ────────────────────────────────────────────────────────
-      const panel = document.createElement("div");
-      panel.className         = "oni-fabula-sub-panel";
-      panel.dataset.subTab    = "tile-effects";
-      panel.style.display     = "none";
-      panel.innerHTML         = buildPanelHtml(cfg, MODULE_ID);
+      // Sub-panel
+      const panel              = document.createElement("div");
+      panel.className          = "oni-fabula-sub-panel";
+      panel.dataset.subTab     = "tile-effects";
+      panel.style.display      = "none";
+      panel.innerHTML          = buildPanelHtml(cfg);
       subContent.appendChild(panel);
 
-      // Wire interactivity
-      wirePanel(panel, tileDoc, app);
+      wirePanel(panel, cfg, app);
 
     } catch (e) {
       console.warn(TAG, "inject failed:", e);
