@@ -134,6 +134,21 @@
   color: #d8f0c0;
 }
 
+/* ── Use button (teal parchment) ────────────────────────────────────────── */
+.oni-dp-btn-use {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(140,220,200,0.18) 0%, transparent 70%),
+    linear-gradient(
+      175deg,
+      #1a5050 0%,
+      #206858 25%,
+      #185448 50%,
+      #12403a 75%,
+      #0c2c28 100%
+    );
+  color: #a8f0e0;
+}
+
 /* ── Go Back button (dark parchment) ────────────────────────────────────── */
 .oni-dp-btn-revert {
   background:
@@ -189,7 +204,7 @@
 
     // Anchor point: right edge of token, vertically centred
     const anchorClient = worldToClient(docX + tokW, docY + tokH / 2, cachedRect);
-    const panelH = cfg.HEIGHT * 2 + cfg.GAP;
+    const panelH = panel.offsetHeight || (cfg.HEIGHT * 2 + cfg.GAP);
 
     panel.style.left = `${Math.round(anchorClient.x + cfg.OFFSET_X)}px`;
     panel.style.top  = `${Math.round(anchorClient.y - panelH / 2)}px`;
@@ -241,9 +256,18 @@
 
     /**
      * Display the in-canvas confirm buttons anchored to the given token.
-     * Returns Promise<boolean>: true = confirmed, false = go back.
+     *
+     * @param {Token} token
+     * @param {object} [options]
+     * @param {boolean} [options.showUseButton=false]
+     *   When true, a teal "Use" button is inserted between Confirm and Go Back.
+     *
+     * Returns Promise<true|"use"|false>:
+     *   true  = Confirm pressed  (land without triggering tile event)
+     *   "use" = Use pressed      (land AND trigger tile event)
+     *   false = Go Back pressed  (revert movement)
      */
-    ask(token) {
+    ask(token, { showUseButton = false } = {}) {
       this.forceClose();
       this.isOpen = true;
 
@@ -272,12 +296,20 @@
           return btn;
         };
 
+        const addGap = () => {
+          const gap = document.createElement("div");
+          gap.style.height = `${cfg.GAP}px`;
+          panel.appendChild(gap);
+        };
+
         panel.appendChild(makeBtn("✔  Confirm", "oni-dp-btn-confirm", true));
 
-        const gap = document.createElement("div");
-        gap.style.height = `${cfg.GAP}px`;
-        panel.appendChild(gap);
+        if (showUseButton) {
+          addGap();
+          panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
+        }
 
+        addGap();
         panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
 
         document.body.appendChild(panel);

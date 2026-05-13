@@ -322,12 +322,17 @@
       // — Token moved event —
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
+      // — Resolve tile doc before dialog so we can check the usable flag —
+      const tileDoc    = scene.tiles.get(clicked.nodeId) ?? null;
+      const usableFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable   = usableFlag === true || usableFlag === "true";
+
       // — In-canvas confirmation buttons —
       const tConfirm  = performance.now();
-      const confirmed = await DP.ConfirmDialog.ask(freshToken);
-      perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed ? "CONFIRMED" : "REVERTED"}`);
+      const confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
+      perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
 
-      if (!confirmed) {
+      if (confirmed === false) {
         // — Revert —
         const tRevert = performance.now();
         state.forcedNodeId = fromNode.nodeId;
@@ -337,34 +342,39 @@
         return; // finally block handles rebuild and clears busy
       }
 
-      // — Confirmed —
-      const tileDoc  = scene.tiles.get(clicked.nodeId) ?? null;
+      // — Confirmed (land + optionally use) —
       DP.Events.turnConfirmed(freshToken.document, fromNode, clicked, tileDoc);
 
       const tileType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
         ?? clicked.tileType
         ?? DP.TILE_TYPES.UNKNOWN;
 
-      DP.Events.tileEvent(freshToken.document, clicked, tileDoc, tileType);
-
-      const tEvent = performance.now();
-      const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
-      const dtEvent = performance.now() - tEvent;
-      perf(`turn | tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms`);
-      walkDbg(`tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms${dtEvent > 500 ? " ⚠ slow handler — check for deferred updates or heavy async work" : ""}`);
-
-      // Capture tileId; markVisited fires 300 ms after rebuild (see finally) to
-      // avoid congesting the server socket queue before the next turn's doc update.
+      // Mark visited on any positive confirmation (land or use).
       if (tileDoc) _deferredVisitTileId = tileDoc.id;
 
-      // Per-tile override: "Persist after trigger" checkbox overrides registry default.
-      const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
-      const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
+      // Dispatch tile event only when:
+      //   - player pressed "Use" on a usable tile, OR
+      //   - tile is not usable (standard confirm fires the event as before).
+      const shouldDispatchEvent = confirmed === "use" || !isUsable;
 
-      if (shouldClear && tileDoc) {
-        const tClear = performance.now();
-        await DP.Socket.clearTile(scene, tileDoc.id);
-        perf(`turn | clearTile: ${(performance.now()-tClear).toFixed(1)}ms`);
+      if (shouldDispatchEvent) {
+        DP.Events.tileEvent(freshToken.document, clicked, tileDoc, tileType);
+
+        const tEvent = performance.now();
+        const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
+        const dtEvent = performance.now() - tEvent;
+        perf(`turn | tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms`);
+        walkDbg(`tileEvent dispatch (${tileType}): ${dtEvent.toFixed(1)}ms${dtEvent > 500 ? " ⚠ slow handler — check for deferred updates or heavy async work" : ""}`);
+
+        // Per-tile override: "Persist after trigger" checkbox overrides registry default.
+        const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
+        const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
+
+        if (shouldClear && tileDoc) {
+          const tClear = performance.now();
+          await DP.Socket.clearTile(scene, tileDoc.id);
+          perf(`turn | clearTile: ${(performance.now()-tClear).toFixed(1)}ms`);
+        }
       }
 
       // — Turn End —

@@ -18,6 +18,7 @@
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
+    ACTIVATE_SCENE:         "dungeonPathing.activateScene",
   };
 
   // Raw game.socket channel — used for markVisited to avoid socketlib.ready timing race.
@@ -154,6 +155,19 @@
         }
       });
 
+      socket.register(HANDLERS.ACTIVATE_SCENE, async ({ sceneUuid }) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        const campScene = await fromUuid(sceneUuid).catch(() => null);
+        if (!campScene || !(campScene instanceof Scene)) return { ok: false, error: "Scene not found" };
+        try {
+          await campScene.activate();
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "activateScene socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       console.debug(TAG, "Socketlib handlers registered.");
     },
 
@@ -213,6 +227,23 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for fastTravelTeleport"); return; }
       return socket.executeAsGM(HANDLERS.FAST_TRAVEL_TELEPORT, { sceneId: scene.id, tokenId, x, y });
+    },
+
+    async activateScene(sceneUuid) {
+      if (game.user?.isGM) {
+        const campScene = await fromUuid(sceneUuid).catch(() => null);
+        if (!campScene || !(campScene instanceof Scene)) return { ok: false, error: "Scene not found" };
+        try {
+          await campScene.activate();
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "activateScene (GM direct) failed", e);
+          return { ok: false, error: e?.message };
+        }
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for activateScene"); return { ok: false, error: "Socket not ready" }; }
+      return socket.executeAsGM(HANDLERS.ACTIVATE_SCENE, { sceneUuid });
     },
 
     async triggerTreasure(scene, tileId, tokenId, tileType) {

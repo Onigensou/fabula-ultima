@@ -274,10 +274,12 @@
       const tileId      = tileDoc?.id ?? null;
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
       const persistFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
+      const usableFlag  = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
       const initialType = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
       const currentType = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
       const visitedTile = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
       const persists    = persistFlag === true || persistFlag === "true";
+      const usable      = usableFlag  === true || usableFlag  === "true";
 
       // eligibleForFastTravel: explicit tile flag, or type-based default when unset
       const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
@@ -299,6 +301,21 @@
           <p class="notes">
             When checked, this tile stays active after its event fires and will not be blanked out.
             Use for persistent locations like camp sites or recurring encounters.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Usable</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.usable"
+                   data-dtype="Boolean"
+                   ${usable ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, landing on this tile shows an extra <b>Use</b> button in the confirmation
+            panel. Pressing <b>Use</b> triggers the tile's event. Pressing <b>Confirm</b> lands
+            without triggering it, letting the player choose when to act.
           </p>
         </div>
 
