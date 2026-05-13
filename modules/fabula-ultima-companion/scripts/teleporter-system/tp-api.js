@@ -14,12 +14,10 @@
 //   { type: "coords", x, y, sceneId }
 //   { type: "tile",   tileId, sceneId }
 //
-// Flag paths — all under flags.fabula-ultima-companion.teleporter.*:
-//   enabled      boolean  — is this tile a teleporter?
-//   confirmMode  boolean  — show confirmation dialog before teleporting?
-//   destination  object   — destination (see above)
-//   twoWay       boolean  — auto-link destination tile back to this one
-//   sfxUrl       string   — SFX to play on teleportation
+// options:
+//   sfxUrl       string   — override SFX
+//   applyDpOffset boolean — apply DP.UI.TOKEN_OFFSET to arrival position
+//                           (use when teleporting to a tile in dungeon mode)
 // ============================================================================
 (() => {
   const TP        = globalThis.TeleporterSystem ??= {};
@@ -93,39 +91,72 @@
       };
     }
 
-    console.warn(TAG, "resolveDestination: unknown destination type:", destination.type);
+    console.warn(TAG, "resolveDestination: unknown type:", destination.type);
     return null;
   }
 
-  // ── Same-scene teleport ───────────────────────────────────────────────────────
-  // Always routed through GM so the dungeon-pathing preUpdateToken block
-  // (which strips x/y from non-GM updates) never interferes.
+  // ── Wait for dungeon pathing busy state to clear ──────────────────────────────
+  // turnEnd fires while the finally-block rebuild() is still running (state.busy = true).
+  // If we update the token immediately, the DP updateToken hook sees busy=false only
+  // AFTER rebuild() finishes.  Waiting first guarantees ONE clean rebuild at the
+  // teleport destination instead of a race between two concurrent rebuilds.
 
-  async function sameSceneTeleport(tokenDoc, resolved) {
+  async function waitForDpReady(maxWaitMs = 1200) {
+    const dpState = globalThis.__ONI_DUNGEON_PATHING__?.state;
+    if (!dpState?.busy) return;
+    const deadline = performance.now() + maxWaitMs;
+    while (dpState.busy && performance.now() < deadline) {
+      await new Promise(r => setTimeout(r, 30));
+    }
+  }
+
+  // ── Same-scene teleport ───────────────────────────────────────────────────────
+  // Always routed through GM so dp-bootstrap's preUpdateToken guard
+  // (which strips x/y from non-GM updates) never interferes.
+  //
+  // applyDpOffset: when true, applies DP.UI.TOKEN_OFFSET to the arrival
+  // position so the token's feet align with the tile graphic (dungeon mode).
+
+  async function sameSceneTeleport(tokenDoc, resolved, { applyDpOffset = false } = {}) {
+    const scene = game.scenes.get(resolved.sceneId) ?? canvas?.scene;
+    if (!scene) return;
+
+    const gSize = scene.grid?.size ?? 100;
+    const tw    = (tokenDoc.width  ?? 1) * gSize;
+    const th    = (tokenDoc.height ?? 1) * gSize;
+
+    const DP   = globalThis.DungeonPathing;
+    const offX = (applyDpOffset && DP?.UI?.TOKEN_OFFSET) ? Number(DP.UI.TOKEN_OFFSET.x ?? 0) : 0;
+    const offY = (applyDpOffset && DP?.UI?.TOKEN_OFFSET) ? Number(DP.UI.TOKEN_OFFSET.y ?? 0) : 0;
+
     if (!game.user?.isGM) {
       game.socket.emit(SOCKET_CH, {
         type:    "TP_SAME_SCENE",
         payload: {
           tokenId: tokenDoc.id,
           sceneId: resolved.sceneId,
-          x:       resolved.x,
-          y:       resolved.y,
+          // Send CENTER coords + separate offsets so the GM can compute the
+          // correct top-left after knowing the token's dimensions.
+          x: resolved.x, y: resolved.y,
+          offX, offY,
         },
       });
       return;
     }
 
-    const scene = game.scenes.get(resolved.sceneId) ?? canvas?.scene;
-    if (!scene) return;
-    const gSize = scene.grid?.size ?? 100;
-    const tw    = (tokenDoc.width  ?? 1) * gSize;
-    const th    = (tokenDoc.height ?? 1) * gSize;
+    // Wait for any in-progress dungeon-pathing rebuild to finish before touching
+    // the token — prevents a race between our update and the DP updateToken hook.
+    await waitForDpReady();
+
+    const finalX = Math.round(resolved.x - tw / 2 + offX);
+    const finalY = Math.round(resolved.y - th / 2 + offY);
 
     await tokenDoc.update(
-      { x: Math.round(resolved.x - tw / 2), y: Math.round(resolved.y - th / 2) },
-      // dungeonPathing:true bypasses the DP preUpdateToken guard;
-      // teleporter:true lets our own updateToken listener skip this move.
-      { dungeonPathing: true, teleporter: true }
+      { x: finalX, y: finalY },
+      // animate:false  — instant position change, no slide animation
+      // dungeonPathing — bypasses DP's preUpdateToken guard that strips x/y
+      // teleporter     — signals our own updateToken handler to skip re-trigger
+      { animate: false, dungeonPathing: true, teleporter: true }
     );
   }
 
@@ -150,7 +181,7 @@
     if (!game.user?.isGM) return;
 
     const destScene = game.scenes.get(toSceneId);
-    if (!destScene) { console.warn(TAG, "executeCrossSceneTeleport: destination scene not found:", toSceneId); return; }
+    if (!destScene) { console.warn(TAG, "destination scene not found:", toSceneId); return; }
 
     const gSize = destScene.grid?.size ?? 100;
 
@@ -173,16 +204,12 @@
       console.warn(TAG, "token setup failed (non-fatal):", e);
     }
 
-    try {
-      await destScene.activate();
-    } catch (e) {
-      console.error(TAG, "scene activate attempt 1 threw:", e);
-    }
+    try { await destScene.activate(); }
+    catch (e) { console.error(TAG, "scene activate attempt 1:", e); }
 
-    // Retry activate if canvas hasn't switched after 2 s
     await new Promise(r => setTimeout(r, 2000));
     if (canvas?.scene?.id !== toSceneId) {
-      await destScene.activate().catch(e => console.error(TAG, "scene activate attempt 2 threw:", e));
+      await destScene.activate().catch(e => console.error(TAG, "scene activate attempt 2:", e));
     }
 
     if (fromSceneId && actorId && fromSceneId !== toSceneId) {
@@ -194,7 +221,7 @@
 
   // ── Main teleport entry point ─────────────────────────────────────────────────
 
-  async function teleportToken(tokenDoc, destination, { sfxUrl } = {}) {
+  async function teleportToken(tokenDoc, destination, { sfxUrl, applyDpOffset = false } = {}) {
     if (!tokenDoc) return;
 
     const resolved = await resolveDestination(destination);
@@ -206,7 +233,7 @@
     if (resolved.sceneId && resolved.sceneId !== currentSceneId) {
       await crossSceneTeleport(tokenDoc, resolved);
     } else {
-      await sameSceneTeleport(tokenDoc, resolved);
+      await sameSceneTeleport(tokenDoc, resolved, { applyDpOffset });
     }
   }
 
