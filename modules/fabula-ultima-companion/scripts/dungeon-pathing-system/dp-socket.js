@@ -18,14 +18,15 @@
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
-    ACTIVATE_SCENE:         "dungeonPathing.activateScene",
   };
 
-  // Raw game.socket channel — used for markVisited to avoid socketlib.ready timing race.
-  // socketlib fires its ready hook before our module's ready hook, so Hooks.once("socketlib.ready")
-  // registered inside installHooks() is always missed.  game.socket has no such race.
+  // Raw game.socket channel — used for operations that must survive the socketlib.ready
+  // timing race.  socketlib fires its ready hook before our module's ready hook, so
+  // Hooks.once("socketlib.ready") registered inside installHooks() is always missed.
+  // game.socket has no such race: it is available as soon as Hooks.once("ready") fires.
   const RAW_CH    = `module.${DP.MODULE_ID ?? "fabula-ultima-companion"}`;
   const MSG_MV    = "DP_MARK_VISITED";
+  const MSG_AS    = "DP_ACTIVATE_SCENE";
   const MV_GUARD  = "__ONI_DP_MV_SOCKET__";
 
   DP.Socket = {
@@ -40,16 +41,32 @@
       window[MV_GUARD] = true;
 
       game.socket.on(RAW_CH, async (msg) => {
-        if (msg?.type !== MSG_MV) return;
         if (!game.user?.isGM) return;
-        const { sceneId, tileId } = msg.payload ?? {};
-        const scene = game.scenes.get(sceneId);
-        if (!scene || !tileId) { console.warn(TAG, "raw markVisited: bad payload", msg.payload); return; }
-        await DP.TileState.markVisited(scene, tileId)
-          .catch(e => console.warn(TAG, "raw markVisited failed:", e));
+
+        if (msg?.type === MSG_MV) {
+          const { sceneId, tileId } = msg.payload ?? {};
+          const scene = game.scenes.get(sceneId);
+          if (!scene || !tileId) { console.warn(TAG, "raw markVisited: bad payload", msg.payload); return; }
+          await DP.TileState.markVisited(scene, tileId)
+            .catch(e => console.warn(TAG, "raw markVisited failed:", e));
+          return;
+        }
+
+        if (msg?.type === MSG_AS) {
+          const { sceneUuid } = msg.payload ?? {};
+          if (!sceneUuid) { console.warn(TAG, "raw activateScene: missing sceneUuid"); return; }
+          const campScene = await fromUuid(sceneUuid).catch(() => null);
+          if (!campScene || !(campScene instanceof Scene)) {
+            console.warn(TAG, "raw activateScene: scene not found for UUID", sceneUuid);
+            return;
+          }
+          await campScene.activate()
+            .catch(e => console.warn(TAG, "raw activateScene failed:", e));
+          return;
+        }
       });
 
-      console.debug(TAG, "Raw socket listener installed (markVisited).");
+      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene).");
     },
 
     /** Called from dp-bootstrap once socketlib is ready. */
@@ -155,19 +172,6 @@
         }
       });
 
-      socket.register(HANDLERS.ACTIVATE_SCENE, async ({ sceneUuid }) => {
-        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
-        const campScene = await fromUuid(sceneUuid).catch(() => null);
-        if (!campScene || !(campScene instanceof Scene)) return { ok: false, error: "Scene not found" };
-        try {
-          await campScene.activate();
-          return { ok: true };
-        } catch (e) {
-          console.error(TAG, "activateScene socket handler failed", e);
-          return { ok: false, error: e?.message };
-        }
-      });
-
       console.debug(TAG, "Socketlib handlers registered.");
     },
 
@@ -241,9 +245,10 @@
           return { ok: false, error: e?.message };
         }
       }
-      const socket = this._socket ?? window.FUCompanionSocket;
-      if (!socket) { console.warn(TAG, "Socket not ready for activateScene"); return { ok: false, error: "Socket not ready" }; }
-      return socket.executeAsGM(HANDLERS.ACTIVATE_SCENE, { sceneUuid });
+      // Bypass socketlib — emit directly on game.socket so the GM's raw listener
+      // handles it.  This avoids the socketlib.ready timing race (same fix as markVisited).
+      game.socket.emit(RAW_CH, { type: MSG_AS, payload: { sceneUuid } });
+      return { ok: true };
     },
 
     async triggerTreasure(scene, tileId, tokenId, tileType) {

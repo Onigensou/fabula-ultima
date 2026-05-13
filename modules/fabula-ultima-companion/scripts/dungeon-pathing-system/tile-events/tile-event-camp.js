@@ -48,6 +48,10 @@
 
       console.debug(TAG, `Activating camp scene "${campScene.name}" (${campSceneUuid})`);
 
+      // Bookkeeping hook — fires before transport so other systems can listen.
+      // Signature: (tileDoc, tokenDoc, dungeonScene, campSceneUuid, campScene)
+      Hooks.callAll("dungeonPathing.campStart", tileDoc, tokenDoc, scene, campSceneUuid, campScene);
+
       const result = await DP.Socket.activateScene(campSceneUuid);
       if (!result?.ok) {
         ui.notifications?.error(

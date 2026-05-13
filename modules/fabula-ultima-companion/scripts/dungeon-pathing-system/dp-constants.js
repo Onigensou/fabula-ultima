@@ -26,6 +26,7 @@
     TILE_EVENT:      "dungeonPathing.tileEvent",
     TURN_END:        "dungeonPathing.turnEnd",
     GRAPH_REBUILT:   "dungeonPathing.graphRebuilt",
+    CAMP_START:      "dungeonPathing.campStart",
   });
 
   DP.TILE_TYPES = Object.freeze({
