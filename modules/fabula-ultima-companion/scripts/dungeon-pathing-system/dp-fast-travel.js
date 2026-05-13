@@ -653,7 +653,7 @@
 
       // Broadcast to non-controller clients; everyone plays eagle sound then gryphon together
       game.socket.emit(SOCKET_CH, { type: MSG_FT_ANIM, payload: {} });
-      await DP.Sound?.playFastTravelEagle?.().catch(() => {});
+      await DP.Sound?.playFastTravelEagle?.(450).catch(() => {});
       const meshInfo = await runGryphonAnimation(token).catch(e => {
         console.warn(TAG, "gryphon anim:", e);
         return null;

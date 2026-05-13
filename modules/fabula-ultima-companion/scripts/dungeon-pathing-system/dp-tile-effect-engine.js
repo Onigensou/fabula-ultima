@@ -1,0 +1,378 @@
+// ============================================================================
+// Dungeon Pathing — Tile Effect Engine
+//
+// Generic runtime for damage / healing / resource-drain / Active Effect tiles.
+// Config per tile at: flags.fabula-ultima-companion.dungeonPathing.effectConfig.*
+//
+// VFX/SFX sync: triggered client plays locally; GM also broadcasts MSG_VFX so
+// all OTHER clients play in sync (covering both the player-trigger and
+// GM-trigger cases).
+//
+// GM routing: resource updates and AE application require actor ownership.
+// Player clients send MSG_APPLY to GM (fire-and-forget).  GM applies and then
+// emits MSG_VFX so the triggering player also sees the VFX.
+//
+// Multiple Active Effects: stored as JSON array in activeEffectsJson flag.
+//   [ { source: "registry"|"custom", id?: string, json?: string, label: string } ]
+// ============================================================================
+(() => {
+  const DP        = globalThis.DungeonPathing ??= {};
+  const MODULE_ID = "fabula-ultima-companion";
+  const TAG       = "[DungeonPathing][TileEffectEngine]";
+  const PATHING   = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
+  const SOCKET_CH = `module.${MODULE_ID}`;
+  const MSG_APPLY = "DP_TILE_EFFECT_APPLY";
+  const MSG_VFX   = "DP_TILE_EFFECT_VFX";
+
+  // ── Resource type map ──────────────────────────────────────────────────────
+  const RESOURCE_TYPES = Object.freeze({
+    damage:   { prop: "current_hp",       maxProp: "max_hp",   sign: -1, label: "HP", gainVerb: null,       lossVerb: "takes"   },
+    healing:  { prop: "current_hp",       maxProp: "max_hp",   sign: +1, label: "HP", gainVerb: "heals",    lossVerb: null      },
+    mp_drain: { prop: "current_mp",       maxProp: "max_mp",   sign: -1, label: "MP", gainVerb: null,       lossVerb: "burns"   },
+    mp_gain:  { prop: "current_mp",       maxProp: "max_mp",   sign: +1, label: "MP", gainVerb: "gains",    lossVerb: null      },
+    ip_drain: { prop: "current_ip",       maxProp: "max_ip",   sign: -1, label: "IP", gainVerb: null,       lossVerb: "spends"  },
+    ip_gain:  { prop: "current_ip",       maxProp: "max_ip",   sign: +1, label: "IP", gainVerb: "gains",    lossVerb: null      },
+    zp_drain: { prop: "zero_power_value", maxProp: "max_zero", sign: -1, label: "ZP", gainVerb: null,       lossVerb: "loses"   },
+    zp_gain:  { prop: "zero_power_value", maxProp: "max_zero", sign: +1, label: "ZP", gainVerb: "gains",    lossVerb: null      },
+  });
+
+  // ── Config reader ──────────────────────────────────────────────────────────
+  function readConfig(tileDoc) {
+    const raw  = tileDoc?.flags?.[MODULE_ID]?.[PATHING]?.effectConfig ?? {};
+    const bool = v => v === true || v === "true" || v === 1;
+
+    // Parse multi-AE array; fall back to migrating old single-AE fields.
+    let activeEffects = [];
+    if (raw.activeEffectsJson) {
+      try { activeEffects = JSON.parse(raw.activeEffectsJson); } catch {}
+    }
+    if (!activeEffects.length && raw.activeEffectId) {
+      activeEffects.push({ source: "registry", id: raw.activeEffectId, label: raw.activeEffectId });
+    }
+    if (!activeEffects.length && raw.customEffectJson) {
+      try {
+        const d = JSON.parse(raw.customEffectJson);
+        activeEffects.push({ source: "custom", json: raw.customEffectJson, label: d.name ?? "Custom" });
+      } catch {}
+    }
+
+    return {
+      enabled:           bool(raw.enabled),
+      useResourceChange: bool(raw.useResourceChange),
+      resourceType:      String(raw.resourceType      ?? "damage"),
+      resourceValue:     Number(raw.resourceValue      ?? 0),
+      useActiveEffect:   bool(raw.useActiveEffect),
+      activeEffects,
+      targetMode:        String(raw.targetMode         ?? "all"),
+      silent:            bool(raw.silent),
+      vfxType:           String(raw.vfxType            ?? "none"),
+      vfxFile:           String(raw.vfxFile            ?? ""),
+      vfxFlashTint:      String(raw.vfxFlashTint       ?? "#ff0000"),
+      vfxFlashAlpha:     Number(raw.vfxFlashAlpha      ?? 0.5),
+      sfxUrl:            String(raw.sfxUrl             ?? ""),
+    };
+  }
+
+  // ── Party member resolution ────────────────────────────────────────────────
+  async function resolvePartyMembers() {
+    const api = window.FUCompanion?.api;
+    let partyActor = null;
+    if (api?.getCurrentGameDb) {
+      const res = await api.getCurrentGameDb().catch(() => null);
+      partyActor = res?.db ?? null;
+    }
+    if (!partyActor) { console.warn(TAG, "Party actor not resolved."); return []; }
+
+    const props   = partyActor.system?.props ?? {};
+    const members = [];
+    for (let i = 1; i <= 4; i++) {
+      const rawId = String(props[`member_id_${i}`] ?? "").trim();
+      if (!rawId) continue;
+      let actor = null;
+      try {
+        actor = /^Actor\./i.test(rawId)
+          ? await fromUuid(rawId)
+          : (game.actors.get(rawId) ?? await fromUuid(`Actor.${rawId}`).catch(() => null));
+      } catch {}
+      if (actor) members.push(actor);
+    }
+    return members;
+  }
+
+  // ── Target selection ───────────────────────────────────────────────────────
+  function selectTargets(members, mode) {
+    if (!members.length) return [];
+    switch (String(mode)) {
+      case "one": return [members[Math.floor(Math.random() * members.length)]];
+      case "random": {
+        const n       = Math.max(1, Math.ceil(Math.random() * members.length));
+        const shuffled = [...members].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, n);
+      }
+      default: return [...members];
+    }
+  }
+
+  // ── Resource delta (one actor) ─────────────────────────────────────────────
+  async function applyResourceDelta(actor, cfg) {
+    const rt = RESOURCE_TYPES[cfg.resourceType];
+    if (!rt || !(cfg.resourceValue > 0)) return null;
+    const props   = actor.system?.props ?? {};
+    const current = Number(props[rt.prop]    ?? 0);
+    const max     = Number(props[rt.maxProp] ?? 0);
+    const newVal  = Math.max(0, Math.min(max, current + rt.sign * Number(cfg.resourceValue)));
+    const actual  = newVal - current;
+    await actor.update({ [`system.props.${rt.prop}`]: newVal }, { render: false });
+    return { rt, previous: current, delta: actual, newValue: newVal, max };
+  }
+
+  // ── Active Effects (array, one actor) ─────────────────────────────────────
+  async function applyActiveEffects(actor, activeEffects) {
+    const aeApi = window.FUCompanion?.api?.activeEffectManager;
+    if (!aeApi?.applyEffects) { console.warn(TAG, "AEM API not available."); return []; }
+
+    const effectRefs = [];
+    for (const entry of activeEffects) {
+      if (entry.source === "registry" && entry.id) {
+        effectRefs.push(entry.id);
+      } else if (entry.source === "custom" && entry.json) {
+        try { effectRefs.push(JSON.parse(entry.json)); } catch {}
+      }
+    }
+    if (!effectRefs.length) return [];
+
+    try {
+      const res = await aeApi.applyEffects({ actors: [actor], effects: effectRefs });
+      return activeEffects.map(e => ({ label: e.label ?? "Effect", ok: res?.ok ?? true }));
+    } catch (e) {
+      console.error(TAG, `AE apply failed for ${actor.name}:`, e);
+      return activeEffects.map(e => ({ label: e.label ?? "Effect", ok: false }));
+    }
+  }
+
+  // ── Apply to a list of actors ──────────────────────────────────────────────
+  async function applyToActors(actors, cfg) {
+    const results = [];
+    for (const actor of actors) {
+      const row = { actorName: actor.name, resource: null, ae: [] };
+      if (cfg.useResourceChange) {
+        row.resource = await applyResourceDelta(actor, cfg).catch(e => {
+          console.error(TAG, `resource delta failed for ${actor.name}:`, e); return null;
+        });
+      }
+      if (cfg.useActiveEffect && cfg.activeEffects?.length) {
+        row.ae = await applyActiveEffects(actor, cfg.activeEffects).catch(e => {
+          console.error(TAG, `AE failed for ${actor.name}:`, e); return [];
+        });
+      }
+      results.push(row);
+    }
+    return results;
+  }
+
+  // ── Chat card ──────────────────────────────────────────────────────────────
+  async function createChatCard(results, cfg, tileLabel) {
+    const lines = results.map(({ actorName, resource, ae }) => {
+      const parts = [];
+      if (resource) {
+        const { rt, delta, newValue, max } = resource;
+        if (delta === 0) {
+          parts.push(`${rt.label} unchanged (already at limit)`);
+        } else if (delta > 0) {
+          parts.push(`${rt.gainVerb ?? "gains"} <b>${Math.abs(delta)} ${rt.label}</b> <span style="opacity:.65">(${newValue}/${max})</span>`);
+        } else {
+          parts.push(`${rt.lossVerb ?? "loses"} <b>${Math.abs(delta)} ${rt.label}</b> <span style="opacity:.65">(${newValue}/${max})</span>`);
+        }
+      }
+      for (const { label, ok } of ae) {
+        parts.push(ok ? `afflicted by <b>${label}</b>` : `could not apply <b>${label}</b>`);
+      }
+      if (!parts.length) parts.push("is unaffected");
+      return `<li style="margin-bottom:3px"><b>${actorName}</b> ${parts.join("; ")}.</li>`;
+    });
+
+    const header = tileLabel
+      ? `<div style="font-weight:bold;font-size:1.05rem;border-bottom:1px solid rgba(255,255,255,0.2);margin-bottom:6px;padding-bottom:4px;">${tileLabel}</div>`
+      : "";
+
+    await ChatMessage.create({
+      speaker: { alias: "Tile Event" },
+      content: `<div style="padding:6px 10px;">${header}<ul style="margin:0;padding-left:16px;">${lines.join("")}</ul></div>`,
+    }).catch(e => console.warn(TAG, "ChatMessage.create failed:", e));
+  }
+
+  // ── VFX ───────────────────────────────────────────────────────────────────
+  function playVfx(cfg, tokenDoc) {
+    if (cfg.vfxType === "file" && cfg.vfxFile) {
+      if (game.modules.get("sequencer")?.active) {
+        try { new Sequence().effect().file(cfg.vfxFile).atLocation(tokenDoc).play(); return; }
+        catch {}
+      }
+      const tokenObj = canvas.tokens.get(tokenDoc?.id);
+      if (!tokenObj) return;
+      PIXI.Assets.load(cfg.vfxFile).then(texture => {
+        const gSize  = canvas.grid.size ?? 100;
+        const w      = Number(tokenDoc?.width  ?? 1) * gSize;
+        const h      = Number(tokenDoc?.height ?? 1) * gSize;
+        const sprite = new PIXI.Sprite(texture);
+        sprite.anchor.set(0.5);
+        sprite.x      = Number(tokenDoc.x) + w / 2;
+        sprite.y      = Number(tokenDoc.y) + h / 2;
+        sprite.width  = w; sprite.height = h;
+        sprite.zIndex = 999998; sprite.alpha = 0;
+        canvas.stage.addChild(sprite);
+        canvas.stage.sortChildren?.();
+        const start = performance.now(), DUR = 1500;
+        const tick  = () => {
+          const t = (performance.now() - start) / DUR;
+          sprite.alpha = t < 0.15 ? t / 0.15 : t > 0.8 ? Math.max(0, 1 - (t - 0.8) / 0.2) : 1;
+          if (t >= 1) {
+            canvas.app.ticker.remove(tick);
+            canvas.stage.removeChild(sprite);
+            sprite.destroy({ texture: false });
+          }
+        };
+        canvas.app.ticker.add(tick);
+      }).catch(() => {});
+    }
+
+    if (cfg.vfxType === "screenflash") {
+      const el = document.createElement("div");
+      el.style.cssText = `position:fixed;inset:0;z-index:99999;pointer-events:none;`
+        + `background:${cfg.vfxFlashTint ?? "#ff0000"};opacity:${Number(cfg.vfxFlashAlpha ?? 0.5)};`
+        + `transition:opacity 600ms ease-out;`;
+      document.body.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = "0"; }));
+      setTimeout(() => el.remove(), 700);
+    }
+  }
+
+  // ── SFX ───────────────────────────────────────────────────────────────────
+  function playSfx(cfg) {
+    if (!cfg.sfxUrl) return;
+    try {
+      if (game.modules.get("sequencer")?.active) new Sequence().sound(cfg.sfxUrl).play();
+      else AudioHelper.play({ src: cfg.sfxUrl, volume: 0.8, autoplay: true });
+    } catch (e) { console.warn(TAG, "SFX error:", e); }
+  }
+
+  // ── Broadcast VFX/SFX to all other clients ────────────────────────────────
+  function broadcastVfx(cfg, tokenDoc, sceneId) {
+    if (cfg.silent) return;
+    if (cfg.vfxType === "none" && !cfg.sfxUrl) return;
+    game.socket.emit(SOCKET_CH, {
+      type: MSG_VFX,
+      payload: { cfg, tokenId: tokenDoc?.id ?? null, sceneId: sceneId ?? null },
+    });
+  }
+
+  // ── Socket handler (all clients) ───────────────────────────────────────────
+  const SOCKET_GUARD = "__ONI_DP_EFFECT_ENGINE_SOCKET__";
+
+  function setupSocket() {
+    if (window[SOCKET_GUARD]) return;
+    window[SOCKET_GUARD] = true;
+
+    game.socket.on(SOCKET_CH, async (msg) => {
+      // ── GM: apply resource/AE changes, create chat card, re-broadcast VFX ──
+      if (msg?.type === MSG_APPLY && game.user?.isGM) {
+        const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
+        const actors = [];
+        for (const uuid of (actorUuids ?? [])) {
+          const a = await fromUuid(uuid).catch(() => null);
+          if (a) actors.push(a);
+        }
+        if (!actors.length) { console.warn(TAG, "GM: no actors resolved."); return; }
+
+        const results = await applyToActors(actors, cfg);
+        if (!cfg.silent) await createChatCard(results, cfg, tileLabel);
+
+        // Broadcast VFX so the triggering player (and any spectators) all see it.
+        // The player who emitted MSG_APPLY already played VFX locally, but other
+        // clients haven't — this covers everyone else.
+        broadcastVfx(cfg, { id: tokenId }, sceneId);
+        return;
+      }
+
+      // ── All clients: play VFX/SFX ──────────────────────────────────────────
+      if (msg?.type === MSG_VFX) {
+        const { cfg, tokenId, sceneId } = msg.payload ?? {};
+        if (sceneId && canvas.scene?.id !== sceneId) return;
+        const tokenDoc = canvas.tokens.get(tokenId)?.document ?? { id: tokenId };
+        if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
+      }
+    });
+
+    console.debug(TAG, "Socket listeners installed.");
+  }
+
+  // ── Main run() ─────────────────────────────────────────────────────────────
+  async function run(cfg, tileDoc, tokenDoc, scene) {
+    if (!cfg.enabled) return;
+    if (!cfg.useResourceChange && !cfg.useActiveEffect
+        && cfg.vfxType === "none" && !cfg.sfxUrl) return;
+
+    const allMembers = await resolvePartyMembers();
+    const targets    = selectTargets(allMembers, cfg.targetMode);
+    const tileLabel  = tileDoc?.name ?? "Tile Event";
+    const sceneId    = scene?.id ?? canvas.scene?.id ?? null;
+
+    // VFX/SFX plays locally on the triggering client immediately.
+    if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
+
+    if (!cfg.useResourceChange && !cfg.useActiveEffect) return;
+
+    if (!targets.length) {
+      console.warn(TAG, "No party members resolved; skipping resource/AE application.");
+      return;
+    }
+
+    if (game.user?.isGM) {
+      const results = await applyToActors(targets, cfg);
+      if (!cfg.silent) {
+        await createChatCard(results, cfg, tileLabel);
+        // Broadcast VFX so non-triggering clients also see it.
+        broadcastVfx(cfg, tokenDoc, sceneId);
+      }
+    } else {
+      // Player → fire-and-forget to GM.  GM will broadcast VFX back to all
+      // OTHER clients after applying (triggering player already played above).
+      game.socket.emit(SOCKET_CH, {
+        type: MSG_APPLY,
+        payload: {
+          actorUuids: targets.map(a => a.uuid).filter(Boolean),
+          cfg,
+          tileLabel,
+          tokenId: tokenDoc?.id ?? null,
+          sceneId,
+        },
+      });
+    }
+  }
+
+  // ── Patch TileEventRegistry.dispatch ──────────────────────────────────────
+  function patchDispatch() {
+    const reg = DP.TileEventRegistry;
+    if (!reg?.dispatch) { console.warn(TAG, "TileEventRegistry.dispatch not found."); return; }
+    const _orig = reg.dispatch.bind(reg);
+    reg.dispatch = async function (typeKey, tileDoc, tokenDoc, scene) {
+      const result = await _orig(typeKey, tileDoc, tokenDoc, scene);
+      const cfg    = readConfig(tileDoc);
+      if (cfg.enabled) {
+        await run(cfg, tileDoc, tokenDoc, scene)
+          .catch(e => console.error(TAG, "post-dispatch run() error:", e));
+      }
+      return result;
+    };
+    console.debug(TAG, "TileEventRegistry.dispatch patched.");
+  }
+
+  // ── Public API ─────────────────────────────────────────────────────────────
+  DP.TileEffectEngine = { run, readConfig, resolvePartyMembers, selectTargets, RESOURCE_TYPES };
+
+  Hooks.once("ready", () => {
+    setupSocket();
+    patchDispatch();
+    console.debug(TAG, "Tile Effect Engine ready.");
+  });
+})();

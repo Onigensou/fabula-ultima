@@ -11,7 +11,7 @@
   const TAG = "[ONI][PseudoAnim][Core]";
   const SOCKET_NS = "module.fabula-ultima-companion";
   const API_PATH = ["ONI", "pseudo"];
-  const DEBUG = true;
+  const DEBUG = window.__ONI_PSEUDO_DEBUG__ ?? false;
 
   function log(...args) { if (DEBUG) console.log(TAG, ...args); }
   function warn(...args) { console.warn(TAG, ...args); }
