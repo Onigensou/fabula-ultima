@@ -1,19 +1,17 @@
 // ============================================================================
 // Teleporter System — Bootstrap & Movement Detection
 //
-// Two integration paths:
+// DUNGEON MODE (sceneMode === "dungeon"):
+//   Hooks "dungeonPathing.turnEnd" which fires { tokenDoc, node } (single
+//   object — all DP events use this shape).  Fires AFTER the DP confirm dialog
+//   and tile event dispatch, so the turn is fully resolved before we teleport.
 //
-// DUNGEON MODE (scene mode === "dungeon")
-//   Hooks on "dungeonPathing.turnEnd".  This hook fires only on the client
-//   that ran the turn loop (the movement controller), so only one client acts.
-//   The DP confirm dialog already confirmed the move; this fires AFTER that.
+// EXPLORATION MODE (sceneMode === "exploration"):
+//   Hooks "updateToken".  Fires on all clients; guarded to GM-only so only one
+//   client triggers the teleport.  Skips updates caused by our own teleport
+//   (options.teleporter = true) to avoid re-triggering on arrival.
 //
-// EXPLORATION / FREE MODE (scene mode === "exploration")
-//   Hooks on "updateToken".  Fires on all clients — guarded by movement-
-//   controller check (or GM fallback) and a debounce to prevent double-fire.
-//   Skips updates that were themselves triggered by a teleport (options.teleporter).
-//
-// SCENE MODE "none"
+// SCENE MODE "none":
 //   Teleporter logic is fully disabled.
 // ============================================================================
 (() => {
@@ -26,7 +24,6 @@
   const FLAG_ROOT = TP.FLAG_ROOT ?? "teleporter";
   const TAG       = "[TeleporterSystem][Bootstrap]";
 
-  // Prevents concurrent teleport triggers (e.g. two quick tile entries)
   let _teleporting = false;
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -41,21 +38,24 @@
   }
 
   function getSceneMode(scene) {
-    return TP.api?.getSceneMode?.(scene) ?? "none";
+    const sc  = scene ?? canvas?.scene;
+    const DP  = globalThis.DungeonPathing;
+    if (!DP) return "none";
+    const fab  = sc?.flags?.[MODULE_ID]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
+    const mode = fab?.[DP.SCENE_MODE_KEY];
+    if (mode === "dungeon" || mode === "exploration" || mode === "none") return mode;
+    const legacy = fab?.cameraFollowToken;
+    if (legacy === true || legacy === "true" || legacy === 1) return "exploration";
+    return "none";
   }
 
-  // Center point of the token document (world coords)
   function tokenCenter(tokenDoc) {
     const gSize = canvas?.grid?.size ?? 100;
     const tw    = (tokenDoc.width  ?? 1) * gSize;
     const th    = (tokenDoc.height ?? 1) * gSize;
-    return {
-      x: (tokenDoc.x ?? 0) + tw / 2,
-      y: (tokenDoc.y ?? 0) + th / 2,
-    };
+    return { x: (tokenDoc.x ?? 0) + tw / 2, y: (tokenDoc.y ?? 0) + th / 2 };
   }
 
-  // Find the first teleporter tile whose bounds contain the given world point
   function teleporterTileAt(worldX, worldY, scene) {
     const sc = scene ?? canvas?.scene;
     for (const tileDoc of (sc?.tiles ?? [])) {
@@ -72,7 +72,6 @@
 
   async function askTeleportConfirm(destination) {
     let where = "the destination";
-
     if (destination?.type === "coords") {
       where = `(${Math.round(destination.x ?? 0)}, ${Math.round(destination.y ?? 0)})`;
       if (destination.sceneId && destination.sceneId !== canvas?.scene?.id) {
@@ -87,7 +86,6 @@
         where = "a nearby tile";
       }
     }
-
     return Dialog.confirm({
       title:   "Teleporter",
       content: `<p style="text-align:center;padding:8px 4px;">Teleport to ${where}?</p>`,
@@ -104,59 +102,75 @@
 
     if (!flags.destination) {
       ui.notifications?.warn?.("Teleporter tile has no destination configured.");
+      console.warn(TAG, "Teleporter tile has no destination:", tileDoc.id);
       return;
     }
+
+    console.debug(TAG, "Triggering teleporter on tile", tileDoc.id, "→", flags.destination);
 
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode) {
       const confirmed = await askTeleportConfirm(flags.destination);
-      if (!confirmed) return;
+      if (!confirmed) {
+        console.debug(TAG, "Teleport cancelled by player.");
+        return;
+      }
     }
 
     _teleporting = true;
     try {
-      await TP.api.teleportToken(tokenDoc, flags.destination, { sfxUrl: flags.sfxUrl });
+      const sfxUrl = (typeof flags.sfxUrl === "string" && flags.sfxUrl.trim()) ? flags.sfxUrl.trim() : undefined;
+      await TP.api.teleportToken(tokenDoc, flags.destination, { sfxUrl });
     } catch (e) {
       console.error(TAG, "Teleportation failed:", e);
-      ui.notifications?.error?.("Teleporter: an error occurred. See the console.");
+      ui.notifications?.error?.("Teleporter error — see console.");
     } finally {
-      // Brief cooldown so the arrival position update doesn't re-trigger
       setTimeout(() => { _teleporting = false; }, 1500);
     }
   }
 
   // ── DUNGEON MODE — hook on turnEnd ────────────────────────────────────────────
-  // "dungeonPathing.turnEnd" fires only on the movement controller's client,
-  // after the DP confirm button has been pressed and the graph rebuilt.
+  // NOTE: all DP events pass a SINGLE object as their argument:
+  //   Hooks.callAll(DP.HOOKS.TURN_END, { tokenDoc, node })
+  // Destructure accordingly.
 
-  Hooks.on("dungeonPathing.turnEnd", async (tokenDoc, destinationNode) => {
-    if (getSceneMode() !== "dungeon") return;
-    if (_teleporting) return;
+  Hooks.on("dungeonPathing.turnEnd", async ({ tokenDoc, node } = {}) => {
+    try {
+      if (getSceneMode() !== "dungeon") return;
+      if (_teleporting) return;
+      if (!node?.nodeId) return;
 
-    const scene   = canvas?.scene;
-    const tileDoc = scene?.tiles?.get?.(destinationNode?.nodeId);
-    if (!tileDoc || !isTeleporterEnabled(tileDoc)) return;
+      const scene   = canvas?.scene;
+      const tileDoc = scene?.tiles?.get?.(node.nodeId);
 
-    await triggerTeleporter(tileDoc, tokenDoc);
+      console.debug(TAG, "[dungeon] turnEnd fired | nodeId:", node.nodeId, "| tileDoc:", tileDoc?.id, "| enabled:", isTeleporterEnabled(tileDoc));
+
+      if (!tileDoc || !isTeleporterEnabled(tileDoc)) return;
+
+      await triggerTeleporter(tileDoc, tokenDoc);
+    } catch (e) {
+      console.error(TAG, "dungeonPathing.turnEnd handler error:", e);
+    }
   });
 
   // ── EXPLORATION MODE — hook on updateToken ────────────────────────────────────
-  // updateToken fires on ALL clients; only the movement controller (or GM) acts.
+  // GM handles all triggers in exploration mode to guarantee a single executor.
 
   let _exploreTimer = null;
 
   Hooks.on("updateToken", async (tokenDoc, changes, options) => {
-    // Skip token moves caused by a teleport (prevents re-triggering on arrival)
+    // Skip teleport-origin updates to prevent re-triggering on arrival
     if (options?.teleporter) return;
 
-    // Only react to position changes
     if (!("x" in changes || "y" in changes)) return;
 
     const mode = getSceneMode();
     if (mode === "none")    return;
-    if (mode === "dungeon") return; // dungeon path handled above via turnEnd
+    if (mode === "dungeon") return; // handled via turnEnd
 
-    // Debounce rapid updates
+    // Only the GM executes exploration-mode teleports
+    if (!game.user?.isGM) return;
+
     if (_exploreTimer) clearTimeout(_exploreTimer);
     _exploreTimer = setTimeout(async () => {
       _exploreTimer = null;
@@ -172,28 +186,25 @@
     if (_teleporting) return;
 
     // Only act for the party (db_actor) token
-    const dbResult = await window.FUCompanion?.api?.getCurrentGameDb?.();
-    if (!dbResult?.db || tokenDoc.actorId !== dbResult.db.id) return;
-
-    // Gate to a single client: prefer movement controller, fall back to GM
-    const movCtrl = globalThis.__ONI_MOVEMENT_CONTROL_API__;
-    if (movCtrl?.isCurrentUserMainController) {
-      const isCtrl = await movCtrl.isCurrentUserMainController().catch(() => false);
-      if (!isCtrl) return;
-    } else {
-      if (!game.user?.isGM) return;
+    try {
+      const dbResult = await window.FUCompanion?.api?.getCurrentGameDb?.();
+      if (dbResult?.db && tokenDoc.actorId !== dbResult.db.id) return;
+      // If db lookup fails, fall through and check any token (permissive fallback)
+    } catch {
+      // db resolver not available — skip the check and act on any token move
     }
 
     const center  = tokenCenter(tokenDoc);
     const tileDoc = teleporterTileAt(center.x, center.y);
     if (!tileDoc) return;
 
+    console.debug(TAG, "[exploration] token center:", center, "| teleporter tile:", tileDoc.id);
+
     await triggerTeleporter(tileDoc, tokenDoc);
   }
 
   Hooks.once("ready", () => {
     console.debug(TAG, "Teleporter System loaded.");
-    console.debug(TAG, "Flags: flags.fabula-ultima-companion.teleporter.*");
-    console.debug(TAG, "API:   globalThis.TeleporterSystem.api");
+    console.debug(TAG, "API: globalThis.TeleporterSystem.api");
   });
 })();
