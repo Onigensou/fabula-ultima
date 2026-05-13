@@ -39,7 +39,12 @@
   }
 
   function destroyContainer() {
-    try { _container?.destroy({ children: true }); } catch {}
+    if (_container) {
+      // Remove from parent before destroy — PIXI.destroy() does not guarantee removal,
+      // and orphaned containers in canvas.stage.children inflate the sortableChildren sort.
+      try { _container.parent?.removeChild(_container); } catch {}
+      try { _container.destroy({ children: true }); } catch {}
+    }
     _container = null;
     _currentNeighborKey = "";
   }

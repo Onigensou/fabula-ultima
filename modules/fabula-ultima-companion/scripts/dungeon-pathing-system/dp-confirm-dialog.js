@@ -172,6 +172,8 @@
   let _panel     = null;
   let _rafId     = null;
   let _resolveFn = null;
+  let _onResize  = null;
+  let _rect      = { left: 0, top: 0, width: 1, height: 1 };
 
   /**
    * Convert a world-space point to client (viewport) px using the PIXI stage
@@ -204,7 +206,7 @@
 
     // Anchor point: right edge of token, vertically centred
     const anchorClient = worldToClient(docX + tokW, docY + tokH / 2, cachedRect);
-    const panelH = panel.offsetHeight || (cfg.HEIGHT * 2 + cfg.GAP);
+    const panelH = panel._dpCachedHeight || (cfg.HEIGHT * 2 + cfg.GAP);
 
     panel.style.left = `${Math.round(anchorClient.x + cfg.OFFSET_X)}px`;
     panel.style.top  = `${Math.round(anchorClient.y - panelH / 2)}px`;
@@ -212,17 +214,18 @@
 
   function startTracking(panel, token) {
     if (_rafId) cancelAnimationFrame(_rafId);
+    if (_onResize) { window.removeEventListener("resize", _onResize); _onResize = null; }
 
     // Cache the canvas element's bounding rect — it only changes on window resize,
     // not on pan/zoom.  Avoids a potential reflow on every RAF frame.
     const el = canvas?.app?.view ?? canvas?.app?.renderer?.view;
-    let _rect = el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
-    const onResize = () => { _rect = el?.getBoundingClientRect?.() ?? _rect; };
-    window.addEventListener("resize", onResize, { passive: true });
+    _rect = el?.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
+    _onResize = () => { _rect = el?.getBoundingClientRect?.() ?? _rect; };
+    window.addEventListener("resize", _onResize, { passive: true });
 
     function tick() {
       if (!_panel) {
-        window.removeEventListener("resize", onResize);
+        stopTracking();
         return;
       }
       trackPosition(panel, token, _rect);
@@ -234,6 +237,8 @@
   function stopTracking() {
     if (_rafId) cancelAnimationFrame(_rafId);
     _rafId = null;
+    if (_onResize) window.removeEventListener("resize", _onResize);
+    _onResize = null;
   }
 
   function removePanel(leaveAnimation) {
@@ -314,6 +319,10 @@
 
         document.body.appendChild(panel);
         _panel = panel;
+
+        // Measure height ONCE after DOM insertion — reading offsetHeight inside the RAF
+        // loop (after writing style.top) forces a synchronous browser reflow every frame.
+        panel._dpCachedHeight = panel.offsetHeight;
 
         // Initial position + start tracking
         trackPosition(panel, token);
