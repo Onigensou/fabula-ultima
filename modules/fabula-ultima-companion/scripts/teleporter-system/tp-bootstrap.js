@@ -217,7 +217,10 @@
     document.head.appendChild(s);
   }
 
-  // ── Cooldown (loop safeguard) ─────────────────────────────────────────────────
+  // ── Cooldown — short time-based guard (rule 2 + network edge-case) ──────────
+  // Primary protection against rapid re-fire and against remote clients that
+  // may not receive options.teleporter from the server.  Exit-based locking
+  // (see _destLock below) is the main guard for rules 3 & 4.
   const COOLDOWN_MS = 2000;
   const _cooldowns  = new Map(); // tokenId → timestamp
 
@@ -229,6 +232,41 @@
   function markCooldown(tokenDoc) {
     _cooldowns.set(tokenDoc.id, Date.now());
     setTimeout(() => _cooldowns.delete(tokenDoc.id), COOLDOWN_MS * 2);
+  }
+
+  // ── Destination lock — exit-based guard (rules 3 & 4) ────────────────────────
+  // After a token teleports onto tile B, B is locked for that token until it
+  // physically exits B's area.  Time doesn't matter — only position does.
+  // This prevents B from re-triggering and sending the token back to A,
+  // even if the token idles on B long enough for the cooldown to expire.
+  const _destLock = new Map(); // tokenId → Set<tileId>
+
+  function _lockDestTile(tokenId, tileId) {
+    let s = _destLock.get(tokenId);
+    if (!s) { s = new Set(); _destLock.set(tokenId, s); }
+    s.add(tileId);
+    console.debug(TAG, `[destLock] locked tile ${tileId} for token ${tokenId}`);
+  }
+
+  function _isDestLocked(tokenId, tileId) {
+    return _destLock.get(tokenId)?.has(tileId) ?? false;
+  }
+
+  // Disarm any locked tiles the token has physically moved away from.
+  // Called on every normal token move after _tokenPrevPos is updated.
+  function _sweepDestLocks(tokenId, cx, cy) {
+    const locked = _destLock.get(tokenId);
+    if (!locked?.size) return;
+    for (const tileId of locked) {
+      const entry = _getTileCache().find(e => e.tileDoc.id === tileId);
+      if (!entry) { locked.delete(tileId); continue; }
+      const { rx, ry, rw, rh } = entry;
+      if (cx < rx || cx > rx + rw || cy < ry || cy > ry + rh) {
+        locked.delete(tileId);
+        console.debug(TAG, `[destLock] rearmed tile ${tileId} for token ${tokenId}`);
+      }
+    }
+    if (locked.size === 0) _destLock.delete(tokenId);
   }
 
   // ── Cached db actor ID for sync check ────────────────────────────────────────
@@ -483,6 +521,7 @@
     _initPosCache();
     _invalidateTileCache();
     _invalidateSceneMode();
+    _destLock.clear();
   });
 
   // ── Teleporter tile cache ─────────────────────────────────────────────────────
@@ -546,11 +585,15 @@
   }
 
   // Returns the first tile-cache entry whose rect the movement path crosses.
-  // Enter-only: prevC inside the tile skips it — token must exit before re-arming.
-  function _tileOnPath(x1, y1, x2, y2) {
+  // Rule 1 (enter-only): skips tiles where prevC is already inside — token must
+  //   exit before the tile re-arms.
+  // Rules 3 & 4 (destination lock): skips tiles that are locked for this token
+  //   (token arrived here via teleport and hasn't physically left yet).
+  function _tileOnPath(x1, y1, x2, y2, tokenId) {
     for (const entry of _getTileCache()) {
       const { rx, ry, rw, rh } = entry;
       if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) continue;
+      if (tokenId && _isDestLocked(tokenId, entry.tileDoc.id)) continue;
       if (_segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh)) return entry;
     }
     return null;
@@ -569,10 +612,20 @@
 
   Hooks.on("updateToken", (tokenDoc, changes, options) => {
     if (options?.teleporter) {
-      // Update arrival position so the first real move from the destination tile
-      // uses correct prev coords and does not immediately re-cross that tile.
       if ("x" in changes || "y" in changes) {
-        _tokenPrevPos.set(tokenDoc.id, tokenCenter(tokenDoc));
+        // Rule 5: record arrival position so the next real move from the destination
+        // tile uses the correct prev coords and does not immediately re-cross it.
+        const arrC = tokenCenter(tokenDoc);
+        _tokenPrevPos.set(tokenDoc.id, arrC);
+
+        // Rules 3 & 4: lock any teleporter tile the token just landed on.
+        // The lock persists until the token physically exits that tile's area.
+        for (const entry of _getTileCache()) {
+          const { rx, ry, rw, rh, tileDoc: td } = entry;
+          if (arrC.x >= rx && arrC.x <= rx + rw && arrC.y >= ry && arrC.y <= ry + rh) {
+            _lockDestTile(tokenDoc.id, td.id);
+          }
+        }
       }
       hideTpHudButton();
       return;
@@ -588,6 +641,9 @@
     const newC  = tokenCenter(tokenDoc);
     const prevC = _tokenPrevPos.get(tokenDoc.id) ?? { x: newC.x, y: newC.y };
     _tokenPrevPos.set(tokenDoc.id, { x: newC.x, y: newC.y });
+
+    // Rules 3 & 4: disarm any destination-locked tile the token has left.
+    if (_destLock.has(tokenDoc.id)) _sweepDestLocks(tokenDoc.id, newC.x, newC.y);
 
     // Quick-hide: token moved, check immediately if it left the active button tile
     if (_hudBtnToken?.id === tokenDoc.id && _hudBtnTile) {
@@ -613,7 +669,7 @@
   });
 
   function _detectExplore(tokenDoc, prevC, newC) {
-    const entry = _tileOnPath(prevC.x, prevC.y, newC.x, newC.y);
+    const entry = _tileOnPath(prevC.x, prevC.y, newC.x, newC.y, tokenDoc.id);
     if (!entry) return;
 
     const { tileDoc, rx, ry, rw, rh, confirmMode } = entry;
