@@ -233,18 +233,20 @@
       }
 
       // — Resolve tile doc and flags —
-      const tileDoc         = scene.tiles.get(node.nodeId) ?? null;
-      const usableFlag      = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable        = usableFlag === true || usableFlag === "true";
-      const skipConfirmFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
-      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const tileDoc            = scene.tiles.get(node.nodeId) ?? null;
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable           = usableFlag === true || usableFlag === "true";
+      const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
+      const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
 
       // — Confirmation (or skip if flagged) —
       let confirmed;
       if (skipConfirm) {
         confirmed = true;
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack });
       }
 
       if (confirmed === false) return;
@@ -414,11 +416,13 @@
       }
 
       // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
-      const tileDoc         = scene.tiles.get(clicked.nodeId) ?? null;
-      const usableFlag      = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable        = usableFlag === true || usableFlag === "true";
-      const skipConfirmFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
-      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const tileDoc            = scene.tiles.get(clicked.nodeId) ?? null;
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable           = usableFlag === true || usableFlag === "true";
+      const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
+      const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
 
       // — In-canvas confirmation buttons (or skip if flagged) —
       const tConfirm = performance.now();
@@ -427,7 +431,7 @@
         confirmed = true;
         perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack });
         perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
       }
 

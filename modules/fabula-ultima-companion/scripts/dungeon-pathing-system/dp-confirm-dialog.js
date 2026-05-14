@@ -266,13 +266,16 @@
      * @param {object} [options]
      * @param {boolean} [options.showUseButton=false]
      *   When true, a teal "Use" button is inserted between Confirm and Go Back.
+     * @param {boolean} [options.showRevertButton=true]
+     *   When false, the "Go Back" button is hidden entirely. Use for tiles where
+     *   reverting is not meaningful (e.g. after a force move).
      *
      * Returns Promise<true|"use"|false>:
      *   true  = Confirm pressed  (land without triggering tile event)
      *   "use" = Use pressed      (land AND trigger tile event)
      *   false = Go Back pressed  (revert movement)
      */
-    ask(token, { showUseButton = false } = {}) {
+    ask(token, { showUseButton = false, showRevertButton = true } = {}) {
       this.forceClose();
       this.isOpen = true;
 
@@ -314,8 +317,10 @@
           panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
         }
 
-        addGap();
-        panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
+        if (showRevertButton) {
+          addGap();
+          panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
+        }
 
         document.body.appendChild(panel);
         _panel = panel;

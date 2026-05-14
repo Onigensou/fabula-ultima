@@ -273,15 +273,17 @@
       const scene       = tileDoc?.parent ?? null;
       const tileId      = tileDoc?.id ?? null;
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
-      const persistFlag     = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
-      const usableFlag      = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
-      const skipConfirmFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
+      const persistFlag       = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
+      const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
+      const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
+      const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
       const initialType     = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
       const currentType     = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
-      const persists        = persistFlag === true || persistFlag === "true";
-      const usable          = usableFlag  === true || usableFlag  === "true";
-      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const persists        = persistFlag       === true || persistFlag       === "true";
+      const usable          = usableFlag        === true || usableFlag        === "true";
+      const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
+      const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
 
       const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
       const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
@@ -319,6 +321,20 @@
           </div>
           <p class="notes">
             When checked, landing on this tile skips the confirmation dialog and triggers the tile event immediately.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Disable Go Back</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.disableGoBack"
+                   data-dtype="Boolean"
+                   ${disableGoBack ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, the <b>Go Back</b> button is hidden from the confirmation dialog.
+            Use on tiles where undoing the move is not meaningful, such as Force Move destinations.
           </p>
         </div>
 
