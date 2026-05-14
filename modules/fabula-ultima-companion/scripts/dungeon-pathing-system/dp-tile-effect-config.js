@@ -322,7 +322,7 @@
                ${cfg.useResourceChange ? "" : 'style="display:none"'}>
             <div class="form-group">
               <label>Type</label>
-              <select name="${fl("resourceType")}">
+              <select name="${fl("resourceType")}" data-oni-ec="resource-type">
                 <optgroup label="HP">
                   <option value="damage"   ${sel("damage",   cfg.resourceType)}>Damage (HP loss)</option>
                   <option value="healing"  ${sel("healing",  cfg.resourceType)}>Healing (HP gain)</option>
@@ -345,6 +345,46 @@
               <label>Amount</label>
               <input type="number" name="${fl("resourceValue")}"
                      data-dtype="Number" min="0" value="${cfg.resourceValue}" />
+            </div>
+            <div class="form-group" data-oni-ec-damage-only="1"
+                 ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
+              <label>Element</label>
+              <select name="${fl("elementType")}">
+                <option value="elementless" ${sel("elementless", cfg.elementType)}>— None —</option>
+                <option value="physical"    ${sel("physical",    cfg.elementType)}>Physical</option>
+                <option value="air"         ${sel("air",         cfg.elementType)}>Air</option>
+                <option value="bolt"        ${sel("bolt",        cfg.elementType)}>Bolt</option>
+                <option value="dark"        ${sel("dark",        cfg.elementType)}>Dark</option>
+                <option value="earth"       ${sel("earth",       cfg.elementType)}>Earth</option>
+                <option value="fire"        ${sel("fire",        cfg.elementType)}>Fire</option>
+                <option value="ice"         ${sel("ice",         cfg.elementType)}>Ice</option>
+                <option value="light"       ${sel("light",       cfg.elementType)}>Light</option>
+                <option value="poison"      ${sel("poison",      cfg.elementType)}>Poison</option>
+              </select>
+            </div>
+            <div class="form-group" data-oni-ec-damage-only="1"
+                 ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
+              <label>Ignore Reduction</label>
+              <input type="checkbox" name="${fl("ignoreReduction")}"
+                     data-dtype="Boolean" ${chk(cfg.ignoreReduction)} />
+              <p class="notes">Bypasses target flat and % damage reduction stats.</p>
+            </div>
+            <div class="form-group" data-oni-ec-damage-only="1"
+                 ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
+              <label>Weapon Type</label>
+              <select name="${fl("weaponType")}">
+                <option value="none_ef"     ${sel("none_ef",     cfg.weaponType)}>— None —</option>
+                <option value="arcane_ef"   ${sel("arcane_ef",   cfg.weaponType)}>Arcane</option>
+                <option value="bow_ef"      ${sel("bow_ef",      cfg.weaponType)}>Bow</option>
+                <option value="brawling_ef" ${sel("brawling_ef", cfg.weaponType)}>Brawling</option>
+                <option value="dagger_ef"   ${sel("dagger_ef",   cfg.weaponType)}>Dagger</option>
+                <option value="firearm_ef"  ${sel("firearm_ef",  cfg.weaponType)}>Firearm</option>
+                <option value="flail_ef"    ${sel("flail_ef",    cfg.weaponType)}>Flail</option>
+                <option value="heavy_ef"    ${sel("heavy_ef",    cfg.weaponType)}>Heavy</option>
+                <option value="spear_ef"    ${sel("spear_ef",    cfg.weaponType)}>Spear</option>
+                <option value="sword_ef"    ${sel("sword_ef",    cfg.weaponType)}>Sword</option>
+                <option value="thrown_ef"   ${sel("thrown_ef",   cfg.weaponType)}>Thrown</option>
+              </select>
             </div>
           </div>
 
@@ -501,6 +541,15 @@
     const resBody = $("[data-oni-ec-resource='1']");
     resCb?.addEventListener("change", () => { toggle(resBody, resCb.checked); resize(); });
 
+    // Resource type → show/hide element + weapon fields (damage only)
+    const resTypeSel      = $("[data-oni-ec='resource-type']");
+    const damageOnlyFields = panel.querySelectorAll("[data-oni-ec-damage-only='1']");
+    resTypeSel?.addEventListener("change", () => {
+      const show = resTypeSel.value === "damage";
+      damageOnlyFields.forEach(el => toggle(el, show));
+      resize();
+    });
+
     // AE toggle
     const aeCb   = $("[data-oni-ec='ae-toggle']");
     const aeBody = $("[data-oni-ec-ae='1']");
@@ -562,6 +611,9 @@
         useResourceChange: bool(raw.useResourceChange),
         resourceType:      String(raw.resourceType    ?? "damage"),
         resourceValue:     Number(raw.resourceValue   ?? 0),
+        elementType:       String(raw.elementType     ?? "elementless"),
+        weaponType:        String(raw.weaponType      ?? "none_ef"),
+        ignoreReduction:   bool(raw.ignoreReduction),
         useActiveEffect:   bool(raw.useActiveEffect),
         activeEffects,
         activeEffectsJson: raw.activeEffectsJson ?? "",

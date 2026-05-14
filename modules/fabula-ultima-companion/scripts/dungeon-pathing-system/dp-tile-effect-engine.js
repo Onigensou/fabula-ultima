@@ -61,6 +61,9 @@
       useResourceChange: bool(raw.useResourceChange),
       resourceType:      String(raw.resourceType      ?? "damage"),
       resourceValue:     Number(raw.resourceValue      ?? 0),
+      elementType:       String(raw.elementType        ?? "elementless"),
+      weaponType:        String(raw.weaponType         ?? "none_ef"),
+      ignoreReduction:   bool(raw.ignoreReduction),
       useActiveEffect:   bool(raw.useActiveEffect),
       activeEffects,
       targetMode:        String(raw.targetMode         ?? "all"),
@@ -114,9 +117,49 @@
   }
 
   // ── Resource delta (one actor) ─────────────────────────────────────────────
+  // HP and MP types route through FUCompanion.api.applyDamage (verbosity: silent —
+  // tile system handles its own VFX/chat).  IP/ZP use the legacy direct-update path
+  // since the API does not model those resources.
   async function applyResourceDelta(actor, cfg) {
     const rt = RESOURCE_TYPES[cfg.resourceType];
     if (!rt || !(cfg.resourceValue > 0)) return null;
+
+    const dmgApi = globalThis.FUCompanion?.api?.applyDamage?.applyToActor;
+
+    // ── HP damage / healing via new API ──────────────────────────────────────
+    if (dmgApi && (cfg.resourceType === "damage" || cfg.resourceType === "healing")) {
+      const result = await dmgApi({
+        baseDamage:   cfg.resourceValue,
+        elementType:  cfg.elementType,
+        weaponType:   cfg.weaponType,
+        valueType:    "hp",
+        isRecovery:   cfg.resourceType === "healing",
+        ignoreDR:     cfg.ignoreReduction,
+        targetActor:  actor,
+        attackerName: "Tile",
+        sourceType:   "Tile",
+        verbosity:    "silent",
+      });
+      const max = Number(actor.system?.props?.[rt.maxProp] ?? 0);
+      return { rt, previous: result.hp.from, delta: result.hp.to - result.hp.from, newValue: result.hp.to, max };
+    }
+
+    // ── MP drain / gain via new API ───────────────────────────────────────────
+    if (dmgApi && (cfg.resourceType === "mp_drain" || cfg.resourceType === "mp_gain")) {
+      const result = await dmgApi({
+        baseDamage:   cfg.resourceValue,
+        valueType:    "mp",
+        isRecovery:   cfg.resourceType === "mp_gain",
+        targetActor:  actor,
+        attackerName: "Tile",
+        sourceType:   "Tile",
+        verbosity:    "silent",
+      });
+      const max = Number(actor.system?.props?.[rt.maxProp] ?? 0);
+      return { rt, previous: result.mp.from, delta: result.mp.to - result.mp.from, newValue: result.mp.to, max };
+    }
+
+    // ── Legacy path: IP / ZP (and fallback if API unavailable) ───────────────
     const props   = actor.system?.props ?? {};
     const current = Number(props[rt.prop]    ?? 0);
     const max     = Number(props[rt.maxProp] ?? 0);
