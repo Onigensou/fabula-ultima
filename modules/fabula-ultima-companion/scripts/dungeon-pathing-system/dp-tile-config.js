@@ -277,6 +277,7 @@
       const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
       const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
       const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
+      const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
       const initialType     = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
       const currentType     = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
@@ -284,6 +285,7 @@
       const usable          = usableFlag        === true || usableFlag        === "true";
       const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
       const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
+      const blockGoBack     = blockGoBackFlag   === true || blockGoBackFlag   === "true";
 
       const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
       const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
@@ -324,8 +326,10 @@
           </p>
         </div>
 
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-undo"></i> Undo</h3>
+
         <div class="form-group">
-          <label>Disable Go Back</label>
+          <label>Disable</label>
           <div class="form-fields">
             <input type="checkbox"
                    name="flags.${MODULE_ID}.${pathingKey}.disableGoBack"
@@ -333,10 +337,22 @@
                    ${disableGoBack ? "checked" : ""} />
           </div>
           <p class="notes">
-            When checked, the <b>Go Back</b> button is hidden from the confirmation dialog.<br/>
-            <b>On a destination tile</b> — hides Go Back when the player lands here.<br/>
-            <b>On a Force Move tile</b> — hides Go Back on whatever tile the token is pushed to,
-            blocking undo of the forced movement.
+            When checked, the <b>Go Back</b> button is hidden when the token lands on <b>this</b> tile.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Block</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.blockGoBack"
+                   data-dtype="Boolean"
+                   ${blockGoBack ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, the <b>Go Back</b> button is hidden on whatever tile the token moves to
+            <b>from</b> this tile — because going back would land on this tile.
+            Use on Force Move tiles to prevent undoing the push.
           </p>
         </div>
 

@@ -210,7 +210,7 @@
   // ---------------------------------------------------------------------------
   const _MAX_ARRIVAL_DEPTH = 10;
 
-  async function processArrivalAt(node, token, scene, fromNode, { allowRevert = true } = {}) {
+  async function processArrivalAt(node, token, scene, fromNode) {
     state._arrivalDepth++;
     if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
       console.warn(TAG, `processArrivalAt: chain depth limit (${_MAX_ARRIVAL_DEPTH}) reached — stopping.`);
@@ -238,17 +238,20 @@
       const isUsable           = usableFlag === true || usableFlag === "true";
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Disable: hide Go Back on this destination tile.
       const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
       const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
+      // Block: if the FROM tile has blockGoBack set, hide Go Back (going back lands there).
+      const fromTileDoc        = fromNode ? (scene.tiles.get(fromNode.nodeId) ?? null) : null;
+      const blockGoBackFlag    = fromTileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.blockGoBack`);
+      const blockGoBack        = blockGoBackFlag === true || blockGoBackFlag === "true";
 
       // — Confirmation (or skip if flagged) —
-      // showRevertButton is false if either the caller blocks revert (allowRevert=false,
-      // e.g. a Force Move tile with disableGoBack set) OR the destination itself has disableGoBack.
       let confirmed;
       if (skipConfirm) {
         confirmed = true;
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: allowRevert && !disableGoBack });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
       }
 
       if (confirmed === false) return;
@@ -423,8 +426,13 @@
       const isUsable           = usableFlag === true || usableFlag === "true";
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Disable: hide Go Back on this destination tile.
       const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
       const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
+      // Block: if the FROM tile has blockGoBack set, hide Go Back (going back lands there).
+      const fromTileDoc        = scene.tiles.get(fromNode?.nodeId) ?? null;
+      const blockGoBackFlag    = fromTileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.blockGoBack`);
+      const blockGoBack        = blockGoBackFlag === true || blockGoBackFlag === "true";
 
       // — In-canvas confirmation buttons (or skip if flagged) —
       const tConfirm = performance.now();
@@ -433,7 +441,7 @@
         confirmed = true;
         perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
         perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
       }
 
