@@ -364,6 +364,13 @@
             </div>
             <div class="form-group" data-oni-ec-damage-only="1"
                  ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
+              <label>Ignore Reduction</label>
+              <input type="checkbox" name="${fl("ignoreReduction")}"
+                     data-dtype="Boolean" ${chk(cfg.ignoreReduction)} />
+              <p class="notes">Bypasses target flat and % damage reduction stats.</p>
+            </div>
+            <div class="form-group" data-oni-ec-damage-only="1"
+                 ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
               <label>Weapon Type</label>
               <select name="${fl("weaponType")}">
                 <option value="none_ef"     ${sel("none_ef",     cfg.weaponType)}>— None —</option>
@@ -606,6 +613,7 @@
         resourceValue:     Number(raw.resourceValue   ?? 0),
         elementType:       String(raw.elementType     ?? "elementless"),
         weaponType:        String(raw.weaponType      ?? "none_ef"),
+        ignoreReduction:   bool(raw.ignoreReduction),
         useActiveEffect:   bool(raw.useActiveEffect),
         activeEffects,
         activeEffectsJson: raw.activeEffectsJson ?? "",
