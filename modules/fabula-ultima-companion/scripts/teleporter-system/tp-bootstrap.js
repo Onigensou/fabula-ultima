@@ -70,12 +70,20 @@
   pointer-events: auto;
   user-select: none;
   box-shadow: 0 0 14px rgba(160,100,255,.55), 0 4px 14px rgba(0,0,0,.55);
-  animation: oni-tp-btn-pulse 1.8s ease-in-out infinite;
   text-shadow: 0 0 8px rgba(200,160,255,.8);
   transition: filter .12s ease;
+  /* animation is applied dynamically — see showTpHudButton / hideTpHudButton */
 }
 #oni-tp-hud-btn:hover  { filter: brightness(1.25); border-color: rgba(200,140,255,.9); }
 #oni-tp-hud-btn:active { transform: translate(-50%,-100%) scale(.91); }
+@keyframes oni-tp-btn-in {
+  from { opacity: 0; transform: translate(-50%, -100%) scale(0.45); }
+  to   { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+@keyframes oni-tp-btn-out {
+  from { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -100%) scale(0.45); }
+}
 @keyframes oni-tp-btn-pulse {
   0%,100% { box-shadow: 0 0 10px rgba(160,100,255,.4), 0 4px 14px rgba(0,0,0,.5); }
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
@@ -395,6 +403,12 @@
     btn.textContent = "🚪";
     document.body.appendChild(btn);
 
+    // Ease-in: fade + scale up, then chain to idle pulse
+    btn.style.animation = 'oni-tp-btn-in 0.18s ease-out forwards';
+    btn.addEventListener('animationend', () => {
+      if (_hudBtn === btn) btn.style.animation = 'oni-tp-btn-pulse 1.8s ease-in-out infinite';
+    }, { once: true });
+
     _hudBtn      = btn;
     _hudBtnTile  = tileDoc;
     _hudBtnToken = tokenDoc;
@@ -423,12 +437,21 @@
     _hudBtnRaf = requestAnimationFrame(track);
   }
 
-  function hideTpHudButton() {
+  function hideTpHudButton(animate = false) {
     if (_hudBtnRaf) { cancelAnimationFrame(_hudBtnRaf); _hudBtnRaf = null; }
-    _hudBtn?.remove();
+    const btn = _hudBtn;
     _hudBtn      = null;
     _hudBtnTile  = null;
     _hudBtnToken = null;
+    if (!btn) return;
+    if (animate) {
+      // Ease-out: fade + scale down, then remove from DOM
+      btn.style.animation    = 'oni-tp-btn-out 0.15s ease-in forwards';
+      btn.style.pointerEvents = 'none';
+      btn.addEventListener('animationend', () => btn.remove(), { once: true });
+    } else {
+      btn.remove();
+    }
   }
 
   // ── Dungeon confirmation dialog — parchment/JRPG themed with smart text ──────
@@ -687,7 +710,7 @@
     // Hide button if token visually left the tile the button was shown for
     if (_hudBtnTile) {
       const onTile = _tokenOnTile.get(tokenDoc.id);
-      if (!onTile?.has(_hudBtnTile.id)) hideTpHudButton();
+      if (!onTile?.has(_hudBtnTile.id)) hideTpHudButton(true); // animated exit
     }
 
     if (entered.length === 0) return;
