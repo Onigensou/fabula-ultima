@@ -145,5 +145,61 @@
     label(direction) {
       return _LABEL[direction] ?? direction;
     },
+
+    // ── Dev / Debug ───────────────────────────────────────────────────────────
+
+    /**
+     * Console test bridge — call from the browser console to verify that the
+     * direction graph can resolve a path from a given tile.
+     *
+     * Usage:
+     *   DungeonPathing.Direction.testPath("tileDocId", "S", 2)
+     *   // or use the shorthand on the bootstrap object:
+     *   __ONI_DUNGEON_PATHING__.testForcePath("tileDocId", "S", 2)
+     *
+     * @param {string} tileId   - The tile document ID (copy from Tile Config header).
+     * @param {string} direction - Direction key: N/NE/E/SE/S/SW/W/NW
+     * @param {number} [steps=1] - Number of hops to attempt.
+     * @returns {object|null} The resolved destination node, or null if blocked.
+     */
+    testPath(tileId, direction, steps = 1) {
+      const graph = globalThis.__ONI_DUNGEON_PATHING__?.graph;
+      if (!graph) { console.warn("[DP][Direction.testPath] Graph not ready."); return null; }
+
+      const startNode = graph.nodeMap.get(tileId);
+      if (!startNode) {
+        const ids = [...graph.nodeMap.keys()];
+        console.warn("[DP][Direction.testPath] Tile not found:", tileId,
+          "\nKnown IDs:", ids.join(", "));
+        return null;
+      }
+
+      console.group(`[DP][Direction.testPath] "${startNode.name}" → ${direction} ×${steps}`);
+      console.debug("Start node:", startNode.name, "| center:", startNode.center);
+
+      const neighbours = DP.Graph.getNeighbors(startNode.nodeId, graph);
+      if (!neighbours.length) {
+        console.warn("  ⚠ No neighbours — tile has no graph edges.");
+      } else {
+        console.debug(`  Neighbours (${neighbours.length}):`);
+        for (const n of neighbours) {
+          const dx = n.center.x - startNode.center.x;
+          const dy = n.center.y - startNode.center.y;
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          const bestDir = this.computeDirection(startNode, n);
+          console.debug(`    "${n.name}" | angle ${angle.toFixed(1)}° → sector ${bestDir}`);
+        }
+      }
+
+      const dest = this.getNodeNStepsInDirection(startNode, direction, steps, graph);
+      if (dest && dest.nodeId !== startNode.nodeId) {
+        console.debug(`  ✔ Destination: "${dest.name}" (${dest.nodeId})`);
+      } else {
+        console.warn(`  ✘ No reachable node ${steps}×${direction} from "${startNode.name}"`);
+      }
+
+      console.groupEnd();
+      return dest ?? null;
+    },
   };
 })();
