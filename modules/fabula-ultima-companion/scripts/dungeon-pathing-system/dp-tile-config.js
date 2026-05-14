@@ -462,6 +462,12 @@
           .filter(el => el.classList.contains("tab"))
           .forEach(p => p.classList.remove("active"));
 
+        // Hide any other manually-managed panels (e.g. Teleporter tab).
+        // stopImmediatePropagation() prevents the TP's tabsNav listener from firing,
+        // so we must explicitly hide its panel here — mirroring what tp-tile-config.js
+        // does for [data-oni-fabula-panel] when the Teleporter tab is clicked.
+        sheetBody.querySelectorAll("[data-oni-tp-panel='1']").forEach(p => { p.style.display = "none"; });
+
         tabPanel.style.display = "";
         try { app.setPosition({ height: "auto" }); } catch {}
       });
