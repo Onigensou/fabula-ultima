@@ -333,8 +333,10 @@
                    ${disableGoBack ? "checked" : ""} />
           </div>
           <p class="notes">
-            When checked, the <b>Go Back</b> button is hidden from the confirmation dialog.
-            Use on tiles where undoing the move is not meaningful, such as Force Move destinations.
+            When checked, the <b>Go Back</b> button is hidden from the confirmation dialog.<br/>
+            <b>On a destination tile</b> — hides Go Back when the player lands here.<br/>
+            <b>On a Force Move tile</b> — hides Go Back on whatever tile the token is pushed to,
+            blocking undo of the forced movement.
           </p>
         </div>
 

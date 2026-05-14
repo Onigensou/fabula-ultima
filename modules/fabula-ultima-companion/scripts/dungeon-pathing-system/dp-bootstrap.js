@@ -210,7 +210,7 @@
   // ---------------------------------------------------------------------------
   const _MAX_ARRIVAL_DEPTH = 10;
 
-  async function processArrivalAt(node, token, scene, fromNode) {
+  async function processArrivalAt(node, token, scene, fromNode, { allowRevert = true } = {}) {
     state._arrivalDepth++;
     if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
       console.warn(TAG, `processArrivalAt: chain depth limit (${_MAX_ARRIVAL_DEPTH}) reached — stopping.`);
@@ -242,11 +242,13 @@
       const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
 
       // — Confirmation (or skip if flagged) —
+      // showRevertButton is false if either the caller blocks revert (allowRevert=false,
+      // e.g. a Force Move tile with disableGoBack set) OR the destination itself has disableGoBack.
       let confirmed;
       if (skipConfirm) {
         confirmed = true;
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: allowRevert && !disableGoBack });
       }
 
       if (confirmed === false) return;

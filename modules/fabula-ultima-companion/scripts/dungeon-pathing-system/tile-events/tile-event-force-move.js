@@ -85,9 +85,16 @@
       // confirm → event dispatch → clear cycle for the destination tile,
       // exactly as if the player had clicked it. If destNode is itself a
       // Force Move tile (or any other tile type), it fires naturally from here.
+      //
+      // If this force move tile has disableGoBack set, pass allowRevert:false so
+      // the Go Back button is suppressed on the destination — the force move tile
+      // is "blocking" the undo, not the destination tile itself.
+      const _disableGoBackFlag = tileDoc?.getFlag(MOD, `${ROOT}.disableGoBack`);
+      const _allowRevert = !(_disableGoBackFlag === true || _disableGoBackFlag === "true");
+
       const bootstrap = globalThis.__ONI_DUNGEON_PATHING__;
       if (bootstrap?.processArrivalAt) {
-        await bootstrap.processArrivalAt(destNode, token, scene, forceMoveNode);
+        await bootstrap.processArrivalAt(destNode, token, scene, forceMoveNode, { allowRevert: _allowRevert });
       }
     },
   });
