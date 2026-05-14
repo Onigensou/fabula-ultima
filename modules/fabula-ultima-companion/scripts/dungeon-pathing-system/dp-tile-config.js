@@ -283,6 +283,9 @@
       const usable          = usableFlag  === true || usableFlag  === "true";
       const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
 
+      const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
+      const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
+
       // eligibleForFastTravel: explicit tile flag, or type-based default when unset
       const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
       const isEligible  = (rawEligible === null || rawEligible === undefined)
@@ -346,6 +349,42 @@
             When ON and the tile has been visited, it appears as a Fast Travel destination.
             Defaults to <b>ON</b> for Camp, Event, Story, and Final tiles.
           </p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-arrows-alt"></i> Force Move Settings</h3>
+        <p class="notes" style="margin: 0 0 8px; font-style: italic;">
+          Only active when the tile type is <strong>Force Move</strong>.
+        </p>
+
+        <div class="form-group">
+          <label>Direction</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.forceMoveDirection" data-dtype="String">
+              <option value="" ${!forceMoveDir ? "selected" : ""}>— not set —</option>
+              <option value="N"  ${forceMoveDir === "N"  ? "selected" : ""}>↑ North</option>
+              <option value="NE" ${forceMoveDir === "NE" ? "selected" : ""}>↗ North-East</option>
+              <option value="E"  ${forceMoveDir === "E"  ? "selected" : ""}>→ East</option>
+              <option value="SE" ${forceMoveDir === "SE" ? "selected" : ""}>↘ South-East</option>
+              <option value="S"  ${forceMoveDir === "S"  ? "selected" : ""}>↓ South</option>
+              <option value="SW" ${forceMoveDir === "SW" ? "selected" : ""}>↙ South-West</option>
+              <option value="W"  ${forceMoveDir === "W"  ? "selected" : ""}>← West</option>
+              <option value="NW" ${forceMoveDir === "NW" ? "selected" : ""}>↖ North-West</option>
+            </select>
+          </div>
+          <p class="notes">Direction to push the token when this tile triggers.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Steps</label>
+          <div class="form-fields">
+            <input type="number"
+                   name="flags.${MODULE_ID}.${pathingKey}.forceMoveSteps"
+                   data-dtype="Number"
+                   value="${forceMoveSteps}"
+                   min="1" max="10" step="1" />
+          </div>
+          <p class="notes">Number of tiles to push the token in the chosen direction.</p>
         </div>
 
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-info-circle"></i> Tracked State</h3>

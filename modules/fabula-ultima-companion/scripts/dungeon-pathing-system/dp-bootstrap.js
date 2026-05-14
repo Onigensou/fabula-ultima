@@ -322,6 +322,11 @@
       // — Token moved event —
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
+      // — Track entry direction (used by Force Move, Slippery, and future directional tiles) —
+      if (DP.Direction) {
+        DP.Direction.lastEntryDirection = DP.Direction.computeDirection(fromNode, clicked);
+      }
+
       // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
       const tileDoc         = scene.tiles.get(clicked.nodeId) ?? null;
       const usableFlag      = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);

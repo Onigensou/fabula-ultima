@@ -51,7 +51,7 @@
     GATHERING:      "gathering",
     HAZARD:         "hazard",
     HEALING:        "healing",
-    JUMP:           "jump",
+    FORCE_MOVE:     "force_move",
     POISON:         "poison",
     RECIPE:         "recipe",
     SETTLEMENT:     "settlement",
@@ -63,6 +63,18 @@
     ALERT:          "alert",
     DOOR:           "door",
     UNKNOWN:        "unknown",
+  });
+
+  // 8-directional compass keys (screen space: Y increases downward)
+  DP.DIRECTIONS = Object.freeze({
+    N:  "N",
+    NE: "NE",
+    E:  "E",
+    SE: "SE",
+    S:  "S",
+    SW: "SW",
+    W:  "W",
+    NW: "NW",
   });
 
   // Animation timing
