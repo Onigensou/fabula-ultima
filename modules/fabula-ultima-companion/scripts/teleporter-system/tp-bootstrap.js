@@ -70,12 +70,20 @@
   pointer-events: auto;
   user-select: none;
   box-shadow: 0 0 14px rgba(160,100,255,.55), 0 4px 14px rgba(0,0,0,.55);
-  animation: oni-tp-btn-pulse 1.8s ease-in-out infinite;
   text-shadow: 0 0 8px rgba(200,160,255,.8);
   transition: filter .12s ease;
+  /* animation is applied dynamically — see showTpHudButton / hideTpHudButton */
 }
 #oni-tp-hud-btn:hover  { filter: brightness(1.25); border-color: rgba(200,140,255,.9); }
 #oni-tp-hud-btn:active { transform: translate(-50%,-100%) scale(.91); }
+@keyframes oni-tp-btn-in {
+  from { opacity: 0; transform: translate(-50%, -100%) scale(0.45); }
+  to   { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+@keyframes oni-tp-btn-out {
+  from { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -100%) scale(0.45); }
+}
 @keyframes oni-tp-btn-pulse {
   0%,100% { box-shadow: 0 0 10px rgba(160,100,255,.4), 0 4px 14px rgba(0,0,0,.5); }
   50%     { box-shadow: 0 0 24px rgba(190,130,255,.75), 0 4px 18px rgba(0,0,0,.55); }
@@ -217,7 +225,10 @@
     document.head.appendChild(s);
   }
 
-  // ── Cooldown (loop safeguard) ─────────────────────────────────────────────────
+  // ── Cooldown — short time-based guard (rule 2 + network edge-case) ──────────
+  // Primary protection against rapid re-fire and against remote clients that
+  // may not receive options.teleporter from the server.  Exit-based locking
+  // (see _destLock below) is the main guard for rules 3 & 4.
   const COOLDOWN_MS = 2000;
   const _cooldowns  = new Map(); // tokenId → timestamp
 
@@ -231,8 +242,36 @@
     setTimeout(() => _cooldowns.delete(tokenDoc.id), COOLDOWN_MS * 2);
   }
 
-  // ── Cached db actor ID for sync check ────────────────────────────────────────
+  // ── Destination lock — exit-based guard (rules 3 & 4) ────────────────────────
+  // After a token teleports onto tile B, B is locked for that token until it
+  // physically exits B's area.  Time doesn't matter — only position does.
+  // This prevents B from re-triggering and sending the token back to A,
+  // even if the token idles on B long enough for the cooldown to expire.
+  const _destLock = new Map(); // tokenId → Set<tileId>
+
+  function _lockDestTile(tokenId, tileId) {
+    let s = _destLock.get(tokenId);
+    if (!s) { s = new Set(); _destLock.set(tokenId, s); }
+    s.add(tileId);
+    console.debug(TAG, `[destLock] locked tile ${tileId} for token ${tokenId}`);
+  }
+
+  function _isDestLocked(tokenId, tileId) {
+    return _destLock.get(tokenId)?.has(tileId) ?? false;
+  }
+
+  // _sweepDestLocks is now integrated into _detectEnter (exit detection).
+
+  // ── Cached db actor ID + PIXI token watch ────────────────────────────────────
+  // _cachedDbActorId: fast sync pre-check (avoids flag reads for non-party moves).
+  // _tpWatchToken: the live PIXI Token object for the db actor.  Its .center
+  //   property returns the CURRENT VISUAL position, which updates every animation
+  //   frame — not the document x/y, which only reflects the final destination.
+  //   This is what lets us detect tile entry mid-slide.
+
   let _cachedDbActorId = null;
+  let _tpWatchToken    = null; // PIXI Token object
+  let _tpTickerFn      = null; // current ticker callback (null when not installed)
 
   async function warmDbCache() {
     try {
@@ -241,11 +280,37 @@
     } catch {
       _cachedDbActorId = null;
     }
+    _refreshWatchToken();
+  }
+
+  function _refreshWatchToken() {
+    if (!_cachedDbActorId || !canvas?.tokens) { _tpWatchToken = null; return; }
+    _tpWatchToken = canvas.tokens.placeables.find(
+      t => t.document.actorId === _cachedDbActorId
+    ) ?? null;
+  }
+
+  // Start the per-frame ticker that reads the visual (PIXI) position of the db
+  // actor token and drives teleporter enter detection.
+  function _startExploreWatch() {
+    if (_tpTickerFn || !canvas?.app?.ticker) return;
+    _tpTickerFn = () => {
+      if (_getSceneMode() !== "exploration") return;
+      if (!_tpWatchToken) return;
+      const vis = _tpWatchToken.center; // PIXI visual position — live during animation
+      _runExploreDetect(_tpWatchToken.document, vis.x, vis.y);
+    };
+    canvas.app.ticker.add(_tpTickerFn);
+  }
+
+  function _stopExploreWatch() {
+    if (_tpTickerFn) { canvas?.app?.ticker?.remove(_tpTickerFn); _tpTickerFn = null; }
+    _tpWatchToken = null;
   }
 
   Hooks.once("ready", () => {
     ensureStyle();
-    warmDbCache();
+    warmDbCache(); // also calls _refreshWatchToken
     Hooks.on("updateActor", () => { _cachedDbActorId = null; warmDbCache(); });
   });
 
@@ -338,6 +403,12 @@
     btn.textContent = "🚪";
     document.body.appendChild(btn);
 
+    // Ease-in: fade + scale up, then chain to idle pulse
+    btn.style.animation = 'oni-tp-btn-in 0.18s ease-out forwards';
+    btn.addEventListener('animationend', () => {
+      if (_hudBtn === btn) btn.style.animation = 'oni-tp-btn-pulse 1.8s ease-in-out infinite';
+    }, { once: true });
+
     _hudBtn      = btn;
     _hudBtnTile  = tileDoc;
     _hudBtnToken = tokenDoc;
@@ -366,12 +437,21 @@
     _hudBtnRaf = requestAnimationFrame(track);
   }
 
-  function hideTpHudButton() {
+  function hideTpHudButton(animate = false) {
     if (_hudBtnRaf) { cancelAnimationFrame(_hudBtnRaf); _hudBtnRaf = null; }
-    _hudBtn?.remove();
+    const btn = _hudBtn;
     _hudBtn      = null;
     _hudBtnTile  = null;
     _hudBtnToken = null;
+    if (!btn) return;
+    if (animate) {
+      // Ease-out: fade + scale down, then remove from DOM
+      btn.style.animation    = 'oni-tp-btn-out 0.15s ease-in forwards';
+      btn.style.pointerEvents = 'none';
+      btn.addEventListener('animationend', () => btn.remove(), { once: true });
+    } else {
+      btn.remove();
+    }
   }
 
   // ── Dungeon confirmation dialog — parchment/JRPG themed with smart text ──────
@@ -465,24 +545,50 @@
     }
   });
 
-  // ── Per-token position cache (path-crossing detection) ───────────────────────
-  // Stores last known world-center for every token so the updateToken hook can
-  // test the movement segment rather than only the final position.
+  // ── Per-token tile-presence tracking (enter detection) ───────────────────────
+  // tokenId → Set<tileId>: which teleporter tiles the token center is currently
+  // inside.  Populated silently on canvasReady so tokens already sitting on a
+  // tile at scene load don't fire a spurious enter on their first move.
 
-  const _tokenPrevPos = new Map(); // tokenId → { x, y }
+  const _tokenOnTile = new Map();
 
-  function _initPosCache() {
-    _tokenPrevPos.clear();
+  function _initOnTileCache() {
+    _tokenOnTile.clear();
+    const tileCache = _getTileCache();
+    if (!tileCache.length) return;
     for (const tokenDoc of (canvas?.scene?.tokens ?? [])) {
       const c = tokenCenter(tokenDoc);
-      _tokenPrevPos.set(tokenDoc.id, { x: c.x, y: c.y });
+      for (const entry of tileCache) {
+        const { rx, ry, rw, rh, tileDoc } = entry;
+        if (c.x >= rx && c.x <= rx + rw && c.y >= ry && c.y <= ry + rh) {
+          let s = _tokenOnTile.get(tokenDoc.id);
+          if (!s) { s = new Set(); _tokenOnTile.set(tokenDoc.id, s); }
+          s.add(tileDoc.id);
+        }
+      }
     }
   }
 
   Hooks.on("canvasReady", () => {
-    _initPosCache();
     _invalidateTileCache();
     _invalidateSceneMode();
+    _destLock.clear();
+    _tokenOnTile.clear();
+    _initOnTileCache();
+    _refreshWatchToken();
+    _startExploreWatch();
+  });
+
+  Hooks.on("createToken", (tokenDoc) => {
+    // If the db token appears after canvasReady (e.g. spawned mid-session), latch it.
+    if (!_tpWatchToken && tokenDoc.actorId === _cachedDbActorId) _refreshWatchToken();
+  });
+
+  Hooks.on("deleteToken", (tokenDoc) => {
+    _tokenOnTile.delete(tokenDoc.id);
+    _destLock.delete(tokenDoc.id);
+    _cooldowns.delete(tokenDoc.id);
+    if (_tpWatchToken?.document?.id === tokenDoc.id) _tpWatchToken = null;
   });
 
   // ── Teleporter tile cache ─────────────────────────────────────────────────────
@@ -520,120 +626,120 @@
         "width" in changes || "height" in changes) _invalidateTileCache();
   });
 
-  // ── Path-vs-rectangle intersection ──────────────────────────────────────────
-  // _edgesCross extracted as a named function — avoids allocating closure
-  // objects inside _segCrossesRect on every call.
+  // ── Enter detection ──────────────────────────────────────────────────────────
+  // Compares the token's new center position against every cached teleporter tile.
+  // Returns tile-cache entries the token JUST ENTERED (center moved outside→inside).
+  // Also handles exits: tiles the token left are removed from _tokenOnTile and
+  // their dest locks are disarmed (rules 3 & 4).
+  //
+  // Dest-locked tiles (token arrived there via teleport and hasn't left yet) are
+  // tracked in _tokenOnTile so exits are still detected, but they are NOT added
+  // to the returned array — they don't trigger.
 
-  function _edgesCross(p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y) {
-    const dx1 = p2x - p1x, dy1 = p2y - p1y;
-    const dx2 = p4x - p3x, dy2 = p4y - p3y;
-    const d   = dx1 * dy2 - dy1 * dx2;
-    if (d > -1e-9 && d < 1e-9) return false;
-    const ex = p3x - p1x, ey = p3y - p1y;
-    const t  = (ex * dy2 - ey * dx2) / d;
-    const u  = (ex * dy1 - ey * dx1) / d;
-    return t >= 0 && t <= 1 && u >= 0 && u <= 1;
-  }
+  function _detectEnter(tokenId, cx, cy) {
+    let onTile = _tokenOnTile.get(tokenId);
+    if (!onTile) { onTile = new Set(); _tokenOnTile.set(tokenId, onTile); }
 
-  function _segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh) {
-    if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) return true;
-    if (x2 >= rx && x2 <= rx + rw && y2 >= ry && y2 <= ry + rh) return true;
-    const x2r = rx + rw, y2r = ry + rh;
-    return _edgesCross(x1, y1, x2, y2,  rx,  ry, x2r,  ry) ||
-           _edgesCross(x1, y1, x2, y2, x2r,  ry, x2r, y2r) ||
-           _edgesCross(x1, y1, x2, y2, x2r, y2r,  rx, y2r) ||
-           _edgesCross(x1, y1, x2, y2,  rx, y2r,  rx,  ry);
-  }
+    const entered  = [];
+    const nowOnIds = new Set();
 
-  // Returns the first tile-cache entry whose rect the movement path crosses.
-  // Enter-only: prevC inside the tile skips it — token must exit before re-arming.
-  function _tileOnPath(x1, y1, x2, y2) {
     for (const entry of _getTileCache()) {
-      const { rx, ry, rw, rh } = entry;
-      if (x1 >= rx && x1 <= rx + rw && y1 >= ry && y1 <= ry + rh) continue;
-      if (_segCrossesRect(x1, y1, x2, y2, rx, ry, rw, rh)) return entry;
+      const { rx, ry, rw, rh, tileDoc } = entry;
+      if (cx >= rx && cx <= rx + rw && cy >= ry && cy <= ry + rh) {
+        nowOnIds.add(tileDoc.id);
+        // Was outside → now inside, and not dest-locked → genuine enter
+        if (!onTile.has(tileDoc.id) && !_isDestLocked(tokenId, tileDoc.id)) {
+          entered.push(entry);
+        }
+      }
     }
-    return null;
+
+    // Exits: tiles token was on but is no longer on
+    for (const tileId of onTile) {
+      if (!nowOnIds.has(tileId)) {
+        onTile.delete(tileId);
+        // Disarm dest lock when token physically leaves the locked tile (rule 4)
+        const locked = _destLock.get(tokenId);
+        if (locked?.has(tileId)) {
+          locked.delete(tileId);
+          if (locked.size === 0) _destLock.delete(tokenId);
+          console.debug(TAG, `[destLock] rearmed tile ${tileId} for token ${tokenId}`);
+        }
+      }
+    }
+
+    // Commit presence: all tiles token is now on (including locked ones for exit tracking)
+    for (const tileId of nowOnIds) onTile.add(tileId);
+
+    return entered;
   }
 
-  // ── EXPLORATION MODE — hook on updateToken ───────────────────────────────────
-  // Runs on ALL clients (players + GM).
-  //
-  // Hot path (cache warm, covers ~99 % of calls):
-  //   1. Mode + actor check FIRST — zero allocation for non-party/non-exploration moves.
-  //   2. tokenCenter + prevPos update only for the party token.
-  //   3. _detectExplore: pure sync — tile cache lookup + path-crossing math.
-  //
-  // Cold path (db cache miss on first load or after actor update):
-  //   Async IIFE to warm cache, then calls _detectExplore.  Rare.
+  // ── updateToken — teleport-arrival handler only ──────────────────────────────
+  // Exploration enter-detection is now driven by the PIXI ticker (_startExploreWatch),
+  // which reads token.center (visual position) every animation frame.
+  // This hook only handles teleporter-caused jumps (options.teleporter = true):
+  //   • Clears stale presence so the ticker re-evaluates from a clean state.
+  //   • Locks the arrival tile so the destination pad can't immediately re-fire.
 
   Hooks.on("updateToken", (tokenDoc, changes, options) => {
-    if (options?.teleporter) {
-      // Update arrival position so the first real move from the destination tile
-      // uses correct prev coords and does not immediately re-cross that tile.
-      if ("x" in changes || "y" in changes) {
-        _tokenPrevPos.set(tokenDoc.id, tokenCenter(tokenDoc));
-      }
-      hideTpHudButton();
-      return;
-    }
+    if (!options?.teleporter) return;
     if (!("x" in changes || "y" in changes)) return;
 
-    // ── Cheap guards first — exit before any allocation ─────────────────────
-    const mode = _getSceneMode();                               // cached, no flag read
-    if (mode === "none" || mode === "dungeon") return;
-    if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
+    // Rule 5: clear visual tracking — token just jumped to a new position.
+    _tokenOnTile.delete(tokenDoc.id);
 
-    // ── Only now pay for tokenCenter + Map ops ───────────────────────────────
-    const newC  = tokenCenter(tokenDoc);
-    const prevC = _tokenPrevPos.get(tokenDoc.id) ?? { x: newC.x, y: newC.y };
-    _tokenPrevPos.set(tokenDoc.id, { x: newC.x, y: newC.y });
-
-    // Quick-hide: token moved, check immediately if it left the active button tile
-    if (_hudBtnToken?.id === tokenDoc.id && _hudBtnTile) {
-      const tile = _hudBtnTile;
-      if (newC.x < tile.x || newC.x > tile.x + tile.width ||
-          newC.y < tile.y || newC.y > tile.y + tile.height) {
-        hideTpHudButton();
+    // Rules 3 & 4: lock any teleporter tile the token just landed on.
+    const arrC = tokenCenter(tokenDoc); // document position = teleport destination
+    for (const entry of _getTileCache()) {
+      const { rx, ry, rw, rh, tileDoc: td } = entry;
+      if (arrC.x >= rx && arrC.x <= rx + rw && arrC.y >= ry && arrC.y <= ry + rh) {
+        _lockDestTile(tokenDoc.id, td.id);
       }
     }
-
-    // ── Hot path: fully synchronous ──────────────────────────────────────────
-    if (_cachedDbActorId !== null) {
-      _detectExplore(tokenDoc, prevC, newC);
-      return;
-    }
-
-    // ── Cold path: db cache miss (rare) ──────────────────────────────────────
-    (async () => {
-      await warmDbCache();
-      if (_cachedDbActorId !== null && tokenDoc.actorId !== _cachedDbActorId) return;
-      _detectExplore(tokenDoc, prevC, newC);
-    })().catch(e => console.warn(TAG, "exploration error:", e));
+    hideTpHudButton();
   });
 
-  function _detectExplore(tokenDoc, prevC, newC) {
-    const entry = _tileOnPath(prevC.x, prevC.y, newC.x, newC.y);
-    if (!entry) return;
+  // ── _runExploreDetect — called by the PIXI ticker every animation frame ──────
+  // visCx/visCy: the token's current VISUAL center (from token.center, not tokenDoc.x/y).
+  // This fires mid-animation, so the token's document position may differ from its
+  // visual position (the slide hasn't arrived at the destination yet).
 
-    const { tileDoc, rx, ry, rw, rh, confirmMode } = entry;
-    console.debug(TAG, "[exploration] path crossed tile:", tileDoc.id);
+  function _runExploreDetect(tokenDoc, visCx, visCy) {
+    const entered = _detectEnter(tokenDoc.id, visCx, visCy);
+
+    // Hide button if token visually left the tile the button was shown for
+    if (_hudBtnTile) {
+      const onTile = _tokenOnTile.get(tokenDoc.id);
+      if (!onTile?.has(_hudBtnTile.id)) hideTpHudButton(true); // animated exit
+    }
+
+    if (entered.length === 0) return;
+
+    const { tileDoc, rx, ry, rw, rh, confirmMode } = entered[0];
+    console.debug(TAG, "[exploration] visual entered tile:", tileDoc.id);
 
     if (confirmMode) {
-      // Show button only when the token stopped on the tile, not just walked past.
-      if (newC.x >= rx && newC.x <= rx + rw && newC.y >= ry && newC.y <= ry + rh &&
-          _hudBtnTile?.id !== tileDoc.id) {
+      // Button mode: only arm when the document position is also inside the tile.
+      // This distinguishes "player stopped here" from "player walked through."
+      // (With animate:true, tokenDoc.x/y = final destination — already known.)
+      const docC = tokenCenter(tokenDoc);
+      if (docC.x >= rx && docC.x <= rx + rw && docC.y >= ry && docC.y <= ry + rh) {
         showTpHudButton(tileDoc, tokenDoc);
       }
     } else {
+      // Auto mode: fire the moment the visual center crosses the tile boundary,
+      // regardless of where the final click destination is.
       hideTpHudButton();
       triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset: false, forcedNodeId: null })
         .catch(e => console.error(TAG, "teleport error:", e));
     }
   }
 
-  // Clean up button when the canvas is torn down (scene change, reload)
-  Hooks.on("canvasTearDown", () => hideTpHudButton());
+  // Stop ticker and clean up button when scene unloads
+  Hooks.on("canvasTearDown", () => {
+    hideTpHudButton();
+    _stopExploreWatch();
+  });
 
   Hooks.once("ready", () => {
     console.debug(TAG, "Teleporter System loaded.");
