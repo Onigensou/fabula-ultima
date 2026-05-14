@@ -362,16 +362,15 @@
         ?? clicked.tileType
         ?? DP.TILE_TYPES.UNKNOWN;
 
-      // If the tile has a forceMoveDirection flag set, treat it as force_move
-      // regardless of its stored tile type — allows blank/any tile to act as
-      // a force move conveyor without renaming or retyping the tile document.
+      // If the tile has a forceMoveDirection flag, treat it as FORCE_MOVE
+      // regardless of stored type — any tile can act as a conveyor without
+      // needing to be named or retyped.
       const _forceMoveDir = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.forceMoveDirection`) ?? "";
       const tileType = (_forceMoveDir && DP.Direction?.DIRS?.[_forceMoveDir])
         ? DP.TILE_TYPES.FORCE_MOVE
         : _storedType;
 
       console.debug(TAG, `[tileType] stored="${_storedType}" forceMoveDir="${_forceMoveDir || "(none)"}" effective="${tileType}"`);
-      DP.Debug?.log("bootstrap", `tileType | tile="${tileDoc?.name}" stored="${_storedType}" forceMoveDir="${_forceMoveDir || "(none)"}" effective="${tileType}"`);
 
       // Mark visited on any positive confirmation (land or use).
       if (tileDoc) _deferredVisitTileId = tileDoc.id;
@@ -617,34 +616,7 @@
     },
 
     get graph()       { return state.graph; },
-    get currentNode() { return state.currentNode; },
-
-    /**
-     * Dev console helper — test whether the direction graph can resolve a path
-     * from a tile, and print full diagnostic info.
-     *
-     * Usage (browser console):
-     *   __ONI_DUNGEON_PATHING__.testForcePath("tileId", "S", 2)
-     *
-     * Get a tile's ID from the Tile Config header, or:
-     *   __ONI_DUNGEON_PATHING__.graph.nodes.forEach(n => console.log(n.nodeId, n.name))
-     */
-    testForcePath(tileId, direction, steps = 1) {
-      if (!DP.Direction?.testPath) {
-        console.warn(TAG, "DP.Direction not loaded yet."); return null;
-      }
-      return DP.Direction.testPath(tileId, direction, steps);
-    },
-
-    /** List all nodes in the current graph — handy for picking tile IDs. */
-    listNodes() {
-      const nodes = state.graph?.nodes ?? [];
-      console.table(nodes.map(n => ({
-        id: n.nodeId, name: n.name, type: n.tileType,
-        cx: Math.round(n.center.x), cy: Math.round(n.center.y),
-      })));
-      return nodes;
-    },
+    get currentNode() { return state.currentNode; }
   };
 
   Hooks.once("ready", () => {
@@ -655,8 +627,6 @@
     console.debug(TAG, "  H key — toggle helper mode (walkable tile indicators)");
     console.debug(TAG, "  .resetDungeon()  — reset all tiles to initial state");
     console.debug(TAG, "  .mutateTile(id, type, texture?)");
-    console.debug(TAG, "  .listNodes()                    — table of all graph nodes + IDs");
-    console.debug(TAG, "  .testForcePath(id, dir, steps)  — test direction path from a tile");
     console.debug(TAG, "Perf logging: window.__DP_PERF__ = true  (set in browser console)");
     console.debug(TAG, "Walk debug:   window.__DP_WALK_DBG__ = true  (per-move + per-rebuild timing)");
   });
