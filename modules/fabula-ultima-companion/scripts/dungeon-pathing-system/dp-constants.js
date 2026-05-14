@@ -66,15 +66,17 @@
   });
 
   // 8-directional compass keys (screen space: Y increases downward)
+  // SLIPPERY is a special sentinel: "continue in entry direction" — handled by the force-move handler.
   DP.DIRECTIONS = Object.freeze({
-    N:  "N",
-    NE: "NE",
-    E:  "E",
-    SE: "SE",
-    S:  "S",
-    SW: "SW",
-    W:  "W",
-    NW: "NW",
+    N:        "N",
+    NE:       "NE",
+    E:        "E",
+    SE:       "SE",
+    S:        "S",
+    SW:       "SW",
+    W:        "W",
+    NW:       "NW",
+    SLIPPERY: "SLIPPERY",
   });
 
   // Animation timing

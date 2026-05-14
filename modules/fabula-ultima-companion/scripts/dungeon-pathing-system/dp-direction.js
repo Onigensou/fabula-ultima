@@ -117,6 +117,34 @@
     },
 
     /**
+     * Like getNeighborInDirection but returns ALL connected neighbors whose
+     * center falls within a ±45° cone of the given direction (not just the
+     * most-on-axis one).  Used by Slippery tiles for random path selection.
+     *
+     * @param {object} startNode - Current graph node.
+     * @param {string} direction - One of DP.DIRECTIONS (not SLIPPERY).
+     * @param {object} graph     - Full graph object.
+     * @returns {object[]} All matching neighbor nodes (may be empty).
+     */
+    getNeighborsInDirection(startNode, direction, graph) {
+      const targetAngle = _ANGLE[direction];
+      if (targetAngle === undefined) return [];
+
+      const neighbors = DP.Graph.getNeighbors(startNode.nodeId, graph);
+      const result = [];
+
+      for (const neighbor of neighbors) {
+        const dx = neighbor.center.x - startNode.center.x;
+        const dy = neighbor.center.y - startNode.center.y;
+        if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
+
+        const angleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (_angleDiff(angleDeg, targetAngle) <= 45) result.push(neighbor);
+      }
+      return result;
+    },
+
+    /**
      * Follow `steps` hops from startNode in the given direction.
      * Returns the furthest reachable node (may be fewer than `steps` if the
      * path is blocked). Returns null if the very first step is blocked.

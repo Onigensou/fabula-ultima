@@ -299,6 +299,8 @@
       dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
 
       dungeonSubPanel.innerHTML = `
+        <h3 style="margin: 0 0 6px;"><i class="fas fa-cog"></i> Behavior</h3>
+
         <div class="form-group">
           <label>Persist after trigger</label>
           <div class="form-fields">
@@ -326,6 +328,22 @@
           </p>
         </div>
 
+        <div class="form-group">
+          <label>Usable</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.usable"
+                   data-dtype="Boolean"
+                   ${usable ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, landing on this tile shows an extra <b>Use</b> button in the confirmation
+            panel. Pressing <b>Use</b> triggers the tile's event. Pressing <b>Confirm</b> lands
+            without triggering it, letting the player choose when to act.
+          </p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-undo"></i> Undo</h3>
 
         <div class="form-group">
@@ -356,23 +374,11 @@
           </p>
         </div>
 
-        <div class="form-group">
-          <label>Usable</label>
-          <div class="form-fields">
-            <input type="checkbox"
-                   name="flags.${MODULE_ID}.${pathingKey}.usable"
-                   data-dtype="Boolean"
-                   ${usable ? "checked" : ""} />
-          </div>
-          <p class="notes">
-            When checked, landing on this tile shows an extra <b>Use</b> button in the confirmation
-            panel. Pressing <b>Use</b> triggers the tile's event. Pressing <b>Confirm</b> lands
-            without triggering it, letting the player choose when to act.
-          </p>
-        </div>
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-map-marked-alt"></i> Fast Travel</h3>
 
         <div class="form-group">
-          <label>Eligible for Fast Travel</label>
+          <label>Eligible</label>
           <div class="form-fields">
             <input type="checkbox"
                    name="flags.${MODULE_ID}.${pathingKey}.eligibleForFastTravel"
@@ -388,25 +394,29 @@
         <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-arrows-alt"></i> Force Move Settings</h3>
         <p class="notes" style="margin: 0 0 8px; font-style: italic;">
-          Only active when the tile type is <strong>Force Move</strong>.
+          Set a direction to automatically push the token when it lands on this tile.
         </p>
 
         <div class="form-group">
           <label>Direction</label>
           <div class="form-fields">
             <select name="flags.${MODULE_ID}.${pathingKey}.forceMoveDirection" data-dtype="String">
-              <option value="" ${!forceMoveDir ? "selected" : ""}>— not set —</option>
-              <option value="N"  ${forceMoveDir === "N"  ? "selected" : ""}>↑ North</option>
-              <option value="NE" ${forceMoveDir === "NE" ? "selected" : ""}>↗ North-East</option>
-              <option value="E"  ${forceMoveDir === "E"  ? "selected" : ""}>→ East</option>
-              <option value="SE" ${forceMoveDir === "SE" ? "selected" : ""}>↘ South-East</option>
-              <option value="S"  ${forceMoveDir === "S"  ? "selected" : ""}>↓ South</option>
-              <option value="SW" ${forceMoveDir === "SW" ? "selected" : ""}>↙ South-West</option>
-              <option value="W"  ${forceMoveDir === "W"  ? "selected" : ""}>← West</option>
-              <option value="NW" ${forceMoveDir === "NW" ? "selected" : ""}>↖ North-West</option>
+              <option value=""         ${!forceMoveDir                  ? "selected" : ""}>— not set —</option>
+              <option value="N"        ${forceMoveDir === "N"           ? "selected" : ""}>↑ North</option>
+              <option value="NE"       ${forceMoveDir === "NE"          ? "selected" : ""}>↗ North-East</option>
+              <option value="E"        ${forceMoveDir === "E"           ? "selected" : ""}>→ East</option>
+              <option value="SE"       ${forceMoveDir === "SE"          ? "selected" : ""}>↘ South-East</option>
+              <option value="S"        ${forceMoveDir === "S"           ? "selected" : ""}>↓ South</option>
+              <option value="SW"       ${forceMoveDir === "SW"          ? "selected" : ""}>↙ South-West</option>
+              <option value="W"        ${forceMoveDir === "W"           ? "selected" : ""}>← West</option>
+              <option value="NW"       ${forceMoveDir === "NW"          ? "selected" : ""}>↖ North-West</option>
+              <option value="SLIPPERY" ${forceMoveDir === "SLIPPERY"    ? "selected" : ""}>~ Slippery (continue entry direction)</option>
             </select>
           </div>
-          <p class="notes">Direction to push the token when this tile triggers.</p>
+          <p class="notes">
+            Direction to push the token. <b>Slippery</b> continues the token in whichever
+            direction it entered this tile from; if multiple paths branch, one is chosen at random.
+          </p>
         </div>
 
         <div class="form-group">
@@ -421,6 +431,7 @@
           <p class="notes">Number of tiles to push the token in the chosen direction.</p>
         </div>
 
+        <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-info-circle"></i> Tracked State</h3>
 
         <div class="form-group">

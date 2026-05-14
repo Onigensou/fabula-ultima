@@ -1,23 +1,25 @@
 // ============================================================================
 // Dungeon Pathing — Tile Event: Force Move
 //
-// Automatically pushes the party token N steps in a configured direction when
-// the token lands on this tile. Direction and step count are set per-tile in
-// the tile config panel (Fabula Configuration → Dungeon → Force Move Settings).
+// Automatically pushes the party token when the token lands on this tile.
+// Behaviour is determined by the Direction flag in Tile Config:
 //
-// Flags (on tileDoc):
-//   flags.fabula-ultima-companion.dungeonPathing.forceMoveDirection  — e.g. "SE"
-//   flags.fabula-ultima-companion.dungeonPathing.forceMoveSteps      — e.g. 2
+//   Fixed direction (N/NE/E/…):
+//     Pushes the token N steps in the configured direction.
+//     getNodeNStepsInDirection returns the furthest reachable node if the
+//     full step count is blocked (partial progress). Only a fully-blocked
+//     first step cancels the move.
 //
-// After moving the token, the handler calls bootstrap.processArrivalAt() so
-// the destination tile is processed exactly as if the player had walked there:
-// confirm dialog (or skip), event dispatch, tile clear — including chained
-// Force Moves, random battles, or any other tile type. No bespoke chain logic
-// needed here.
+//   SLIPPERY:
+//     Continues the token in whichever direction it entered from.
+//     If multiple graph neighbors fall within the ±45° entry cone,
+//     one is chosen at random (supports branching/forking paths).
+//     If no entry direction is known (first tile of the session) the
+//     move is skipped with a warning.
 //
-// Deadend guard: getNodeNStepsInDirection returns the furthest reachable node
-// if the full step count is blocked. Only a fully-blocked first step cancels
-// the move; partial paths (fewer steps than configured) move as far as possible.
+// After moving, hands off to bootstrap.processArrivalAt() so the
+// destination tile fires exactly like a player-initiated move:
+// confirm dialog (or skip), event dispatch, tile clear.
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing;
@@ -53,40 +55,70 @@
       const forceMoveNode = graph.nodeMap.get(tileDoc.id);
       if (!forceMoveNode) { console.warn(TAG, "Tile node not found in graph:", tileDoc.id); return; }
 
-      // getNodeNStepsInDirection returns the furthest reachable node — it may
-      // stop short if the path is blocked. null means even the first step is
-      // blocked, in which case we cancel with a warning.
-      const destNode = DP.Direction.getNodeNStepsInDirection(forceMoveNode, direction, steps, graph);
-      if (!destNode || destNode.nodeId === forceMoveNode.nodeId) {
-        ui.notifications?.warn(
-          `Force Move | No valid path ${steps} step(s) ${DP.Direction.label(direction)} ` +
-          `from "${forceMoveNode.name}". Is the destination tile connected in the graph?`
-        );
-        return;
-      }
-
       const token = canvas.tokens?.get(tokenDoc.id)
         ?? canvas.tokens?.placeables?.find(t => t.document?.id === tokenDoc.id);
       if (!token) { console.warn(TAG, "Token placeable not found for:", tokenDoc.id); return; }
 
-      // Track direction for subsequent tiles (e.g. Slippery).
-      DP.Direction.lastEntryDirection = direction;
+      // ── Resolve destination ───────────────────────────────────────────────
+      let destNode;
+
+      if (direction === DP.DIRECTIONS.SLIPPERY) {
+        // Slippery: continue in the direction the token entered from.
+        const entryDir = DP.Direction.lastEntryDirection;
+        if (!entryDir || !DP.Direction.DIRS[entryDir]) {
+          ui.notifications?.warn(
+            `Slippery | "${forceMoveNode.name}": no entry direction known. ` +
+            "Was the token moved via the dungeon system?"
+          );
+          return;
+        }
+
+        // Walk `steps` hops. At each hop, gather ALL neighbors in the entry
+        // cone and pick one at random (handles branching paths).
+        let node = forceMoveNode;
+        for (let i = 0; i < steps; i++) {
+          const candidates = DP.Direction.getNeighborsInDirection(node, entryDir, graph);
+          if (!candidates.length) break;
+          node = candidates[Math.floor(Math.random() * candidates.length)];
+        }
+
+        if (node.nodeId === forceMoveNode.nodeId) {
+          console.debug(TAG, `Slippery | "${forceMoveNode.name}" — no neighbor ${DP.Direction.label(entryDir)}, token stays.`);
+          return;
+        }
+        destNode = node;
+        console.debug(TAG, `Slippery | "${forceMoveNode.name}" → "${destNode.name}" (${DP.Direction.label(entryDir)} ×${steps})`);
+      } else {
+        // Fixed direction: move up to `steps` hops, stopping early if blocked.
+        destNode = DP.Direction.getNodeNStepsInDirection(forceMoveNode, direction, steps, graph);
+        if (!destNode || destNode.nodeId === forceMoveNode.nodeId) {
+          ui.notifications?.warn(
+            `Force Move | No valid path ${steps} step(s) ${DP.Direction.label(direction)} ` +
+            `from "${forceMoveNode.name}". Is the destination tile connected in the graph?`
+          );
+          return;
+        }
+        console.debug(TAG, `"${forceMoveNode.name}" → "${destNode.name}" (${DP.Direction.label(direction)} ×${steps})`);
+      }
+
+      // ── Move ──────────────────────────────────────────────────────────────
+      // Track direction for subsequent tiles (e.g. chained Slippery).
+      const effectiveDir = direction === DP.DIRECTIONS.SLIPPERY
+        ? DP.Direction.lastEntryDirection
+        : direction;
+      DP.Direction.lastEntryDirection = effectiveDir;
 
       // Sync the bootstrap's fast-path node pointer so rebuild() after the
       // full turn resolves currentNode to the final destination.
       const _bState = globalThis.__ONI_DUNGEON_PATHING__?.state;
       if (_bState) _bState.forcedNodeId = destNode.nodeId;
 
-      console.debug(TAG, `"${forceMoveNode.name}" → "${destNode.name}" (${DP.Direction.label(direction)} ×${steps})`);
-
       await DP.Movement.moveToNode(token, destNode);
 
-      // Hand off to the bootstrap's arrival processor — this runs the full
-      // confirm → event dispatch → clear cycle for the destination tile,
-      // exactly as if the player had clicked it. If destNode is itself a
-      // Force Move tile (or any other tile type), it fires naturally from here.
-      // Whether Go Back is shown is determined by the bootstrap reading the
-      // blockGoBack / disableGoBack flags from the source and destination tiles.
+      // Hand off to the bootstrap's arrival processor — runs the full
+      // confirm → event dispatch → clear cycle for the destination tile.
+      // blockGoBack / disableGoBack flags are read from the tile docs by
+      // the bootstrap; no need to pass them here.
       const bootstrap = globalThis.__ONI_DUNGEON_PATHING__;
       if (bootstrap?.processArrivalAt) {
         await bootstrap.processArrivalAt(destNode, token, scene, forceMoveNode);
