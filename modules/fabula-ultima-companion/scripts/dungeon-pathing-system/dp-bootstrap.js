@@ -371,6 +371,7 @@
         : _storedType;
 
       console.debug(TAG, `[tileType] stored="${_storedType}" forceMoveDir="${_forceMoveDir || "(none)"}" effective="${tileType}"`);
+      DP.Debug?.log("bootstrap", `tileType | tile="${tileDoc?.name}" stored="${_storedType}" forceMoveDir="${_forceMoveDir || "(none)"}" effective="${tileType}"`);
 
       // Mark visited on any positive confirmation (land or use).
       if (tileDoc) _deferredVisitTileId = tileDoc.id;

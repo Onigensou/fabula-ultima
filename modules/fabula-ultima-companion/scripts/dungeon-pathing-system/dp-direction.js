@@ -199,6 +199,22 @@
       }
 
       console.groupEnd();
+
+      // Push full report to the debug bridge (if loaded) and auto-dump to file
+      if (DP.Debug) {
+        DP.Debug.log("testPath", `testPath("${tileId}", "${direction}", ${steps})`);
+        DP.Debug.log("testPath", `  start="${startNode.name}" center=${JSON.stringify(startNode.center)}`);
+        for (const n of neighbours) {
+          const dx = n.center.x - startNode.center.x;
+          const dy = n.center.y - startNode.center.y;
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          DP.Debug.log("testPath", `  neighbour "${n.name}" angle=${angle.toFixed(1)}° sector=${this.computeDirection(startNode, n)}`);
+        }
+        const result = (dest && dest.nodeId !== startNode.nodeId) ? `✔ "${dest.name}"` : "✘ blocked";
+        DP.Debug.log("testPath", `  result: ${result}`);
+        DP.Debug.dump();
+      }
+
       return dest ?? null;
     },
   };
