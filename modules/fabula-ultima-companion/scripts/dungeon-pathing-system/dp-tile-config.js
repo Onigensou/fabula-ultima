@@ -273,13 +273,15 @@
       const scene       = tileDoc?.parent ?? null;
       const tileId      = tileDoc?.id ?? null;
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
-      const persistFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
-      const usableFlag  = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
-      const initialType = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
-      const currentType = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
-      const visitedTile = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
-      const persists    = persistFlag === true || persistFlag === "true";
-      const usable      = usableFlag  === true || usableFlag  === "true";
+      const persistFlag     = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
+      const usableFlag      = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
+      const skipConfirmFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
+      const initialType     = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
+      const currentType     = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
+      const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
+      const persists        = persistFlag === true || persistFlag === "true";
+      const usable          = usableFlag  === true || usableFlag  === "true";
+      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
 
       // eligibleForFastTravel: explicit tile flag, or type-based default when unset
       const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
@@ -287,7 +289,7 @@
         ? FT_ELIGIBLE_TYPES.has(initialType)
         : (rawEligible === true || rawEligible === "true" || rawEligible === 1);
 
-      dbg("Tile flags read", { persistFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
+      dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
 
       dungeonSubPanel.innerHTML = `
         <div class="form-group">
@@ -301,6 +303,19 @@
           <p class="notes">
             When checked, this tile stays active after its event fires and will not be blanked out.
             Use for persistent locations like camp sites or recurring encounters.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Skip Confirm</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.skipConfirm"
+                   data-dtype="Boolean"
+                   ${skipConfirm ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, landing on this tile skips the confirmation dialog and triggers the tile event immediately.
           </p>
         </div>
 

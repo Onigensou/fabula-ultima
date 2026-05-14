@@ -322,15 +322,23 @@
       // — Token moved event —
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
-      // — Resolve tile doc before dialog so we can check the usable flag —
-      const tileDoc    = scene.tiles.get(clicked.nodeId) ?? null;
-      const usableFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable   = usableFlag === true || usableFlag === "true";
+      // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
+      const tileDoc         = scene.tiles.get(clicked.nodeId) ?? null;
+      const usableFlag      = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable        = usableFlag === true || usableFlag === "true";
+      const skipConfirmFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
 
-      // — In-canvas confirmation buttons —
-      const tConfirm  = performance.now();
-      const confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
-      perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
+      // — In-canvas confirmation buttons (or skip if flagged) —
+      const tConfirm = performance.now();
+      let confirmed;
+      if (skipConfirm) {
+        confirmed = true;
+        perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
+      } else {
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
+        perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
+      }
 
       if (confirmed === false) {
         // — Revert —
