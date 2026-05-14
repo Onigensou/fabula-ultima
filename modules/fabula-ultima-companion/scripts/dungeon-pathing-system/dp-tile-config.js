@@ -273,15 +273,22 @@
       const scene       = tileDoc?.parent ?? null;
       const tileId      = tileDoc?.id ?? null;
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
-      const persistFlag     = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
-      const usableFlag      = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
-      const skipConfirmFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
+      const persistFlag       = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
+      const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
+      const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
+      const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
+      const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
       const initialType     = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
       const currentType     = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
-      const persists        = persistFlag === true || persistFlag === "true";
-      const usable          = usableFlag  === true || usableFlag  === "true";
-      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const persists        = persistFlag       === true || persistFlag       === "true";
+      const usable          = usableFlag        === true || usableFlag        === "true";
+      const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
+      const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
+      const blockGoBack     = blockGoBackFlag   === true || blockGoBackFlag   === "true";
+
+      const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
+      const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
 
       // eligibleForFastTravel: explicit tile flag, or type-based default when unset
       const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
@@ -292,6 +299,8 @@
       dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
 
       dungeonSubPanel.innerHTML = `
+        <h3 style="margin: 0 0 6px;"><i class="fas fa-cog"></i> Behavior</h3>
+
         <div class="form-group">
           <label>Persist after trigger</label>
           <div class="form-fields">
@@ -334,8 +343,42 @@
           </p>
         </div>
 
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-undo"></i> Undo</h3>
+
         <div class="form-group">
-          <label>Eligible for Fast Travel</label>
+          <label>Disable</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.disableGoBack"
+                   data-dtype="Boolean"
+                   ${disableGoBack ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, the <b>Go Back</b> button is hidden when the token lands on <b>this</b> tile.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Block</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.blockGoBack"
+                   data-dtype="Boolean"
+                   ${blockGoBack ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, the <b>Go Back</b> button is hidden on whatever tile the token moves to
+            <b>from</b> this tile — because going back would land on this tile.
+            Use on Force Move tiles to prevent undoing the push.
+          </p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-map-marked-alt"></i> Fast Travel</h3>
+
+        <div class="form-group">
+          <label>Eligible</label>
           <div class="form-fields">
             <input type="checkbox"
                    name="flags.${MODULE_ID}.${pathingKey}.eligibleForFastTravel"
@@ -348,6 +391,49 @@
           </p>
         </div>
 
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-arrows-alt"></i> Force Move Settings</h3>
+        <p class="notes" style="margin: 0 0 8px; font-style: italic;">
+          Set a direction to automatically push the token when it lands on this tile.
+        </p>
+
+        <div class="form-group">
+          <label>Direction</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.forceMoveDirection" data-dtype="String">
+              <option value=""         ${!forceMoveDir                  ? "selected" : ""}>— not set —</option>
+              <option value="N"        ${forceMoveDir === "N"           ? "selected" : ""}>↑ North</option>
+              <option value="NE"       ${forceMoveDir === "NE"          ? "selected" : ""}>↗ North-East</option>
+              <option value="E"        ${forceMoveDir === "E"           ? "selected" : ""}>→ East</option>
+              <option value="SE"       ${forceMoveDir === "SE"          ? "selected" : ""}>↘ South-East</option>
+              <option value="S"        ${forceMoveDir === "S"           ? "selected" : ""}>↓ South</option>
+              <option value="SW"       ${forceMoveDir === "SW"          ? "selected" : ""}>↙ South-West</option>
+              <option value="W"        ${forceMoveDir === "W"           ? "selected" : ""}>← West</option>
+              <option value="NW"       ${forceMoveDir === "NW"          ? "selected" : ""}>↖ North-West</option>
+              <option value="SLIPPERY" ${forceMoveDir === "SLIPPERY"    ? "selected" : ""}>~ Slippery (continue entry direction)</option>
+              <option value="RANDOM"   ${forceMoveDir === "RANDOM"      ? "selected" : ""}>? Random (pick any eligible path)</option>
+            </select>
+          </div>
+          <p class="notes">
+            Direction to push the token.
+            <b>Slippery</b> continues the token in whichever direction it entered from (random if paths branch).
+            <b>Random</b> picks any connected neighbor at random, ignoring direction.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Steps</label>
+          <div class="form-fields">
+            <input type="number"
+                   name="flags.${MODULE_ID}.${pathingKey}.forceMoveSteps"
+                   data-dtype="Number"
+                   value="${forceMoveSteps}"
+                   min="1" max="10" step="1" />
+          </div>
+          <p class="notes">Number of tiles to push the token in the chosen direction.</p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-info-circle"></i> Tracked State</h3>
 
         <div class="form-group">

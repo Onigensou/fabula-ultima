@@ -51,6 +51,7 @@
     hoverTimer:   null,
     lastHoveredNodeId: null,
     hookIds:      [],
+    _arrivalDepth: 0,   // recursion guard for processArrivalAt chains
   };
 
   // ---------------------------------------------------------------------------
@@ -198,6 +199,98 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Arrival processing — shared by handleClick and force-move (+ any future
+  // tile that programmatically lands the token on another tile).
+  //
+  // Runs: tokenMoved event → direction tracking → confirm dialog (or skip) →
+  //       tileType resolve → turnConfirmed event → tile event dispatch → clear.
+  //
+  // Does NOT handle: savedPos / revert, turnStart/End, rebuild, or busy flag —
+  // those belong to the outer handleClick / caller context.
+  // ---------------------------------------------------------------------------
+  const _MAX_ARRIVAL_DEPTH = 10;
+
+  async function processArrivalAt(node, token, scene, fromNode) {
+    state._arrivalDepth++;
+    if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
+      console.warn(TAG, `processArrivalAt: chain depth limit (${_MAX_ARRIVAL_DEPTH}) reached — stopping.`);
+      state._arrivalDepth--;
+      return;
+    }
+
+    try {
+      // Refresh token reference — moveToNode may have updated the document.
+      const freshToken = canvas.tokens?.get?.(token.document?.id ?? token.id)
+        ?? canvas.tokens?.placeables?.find(t => t.document?.id === (token.document?.id ?? token.id))
+        ?? token;
+
+      // — Token moved event —
+      DP.Events.tokenMoved(freshToken.document, fromNode, node);
+
+      // — Track entry direction —
+      if (DP.Direction && fromNode) {
+        DP.Direction.lastEntryDirection = DP.Direction.computeDirection(fromNode, node);
+      }
+
+      // — Resolve tile doc and flags —
+      const tileDoc            = scene.tiles.get(node.nodeId) ?? null;
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable           = usableFlag === true || usableFlag === "true";
+      const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Disable: hide Go Back on this destination tile.
+      const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
+      const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
+      // Block: if the FROM tile has blockGoBack set, hide Go Back (going back lands there).
+      const fromTileDoc        = fromNode ? (scene.tiles.get(fromNode.nodeId) ?? null) : null;
+      const blockGoBackFlag    = fromTileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.blockGoBack`);
+      const blockGoBack        = blockGoBackFlag === true || blockGoBackFlag === "true";
+
+      // — Confirmation (or skip if flagged) —
+      let confirmed;
+      if (skipConfirm) {
+        confirmed = true;
+      } else {
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
+      }
+
+      if (confirmed === false) return;
+
+      // — Resolve tile type (same override logic as handleClick) —
+      const _storedType   = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
+        ?? node.tileType ?? DP.TILE_TYPES.UNKNOWN;
+      const _forceMoveDir = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.forceMoveDirection`) ?? "";
+      const tileType      = (_forceMoveDir && DP.Direction?.DIRS?.[_forceMoveDir])
+        ? DP.TILE_TYPES.FORCE_MOVE : _storedType;
+
+      console.debug(TAG, `[processArrivalAt][depth ${state._arrivalDepth}] tileType="${tileType}" at "${node.name}"`);
+
+      // — Turn confirmed —
+      DP.Events.turnConfirmed(freshToken.document, fromNode, node, tileDoc);
+
+      // — Deferred markVisited —
+      if (tileDoc) {
+        const _tid = tileDoc.id;
+        setTimeout(() => DP.Socket.markVisited(scene, _tid).catch(() => {}), 300);
+      }
+
+      // — Dispatch tile event —
+      const shouldDispatchEvent = confirmed === "use" || !isUsable;
+      if (shouldDispatchEvent) {
+        DP.Events.tileEvent(freshToken.document, node, tileDoc, tileType);
+        const { ok, cleared } = await DP.TileEventRegistry.dispatch(tileType, tileDoc, freshToken.document, scene);
+
+        const persistFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
+        const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
+        if (shouldClear && tileDoc) await DP.Socket.clearTile(scene, tileDoc.id);
+      }
+
+    } finally {
+      state._arrivalDepth--;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Hover sound detection
   // ---------------------------------------------------------------------------
   function installHoverHandler() {
@@ -322,12 +415,24 @@
       // — Token moved event —
       DP.Events.tokenMoved(freshToken.document, fromNode, clicked);
 
+      // — Track entry direction (used by Force Move, Slippery, and future directional tiles) —
+      if (DP.Direction) {
+        DP.Direction.lastEntryDirection = DP.Direction.computeDirection(fromNode, clicked);
+      }
+
       // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
-      const tileDoc         = scene.tiles.get(clicked.nodeId) ?? null;
-      const usableFlag      = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable        = usableFlag === true || usableFlag === "true";
-      const skipConfirmFlag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
-      const skipConfirm     = skipConfirmFlag === true || skipConfirmFlag === "true";
+      const tileDoc            = scene.tiles.get(clicked.nodeId) ?? null;
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      const isUsable           = usableFlag === true || usableFlag === "true";
+      const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
+      const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true";
+      // Disable: hide Go Back on this destination tile.
+      const disableGoBackFlag  = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.disableGoBack`);
+      const disableGoBack      = disableGoBackFlag === true || disableGoBackFlag === "true";
+      // Block: if the FROM tile has blockGoBack set, hide Go Back (going back lands there).
+      const fromTileDoc        = scene.tiles.get(fromNode?.nodeId) ?? null;
+      const blockGoBackFlag    = fromTileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.blockGoBack`);
+      const blockGoBack        = blockGoBackFlag === true || blockGoBackFlag === "true";
 
       // — In-canvas confirmation buttons (or skip if flagged) —
       const tConfirm = performance.now();
@@ -336,7 +441,7 @@
         confirmed = true;
         perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
       } else {
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack });
         perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
       }
 
@@ -353,9 +458,19 @@
       // — Confirmed (land + optionally use) —
       DP.Events.turnConfirmed(freshToken.document, fromNode, clicked, tileDoc);
 
-      const tileType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
+      const _storedType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
         ?? clicked.tileType
         ?? DP.TILE_TYPES.UNKNOWN;
+
+      // If the tile has a forceMoveDirection flag, treat it as FORCE_MOVE
+      // regardless of stored type — any tile can act as a conveyor without
+      // needing to be named or retyped.
+      const _forceMoveDir = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.forceMoveDirection`) ?? "";
+      const tileType = (_forceMoveDir && DP.Direction?.DIRS?.[_forceMoveDir])
+        ? DP.TILE_TYPES.FORCE_MOVE
+        : _storedType;
+
+      console.debug(TAG, `[tileType] stored="${_storedType}" forceMoveDir="${_forceMoveDir || "(none)"}" effective="${tileType}"`);
 
       // Mark visited on any positive confirmation (land or use).
       if (tileDoc) _deferredVisitTileId = tileDoc.id;
@@ -589,6 +704,7 @@
     activate,
     deactivate,
     rebuild,
+    processArrivalAt,
 
     async resetDungeon() {
       await DP.Socket.resetDungeon(canvas.scene);
