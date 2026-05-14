@@ -1,16 +1,124 @@
+// ============================================================================
 // scripts/apply-damage-core.js
-// Self-contained universal damage API.  Registered as FUCompanion.api.applyDamage.
+// Universal Damage API  —  FUCompanion.api.applyDamage
+// ============================================================================
 //
-// AdvanceDamage macro is NOT touched — this runs alongside it.
-// New damage sources (passives, reactions, items) call applyToActor() directly.
-// Old AdvanceDamage callers are unaffected.
+// ── ARCHITECTURE NOTE (Strangler Fig Pattern) ────────────────────────────────
 //
-// Public surface:
-//   .VERBOSITY                  – level constants (silent / numbers / fx / full)
-//   .verbosityAtLeast(l, t)     – ordered comparison
-//   .deriveDamageClass(opts)    – "strike" / "magic" / null
-//   .compute(opts)              – pure math, no side-effects
-//   .applyToActor(opts)         – full pipeline: math + actor.update() + AV feedback
+// This file is the NEW universal entry point for dealing damage / healing in
+// the game.  It runs ALONGSIDE the old "AdvanceDamage" macro without touching
+// it — both can coexist indefinitely.
+//
+// The migration strategy is:
+//   OLD path  →  AdvanceDamage macro (called from Action Pipeline, skill cards)
+//                Do NOT change these callers yet.  They work fine as-is.
+//
+//   NEW path  →  FUCompanion.api.applyDamage.applyToActor()
+//                Use this for every NEW system you build:
+//                passive damage, tile effects, reactions, item triggers, etc.
+//
+// Over time, when confidence is high, old callers can be migrated one-by-one.
+// Until then: if in doubt, use the NEW API for anything you write today.
+//
+// ── WHY A SEPARATE API INSTEAD OF EDITING AdvanceDamage? ─────────────────────
+//
+// AdvanceDamage is wired into dozens of in-game macros and action cards.
+// A wrong edit breaks combat for everyone immediately.  The new API is isolated:
+// a bug here only affects callers that explicitly use it, so failures are
+// contained and rollback is easy.
+//
+// ── SHEET KEY MAPPING (custom-system-builder, actor.system.props) ─────────────
+//
+// This file is the single source of truth for prop key names.
+// If a key ever changes on the sheet, fix it HERE only.
+//
+//   Attacker outgoing flat bonus:
+//     extra_damage_mod_all
+//     extra_damage_mod_melee / _ranged / _spell
+//     extra_damage_mod_{element}     (physical/air/bolt/dark/earth/fire/ice/light/poison)
+//     extra_damage_mod_{weaponKey}   (arcane/bow/brawling/dagger/firearm/flail/heavy/spear/sword/thrown)
+//
+//   Target incoming flat reduction:
+//     damage_receiving_mod_all
+//     damage_receiving_mod_melee / damage_receiving_mod_range  (note: "range" not "ranged")
+//     damage_receiving_mod_{element}
+//
+//   Target incoming % reduction:
+//     damage_receiving_percentage_all
+//     damage_receiving_percentage_melee / damage_receiving_percentage_range
+//     damage_receiving_percentage_{element}   (stored as "0%" string — handled automatically)
+//
+//   Crit:      critical_damage_bonus, critical_damage_multiplier
+//   Affinity:  affinity_1 … affinity_9  (physical → poison, see ELEMENT_AFFINITY_KEY below)
+//   HP/MP/Shield: current_hp, max_hp, current_mp, max_mp, shield_value
+//   Weapon efficiency: {weaponKey}_ef  (e.g. sword_ef — value 100 = full efficiency)
+//
+// ── DAMAGE PIPELINE (Steps 0–9) ──────────────────────────────────────────────
+//
+//   0  Base damage (raw number)
+//   1  + Outgoing flat bonus   (action bonus + all attacker sheet modifiers)
+//   2  × Outgoing % multiplier (action multiplier × sheet %, sheet not wired yet)
+//   3  − Target flat reduction (sheet modifiers, skipped if ignoreDR)
+//   4  × Target % reduction    (sheet modifiers, skipped if ignoreDR)
+//   5  + Crit flat bonus       (attacker sheet, only if isCrit)
+//   6  × Crit multiplier       (attacker sheet, only if isCrit)
+//   7  Clamp to 0
+//   8  ceil → finalPreAffinity
+//   9a × Weapon efficiency     (target sheet, e.g. sword_ef)
+//   9b Affinity modifier       (RS ÷2, VU ×2, IM →0, AB →healing)
+//       + condition-forced VU  (Wet/Oil/Petrify/Hypothermia/Turbulence/Zombie)
+//
+//   Steps 0–8 live in compute() (pure, no side-effects).
+//   Step 9 runs inside applyToActor() after compute().
+//
+// ── PUBLIC API ────────────────────────────────────────────────────────────────
+//
+//   FUCompanion.api.applyDamage.VERBOSITY
+//     Enum of output levels: SILENT / NUMBERS / FX / FULL
+//
+//   FUCompanion.api.applyDamage.verbosityAtLeast(level, threshold)
+//     Returns true when level >= threshold in the ordered scale.
+//     Use this in your own code when you need to gate output.
+//
+//   FUCompanion.api.applyDamage.deriveDamageClass({ damageClass, isSpellish, weaponType })
+//     Resolves "strike" (targets DEF), "magic" (targets MDEF), or null (neither).
+//     Pass damageClass explicitly to override auto-detection.
+//
+//   FUCompanion.api.applyDamage.compute(opts)  →  { finalPreAffinity, damageClass, breakdown }
+//     Pure math.  Safe to call anywhere for preview / tooltip / dry-run purposes.
+//     Does NOT update any actor or emit any output.
+//
+//   FUCompanion.api.applyDamage.applyToActor(opts)  →  Promise<result>
+//     Full pipeline: compute → weapon efficiency → affinity → actor.update()
+//     Also emits AV feedback (Sequencer, Damage Card, BattleLog) gated by verbosity.
+//     verbosity defaults to "full" — pass verbosity:"silent" if your system
+//     handles its own output (e.g. tile effects, passive system).
+//
+// ── QUICK USAGE EXAMPLE ──────────────────────────────────────────────────────
+//
+//   // Minimal — deal 10 fire damage to a target actor:
+//   await FUCompanion.api.applyDamage.applyToActor({
+//     baseDamage:   10,
+//     elementType:  "fire",
+//     targetActor:  someActor,
+//     attackerName: "Lava Floor",
+//   });
+//
+//   // With attacker sheet modifiers + crit + silent output:
+//   await FUCompanion.api.applyDamage.applyToActor({
+//     baseDamage:    20,
+//     elementType:   "physical",
+//     weaponType:    "sword_ef",
+//     attackRange:   "Melee",
+//     isCrit:        true,
+//     attackerUuid:  attacker.uuid,   // resolves attackerProps automatically
+//     targetActor:   target,
+//     targetToken:   targetToken,
+//     attackerName:  attacker.name,
+//     verbosity:     "silent",        // caller handles its own output
+//   });
+//
+// ============================================================================
 
 (() => {
   const API_ROOT = (globalThis.FUCompanion = globalThis.FUCompanion || {});
