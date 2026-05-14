@@ -77,6 +77,7 @@
     W:        "W",
     NW:       "NW",
     SLIPPERY: "SLIPPERY",
+    RANDOM:   "RANDOM",
   });
 
   // Animation timing

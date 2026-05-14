@@ -411,11 +411,13 @@
               <option value="W"        ${forceMoveDir === "W"           ? "selected" : ""}>← West</option>
               <option value="NW"       ${forceMoveDir === "NW"          ? "selected" : ""}>↖ North-West</option>
               <option value="SLIPPERY" ${forceMoveDir === "SLIPPERY"    ? "selected" : ""}>~ Slippery (continue entry direction)</option>
+              <option value="RANDOM"   ${forceMoveDir === "RANDOM"      ? "selected" : ""}>? Random (pick any eligible path)</option>
             </select>
           </div>
           <p class="notes">
-            Direction to push the token. <b>Slippery</b> continues the token in whichever
-            direction it entered this tile from; if multiple paths branch, one is chosen at random.
+            Direction to push the token.
+            <b>Slippery</b> continues the token in whichever direction it entered from (random if paths branch).
+            <b>Random</b> picks any connected neighbor at random, ignoring direction.
           </p>
         </div>
 

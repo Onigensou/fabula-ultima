@@ -62,7 +62,27 @@
       // ── Resolve destination ───────────────────────────────────────────────
       let destNode;
 
-      if (direction === DP.DIRECTIONS.SLIPPERY) {
+      if (direction === DP.DIRECTIONS.RANDOM) {
+        // Random: pick any connected neighbor at each hop (ignores direction).
+        let node = forceMoveNode;
+        let lastHopDir = null;
+        for (let i = 0; i < steps; i++) {
+          const neighbors = DP.Graph.getNeighbors(node.nodeId, graph);
+          if (!neighbors.length) break;
+          const prev = node;
+          node = neighbors[Math.floor(Math.random() * neighbors.length)];
+          lastHopDir = DP.Direction.computeDirection(prev, node);
+        }
+        if (node.nodeId === forceMoveNode.nodeId) {
+          console.debug(TAG, `Random | "${forceMoveNode.name}" — no neighbors, token stays.`);
+          return;
+        }
+        destNode = node;
+        // Update entry direction to the direction of the last hop so any
+        // chained Slippery tile knows which way the token was travelling.
+        DP.Direction.lastEntryDirection = lastHopDir;
+        console.debug(TAG, `Random | "${forceMoveNode.name}" → "${destNode.name}"`);
+      } else if (direction === DP.DIRECTIONS.SLIPPERY) {
         // Slippery: continue in the direction the token entered from.
         const entryDir = DP.Direction.lastEntryDirection;
         if (!entryDir || !DP.Direction.DIRS[entryDir]) {
@@ -103,10 +123,11 @@
 
       // ── Move ──────────────────────────────────────────────────────────────
       // Track direction for subsequent tiles (e.g. chained Slippery).
-      const effectiveDir = direction === DP.DIRECTIONS.SLIPPERY
-        ? DP.Direction.lastEntryDirection
-        : direction;
-      DP.Direction.lastEntryDirection = effectiveDir;
+      // RANDOM and SLIPPERY already set lastEntryDirection during resolution;
+      // for fixed directions, set it now.
+      if (direction !== DP.DIRECTIONS.RANDOM && direction !== DP.DIRECTIONS.SLIPPERY) {
+        DP.Direction.lastEntryDirection = direction;
+      }
 
       // Sync the bootstrap's fast-path node pointer so rebuild() after the
       // full turn resolves currentNode to the final destination.
