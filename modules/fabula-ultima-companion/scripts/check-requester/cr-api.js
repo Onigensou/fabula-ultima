@@ -359,12 +359,15 @@
         animation: oni-cr-zone-in 1500ms cubic-bezier(.22,1,.36,1) both;
       }
 
-      @keyframes oni-cr-verdict-in {
-        0%   { opacity: 0; transform: translateY(5px) scale(0.82); }
-        100% { opacity: 1; transform: translateY(0)   scale(1); }
+      @keyframes oni-cr-verdict-stamp {
+        0%   { opacity: 0; transform: scale(2.4); }
+        100% { opacity: 1; transform: scale(1); }
       }
       .oni-cr-verdict.oni-cr-verdict-fadein {
-        animation: oni-cr-verdict-in 300ms 80ms cubic-bezier(.22,1,.36,1) both;
+        animation: oni-cr-verdict-stamp 520ms cubic-bezier(0.22, 1.55, 0.36, 1) both;
+        transform-origin: center;
+        position: relative;
+        z-index: 5;
       }
 
       .oni-cr-sep { width: 80%; height: 1px; background: rgba(0,0,0,.14); flex-shrink: 0; }
@@ -656,10 +659,13 @@
     const allowInvokes = ses.opts?.allowInvokes !== false;
     const canInvoke    = allowInvokes && isOwner && allRolled && !st.confirmed && !st.result?.isFumble;
     const anyInvoke    = st.canTrait || st.canBond || st.canDivination;
-    const invokeEl     = zone(el, "invoke");
-    const invokeWasHidden = invokeEl?.style.display === "none";
-    showZone(el, "invoke", canInvoke && anyInvoke);
-    if (canInvoke && anyInvoke && invokeWasHidden && invokeEl) {
+    const invokeEl = zone(el, "invoke");
+    const shouldShowInvoke = canInvoke && anyInvoke;
+    showZone(el, "invoke", shouldShowInvoke);
+    let invokeJustShown = false;
+    if (shouldShowInvoke && !st._invokeShown && invokeEl) {
+      st._invokeShown = true;
+      invokeJustShown = true;
       invokeEl.classList.add("oni-cr-zone-slide-in");
     }
     if (canInvoke && anyInvoke) {
@@ -684,14 +690,15 @@
     }
 
     // Confirm / waiting / done
-    const confirmEl       = zone(el, "confirm");
-    const confirmWasHidden = confirmEl?.style.display === "none";
+    const confirmEl        = zone(el, "confirm");
+    const shouldShowConfirm = isOwner && allRolled && !st.confirmed;
     showZone(el, "sep2",      !st.confirmed);
-    showZone(el, "confirm",   isOwner && allRolled && !st.confirmed);
+    showZone(el, "confirm",   shouldShowConfirm);
     showZone(el, "confirmed", st.confirmed);
     showZone(el, "waiting",   !isOwner && !st.confirmed);
-    if (isOwner && allRolled && !st.confirmed && confirmWasHidden && confirmEl) {
-      confirmEl.style.animationDelay = invokeWasHidden ? "60ms" : "";
+    if (shouldShowConfirm && !st._confirmShown && confirmEl) {
+      st._confirmShown = true;
+      confirmEl.style.animationDelay = invokeJustShown ? "60ms" : "";
       confirmEl.classList.add("oni-cr-zone-slide-in");
     }
 
@@ -932,6 +939,7 @@
         canBond: false,  usedBond: false,
         canDivination: false, usedDivination: false,
         confirmed: false, _actor: null, _bonds: null,
+        _invokeShown: false, _confirmShown: false,
       });
     }
 
