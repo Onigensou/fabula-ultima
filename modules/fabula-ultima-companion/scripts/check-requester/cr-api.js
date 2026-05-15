@@ -643,7 +643,13 @@
           else if (st.result.pass === true)  { verdictEl.textContent = ses.opts?.hiddenDl ? "✓ Pass" : `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
           else if (st.result.pass === false) { verdictEl.textContent = ses.opts?.hiddenDl ? "✗ Fail" : `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
           else                               { verdictEl.textContent = `Total ${st.result.total}`; }
-          if (wasHidden) verdictEl.classList.add("oni-cr-verdict-fadein");
+          if (wasHidden) {
+            verdictEl.classList.add("oni-cr-verdict-fadein");
+            if (!st._stampSounded) {
+              st._stampSounded = true;
+              globalThis.ONI?.CheckRequester?.Sound?.playStamp(st.result);
+            }
+          }
         } else {
           // Hidden DL mode — keep verdict invisible until reveal fires
           verdictEl.style.display = "none";
@@ -895,6 +901,15 @@
         }, delay);
       });
 
+      // Group outcome fanfare fires when the last badge lands (+150ms buffer so
+      // individual stamp sounds settle first before the fanfare kicks in)
+      setTimeout(() => {
+        if (_session?.sessionId !== ses.sessionId) return;
+        const results = [...ses.panelStates.values()]
+          .filter(s => s.result).map(s => s.result);
+        globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
+      }, lastDelay + 150);
+
       // Auto-proceed: 2.7 seconds after the last badge appears
       setTimeout(resolve, lastDelay + 2700);
     });
@@ -923,6 +938,7 @@
     row.innerHTML = panels.map(buildPanelHtml).join("");
     backdrop.appendChild(row);
     document.body.appendChild(backdrop);
+    globalThis.ONI?.CheckRequester?.Sound?.playOpen();
 
     // Stagger panel entrance — each spawns 90ms after the previous
     row.querySelectorAll(".oni-cr-panel").forEach((el, i) => {
@@ -939,7 +955,7 @@
         canBond: false,  usedBond: false,
         canDivination: false, usedDivination: false,
         confirmed: false, _actor: null, _bonds: null,
-        _invokeShown: false, _confirmShown: false,
+        _invokeShown: false, _confirmShown: false, _stampSounded: false,
       });
     }
 
@@ -1001,6 +1017,7 @@
     if (die === "A" && st.rollA !== null) return;
     if (die === "B" && (st.rollB !== null || isSingle)) return;
     btn.disabled = true;
+    globalThis.ONI?.CheckRequester?.Sound?.playRoll();
 
     if (isSingle && die === "A") {
       const vA = await rollDie(st.dieA), vB = await rollDie(st.dieA);
@@ -1079,6 +1096,7 @@
   async function onInvokeClick(btn) {
     const { action, uuid } = btn.dataset;
     if (!canOwnerAct(uuid)) return;
+    globalThis.ONI?.CheckRequester?.Sound?.playInvoke();
     if (action === "trait")      await invokeTrait(uuid);
     else if (action === "bond")  await invokeBond(uuid);
     else if (action === "divination") await invokeDivination(uuid);
@@ -1206,6 +1224,7 @@
   // =========================================================================
   async function onConfirmClick(btn) {
     if (!canOwnerAct(btn.dataset.uuid)) return;
+    globalThis.ONI?.CheckRequester?.Sound?.playConfirm();
     await doConfirm(btn.dataset.uuid);
   }
 
