@@ -566,6 +566,7 @@
       label            = "",
       allowInvokes     = true,
       postChat         = true,
+      hiddenDl         = false,
     } = opts;
 
     const CR = globalThis.ONI?.CheckRequester;
@@ -635,6 +636,7 @@
         allowInvokes,
         postChat:     false,
         modifiers:    [],
+        hiddenDl,
         context:      { groupCheck: true, phase: "helper" },
       });
     }
@@ -656,6 +658,7 @@
       allowInvokes,
       postChat:     false,
       modifiers,
+      hiddenDl,
       context:      { groupCheck: true, phase: "leader", bonus },
     });
 

@@ -62,6 +62,7 @@
     timeout: null,
     context: {},
     singleDie: false,
+    hiddenDl: false,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -71,6 +72,15 @@
   };
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc  = s  => String(s ?? "")
+
+  // Decide whether the final die should play intense anticipation.
+  // Always intense if the total lands within 3 of DL (close call).
+  // Otherwise 8% surprise chance so it doesn't feel fully predictable.
+  const pickIntense = (dl, total) => {
+    if (dl == null || !Number.isFinite(Number(dl))) return false;
+    if (Math.abs(total - Number(dl)) <= 3) return true;
+    return Math.random() < 0.08;
+  };
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -409,6 +419,30 @@
         background: linear-gradient(180deg, #4caf50, #2e7d32); border-color: #2e7d32; color: #fff;
       }
       .oni-cr-subpanel-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; filter: none; }
+
+      /* Trait reroll ticker cards */
+      .oni-cr-trait-dice-row { display:flex; gap:10px; justify-content:center; margin-bottom:2px; }
+      .oni-cr-trait-die-card {
+        display:flex; flex-direction:column; align-items:center; gap:3px;
+        padding:10px 14px; border-radius:12px; min-width:64px;
+        border:2.5px solid rgba(91,63,38,.6);
+        background:linear-gradient(180deg,#f6ebd3,#e4d0b5);
+        cursor:pointer; user-select:none;
+        transition:border-color .12s, background .12s, box-shadow .12s;
+      }
+      .oni-cr-trait-die-card:hover { filter:brightness(1.06); }
+      .oni-cr-trait-die-card.on {
+        border-color:#c0392b;
+        background:linear-gradient(180deg,#ffe5e2,#ffc9c4);
+        box-shadow:0 0 0 2px rgba(192,57,43,.25);
+      }
+      .oni-cr-trait-die-card img {
+        width:26px; height:26px; object-fit:contain;
+        background:none!important; border:none!important; box-shadow:none!important;
+      }
+      .oni-cr-trait-die-name { font-size:.75rem; font-weight:800; opacity:.8; }
+      .oni-cr-trait-die-size { font-size:.68rem; opacity:.55; }
+      .oni-cr-trait-die-val  { font-size:1.3rem; font-weight:900; line-height:1; }
     `;
     document.head.appendChild(s);
   }
@@ -561,8 +595,8 @@
         verdictEl.className = "oni-cr-verdict";
         if (st.result.isFumble)          { verdictEl.textContent = "FUMBLE";    verdictEl.classList.add("fumble"); }
         else if (st.result.isCrit)       { verdictEl.textContent = "CRITICAL!"; verdictEl.classList.add("crit");   }
-        else if (st.result.pass === true)  { verdictEl.textContent = `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
-        else if (st.result.pass === false) { verdictEl.textContent = `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
+        else if (st.result.pass === true)  { verdictEl.textContent = ses.opts?.hiddenDl ? "✓ Pass" : `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
+        else if (st.result.pass === false) { verdictEl.textContent = ses.opts?.hiddenDl ? "✗ Fail" : `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
         else                             { verdictEl.textContent = `Total ${st.result.total}`; }
       }
     } else {
@@ -600,7 +634,7 @@
   // =========================================================================
   // Rolling animation
   // =========================================================================
-  async function animateDie(panelEl, chipSel, finalValue, faces) {
+  async function animateDie(panelEl, chipSel, finalValue, faces, { intense = false } = {}) {
     const chip = panelEl?.querySelector(`[data-chip="${chipSel}"]`);
     if (!chip) return;
     const diceRow = panelEl.querySelector("[data-zone='dice']");
@@ -608,17 +642,26 @@
 
     chip.classList.add("is-rolling");
 
-    // Fast tumble phase — jittery, each tick varies for an organic feel
+    // Fast tumble phase — random tick intervals for an organic feel
     for (let i = 0; i < 8; i++) {
       chip.textContent = String(Math.floor(Math.random() * faces) + 1);
       await wait(35 + Math.floor(Math.random() * 22));  // 35–57 ms
     }
 
-    // Anticipation phase — roulette-style exponential deceleration
-    for (let i = 0; i < 4; i++) {
-      chip.textContent = String(Math.floor(Math.random() * faces) + 1);
-      const t = (i + 1) / 4;
-      await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
+    if (intense) {
+      // Dramatic roulette: 6 steps, exponential 68 ms → 360 ms
+      for (let i = 0; i < 6; i++) {
+        chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+        const t = (i + 1) / 6;
+        await wait(60 + Math.round(t * t * 300));  // 68 → 360 ms
+      }
+    } else {
+      // Normal anticipation: 4 steps, 63 ms → 180 ms
+      for (let i = 0; i < 4; i++) {
+        chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+        const t = (i + 1) / 4;
+        await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
+      }
     }
 
     chip.classList.remove("is-rolling");
@@ -676,6 +719,71 @@
   }
 
   // =========================================================================
+  // Trait reroll ticker panel (replaces generic showSubPanel for invokeTrait)
+  // =========================================================================
+  function showTraitRerollPanel(st, isSingle) {
+    return new Promise(resolve => {
+      const backdrop = _session?.backdropEl;
+      if (!backdrop) { resolve(null); return; }
+
+      const iconA = ATTR_ICONS[st.attrA] ?? "";
+      const iconB = ATTR_ICONS[st.attrB] ?? "";
+      const rB    = isSingle ? st.rollA : (st.rollB ?? "—");
+
+      const overlay = document.createElement("div");
+      overlay.className = "oni-cr-subpanel-overlay";
+
+      const panel = document.createElement("div");
+      panel.className = "oni-cr-subpanel";
+      panel.innerHTML = `
+        <div class="oni-cr-subpanel-title">🎭 Invoke Trait — Select dice to reroll</div>
+        <div class="oni-cr-trait-dice-row">
+          <div class="oni-cr-trait-die-card" data-die="A">
+            <img src="${iconA}" alt="${st.attrA}">
+            <div class="oni-cr-trait-die-name">${st.attrA}</div>
+            <div class="oni-cr-trait-die-size">d${st.dieA}</div>
+            <div class="oni-cr-trait-die-val">${st.rollA}</div>
+          </div>
+          ${!isSingle ? `
+          <div class="oni-cr-trait-die-card" data-die="B">
+            <img src="${iconB}" alt="${st.attrB}">
+            <div class="oni-cr-trait-die-name">${st.attrB}</div>
+            <div class="oni-cr-trait-die-size">d${st.dieB}</div>
+            <div class="oni-cr-trait-die-val">${rB}</div>
+          </div>` : ""}
+        </div>
+        <div class="oni-cr-subpanel-footer">
+          <button class="oni-cr-subpanel-btn" data-sp="cancel">Cancel</button>
+          <button class="oni-cr-subpanel-btn primary" data-sp="confirm" disabled>Reroll</button>
+        </div>`;
+      overlay.appendChild(panel);
+      backdrop.appendChild(overlay);
+
+      const selected   = new Set();
+      const confirmBtn = panel.querySelector("[data-sp='confirm']");
+
+      panel.querySelectorAll(".oni-cr-trait-die-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const die = card.dataset.die;
+          if (selected.has(die)) { selected.delete(die); card.classList.remove("on"); }
+          else                   { selected.add(die);    card.classList.add("on"); }
+          if (confirmBtn) confirmBtn.disabled = selected.size === 0;
+        });
+      });
+
+      panel.addEventListener("click", e => {
+        const btn = e.target.closest("[data-sp]");
+        if (!btn || btn.disabled) return;
+        overlay.remove();
+        if (btn.dataset.sp === "cancel") { resolve(null); return; }
+        const hasA = selected.has("A"), hasB = selected.has("B");
+        resolve(hasA && hasB ? "AB" : hasA ? "A" : hasB ? "B" : null);
+      });
+      overlay.addEventListener("click", e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
+    });
+  }
+
+  // =========================================================================
   // Open overlay
   // =========================================================================
   function openOverlay(data, opts) {
@@ -689,7 +797,8 @@
 
     const titleEl = document.createElement("div");
     titleEl.className = "oni-cr-title";
-    titleEl.textContent = [tileLabel ? `Skill Check — ${tileLabel}` : "Skill Check", dl != null ? `(DL ${dl})` : ""].filter(Boolean).join(" ");
+    const dlLabel = dl != null ? `(DL ${opts?.hiddenDl ? "?" : dl})` : "";
+    titleEl.textContent = [tileLabel ? `Skill Check — ${tileLabel}` : "Skill Check", dlLabel].filter(Boolean).join(" ");
     backdrop.appendChild(titleEl);
 
     const row = document.createElement("div");
@@ -780,7 +889,10 @@
       st.rollA = vA; st.rollB = vB;
       game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, uuid, die: "BOTH", rollA: vA, rollB: vB } });
       const panelEl = getPanelEl(uuid);
-      if (panelEl) await animateDie(panelEl, "A", vA, st.dieA);
+      if (panelEl) {
+        const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+        await animateDie(panelEl, "A", vA, st.dieA, { intense: pickIntense(ses.dl, vA + modTotal) });
+      }
       afterAllRolled(uuid);
       return;
     }
@@ -790,7 +902,14 @@
     if (die === "A") st.rollA = value; else st.rollB = value;
     game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, uuid, die, value } });
     const panelEl = getPanelEl(uuid);
-    if (panelEl) await animateDie(panelEl, die, value, faces);
+    if (panelEl) {
+      let intense = false;
+      if (die === "B" && st.rollA !== null) {
+        const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+        intense = pickIntense(ses.dl, st.rollA + value + modTotal);
+      }
+      await animateDie(panelEl, die, value, faces, { intense });
+    }
     afterAllRolled(uuid);
   }
 
@@ -856,26 +975,12 @@
     if (!actor || getFP(actor) < 1) { ui.notifications?.warn("Not enough Fabula Points (need 1)."); return; }
 
     const isSingle = st.attrA === st.attrB;
-    const iconA = ATTR_ICONS[st.attrA] ?? "", iconB = ATTR_ICONS[st.attrB] ?? "";
-    const rA = st.rollA, rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
-
-    const rowA = `<div class="oni-cr-subpanel-row" data-value="A">
-      <img src="${iconA}" title="${st.attrA}">
-      <div class="oni-cr-subpanel-lbl">${st.attrA} (d${st.dieA})</div>
-      <div class="oni-cr-subpanel-val">${rA}</div></div>`;
-    const rowsHtml = isSingle ? rowA : rowA
-      + `<div class="oni-cr-subpanel-row" data-value="B">
-           <img src="${iconB}" title="${st.attrB}">
-           <div class="oni-cr-subpanel-lbl">${st.attrB} (d${st.dieB})</div>
-           <div class="oni-cr-subpanel-val">${rB}</div></div>
-         <div class="oni-cr-subpanel-row" data-value="AB">
-           <div class="oni-cr-subpanel-lbl" style="text-align:center;width:100%">Both dice</div></div>`;
-
-    const choice = await showSubPanel("🎭 Invoke Trait — Choose dice to reroll", rowsHtml, "Reroll");
+    const choice = await showTraitRerollPanel(st, isSingle);
     if (!choice) return;
 
     await actor.update({ "system.props.fabula_point": getFP(actor) - 1 });
 
+    const rA = st.rollA, rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
     let newA = rA, newB = rB;
     if (choice === "A" || choice === "AB") newA = await rollDie(st.dieA);
     if ((choice === "B" || choice === "AB") && !isSingle) newB = await rollDie(st.dieB);
@@ -888,8 +993,16 @@
     const panelEl = getPanelEl(uuid);
     if (panelEl) {
       showZone(panelEl, "result", false);
-      if (choice === "A" || choice === "AB") await animateDie(panelEl, "A", newA, st.dieA);
-      if ((choice === "B" || choice === "AB") && !isSingle) await animateDie(panelEl, "B", newB, st.dieB);
+      const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+      if (choice === "A" || choice === "AB") {
+        const isLastDie = isSingle || choice === "A";
+        const totA = isSingle ? (newA + modTotal) : (choice === "A" ? (newA + rB + modTotal) : 0);
+        await animateDie(panelEl, "A", newA, st.dieA, { intense: isLastDie ? pickIntense(ses.dl, totA) : false });
+      }
+      if ((choice === "B" || choice === "AB") && !isSingle) {
+        const effA = choice === "AB" ? newA : (st.rollA ?? 0);
+        await animateDie(panelEl, "B", newB, st.dieB, { intense: pickIntense(ses.dl, effA + newB + modTotal) });
+      }
     }
     broadcastUpdate(uuid); syncPanel(uuid);
   }
@@ -946,8 +1059,13 @@
     const panelEl = getPanelEl(uuid);
     if (panelEl) {
       showZone(panelEl, "result", false);
-      await animateDie(panelEl, "A", newA, st.dieA);
-      if (!isSingle) await animateDie(panelEl, "B", newB, st.dieB);
+      const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+      if (isSingle) {
+        await animateDie(panelEl, "A", newA, st.dieA, { intense: pickIntense(ses.dl, newA + modTotal) });
+      } else {
+        await animateDie(panelEl, "A", newA, st.dieA, { intense: false });
+        await animateDie(panelEl, "B", newB, st.dieB, { intense: pickIntense(ses.dl, newA + newB + modTotal) });
+      }
     }
     broadcastUpdate(uuid); syncPanel(uuid);
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");

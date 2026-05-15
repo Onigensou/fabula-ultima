@@ -311,6 +311,14 @@ Hooks.once("ready", () => {
           }
           .oni-gc-gc-config-row { display:flex; gap:10px; align-items:flex-start; margin-top:6px; }
 
+          /* ── Hidden DL toggle ────────────────────────────────────────── */
+          .oni-creq-hidden-dl-row {
+            display:flex; align-items:center; gap:4px; margin-top:5px;
+            font-size:10px; font-weight:700; cursor:pointer; user-select:none;
+            opacity:.65; white-space:nowrap;
+          }
+          .oni-creq-hidden-dl-row input[type=checkbox] { width:auto; padding:0; margin:0; }
+
           /* ── Empty state ──────────────────────────────────────────────── */
           .oni-creq-empty { font-size:12px; opacity:.5; font-style:italic; padding:4px 0; }
         </style>
@@ -387,6 +395,10 @@ Hooks.once("ready", () => {
               <div class="oni-creq-field oni-creq-dl-wrap">
                 <div class="oni-creq-field-lbl" id="oni-creq-dl-lbl">DL</div>
                 <input type="number" id="oni-creq-dl" name="dl" value="10" min="1" max="40" step="1">
+                <label class="oni-creq-hidden-dl-row">
+                  <input type="checkbox" id="oni-creq-hidden-dl" name="hidden-dl">
+                  <span>Hidden (DL ?)</span>
+                </label>
               </div>
               <div class="oni-creq-field">
                 <div class="oni-creq-field-lbl">Context (optional)</div>
@@ -561,6 +573,7 @@ Hooks.once("ready", () => {
                 const attrB     = singleDie ? attrA : rawB;
                 const leaderDl  = parseInt(root.querySelector('[name="dl"]')?.value   ?? "10", 10) || 10;
                 const context   = root.querySelector('[name="context"]')?.value?.trim() ?? "";
+                const hiddenDl  = !!root.querySelector('[name="hidden-dl"]')?.checked;
 
                 // ── SKILL CHECK ──────────────────────────────────────────
                 if (mode === "skill-check") {
@@ -591,6 +604,7 @@ Hooks.once("ready", () => {
                       allowInvokes: true,
                       postChat:     true,
                       context,
+                      hiddenDl,
                     }));
                   } catch (e) {
                     console.error(TAG, e);
@@ -637,6 +651,7 @@ Hooks.once("ready", () => {
                     label:        context || "Group Check",
                     allowInvokes: true,
                     postChat:     true,
+                    hiddenDl,
                   }));
                 } catch (e) {
                   if (e?.message?.includes("cancelled")) { resolve(null); return; }
