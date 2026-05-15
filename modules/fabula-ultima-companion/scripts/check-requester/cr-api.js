@@ -485,7 +485,7 @@
   // Panel HTML
   // =========================================================================
   function buildPanelHtml(pd) {
-    const isSingle  = pd.singleDie || pd.attrA === pd.attrB;
+    const isSingle  = pd.singleDie;
     const iconA     = ATTR_ICONS[pd.attrA] ?? ATTR_ICONS.DEX;
     const iconB     = ATTR_ICONS[pd.attrB] ?? ATTR_ICONS.MIG;
     const isVideo   = /\.(webm|mp4|ogg)(\?|$)/i.test(pd.tokenImg ?? "");
@@ -574,7 +574,7 @@
     if (!st || !el) return;
 
     const isOwner   = canOwnerAct(uuid);
-    const isSingle  = st.attrA === st.attrB;
+    const isSingle  = !!st.singleDie;
     const hasA      = st.rollA !== null;
     const hasB      = st.rollB !== null;
     const allRolled = hasA && (isSingle || hasB);
@@ -1066,7 +1066,7 @@
     if (!canOwnerAct(uuid)) return;
     const st = ses.panelStates.get(uuid);
     if (!st || st.confirmed) return;
-    const isSingle = st.attrA === st.attrB;
+    const isSingle = !!st.singleDie;
     if (die === "A" && st.rollA !== null) return;
     if (die === "B" && (st.rollB !== null || isSingle)) return;
     btn.disabled = true;
@@ -1106,7 +1106,7 @@
     if (!ses) return;
     const st = ses.panelStates.get(uuid);
     if (!st) return;
-    const isSingle = st.attrA === st.attrB;
+    const isSingle = !!st.singleDie;
     const allDone  = st.rollA !== null && (isSingle || st.rollB !== null);
     if (!allDone) { syncPanel(uuid); return; }
     const rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
@@ -1163,7 +1163,7 @@
     const actor = st._actor ?? await resolveActor(uuid);
     if (!actor || getFP(actor) < 1) { ui.notifications?.warn("Not enough Fabula Points (need 1)."); return; }
 
-    const isSingle = st.attrA === st.attrB;
+    const isSingle = !!st.singleDie;
     const choice = await showTraitRerollPanel(st, isSingle);
     if (!choice) return;
 
@@ -1219,7 +1219,7 @@
 
     await actor.update({ "system.props.fabula_point": getFP(actor) - 1 });
     st.modifierParts = [...(st.modifierParts ?? []), { label: `Bond: ${bond.name}`, value: bond.bonus }];
-    const isSingle = st.attrA === st.attrB;
+    const isSingle = !!st.singleDie;
     st.result = computeCheck(st.rollA, isSingle ? st.rollA : (st.rollB ?? st.rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedBond = true; st.canBond = false;
     broadcastUpdate(uuid); syncPanel(uuid);
@@ -1239,7 +1239,7 @@
     const res  = await consumeDivinationCharge(actor);
     if (!res.ok) { ui.notifications?.error("Failed to consume Divination charge."); return; }
 
-    const isSingle = st.attrA === st.attrB;
+    const isSingle = !!st.singleDie;
     st.rollA = newA;
     if (!isSingle) st.rollB = newB;
     st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
@@ -1287,7 +1287,7 @@
     const st = ses.panelStates.get(uuid);
     if (!st || st.confirmed || !canOwnerAct(uuid)) return;
 
-    const isSingle  = st.attrA === st.attrB;
+    const isSingle  = !!st.singleDie;
     const singleDie = ses.opts?.singleDie ?? false;
     const rA  = st.rollA ?? 0;
     const rB  = isSingle ? rA : (st.rollB ?? rA);
@@ -1436,7 +1436,7 @@
         const st = ses.panelStates.get(uuid);
         if (!st) return;
         Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
-        const isSingle = st.attrA === st.attrB;
+        const isSingle = !!st.singleDie;
         if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
         syncPanel(uuid);
         return;
