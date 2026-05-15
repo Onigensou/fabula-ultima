@@ -1008,6 +1008,7 @@
       sessionId:     ses.sessionId,
       actorUuid:     uuid,
       actorName:     st.actorName,
+      tokenImg:      st.tokenImg ?? "",
       attrA:         st.attrA,
       attrB:         st.attrB,
       dieA:          st.dieA,
@@ -1036,54 +1037,84 @@
   }
 
   // =========================================================================
-  // Post-check chat card (GM side, called for each confirmed actor)
+  // Post grouped chat card — one message for all actors in this check
   // =========================================================================
-  async function postChatCard(cp, tileLabel, dl) {
-    const { actorName, attrA, attrB, dieA, dieB,
-            rollA, rollB, total, pass, isCrit, isFumble, modifierParts } = cp;
-    const modTotal = (modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
-    const hr   = Math.max(rollA, rollB);
-    const base = rollA + rollB;
+  async function postGroupedChatCard(confirmPayloads, tileLabel, dl) {
+    if (!confirmPayloads.length) return;
 
-    let badge = "";
-    if (isFumble) badge = `<span style="display:inline-block;padding:1px 7px;border-radius:4px;background:#7a0000;color:#fff;font-size:.73rem;font-weight:800;margin-left:6px;">FUMBLE</span>`;
-    else if (isCrit) badge = `<span style="display:inline-block;padding:1px 7px;border-radius:4px;background:#7a5000;color:#fff;font-size:.73rem;font-weight:800;margin-left:6px;">CRITICAL</span>`;
+    const titleText = [
+      tileLabel ? `Skill Check — ${tileLabel}` : "Skill Check",
+      dl != null ? `(DL ${dl})` : "",
+    ].filter(Boolean).join(" ");
 
-    let verdictHtml = "";
-    if (dl != null) {
-      const v  = pass ? "PASS" : "FAIL";
-      const vc = pass ? "#2f8a3a" : "#b33a2f";
-      verdictHtml = `<div style="margin-top:5px;font-weight:800;font-size:.92rem;color:${vc};">DL ${dl}: ${v}</div>`;
-    }
+    const actorRows = confirmPayloads.map(cp => {
+      const { actorName, tokenImg, attrA, attrB, dieA, dieB,
+              rollA, rollB, total, pass, isCrit, isFumble, modifierParts } = cp;
+      const modTotal = (modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+      const hr   = Math.max(rollA, rollB);
+      const base = rollA + rollB;
 
-    const modLines = (modifierParts ?? [])
-      .filter(p => p?.label && safeInt(p.value, 0) !== 0)
-      .map(p => `<div>${esc(p.label)}: <b>${p.value >= 0 ? "+" : ""}${p.value}</b></div>`)
-      .join("");
+      let verdictText, verdictColor, summaryBg;
+      if (isFumble)        { verdictText = "FUMBLE";   verdictColor = "#7a0000"; summaryBg = "rgba(122,0,0,.06)"; }
+      else if (isCrit)     { verdictText = "CRITICAL"; verdictColor = "#7a5000"; summaryBg = "rgba(122,80,0,.06)"; }
+      else if (pass === true)  { verdictText = "✓ PASS"; verdictColor = "#2f8a3a"; summaryBg = "rgba(46,125,50,.06)"; }
+      else if (pass === false) { verdictText = "✗ FAIL"; verdictColor = "#b33a2f"; summaryBg = "rgba(179,58,47,.06)"; }
+      else                 { verdictText = String(total); verdictColor = "#3b2a19"; summaryBg = "transparent"; }
+
+      const imgSrc = tokenImg || "icons/svg/mystery-man.svg";
+
+      const modRows = (modifierParts ?? [])
+        .filter(p => p?.label && safeInt(p.value, 0) !== 0)
+        .map(p => `<tr><td style="opacity:.55;padding-right:10px;padding-bottom:2px;">${esc(p.label)}</td>
+                       <td style="padding-bottom:2px;">${p.value >= 0 ? "+" : ""}${p.value}</td></tr>`)
+        .join("");
+
+      return `
+        <details style="margin-bottom:4px;border-radius:8px;overflow:hidden;
+          border:1.5px solid rgba(91,63,38,.25);">
+          <summary style="list-style:none;display:flex;align-items:center;gap:8px;
+            cursor:pointer;padding:5px 8px;background:${summaryBg};user-select:none;">
+            <img src="${esc(imgSrc)}" alt=""
+              style="width:34px;height:34px;flex-shrink:0;object-fit:contain;
+                background:transparent!important;border:none!important;
+                box-shadow:none!important;filter:none!important;border-radius:0!important;">
+            <span style="flex:1;font-weight:800;font-size:.86rem;">${esc(actorName)}</span>
+            <span style="font-weight:800;font-size:.82rem;color:${verdictColor};">${verdictText}</span>
+          </summary>
+          <div style="padding:7px 10px 5px;background:rgba(0,0,0,.03);
+            border-top:1px solid rgba(91,63,38,.18);">
+            <table style="width:100%;border-collapse:collapse;font-size:.8rem;color:#3b2a19;">
+              <tr><td style="opacity:.55;padding-right:10px;padding-bottom:2px;">Formula</td>
+                  <td style="padding-bottom:2px;">${esc(attrA)} + ${esc(attrB)}</td></tr>
+              <tr><td style="opacity:.55;padding-bottom:2px;">Dice</td>
+                  <td style="padding-bottom:2px;">d${dieA} + d${dieB}</td></tr>
+              <tr><td style="opacity:.55;padding-bottom:2px;">Rolls</td>
+                  <td style="padding-bottom:2px;">${rollA}, ${rollB}
+                    <span style="opacity:.5;">(HR ${hr})</span></td></tr>
+              <tr><td style="opacity:.55;padding-bottom:2px;">Base</td>
+                  <td style="padding-bottom:2px;">${base}</td></tr>
+              ${modTotal !== 0 ? `<tr><td style="opacity:.55;padding-bottom:2px;">Modifier</td>
+                  <td style="padding-bottom:2px;">${modTotal >= 0 ? "+" : ""}${modTotal}</td></tr>` : ""}
+              ${modRows}
+              <tr><td style="opacity:.55;font-weight:800;padding-top:3px;">Total</td>
+                  <td style="font-weight:900;font-size:.95rem;padding-top:3px;">${total}</td></tr>
+            </table>
+          </div>
+        </details>`;
+    }).join("");
 
     await ChatMessage.create({
-      speaker: { alias: actorName },
       content: `
-        <div style="font-family:inherit;padding:8px 10px;border-radius:8px;
+        <div style="font-family:inherit;padding:9px 11px 7px;border-radius:10px;
           background:linear-gradient(180deg,#f6ebd3,#e4d0b5);
           border:2px solid rgba(91,63,38,.8);color:#3b2a19;">
-          <div style="font-weight:800;font-size:1rem;margin-bottom:5px;
-            border-bottom:1px solid rgba(0,0,0,.15);padding-bottom:3px;">
-            ${esc(actorName)} — Check Roll ${badge}
-            ${tileLabel ? `<span style="opacity:.6;font-size:.8rem;margin-left:4px;">[${esc(tileLabel)}]</span>` : ""}
+          <div style="font-weight:900;font-size:.92rem;margin-bottom:8px;
+            border-bottom:1px solid rgba(0,0,0,.15);padding-bottom:5px;">
+            ${esc(titleText)}
           </div>
-          <div style="display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.88rem;">
-            <span style="opacity:.6;">Formula</span><span>${esc(attrA)} + ${esc(attrB)}</span>
-            <span style="opacity:.6;">Dice</span><span>d${dieA} + d${dieB}</span>
-            <span style="opacity:.6;">Rolls</span><span>${rollA}, ${rollB} <span style="opacity:.55;">(HR ${hr})</span></span>
-            <span style="opacity:.6;">Base</span><span>${base}</span>
-            ${modTotal !== 0 ? `<span style="opacity:.6;">Modifier</span><span>${modTotal >= 0 ? "+" : ""}${modTotal}</span>` : ""}
-            <span style="opacity:.6;font-weight:800;">Total</span><span style="font-weight:800;font-size:1rem;">${total}</span>
-          </div>
-          ${modLines ? `<div style="margin-top:4px;font-size:.78rem;opacity:.65;">${modLines}</div>` : ""}
-          ${verdictHtml}
+          ${actorRows}
         </div>`,
-    }).catch(e => console.warn(TAG, "ChatMessage.create failed:", e));
+    }).catch(e => console.warn(TAG, "postGroupedChatCard failed:", e));
   }
 
   // =========================================================================
@@ -1239,10 +1270,8 @@
     const confirmPayloads = await done;
     _pendingSessions.delete(sessionId);
 
-    // Post chat cards
-    for (const cp of confirmPayloads) {
-      await postChatCard(cp, tileLabel, dl);
-    }
+    // Post one grouped chat card for all actors
+    await postGroupedChatCard(confirmPayloads, tileLabel, dl);
 
     // Close overlay on all clients
     game.socket.emit(SOCKET_CH, { type: MSG_CLOSE, payload: { sessionId } });
