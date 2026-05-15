@@ -306,19 +306,24 @@
         display: inline-flex; align-items: center; justify-content: center;
         min-width: 34px; height: 34px; border-radius: 8px;
         background: rgba(0,0,0,.08); border: 1.5px solid rgba(0,0,0,.18);
-        font-weight: 900; font-size: 1.05rem; color: #3b2a19; transition: transform .15s;
+        font-weight: 900; font-size: 1.05rem; color: #3b2a19;
       }
-      .oni-cr-die-chip.pop { animation: oni-cr-pop .25s cubic-bezier(.22,1,.36,1); }
-      @keyframes oni-cr-pop {
-        0%  { transform: scale(1); } 45% { transform: scale(1.3); } 100% { transform: scale(1); }
+      /* Number text lives inside the chip; only it gets animated — box stays static */
+      .oni-cr-die-num { display: inline-block; }
+      @keyframes oni-cr-num-rolling {
+        0%, 100% { opacity: 1;    transform: scaleY(1);   }
+        45%, 55% { opacity: 0.08; transform: scaleY(0.3); }
       }
-      @keyframes oni-cr-die-tumble {
-        0%   { transform: rotate(-3deg) scale(1.06); }
-        50%  { transform: rotate(3deg)  scale(0.94); }
-        100% { transform: rotate(-3deg) scale(1.06); }
+      .oni-cr-die-chip.is-rolling .oni-cr-die-num {
+        animation: oni-cr-num-rolling 85ms linear infinite;
       }
-      .oni-cr-die-chip.is-rolling {
-        animation: oni-cr-die-tumble 120ms ease-in-out infinite;
+      @keyframes oni-cr-num-land {
+        0%   { opacity: 0.1; transform: scale(1.8); }
+        55%  { transform: scale(0.88); }
+        100% { opacity: 1;   transform: scale(1); }
+      }
+      .oni-cr-die-num.is-landing {
+        animation: oni-cr-num-land 360ms cubic-bezier(.22,1,.36,1) both;
       }
 
       /* Modifier bonus display (e.g. Helper Bonus from Group Check) */
@@ -343,6 +348,13 @@
       .oni-cr-verdict.fail   { background: rgba(179,58,47,.18);  color: #b33a2f; }
       .oni-cr-verdict.crit   { background: rgba(181,124,0,.2);   color: #7a5000; }
       .oni-cr-verdict.fumble { background: rgba(100,0,0,.18);    color: #7a0000; }
+      @keyframes oni-cr-result-in {
+        0%   { opacity: 0; transform: translateY(7px) scale(0.90); }
+        100% { opacity: 1; transform: translateY(0)   scale(1); }
+      }
+      .oni-cr-result-block.oni-cr-result-fadein {
+        animation: oni-cr-result-in 350ms cubic-bezier(.22,1,.36,1) both;
+      }
 
       .oni-cr-sep { width: 80%; height: 1px; background: rgba(0,0,0,.14); flex-shrink: 0; }
 
@@ -498,8 +510,8 @@
         <div class="oni-cr-roll-row" data-zone="roll">${rollBtns}</div>
 
         <div class="oni-cr-die-row" data-zone="dice" style="display:none">
-          <div class="oni-cr-die-chip" data-chip="A">—</div>
-          ${!isSingle ? `<div class="oni-cr-plus-sep">+</div><div class="oni-cr-die-chip" data-chip="B">—</div>` : ""}
+          <div class="oni-cr-die-chip" data-chip="A"><span class="oni-cr-die-num">—</span></div>
+          ${!isSingle ? `<div class="oni-cr-plus-sep">+</div><div class="oni-cr-die-chip" data-chip="B"><span class="oni-cr-die-num">—</span></div>` : ""}
         </div>
 
         <div class="oni-cr-mod-row" data-zone="mods" style="display:none"></div>
@@ -562,8 +574,8 @@
     // Die chips — show as soon as any die lands
     if (hasA || hasB) {
       showZone(el, "dice", true);
-      const cA = el.querySelector("[data-chip='A']");
-      const cB = el.querySelector("[data-chip='B']");
+      const cA = el.querySelector("[data-chip='A'] .oni-cr-die-num") ?? el.querySelector("[data-chip='A']");
+      const cB = el.querySelector("[data-chip='B'] .oni-cr-die-num") ?? el.querySelector("[data-chip='B']");
       if (cA) cA.textContent = hasA ? String(st.rollA) : "—";
       if (cB && !isSingle) cB.textContent = hasB ? String(st.rollB) : "—";
     } else {
@@ -586,8 +598,14 @@
 
     // Total + verdict (only when both dice done)
     if (allRolled && st.result) {
-      showZone(el, "result", true);
-      showZone(el, "sep1",   true);
+      const resultZone = zone(el, "result");
+      if (resultZone) {
+        resultZone.style.display = "";
+        resultZone.classList.remove("oni-cr-result-fadein");
+        void resultZone.offsetWidth;
+        resultZone.classList.add("oni-cr-result-fadein");
+      }
+      showZone(el, "sep1", true);
       const totalEl   = el.querySelector("[data-field='total']");
       const verdictEl = el.querySelector("[data-field='verdict']");
       if (totalEl) totalEl.textContent = String(st.result.total);
@@ -641,34 +659,35 @@
     if (diceRow) diceRow.style.display = "";
 
     chip.classList.add("is-rolling");
+    const num = chip.querySelector(".oni-cr-die-num") ?? chip;
 
     // Fast tumble phase — random tick intervals for an organic feel
     for (let i = 0; i < 8; i++) {
-      chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+      num.textContent = String(Math.floor(Math.random() * faces) + 1);
       await wait(35 + Math.floor(Math.random() * 22));  // 35–57 ms
     }
 
     if (intense) {
       // Dramatic roulette: 6 steps, exponential 68 ms → 360 ms
       for (let i = 0; i < 6; i++) {
-        chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+        num.textContent = String(Math.floor(Math.random() * faces) + 1);
         const t = (i + 1) / 6;
         await wait(60 + Math.round(t * t * 300));  // 68 → 360 ms
       }
     } else {
       // Normal anticipation: 4 steps, 63 ms → 180 ms
       for (let i = 0; i < 4; i++) {
-        chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+        num.textContent = String(Math.floor(Math.random() * faces) + 1);
         const t = (i + 1) / 4;
         await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
       }
     }
 
     chip.classList.remove("is-rolling");
-    chip.textContent = String(finalValue);
-    chip.classList.remove("pop");
-    void chip.offsetWidth;
-    chip.classList.add("pop");
+    num.classList.remove("is-landing");
+    void num.offsetWidth;
+    num.textContent = String(finalValue);
+    num.classList.add("is-landing");
     try {
       const sfx = globalThis.ONI?.CheckRoller?.CONST?.DEFAULTS?.UI_TUNING?.rollSfxUrl;
       if (sfx) AudioHelper.play({ src: sfx, volume: 0.55, autoplay: true }, false);
