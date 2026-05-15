@@ -81,9 +81,10 @@
   const getFP = actor => safeInt(actor?.system?.props?.fabula_point, 0);
 
   const getTokenImg = actor => {
+    const std   = String(actor?.system?.props?.sprite_standard ?? "").trim();
     const token = String(actor.getActiveTokens?.(true, true)?.[0]?.document?.texture?.src ?? "").trim();
     const proto = String(actor?.prototypeToken?.texture?.src ?? "").trim();
-    return token || proto || actor.img || "icons/svg/mystery-man.svg";
+    return std || token || proto || actor.img || "icons/svg/mystery-man.svg";
   };
 
   // Resolve an actor or actor UUID → Actor document
@@ -250,17 +251,16 @@
       }
       .oni-cr-panel.is-confirmed { opacity: .5; }
 
-      /* Token portrait — circular crop matching the original panel style */
+      /* Token portrait — transparent container, full sprite visible */
       .oni-cr-portrait {
-        width: 68px; height: 68px; border-radius: 50%;
-        border: 2px solid rgba(91,63,38,.85);
-        overflow: hidden; flex-shrink: 0;
-        box-shadow: 0 3px 8px rgba(0,0,0,.3);
-        background: rgba(0,0,0,.08);
+        width: 86px; height: 86px;
+        flex-shrink: 0; position: relative;
+        background: transparent !important;
+        border: none !important; box-shadow: none !important;
       }
       .oni-cr-portrait img, .oni-cr-portrait video {
-        width: 100%; height: 100%; display: block; object-fit: cover;
-        background: none !important; border: none !important;
+        width: 100%; height: 100%; display: block; object-fit: contain;
+        background: transparent !important; border: none !important;
         outline: none !important; box-shadow: none !important; filter: none !important;
       }
       .oni-cr-actor-name {
