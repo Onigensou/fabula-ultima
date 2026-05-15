@@ -65,7 +65,7 @@
     singleDie: false,
     hiddenDl: true,
     skipGroupOutcomeSound: false,
-    revealTimeout: 2500,
+    revealTimeout: 2300,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -749,37 +749,34 @@
       await showFrame(pick(), 48 + Math.floor(Math.random() * 22));
     }
 
-    // Phase 2: deceleration — early frames random, final seqLen frames tick
-    // strictly sequentially up to (but not including) finalValue so players
-    // can read the outcome coming (e.g. final=4 → rnd→rnd→1→2→3→[stamp 4]).
+    // Phase 2: deceleration — early frames random, then 1–N sequential frames
+    // ticking strictly upward into finalValue (with wrap at faces).
+    // e.g. final=4, seqLen=3 → rnd→rnd→1→2→3→[stamp 4]
+    // e.g. final=2, faces=20, seqLen=3 → rnd→19→20→1→[stamp 2]
     const decelMs = intense
       ? [90, 155, 240, 360, 510, 700]
       : [85, 135, 195, 270];
-    const seqLen = intense ? Math.min(5, decelMs.length) : Math.min(3, decelMs.length);
+    const maxSeq = intense ? 5 : 3;
+    // Variable-length sequential tail: 1 to maxSeq, capped so at least 1 random frame remains
+    const seqLen = faces > 1
+      ? Math.min(Math.floor(Math.random() * maxSeq) + 1, decelMs.length - 1)
+      : 0;
 
-    // Sequential frames approach finalValue from below; fall back to from above
-    // when finalValue is too close to the die minimum.
-    let seqValues;
-    if (finalValue - 1 >= seqLen) {
-      seqValues = [];
-      for (let v = finalValue - seqLen; v < finalValue; v++) seqValues.push(v);
-    } else {
-      const start = Math.min(faces, finalValue + seqLen);
-      seqValues = [];
-      for (let v = start; v > finalValue; v--) seqValues.push(v);
+    // Build sequential values: always upward, wrapping at faces.
+    // Last value is always finalValue-1 (mod faces), so the stamp is a clean step up.
+    const seqValues = [];
+    for (let i = seqLen; i >= 1; i--) {
+      let v = finalValue - i;
+      while (v < 1) v += faces;
+      seqValues.push(v);
     }
 
-    for (const ms of decelMs.slice(0, decelMs.length - seqValues.length)) {
+    for (const ms of decelMs.slice(0, decelMs.length - seqLen)) {
       await showFrame(pick(), ms);
     }
-    const seqMs = decelMs.slice(decelMs.length - seqValues.length);
+    const seqMs = decelMs.slice(decelMs.length - seqLen);
     for (let i = 0; i < seqValues.length; i++) {
       await showFrame(seqValues[i], seqMs[i]);
-    }
-
-    // Guard: safety net in case sequential phase already landed on finalValue
-    if (lastShown === finalValue && faces > 1) {
-      await showFrame(pick(finalValue), intense ? 95 : 68);
     }
 
     num.classList.remove("is-landing");
@@ -923,7 +920,7 @@
         }, delay);
       });
 
-      const timeout = ses.opts?.revealTimeout ?? 2500;
+      const timeout = ses.opts?.revealTimeout ?? 2300;
 
       // Group outcome fanfare fires at the end of the tension window,
       // same moment as the auto-proceed resolve — skipped for helper-phase
