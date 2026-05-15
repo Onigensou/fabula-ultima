@@ -72,6 +72,8 @@
   };
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const esc  = s  => String(s ?? "")
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
   // Decide whether the final die should play intense anticipation.
   // Always intense if the total lands within 3 of DL (close call).
@@ -81,8 +83,6 @@
     if (Math.abs(total - Number(dl)) <= 3) return true;
     return Math.random() < 0.08;
   };
-    .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
   // ── Actor utilities ───────────────────────────────────────────────────────
   const getDieSize = (actor, attr) =>
