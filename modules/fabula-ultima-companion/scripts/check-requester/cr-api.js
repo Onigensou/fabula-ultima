@@ -310,14 +310,7 @@
         font-weight: 900; font-size: 1.05rem; color: #3b2a19;
       }
       /* Number text lives inside the chip; only it gets animated — box stays static */
-      .oni-cr-die-num { display: inline-block; }
-      @keyframes oni-cr-num-rolling {
-        0%, 100% { transform: scale(1.0); }
-        50%      { transform: scale(0.72); }
-      }
-      .oni-cr-die-chip.is-rolling .oni-cr-die-num {
-        animation: oni-cr-num-rolling 130ms ease-in-out infinite;
-      }
+      .oni-cr-die-num { display: inline-block; transform-origin: center; }
       @keyframes oni-cr-num-land {
         0%   { opacity: 0.1; transform: scale(1.8); }
         55%  { transform: scale(0.88); }
@@ -699,44 +692,53 @@
     const diceRow = panelEl.querySelector("[data-zone='dice']");
     if (diceRow) diceRow.style.display = "";
 
-    chip.classList.add("is-rolling");
     const num = chip.querySelector(".oni-cr-die-num") ?? chip;
 
-    // pick(exclude) — random face guaranteed ≠ exclude when faces > 1.
-    // lastShown is updated by show() and flows through all phases, including the
-    // final-value guard, so no consecutive repeats occur anywhere in the sequence.
+    // pick(exclude) — random face guaranteed ≠ exclude when faces > 1
     let lastShown = -1;
     const pick = (exclude = lastShown) => {
       let n;
       do { n = Math.floor(Math.random() * faces) + 1; } while (n === exclude && faces > 1);
       return n;
     };
-    const show = v => { num.textContent = String(lastShown = v); };
 
-    // Phase 1: fast tumble — organic random cadence
+    // showFrame — shrink → swap number at nadir → grow back, all in tickMs total.
+    // The number change is perfectly synchronised with the scale because it happens
+    // at the exact moment the element is at its smallest — never mid-scale.
+    const showFrame = async (v, tickMs) => {
+      const halfMs = Math.min(Math.round(tickMs * 0.38), 58); // shrink phase, capped at 58ms
+      num.style.transition = `transform ${halfMs}ms ease-in`;
+      num.style.transform   = "scale(0.58)";
+      await wait(halfMs);
+      num.textContent = String(lastShown = v);             // swap at nadir
+      num.style.transition = `transform ${halfMs}ms ease-out`;
+      num.style.transform   = "scale(1)";
+      await wait(tickMs - halfMs);                         // hold at full scale for remainder
+    };
+
+    // Phase 1: fast tumble — random tick intervals for organic feel
     for (let i = 0; i < 8; i++) {
-      show(pick());
-      await wait(30 + Math.floor(Math.random() * 20));
+      await showFrame(pick(), 48 + Math.floor(Math.random() * 22));
     }
 
     // Phase 2: deceleration — explicit per-frame ms for tight control.
     // Intense gives a dramatic roulette crawl; normal gives a gentle settle.
     const decelMs = intense
-      ? [90, 150, 230, 340, 480, 660]
-      : [80, 130, 185, 255];
+      ? [90, 155, 240, 360, 510, 700]
+      : [85, 135, 195, 270];
     for (const ms of decelMs) {
-      show(pick());
-      await wait(ms);
+      await showFrame(pick(), ms);
     }
 
-    // Guard: if the last animated face already equals finalValue, show one
-    // more different face so the landing number is always visibly distinct.
+    // Guard: if last animated face equals finalValue, one more different face
+    // so the number is always visibly distinct when it lands
     if (lastShown === finalValue && faces > 1) {
-      show(pick(finalValue));
-      await wait(intense ? 90 : 65);
+      await showFrame(pick(finalValue), intense ? 95 : 68);
     }
 
-    chip.classList.remove("is-rolling");
+    // Clear inline transition so is-landing keyframe has full control
+    num.style.transition = "";
+    num.style.transform   = "";
     num.classList.remove("is-landing");
     void num.offsetWidth;
     num.textContent = String(finalValue);
