@@ -797,6 +797,15 @@
       await showFrame(seqValues[i], ms);
     }
 
+    // Dwell on the last sequential value before stamping — without this, the last
+    // sequential number is visible for 0ms because showFrame delay is approach-time
+    // not dwell-time. Hold for as long as the final approach gap.
+    if (seqMs.length > 0) {
+      const dwellMs = seqMs[seqMs.length - 1] * P2_MUL;
+      console.debug(`[CR][animateDie][${chipSel}] dwell=${dwellMs}ms`);
+      await wait(dwellMs);
+    }
+
     console.debug(`[CR][animateDie][${chipSel}] STAMP finalValue=${finalValue}`);
     num.classList.remove("is-landing");
     void num.offsetWidth;
