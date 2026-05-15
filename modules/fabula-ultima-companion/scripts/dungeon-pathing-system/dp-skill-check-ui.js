@@ -186,16 +186,20 @@
       }
       .dpsc-panel.is-confirmed { opacity: .5; }
 
-      /* Portrait */
+      /* Token sprite */
       .dpsc-portrait {
-        width: 68px; height: 68px; border-radius: 50%;
-        border: 2px solid rgba(91,63,38,.85);
-        overflow: hidden; flex-shrink: 0;
-        box-shadow: 0 3px 8px rgba(0,0,0,.3);
+        width: 86px; height: 86px;
+        flex-shrink: 0; position: relative;
+        background: transparent !important;
+        border: none !important; box-shadow: none !important;
       }
-      .dpsc-portrait img {
-        width: 100%; height: 100%; object-fit: cover;
-        background: none; border: none; box-shadow: none;
+      .dpsc-portrait img,
+      .dpsc-portrait video {
+        width: 100%; height: 100%; display: block;
+        object-fit: contain;
+        background: transparent !important;
+        border: none !important; outline: none !important;
+        box-shadow: none !important; filter: none !important;
       }
       .dpsc-actor-name {
         font-size: .84rem; font-weight: 800; text-align: center;
@@ -293,6 +297,60 @@
 
       .dpsc-waiting    { font-size: .78rem; opacity: .55; font-style: italic; text-align: center; }
       .dpsc-confirmed  { font-size: .78rem; color: #2f8a3a; font-weight: 700; text-align: center; }
+
+      /* ── Inline sub-panel (Invoke Trait / Bond selection) ── */
+      .dpsc-subpanel-overlay {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,.42);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 10;
+      }
+      .dpsc-subpanel {
+        background:
+          radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.45) 0%,
+            rgba(255,255,255,.15) 22%, transparent 40%),
+          linear-gradient(180deg, #f6ebd3 0%, #eddecb 55%, #e4d0b5 100%);
+        border: 2.5px solid rgba(91,63,38,.95);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,248,232,.7);
+        padding: 14px 14px 12px;
+        min-width: 220px; max-width: 300px;
+        color: #3b2a19;
+      }
+      .dpsc-subpanel-title {
+        font-size: .88rem; font-weight: 900;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(0,0,0,.15);
+        padding-bottom: 6px;
+      }
+      .dpsc-subpanel-rows { display: flex; flex-direction: column; gap: 5px; }
+      .dpsc-subpanel-row {
+        display: flex; align-items: center; gap: 8px;
+        padding: 7px 10px; border-radius: 10px;
+        border: 2px solid rgba(91,63,38,.6);
+        background: linear-gradient(180deg, #f6ebd3, #e4d0b5);
+        cursor: pointer; transition: filter .1s;
+      }
+      .dpsc-subpanel-row:hover { filter: brightness(1.06); }
+      .dpsc-subpanel-row.on { outline: 2.5px solid #e35151; }
+      .dpsc-subpanel-row img { width: 22px; height: 22px; object-fit: contain;
+        background: none !important; border: none !important; box-shadow: none !important; }
+      .dpsc-subpanel-lbl { flex: 1; font-weight: 800; font-size: .82rem; }
+      .dpsc-subpanel-val { font-weight: 900; font-size: 1rem; }
+      .dpsc-subpanel-footer { display: flex; gap: 7px; margin-top: 10px; }
+      .dpsc-subpanel-btn {
+        flex: 1; padding: 6px 4px; border-radius: 10px;
+        border: 2px solid rgba(91,63,38,.8);
+        font-size: .78rem; font-weight: 800; cursor: pointer;
+        background: linear-gradient(180deg, #f6ebd3, #d9c4a4);
+        color: #3b2a19; transition: filter .1s, transform .1s;
+      }
+      .dpsc-subpanel-btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+      .dpsc-subpanel-btn.primary {
+        background: linear-gradient(180deg, #4caf50, #2e7d32);
+        border-color: #2e7d32; color: #fff;
+      }
+      .dpsc-subpanel-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; filter: none; }
     `;
     document.head.appendChild(s);
   }
@@ -328,11 +386,14 @@
       ? attrBtnA
       : `${attrBtnA}<div class="dpsc-plus-sep">+</div>${attrBtnB}`;
 
+    const isVideo = /\.(webm|mp4|ogg)(\?|$)/i.test(pd.tokenImg ?? "");
+    const tokenMedia = isVideo
+      ? `<video src="${esc(pd.tokenImg)}" autoplay loop muted playsinline preload="auto"></video>`
+      : `<img src="${esc(pd.tokenImg)}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">`;
+
     return `
       <div class="dpsc-panel" data-uuid="${pd.actorUuid}">
-        <div class="dpsc-portrait">
-          <img src="${esc(pd.tokenImg)}" onerror="this.src='icons/svg/mystery-man.svg'">
-        </div>
+        <div class="dpsc-portrait">${tokenMedia}</div>
         <div class="dpsc-actor-name" title="${esc(pd.actorName)}">${esc(pd.actorName)}</div>
 
         <!-- roll buttons -->
@@ -398,20 +459,20 @@
 
     // ── Roll buttons ──────────────────────────────────────────────────────
     showZone(el, "roll", !allRolled);
-    if (!allRolled) {
+    {
       const btnA = el.querySelector(`[data-die="A"][data-uuid="${uuid}"]`);
       const btnB = el.querySelector(`[data-die="B"][data-uuid="${uuid}"]`);
       if (btnA) { btnA.disabled = !isOwner || st.confirmed || hasA; if (hasA) btnA.classList.add("is-done"); }
       if (btnB && !isSingle) { btnB.disabled = !isOwner || st.confirmed || hasB; if (hasB) btnB.classList.add("is-done"); }
     }
 
-    // ── Die chips ─────────────────────────────────────────────────────────
-    if (allRolled) {
+    // ── Die chips — show as soon as any die is rolled ─────────────────────
+    if (hasA || hasB) {
       showZone(el, "dice", true);
       const chipA = el.querySelector("[data-chip='A']");
       const chipB = el.querySelector("[data-chip='B']");
-      if (chipA) chipA.textContent = String(st.rollA);
-      if (chipB) chipB.textContent = String(isSingle ? st.rollA : (st.rollB ?? st.rollA));
+      if (chipA) chipA.textContent = hasA ? String(st.rollA) : "—";
+      if (chipB && !isSingle) chipB.textContent = hasB ? String(st.rollB) : "—";
     } else {
       showZone(el, "dice", false);
     }
@@ -491,6 +552,54 @@
       const sfx = globalThis.ONI?.CheckRoller?.CONST?.DEFAULTS?.UI_TUNING?.rollSfxUrl;
       if (sfx) AudioHelper.play({ src: sfx, volume: 0.55, autoplay: true }, false);
     } catch (_) {}
+  }
+
+  // =========================================================================
+  // Inline sub-panel (replaces Dialog popups for Invoke actions)
+  // =========================================================================
+  function showSubPanel(titleText, rowsHtml, confirmLabel, cancelLabel = "Cancel") {
+    return new Promise((resolve) => {
+      const backdrop = _session?.backdropEl;
+      if (!backdrop) { resolve(null); return; }
+
+      const overlay = document.createElement("div");
+      overlay.className = "dpsc-subpanel-overlay";
+
+      const panel = document.createElement("div");
+      panel.className = "dpsc-subpanel";
+      panel.innerHTML = `
+        <div class="dpsc-subpanel-title">${titleText}</div>
+        <div class="dpsc-subpanel-rows">${rowsHtml}</div>
+        <div class="dpsc-subpanel-footer">
+          <button class="dpsc-subpanel-btn" data-sp="cancel">${cancelLabel}</button>
+          <button class="dpsc-subpanel-btn primary" data-sp="confirm" disabled>${confirmLabel}</button>
+        </div>`;
+      overlay.appendChild(panel);
+      backdrop.appendChild(overlay);
+
+      let selected = null;
+
+      panel.querySelectorAll(".dpsc-subpanel-row").forEach(r => {
+        r.addEventListener("click", () => {
+          panel.querySelectorAll(".dpsc-subpanel-row").forEach(x => x.classList.remove("on"));
+          r.classList.add("on");
+          selected = r.dataset.value ?? null;
+          const confirmBtn = panel.querySelector("[data-sp='confirm']");
+          if (confirmBtn) confirmBtn.disabled = false;
+        });
+      });
+
+      panel.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-sp]");
+        if (!btn || btn.disabled) return;
+        overlay.remove();
+        resolve(btn.dataset.sp === "confirm" ? selected : null);
+      });
+
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) { overlay.remove(); resolve(null); }
+      });
+    });
   }
 
   // =========================================================================
@@ -724,46 +833,19 @@
     const rA = st.rollA;
     const rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
 
-    const choice = await new Promise(resolve => {
-      const rowA = `<div class="dpsc-tr-row" data-c="A">
-        <img src="${iconA}"><div class="lbl">${st.attrA} (d${st.dieA})</div><div class="val">${rA}</div></div>`;
-      const rowB = !isSingle
-        ? `<div class="dpsc-tr-row" data-c="B">
-            <img src="${iconB}"><div class="lbl">${st.attrB} (d${st.dieB})</div><div class="val">${rB}</div></div>
-           <div class="dpsc-tr-row" data-c="AB"><div class="lbl" style="text-align:center">Both dice</div></div>`
-        : "";
+    const rowA = `<div class="dpsc-subpanel-row" data-value="A">
+      <img src="${iconA}" title="${st.attrA}">
+      <div class="dpsc-subpanel-lbl">${st.attrA} (d${st.dieA})</div>
+      <div class="dpsc-subpanel-val">${rA}</div></div>`;
+    const rowsHtml = isSingle ? rowA : rowA
+      + `<div class="dpsc-subpanel-row" data-value="B">
+           <img src="${iconB}" title="${st.attrB}">
+           <div class="dpsc-subpanel-lbl">${st.attrB} (d${st.dieB})</div>
+           <div class="dpsc-subpanel-val">${rB}</div></div>
+         <div class="dpsc-subpanel-row" data-value="AB">
+           <div class="dpsc-subpanel-lbl" style="text-align:center;width:100%">Both dice</div></div>`;
 
-      new Dialog({
-        title: "Invoke Trait — Choose dice to reroll",
-        content: `
-          <style>
-            .dpsc-tr-row{display:flex;align-items:center;gap:8px;padding:8px 12px;
-              border-radius:10px;border:2px solid rgba(91,63,38,.7);
-              background:linear-gradient(180deg,#f6ebd3,#e4d0b5);
-              cursor:pointer;transition:filter .1s;margin-bottom:5px;}
-            .dpsc-tr-row:hover{filter:brightness(1.05);}
-            .dpsc-tr-row.on{outline:2px solid #e35151;}
-            .dpsc-tr-row img{width:24px;height:24px;object-fit:contain;background:none;border:none;}
-            .dpsc-tr-row .lbl{flex:1;font-weight:800;}
-            .dpsc-tr-row .val{font-size:1.1rem;font-weight:900;}
-          </style>
-          ${rowA}${rowB}`,
-        buttons: {
-          ok:     { label: "Reroll",  callback: html => { const on = html[0].querySelector(".dpsc-tr-row.on"); resolve(on?.dataset.c ?? null); } },
-          cancel: { label: "Cancel",  callback: () => resolve(null) },
-        },
-        default: "ok",
-        close:   () => resolve(null),
-        render: html => {
-          html[0].querySelectorAll(".dpsc-tr-row").forEach(r =>
-            r.addEventListener("click", () => {
-              html[0].querySelectorAll(".dpsc-tr-row").forEach(x => x.classList.remove("on"));
-              r.classList.add("on");
-            })
-          );
-        },
-      }).render(true);
-    });
+    const choice = await showSubPanel("🎭 Invoke Trait — Choose dice to reroll", rowsHtml, "Reroll");
 
     if (!choice) return;
 
@@ -803,54 +885,17 @@
     const bonds = st._bonds ?? collectBonds(actor);
     if (!bonds.length) { ui.notifications?.warn("No bonds found on this actor."); return; }
 
-    const bond = await new Promise(resolve => {
-      const HEART_POS = "❤";
-      const HEART_NEG = "💜";
-      const rowHtml = b => `
-        <div class="oni-bond-row" tabindex="0" data-idx="${b.idx}">
-          <div class="oni-bond-name">${esc(b.name)}</div>
-          <div class="oni-bond-hearts">${HEART_POS.repeat(b.filledPos)}${HEART_NEG.repeat(b.filledNeg)}</div>
-          <div class="oni-bond-bonus">+${b.bonus}</div>
-        </div>`;
+    const HEART_POS = "❤";
+    const HEART_NEG = "💜";
+    const bondRowsHtml = bonds.map(b => `
+      <div class="dpsc-subpanel-row" data-value="${b.idx}">
+        <div class="dpsc-subpanel-lbl">${esc(b.name)}<span style="opacity:.6;font-size:.75rem;margin-left:5px;">${HEART_POS.repeat(b.filledPos)}${HEART_NEG.repeat(b.filledNeg)}</span></div>
+        <div class="dpsc-subpanel-val">+${b.bonus}</div>
+      </div>`).join("");
 
-      new Dialog({
-        title: "Invoke Bond — Choose a Bond",
-        content: `<form>
-          <style>
-            .oni-bond-list{display:flex;flex-direction:column;gap:.4rem;margin:.2rem 0;}
-            .oni-bond-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;
-              padding:.5rem .7rem;border-radius:12px;cursor:pointer;
-              border:2.5px solid rgba(87,58,33,.9);
-              background:linear-gradient(180deg,#f6ebd3,#e8d3b1);
-              transition:filter .1s;}
-            .oni-bond-row:hover{filter:brightness(1.04);}
-            .oni-bond-row.on{outline:3px solid #e35151;}
-            .oni-bond-name{font-weight:800;}
-            .oni-bond-bonus{font-weight:900;min-width:3ch;text-align:right;}
-          </style>
-          <div class="oni-bond-list">${bonds.map(rowHtml).join("")}</div>
-        </form>`,
-        buttons: {
-          ok:     { label: "Invoke", callback: html => {
-            const on = html[0].querySelector(".oni-bond-row.on");
-            if (!on) return resolve(null);
-            resolve(bonds.find(b => b.idx === parseInt(on.dataset.idx, 10)) ?? null);
-          }},
-          cancel: { label: "Cancel", callback: () => resolve(null) },
-        },
-        default: "ok",
-        close:   () => resolve(null),
-        render: html => {
-          html[0].querySelectorAll(".oni-bond-row").forEach(r =>
-            r.addEventListener("click", () => {
-              html[0].querySelectorAll(".oni-bond-row").forEach(x => x.classList.remove("on"));
-              r.classList.add("on");
-            })
-          );
-        },
-      }).render(true);
-    });
-
+    const bondChoice = await showSubPanel("🤝 Invoke Bond — Choose a Bond", bondRowsHtml, "Invoke");
+    if (!bondChoice) return;
+    const bond = bonds.find(b => b.idx === parseInt(bondChoice, 10));
     if (!bond) return;
 
     // Spend FP + apply bonus
@@ -959,25 +1004,35 @@
     st.confirmed = true;
     syncPanel(uuid);
 
-    game.socket.emit(SOCKET_CH, {
-      type: MSG_CONFIRM,
-      payload: {
-        sessionId:     ses.sessionId,
-        actorUuid:     uuid,
-        actorName:     st.actorName,
-        attrA:         st.attrA,
-        attrB:         st.attrB,
-        dieA:          st.dieA,
-        dieB:          st.dieB,
-        rollA:         rA,
-        rollB:         rB,
-        modifierParts: st.modifierParts,
-        total:         res.total,
-        pass:          res.pass,
-        isCrit:        res.isCrit,
-        isFumble:      res.isFumble,
-      },
-    });
+    const confirmPayload = {
+      sessionId:     ses.sessionId,
+      actorUuid:     uuid,
+      actorName:     st.actorName,
+      attrA:         st.attrA,
+      attrB:         st.attrB,
+      dieA:          st.dieA,
+      dieB:          st.dieB,
+      rollA:         rA,
+      rollB:         rB,
+      modifierParts: st.modifierParts,
+      total:         res.total,
+      pass:          res.pass,
+      isCrit:        res.isCrit,
+      isFumble:      res.isFumble,
+    };
+
+    game.socket.emit(SOCKET_CH, { type: MSG_CONFIRM, payload: confirmPayload });
+
+    // game.socket.emit does NOT echo back to the sender, so the GM's own
+    // socket listener never fires for confirmations the GM sends.
+    // Collect directly so the pending-session promise can resolve.
+    if (game.user?.isGM) {
+      const pending = _pendingSessions.get(ses.sessionId);
+      if (pending) {
+        pending.confirms.set(uuid, confirmPayload);
+        pending.checkComplete();
+      }
+    }
   }
 
   // =========================================================================
@@ -1152,9 +1207,14 @@
       const dieA = getDieSize(actor, attrA);
       const dieB = getDieSize(actor, attrB);
 
-      let tokenImg = actor.img ?? "icons/svg/mystery-man.svg";
-      const tokens = actor.getActiveTokens?.(true, true) ?? [];
-      if (tokens[0]?.document?.texture?.src) tokenImg = tokens[0].document.texture.src;
+      // Priority: custom sprite_standard → active token texture → prototype token → portrait
+      const spriteStd = String(actor?.system?.props?.sprite_standard ?? "").trim();
+      const activeTokenSrc = (() => {
+        const tokens = actor.getActiveTokens?.(true, true) ?? [];
+        return String(tokens[0]?.document?.texture?.src ?? "").trim();
+      })();
+      const protoSrc = String(actor?.prototypeToken?.texture?.src ?? "").trim();
+      const tokenImg = spriteStd || activeTokenSrc || protoSrc || actor.img || "icons/svg/mystery-man.svg";
 
       return { actorUuid: actor.uuid, actorName: actor.name, tokenImg, attrA, attrB, dieA, dieB };
     });
