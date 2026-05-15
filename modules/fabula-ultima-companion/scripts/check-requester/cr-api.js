@@ -746,16 +746,18 @@
     // Pre-compute Phase 2 case BEFORE Phase 1 so we can bridge the last tumble
     // frame into the sequential start with no downward jump at the handoff.
     //
-    // Three decel cases — picked randomly each roll:
+    // Four decel cases — picked randomly each roll:
+    //   Case 0: approach → N (no tick) ——stagger——→ stamp N   ("is this it?")
     //   Case 1: approach → N-1 ——stagger——→ stamp N
     //   Case 2: approach → N-2 —hold— tick → N-1 ——stagger——→ stamp N
     //   Case 3: approach → N-3 —hold— tick → N-2 —midHold— tick → N-1 ——stagger——→ stamp N
     //
     // All cases end with ~1s stagger so players can read the "final?" number.
-    const decelCase = faces > 1 ? (Math.floor(Math.random() * 3) + 1) : 0;
-    const numSeq    = Math.min(decelCase, faces - 1); // cap to avoid repeats on tiny dice
+    const decelCase = faces > 1 ? Math.floor(Math.random() * 4) : 0;
+    const numSeq    = decelCase === 0 ? 0 : Math.min(decelCase, faces - 1);
 
     // Sequential values: always upward, wrapping at faces, ending at finalValue-1.
+    // Empty for case 0 (lands directly on finalValue).
     const seqValues = [];
     for (let i = numSeq; i >= 1; i--) {
       let v = finalValue - i;
@@ -763,10 +765,12 @@
       seqValues.push(v);
     }
 
-    // Bridge value: one step below seqValues[0], forced as last Phase 1 frame.
+    // Bridge value: one step below wherever Phase 2 first lands (mod faces).
+    // Forced as last Phase 1 frame so the P1→P2 handoff is always upward.
     let bridgeVal = null;
-    if (numSeq > 0) {
-      bridgeVal = seqValues[0] - 1;
+    if (faces > 1) {
+      const firstP2 = decelCase === 0 ? finalValue : seqValues[0];
+      bridgeVal = firstP2 - 1;
       if (bridgeVal < 1) bridgeVal += faces;
     }
 
@@ -785,7 +789,10 @@
     }
 
     // Phase 2: case-based decel with explicit stagger holds.
-    if (decelCase === 1) {
+    if (decelCase === 0) {
+      await showFrame(finalValue, approachMs); // land directly on final
+      await wait(staggerMs);                   // hold: "is this it?"
+    } else if (decelCase === 1) {
       await showFrame(seqValues[0], approachMs);
       await wait(staggerMs);
     } else if (decelCase === 2) {
@@ -793,7 +800,7 @@
       await wait(shortHoldMs);
       await showFrame(seqValues[1], tickMs);
       await wait(staggerMs);
-    } else if (decelCase >= 3) {
+    } else {
       await showFrame(seqValues[0], approachMs);
       await wait(shortHoldMs);
       await showFrame(seqValues[1], tickMs);
