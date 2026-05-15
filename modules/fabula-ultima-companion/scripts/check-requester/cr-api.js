@@ -356,7 +356,7 @@
         to   { opacity: 1; transform: translateY(0); }
       }
       .oni-cr-zone-slide-in {
-        animation: oni-cr-zone-in 260ms cubic-bezier(.22,1,.36,1) both;
+        animation: oni-cr-zone-in 1500ms cubic-bezier(.22,1,.36,1) both;
       }
 
       @keyframes oni-cr-verdict-in {
@@ -718,32 +718,9 @@
       return n;
     };
 
-    // showFrame — shrink → swap at nadir → grow back, totalMs = tickMs.
-    // Uses transitionend so the number changes exactly when the CSS transition
-    // completes — no timer drift, no mid-scale text swap.
-    const onTransitionEnd = () => new Promise(res => {
-      let done = false;
-      const finish = () => { if (!done) { done = true; res(); } };
-      const handler = e => {
-        if (e.propertyName === "transform") {
-          num.removeEventListener("transitionend", handler);
-          finish();
-        }
-      };
-      num.addEventListener("transitionend", handler);
-      setTimeout(finish, 120); // safety: fire even if transitionend doesn't
-    });
-
     const showFrame = async (v, tickMs) => {
-      const halfMs = Math.min(Math.round(tickMs * 0.38), 58);
-      num.style.transition = `transform ${halfMs}ms ease-in`;
-      num.style.transform   = "scale(0.58)";
-      await onTransitionEnd();                   // wait for actual CSS shrink end
-      num.textContent = String(lastShown = v);   // swap precisely at nadir
-      num.style.transition = `transform ${halfMs}ms ease-out`;
-      num.style.transform   = "scale(1)";
-      // Wait for grow AND remaining hold time (whichever is longer)
-      await Promise.all([onTransitionEnd(), wait(tickMs - halfMs)]);
+      await wait(tickMs);
+      num.textContent = String(lastShown = v);
     };
 
     // Phase 1: fast tumble — random tick intervals for organic feel
@@ -766,9 +743,6 @@
       await showFrame(pick(finalValue), intense ? 95 : 68);
     }
 
-    // Clear inline transition so is-landing keyframe has full control
-    num.style.transition = "";
-    num.style.transform   = "";
     num.classList.remove("is-landing");
     void num.offsetWidth;
     num.textContent = String(finalValue);
