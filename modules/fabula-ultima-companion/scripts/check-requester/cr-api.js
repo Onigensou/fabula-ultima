@@ -743,47 +743,64 @@
       num.textContent = String(lastShown = v);
     };
 
-    // Pre-compute Phase 2 BEFORE Phase 1 so we can bridge the last tumble frame
-    // into the sequential start — guaranteeing no downward jump at the handoff.
-    const decelMs = intense
-      ? [90, 155, 240, 360, 510, 700]
-      : [85, 135, 195, 270];
-    const maxSeq = intense ? 5 : 3;
-    const seqLen = faces > 1 ? Math.floor(Math.random() * maxSeq) + 1 : 0;
+    // Pre-compute Phase 2 case BEFORE Phase 1 so we can bridge the last tumble
+    // frame into the sequential start with no downward jump at the handoff.
+    //
+    // Three decel cases — picked randomly each roll:
+    //   Case 1: approach → N-1 ——stagger——→ stamp N
+    //   Case 2: approach → N-2 —hold— tick → N-1 ——stagger——→ stamp N
+    //   Case 3: approach → N-3 —hold— tick → N-2 —midHold— tick → N-1 ——stagger——→ stamp N
+    //
+    // All cases end with ~1s stagger so players can read the "final?" number.
+    const decelCase = faces > 1 ? (Math.floor(Math.random() * 3) + 1) : 0;
+    const numSeq    = Math.min(decelCase, faces - 1); // cap to avoid repeats on tiny dice
 
     // Sequential values: always upward, wrapping at faces, ending at finalValue-1.
     const seqValues = [];
-    for (let i = seqLen; i >= 1; i--) {
+    for (let i = numSeq; i >= 1; i--) {
       let v = finalValue - i;
       while (v < 1) v += faces;
       seqValues.push(v);
     }
-    // Use the last seqLen timing slots (the slowest) for natural decel feel.
-    const seqMs = seqLen > 0 ? decelMs.slice(-seqLen) : [];
 
-    // Bridge value: one step below seqValues[0] (mod faces).
-    // Forced as the LAST frame of Phase 1 so the P1→P2 handoff is also upward.
+    // Bridge value: one step below seqValues[0], forced as last Phase 1 frame.
     let bridgeVal = null;
-    if (seqLen > 0) {
+    if (numSeq > 0) {
       bridgeVal = seqValues[0] - 1;
       if (bridgeVal < 1) bridgeVal += faces;
     }
 
-    // Phase 1: fast random tumble — frames 0–6 random, frame 7 forced to bridgeVal
-    // so the transition into the sequential phase is gapless.
+    // Per-case timing constants — intense mode is more dramatic.
+    const staggerMs   = intense ? 1200 :  950;  // final hold before stamp
+    const midHoldMs   = intense ?  700 :  480;  // Case 3 mid-hold
+    const shortHoldMs = intense ?  400 :  280;  // Case 2/3 first hold
+    const approachMs  = intense ?  380 :  240;  // slow approach to first seq value
+    const tickMs      = intense ?  200 :  140;  // quick tick between seq values
+
+    // Phase 1: fast random tumble — frames 0–6 random, frame 7 forced to bridgeVal.
     for (let i = 0; i < 8; i++) {
       const isLast = i === 7;
       const v = (isLast && bridgeVal !== null) ? bridgeVal : pick();
       await showFrame(v, 48 + Math.floor(Math.random() * 22));
     }
 
-    // Phase 2: purely sequential, always upward — no random frames.
-    for (let i = 0; i < seqValues.length; i++) {
-      await showFrame(seqValues[i], seqMs[i]);
+    // Phase 2: case-based decel with explicit stagger holds.
+    if (decelCase === 1) {
+      await showFrame(seqValues[0], approachMs);
+      await wait(staggerMs);
+    } else if (decelCase === 2) {
+      await showFrame(seqValues[0], approachMs);
+      await wait(shortHoldMs);
+      await showFrame(seqValues[1], tickMs);
+      await wait(staggerMs);
+    } else if (decelCase >= 3) {
+      await showFrame(seqValues[0], approachMs);
+      await wait(shortHoldMs);
+      await showFrame(seqValues[1], tickMs);
+      await wait(midHoldMs);
+      await showFrame(seqValues[2], tickMs);
+      await wait(staggerMs);
     }
-
-    // Hold the last sequential value for ~1s so players can read it before the stamp.
-    if (seqMs.length > 0) await wait(1000);
     num.classList.remove("is-landing");
     void num.offsetWidth;
     num.textContent = String(finalValue);
