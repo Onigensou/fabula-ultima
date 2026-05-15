@@ -937,9 +937,12 @@
       const n     = uuids.length;
       let lastDelay = 0;
 
+      // Base delay ensures even single-actor checks have a beat before the badge
+      // appears (0ms felt instant/mechanical vs. group check's natural stagger).
+      const BASE_REVEAL = 420;
       uuids.forEach((uuid, i) => {
         const isLast = n > 1 && i === n - 1 && !ses.opts?.skipGroupOutcomeSound;
-        const delay  = i * 420 + (isLast ? 380 : 0);
+        const delay  = BASE_REVEAL + i * 420 + (isLast ? 380 : 0);
         if (i === n - 1) lastDelay = delay;
         setTimeout(() => {
           const st = ses.panelStates.get(uuid);
