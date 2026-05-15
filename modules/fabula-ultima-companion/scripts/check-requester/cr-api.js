@@ -311,11 +311,11 @@
       /* Number text lives inside the chip; only it gets animated — box stays static */
       .oni-cr-die-num { display: inline-block; }
       @keyframes oni-cr-num-rolling {
-        0%, 100% { opacity: 1;    transform: scaleY(1);   }
-        45%, 55% { opacity: 0.08; transform: scaleY(0.3); }
+        0%, 100% { transform: scale(1.0); }
+        50%      { transform: scale(0.72); }
       }
       .oni-cr-die-chip.is-rolling .oni-cr-die-num {
-        animation: oni-cr-num-rolling 85ms linear infinite;
+        animation: oni-cr-num-rolling 80ms ease-in-out infinite;
       }
       @keyframes oni-cr-num-land {
         0%   { opacity: 0.1; transform: scale(1.8); }
