@@ -194,6 +194,28 @@
     return { hr, base, modTotal, total, isFumble, isCrit, pass };
   };
 
+  // Compute authoritative outcome key from an array of check results.
+  // Used by the GM to stamp the key into MSG_REVEAL so all clients play the same sound.
+  function _computeOutcomeKey(results) {
+    if (!results?.length) return null;
+    if (results.some(r => r.isFumble))                     return "fumble";
+    if (results.every(r => r.isCrit))                      return "crit";
+    if (results.every(r => r.pass === true || r.isCrit))   return "success";
+    return "fail";
+  }
+
+  // Play the group outcome sound that matches a pre-computed key.
+  function _playSoundByKey(key) {
+    const S = globalThis.ONI?.CheckRequester?.Sound;
+    if (!S) return;
+    switch (key) {
+      case "fumble":  S.playGroupOutcome([{ isFumble: true }]); break;
+      case "crit":    S.playGroupOutcome([{ isCrit: true, pass: true }]); break;
+      case "success": S.playGroupOutcome([{ pass: true }]); break;
+      default:        S.playGroupOutcome([{ pass: false }]); break;
+    }
+  }
+
   // ── Silent mode ───────────────────────────────────────────────────────────
   async function silentRequest(actors, opts) {
     const { attrA, attrB, dl, modifiers, context, singleDie } = opts;
@@ -960,9 +982,16 @@
       if (!ses.opts?.skipGroupOutcomeSound) {
         setTimeout(() => {
           if (_session?.sessionId !== ses.sessionId) return;
-          const results = [...ses.panelStates.values()]
-            .filter(s => s.result).map(s => s.result);
-          globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
+          // Prefer GM-authoritative key stamped into session; fall back to local computation
+          // so the GM (which sets the key before its own showRevealAndWait call) is also covered.
+          const key = ses._outcomeKey;
+          if (key) {
+            _playSoundByKey(key);
+          } else {
+            const results = [...ses.panelStates.values()]
+              .filter(s => s.result).map(s => s.result);
+            globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
+          }
         }, lastDelay + timeout);
       }
 
@@ -1494,9 +1523,11 @@
       }
 
       if (msg.type === MSG_REVEAL) {
-        const { sessionId } = msg.payload ?? {};
+        const { sessionId, outcomeKey } = msg.payload ?? {};
         if (_session?.sessionId !== sessionId) return;
         if (!_session?.opts?.hiddenDl) return; // only fires in hidden-DL mode
+        // Store GM-authoritative outcome key so showRevealAndWait plays the correct sound.
+        if (outcomeKey && _session) _session._outcomeKey = outcomeKey;
         // Non-GM: staggered reveal + auto-proceed; MSG_CLOSE may arrive first.
         showRevealAndWait().then(() => {
           if (_session?.sessionId === sessionId) closeOverlay();
@@ -1604,7 +1635,9 @@
     // hiddenDl mode: stagger-reveal verdicts across all clients then auto-proceed.
     // Non-hidden mode: verdicts already visible, close immediately after all confirm.
     if (opts.hiddenDl) {
-      game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId } });
+      const outcomeKey = _computeOutcomeKey(confirmPayloads);
+      if (_session) _session._outcomeKey = outcomeKey;
+      game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId, outcomeKey } });
       await showRevealAndWait();
     }
 

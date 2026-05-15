@@ -389,10 +389,13 @@
     for (const p of newPanels) syncLobbyPanel(p.uuid);
     updateStartButton();
 
-    // Broadcast state to all other clients
+    const sound = (action === "claim-leader" || action === "participate") ? "enter"
+                : (action === "leave") ? "exit" : null;
+
+    // Broadcast state + sound cue to all other clients
     game.socket.emit(SOCKET_CH, {
       type:    GC_SYNC,
-      payload: { sessionId: ses.sessionId, allPanels: newPanels },
+      payload: { sessionId: ses.sessionId, allPanels: newPanels, sound },
     });
   }
 
@@ -447,12 +450,14 @@
       }
 
       if (msg.type === GC_SYNC) {
-        const { sessionId, allPanels } = msg.payload ?? {};
+        const { sessionId, allPanels, sound } = msg.payload ?? {};
         const ses = _lobbySession;
         if (!ses || ses.sessionId !== sessionId) return;
         ses.state = { ...ses.state, allPanels: allPanels.map(p => ({ ...p })) };
         for (const p of allPanels) syncLobbyPanel(p.uuid);
         updateStartButton();
+        if (sound === "enter") globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
+        else if (sound === "exit")  globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
         return;
       }
 
