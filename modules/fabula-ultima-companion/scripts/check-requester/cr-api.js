@@ -1179,21 +1179,26 @@
     if (!isSingle) st.rollB = newB;
     st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
 
+    // Build animation descriptor first — reused for local playback and broadcast.
+    const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+    const animateDice = [];
+    if (choice === "A" || choice === "AB") {
+      const isLastDie = isSingle || choice === "A";
+      const totA = isSingle ? (newA + modTotal) : (choice === "A" ? (newA + rB + modTotal) : 0);
+      animateDice.push({ die: "A", value: newA, faces: st.dieA, intense: isLastDie ? pickIntense(ses.dl, totA) : false });
+    }
+    if ((choice === "B" || choice === "AB") && !isSingle) {
+      const effA = choice === "AB" ? newA : (st.rollA ?? 0);
+      animateDice.push({ die: "B", value: newB, faces: st.dieB, intense: pickIntense(ses.dl, effA + newB + modTotal) });
+    }
     const panelEl = getPanelEl(uuid);
     if (panelEl) {
       showZone(panelEl, "result", false);
-      const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
-      if (choice === "A" || choice === "AB") {
-        const isLastDie = isSingle || choice === "A";
-        const totA = isSingle ? (newA + modTotal) : (choice === "A" ? (newA + rB + modTotal) : 0);
-        await animateDie(panelEl, "A", newA, st.dieA, { intense: isLastDie ? pickIntense(ses.dl, totA) : false });
-      }
-      if ((choice === "B" || choice === "AB") && !isSingle) {
-        const effA = choice === "AB" ? newA : (st.rollA ?? 0);
-        await animateDie(panelEl, "B", newB, st.dieB, { intense: pickIntense(ses.dl, effA + newB + modTotal) });
+      for (const { die, value, faces, intense } of animateDice) {
+        await animateDie(panelEl, die, value, faces, { intense });
       }
     }
-    broadcastUpdate(uuid); syncPanel(uuid);
+    broadcastUpdate(uuid, animateDice.length ? animateDice : null); syncPanel(uuid);
   }
 
   async function invokeBond(uuid) {
@@ -1245,22 +1250,23 @@
     st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedDivination = true; st.canDivination = false;
 
+    const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+    const animateDice = isSingle
+      ? [{ die: "A", value: newA, faces: st.dieA, intense: pickIntense(ses.dl, newA + modTotal) }]
+      : [{ die: "A", value: newA, faces: st.dieA, intense: false },
+         { die: "B", value: newB, faces: st.dieB, intense: pickIntense(ses.dl, newA + newB + modTotal) }];
     const panelEl = getPanelEl(uuid);
     if (panelEl) {
       showZone(panelEl, "result", false);
-      const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
-      if (isSingle) {
-        await animateDie(panelEl, "A", newA, st.dieA, { intense: pickIntense(ses.dl, newA + modTotal) });
-      } else {
-        await animateDie(panelEl, "A", newA, st.dieA, { intense: false });
-        await animateDie(panelEl, "B", newB, st.dieB, { intense: pickIntense(ses.dl, newA + newB + modTotal) });
+      for (const { die, value, faces, intense } of animateDice) {
+        await animateDie(panelEl, die, value, faces, { intense });
       }
     }
-    broadcastUpdate(uuid); syncPanel(uuid);
+    broadcastUpdate(uuid, animateDice); syncPanel(uuid);
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
   }
 
-  function broadcastUpdate(uuid) {
+  function broadcastUpdate(uuid, animateDice = null) {
     const ses = _session;
     if (!ses) return;
     const st = ses.panelStates.get(uuid);
@@ -1268,7 +1274,8 @@
     game.socket.emit(SOCKET_CH, {
       type: MSG_UPDATE,
       payload: { sessionId: ses.sessionId, uuid, rollA: st.rollA, rollB: st.rollB,
-        modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination },
+        modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
+        animateDice: animateDice ?? null },
     });
   }
 
@@ -1430,7 +1437,7 @@
       }
 
       if (msg.type === MSG_UPDATE) {
-        const { sessionId, uuid, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination } = msg.payload ?? {};
+        const { sessionId, uuid, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice } = msg.payload ?? {};
         const ses = _session;
         if (!ses || ses.sessionId !== sessionId) return;
         const st = ses.panelStates.get(uuid);
@@ -1438,6 +1445,15 @@
         Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
         const isSingle = !!st.singleDie;
         if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
+        if (animateDice?.length) {
+          const panelEl = getPanelEl(uuid);
+          if (panelEl) {
+            showZone(panelEl, "result", false);
+            for (const { die, value, faces, intense } of animateDice) {
+              await animateDie(panelEl, die, value, faces, { intense: !!intense });
+            }
+          }
+        }
         syncPanel(uuid);
         return;
       }
