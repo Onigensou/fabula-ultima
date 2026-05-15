@@ -268,14 +268,17 @@
         max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
       }
 
-      /* Roll row */
-      .oni-cr-roll-row { display: flex; align-items: center; gap: 5px; width: 100%; }
-      .oni-cr-attr-block { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+      /* Attribute icon row — always visible throughout check */
+      .oni-cr-attr-row { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; }
+      .oni-cr-attr-block-sm { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; }
       .oni-cr-attr-icon {
         width: 30px; height: 30px; object-fit: contain;
         background: none !important; border: none !important; box-shadow: none !important;
       }
       .oni-cr-attr-label { font-size: .7rem; font-weight: 700; opacity: .7; }
+
+      /* Roll buttons row (hidden after all dice rolled) */
+      .oni-cr-roll-row { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; }
       .oni-cr-roll-btn {
         font-size: .75rem; font-weight: 800; padding: 3px 8px; border-radius: 8px;
         border: 2px solid rgba(91,63,38,.85);
@@ -408,27 +411,38 @@
       ? `<video src="${esc(pd.tokenImg)}" autoplay loop muted playsinline preload="auto"></video>`
       : `<img src="${esc(pd.tokenImg)}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">`;
 
-    const btnA = `
-      <div class="oni-cr-attr-block">
+    // Attr icon row (always visible — persists after rolling so players know which die is which)
+    const attrHeaderA = `
+      <div class="oni-cr-attr-block-sm">
         <img class="oni-cr-attr-icon" src="${iconA}" title="${pd.attrA}">
         <div class="oni-cr-attr-label">${pd.attrA}</div>
-        <button class="oni-cr-roll-btn" data-die="A" data-uuid="${pd.actorUuid}">d${pd.dieA}</button>
       </div>`;
-    const btnB = `
-      <div class="oni-cr-attr-block">
+    const attrHeaderB = `
+      <div class="oni-cr-attr-block-sm">
         <img class="oni-cr-attr-icon" src="${iconB}" title="${pd.attrB}">
         <div class="oni-cr-attr-label">${pd.attrB}</div>
-        <button class="oni-cr-roll-btn" data-die="B" data-uuid="${pd.actorUuid}">d${pd.dieB}</button>
       </div>`;
+    const attrHeader = isSingle
+      ? attrHeaderA
+      : `${attrHeaderA}<div class="oni-cr-plus-sep">+</div>${attrHeaderB}`;
 
-    const rollRow = isSingle ? btnA : `${btnA}<div class="oni-cr-plus-sep">+</div>${btnB}`;
+    // Roll buttons (hidden when all dice are in)
+    const rollBtns = isSingle
+      ? `<button class="oni-cr-roll-btn" data-die="A" data-uuid="${pd.actorUuid}">d${pd.dieA}</button>`
+      : `<button class="oni-cr-roll-btn" data-die="A" data-uuid="${pd.actorUuid}">d${pd.dieA}</button>
+         <div class="oni-cr-plus-sep">+</div>
+         <button class="oni-cr-roll-btn" data-die="B" data-uuid="${pd.actorUuid}">d${pd.dieB}</button>`;
 
     return `
       <div class="oni-cr-panel" data-uuid="${pd.actorUuid}">
         <div class="oni-cr-portrait">${tokenMedia}</div>
         <div class="oni-cr-actor-name" title="${esc(pd.actorName)}">${esc(pd.actorName)}</div>
 
-        <div class="oni-cr-roll-row" data-zone="roll">${rollRow}</div>
+        <!-- Attribute icons — always visible -->
+        <div class="oni-cr-attr-row">${attrHeader}</div>
+
+        <!-- Roll buttons — hidden when allRolled -->
+        <div class="oni-cr-roll-row" data-zone="roll">${rollBtns}</div>
 
         <div class="oni-cr-die-row" data-zone="dice" style="display:none">
           <div class="oni-cr-die-chip" data-chip="A">—</div>
@@ -481,11 +495,11 @@
     const hasB      = st.rollB !== null;
     const allRolled = hasA && (isSingle || hasB);
 
-    // Roll buttons
+    // Roll buttons (zone hidden when all dice in; attr-row stays visible always)
     showZone(el, "roll", !allRolled);
     {
-      const bA = el.querySelector(`[data-die="A"][data-uuid="${uuid}"]`);
-      const bB = el.querySelector(`[data-die="B"][data-uuid="${uuid}"]`);
+      const bA = el.querySelector(`.oni-cr-roll-row [data-die="A"]`);
+      const bB = el.querySelector(`.oni-cr-roll-row [data-die="B"]`);
       if (bA) { bA.disabled = !isOwner || st.confirmed || hasA; if (hasA) bA.classList.add("is-done"); }
       if (bB && !isSingle) { bB.disabled = !isOwner || st.confirmed || hasB; if (hasB) bB.classList.add("is-done"); }
     }

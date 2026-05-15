@@ -190,15 +190,32 @@ Hooks.once("ready", () => {
           /* ---- Actor cards (AEM sprite style — full image, no crop) ---- */
           .oni-creq-actor-grid {
             display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
+            overflow:visible; padding:4px 2px;
           }
           .oni-creq-actor-card {
             display:flex; flex-direction:column; align-items:center; gap:3px;
             padding:5px 2px; border-radius:8px; cursor:pointer;
-            border:1.5px solid rgba(0,0,0,.12); transition:border-color 100ms,background 100ms;
+            border:1.5px solid rgba(0,0,0,.10);
             user-select:none;
+            filter:grayscale(55%) brightness(0.82);
+            opacity:0.60;
+            transform:scale(1);
+            transition:filter 150ms ease, opacity 150ms ease, transform 150ms ease,
+                        border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
           }
-          .oni-creq-actor-card:hover { border-color:rgba(87,58,33,.45); background:rgba(87,58,33,.04); }
-          .oni-creq-actor-card.sel   { border-color:rgba(87,58,33,.80); background:rgba(87,58,33,.09); }
+          .oni-creq-actor-card:hover {
+            filter:grayscale(20%) brightness(0.95);
+            opacity:0.85;
+            border-color:rgba(87,58,33,.40);
+          }
+          .oni-creq-actor-card.sel {
+            filter:none;
+            opacity:1;
+            transform:scale(1.06);
+            border-color:rgba(185,125,38,.95);
+            background:rgba(87,58,33,.08);
+            box-shadow:0 0 0 2px rgba(210,148,42,.75), 0 0 14px rgba(210,148,42,.30);
+          }
           .oni-creq-actor-card input { position:absolute; opacity:0; pointer-events:none; width:0; height:0; }
           .oni-creq-actor-img-wrap {
             width:68px; height:80px; display:flex; align-items:flex-end; justify-content:center;
