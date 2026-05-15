@@ -26,9 +26,9 @@ Hooks.once("ready", () => {
     };
 
     const DOM = {
-      ROOT_ID: "oni-cr-button-root",
-      BTN_ID:  "oni-cr-button",
-      STYLE_ID: "oni-cr-button-style",
+      ROOT_ID: "oni-creq-button-root",
+      BTN_ID:  "oni-creq-button",
+      STYLE_ID: "oni-creq-button-style",
     };
 
     const STATE = (globalThis[STATE_KEY] ??= { installed: false });
