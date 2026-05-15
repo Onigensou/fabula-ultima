@@ -41,6 +41,7 @@
   const MSG_ROLL    = "CR_ROLL";
   const MSG_UPDATE  = "CR_UPDATE";
   const MSG_CONFIRM = "CR_CONFIRM";
+  const MSG_REVEAL  = "CR_REVEAL";
   const MSG_CLOSE   = "CR_CLOSE";
 
   // ── Attribute icons ───────────────────────────────────────────────────────
@@ -391,6 +392,15 @@
       .oni-cr-waiting   { font-size: .78rem; opacity: .55; font-style: italic; text-align: center; }
       .oni-cr-confirmed { font-size: .78rem; color: #2f8a3a; font-weight: 700; text-align: center; }
 
+      /* Reveal-screen "click to proceed" pill */
+      .oni-cr-proceed-hint {
+        background: rgba(0,0,0,.72); color: #f6ebd3;
+        font-size: .82rem; font-weight: 700;
+        padding: 8px 22px; border-radius: 24px;
+        letter-spacing: .04em; pointer-events: none;
+        box-shadow: 0 3px 12px rgba(0,0,0,.4);
+      }
+
       /* Sub-panel (inline Invoke selection) */
       .oni-cr-subpanel-overlay {
         position: absolute; inset: 0;
@@ -603,28 +613,41 @@
       }
     }
 
-    // Total + verdict (only when both dice done)
+    // Total + verdict
     if (allRolled && st.result) {
       const resultZone = zone(el, "result");
       if (resultZone) {
+        // Only animate fade-in on hidden→visible; subsequent syncs leave it static
+        const wasHidden = resultZone.style.display === "none";
         resultZone.style.display = "";
-        resultZone.classList.remove("oni-cr-result-fadein");
-        void resultZone.offsetWidth;
-        resultZone.classList.add("oni-cr-result-fadein");
+        if (wasHidden) {
+          resultZone.classList.remove("oni-cr-result-fadein");
+          void resultZone.offsetWidth;
+          resultZone.classList.add("oni-cr-result-fadein");
+        }
       }
       showZone(el, "sep1", true);
       const totalEl   = el.querySelector("[data-field='total']");
       const verdictEl = el.querySelector("[data-field='verdict']");
       if (totalEl) totalEl.textContent = String(st.result.total);
       if (verdictEl) {
-        verdictEl.className = "oni-cr-verdict";
-        void verdictEl.offsetWidth;
-        if (st.result.isFumble)            { verdictEl.textContent = "FUMBLE";    verdictEl.classList.add("fumble"); }
-        else if (st.result.isCrit)         { verdictEl.textContent = "CRITICAL!"; verdictEl.classList.add("crit");   }
-        else if (st.result.pass === true)  { verdictEl.textContent = ses.opts?.hiddenDl ? "✓ Pass" : `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
-        else if (st.result.pass === false) { verdictEl.textContent = ses.opts?.hiddenDl ? "✗ Fail" : `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
-        else                               { verdictEl.textContent = `Total ${st.result.total}`; }
-        verdictEl.classList.add("oni-cr-verdict-fadein");
+        if (st._revealed) {
+          // Animate badge only on first reveal (hidden→visible); stay static after
+          const wasHidden = verdictEl.style.display === "none";
+          verdictEl.style.display = "";
+          verdictEl.className = "oni-cr-verdict";
+          if (wasHidden) void verdictEl.offsetWidth;
+          if (st.result.isFumble)            { verdictEl.textContent = "FUMBLE";    verdictEl.classList.add("fumble"); }
+          else if (st.result.isCrit)         { verdictEl.textContent = "CRITICAL!"; verdictEl.classList.add("crit");   }
+          else if (st.result.pass === true)  { verdictEl.textContent = ses.opts?.hiddenDl ? "✓ Pass" : `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
+          else if (st.result.pass === false) { verdictEl.textContent = ses.opts?.hiddenDl ? "✗ Fail" : `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
+          else                               { verdictEl.textContent = `Total ${st.result.total}`; }
+          if (wasHidden) verdictEl.classList.add("oni-cr-verdict-fadein");
+        } else {
+          // Not yet revealed — keep verdict hidden until all players have confirmed
+          verdictEl.style.display = "none";
+          verdictEl.textContent = "";
+        }
       }
     } else {
       showZone(el, "result", false);
@@ -679,35 +702,38 @@
     chip.classList.add("is-rolling");
     const num = chip.querySelector(".oni-cr-die-num") ?? chip;
 
-    // Never repeat the same face twice in a row
-    let lastFace = -1;
-    const nextFace = () => {
+    // pick(exclude) — random face guaranteed ≠ exclude when faces > 1.
+    // lastShown is updated by show() and flows through all phases, including the
+    // final-value guard, so no consecutive repeats occur anywhere in the sequence.
+    let lastShown = -1;
+    const pick = (exclude = lastShown) => {
       let n;
-      do { n = Math.floor(Math.random() * faces) + 1; } while (n === lastFace && faces > 1);
-      lastFace = n;
+      do { n = Math.floor(Math.random() * faces) + 1; } while (n === exclude && faces > 1);
       return n;
     };
+    const show = v => { num.textContent = String(lastShown = v); };
 
-    // Fast tumble phase — random tick intervals for an organic feel
+    // Phase 1: fast tumble — organic random cadence
     for (let i = 0; i < 8; i++) {
-      num.textContent = String(nextFace());
-      await wait(35 + Math.floor(Math.random() * 22));  // 35–57 ms
+      show(pick());
+      await wait(30 + Math.floor(Math.random() * 20));
     }
 
-    if (intense) {
-      // Dramatic roulette: 6 steps, exponential 68 ms → 360 ms
-      for (let i = 0; i < 6; i++) {
-        num.textContent = String(nextFace());
-        const t = (i + 1) / 6;
-        await wait(60 + Math.round(t * t * 300));  // 68 → 360 ms
-      }
-    } else {
-      // Normal anticipation: 4 steps, 63 ms → 180 ms
-      for (let i = 0; i < 4; i++) {
-        num.textContent = String(nextFace());
-        const t = (i + 1) / 4;
-        await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
-      }
+    // Phase 2: deceleration — explicit per-frame ms for tight control.
+    // Intense gives a dramatic roulette crawl; normal gives a gentle settle.
+    const decelMs = intense
+      ? [90, 150, 230, 340, 480, 660]
+      : [80, 130, 185, 255];
+    for (const ms of decelMs) {
+      show(pick());
+      await wait(ms);
+    }
+
+    // Guard: if the last animated face already equals finalValue, show one
+    // more different face so the landing number is always visibly distinct.
+    if (lastShown === finalValue && faces > 1) {
+      show(pick(finalValue));
+      await wait(intense ? 90 : 65);
     }
 
     chip.classList.remove("is-rolling");
@@ -830,6 +856,52 @@
   }
 
   // =========================================================================
+  // Reveal screen — show verdicts simultaneously, wait for "click to proceed"
+  // =========================================================================
+  function showRevealAndWait() {
+    return new Promise(resolve => {
+      const ses = _session;
+      if (!ses) { resolve(); return; }
+
+      // Flip all panels to revealed state and re-sync to show verdict badges
+      for (const [uuid, st] of ses.panelStates) {
+        st._revealed = true;
+        syncPanel(uuid);
+      }
+
+      // Full-screen transparent barrier — collects the "proceed" click
+      const barrier = document.createElement("div");
+      barrier.style.cssText =
+        "position:fixed;inset:0;z-index:100011;cursor:pointer;" +
+        "display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px;";
+
+      const hint = document.createElement("div");
+      hint.className = "oni-cr-proceed-hint";
+      hint.style.opacity = "0";
+      hint.style.transition = "opacity 450ms 700ms";
+      hint.textContent = "Click anywhere to proceed";
+      barrier.appendChild(hint);
+      document.body.appendChild(barrier);
+
+      // Store on session so closeOverlay() can remove it if MSG_CLOSE arrives first
+      ses._revealBarrier = barrier;
+
+      // Kick off the CSS fade-in transition
+      requestAnimationFrame(() => requestAnimationFrame(() => { hint.style.opacity = "1"; }));
+
+      // Accidental-click guard: ignore clicks for the first 1500ms
+      let ready = false;
+      setTimeout(() => { ready = true; }, 1500);
+      barrier.addEventListener("click", () => {
+        if (!ready) return;
+        barrier.remove();
+        ses._revealBarrier = null;
+        resolve();
+      });
+    });
+  }
+
+  // =========================================================================
   // Open overlay
   // =========================================================================
   function openOverlay(data, opts) {
@@ -910,6 +982,7 @@
   // Close overlay
   // =========================================================================
   function closeOverlay() {
+    _session?._revealBarrier?.remove();
     _session?.backdropEl?.remove();
     _session = null;
   }
@@ -1311,6 +1384,17 @@
         return;
       }
 
+      if (msg.type === MSG_REVEAL) {
+        const { sessionId } = msg.payload ?? {};
+        if (_session?.sessionId !== sessionId) return;
+        // Non-GM clients: reveal verdicts and let each player click to dismiss locally.
+        // If MSG_CLOSE arrives before they click, closeOverlay() removes the barrier cleanly.
+        showRevealAndWait().then(() => {
+          if (_session?.sessionId === sessionId) closeOverlay();
+        });
+        return;
+      }
+
       if (msg.type === MSG_CLOSE) {
         if (_session?.sessionId === msg.payload?.sessionId) closeOverlay();
       }
@@ -1407,6 +1491,10 @@
 
     const confirmPayloads = await done;
     _pendingSessions.delete(sessionId);
+
+    // Reveal verdicts on all clients simultaneously, then pause for anyone to click
+    game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId } });
+    await showRevealAndWait();
 
     if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl);
 
