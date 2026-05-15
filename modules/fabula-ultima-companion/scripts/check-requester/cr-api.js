@@ -749,43 +749,35 @@
       await showFrame(pick(), 48 + Math.floor(Math.random() * 22));
     }
 
-    // Phase 2: deceleration with roulette convergence.
-    // The first part of decel is still random; the final swingSize frames
-    // tick sequentially toward finalValue so players can read the outcome
-    // coming (e.g. final=4 → random→…→2→3→[stamp 4]).
+    // Phase 2: deceleration — early frames random, final seqLen frames tick
+    // strictly sequentially up to (but not including) finalValue so players
+    // can read the outcome coming (e.g. final=4 → rnd→rnd→1→2→3→[stamp 4]).
     const decelMs = intense
       ? [90, 155, 240, 360, 510, 700]
       : [85, 135, 195, 270];
-    const swingSize = intense ? 3 : 2;
+    const seqLen = intense ? Math.min(5, decelMs.length) : Math.min(3, decelMs.length);
 
-    // Build sequential convergence frames that approach finalValue.
-    // Preferred direction is upward (from below); falls back to downward
-    // when finalValue is too close to the minimum face.
-    const convergence = (() => {
-      const count  = Math.min(swingSize, decelMs.length - 1);
-      const frames = [];
-      const below  = finalValue - count;
-      if (below >= 1) {
-        for (let v = below; v < finalValue; v++) frames.push(v);
-      } else {
-        const above = Math.min(faces, finalValue + count);
-        for (let v = above; v > finalValue; v--) frames.push(v);
-      }
-      return frames;
-    })();
+    // Sequential frames approach finalValue from below; fall back to from above
+    // when finalValue is too close to the die minimum.
+    let seqValues;
+    if (finalValue - 1 >= seqLen) {
+      seqValues = [];
+      for (let v = finalValue - seqLen; v < finalValue; v++) seqValues.push(v);
+    } else {
+      const start = Math.min(faces, finalValue + seqLen);
+      seqValues = [];
+      for (let v = start; v > finalValue; v--) seqValues.push(v);
+    }
 
-    // Random-phase decel (early frames — still organic)
-    for (const ms of decelMs.slice(0, decelMs.length - convergence.length)) {
+    for (const ms of decelMs.slice(0, decelMs.length - seqValues.length)) {
       await showFrame(pick(), ms);
     }
-
-    // Convergence-phase decel (sequential tick toward finalValue)
-    const convMs = decelMs.slice(decelMs.length - convergence.length);
-    for (let i = 0; i < convergence.length; i++) {
-      await showFrame(convergence[i], convMs[i]);
+    const seqMs = decelMs.slice(decelMs.length - seqValues.length);
+    for (let i = 0; i < seqValues.length; i++) {
+      await showFrame(seqValues[i], seqMs[i]);
     }
 
-    // Guard: safety net for edge cases where convergence ends on finalValue
+    // Guard: safety net in case sequential phase already landed on finalValue
     if (lastShown === finalValue && faces > 1) {
       await showFrame(pick(finalValue), intense ? 95 : 68);
     }
@@ -920,7 +912,7 @@
       let lastDelay = 0;
 
       uuids.forEach((uuid, i) => {
-        const isLast = n > 1 && i === n - 1;
+        const isLast = n > 1 && i === n - 1 && !ses.opts?.skipGroupOutcomeSound;
         const delay  = i * 420 + (isLast ? 380 : 0);
         if (i === n - 1) lastDelay = delay;
         setTimeout(() => {
