@@ -744,41 +744,45 @@
       num.textContent = String(lastShown = v);
     };
 
-    // Phase 1: fast tumble — fully random
+    // Phase 1: fast random tumble (8 frames) — all randomness lives here.
     for (let i = 0; i < 8; i++) {
-      await showFrame(pick(), 48 + Math.floor(Math.random() * 22));
+      const v = pick();
+      console.debug(`[CR][animateDie][${chipSel}] P1[${i}] rnd=${v}`);
+      await showFrame(v, 48 + Math.floor(Math.random() * 22));
     }
 
-    // Phase 2: deceleration — early frames random, then 1–N sequential frames
-    // ticking strictly upward into finalValue (with wrap at faces).
-    // e.g. final=4, seqLen=3 → rnd→rnd→1→2→3→[stamp 4]
-    // e.g. final=2, faces=20, seqLen=3 → rnd→19→20→1→[stamp 2]
+    // Phase 2: purely sequential decel — NO random frames to prevent jumps.
+    // Randomly pick 1–maxSeq sequential values, always ticking upward
+    // into finalValue (wrapping at faces).
+    // e.g. final=4, seqLen=3  → 1→2→3→[stamp 4]
+    // e.g. final=2, d20, seqLen=3 → 19→20→1→[stamp 2]
     const decelMs = intense
       ? [90, 155, 240, 360, 510, 700]
       : [85, 135, 195, 270];
     const maxSeq = intense ? 5 : 3;
-    // Variable-length sequential tail: 1 to maxSeq, capped so at least 1 random frame remains
-    const seqLen = faces > 1
-      ? Math.min(Math.floor(Math.random() * maxSeq) + 1, decelMs.length - 1)
-      : 0;
+    const seqLen = faces > 1 ? Math.floor(Math.random() * maxSeq) + 1 : 0;
 
-    // Build sequential values: always upward, wrapping at faces.
-    // Last value is always finalValue-1 (mod faces), so the stamp is a clean step up.
     const seqValues = [];
     for (let i = seqLen; i >= 1; i--) {
       let v = finalValue - i;
       while (v < 1) v += faces;
       seqValues.push(v);
     }
+    // Use the last seqLen timing slots (the slowest) so the tail always decelerates.
+    const seqMs = seqLen > 0 ? decelMs.slice(-seqLen) : [];
 
-    for (const ms of decelMs.slice(0, decelMs.length - seqLen)) {
-      await showFrame(pick(), ms);
-    }
-    const seqMs = decelMs.slice(decelMs.length - seqLen);
+    console.debug(
+      `[CR][animateDie][${chipSel}] P2 finalValue=${finalValue} faces=${faces}` +
+      ` intense=${intense} seqLen=${seqLen}` +
+      ` seq=[${seqValues.join(",")}] ms=[${seqMs.join(",")}]`
+    );
+
     for (let i = 0; i < seqValues.length; i++) {
+      console.debug(`[CR][animateDie][${chipSel}] P2[${i}] seq=${seqValues[i]} ms=${seqMs[i]}`);
       await showFrame(seqValues[i], seqMs[i]);
     }
 
+    console.debug(`[CR][animateDie][${chipSel}] STAMP finalValue=${finalValue}`);
     num.classList.remove("is-landing");
     void num.offsetWidth;
     num.textContent = String(finalValue);
