@@ -1201,6 +1201,18 @@
     broadcastUpdate(uuid, animateDice.length ? animateDice : null); syncPanel(uuid);
   }
 
+  async function animateTotalRollup(panelEl, fromVal, toVal) {
+    const totalEl = panelEl?.querySelector("[data-field='total']");
+    if (!totalEl || fromVal === toVal) return;
+    const step = toVal > fromVal ? 1 : -1;
+    let cur = fromVal;
+    while (cur !== toVal) {
+      cur += step;
+      await wait(160);
+      totalEl.textContent = String(cur);
+    }
+  }
+
   async function invokeBond(uuid) {
     const ses = _session;
     if (!ses) return;
@@ -1213,7 +1225,7 @@
 
     const bondRowsHtml = bonds.map(b => `
       <div class="oni-cr-subpanel-row" data-value="${b.idx}">
-        <div class="oni-cr-subpanel-lbl">${esc(b.name)}<span style="opacity:.6;font-size:.75rem;margin-left:5px;">${"❤".repeat(b.filledPos)}${"💜".repeat(b.filledNeg)}</span></div>
+        <div class="oni-cr-subpanel-lbl">${esc(b.name)}<span style="opacity:.6;font-size:.75rem;margin-left:5px;">${"🩷".repeat(b.filledPos)}${"💜".repeat(b.filledNeg)}</span></div>
         <div class="oni-cr-subpanel-val">+${b.bonus}</div>
       </div>`).join("");
 
@@ -1222,12 +1234,17 @@
     const bond = bonds.find(b => b.idx === parseInt(bondChoice, 10));
     if (!bond) return;
 
+    const oldTotal = st.result?.total ?? null;
     await actor.update({ "system.props.fabula_point": getFP(actor) - 1 });
     st.modifierParts = [...(st.modifierParts ?? []), { label: `Bond: ${bond.name}`, value: bond.bonus }];
     const isSingle = !!st.singleDie;
     st.result = computeCheck(st.rollA, isSingle ? st.rollA : (st.rollB ?? st.rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedBond = true; st.canBond = false;
-    broadcastUpdate(uuid); syncPanel(uuid);
+    const newTotal = st.result.total;
+    const totalRollup = oldTotal !== null && oldTotal !== newTotal ? { from: oldTotal, to: newTotal } : null;
+    const panelEl = getPanelEl(uuid);
+    if (panelEl && totalRollup) await animateTotalRollup(panelEl, totalRollup.from, totalRollup.to);
+    broadcastUpdate(uuid, null, totalRollup); syncPanel(uuid);
   }
 
   async function invokeDivination(uuid) {
@@ -1266,7 +1283,7 @@
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
   }
 
-  function broadcastUpdate(uuid, animateDice = null) {
+  function broadcastUpdate(uuid, animateDice = null, totalRollup = null) {
     const ses = _session;
     if (!ses) return;
     const st = ses.panelStates.get(uuid);
@@ -1275,7 +1292,7 @@
       type: MSG_UPDATE,
       payload: { sessionId: ses.sessionId, uuid, rollA: st.rollA, rollB: st.rollB,
         modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
-        animateDice: animateDice ?? null },
+        animateDice: animateDice ?? null, totalRollup: totalRollup ?? null },
     });
   }
 
@@ -1437,7 +1454,7 @@
       }
 
       if (msg.type === MSG_UPDATE) {
-        const { sessionId, uuid, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice } = msg.payload ?? {};
+        const { sessionId, uuid, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice, totalRollup } = msg.payload ?? {};
         const ses = _session;
         if (!ses || ses.sessionId !== sessionId) return;
         const st = ses.panelStates.get(uuid);
@@ -1445,14 +1462,15 @@
         Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
         const isSingle = !!st.singleDie;
         if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
-        if (animateDice?.length) {
-          const panelEl = getPanelEl(uuid);
-          if (panelEl) {
-            showZone(panelEl, "result", false);
-            for (const { die, value, faces, intense } of animateDice) {
-              await animateDie(panelEl, die, value, faces, { intense: !!intense });
-            }
+        const panelEl = getPanelEl(uuid);
+        if (animateDice?.length && panelEl) {
+          showZone(panelEl, "result", false);
+          for (const { die, value, faces, intense } of animateDice) {
+            await animateDie(panelEl, die, value, faces, { intense: !!intense });
           }
+        }
+        if (totalRollup?.from !== undefined && panelEl) {
+          await animateTotalRollup(panelEl, totalRollup.from, totalRollup.to);
         }
         syncPanel(uuid);
         return;
