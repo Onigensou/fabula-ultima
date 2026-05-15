@@ -302,6 +302,14 @@
       @keyframes oni-cr-pop {
         0%  { transform: scale(1); } 45% { transform: scale(1.3); } 100% { transform: scale(1); }
       }
+      @keyframes oni-cr-die-tumble {
+        0%   { transform: rotate(-3deg) scale(1.06); }
+        50%  { transform: rotate(3deg)  scale(0.94); }
+        100% { transform: rotate(-3deg) scale(1.06); }
+      }
+      .oni-cr-die-chip.is-rolling {
+        animation: oni-cr-die-tumble 120ms ease-in-out infinite;
+      }
 
       /* Modifier bonus display (e.g. Helper Bonus from Group Check) */
       .oni-cr-mod-row {
@@ -597,11 +605,23 @@
     if (!chip) return;
     const diceRow = panelEl.querySelector("[data-zone='dice']");
     if (diceRow) diceRow.style.display = "";
-    const TICK = 55, STEPS = Math.ceil(700 / TICK);
-    for (let i = 0; i < STEPS; i++) {
+
+    chip.classList.add("is-rolling");
+
+    // Fast tumble phase — jittery, each tick varies for an organic feel
+    for (let i = 0; i < 8; i++) {
       chip.textContent = String(Math.floor(Math.random() * faces) + 1);
-      await wait(TICK);
+      await wait(35 + Math.floor(Math.random() * 22));  // 35–57 ms
     }
+
+    // Anticipation phase — roulette-style exponential deceleration
+    for (let i = 0; i < 4; i++) {
+      chip.textContent = String(Math.floor(Math.random() * faces) + 1);
+      const t = (i + 1) / 4;
+      await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
+    }
+
+    chip.classList.remove("is-rolling");
     chip.textContent = String(finalValue);
     chip.classList.remove("pop");
     void chip.offsetWidth;
@@ -864,6 +884,13 @@
     st.rollA = newA;
     if (!isSingle) st.rollB = newB;
     st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
+
+    const panelEl = getPanelEl(uuid);
+    if (panelEl) {
+      showZone(panelEl, "result", false);
+      if (choice === "A" || choice === "AB") await animateDie(panelEl, "A", newA, st.dieA);
+      if ((choice === "B" || choice === "AB") && !isSingle) await animateDie(panelEl, "B", newB, st.dieB);
+    }
     broadcastUpdate(uuid); syncPanel(uuid);
   }
 
@@ -915,6 +942,13 @@
     if (!isSingle) st.rollB = newB;
     st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedDivination = true; st.canDivination = false;
+
+    const panelEl = getPanelEl(uuid);
+    if (panelEl) {
+      showZone(panelEl, "result", false);
+      await animateDie(panelEl, "A", newA, st.dieA);
+      if (!isSingle) await animateDie(panelEl, "B", newB, st.dieB);
+    }
     broadcastUpdate(uuid); syncPanel(uuid);
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
   }
