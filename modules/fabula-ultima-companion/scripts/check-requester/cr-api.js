@@ -981,7 +981,10 @@
       // checks so the fanfare only plays on the final (leader) check.
       if (!ses.opts?.skipGroupOutcomeSound) {
         setTimeout(() => {
-          if (_session?.sessionId !== ses.sessionId) return;
+          // Allow _session to be null (session just closed cleanly by MSG_CLOSE racing the timer).
+          // Only block if a DIFFERENT session has taken over — that means a new check started
+          // before the sound fired, and we must not play the stale sound.
+          if (_session !== null && _session.sessionId !== ses.sessionId) return;
           // Prefer GM-authoritative key stamped into session; fall back to local computation
           // so the GM (which sets the key before its own showRevealAndWait call) is also covered.
           const key = ses._outcomeKey;
