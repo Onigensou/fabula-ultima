@@ -14,11 +14,18 @@
 
   // ── Sound URL registry ─────────────────────────────────────────────────────
   const SOUNDS = Object.freeze({
+    // Check lifecycle
+    CHECK_START:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_start.wav",
+
     // UI interactions — consistent with DP sound library
     BUTTON_ROLL:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
     BUTTON_INVOKE:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav",
     BUTTON_CONFIRM: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
     PANEL_OPEN:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+
+    // Group check lobby
+    PARTICIPANT_ENTER: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/participant_enter.wav",
+    PARTICIPANT_EXIT:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/participant_exit.wav",
 
     // Individual badge stamp sounds (play per-actor as each verdict reveals)
     STAMP_PASS:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
@@ -35,12 +42,15 @@
 
   // ── Volume levels ──────────────────────────────────────────────────────────
   const VOLUME = Object.freeze({
-    BUTTON_ROLL:    0.45,
-    BUTTON_INVOKE:  0.40,
-    BUTTON_CONFIRM: 0.50,
-    PANEL_OPEN:     0.35,
-    STAMP:          0.65,
-    GROUP:          0.80,
+    CHECK_START:       0.65,
+    BUTTON_ROLL:       0.45,
+    BUTTON_INVOKE:     0.40,
+    BUTTON_CONFIRM:    0.50,
+    PANEL_OPEN:        0.35,
+    PARTICIPANT_ENTER: 0.55,
+    PARTICIPANT_EXIT:  0.50,
+    STAMP:             0.65,
+    GROUP:             0.80,
   });
 
   // ── Preload cache ──────────────────────────────────────────────────────────
@@ -80,6 +90,19 @@
       for (const src of Object.values(SOUNDS)) _preload(src);
       console.debug(TAG, "All sounds preloaded.");
     },
+
+    // ── Check lifecycle ──────────────────────────────────────────────────────
+
+    /** Plays once when a skill check or group check UI is first brought up. */
+    playCheckStart()       { _play(SOUNDS.CHECK_START,        VOLUME.CHECK_START);       },
+
+    // ── Group check lobby ────────────────────────────────────────────────────
+
+    /** Plays when an actor joins the group check (claims leader or becomes helper). */
+    playParticipantEnter() { _play(SOUNDS.PARTICIPANT_ENTER,  VOLUME.PARTICIPANT_ENTER); },
+
+    /** Plays when a helper leaves the group check lobby. */
+    playParticipantExit()  { _play(SOUNDS.PARTICIPANT_EXIT,   VOLUME.PARTICIPANT_EXIT);  },
 
     // ── UI interactions ──────────────────────────────────────────────────────
 

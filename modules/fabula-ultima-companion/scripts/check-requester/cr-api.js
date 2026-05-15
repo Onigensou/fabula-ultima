@@ -65,6 +65,7 @@
     singleDie: false,
     hiddenDl: true,
     skipGroupOutcomeSound: false,
+    revealTimeout: 2500,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -930,7 +931,9 @@
         }, delay);
       });
 
-      // Group outcome fanfare fires after the 2.5 s tension window,
+      const timeout = ses.opts?.revealTimeout ?? 2500;
+
+      // Group outcome fanfare fires at the end of the tension window,
       // same moment as the auto-proceed resolve — skipped for helper-phase
       // checks so the fanfare only plays on the final (leader) check.
       if (!ses.opts?.skipGroupOutcomeSound) {
@@ -939,11 +942,11 @@
           const results = [...ses.panelStates.values()]
             .filter(s => s.result).map(s => s.result);
           globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
-        }, lastDelay + 2500);
+        }, lastDelay + timeout);
       }
 
-      // Auto-proceed: 2.5 seconds after the last badge appears
-      setTimeout(resolve, lastDelay + 2500);
+      // Auto-proceed after the configured tension window
+      setTimeout(resolve, lastDelay + timeout);
     });
   }
 
@@ -970,7 +973,7 @@
     row.innerHTML = panels.map(buildPanelHtml).join("");
     backdrop.appendChild(row);
     document.body.appendChild(backdrop);
-    globalThis.ONI?.CheckRequester?.Sound?.playOpen();
+    globalThis.ONI?.CheckRequester?.Sound?.playCheckStart();
 
     // Stagger panel entrance — each spawns 90ms after the previous
     row.querySelectorAll(".oni-cr-panel").forEach((el, i) => {

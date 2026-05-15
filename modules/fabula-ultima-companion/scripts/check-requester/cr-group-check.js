@@ -281,6 +281,7 @@
     }
     backdrop.appendChild(controls);
     document.body.appendChild(backdrop);
+    globalThis.ONI?.CheckRequester?.Sound?.playCheckStart();
 
     _lobbySession = {
       sessionId,
@@ -375,10 +376,13 @@
       // Clear any existing leader → spectator, then set this actor as leader
       newPanels = newPanels.map(p => p.role === "leader" ? { ...p, role: "spectator" } : p);
       newPanels = newPanels.map(p => p.uuid === uuid    ? { ...p, role: "leader" }    : p);
+      globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
     } else if (action === "participate") {
       newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "helper" }    : p);
+      globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
     } else if (action === "leave") {
       newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "spectator" } : p);
+      globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
     }
 
     ses.state = { ...ses.state, allPanels: newPanels };
@@ -639,6 +643,7 @@
         modifiers:            [],
         hiddenDl,
         skipGroupOutcomeSound: true,
+        revealTimeout:        2000,
         context:              { groupCheck: true, phase: "helper" },
       });
     }
