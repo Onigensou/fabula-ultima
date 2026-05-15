@@ -238,14 +238,17 @@
       }
       .oni-cr-panel.is-confirmed { opacity: .5; }
 
-      /* Token sprite */
+      /* Token portrait — circular crop matching the original panel style */
       .oni-cr-portrait {
-        width: 86px; height: 86px; flex-shrink: 0;
-        background: transparent !important; border: none !important; box-shadow: none !important;
+        width: 68px; height: 68px; border-radius: 50%;
+        border: 2px solid rgba(91,63,38,.85);
+        overflow: hidden; flex-shrink: 0;
+        box-shadow: 0 3px 8px rgba(0,0,0,.3);
+        background: rgba(0,0,0,.08);
       }
       .oni-cr-portrait img, .oni-cr-portrait video {
-        width: 100%; height: 100%; display: block; object-fit: contain;
-        background: transparent !important; border: none !important;
+        width: 100%; height: 100%; display: block; object-fit: cover;
+        background: none !important; border: none !important;
         outline: none !important; box-shadow: none !important; filter: none !important;
       }
       .oni-cr-actor-name {

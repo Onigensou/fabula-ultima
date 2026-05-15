@@ -118,6 +118,7 @@
   "scripts/map-system/movementControl-cameraRuntime.js",
   "scripts/map-system/movementControl-bootstrap.js",
   "scripts/check-requester/cr-api.js",
+  "scripts/check-requester/cr-sidebar-button.js",
   "scripts/dungeon-pathing-system/dp-constants.js",
   "scripts/dungeon-pathing-system/dp-tile-registry.js",
   "scripts/dungeon-pathing-system/dp-tile-state.js",
