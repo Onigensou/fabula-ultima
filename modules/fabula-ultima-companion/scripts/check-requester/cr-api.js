@@ -1225,7 +1225,7 @@
 
     const bondRowsHtml = bonds.map(b => `
       <div class="oni-cr-subpanel-row" data-value="${b.idx}">
-        <div class="oni-cr-subpanel-lbl">${esc(b.name)}<span style="opacity:.6;font-size:.75rem;margin-left:5px;">${"🩷".repeat(b.filledPos)}${"💜".repeat(b.filledNeg)}</span></div>
+        <div class="oni-cr-subpanel-lbl">${esc(b.name)}<span style="opacity:.6;font-size:.75rem;margin-left:5px;">${'<span style="color:#f472b6;">❤</span>'.repeat(b.filledPos)}${"💜".repeat(b.filledNeg)}</span></div>
         <div class="oni-cr-subpanel-val">+${b.bonus}</div>
       </div>`).join("");
 
