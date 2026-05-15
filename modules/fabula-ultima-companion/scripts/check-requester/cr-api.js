@@ -724,6 +724,12 @@
 
     const num = chip.querySelector(".oni-cr-die-num") ?? chip;
 
+    // SFX fires when the animation starts (not on landing)
+    try {
+      const sfx = globalThis.ONI?.CheckRoller?.CONST?.DEFAULTS?.UI_TUNING?.rollSfxUrl;
+      if (sfx) AudioHelper.play({ src: sfx, volume: 0.55, autoplay: true }, false);
+    } catch (_) {}
+
     // pick(exclude) — random face guaranteed ≠ exclude when faces > 1
     let lastShown = -1;
     const pick = (exclude = lastShown) => {
@@ -737,22 +743,48 @@
       num.textContent = String(lastShown = v);
     };
 
-    // Phase 1: fast tumble — random tick intervals for organic feel
+    // Phase 1: fast tumble — fully random
     for (let i = 0; i < 8; i++) {
       await showFrame(pick(), 48 + Math.floor(Math.random() * 22));
     }
 
-    // Phase 2: deceleration — explicit per-frame ms for tight control.
-    // Intense gives a dramatic roulette crawl; normal gives a gentle settle.
+    // Phase 2: deceleration with roulette convergence.
+    // The first part of decel is still random; the final swingSize frames
+    // tick sequentially toward finalValue so players can read the outcome
+    // coming (e.g. final=4 → random→…→2→3→[stamp 4]).
     const decelMs = intense
       ? [90, 155, 240, 360, 510, 700]
       : [85, 135, 195, 270];
-    for (const ms of decelMs) {
+    const swingSize = intense ? 3 : 2;
+
+    // Build sequential convergence frames that approach finalValue.
+    // Preferred direction is upward (from below); falls back to downward
+    // when finalValue is too close to the minimum face.
+    const convergence = (() => {
+      const count  = Math.min(swingSize, decelMs.length - 1);
+      const frames = [];
+      const below  = finalValue - count;
+      if (below >= 1) {
+        for (let v = below; v < finalValue; v++) frames.push(v);
+      } else {
+        const above = Math.min(faces, finalValue + count);
+        for (let v = above; v > finalValue; v--) frames.push(v);
+      }
+      return frames;
+    })();
+
+    // Random-phase decel (early frames — still organic)
+    for (const ms of decelMs.slice(0, decelMs.length - convergence.length)) {
       await showFrame(pick(), ms);
     }
 
-    // Guard: if last animated face equals finalValue, one more different face
-    // so the number is always visibly distinct when it lands
+    // Convergence-phase decel (sequential tick toward finalValue)
+    const convMs = decelMs.slice(decelMs.length - convergence.length);
+    for (let i = 0; i < convergence.length; i++) {
+      await showFrame(convergence[i], convMs[i]);
+    }
+
+    // Guard: safety net for edge cases where convergence ends on finalValue
     if (lastShown === finalValue && faces > 1) {
       await showFrame(pick(finalValue), intense ? 95 : 68);
     }
@@ -761,10 +793,6 @@
     void num.offsetWidth;
     num.textContent = String(finalValue);
     num.classList.add("is-landing");
-    try {
-      const sfx = globalThis.ONI?.CheckRoller?.CONST?.DEFAULTS?.UI_TUNING?.rollSfxUrl;
-      if (sfx) AudioHelper.play({ src: sfx, volume: 0.55, autoplay: true }, false);
-    } catch (_) {}
   }
 
   // =========================================================================
@@ -902,7 +930,7 @@
         }, delay);
       });
 
-      // Group outcome fanfare fires after the full 2.7 s tension window,
+      // Group outcome fanfare fires after the 2.5 s tension window,
       // same moment as the auto-proceed resolve — skipped for helper-phase
       // checks so the fanfare only plays on the final (leader) check.
       if (!ses.opts?.skipGroupOutcomeSound) {
@@ -911,11 +939,11 @@
           const results = [...ses.panelStates.values()]
             .filter(s => s.result).map(s => s.result);
           globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
-        }, lastDelay + 2700);
+        }, lastDelay + 2500);
       }
 
-      // Auto-proceed: 2.7 seconds after the last badge appears
-      setTimeout(resolve, lastDelay + 2700);
+      // Auto-proceed: 2.5 seconds after the last badge appears
+      setTimeout(resolve, lastDelay + 2500);
     });
   }
 
