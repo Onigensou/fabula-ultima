@@ -81,10 +81,9 @@
   const getFP = actor => safeInt(actor?.system?.props?.fabula_point, 0);
 
   const getTokenImg = actor => {
-    const std   = String(actor?.system?.props?.sprite_standard ?? "").trim();
     const token = String(actor.getActiveTokens?.(true, true)?.[0]?.document?.texture?.src ?? "").trim();
     const proto = String(actor?.prototypeToken?.texture?.src ?? "").trim();
-    return std || token || proto || actor.img || "icons/svg/mystery-man.svg";
+    return token || proto || actor.img || "icons/svg/mystery-man.svg";
   };
 
   // Resolve an actor or actor UUID → Actor document
@@ -229,6 +228,12 @@
       }
       .oni-cr-panels { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 880px; }
 
+      /* Panel entrance animation */
+      @keyframes oni-cr-panel-in {
+        from { opacity: 0; transform: translateY(20px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0)    scale(1); }
+      }
+
       /* Panel */
       .oni-cr-panel {
         width: 186px;
@@ -241,6 +246,7 @@
         color: #3b2a19;
         display: flex; flex-direction: column; align-items: center;
         padding: 12px 10px 10px; gap: 8px; transition: opacity .3s;
+        animation: oni-cr-panel-in 300ms cubic-bezier(.22,1,.36,1) both;
       }
       .oni-cr-panel.is-confirmed { opacity: .5; }
 
@@ -630,6 +636,11 @@
     row.innerHTML = panels.map(buildPanelHtml).join("");
     backdrop.appendChild(row);
     document.body.appendChild(backdrop);
+
+    // Stagger panel entrance — each spawns 90ms after the previous
+    row.querySelectorAll(".oni-cr-panel").forEach((el, i) => {
+      el.style.animationDelay = `${i * 90}ms`;
+    });
 
     const panelStates = new Map();
     for (const pd of panels) {
