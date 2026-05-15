@@ -782,9 +782,8 @@
       await showFrame(seqValues[i], seqMs[i]);
     }
 
-    // Dwell on the last sequential value so it's visible before the stamp fires.
-    // showFrame delay is approach-time; without this the last frame shows for 0ms.
-    if (seqMs.length > 0) await wait(seqMs[seqMs.length - 1]);
+    // Hold the last sequential value for ~1s so players can read it before the stamp.
+    if (seqMs.length > 0) await wait(1000);
     num.classList.remove("is-landing");
     void num.offsetWidth;
     num.textContent = String(finalValue);
