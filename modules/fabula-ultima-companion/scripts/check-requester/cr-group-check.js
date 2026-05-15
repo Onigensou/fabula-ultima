@@ -472,7 +472,8 @@
   // Final group-check chat card
   // =========================================================================
   async function postGroupCheckChatCard(helperResults, leaderResult, bonus, opts) {
-    const { label, helperDl, leaderDl, helperBonus } = opts;
+    const { label, helperDl, leaderDl, helperBonus, hiddenDl = false } = opts;
+    const dlStr = dl => hiddenDl ? "?" : dl;
     const titleText = `Group Check${label ? ` — ${label}` : ""}`;
 
     const passClr   = "#2f8a3a", failClr = "#b33a2f",
@@ -499,7 +500,7 @@
     const helperSection = helperResults.length > 0 ? `
       <div style="margin-bottom:8px;">
         <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-          opacity:.45;margin-bottom:5px;">Helpers (DL ${helperDl})</div>
+          opacity:.45;margin-bottom:5px;">Helpers (DL ${dlStr(helperDl)})</div>
         ${helperResults.map(r => renderRow(r, helperDl)).join("")}
       </div>` : "";
 
@@ -517,7 +518,7 @@
     const leaderSec = leaderResult ? `
       <div style="margin-bottom:8px;">
         <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-          opacity:.45;margin-bottom:5px;">Leader (DL ${leaderDl})</div>
+          opacity:.45;margin-bottom:5px;">Leader (DL ${dlStr(leaderDl)})</div>
         ${renderRow(leaderResult, leaderDl)}
       </div>` : "";
 
@@ -630,14 +631,15 @@
     if (helperActors.length > 0) {
       helperResults = await CR.request(helperActors, {
         attrA, attrB, singleDie,
-        dl:           helperDl,
-        label:        label ? `${label} — Helpers` : "Group Check — Helpers",
-        mode:         "interactive",
+        dl:                   helperDl,
+        label:                label ? `${label} — Helpers` : "Group Check — Helpers",
+        mode:                 "interactive",
         allowInvokes,
-        postChat:     false,
-        modifiers:    [],
+        postChat:             false,
+        modifiers:            [],
         hiddenDl,
-        context:      { groupCheck: true, phase: "helper" },
+        skipGroupOutcomeSound: true,
+        context:              { groupCheck: true, phase: "helper" },
       });
     }
 
@@ -667,7 +669,7 @@
     // ── Final chat card ────────────────────────────────────────────────────
     if (postChat) {
       await postGroupCheckChatCard(helperResults, leaderResult, bonus, {
-        label, helperDl, leaderDl, helperBonus,
+        label, helperDl, leaderDl, helperBonus, hiddenDl,
       });
     }
 

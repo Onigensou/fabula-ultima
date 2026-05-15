@@ -64,6 +64,7 @@
     context: {},
     singleDie: false,
     hiddenDl: true,
+    skipGroupOutcomeSound: false,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -211,7 +212,7 @@
         context: context ?? {},
       });
     }
-    if (opts.postChat) await postGroupedChatCard(results, opts.label, dl);
+    if (opts.postChat) await postGroupedChatCard(results, opts.label, dl, opts.hiddenDl ?? false);
     return results;
   }
 
@@ -901,14 +902,17 @@
         }, delay);
       });
 
-      // Group outcome fanfare fires when the last badge lands (+150ms buffer so
-      // individual stamp sounds settle first before the fanfare kicks in)
-      setTimeout(() => {
-        if (_session?.sessionId !== ses.sessionId) return;
-        const results = [...ses.panelStates.values()]
-          .filter(s => s.result).map(s => s.result);
-        globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
-      }, lastDelay + 150);
+      // Group outcome fanfare fires after the full 2.7 s tension window,
+      // same moment as the auto-proceed resolve — skipped for helper-phase
+      // checks so the fanfare only plays on the final (leader) check.
+      if (!ses.opts?.skipGroupOutcomeSound) {
+        setTimeout(() => {
+          if (_session?.sessionId !== ses.sessionId) return;
+          const results = [...ses.panelStates.values()]
+            .filter(s => s.result).map(s => s.result);
+          globalThis.ONI?.CheckRequester?.Sound?.playGroupOutcome(results);
+        }, lastDelay + 2700);
+      }
 
       // Auto-proceed: 2.7 seconds after the last badge appears
       setTimeout(resolve, lastDelay + 2700);
@@ -1268,9 +1272,10 @@
   // =========================================================================
   // Grouped chat card
   // =========================================================================
-  async function postGroupedChatCard(confirmPayloads, label, dl) {
+  async function postGroupedChatCard(confirmPayloads, label, dl, hiddenDl = false) {
     if (!confirmPayloads.length) return;
-    const titleText = [label ? `Skill Check — ${label}` : "Skill Check", dl != null ? `(DL ${dl})` : ""].filter(Boolean).join(" ");
+    const dlLabel   = dl != null ? `(DL ${hiddenDl ? "?" : dl})` : "";
+    const titleText = [label ? `Skill Check — ${label}` : "Skill Check", dlLabel].filter(Boolean).join(" ");
 
     const actorRows = confirmPayloads.map(cp => {
       const { actorName, tokenImg, attrA, attrB, dieA, dieB,
@@ -1517,7 +1522,7 @@
       await showRevealAndWait();
     }
 
-    if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl);
+    if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl, opts.hiddenDl ?? false);
 
     // Emit reaction phase events per actor (GM-only, local)
     for (const cp of confirmPayloads) emitCheckReactions(cp);
