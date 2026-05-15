@@ -9,18 +9,18 @@
 
 Hooks.once("ready", () => {
   (() => {
-    const TAG      = "[ONI][CheckRequester:Button]";
+    const TAG       = "[ONI][CheckRequester:Button]";
     const STATE_KEY = "__ONI_CR_BUTTON_STATE__";
 
     // ── Config ────────────────────────────────────────────────────────────
     const CFG = {
-      gmOnly:          true,
-      offsetRightPx:   313,
-      offsetBottomPx:  322,
-      sizePx:          60,
-      zIndex:          83,
-      iconText:        "🎯",
-      label:           "Request Check",
+      gmOnly:         true,
+      offsetRightPx:  313,
+      offsetBottomPx: 322,
+      sizePx:         60,
+      zIndex:         83,
+      iconText:       "🎯",
+      label:          "Request Check",
     };
 
     const DOM = {
@@ -114,9 +114,9 @@ Hooks.once("ready", () => {
     `;
 
     const buildPickerHtml = (slot, attr) => {
-      const isNone   = attr === "—";
-      const icon     = isNone ? "" : ATTR_ICONS[attr] ?? "";
-      const imgHtml  = isNone
+      const isNone  = attr === "—";
+      const icon    = isNone ? "" : ATTR_ICONS[attr] ?? "";
+      const imgHtml = isNone
         ? `<span class="oni-creq-picker-name" style="font-size:18px;opacity:.4;">—</span>`
         : `<img class="oni-creq-picker-icon" src="${icon}" alt="${attr}">
            <div class="oni-creq-picker-name">${attr}</div>`;
@@ -128,43 +128,13 @@ Hooks.once("ready", () => {
         </div>`;
     };
 
-    // ── Actor card HTML ───────────────────────────────────────────────────
-    // type: "sc" = skill-check multi-select
-    //       "gc-leader" = group-check leader single-select
-    //       "gc-helper" = group-check helper multi-select
-    const buildActorCardHtml = (actor, type, selected) => {
+    // ── Skill-Check actor card ────────────────────────────────────────────
+    const buildScActorCard = (actor, selected) => {
       const img  = getSpriteImg(actor);
-      const uuid = actor.uuid;
-      const id   = `oni-creq-ac-${type}-${actor.id}`;
-      const sel  = selected ? " sel" : "";
-
-      if (type === "gc-leader") {
-        // Radio-style — single select
-        return `
-          <label class="oni-creq-actor-card${sel}" for="${id}" title="${actor.name}" data-gc-leader-card data-uuid="${uuid}">
-            <input type="radio" id="${id}" name="gc-leader" value="${uuid}"${selected ? " checked" : ""}>
-            <div class="oni-creq-actor-img-wrap">
-              <img src="${img}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">
-            </div>
-            <div class="oni-creq-actor-lbl">${actor.name}</div>
-          </label>`;
-      }
-
-      if (type === "gc-helper") {
-        return `
-          <label class="oni-creq-actor-card${sel}" for="${id}" title="${actor.name}" data-gc-helper-card data-uuid="${uuid}">
-            <input type="checkbox" id="${id}" name="gc-helper" value="${uuid}"${selected ? " checked" : ""}>
-            <div class="oni-creq-actor-img-wrap">
-              <img src="${img}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">
-            </div>
-            <div class="oni-creq-actor-lbl">${actor.name}</div>
-          </label>`;
-      }
-
-      // Default: skill-check multi-select
+      const id   = `oni-creq-sc-${actor.id}`;
       return `
-        <label class="oni-creq-actor-card${sel}" for="${id}" title="${actor.name}">
-          <input type="checkbox" id="${id}" name="actor" value="${uuid}"${selected ? " checked" : ""}>
+        <label class="oni-creq-actor-card${selected ? " sel" : ""}" for="${id}" title="${actor.name}">
+          <input type="checkbox" id="${id}" name="actor" value="${actor.uuid}"${selected ? " checked" : ""}>
           <div class="oni-creq-actor-img-wrap">
             <img src="${img}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">
           </div>
@@ -172,42 +142,51 @@ Hooks.once("ready", () => {
         </label>`;
     };
 
+    // ── Group-Check participant card (role buttons, no form inputs) ───────
+    const buildGcActorCard = (actor) => {
+      const img = getSpriteImg(actor);
+      return `
+        <div class="oni-gc-card" data-uuid="${actor.uuid}" data-role="">
+          <div class="oni-gc-card-img">
+            <img src="${img}" alt="" onerror="this.src='icons/svg/mystery-man.svg'">
+          </div>
+          <div class="oni-gc-card-name">${actor.name}</div>
+          <div class="oni-gc-card-btns">
+            <button type="button" class="oni-gc-role-btn" data-btn="leader" title="Set as Leader">👑 Lead</button>
+            <button type="button" class="oni-gc-role-btn" data-btn="helper" title="Set as Helper">⚔ Help</button>
+          </div>
+        </div>`;
+    };
+
     // ── Dialog HTML ───────────────────────────────────────────────────────
     const buildDialogContent = (partyActors, preSelectedUuids, stateA, stateB) => {
-      const scCards = partyActors.map(a =>
-        buildActorCardHtml(a, "sc", preSelectedUuids.has(a.uuid))).join("");
-
-      const gcLeaderCards = partyActors.map(a =>
-        buildActorCardHtml(a, "gc-leader", false)).join("");
-
-      const gcHelperCards = partyActors.map(a =>
-        buildActorCardHtml(a, "gc-helper", false)).join("");
-
-      const emptyNote = `<div class="oni-creq-empty">No active party members found in Database Actor.</div>`;
+      const scCards    = partyActors.map(a => buildScActorCard(a, preSelectedUuids.has(a.uuid))).join("");
+      const gcCards    = partyActors.map(buildGcActorCard).join("");
+      const emptyNote  = `<div class="oni-creq-empty">No active party members found in Database Actor.</div>`;
 
       return `
         <style>
-          /* ── Dialog base ─────────────────────────────────────────────── */
+          /* ── Dialog base ──────────────────────────────────────────────── */
           .oni-creq-body { display:flex; flex-direction:column; padding:0; font-family:inherit; }
 
-          /* ── Mode tabs ───────────────────────────────────────────────── */
+          /* ── Mode tabs ────────────────────────────────────────────────── */
           .oni-creq-mode-row {
-            display:flex; gap:0; border-bottom:1px solid rgba(0,0,0,.12);
+            display:flex; border-bottom:1px solid rgba(0,0,0,.12);
           }
           .oni-creq-mode-tab {
             flex:1; padding:9px 6px; font-size:11px; font-weight:800;
-            border:none; border-bottom:2px solid transparent;
+            border:none; border-bottom:2.5px solid transparent;
             background:transparent; color:inherit; cursor:pointer;
             letter-spacing:.04em; text-transform:uppercase;
             transition:background .1s, border-color .1s;
           }
           .oni-creq-mode-tab:hover { background:rgba(0,0,0,.04); }
           .oni-creq-mode-tab.active {
-            border-bottom-color:rgba(87,58,33,.75);
+            border-bottom-color:rgba(87,58,33,.8);
             background:rgba(87,58,33,.06);
           }
 
-          /* ── Section layout ──────────────────────────────────────────── */
+          /* ── Section layout ───────────────────────────────────────────── */
           .oni-creq-sec { padding:8px 14px 10px; border-bottom:1px solid rgba(0,0,0,.1); }
           .oni-creq-sec:last-child { border-bottom:none; }
           .oni-creq-sec-title {
@@ -215,33 +194,22 @@ Hooks.once("ready", () => {
             letter-spacing:.08em; opacity:.45; margin-bottom:8px; display:block;
           }
 
-          /* ── Actor cards ─────────────────────────────────────────────── */
+          /* ── Skill-Check actor cards (multi-select labels) ────────────── */
           .oni-creq-actor-grid {
-            display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
-            overflow:visible; padding:4px 2px;
+            display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:4px 2px;
           }
           .oni-creq-actor-card {
             display:flex; flex-direction:column; align-items:center; gap:3px;
             padding:5px 2px; border-radius:8px; cursor:pointer;
             border:1.5px solid rgba(0,0,0,.10); user-select:none;
-            filter:grayscale(55%) brightness(0.82); opacity:0.60;
-            transform:scale(1);
-            transition:filter 150ms ease, opacity 150ms ease, transform 150ms ease,
-                        border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+            filter:grayscale(55%) brightness(0.82); opacity:0.60; transform:scale(1);
+            transition:filter 150ms, opacity 150ms, transform 150ms, border-color 150ms, box-shadow 150ms, background 150ms;
           }
-          .oni-creq-actor-card:hover { filter:grayscale(20%) brightness(0.95); opacity:0.85; border-color:rgba(87,58,33,.40); }
+          .oni-creq-actor-card:hover { filter:grayscale(20%) brightness(.95); opacity:.85; border-color:rgba(87,58,33,.4); }
           .oni-creq-actor-card.sel {
             filter:none; opacity:1; transform:scale(1.06);
             border-color:rgba(185,125,38,.95); background:rgba(87,58,33,.08);
             box-shadow:0 0 0 2px rgba(210,148,42,.75), 0 0 14px rgba(210,148,42,.30);
-          }
-          .oni-creq-actor-card.gc-leader-sel {
-            filter:none; opacity:1; transform:scale(1.06);
-            border-color:rgba(210,168,42,.95); background:rgba(180,140,20,.08);
-            box-shadow:0 0 0 2px rgba(210,168,42,.8), 0 0 14px rgba(210,168,42,.35);
-          }
-          .oni-creq-actor-card.gc-excluded {
-            filter:grayscale(80%) brightness(0.6); opacity:0.35; pointer-events:none;
           }
           .oni-creq-actor-card input { position:absolute; opacity:0; pointer-events:none; width:0; height:0; }
           .oni-creq-actor-img-wrap {
@@ -257,10 +225,64 @@ Hooks.once("ready", () => {
             max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:.75;
           }
 
-          /* ── Pickers ─────────────────────────────────────────────────── */
+          /* ── Group-Check participant cards ────────────────────────────── */
+          .oni-gc-grid { display:flex; gap:6px; flex-wrap:nowrap; justify-content:flex-start; }
+          .oni-gc-card {
+            display:flex; flex-direction:column; align-items:center; gap:5px;
+            padding:6px 4px 8px; border-radius:10px;
+            border:2px solid rgba(0,0,0,.10);
+            flex:1; min-width:0;
+            background:rgba(0,0,0,.03);
+            opacity:0.58; filter:grayscale(40%);
+            transition:border-color .15s, box-shadow .15s, background .15s, opacity .15s, filter .15s;
+          }
+          .oni-gc-card[data-role="leader"] {
+            opacity:1; filter:none;
+            border-color:rgba(210,168,42,.9);
+            background:rgba(210,168,42,.07);
+            box-shadow:0 0 0 2px rgba(210,168,42,.4);
+          }
+          .oni-gc-card[data-role="helper"] {
+            opacity:1; filter:none;
+            border-color:rgba(46,125,50,.8);
+            background:rgba(46,125,50,.06);
+            box-shadow:0 0 0 2px rgba(46,125,50,.3);
+          }
+          .oni-gc-card-img {
+            width:56px; height:70px;
+            display:flex; align-items:flex-end; justify-content:center;
+            overflow:hidden; flex-shrink:0;
+          }
+          .oni-gc-card-img img {
+            max-width:100%; max-height:100%; object-fit:contain;
+            background:transparent!important; border:none!important; box-shadow:none!important;
+          }
+          .oni-gc-card-name {
+            font-size:9px; font-weight:700; text-align:center;
+            width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:.7;
+          }
+          .oni-gc-card-btns { display:flex; gap:3px; }
+          .oni-gc-role-btn {
+            font-size:9.5px; font-weight:700; padding:3px 5px;
+            border:1.5px solid rgba(0,0,0,.16); border-radius:6px;
+            background:rgba(0,0,0,.05); cursor:pointer; line-height:1.3;
+            color:#3b2a19; transition:background .1s, border-color .1s, opacity .1s;
+            opacity:0.6;
+          }
+          .oni-gc-role-btn:hover { opacity:1; background:rgba(0,0,0,.10); }
+          .oni-gc-card[data-role="leader"] .oni-gc-role-btn[data-btn="leader"] {
+            background:rgba(210,168,42,.3); border-color:rgba(210,168,42,.8); opacity:1; font-weight:900;
+          }
+          .oni-gc-card[data-role="helper"] .oni-gc-role-btn[data-btn="helper"] {
+            background:rgba(46,125,50,.25); border-color:rgba(46,125,50,.7); opacity:1; font-weight:900;
+          }
+          /* In open-participation mode: hide helper buttons (players choose in lobby) */
+          .oni-gc-grid[data-part-mode="open"] .oni-gc-role-btn[data-btn="helper"] { display:none; }
+
+          /* ── Pickers ──────────────────────────────────────────────────── */
           ${PICKER_CSS}
 
-          /* ── DL / config row ─────────────────────────────────────────── */
+          /* ── Config row ───────────────────────────────────────────────── */
           .oni-creq-config-row { display:flex; gap:10px; align-items:flex-start; }
           .oni-creq-field { display:flex; flex-direction:column; gap:3px; flex:1; }
           .oni-creq-field-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.45; }
@@ -270,26 +292,26 @@ Hooks.once("ready", () => {
           }
           .oni-creq-dl-wrap { max-width:64px; }
 
-          /* ── Attr column labels ──────────────────────────────────────── */
+          /* ── Attr labels ──────────────────────────────────────────────── */
           .oni-creq-attr-labels {
             display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;
           }
           .oni-creq-attr-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.45; }
 
-          /* ── Group Check extras ──────────────────────────────────────── */
+          /* ── GC participation mode row ────────────────────────────────── */
           .oni-gc-part-row {
-            display:flex; gap:14px; align-items:center; margin-top:7px;
+            display:flex; gap:14px; align-items:center; margin-top:8px;
           }
           .oni-gc-part-row label {
             display:flex; align-items:center; gap:5px;
             font-size:11px; font-weight:700; cursor:pointer;
           }
-          .oni-gc-leader-note {
-            font-size:10px; opacity:.5; font-style:italic; margin-top:5px;
+          .oni-gc-hint {
+            font-size:10px; opacity:.45; font-style:italic; margin-top:5px;
           }
           .oni-gc-gc-config-row { display:flex; gap:10px; align-items:flex-start; margin-top:6px; }
 
-          /* ── Empty state ─────────────────────────────────────────────── */
+          /* ── Empty state ──────────────────────────────────────────────── */
           .oni-creq-empty { font-size:12px; opacity:.5; font-style:italic; padding:4px 0; }
         </style>
 
@@ -301,46 +323,36 @@ Hooks.once("ready", () => {
             <button type="button" class="oni-creq-mode-tab"        data-mode="group-check">👥 Group Check</button>
           </div>
 
-          <!-- ══ SKILL CHECK sections ══════════════════════════════════════ -->
+          <!-- ══ SKILL CHECK ═══════════════════════════════════════════════ -->
           <div class="oni-creq-sec" data-mode-sec="skill-check">
             <span class="oni-creq-sec-title">Target Actors</span>
             ${partyActors.length > 0
-              ? `<div class="oni-creq-actor-grid">${scCards}</div>`
+              ? `<div class="oni-creq-actor-grid" id="oni-sc-actor-grid">${scCards}</div>`
               : emptyNote}
           </div>
 
-          <!-- ══ GROUP CHECK sections ═══════════════════════════════════════ -->
+          <!-- ══ GROUP CHECK ════════════════════════════════════════════════ -->
 
-          <!-- Leader selection -->
+          <!-- Single participant grid: each actor has 👑 Lead + ⚔ Help buttons -->
           <div class="oni-creq-sec" data-mode-sec="group-check" style="display:none">
-            <span class="oni-creq-sec-title">Leader</span>
+            <span class="oni-creq-sec-title">Participants</span>
             ${partyActors.length > 0
-              ? `<div class="oni-creq-actor-grid" id="oni-gc-leader-grid">${gcLeaderCards}</div>
-                 <div class="oni-gc-leader-note">Click an actor to designate them as Leader. Leave blank to let players choose in the lobby.</div>`
+              ? `<div class="oni-gc-grid" id="oni-gc-grid" data-part-mode="designated">${gcCards}</div>
+                 <div class="oni-gc-hint">👑 = Leader (only one) &nbsp;·&nbsp; ⚔ = Helper &nbsp;·&nbsp; No role = not participating</div>`
               : emptyNote}
-          </div>
-
-          <!-- Helper participation -->
-          <div class="oni-creq-sec" data-mode-sec="group-check" style="display:none">
-            <span class="oni-creq-sec-title">Helpers</span>
             <div class="oni-gc-part-row">
               <label>
-                <input type="radio" name="gc-part-mode" value="designated" id="oni-gc-part-designated" checked>
+                <input type="radio" name="gc-part-mode" value="designated" checked>
                 Designated
               </label>
               <label>
-                <input type="radio" name="gc-part-mode" value="open" id="oni-gc-part-open">
+                <input type="radio" name="gc-part-mode" value="open">
                 Open — players join in lobby
               </label>
             </div>
-            <div id="oni-gc-helper-grid-wrap" style="margin-top:8px;">
-              ${partyActors.length > 0
-                ? `<div class="oni-creq-actor-grid" id="oni-gc-helper-grid">${gcHelperCards}</div>`
-                : emptyNote}
-            </div>
           </div>
 
-          <!-- Group check numerical settings -->
+          <!-- Group Check numerical settings -->
           <div class="oni-creq-sec" data-mode-sec="group-check" style="display:none">
             <span class="oni-creq-sec-title">Group Settings</span>
             <div class="oni-gc-gc-config-row">
@@ -355,11 +367,10 @@ Hooks.once("ready", () => {
             </div>
           </div>
 
-          <!-- ══ SHARED sections ════════════════════════════════════════════ -->
+          <!-- ══ SHARED ════════════════════════════════════════════════════ -->
 
-          <!-- Attribute pickers -->
+          <!-- Attribute pickers (shared) -->
           <div class="oni-creq-sec">
-            <span class="oni-creq-sec-title" id="oni-creq-attr-title">Attributes</span>
             <div class="oni-creq-attr-labels">
               <div class="oni-creq-attr-label">Attribute A</div>
               <div class="oni-creq-attr-label">Attribute B &nbsp;<span style="opacity:.55;font-style:italic;font-weight:400;text-transform:none;letter-spacing:0">(— = 1 die)</span></div>
@@ -370,7 +381,7 @@ Hooks.once("ready", () => {
             </div>
           </div>
 
-          <!-- DL + Context (DL label changes based on mode) -->
+          <!-- DL + Context (DL label changes per mode) -->
           <div class="oni-creq-sec">
             <div class="oni-creq-config-row">
               <div class="oni-creq-field oni-creq-dl-wrap">
@@ -388,12 +399,11 @@ Hooks.once("ready", () => {
 
         <script>
         (function() {
-          // ── Injected data ───────────────────────────────────────────────
           const ATTRS_A    = ${JSON.stringify(ATTRS_A)};
           const ATTRS_B    = ${JSON.stringify(ATTRS_B)};
           const ATTR_ICONS = ${JSON.stringify(ATTR_ICONS)};
 
-          // ── Mode switching ──────────────────────────────────────────────
+          // ── Mode tabs ───────────────────────────────────────────────────
           let currentMode = "skill-check";
 
           function setMode(mode) {
@@ -410,94 +420,63 @@ Hooks.once("ready", () => {
             btn.addEventListener("click", () => setMode(btn.dataset.mode)));
 
           // ── Skill-Check actor card toggle ───────────────────────────────
-          document.querySelectorAll(".oni-creq-actor-grid:first-of-type .oni-creq-actor-card").forEach(card => {
-            card.addEventListener("click", () => {
+          const scGrid = document.getElementById("oni-sc-actor-grid");
+          if (scGrid) {
+            scGrid.addEventListener("click", e => {
+              const card = e.target.closest(".oni-creq-actor-card");
+              if (!card) return;
               const cb = card.querySelector("input[type=checkbox]");
               if (!cb) return;
               cb.checked = !cb.checked;
               card.classList.toggle("sel", cb.checked);
             });
-          });
-          // Also wire the SC section specifically
-          const scGrid = document.querySelector('[data-mode-sec="skill-check"] .oni-creq-actor-grid');
-          if (scGrid) {
-            scGrid.querySelectorAll(".oni-creq-actor-card").forEach(card => {
-              if (!card._scListenerAdded) {
-                card._scListenerAdded = true;
-                card.addEventListener("click", () => {
-                  const cb = card.querySelector("input[type=checkbox]");
-                  if (!cb) return;
-                  cb.checked = !cb.checked;
-                  card.classList.toggle("sel", cb.checked);
-                });
-              }
-            });
           }
 
-          // ── Group Check leader (radio / single-select) ──────────────────
-          const leaderGrid = document.getElementById("oni-gc-leader-grid");
-          if (leaderGrid) {
-            leaderGrid.querySelectorAll(".oni-creq-actor-card").forEach(card => {
-              card.addEventListener("click", () => {
-                const rb = card.querySelector("input[type=radio]");
-                if (!rb) return;
-                const uuid = card.dataset.uuid;
+          // ── Group-Check role buttons ────────────────────────────────────
+          const gcGrid = document.getElementById("oni-gc-grid");
+          if (gcGrid) {
+            gcGrid.addEventListener("click", e => {
+              const btn = e.target.closest(".oni-gc-role-btn");
+              if (!btn) return;
+              e.preventDefault();
+              e.stopPropagation();
 
-                // Toggle off if already selected
-                if (rb.checked) {
-                  rb.checked = false;
-                  card.classList.remove("gc-leader-sel");
+              const card       = btn.closest(".oni-gc-card");
+              if (!card) return;
+              const roleToSet  = btn.dataset.btn;   // "leader" or "helper"
+              const curRole    = card.dataset.role;
+              const allCards   = [...gcGrid.querySelectorAll(".oni-gc-card")];
+
+              if (roleToSet === "leader") {
+                if (curRole === "leader") {
+                  // Deselect — click again to remove leader
+                  card.dataset.role = "";
                 } else {
-                  // Deselect previous
-                  leaderGrid.querySelectorAll(".oni-creq-actor-card").forEach(c => {
-                    const r = c.querySelector("input[type=radio]");
-                    if (r) r.checked = false;
-                    c.classList.remove("gc-leader-sel");
-                  });
-                  rb.checked = true;
-                  card.classList.add("gc-leader-sel");
+                  // Transfer leadership: clear old leader first
+                  allCards.forEach(c => { if (c.dataset.role === "leader") c.dataset.role = ""; });
+                  card.dataset.role = "leader";
                 }
-                // Sync helper grid exclusions
-                syncHelperExclusions();
-              });
-            });
-          }
-
-          // Exclude current leader from helper grid
-          function syncHelperExclusions() {
-            const helperGrid = document.getElementById("oni-gc-helper-grid");
-            if (!helperGrid) return;
-            const leaderRb = leaderGrid?.querySelector("input[type=radio]:checked");
-            const leaderUuid = leaderRb ? leaderRb.value : null;
-
-            helperGrid.querySelectorAll(".oni-creq-actor-card").forEach(card => {
-              const cb   = card.querySelector("input[type=checkbox]");
-              const uuid = card.dataset.uuid;
-              const isLeader = uuid === leaderUuid;
-              card.classList.toggle("gc-excluded", isLeader);
-              if (isLeader && cb) { cb.checked = false; card.classList.remove("sel"); }
-            });
-          }
-
-          // ── Group Check helper cards ────────────────────────────────────
-          const helperGrid = document.getElementById("oni-gc-helper-grid");
-          if (helperGrid) {
-            helperGrid.querySelectorAll(".oni-creq-actor-card").forEach(card => {
-              card.addEventListener("click", () => {
-                if (card.classList.contains("gc-excluded")) return;
-                const cb = card.querySelector("input[type=checkbox]");
-                if (!cb) return;
-                cb.checked = !cb.checked;
-                card.classList.toggle("sel", cb.checked);
-              });
+              } else if (roleToSet === "helper") {
+                if (curRole === "helper") {
+                  card.dataset.role = "";
+                } else if (curRole !== "leader") {
+                  // Can't assign helper to the current leader
+                  card.dataset.role = "helper";
+                }
+              }
             });
           }
 
           // ── Participation mode radio ────────────────────────────────────
           document.querySelectorAll('[name="gc-part-mode"]').forEach(rb => {
             rb.addEventListener("change", () => {
-              const wrap = document.getElementById("oni-gc-helper-grid-wrap");
-              if (wrap) wrap.style.display = rb.value === "open" ? "none" : "";
+              if (!gcGrid) return;
+              gcGrid.dataset.partMode = rb.value;
+              // Clear helper assignments when switching to open (players choose)
+              if (rb.value === "open") {
+                gcGrid.querySelectorAll(".oni-gc-card[data-role='helper']")
+                  .forEach(c => { c.dataset.role = ""; });
+              }
             });
           });
 
@@ -524,8 +503,7 @@ Hooks.once("ready", () => {
             const cur  = picker.dataset.attr || (slot === "A" ? "DEX" : "MIG");
             const list = slot === "A" ? ATTRS_A : ATTRS_B;
             const i    = list.indexOf(cur);
-            const next = list[((i < 0 ? 0 : i) + dir + list.length) % list.length];
-            updatePicker(picker, next);
+            updatePicker(picker, list[((i < 0 ? 0 : i) + dir + list.length) % list.length]);
           }
 
           document.getElementById("oni-creq-pickers")?.addEventListener("click", e => {
@@ -545,7 +523,7 @@ Hooks.once("ready", () => {
             }, { passive: false });
           });
 
-          // Expose mode getter for callback
+          // Expose mode getter for the dialog callback
           window.__oni_creq_getMode = () => currentMode;
         })();
         </script>`;
@@ -574,17 +552,17 @@ Hooks.once("ready", () => {
                 const root = html[0] ?? html;
                 const mode = window.__oni_creq_getMode?.() ?? "skill-check";
 
-                // ── Read shared fields ───────────────────────────────────
+                // ── Shared: attr pickers ─────────────────────────────────
                 const pickA     = root.querySelector('.oni-creq-picker[data-slot="A"]');
                 const pickB     = root.querySelector('.oni-creq-picker[data-slot="B"]');
                 const attrA     = pickA?.dataset?.attr ?? "DEX";
                 const rawB      = pickB?.dataset?.attr ?? "MIG";
                 const singleDie = rawB === "—";
                 const attrB     = singleDie ? attrA : rawB;
-                const leaderDl  = parseInt(root.querySelector('[name="dl"]')?.value ?? "10", 10) || 10;
+                const leaderDl  = parseInt(root.querySelector('[name="dl"]')?.value   ?? "10", 10) || 10;
                 const context   = root.querySelector('[name="context"]')?.value?.trim() ?? "";
 
-                // ── SKILL CHECK mode ─────────────────────────────────────
+                // ── SKILL CHECK ──────────────────────────────────────────
                 if (mode === "skill-check") {
                   const checkedUuids = [...root.querySelectorAll('input[name="actor"]:checked')]
                     .map(el => el.value);
@@ -593,20 +571,19 @@ Hooks.once("ready", () => {
                     resolve(null); return;
                   }
                   const actors = (await Promise.all(
-                    checkedUuids.map(uuid => fromUuid(uuid).catch(() => null))
+                    checkedUuids.map(u => fromUuid(u).catch(() => null))
                   )).filter(Boolean);
                   if (!actors.length) {
                     ui?.notifications?.warn?.("Request Check: Could not resolve actors.");
                     resolve(null); return;
                   }
-
                   const CR = globalThis.ONI?.CheckRequester;
                   if (!CR?.request) {
                     ui?.notifications?.error?.("ONI.CheckRequester is not loaded.");
                     resolve(null); return;
                   }
                   try {
-                    const results = await CR.request(actors, {
+                    resolve(await CR.request(actors, {
                       attrA, attrB, singleDie,
                       dl:           leaderDl,
                       label:        context || "Skill Check",
@@ -614,8 +591,7 @@ Hooks.once("ready", () => {
                       allowInvokes: true,
                       postChat:     true,
                       context,
-                    });
-                    resolve(results);
+                    }));
                   } catch (e) {
                     console.error(TAG, e);
                     ui?.notifications?.error?.("Request Check: An error occurred.");
@@ -624,37 +600,32 @@ Hooks.once("ready", () => {
                   return;
                 }
 
-                // ── GROUP CHECK mode ─────────────────────────────────────
+                // ── GROUP CHECK ──────────────────────────────────────────
                 const GC = globalThis.ONI?.GroupCheck;
                 if (!GC?.request) {
                   ui?.notifications?.error?.("ONI.GroupCheck is not loaded.");
                   resolve(null); return;
                 }
 
-                // Leader (optional — null = let players choose)
-                const leaderRb   = root.querySelector('input[name="gc-leader"]:checked');
-                const leaderUuid = leaderRb?.value ?? null;
+                // Read roles from the GC participant grid
+                const allGcCards  = [...root.querySelectorAll(".oni-gc-card")];
+                const leaderCard  = allGcCards.find(c => c.dataset.role === "leader");
+                const leaderUuid  = leaderCard?.dataset?.uuid ?? null;
 
-                // Participation mode
                 const partModeEl  = root.querySelector('[name="gc-part-mode"]:checked');
                 const partMode    = partModeEl?.value ?? "open";
 
-                // Designated helpers (only relevant in designated mode)
                 const helperUuids = partMode === "designated"
-                  ? [...root.querySelectorAll('input[name="gc-helper"]:checked')]
-                      .map(cb => cb.value)
-                      .filter(v => v !== leaderUuid)
+                  ? allGcCards.filter(c => c.dataset.role === "helper").map(c => c.dataset.uuid)
                   : [];
 
-                // All party actors (for lobby display)
-                const allUuids = partyActors.map(a => a.uuid);
+                const allUuids    = partyActors.map(a => a.uuid);
 
-                // Helper DL + bonus
-                const helperDl    = parseInt(root.querySelector('#oni-gc-helper-dl')?.value    ?? "10", 10) || 10;
-                const helperBonus = parseInt(root.querySelector('#oni-gc-helper-bonus')?.value ?? "1",  10) || 1;
+                const helperDl    = parseInt(root.querySelector("#oni-gc-helper-dl")?.value    ?? "10", 10) || 10;
+                const helperBonus = parseInt(root.querySelector("#oni-gc-helper-bonus")?.value ?? "1",  10) || 1;
 
                 try {
-                  const result = await GC.request({
+                  resolve(await GC.request({
                     leaderUuid,
                     participantMode:  partMode,
                     helperActorUuids: helperUuids,
@@ -666,8 +637,7 @@ Hooks.once("ready", () => {
                     label:        context || "Group Check",
                     allowInvokes: true,
                     postChat:     true,
-                  });
-                  resolve(result);
+                  }));
                 } catch (e) {
                   if (e?.message?.includes("cancelled")) { resolve(null); return; }
                   console.error(TAG, e);

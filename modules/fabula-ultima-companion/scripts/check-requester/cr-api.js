@@ -303,6 +303,17 @@
         0%  { transform: scale(1); } 45% { transform: scale(1.3); } 100% { transform: scale(1); }
       }
 
+      /* Modifier bonus display (e.g. Helper Bonus from Group Check) */
+      .oni-cr-mod-row {
+        display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%;
+      }
+      .oni-cr-mod-entry {
+        font-size: .70rem; font-weight: 700;
+        color: #2a7a35;
+        background: rgba(46,125,50,.13); border-radius: 5px;
+        padding: 2px 9px; text-align: center;
+      }
+
       /* Result */
       .oni-cr-result-block { display: flex; flex-direction: column; align-items: center; gap: 3px; }
       .oni-cr-total { font-size: 1.5rem; font-weight: 900; line-height: 1; }
@@ -449,6 +460,8 @@
           ${!isSingle ? `<div class="oni-cr-plus-sep">+</div><div class="oni-cr-die-chip" data-chip="B">—</div>` : ""}
         </div>
 
+        <div class="oni-cr-mod-row" data-zone="mods" style="display:none"></div>
+
         <div class="oni-cr-result-block" data-zone="result" style="display:none">
           <div class="oni-cr-total" data-field="total">—</div>
           <div class="oni-cr-verdict" data-field="verdict"></div>
@@ -513,6 +526,20 @@
       if (cB && !isSingle) cB.textContent = hasB ? String(st.rollB) : "—";
     } else {
       showZone(el, "dice", false);
+    }
+
+    // Modifier row — shows helper bonuses and other pre-applied modifiers after rolling
+    const modRowEl = el.querySelector("[data-zone='mods']");
+    if (modRowEl) {
+      const nonZero = (st.modifierParts ?? []).filter(p => (p?.value ?? 0) !== 0);
+      if (allRolled && nonZero.length > 0) {
+        modRowEl.style.display = "";
+        modRowEl.innerHTML = nonZero.map(p =>
+          `<div class="oni-cr-mod-entry">${p.value > 0 ? "+" : ""}${p.value}${p.label ? ` — ${esc(p.label)}` : ""}</div>`
+        ).join("");
+      } else {
+        modRowEl.style.display = "none";
+      }
     }
 
     // Total + verdict (only when both dice done)
