@@ -355,6 +355,13 @@
       .oni-cr-result-block.oni-cr-result-fadein {
         animation: oni-cr-result-in 350ms cubic-bezier(.22,1,.36,1) both;
       }
+      @keyframes oni-cr-verdict-in {
+        0%   { opacity: 0; transform: translateY(5px) scale(0.82); }
+        100% { opacity: 1; transform: translateY(0)   scale(1); }
+      }
+      .oni-cr-verdict.oni-cr-verdict-fadein {
+        animation: oni-cr-verdict-in 300ms 80ms cubic-bezier(.22,1,.36,1) both;
+      }
 
       .oni-cr-sep { width: 80%; height: 1px; background: rgba(0,0,0,.14); flex-shrink: 0; }
 
@@ -611,11 +618,13 @@
       if (totalEl) totalEl.textContent = String(st.result.total);
       if (verdictEl) {
         verdictEl.className = "oni-cr-verdict";
-        if (st.result.isFumble)          { verdictEl.textContent = "FUMBLE";    verdictEl.classList.add("fumble"); }
-        else if (st.result.isCrit)       { verdictEl.textContent = "CRITICAL!"; verdictEl.classList.add("crit");   }
+        void verdictEl.offsetWidth;
+        if (st.result.isFumble)            { verdictEl.textContent = "FUMBLE";    verdictEl.classList.add("fumble"); }
+        else if (st.result.isCrit)         { verdictEl.textContent = "CRITICAL!"; verdictEl.classList.add("crit");   }
         else if (st.result.pass === true)  { verdictEl.textContent = ses.opts?.hiddenDl ? "✓ Pass" : `✓ DL ${ses.dl}`; verdictEl.classList.add("pass"); }
         else if (st.result.pass === false) { verdictEl.textContent = ses.opts?.hiddenDl ? "✗ Fail" : `✗ DL ${ses.dl}`; verdictEl.classList.add("fail"); }
-        else                             { verdictEl.textContent = `Total ${st.result.total}`; }
+        else                               { verdictEl.textContent = `Total ${st.result.total}`; }
+        verdictEl.classList.add("oni-cr-verdict-fadein");
       }
     } else {
       showZone(el, "result", false);
