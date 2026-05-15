@@ -757,6 +757,8 @@
     if (!allDone) { syncPanel(uuid); return; }
     const rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
     st.result = computeCheck(st.rollA, rB, st.modifierParts, ses.dl, ses.opts?.singleDie);
+    // Record pre-invoke pass state so doConfirm can detect outcome flips
+    if (st.initialPass === undefined) st.initialPass = st.result.pass;
     syncPanel(uuid);
     if (canOwnerAct(uuid)) scheduleAutoConfirm(uuid);
   }
@@ -925,6 +927,7 @@
     st.confirmed = true;
     syncPanel(uuid);
 
+    const anyInvokeUsed = st.usedTrait || st.usedBond || st.usedDivination;
     const cp = {
       sessionId: ses.sessionId, actorUuid: uuid,
       actorName: st.actorName, tokenImg: st.tokenImg ?? "",
@@ -932,6 +935,8 @@
       rollA: rA, rollB: rB, modifierParts: st.modifierParts,
       total: res.total, pass: res.pass, isCrit: res.isCrit, isFumble: res.isFumble,
       usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
+      flippedOutcome: anyInvokeUsed && (st.initialPass !== res.pass),
+      dl: ses.dl,
       context: ses.opts?.context ?? {}, singleDie,
     };
 
@@ -1090,6 +1095,63 @@
   }
 
   // =========================================================================
+  // Reaction system integration
+  // Emits oni:reactionPhase events on the GM client after each check resolves.
+  // Triggers: creature_performs_check, creature_fumbles_check,
+  //           creature_check_outcome_flipped (invoke flipped pass↔fail)
+  // =========================================================================
+  function emitCheckReactions(cp) {
+    if (!game.user?.isGM) return;
+    const emit = globalThis.ONI?.emit;
+    if (typeof emit !== "function") return;
+
+    // Resolve active token UUID for subject-matching in the reaction system
+    const shortId  = String(cp.actorUuid ?? "").replace(/^Actor\./, "");
+    const actor    = game.actors?.get(shortId);
+    const tokenUuid = actor?.getActiveTokens?.(true, true)?.[0]?.document?.uuid ?? null;
+
+    const base = {
+      kind:           "check_requester",
+      timestamp:      Date.now(),
+      // Subject fields — covers all SUBJECT_PERFORMER field names
+      actorUuid:      cp.actorUuid,
+      checkActorUuid: cp.actorUuid,
+      sourceActorUuid: cp.actorUuid,
+      tokenUuid,
+      checkTokenUuid: tokenUuid,
+      sourceUuid:     tokenUuid,
+      // Check data
+      attrA:         cp.attrA,
+      attrB:         cp.attrB,
+      dl:            cp.dl,
+      rollA:         cp.rollA,
+      rollB:         cp.rollB,
+      total:         cp.total,
+      pass:          cp.pass,
+      isCrit:        cp.isCrit,
+      isFumble:      cp.isFumble,
+      singleDie:     !!cp.singleDie,
+      usedTrait:     !!cp.usedTrait,
+      usedBond:      !!cp.usedBond,
+      usedDivination: !!cp.usedDivination,
+      flippedOutcome: !!cp.flippedOutcome,
+      source:        "ONI.CheckRequester",
+    };
+
+    const opts = { local: true, world: false };
+
+    emit("oni:reactionPhase", { ...base, trigger: "creature_performs_check" }, opts);
+
+    if (cp.isFumble) {
+      emit("oni:reactionPhase", { ...base, trigger: "creature_fumbles_check" }, opts);
+    }
+
+    if (cp.flippedOutcome) {
+      emit("oni:reactionPhase", { ...base, trigger: "creature_check_outcome_flipped" }, opts);
+    }
+  }
+
+  // =========================================================================
   // Interactive mode
   // =========================================================================
   async function interactiveRequest(actors, opts) {
@@ -1122,6 +1184,9 @@
     _pendingSessions.delete(sessionId);
 
     if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl);
+
+    // Emit reaction phase events per actor (GM-only, local)
+    for (const cp of confirmPayloads) emitCheckReactions(cp);
 
     game.socket.emit(SOCKET_CH, { type: MSG_CLOSE, payload: { sessionId } });
     closeOverlay();
