@@ -775,19 +775,26 @@
       ` seq=[${seqValues.join(",")}] ms=[${seqMs.join(",")}]`
     );
 
+    // ── DEBUG SLOW MODE ── remove before ship ────────────────────────────────
+    const DBG_SLOW = true;
+    const P1_MS  = DBG_SLOW ? 600 : null;   // normal: 48–70ms
+    const P2_MUL = DBG_SLOW ? 8   : 1;      // normal: 1×
+    // ─────────────────────────────────────────────────────────────────────────
+
     // Phase 1: fast random tumble — frames 0–6 random, frame 7 forced to bridgeVal
     // so the transition into the sequential phase is gapless.
     for (let i = 0; i < 8; i++) {
       const isLast = i === 7;
       const v = (isLast && bridgeVal !== null) ? bridgeVal : pick();
       console.debug(`[CR][animateDie][${chipSel}] P1[${i}] ${isLast ? "bridge" : "rnd"}=${v}`);
-      await showFrame(v, 48 + Math.floor(Math.random() * 22));
+      await showFrame(v, P1_MS ?? (48 + Math.floor(Math.random() * 22)));
     }
 
     // Phase 2: purely sequential, always upward — no random frames.
     for (let i = 0; i < seqValues.length; i++) {
-      console.debug(`[CR][animateDie][${chipSel}] P2[${i}] seq=${seqValues[i]} ms=${seqMs[i]}`);
-      await showFrame(seqValues[i], seqMs[i]);
+      const ms = seqMs[i] * P2_MUL;
+      console.debug(`[CR][animateDie][${chipSel}] P2[${i}] seq=${seqValues[i]} ms=${ms}`);
+      await showFrame(seqValues[i], ms);
     }
 
     console.debug(`[CR][animateDie][${chipSel}] STAMP finalValue=${finalValue}`);
