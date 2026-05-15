@@ -61,6 +61,7 @@
     modifiers: [],
     timeout: null,
     context: {},
+    singleDie: false,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -164,8 +165,13 @@
     return safeInt(roll.total, 1);
   };
 
-  const computeCheck = (rollA, rollB, modParts, dl) => {
+  const computeCheck = (rollA, rollB, modParts, dl, singleDie = false) => {
     const modTotal = (modParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+    if (singleDie) {
+      const total = rollA + modTotal;
+      const pass  = dl != null && Number.isFinite(Number(dl)) ? total >= Number(dl) : null;
+      return { hr: rollA, base: rollA, modTotal, total, isFumble: false, isCrit: false, pass };
+    }
     const hr       = Math.max(rollA, rollB);
     const base     = rollA + rollB;
     const total    = base + modTotal;
@@ -177,18 +183,18 @@
 
   // ── Silent mode ───────────────────────────────────────────────────────────
   async function silentRequest(actors, opts) {
-    const { attrA, attrB, dl, modifiers, context } = opts;
+    const { attrA, attrB, dl, modifiers, context, singleDie } = opts;
     const results = [];
     for (const actor of actors) {
       const dieA     = getDieSize(actor, attrA);
-      const dieB     = getDieSize(actor, attrB);
+      const dieB     = singleDie ? dieA : getDieSize(actor, attrB);
       const rollA    = await rollDie(dieA);
-      const rollB    = await rollDie(dieB);
+      const rollB    = singleDie ? rollA : await rollDie(dieB);
       const modParts = [...(modifiers ?? [])];
-      const computed = computeCheck(rollA, rollB, modParts, dl);
+      const computed = computeCheck(rollA, rollB, modParts, dl, singleDie);
       results.push({
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
-        attrA, attrB, dieA, dieB, rollA, rollB,
+        attrA, attrB, dieA, dieB, rollA, rollB, singleDie: !!singleDie,
         modifierParts: modParts, ...computed,
         usedTrait: false, usedBond: false, usedDivination: false,
         context: context ?? {},
@@ -388,7 +394,7 @@
   // Panel HTML
   // =========================================================================
   function buildPanelHtml(pd) {
-    const isSingle  = pd.attrA === pd.attrB;
+    const isSingle  = pd.singleDie || pd.attrA === pd.attrB;
     const iconA     = ATTR_ICONS[pd.attrA] ?? ATTR_ICONS.DEX;
     const iconB     = ATTR_ICONS[pd.attrB] ?? ATTR_ICONS.MIG;
     const isVideo   = /\.(webm|mp4|ogg)(\?|$)/i.test(pd.tokenImg ?? "");
@@ -725,7 +731,7 @@
     const allDone  = st.rollA !== null && (isSingle || st.rollB !== null);
     if (!allDone) { syncPanel(uuid); return; }
     const rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
-    st.result = computeCheck(st.rollA, rB, st.modifierParts, ses.dl);
+    st.result = computeCheck(st.rollA, rB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     syncPanel(uuid);
     if (canOwnerAct(uuid)) scheduleAutoConfirm(uuid);
   }
@@ -803,7 +809,7 @@
     st.usedTrait = true; st.canTrait = false;
     st.rollA = newA;
     if (!isSingle) st.rollB = newB;
-    st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl);
+    st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     broadcastUpdate(uuid); syncPanel(uuid);
   }
 
@@ -831,7 +837,7 @@
     await actor.update({ "system.props.fabula_point": getFP(actor) - 1 });
     st.modifierParts = [...(st.modifierParts ?? []), { label: `Bond: ${bond.name}`, value: bond.bonus }];
     const isSingle = st.attrA === st.attrB;
-    st.result = computeCheck(st.rollA, isSingle ? st.rollA : (st.rollB ?? st.rollA), st.modifierParts, ses.dl);
+    st.result = computeCheck(st.rollA, isSingle ? st.rollA : (st.rollB ?? st.rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedBond = true; st.canBond = false;
     broadcastUpdate(uuid); syncPanel(uuid);
   }
@@ -853,7 +859,7 @@
     const isSingle = st.attrA === st.attrB;
     st.rollA = newA;
     if (!isSingle) st.rollB = newB;
-    st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl);
+    st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     st.usedDivination = true; st.canDivination = false;
     broadcastUpdate(uuid); syncPanel(uuid);
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
@@ -885,10 +891,11 @@
     const st = ses.panelStates.get(uuid);
     if (!st || st.confirmed || !canOwnerAct(uuid)) return;
 
-    const isSingle = st.attrA === st.attrB;
+    const isSingle  = st.attrA === st.attrB;
+    const singleDie = ses.opts?.singleDie ?? false;
     const rA  = st.rollA ?? 0;
     const rB  = isSingle ? rA : (st.rollB ?? rA);
-    const res = st.result ?? computeCheck(rA, rB, st.modifierParts, ses.dl);
+    const res = st.result ?? computeCheck(rA, rB, st.modifierParts, ses.dl, singleDie);
 
     st.confirmed = true;
     syncPanel(uuid);
@@ -900,7 +907,7 @@
       rollA: rA, rollB: rB, modifierParts: st.modifierParts,
       total: res.total, pass: res.pass, isCrit: res.isCrit, isFumble: res.isFumble,
       usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
-      context: ses.opts?.context ?? {},
+      context: ses.opts?.context ?? {}, singleDie,
     };
 
     game.socket.emit(SOCKET_CH, { type: MSG_CONFIRM, payload: cp });
@@ -921,9 +928,9 @@
 
     const actorRows = confirmPayloads.map(cp => {
       const { actorName, tokenImg, attrA, attrB, dieA, dieB,
-              rollA, rollB, total, pass, isCrit, isFumble, modifierParts } = cp;
+              rollA, rollB, total, pass, isCrit, isFumble, modifierParts, singleDie } = cp;
       const modTotal = (modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
-      const hr = Math.max(rollA, rollB), base = rollA + rollB;
+      const hr = singleDie ? rollA : Math.max(rollA, rollB), base = singleDie ? rollA : rollA + rollB;
 
       let verdictText, verdictColor, summaryBg;
       if (isFumble)            { verdictText = "FUMBLE";   verdictColor = "#7a0000"; summaryBg = "rgba(122,0,0,.06)"; }
@@ -953,11 +960,11 @@
           <div style="padding:7px 10px 5px;background:rgba(0,0,0,.03);border-top:1px solid rgba(91,63,38,.18);">
             <table style="width:100%;border-collapse:collapse;font-size:.8rem;color:#3b2a19;">
               <tr><td style="opacity:.55;padding-right:10px;padding-bottom:2px;">Formula</td>
-                  <td style="padding-bottom:2px;">${esc(attrA)} + ${esc(attrB)}</td></tr>
+                  <td style="padding-bottom:2px;">${esc(attrA)}${singleDie ? "" : ` + ${esc(attrB)}`}</td></tr>
               <tr><td style="opacity:.55;padding-bottom:2px;">Dice</td>
-                  <td style="padding-bottom:2px;">d${dieA} + d${dieB}</td></tr>
+                  <td style="padding-bottom:2px;">d${dieA}${singleDie ? "" : ` + d${dieB}`}</td></tr>
               <tr><td style="opacity:.55;padding-bottom:2px;">Rolls</td>
-                  <td style="padding-bottom:2px;">${rollA}, ${rollB}<span style="opacity:.5;"> (HR ${hr})</span></td></tr>
+                  <td style="padding-bottom:2px;">${rollA}${singleDie ? "" : `, ${rollB}<span style="opacity:.5;"> (HR ${hr})</span>`}</td></tr>
               <tr><td style="opacity:.55;padding-bottom:2px;">Base</td>
                   <td style="padding-bottom:2px;">${base}</td></tr>
               ${modTotal !== 0 ? `<tr><td style="opacity:.55;padding-bottom:2px;">Modifier</td>
@@ -1030,7 +1037,7 @@
         if (!st) return;
         Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
         const isSingle = st.attrA === st.attrB;
-        if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl);
+        if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
         syncPanel(uuid);
         return;
       }
@@ -1065,12 +1072,14 @@
     const { attrA, attrB, dl, label, context } = opts;
     const sessionId = foundry.utils.randomID();
 
-    const panels = actors.map(actor => ({
-      actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
-      attrA, attrB,
-      dieA: getDieSize(actor, attrA),
-      dieB: getDieSize(actor, attrB),
-    }));
+    const panels = actors.map(actor => {
+      const dieA = getDieSize(actor, attrA);
+      return {
+        actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
+        attrA, attrB, singleDie: opts.singleDie ?? false,
+        dieA, dieB: opts.singleDie ? dieA : getDieSize(actor, attrB),
+      };
+    });
 
     let _resolve;
     const done = new Promise(res => { _resolve = res; });
@@ -1099,8 +1108,8 @@
       attrA:        cp.attrA,   attrB:  cp.attrB,
       dieA:         cp.dieA,    dieB:   cp.dieB,
       rollA:        cp.rollA,   rollB:  cp.rollB,
-      hr:           Math.max(cp.rollA, cp.rollB),
-      base:         cp.rollA + cp.rollB,
+      hr:           cp.singleDie ? cp.rollA : Math.max(cp.rollA, cp.rollB),
+      base:         cp.singleDie ? cp.rollA : cp.rollA + cp.rollB,
       modifierParts: cp.modifierParts ?? [],
       modTotal:     (cp.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0),
       total:        cp.total,
@@ -1121,7 +1130,7 @@
   async function request(actorsInput, options = {}) {
     const opts = { ...DEFAULTS, ...options };
     opts.attrA = String(opts.attrA ?? "DEX").toUpperCase();
-    opts.attrB = String(opts.attrB ?? "MIG").toUpperCase();
+    opts.attrB = opts.singleDie ? opts.attrA : String(opts.attrB ?? "MIG").toUpperCase();
     opts.dl    = safeInt(opts.dl, 10);
     opts.modifiers = Array.isArray(opts.modifiers) ? opts.modifiers : [];
 
