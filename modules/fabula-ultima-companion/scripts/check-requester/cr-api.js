@@ -728,10 +728,9 @@
     // SFX fires when the animation starts (not on landing)
     try {
       const sfx = globalThis.ONI?.CheckRoller?.CONST?.DEFAULTS?.UI_TUNING?.rollSfxUrl;
-      if (sfx) AudioHelper.play({ src: sfx, volume: 0.55, autoplay: true }, false);
+      if (sfx) (foundry.audio.AudioHelper ?? AudioHelper).play({ src: sfx, volume: 0.55, autoplay: true }, false);
     } catch (_) {}
 
-    // pick(exclude) — random face guaranteed ≠ exclude when faces > 1
     let lastShown = -1;
     const pick = (exclude = lastShown) => {
       let n;
@@ -744,39 +743,48 @@
       num.textContent = String(lastShown = v);
     };
 
-    // Phase 1: fast random tumble (8 frames) — all randomness lives here.
-    for (let i = 0; i < 8; i++) {
-      const v = pick();
-      console.debug(`[CR][animateDie][${chipSel}] P1[${i}] rnd=${v}`);
-      await showFrame(v, 48 + Math.floor(Math.random() * 22));
-    }
-
-    // Phase 2: purely sequential decel — NO random frames to prevent jumps.
-    // Randomly pick 1–maxSeq sequential values, always ticking upward
-    // into finalValue (wrapping at faces).
-    // e.g. final=4, seqLen=3  → 1→2→3→[stamp 4]
-    // e.g. final=2, d20, seqLen=3 → 19→20→1→[stamp 2]
+    // Pre-compute Phase 2 BEFORE Phase 1 so we can bridge the last tumble frame
+    // into the sequential start — guaranteeing no downward jump at the handoff.
     const decelMs = intense
       ? [90, 155, 240, 360, 510, 700]
       : [85, 135, 195, 270];
     const maxSeq = intense ? 5 : 3;
     const seqLen = faces > 1 ? Math.floor(Math.random() * maxSeq) + 1 : 0;
 
+    // Sequential values: always upward, wrapping at faces, ending at finalValue-1.
     const seqValues = [];
     for (let i = seqLen; i >= 1; i--) {
       let v = finalValue - i;
       while (v < 1) v += faces;
       seqValues.push(v);
     }
-    // Use the last seqLen timing slots (the slowest) so the tail always decelerates.
+    // Use the last seqLen timing slots (the slowest) for natural decel feel.
     const seqMs = seqLen > 0 ? decelMs.slice(-seqLen) : [];
 
+    // Bridge value: one step below seqValues[0] (mod faces).
+    // Forced as the LAST frame of Phase 1 so the P1→P2 handoff is also upward.
+    let bridgeVal = null;
+    if (seqLen > 0) {
+      bridgeVal = seqValues[0] - 1;
+      if (bridgeVal < 1) bridgeVal += faces;
+    }
+
     console.debug(
-      `[CR][animateDie][${chipSel}] P2 finalValue=${finalValue} faces=${faces}` +
-      ` intense=${intense} seqLen=${seqLen}` +
+      `[CR][animateDie][${chipSel}] plan: finalValue=${finalValue} faces=${faces}` +
+      ` intense=${intense} seqLen=${seqLen} bridge=${bridgeVal}` +
       ` seq=[${seqValues.join(",")}] ms=[${seqMs.join(",")}]`
     );
 
+    // Phase 1: fast random tumble — frames 0–6 random, frame 7 forced to bridgeVal
+    // so the transition into the sequential phase is gapless.
+    for (let i = 0; i < 8; i++) {
+      const isLast = i === 7;
+      const v = (isLast && bridgeVal !== null) ? bridgeVal : pick();
+      console.debug(`[CR][animateDie][${chipSel}] P1[${i}] ${isLast ? "bridge" : "rnd"}=${v}`);
+      await showFrame(v, 48 + Math.floor(Math.random() * 22));
+    }
+
+    // Phase 2: purely sequential, always upward — no random frames.
     for (let i = 0; i < seqValues.length; i++) {
       console.debug(`[CR][animateDie][${chipSel}] P2[${i}] seq=${seqValues[i]} ms=${seqMs[i]}`);
       await showFrame(seqValues[i], seqMs[i]);

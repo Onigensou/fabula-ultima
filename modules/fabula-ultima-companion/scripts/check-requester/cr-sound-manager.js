@@ -62,8 +62,9 @@
     if (!src || _preloaded.has(src)) return;
     _preloaded.add(src);
     try {
-      if (typeof AudioHelper?.preloadSound === "function") {
-        AudioHelper.preloadSound(src);
+      const AH = foundry.audio?.AudioHelper ?? AudioHelper;
+      if (typeof AH?.preloadSound === "function") {
+        AH.preloadSound(src);
       } else {
         fetch(src, { cache: "force-cache" }).catch(() => {});
       }
@@ -75,7 +76,8 @@
     // Lazy-preload on first play so the cache warms even if preloadAll missed it
     _preload(src);
     try {
-      AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
+      const AH = foundry.audio?.AudioHelper ?? AudioHelper;
+      AH.play({ src, volume, autoplay: true, loop: false }, false);
     } catch (e) {
       console.warn(TAG, "AudioHelper.play failed:", e);
     }
