@@ -315,7 +315,7 @@
         50%      { transform: scale(0.72); }
       }
       .oni-cr-die-chip.is-rolling .oni-cr-die-num {
-        animation: oni-cr-num-rolling 80ms ease-in-out infinite;
+        animation: oni-cr-num-rolling 130ms ease-in-out infinite;
       }
       @keyframes oni-cr-num-land {
         0%   { opacity: 0.1; transform: scale(1.8); }
@@ -636,7 +636,16 @@
       };
       applyBtn("[data-action='trait']",      st.usedTrait,      st.canTrait);
       applyBtn("[data-action='bond']",       st.usedBond,       st.canBond);
-      applyBtn("[data-action='divination']", st.usedDivination, st.canDivination);
+      const divBtn = el.querySelector("[data-action='divination']");
+      if (divBtn) {
+        if (!st.canDivination && !st.usedDivination) {
+          divBtn.style.display = "none";
+        } else {
+          divBtn.style.display = "";
+          divBtn.disabled = st.usedDivination || !st.canDivination;
+          divBtn.classList.toggle("used", st.usedDivination);
+        }
+      }
     }
 
     // Confirm / waiting / done
@@ -661,23 +670,32 @@
     chip.classList.add("is-rolling");
     const num = chip.querySelector(".oni-cr-die-num") ?? chip;
 
+    // Never repeat the same face twice in a row
+    let lastFace = -1;
+    const nextFace = () => {
+      let n;
+      do { n = Math.floor(Math.random() * faces) + 1; } while (n === lastFace && faces > 1);
+      lastFace = n;
+      return n;
+    };
+
     // Fast tumble phase — random tick intervals for an organic feel
     for (let i = 0; i < 8; i++) {
-      num.textContent = String(Math.floor(Math.random() * faces) + 1);
+      num.textContent = String(nextFace());
       await wait(35 + Math.floor(Math.random() * 22));  // 35–57 ms
     }
 
     if (intense) {
       // Dramatic roulette: 6 steps, exponential 68 ms → 360 ms
       for (let i = 0; i < 6; i++) {
-        num.textContent = String(Math.floor(Math.random() * faces) + 1);
+        num.textContent = String(nextFace());
         const t = (i + 1) / 6;
         await wait(60 + Math.round(t * t * 300));  // 68 → 360 ms
       }
     } else {
       // Normal anticipation: 4 steps, 63 ms → 180 ms
       for (let i = 0; i < 4; i++) {
-        num.textContent = String(Math.floor(Math.random() * faces) + 1);
+        num.textContent = String(nextFace());
         const t = (i + 1) / 4;
         await wait(55 + Math.round(t * t * 125));  // 63 → 180 ms
       }
