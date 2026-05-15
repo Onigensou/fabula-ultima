@@ -63,7 +63,7 @@
     timeout: null,
     context: {},
     singleDie: false,
-    hiddenDl: false,
+    hiddenDl: true,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -349,6 +349,16 @@
       .oni-cr-result-block.oni-cr-result-fadein {
         animation: oni-cr-result-in 350ms cubic-bezier(.22,1,.36,1) both;
       }
+
+      /* Panel expansion — invoke area and confirm button slide up when they first appear */
+      @keyframes oni-cr-zone-in {
+        from { opacity: 0; transform: translateY(7px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .oni-cr-zone-slide-in {
+        animation: oni-cr-zone-in 260ms cubic-bezier(.22,1,.36,1) both;
+      }
+
       @keyframes oni-cr-verdict-in {
         0%   { opacity: 0; transform: translateY(5px) scale(0.82); }
         100% { opacity: 1; transform: translateY(0)   scale(1); }
@@ -616,8 +626,11 @@
       const verdictEl = el.querySelector("[data-field='verdict']");
       if (totalEl) totalEl.textContent = String(st.result.total);
       if (verdictEl) {
-        if (st._revealed) {
-          // Animate badge only on first reveal (hidden→visible); stay static after
+        // hiddenDl=true: badge stays hidden until explicit reveal after all confirm
+        // hiddenDl=false: badge shows immediately once all dice are in
+        const showVerdict = st._revealed || !ses.opts?.hiddenDl;
+        if (showVerdict) {
+          // Animate badge only on first time it becomes visible
           const wasHidden = verdictEl.style.display === "none";
           verdictEl.style.display = "";
           verdictEl.className = "oni-cr-verdict";
@@ -629,7 +642,7 @@
           else                               { verdictEl.textContent = `Total ${st.result.total}`; }
           if (wasHidden) verdictEl.classList.add("oni-cr-verdict-fadein");
         } else {
-          // Not yet revealed — keep verdict hidden until all players have confirmed
+          // Hidden DL mode — keep verdict invisible until reveal fires
           verdictEl.style.display = "none";
           verdictEl.textContent = "";
         }
@@ -643,7 +656,12 @@
     const allowInvokes = ses.opts?.allowInvokes !== false;
     const canInvoke    = allowInvokes && isOwner && allRolled && !st.confirmed && !st.result?.isFumble;
     const anyInvoke    = st.canTrait || st.canBond || st.canDivination;
+    const invokeEl     = zone(el, "invoke");
+    const invokeWasHidden = invokeEl?.style.display === "none";
     showZone(el, "invoke", canInvoke && anyInvoke);
+    if (canInvoke && anyInvoke && invokeWasHidden && invokeEl) {
+      invokeEl.classList.add("oni-cr-zone-slide-in");
+    }
     if (canInvoke && anyInvoke) {
       const applyBtn = (sel, used, can) => {
         const btn = el.querySelector(sel);
@@ -666,10 +684,16 @@
     }
 
     // Confirm / waiting / done
+    const confirmEl       = zone(el, "confirm");
+    const confirmWasHidden = confirmEl?.style.display === "none";
     showZone(el, "sep2",      !st.confirmed);
     showZone(el, "confirm",   isOwner && allRolled && !st.confirmed);
     showZone(el, "confirmed", st.confirmed);
     showZone(el, "waiting",   !isOwner && !st.confirmed);
+    if (isOwner && allRolled && !st.confirmed && confirmWasHidden && confirmEl) {
+      confirmEl.style.animationDelay = invokeWasHidden ? "60ms" : "";
+      confirmEl.classList.add("oni-cr-zone-slide-in");
+    }
 
     if (st.confirmed) el.classList.add("is-confirmed");
     else              el.classList.remove("is-confirmed");
@@ -694,18 +718,32 @@
       return n;
     };
 
-    // showFrame — shrink → swap number at nadir → grow back, all in tickMs total.
-    // The number change is perfectly synchronised with the scale because it happens
-    // at the exact moment the element is at its smallest — never mid-scale.
+    // showFrame — shrink → swap at nadir → grow back, totalMs = tickMs.
+    // Uses transitionend so the number changes exactly when the CSS transition
+    // completes — no timer drift, no mid-scale text swap.
+    const onTransitionEnd = () => new Promise(res => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; res(); } };
+      const handler = e => {
+        if (e.propertyName === "transform") {
+          num.removeEventListener("transitionend", handler);
+          finish();
+        }
+      };
+      num.addEventListener("transitionend", handler);
+      setTimeout(finish, 120); // safety: fire even if transitionend doesn't
+    });
+
     const showFrame = async (v, tickMs) => {
-      const halfMs = Math.min(Math.round(tickMs * 0.38), 58); // shrink phase, capped at 58ms
+      const halfMs = Math.min(Math.round(tickMs * 0.38), 58);
       num.style.transition = `transform ${halfMs}ms ease-in`;
       num.style.transform   = "scale(0.58)";
-      await wait(halfMs);
-      num.textContent = String(lastShown = v);             // swap at nadir
+      await onTransitionEnd();                   // wait for actual CSS shrink end
+      num.textContent = String(lastShown = v);   // swap precisely at nadir
       num.style.transition = `transform ${halfMs}ms ease-out`;
       num.style.transform   = "scale(1)";
-      await wait(tickMs - halfMs);                         // hold at full scale for remainder
+      // Wait for grow AND remaining hold time (whichever is longer)
+      await Promise.all([onTransitionEnd(), wait(tickMs - halfMs)]);
     };
 
     // Phase 1: fast tumble — random tick intervals for organic feel
@@ -876,8 +914,8 @@
         }, delay);
       });
 
-      // Auto-proceed: 3 seconds after the last badge appears
-      setTimeout(resolve, lastDelay + 3000);
+      // Auto-proceed: 2.7 seconds after the last badge appears
+      setTimeout(resolve, lastDelay + 2700);
     });
   }
 
@@ -1366,8 +1404,8 @@
       if (msg.type === MSG_REVEAL) {
         const { sessionId } = msg.payload ?? {};
         if (_session?.sessionId !== sessionId) return;
-        // Non-GM clients: run same staggered reveal + auto-proceed.
-        // If MSG_CLOSE arrives before the timer fires, closeOverlay() handles cleanup.
+        if (!_session?.opts?.hiddenDl) return; // only fires in hidden-DL mode
+        // Non-GM: staggered reveal + auto-proceed; MSG_CLOSE may arrive first.
         showRevealAndWait().then(() => {
           if (_session?.sessionId === sessionId) closeOverlay();
         });
@@ -1471,9 +1509,12 @@
     const confirmPayloads = await done;
     _pendingSessions.delete(sessionId);
 
-    // Stagger-reveal verdicts on all clients, then auto-proceed after 3s
-    game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId } });
-    await showRevealAndWait();
+    // hiddenDl mode: stagger-reveal verdicts across all clients then auto-proceed.
+    // Non-hidden mode: verdicts already visible, close immediately after all confirm.
+    if (opts.hiddenDl) {
+      game.socket.emit(SOCKET_CH, { type: MSG_REVEAL, payload: { sessionId } });
+      await showRevealAndWait();
+    }
 
     if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl);
 

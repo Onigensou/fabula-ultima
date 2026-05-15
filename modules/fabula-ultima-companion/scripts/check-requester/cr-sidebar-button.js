@@ -396,7 +396,7 @@ Hooks.once("ready", () => {
                 <div class="oni-creq-field-lbl" id="oni-creq-dl-lbl">DL</div>
                 <input type="number" id="oni-creq-dl" name="dl" value="10" min="1" max="40" step="1">
                 <label class="oni-creq-hidden-dl-row">
-                  <input type="checkbox" id="oni-creq-hidden-dl" name="hidden-dl">
+                  <input type="checkbox" id="oni-creq-hidden-dl" name="hidden-dl" checked>
                   <span>Hidden (DL ?)</span>
                 </label>
               </div>
@@ -628,6 +628,12 @@ Hooks.once("ready", () => {
 
                 const partModeEl  = root.querySelector('[name="gc-part-mode"]:checked');
                 const partMode    = partModeEl?.value ?? "open";
+
+                // In designated mode a leader must be assigned before requesting
+                if (partMode === "designated" && !leaderUuid) {
+                  ui?.notifications?.warn?.("Group Check: assign a Leader (👑) before requesting.");
+                  resolve(null); return;
+                }
 
                 const helperUuids = partMode === "designated"
                   ? allGcCards.filter(c => c.dataset.role === "helper").map(c => c.dataset.uuid)
