@@ -206,6 +206,15 @@
       }
       .oni-gc-cancel-btn:hover { filter: brightness(1.07); }
 
+      /* ── Leader Start Check button entrance animation ───────────────────── */
+      @keyframes oni-gc-start-btn-in {
+        from { opacity: 0; transform: translateY(10px) scale(0.93); }
+        to   { opacity: 1; transform: translateY(0)    scale(1); }
+      }
+      #oni-gc-leader-start-btn {
+        animation: oni-gc-start-btn-in 320ms cubic-bezier(.34,1.15,.64,1) both;
+      }
+
       /* ── Ready state ─────────────────────────────────────────────────────── */
       .oni-gc-panel.is-ready {
         border-color: rgba(46,125,50,.80);
@@ -340,9 +349,11 @@
     if (!el) return;
 
     const { participantMode } = ses.state;
-    const hasLeader = ses.state.allPanels.some(p => p.role === "leader");
-    const isOwner   = canOwnerAct(uuid);
-    const isReady   = pd.ready === true;
+    const hasLeader      = ses.state.allPanels.some(p => p.role === "leader");
+    const leaderPanel    = ses.state.allPanels.find(p => p.role === "leader");
+    const isCurrentLeader = leaderPanel ? canOwnerAct(leaderPanel.uuid) : false;
+    const isOwner        = canOwnerAct(uuid);
+    const isReady        = pd.ready === true;
 
     el.className = `oni-gc-panel is-${pd.role}${isReady ? " is-ready" : ""}`;
 
@@ -372,9 +383,15 @@
         show(claimBtn, false);
         show(joinBtn,  false);
         show(leaveBtn, false);
+      } else if (hasLeader) {
+        // A leader exists: only the current leader can pass leadership to other panels
+        show(claimBtn, pd.role !== "leader" && isCurrentLeader);
+        show(joinBtn,  pd.role === "spectator" && isOwner);
+        show(leaveBtn, pd.role === "helper" && isOwner);
       } else {
-        show(claimBtn, pd.role !== "leader" && isOwner);
-        show(joinBtn,  pd.role === "spectator" && hasLeader && isOwner);
+        // No leader yet: any owner can claim leadership for their own actor
+        show(claimBtn, isOwner);
+        show(joinBtn,  false);
         show(leaveBtn, pd.role === "helper" && isOwner);
       }
     } else {
@@ -424,10 +441,22 @@
     const ses = _lobbySession;
     if (!ses) return;
     const { action, uuid } = btn.dataset;
-    if (!uuid || !canOwnerAct(uuid)) return;
+    if (!uuid) return;
 
     const pd = ses.state.allPanels.find(p => p.uuid === uuid);
     if (!pd) return;
+
+    // For passing leadership: the acting user must own the current leader actor, not the target
+    if (action === "claim-leader") {
+      const existingLeader = ses.state.allPanels.find(p => p.role === "leader");
+      if (existingLeader) {
+        if (!canOwnerAct(existingLeader.uuid)) return;
+      } else {
+        if (!canOwnerAct(uuid)) return;
+      }
+    } else {
+      if (!canOwnerAct(uuid)) return;
+    }
 
     let newPanels = ses.state.allPanels.map(p => ({ ...p }));
     let sound = null;
