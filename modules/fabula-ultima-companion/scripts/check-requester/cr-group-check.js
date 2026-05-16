@@ -37,10 +37,11 @@
   window[GUARD] = true;
 
   // ── Socket message types (GC_ prefix, won't clash with CR_ messages) ──────
-  const GC_LOBBY_OPEN = "GC_LOBBY_OPEN";
-  const GC_SYNC       = "GC_SYNC";
-  const GC_START      = "GC_START";
-  const GC_CLOSE      = "GC_CLOSE";
+  const GC_LOBBY_OPEN   = "GC_LOBBY_OPEN";
+  const GC_SYNC         = "GC_SYNC";
+  const GC_START        = "GC_START";
+  const GC_CLOSE        = "GC_CLOSE";
+  const GC_LEADER_START = "GC_LEADER_START";
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   const esc = s => String(s ?? "")
@@ -204,6 +205,30 @@
         transition: filter .1s;
       }
       .oni-gc-cancel-btn:hover { filter: brightness(1.07); }
+
+      /* ── Leader Start Check button entrance animation ───────────────────── */
+      @keyframes oni-gc-start-btn-in {
+        from { opacity: 0; transform: translateY(10px) scale(0.93); }
+        to   { opacity: 1; transform: translateY(0)    scale(1); }
+      }
+      #oni-gc-leader-start-btn {
+        animation: oni-gc-start-btn-in 320ms cubic-bezier(.34,1.15,.64,1) both;
+      }
+
+      /* ── Ready state ─────────────────────────────────────────────────────── */
+      .oni-gc-panel.is-ready {
+        border-color: rgba(46,125,50,.80);
+        box-shadow: 0 0 0 3px rgba(46,125,50,.30), 0 10px 26px rgba(0,0,0,.28),
+                    inset 0 1px 0 rgba(255,248,232,.7);
+      }
+      .oni-gc-ready-badge {
+        font-size: .70rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+        background: rgba(46,125,50,.18); color: #2f6a35;
+      }
+      .oni-gc-btn.ready-active {
+        background: linear-gradient(180deg, #4caf50, #2e7d32);
+        border-color: #2e7d32; color: #fff;
+      }
     `;
     document.head.appendChild(s);
   }
@@ -229,8 +254,10 @@
         <div class="oni-gc-portrait">${media}</div>
         <div class="oni-gc-actor-name" title="${esc(pd.name)}">${esc(pd.name)}</div>
         <div class="oni-gc-role-badge ${pd.role}" data-zone="badge"></div>
+        <div class="oni-gc-ready-badge" data-zone="ready-badge" style="display:none">✓ Ready</div>
         <button class="oni-gc-btn" data-action="claim-leader" data-uuid="${esc(pd.uuid)}" style="display:none">👑 Lead</button>
         <button class="oni-gc-btn primary" data-action="participate" data-uuid="${esc(pd.uuid)}" style="display:none">✚ Participate</button>
+        <button class="oni-gc-btn" data-action="toggle-ready" data-uuid="${esc(pd.uuid)}" style="display:none">Ready</button>
         <button class="oni-gc-btn" data-action="leave" data-uuid="${esc(pd.uuid)}" style="display:none">✕ Leave</button>
       </div>`;
   }
@@ -278,6 +305,9 @@
       controls.innerHTML = `
         <button class="oni-gc-cancel-btn" id="oni-gc-cancel-btn">✕ Cancel</button>
         <button class="oni-gc-start-btn" id="oni-gc-start-btn" disabled>▶ Start Check</button>`;
+    } else {
+      controls.innerHTML = `
+        <button class="oni-gc-start-btn" id="oni-gc-leader-start-btn" style="display:none">▶ Start Check</button>`;
     }
     backdrop.appendChild(controls);
     document.body.appendChild(backdrop);
@@ -301,6 +331,8 @@
       if (isGM) {
         if (ev.target.id === "oni-gc-start-btn"  && !ev.target.disabled) onGMStart();
         if (ev.target.id === "oni-gc-cancel-btn") onGMCancel();
+      } else {
+        if (ev.target.id === "oni-gc-leader-start-btn") onLeaderStart();
       }
     });
   }
@@ -317,10 +349,13 @@
     if (!el) return;
 
     const { participantMode } = ses.state;
-    const hasLeader = ses.state.allPanels.some(p => p.role === "leader");
-    const isOwner   = canOwnerAct(uuid);
+    const hasLeader      = ses.state.allPanels.some(p => p.role === "leader");
+    const leaderPanel    = ses.state.allPanels.find(p => p.role === "leader");
+    const isCurrentLeader = leaderPanel ? canOwnerAct(leaderPanel.uuid) : false;
+    const isOwner        = canOwnerAct(uuid);
+    const isReady        = pd.ready === true;
 
-    el.className = `oni-gc-panel is-${pd.role}`;
+    el.className = `oni-gc-panel is-${pd.role}${isReady ? " is-ready" : ""}`;
 
     const badge = el.querySelector("[data-zone='badge']");
     if (badge) {
@@ -330,32 +365,73 @@
       else                             badge.textContent = participantMode === "open" ? "Not Joined" : "—";
     }
 
-    const claimBtn = el.querySelector("[data-action='claim-leader']");
-    const joinBtn  = el.querySelector("[data-action='participate']");
-    const leaveBtn = el.querySelector("[data-action='leave']");
+    // Ready badge visible to all when this participant is ready
+    const readyBadge = el.querySelector("[data-zone='ready-badge']");
+    if (readyBadge) readyBadge.style.display = isReady ? "" : "none";
+
+    const claimBtn  = el.querySelector("[data-action='claim-leader']");
+    const joinBtn   = el.querySelector("[data-action='participate']");
+    const leaveBtn  = el.querySelector("[data-action='leave']");
+    const readyBtn  = el.querySelector("[data-action='toggle-ready']");
     const show = (btn, v) => { if (btn) btn.style.display = v ? "" : "none"; };
 
+    const hasRole = pd.role === "leader" || pd.role === "helper";
+
     if (participantMode === "open") {
-      // Claim leader: visible to owner when this actor isn't already the leader
-      show(claimBtn, pd.role !== "leader" && isOwner);
-      // Participate: visible to owner when spectator AND a leader already exists
-      show(joinBtn,  pd.role === "spectator" && hasLeader && isOwner);
-      // Leave: visible to owner when helper
-      show(leaveBtn, pd.role === "helper" && isOwner);
+      if (isReady) {
+        // Locked in — hide role-change buttons so the player can't switch after readying
+        show(claimBtn, false);
+        show(joinBtn,  false);
+        show(leaveBtn, false);
+      } else if (hasLeader) {
+        // A leader exists: only the current leader can pass leadership, and only to helpers
+        show(claimBtn, pd.role === "helper" && isCurrentLeader);
+        show(joinBtn,  pd.role === "spectator" && isOwner);
+        show(leaveBtn, pd.role === "helper" && isOwner);
+      } else {
+        // No leader yet: any owner can claim leadership for their own actor
+        show(claimBtn, isOwner);
+        show(joinBtn,  false);
+        show(leaveBtn, pd.role === "helper" && isOwner);
+      }
     } else {
-      // Designated mode: roles are fixed, no interactive buttons
+      // Designated mode: roles are fixed
       show(claimBtn, false);
       show(joinBtn,  false);
       show(leaveBtn, false);
     }
+
+    // Ready button: owner-only, visible when they have a role assigned
+    show(readyBtn, hasRole && isOwner);
+    if (readyBtn) {
+      readyBtn.textContent = isReady ? "✓ Ready!" : "Ready";
+      readyBtn.classList.toggle("ready-active", isReady);
+    }
+  }
+
+  function allParticipantsReady() {
+    const ses = _lobbySession;
+    if (!ses) return false;
+    const participants = ses.state.allPanels.filter(p => p.role !== "spectator");
+    return participants.length > 0 && participants.every(p => p.ready === true);
   }
 
   function updateStartButton() {
     const ses = _lobbySession;
     if (!ses) return;
-    const btn = ses.backdropEl?.querySelector("#oni-gc-start-btn");
-    if (!btn) return;
-    btn.disabled = !ses.state.allPanels.some(p => p.role === "leader");
+
+    // GM Start button: just needs a leader (GM override, no ready requirement)
+    const gmBtn = ses.backdropEl?.querySelector("#oni-gc-start-btn");
+    if (gmBtn) gmBtn.disabled = !ses.state.allPanels.some(p => p.role === "leader");
+
+    // Leader Start button: shown only when all participants are ready and this client owns the leader
+    const leaderBtn = ses.backdropEl?.querySelector("#oni-gc-leader-start-btn");
+    if (leaderBtn) {
+      const allReady     = allParticipantsReady();
+      const leaderPanel  = ses.state.allPanels.find(p => p.role === "leader");
+      const isThisLeader = leaderPanel ? canOwnerAct(leaderPanel.uuid) : false;
+      leaderBtn.style.display = (allReady && isThisLeader) ? "" : "none";
+    }
   }
 
   // =========================================================================
@@ -365,32 +441,59 @@
     const ses = _lobbySession;
     if (!ses) return;
     const { action, uuid } = btn.dataset;
-    if (!uuid || !canOwnerAct(uuid)) return;
+    if (!uuid) return;
 
     const pd = ses.state.allPanels.find(p => p.uuid === uuid);
     if (!pd) return;
 
+    // For passing leadership: the acting user must own the current leader actor, not the target
+    if (action === "claim-leader") {
+      const existingLeader = ses.state.allPanels.find(p => p.role === "leader");
+      if (existingLeader) {
+        if (!canOwnerAct(existingLeader.uuid)) return; // must be the current leader
+        if (pd.role !== "helper") return;              // can only pass to a helper
+      } else {
+        if (!canOwnerAct(uuid)) return;
+      }
+    } else {
+      if (!canOwnerAct(uuid)) return;
+    }
+
     let newPanels = ses.state.allPanels.map(p => ({ ...p }));
+    let sound = null;
 
     if (action === "claim-leader") {
-      // Clear any existing leader → spectator, then set this actor as leader
-      newPanels = newPanels.map(p => p.role === "leader" ? { ...p, role: "spectator" } : p);
-      newPanels = newPanels.map(p => p.uuid === uuid    ? { ...p, role: "leader" }    : p);
+      // Demote existing leader → helper (reset ready), promote target → leader
+      newPanels = newPanels.map(p => p.role === "leader" ? { ...p, role: "helper", ready: false } : p);
+      newPanels = newPanels.map(p => p.uuid === uuid     ? { ...p, role: "leader",    ready: false } : p);
       globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
+      sound = "enter";
     } else if (action === "participate") {
-      newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "helper" }    : p);
+      newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "helper", ready: false } : p);
       globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
+      sound = "enter";
     } else if (action === "leave") {
-      newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "spectator" } : p);
+      newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, role: "spectator", ready: false } : p);
       globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
+      sound = "exit";
+    } else if (action === "toggle-ready") {
+      if (pd.role === "spectator") return; // Spectators cannot ready up
+      const becomingReady = !pd.ready;
+      newPanels = newPanels.map(p => p.uuid === uuid ? { ...p, ready: becomingReady } : p);
+      if (becomingReady) {
+        globalThis.ONI?.CheckRequester?.Sound?.playReady();
+        sound = "ready";
+      } else {
+        globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
+        sound = "exit";
+      }
+    } else {
+      return;
     }
 
     ses.state = { ...ses.state, allPanels: newPanels };
     for (const p of newPanels) syncLobbyPanel(p.uuid);
     updateStartButton();
-
-    const sound = (action === "claim-leader" || action === "participate") ? "enter"
-                : (action === "leave") ? "exit" : null;
 
     // Broadcast state + sound cue to all other clients
     game.socket.emit(SOCKET_CH, {
@@ -425,6 +528,17 @@
     closeLobby();
   }
 
+  function onLeaderStart() {
+    const ses = _lobbySession;
+    if (!ses || !allParticipantsReady()) return;
+    const leaderPanel = ses.state.allPanels.find(p => p.role === "leader");
+    if (!leaderPanel || !canOwnerAct(leaderPanel.uuid)) return;
+    game.socket.emit(SOCKET_CH, {
+      type:    GC_LEADER_START,
+      payload: { sessionId: ses.sessionId, allPanels: ses.state.allPanels },
+    });
+  }
+
   // =========================================================================
   // Close lobby
   // =========================================================================
@@ -456,8 +570,9 @@
         ses.state = { ...ses.state, allPanels: allPanels.map(p => ({ ...p })) };
         for (const p of allPanels) syncLobbyPanel(p.uuid);
         updateStartButton();
-        if (sound === "enter") globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
+        if      (sound === "enter") globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
         else if (sound === "exit")  globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
+        else if (sound === "ready") globalThis.ONI?.CheckRequester?.Sound?.playReady();
         return;
       }
 
@@ -470,6 +585,17 @@
       if (msg.type === GC_CLOSE) {
         const { sessionId } = msg.payload ?? {};
         if (_lobbySession?.sessionId === sessionId) closeLobby();
+        return;
+      }
+
+      if (msg.type === GC_LEADER_START) {
+        // GM receives this from the leader player and triggers the start
+        if (!game.user?.isGM) return;
+        const { sessionId, allPanels } = msg.payload ?? {};
+        const ses = _lobbySession;
+        if (!ses || ses.sessionId !== sessionId) return;
+        ses.state = { ...ses.state, allPanels: allPanels.map(p => ({ ...p })) };
+        onGMStart();
         return;
       }
     });
@@ -593,12 +719,13 @@
     if (needsLobby) {
       const helperSet = new Set(helperActorUuids);
       const initialPanels = allActors.map(a => ({
-        uuid: a.uuid,
-        name: a.name,
-        img:  getTokenImg(a),
-        role: a.uuid === leaderUuid ? "leader"
-            : (participantMode === "designated" && helperSet.has(a.uuid)) ? "helper"
-            : "spectator",
+        uuid:  a.uuid,
+        name:  a.name,
+        img:   getTokenImg(a),
+        role:  a.uuid === leaderUuid ? "leader"
+             : (participantMode === "designated" && helperSet.has(a.uuid)) ? "helper"
+             : "spectator",
+        ready: false,
       }));
 
       const sessionId  = foundry.utils.randomID();
