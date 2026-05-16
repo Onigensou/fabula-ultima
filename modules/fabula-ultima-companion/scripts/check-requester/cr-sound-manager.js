@@ -26,6 +26,7 @@
     // Group check lobby
     PARTICIPANT_ENTER: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/participant_enter.wav",
     PARTICIPANT_EXIT:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/participant_exit.wav",
+    LOBBY_READY:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_ready.wav",
 
     // Individual badge stamp sounds (play per-actor as each verdict reveals)
     STAMP_PASS:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
@@ -49,6 +50,7 @@
     PANEL_OPEN:        0.35,
     PARTICIPANT_ENTER: 0.55,
     PARTICIPANT_EXIT:  0.50,
+    LOBBY_READY:       0.65,
     STAMP:             0.65,
     GROUP:             0.80,
   });
@@ -105,6 +107,9 @@
 
     /** Plays when a helper leaves the group check lobby. */
     playParticipantExit()  { _play(SOUNDS.PARTICIPANT_EXIT,   VOLUME.PARTICIPANT_EXIT);  },
+
+    /** Plays when a participant marks themselves as ready in the lobby. */
+    playReady()            { _play(SOUNDS.LOBBY_READY,        VOLUME.LOBBY_READY);       },
 
     // ── UI interactions ──────────────────────────────────────────────────────
 
