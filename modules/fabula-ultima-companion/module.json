@@ -15,6 +15,7 @@
   ],
   "socket": true,
     "scripts": [
+  "scripts/_console-tap.js",
   "scripts/_module-boot.js",
   "scripts/shared-utils.js",
   "scripts/reload-broadcast.js",

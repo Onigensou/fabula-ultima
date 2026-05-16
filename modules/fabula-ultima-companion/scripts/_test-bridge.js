@@ -20,10 +20,16 @@
  *     "id":   "<unique-id>",
  *     "kind": "ping" | "dryRun" | "diffLastAction" | "updateDocument"
  *           | "createDocument" | "deleteDocument" | "runMacro"
- *           | "query" | "evalGM" | "reload",
+ *           | "query" | "evalGM" | "reload"
+ *           | "screenshot" | "getLogs",
  *     "args": { ...kind-specific... },
  *     "auth": "<secret>"   // required for evalGM only
  *   }
+ *
+ * Note: `screenshot` writes a PNG/JPEG into outbox/ alongside its res-*.json;
+ * `getLogs` reads from globalThis.__FUConsoleTap (installed by _console-tap.js,
+ * which is loaded first in module.json). `query/domSnapshot` returns the HTML
+ * of a CSS selector — chat/sheet/dialog state without needing a screenshot.
  *
  * Response shape
  *   {
@@ -468,6 +474,62 @@
         return await fn(game, canvas, ui, fromUuid, globalThis.FUCompanion, Hooks);
       }
 
+      case "screenshot": {
+        // Capture the PIXI map canvas (tokens / effects / animations) and
+        // write a PNG/JPEG into outbox/. DOM-side UI (chat, sheets, dialogs)
+        // is queryable as HTML — use `query/domSnapshot` for that, not this.
+        const {
+          target = "canvas",
+          format = "png",
+          quality = 0.92,
+          filename
+        } = args;
+        if (target !== "canvas") {
+          // Reserved for a future Electron-IPC path. Today the renderer
+          // doesn't have a reliable way to grab the whole window; chat /
+          // sheets / dialogs go through domSnapshot.
+          throw new Error(`screenshot: only target="canvas" is supported (got "${target}")`);
+        }
+        if (format !== "png" && format !== "jpeg") {
+          throw new Error(`screenshot: format must be "png" or "jpeg" (got "${format}")`);
+        }
+        const extract = canvas?.app?.renderer?.extract;
+        if (!extract) throw new Error("screenshot: PIXI extract plugin unavailable (no active scene?)");
+
+        const mime = `image/${format}`;
+        const dataUrl = await extract.base64(canvas.app.stage, mime, quality);
+        const comma = dataUrl.indexOf(",");
+        if (comma < 0) throw new Error("screenshot: extract.base64 returned malformed data URL");
+        const b64 = dataUrl.slice(comma + 1);
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+
+        const safeId = String(req.id).replace(/[^A-Za-z0-9_-]/g, "_");
+        const name = (filename && /^[A-Za-z0-9._-]+$/.test(filename))
+          ? filename
+          : `shot-${safeId}.${format === "jpeg" ? "jpg" : "png"}`;
+        const blob = new Blob([bytes], { type: mime });
+        const file = new File([blob], name, { type: mime });
+        await FilePicker.upload(SOURCE, outboxDir(), file, {}, { notify: false });
+
+        return {
+          path: `${outboxDir()}/${name}`,
+          bytes: bytes.length,
+          format,
+          width: canvas.app.renderer.width,
+          height: canvas.app.renderer.height,
+          sceneId: canvas.scene?.id ?? null,
+          sceneName: canvas.scene?.name ?? null
+        };
+      }
+
+      case "getLogs": {
+        const tap = globalThis.__FUConsoleTap;
+        if (!tap) throw new Error("getLogs: __FUConsoleTap not installed (is _console-tap.js loaded?)");
+        return tap.snapshot(args);
+      }
+
       case "reload": {
         const delayMs = Math.max(50, Math.min(10000, Number(args.delayMs ?? 250)));
         // Schedule reload AFTER the response is written. Watcher's caller
@@ -543,6 +605,54 @@
           uuid: t.document?.uuid ?? null, name: t.name,
           actorUuid: t.actor?.uuid ?? null
         }));
+      case "domSnapshot": {
+        // Return HTML / text from the live DOM. Use this for chat-log entries,
+        // dialog contents, sheet windows — anything rendered by the browser
+        // rather than the PIXI canvas. For PIXI content use `screenshot`.
+        //
+        // filter:
+        //   selector  — CSS selector (default "body"). If "all", returns an
+        //               array of matches (capped at maxMatches).
+        //   attribute — "outerHTML" | "innerHTML" | "innerText" | "textContent"
+        //               (default "outerHTML")
+        //   maxMatches — cap when selector="all" (default 20)
+        //   maxBytes  — per-match byte cap (default 64 KiB)
+        const {
+          selector = "body",
+          attribute = "outerHTML",
+          maxMatches = 20,
+          maxBytes = 64 * 1024
+        } = filter;
+        const ALLOWED_ATTRS = new Set(["outerHTML", "innerHTML", "innerText", "textContent"]);
+        if (!ALLOWED_ATTRS.has(attribute)) {
+          throw new Error(`query/domSnapshot: attribute must be one of ${Array.from(ALLOWED_ATTRS).join(", ")}`);
+        }
+        const trim = (s) => {
+          if (typeof s !== "string") return s;
+          if (s.length <= maxBytes) return s;
+          return s.slice(0, maxBytes) + `…[truncated +${s.length - maxBytes} bytes]`;
+        };
+        const effective = selector === "all" ? "*" : selector;
+        let nodes;
+        try { nodes = document.querySelectorAll(effective); }
+        catch (e) { throw new Error(`query/domSnapshot: bad selector "${selector}": ${e.message}`); }
+        if (!nodes.length) return { found: false, selector };
+        const slice = Array.from(nodes).slice(0, Math.max(1, maxMatches));
+        const matches = slice.map(el => ({
+          tag: el.tagName?.toLowerCase() ?? null,
+          id: el.id || null,
+          classes: el.className && typeof el.className === "string" ? el.className : null,
+          content: trim(el[attribute] ?? null)
+        }));
+        return {
+          found: true,
+          selector,
+          attribute,
+          totalMatches: nodes.length,
+          returnedMatches: matches.length,
+          matches
+        };
+      }
       default:
         throw new Error(`unknown query kind: ${kind}`);
     }
