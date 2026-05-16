@@ -248,8 +248,8 @@
         <div class="oni-gc-ready-badge" data-zone="ready-badge" style="display:none">✓ Ready</div>
         <button class="oni-gc-btn" data-action="claim-leader" data-uuid="${esc(pd.uuid)}" style="display:none">👑 Lead</button>
         <button class="oni-gc-btn primary" data-action="participate" data-uuid="${esc(pd.uuid)}" style="display:none">✚ Participate</button>
+        <button class="oni-gc-btn" data-action="toggle-ready" data-uuid="${esc(pd.uuid)}" style="display:none">Ready</button>
         <button class="oni-gc-btn" data-action="leave" data-uuid="${esc(pd.uuid)}" style="display:none">✕ Leave</button>
-        <button class="oni-gc-btn" data-action="toggle-ready" data-uuid="${esc(pd.uuid)}" style="display:none">☐ Ready</button>
       </div>`;
   }
 
@@ -387,7 +387,7 @@
     // Ready button: owner-only, visible when they have a role assigned
     show(readyBtn, hasRole && isOwner);
     if (readyBtn) {
-      readyBtn.textContent = isReady ? "✓ Ready!" : "☐ Ready";
+      readyBtn.textContent = isReady ? "✓ Ready!" : "Ready";
       readyBtn.classList.toggle("ready-active", isReady);
     }
   }
@@ -453,6 +453,9 @@
       if (becomingReady) {
         globalThis.ONI?.CheckRequester?.Sound?.playReady();
         sound = "ready";
+      } else {
+        globalThis.ONI?.CheckRequester?.Sound?.playParticipantExit();
+        sound = "exit";
       }
     } else {
       return;
