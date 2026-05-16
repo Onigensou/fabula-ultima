@@ -384,8 +384,8 @@
         show(joinBtn,  false);
         show(leaveBtn, false);
       } else if (hasLeader) {
-        // A leader exists: only the current leader can pass leadership to other panels
-        show(claimBtn, pd.role !== "leader" && isCurrentLeader);
+        // A leader exists: only the current leader can pass leadership, and only to helpers
+        show(claimBtn, pd.role === "helper" && isCurrentLeader);
         show(joinBtn,  pd.role === "spectator" && isOwner);
         show(leaveBtn, pd.role === "helper" && isOwner);
       } else {
@@ -450,7 +450,8 @@
     if (action === "claim-leader") {
       const existingLeader = ses.state.allPanels.find(p => p.role === "leader");
       if (existingLeader) {
-        if (!canOwnerAct(existingLeader.uuid)) return;
+        if (!canOwnerAct(existingLeader.uuid)) return; // must be the current leader
+        if (pd.role !== "helper") return;              // can only pass to a helper
       } else {
         if (!canOwnerAct(uuid)) return;
       }
@@ -462,8 +463,8 @@
     let sound = null;
 
     if (action === "claim-leader") {
-      // Clear any existing leader → spectator (reset ready), set this actor as leader
-      newPanels = newPanels.map(p => p.role === "leader" ? { ...p, role: "spectator", ready: false } : p);
+      // Demote existing leader → helper (reset ready), promote target → leader
+      newPanels = newPanels.map(p => p.role === "leader" ? { ...p, role: "helper", ready: false } : p);
       newPanels = newPanels.map(p => p.uuid === uuid     ? { ...p, role: "leader",    ready: false } : p);
       globalThis.ONI?.CheckRequester?.Sound?.playParticipantEnter();
       sound = "enter";
