@@ -7,6 +7,14 @@
     {
       "key": "2026-05-17-acceleration-ae-flags",
       "path": "data-migrations/2026-05-17-acceleration-ae-flags.js"
+    },
+    {
+      "key": "2026-05-17-agony-formula-grant",
+      "path": "data-migrations/2026-05-17-agony-formula-grant.js"
+    },
+    {
+      "key": "2026-05-17-drain-spirit-declarative",
+      "path": "data-migrations/2026-05-17-drain-spirit-declarative.js"
     }
   ]
 }
