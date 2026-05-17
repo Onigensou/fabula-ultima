@@ -37,6 +37,8 @@ Hooks.once("ready", () => {
   //   reactionSubjectKindMatchesRow(rowKind, triggerKey, phasePayload, combat)
   //   reactionOwnershipMatchesRow(rowOwnership, reactionToken, triggerKey, phasePayload, combat)
   //   reactionActionIntentMatchesRow(rowIntent, phasePayload)
+  //   reactionBondPresenceMatchesRow(rowValue, reactionToken, triggerKey, phasePayload, combat)
+  //   reactionBondEmotionMatchesRow(rowValue, reactionToken, triggerKey, phasePayload, combat)
   // ============================================================================
   (() => {
     const KEY = "oni.ReactionTriggerCore";
@@ -567,6 +569,143 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // reaction_bond_presence / reaction_bond_emotion matching
+    // -------------------------------------------------------------------------
+    //
+    // Bond data on a character actor (Traits & Bonds tab in CSB):
+    //   system.props.bond_N             — target's name (text). N ∈ 1..6 + "temp".
+    //   system.props.emotion_N_1        — Admiration / Inferiority pair (select).
+    //   system.props.emotion_N_2        — Loyalty    / Mistrust    pair (select).
+    //   system.props.emotion_N_3        — Affection  / Hatred      pair (select).
+    //
+    // Matching is case-insensitive throughout because the template's option
+    // values aren't perfectly consistent across slots (slot 1 ships
+    // capitalized "Admiration"/"Inferiority"; slots 2-6/temp ship lowercase).
+    //
+    // Both filters are universal — applicable to any trigger whose subject
+    // is a creature (subject-less lifecycle triggers make the filter inert,
+    // matching the reaction_subject_kind / reaction_ownership convention).
+    const BOND_SLOTS = Object.freeze(["1","2","3","4","5","6","temp"]);
+    const BOND_EMOTION_PAIR = Object.freeze({
+      admiration:   1, inferiority: 1,
+      loyalty:      2, mistrust:    2,
+      affection:    3, hatred:      3
+    });
+
+    function _collectBondedNames(actor) {
+      const props = actor?.system?.props ?? {};
+      const out = new Set();
+      for (const slot of BOND_SLOTS) {
+        const v = String(props[`bond_${slot}`] ?? "").trim().toLowerCase();
+        if (v) out.add(v);
+      }
+      return out;
+    }
+
+    function _subjectNameMatches(subjectToken, nameSet) {
+      const an = String(subjectToken?.actor?.name ?? "").trim().toLowerCase();
+      const tn = String(subjectToken?.document?.name ?? subjectToken?.name ?? "").trim().toLowerCase();
+      return (an && nameSet.has(an)) || (tn && nameSet.has(tn));
+    }
+
+    // Collect every creature the bond filter could plausibly care about for
+    // this trigger: the trigger's declared subject (per registry) PLUS the
+    // action's target list (regardless of trigger).
+    //
+    // Why both: Agony fires on `creature_deals_damage` where the trigger's
+    // subject is the damage SOURCE (the reactor herself — useless for the
+    // bond check). The RAW phrase "Bond towards (one of those creatures)"
+    // means the damaged creatures, which live in the payload's target fields.
+    // For triggers where subject IS the target (e.g. creature_hit_by_action),
+    // the two sets overlap; the Set dedups.
+    function _collectBondCheckCreatures(triggerKey, phasePayload, combat) {
+      const seen = new Set();
+      const out = [];
+      const push = (t) => { if (!t || seen.has(t.id)) return; seen.add(t.id); out.push(t); };
+
+      // Subject side (registry-driven).
+      for (const t of getSubjectTokensForTrigger(triggerKey, phasePayload, combat)) push(t);
+
+      // Targets — payload-driven, irrespective of trigger.
+      const single = ["targetUuid", "targetTokenUuid"];
+      const lists  = ["targets", "targetTokenUuids"];
+      for (const f of single) push(findTokenByUuidish(phasePayload?.[f], combat));
+      for (const f of lists) {
+        const list = phasePayload?.[f];
+        if (!Array.isArray(list)) continue;
+        for (const u of list) push(findTokenByUuidish(u, combat));
+      }
+
+      return out;
+    }
+
+    // reaction_bond_presence:
+    //   ""        — filter inactive (any subject matches).
+    //   "present" — reactor's bond_N matches at least one subject's name.
+    //   "absent"  — reactor has no bond toward any subject.
+    function reactionBondPresenceMatchesRow(rowValueRaw, reactionToken, triggerKey, phasePayload, combat) {
+      const v = String(rowValueRaw ?? "").trim().toLowerCase();
+      if (!v) return true;
+
+      const shape = registry.subjectShapeFor(triggerKey);
+      if (!shape) return true; // subject-less trigger → filter inert
+
+      const reactActor = reactionToken?.actor;
+      if (!reactActor) return false;
+
+      const creatures = _collectBondCheckCreatures(triggerKey, phasePayload, combat);
+      if (!creatures.length) return false; // active filter + no creatures = fail-closed
+
+      const bonded = _collectBondedNames(reactActor);
+      const hasMatch = creatures.some(c => _subjectNameMatches(c, bonded));
+
+      if (v === "present") return hasMatch;
+      if (v === "absent")  return !hasMatch;
+      console.warn("[ReactionTriggerCore] reaction_bond_presence: unknown value, treating as no-match.", rowValueRaw);
+      return false;
+    }
+
+    // reaction_bond_emotion:
+    //   ""           — filter inactive.
+    //   one of the 6 emotions — reactor's bond toward a subject must carry
+    //                           that emotion in its category field. Implies
+    //                           presence (an emotion only exists inside a Bond).
+    function reactionBondEmotionMatchesRow(rowValueRaw, reactionToken, triggerKey, phasePayload, combat) {
+      const v = String(rowValueRaw ?? "").trim().toLowerCase();
+      if (!v) return true;
+
+      const pair = BOND_EMOTION_PAIR[v];
+      if (!pair) {
+        console.warn("[ReactionTriggerCore] reaction_bond_emotion: unknown value, treating as no-match.", rowValueRaw);
+        return false;
+      }
+
+      const shape = registry.subjectShapeFor(triggerKey);
+      if (!shape) return true;
+
+      const reactActor = reactionToken?.actor;
+      if (!reactActor) return false;
+
+      const creatures = _collectBondCheckCreatures(triggerKey, phasePayload, combat);
+      if (!creatures.length) return false;
+
+      const props = reactActor.system?.props ?? {};
+
+      return creatures.some(subj => {
+        const an = String(subj?.actor?.name ?? "").trim().toLowerCase();
+        const tn = String(subj?.document?.name ?? subj?.name ?? "").trim().toLowerCase();
+        for (const slot of BOND_SLOTS) {
+          const bondName = String(props[`bond_${slot}`] ?? "").trim().toLowerCase();
+          if (!bondName) continue;
+          if (bondName !== an && bondName !== tn) continue;
+          const emoVal = String(props[`emotion_${slot}_${pair}`] ?? "").trim().toLowerCase();
+          if (emoVal === v) return true;
+        }
+        return false;
+      });
+    }
+
+    // -------------------------------------------------------------------------
     // reaction_debuff_count_* matching
     // -------------------------------------------------------------------------
     // Off semantics: an empty/zero `_min` always matches (filter inactive).
@@ -757,6 +896,24 @@ Hooks.once("ready", () => {
               phasePayload
             )) continue;
 
+            // Bond-presence filter (reactor has/doesn't have a Bond toward subject).
+            if (!reactionBondPresenceMatchesRow(
+              row.reaction_bond_presence,
+              token,
+              normalizedTriggerKey,
+              phasePayload,
+              combat
+            )) continue;
+
+            // Bond-emotion filter (specific emotion within the Bond toward subject).
+            if (!reactionBondEmotionMatchesRow(
+              row.reaction_bond_emotion,
+              token,
+              normalizedTriggerKey,
+              phasePayload,
+              combat
+            )) continue;
+
             matchingRows.push(row);
           }
 
@@ -813,7 +970,9 @@ Hooks.once("ready", () => {
       reactionDebuffCountMatchesRow,
       reactionSubjectKindMatchesRow,
       reactionOwnershipMatchesRow,
-      reactionActionIntentMatchesRow
+      reactionActionIntentMatchesRow,
+      reactionBondPresenceMatchesRow,
+      reactionBondEmotionMatchesRow
     };
 
     console.debug("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");

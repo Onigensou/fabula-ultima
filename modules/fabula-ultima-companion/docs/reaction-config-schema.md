@@ -33,6 +33,8 @@ runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
 | `reaction_subject_kind` | string (a `system.props.*` boolean flag, e.g. `"isPhantasm"`) | no | Subject-creature kind filter. When non-blank, the subject's `actor.system.props[<value>]` must be truthy. Available on any trigger whose subject is a creature (i.e. `subjectFrom !== null`). Blank disables the filter. |
 | `reaction_ownership` | `"" \| "own_summon"` | no | Subject/reactor relationship filter. `own_summon` requires the subject token's `flags["fabula-ultima-companion"].summonedBy` to equal the reactor's actor UUID — i.e. "I summoned this creature." Available on any trigger with a creature subject. Blank disables the filter. |
 | `reaction_action_intent` | `"" \| "harmful" \| "aid" \| "neutral"` | no | Action-intent filter. `harmful` matches only when ADC classifies the triggering action as harmful (attack, offensive spell, damage source) — the gate Protect / Cover / Counterattack need so they don't fire on an ally's buff/heal. `aid` matches heals / buff spells / utility actives. `neutral` matches Passive / Item / Other. Blank disables the filter. Lifecycle phase payloads (turn_start, round_end, etc.) carry no `actionIntent`, so a row with this filter active against such a payload fails-closed (no match). |
+| `reaction_bond_presence` | `"" \| "present" \| "absent"` | no | Bond gate against the trigger's subject creature. `present` matches when at least one of the reactor's `bond_N` slots (1–6 + `bond_temp`) holds a name equal to a subject's `actor.name` or `token.name` (case-insensitive). `absent` is the inverse — "no bond toward any subject." Blank disables the filter. Available on any trigger with a creature subject; inert on lifecycle triggers. |
+| `reaction_bond_emotion` | `"" \| "admiration" \| "inferiority" \| "loyalty" \| "mistrust" \| "affection" \| "hatred"` | no | Specific-emotion filter on the Bond toward the subject. Maps to the three RAW pairings (Admiration/Inferiority, Loyalty/Mistrust, Affection/Hatred) stored on the actor as `emotion_N_1` / `emotion_N_2` / `emotion_N_3` respectively. Implies presence (the matched Bond must exist) and is checked case-insensitively. Blank disables. |
 | `reaction_effect_ref` | string (an `effect_label` from `reaction_effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
@@ -97,15 +99,32 @@ write them in JSON regardless — they just won't be evaluated.
 template UI is one behind. It still works correctly at runtime; just
 type the key directly.)
 
-**`reaction_subject_kind`, `reaction_ownership`, and `reaction_action_intent`
-are universal across all subject-bearing triggers** (any trigger whose Subject
-side is not `—`), so they're omitted from the matrix above. The runtime
-matchers self-skip when the trigger has no per-creature subject, so authoring
-them on `conflict_start` / `round_start` / `round_end` is a no-op (the rows
-still match). `reaction_action_intent` additionally requires the phase payload
-to carry an `actionIntent` field (set by ADC for action-driven triggers, not
-for lifecycle triggers) — when the field is absent and the filter is set, the
-row fails-closed.
+**`reaction_subject_kind`, `reaction_ownership`, `reaction_action_intent`,
+`reaction_bond_presence`, and `reaction_bond_emotion` are universal across
+all subject-bearing triggers** (any trigger whose Subject side is not `—`),
+so they're omitted from the matrix above. The runtime matchers self-skip
+when the trigger has no per-creature subject, so authoring them on
+`conflict_start` / `round_start` / `round_end` is a no-op (the rows still
+match). `reaction_action_intent` additionally requires the phase payload
+to carry an `actionIntent` field (set by ADC for action-driven triggers,
+not for lifecycle triggers) — when the field is absent and the filter is
+set, the row fails-closed.
+
+### Bond data shape (on character actors)
+
+The bond filters read from the actor's Traits & Bonds tab fields:
+
+| Field | Type | Notes |
+|---|---|---|
+| `system.props.bond_N` | string | Target's name. `N ∈ {1..6, "temp"}`. Blank = slot unused. |
+| `system.props.emotion_N_1` | `"" \| "admiration" \| "inferiority"` | Pair 1. |
+| `system.props.emotion_N_2` | `"" \| "loyalty" \| "mistrust"` | Pair 2. |
+| `system.props.emotion_N_3` | `"" \| "affection" \| "hatred"` | Pair 3. |
+
+Per RAW (Core p. 56), each Bond may hold up to three emotions, one per
+pairing. Strength = count of non-empty emotion fields on the slot (0–3).
+Comparison is case-insensitive — older worlds may have capitalized values
+on bond slot 1 due to template drift.
 
 ### `actionIntent` inference (ADC)
 

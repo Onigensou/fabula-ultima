@@ -48,6 +48,8 @@
   const DEBUFF_TARGET_OPTIONS    = ["self", "ally", "enemy", "all"];
   const OWNERSHIP_OPTIONS        = ["", "own_summon"];
   const ACTION_INTENT_OPTIONS    = ["", "harmful", "aid", "neutral"];
+  const BOND_PRESENCE_OPTIONS    = ["", "present", "absent"];
+  const BOND_EMOTION_OPTIONS     = ["", "admiration", "inferiority", "loyalty", "mistrust", "affection", "hatred"];
   const PASSIVE_TARGET_OPTIONS   = ["self"];
   const GRANT_RESOURCE_OPTIONS   = ["hp", "mp", "ip", "zero_power", "zenit", "enmity"];
   const GRANT_TARGET_OPTIONS     = ["self", "ally", "enemy", "all"];
@@ -141,6 +143,8 @@
       reaction_subject_kind: "",
       reaction_ownership: "",
       reaction_action_intent: "",
+      reaction_bond_presence: "",
+      reaction_bond_emotion: "",
       reaction_effect_ref: "",
       reaction_isPassive: false,
       reaction_passive_target: ""
@@ -294,6 +298,8 @@
         ${formRow("Subject Kind Flag", inputHtml("reaction_subject_kind", row.reaction_subject_kind ?? "", { placeholder: "e.g. isPhantasm" }), "reaction_subject_kind", "actor.system.props.<this> must be truthy")}
         ${formRow("Ownership", selectHtml("reaction_ownership", row.reaction_ownership ?? "", OWNERSHIP_OPTIONS, { labels: { "": "(any)", "own_summon": "Own Summon" } }), "reaction_ownership")}
         ${formRow("Action Intent", selectHtml("reaction_action_intent", row.reaction_action_intent ?? "", ACTION_INTENT_OPTIONS, { labels: { "": "(any)", "harmful": "Harmful", "aid": "Aid", "neutral": "Neutral" } }), "reaction_action_intent")}
+        ${formRow("Bond Presence", selectHtml("reaction_bond_presence", row.reaction_bond_presence ?? "", BOND_PRESENCE_OPTIONS, { labels: { "": "(any)", "present": "Bond exists toward subject", "absent": "No bond toward subject" } }), "reaction_bond_presence", "Gates on whether the reactor has a Bond toward the trigger's subject (bond_N + bond_temp).")}
+        ${formRow("Bond Emotion", selectHtml("reaction_bond_emotion", row.reaction_bond_emotion ?? "", BOND_EMOTION_OPTIONS, { labels: { "": "(any)", "admiration": "Admiration", "inferiority": "Inferiority", "loyalty": "Loyalty", "mistrust": "Mistrust", "affection": "Affection", "hatred": "Hatred" } }), "reaction_bond_emotion", "Requires the Bond toward subject to include this emotion. Implies presence.")}
         ${formRow("Effect Ref", inputHtml("reaction_effect_ref", row.reaction_effect_ref ?? "", { list: effectLabelDatalistId, placeholder: "(none — picker only)" }), "reaction_effect_ref", "Matches an effect_label in the effects table below")}
         ${formRow("Passive (auto-fire)", checkboxHtml("reaction_isPassive", !!row.reaction_isPassive), "reaction_isPassive")}
         ${formRow("Passive Target", selectHtml("reaction_passive_target", row.reaction_passive_target ?? "", PASSIVE_TARGET_OPTIONS, { includeBlank: true, labelForBlank: "(none)" }), "reaction_passive_target")}
@@ -372,6 +378,8 @@
       reaction_subject_kind:         hasSubject,
       reaction_ownership:            hasSubject,
       reaction_action_intent:        hasSubject,
+      reaction_bond_presence:        hasSubject,
+      reaction_bond_emotion:         hasSubject,
       reaction_passive_target:       isPassive
     };
 
