@@ -530,12 +530,28 @@
   async function closeWindowsForActionCard(actionCardId, reason = "forced") {
     if (!actionCardId) return [];
     const closed = [];
+    const skipped = [];
     for (const [key, sub] of Array.from(_subWindows.entries())) {
       if (sub.actionCardId !== actionCardId) continue;
+      // Don't trample resolution-phase sub-windows on card_resolved. The
+      // confirm-button cleanup is meant to drop *pre-resolution* picker
+      // windows opened by CreateActionCard (creature_targeted_by_action),
+      // which the action card's confirm has effectively answered. Damage /
+      // crisis / heal / status-applied subs fire WITHIN AdvanceDamage as
+      // part of the confirm flow itself — they're not stale, they're
+      // actively waiting for the reactor's pick. Closing them here would
+      // kill in-flight reactions like Painful Lesson at the moment they
+      // become available. Let those resolve naturally via per-sub timeout
+      // (5s default), user pick, or cancel pip.
+      if (reason === "card_resolved" && sub.bucket === "resolution_phase") {
+        skipped.push(key);
+        continue;
+      }
       await resolveSub(key, { outcome: "forced", reason });
       closed.push(key);
     }
     if (closed.length) log("Closed subs for action card.", { actionCardId, reason, closed });
+    if (skipped.length) log("Preserved resolution-phase subs through card_resolved.", { actionCardId, skipped });
     return closed;
   }
 

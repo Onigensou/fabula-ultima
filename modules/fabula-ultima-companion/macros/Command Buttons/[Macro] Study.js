@@ -698,17 +698,33 @@ for (const cond of conditionList) {
     } catch { return null; }
   };
 
+  // Scan free-action grants. Player users have at most one pending grant
+  // (their own character's). GM users may have grants on any friendly
+  // token (Painful Lesson, Acceleration, etc.) — pick the friendly token
+  // whose actor has a pending grant. If more than one matches, prefer
+  // game.user.character; otherwise the first match.
   const probeActorForGrant = () => {
-    if (game.user.isGM) {
-      // GM picks acting token later — show no banner upfront. The bonus is
-      // still applied on Study confirm based on whatever token they pick.
-      return null;
+    const faApi = globalThis.FUCompanion?.api?.freeActions;
+    if (!faApi) return { grant: null, actor: null };
+    if (!game.user.isGM) {
+      const a = game.user.character;
+      const grant = a ? peekFreeActionGrant(a.id) : null;
+      return { grant, actor: grant ? a : null };
     }
-    const a = game.user.character;
-    return a ? peekFreeActionGrant(a.id) : null;
+    // GM: enumerate friendly tokens' actors for a pending grant.
+    const ownChar = game.user.character ?? null;
+    const candidates = friendlyTokens
+      .map(t => ({ actor: t.actor, token: t }))
+      .filter(p => p.actor && peekFreeActionGrant(p.actor.id));
+    if (!candidates.length) return { grant: null, actor: null };
+    const preferred =
+      candidates.find(p => ownChar && p.actor.id === ownChar.id) ?? candidates[0];
+    return { grant: peekFreeActionGrant(preferred.actor.id), actor: preferred.actor };
   };
 
-  const initialGrant = probeActorForGrant();
+  const initialGrantInfo = probeActorForGrant();
+  const initialGrant = initialGrantInfo.grant;
+  const initialGrantActor = initialGrantInfo.actor;
   const initialCheckBonus = Number(initialGrant?.checkBonus ?? 0) || 0;
   // Locked target from free-action grant (e.g. Painful Lesson's "on that
   // creature"). When set, the target dropdown is restricted to this token.
@@ -721,9 +737,14 @@ for (const cond of conditionList) {
   const initialLockedToken = resolveLockedToken(initialGrant?.lockedTargetTokenUuid);
 
   if (game.user.isGM) {
+    // Pre-select the actor with the pending grant if any — that's almost
+    // certainly the intended acting character (e.g. Hina after Painful Lesson).
+    const preselectId = initialGrantActor
+      ? friendlyTokens.find(t => t.actor?.id === initialGrantActor.id)?.id ?? null
+      : null;
     dlgHTML += `<p><b>Acting character (GM only):</b><br>
       <select id="actingToken">
-        ${friendlyTokens.map(t => `<option value="${t.id}">${t.name}</option>`).join("")}
+        ${friendlyTokens.map(t => `<option value="${t.id}" ${preselectId === t.id ? "selected" : ""}>${t.name}</option>`).join("")}
       </select></p>`;
   }
 

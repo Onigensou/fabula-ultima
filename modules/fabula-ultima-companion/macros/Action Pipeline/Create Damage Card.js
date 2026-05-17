@@ -198,13 +198,31 @@ return (async () => {
       });
 
       try {
-        emit("oni:reactionPhase", payload, { local: true, world: false });
-        observedSync = true;
-        console.log(`${RUN_TAG} oni:reactionPhase emitted`, payload);
+        // Route through reactionSystem.openWindow when available so the
+        // substrate creates per-reactor sub-windows (countdown + cancel +
+        // pickerClosed lifecycle). The legacy direct `ONI.emit` path still
+        // fires reactions for the manager BUT bypasses the substrate, so
+        // blade buttons spawn without a countdown badge and cancel clicks
+        // have no sub-window to resolve. openWindow internally stamps an
+        // emitId and emits oni:reactionPhase, so the manager still sees the
+        // trigger exactly as before. We fire-and-forget (no await) so the
+        // damage card resolution does not block on user reaction picks.
+        const rs = globalThis.FUCompanion?.api?.reactionSystem;
+        if (rs?.openWindow) {
+          rs.openWindow(payload, { reason: "damage_card_emit" })
+            .catch(err => console.warn(`${RUN_TAG} openWindow rejected`, err));
+          observedSync = true;
+          console.log(`${RUN_TAG} reactionSystem.openWindow dispatched`, { trigger: payload?.trigger });
+        } else {
+          emit("oni:reactionPhase", payload, { local: true, world: false });
+          observedSync = true;
+          console.log(`${RUN_TAG} oni:reactionPhase emitted (legacy path; substrate unavailable)`, payload);
+        }
         dbg("emitReactionPhaseLocalOnGM:after-emit", {
           traceId,
           observedSync,
-          observedAsync
+          observedAsync,
+          via: rs?.openWindow ? "substrate" : "legacy"
         });
         await wait(50);
         dbg("emitReactionPhaseLocalOnGM:post-wait", {
