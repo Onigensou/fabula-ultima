@@ -1,0 +1,2890 @@
+{
+  "folder": "ecsWCKqCXnSE0HO7",
+  "name": "Agony",
+  "type": "equippableItem",
+  "_id": "rERGt9WNcSfYV31k",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/unleash.png",
+  "system": {
+    "hidden": [],
+    "header": {
+      "contents": [
+        {
+          "key": "",
+          "colSpan": 2,
+          "rowSpan": 2,
+          "cssClass": "item-type-css",
+          "role": 0,
+          "editRole": 0,
+          "permission": 0,
+          "tooltip": "",
+          "visibilityFormula": "",
+          "type": "panel",
+          "contents": [
+            {
+              "key": "",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "label",
+              "size": "full-size",
+              "icon": "",
+              "value": "",
+              "prefix": "",
+              "suffix": "",
+              "rollMessage": "",
+              "altRollMessage": "",
+              "rollMessageToChat": true,
+              "altRollMessageToChat": true,
+              "style": "label"
+            },
+            {
+              "key": "",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "label",
+              "size": "full-size",
+              "icon": "",
+              "value": "",
+              "prefix": "",
+              "suffix": "",
+              "rollMessage": "",
+              "altRollMessage": "",
+              "rollMessageToChat": true,
+              "altRollMessageToChat": true,
+              "style": "label"
+            },
+            {
+              "key": "class",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "switchCase(skill_type, 'Attack', true, 'Active', true, 'Passive', true, 'Other', true, 'Spell', true, false)",
+              "type": "textField",
+              "size": "full-size",
+              "label": "Class",
+              "defaultValue": "",
+              "charList": "",
+              "maxLength": null,
+              "autocomplete": ""
+            },
+            {
+              "key": "skill_type",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "What Action Type does this use?",
+              "visibilityFormula": "",
+              "type": "select",
+              "size": "medium",
+              "label": "Type",
+              "defaultValue": "",
+              "selectedOptionType": "custom",
+              "options": [
+                {
+                  "key": "Attack",
+                  "value": "⚔️Basic Attack"
+                },
+                {
+                  "key": "Spell",
+                  "value": "📕 Spell"
+                },
+                {
+                  "key": "Active",
+                  "value": "💥 Active"
+                },
+                {
+                  "key": "Passive",
+                  "value": "📜 Passive"
+                },
+                {
+                  "key": "Item",
+                  "value": "⚗️Item"
+                },
+                {
+                  "key": "Other",
+                  "value": "Other"
+                }
+              ]
+            },
+            {
+              "key": "cost",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "or(or(equalText(skill_type, 'Active'), equalText(skill_type, 'Spell')), equalText(skill_type, 'Attack'))",
+              "type": "textField",
+              "size": "full-size",
+              "label": "Cost",
+              "defaultValue": "-",
+              "charList": "",
+              "maxLength": null,
+              "autocomplete": ""
+            },
+            {
+              "key": "skill_target",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "or(or(equalText(skill_type, 'Active'), equalText(skill_type, 'Spell')), equalText(skill_type, 'Attack'))",
+              "type": "textField",
+              "size": "full-size",
+              "label": "Target",
+              "defaultValue": "-",
+              "charList": "",
+              "maxLength": null,
+              "autocomplete": ""
+            },
+            {
+              "key": "duration",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "or(or(equalText(skill_type, 'Active'), equalText(skill_type, 'Spell')), equalText(skill_type, 'Attack'))",
+              "type": "textField",
+              "size": "full-size",
+              "label": "Duration",
+              "defaultValue": "-",
+              "charList": "",
+              "maxLength": null,
+              "autocomplete": ""
+            },
+            {
+              "key": "skill_range",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "or(or(equalText(skill_type, 'Active'), equalText(skill_type, 'Spell')), equalText(skill_type, 'Attack'))",
+              "type": "select",
+              "size": "full-size",
+              "label": "Range",
+              "defaultValue": "",
+              "selectedOptionType": "custom",
+              "options": [
+                {
+                  "key": "Any",
+                  "value": "🧿 Any"
+                },
+                {
+                  "key": "Melee",
+                  "value": "⚔️ Melee"
+                },
+                {
+                  "key": "Range",
+                  "value": "🏹 Range"
+                }
+              ]
+            },
+            {
+              "key": "level",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "and(switchCase(skill_type, 'Active', true, 'Passive', true, 'Other', true, false), and(not(isFacet), not(isHeroic)))",
+              "type": "numberField",
+              "size": "full-size",
+              "label": "Level",
+              "defaultValue": "1",
+              "allowDecimal": false,
+              "minVal": "0",
+              "maxVal": "${max_level}$",
+              "allowRelative": true,
+              "showControls": true,
+              "controlsStyle": "hover",
+              "controlsCustomIncrements": "",
+              "inputStyle": "text"
+            },
+            {
+              "key": "max_level",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 4,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "and(switchCase(skill_type, 'Active', true, 'Passive', true, 'Other', true, false), and(not(isFacet), not(isHeroic)))",
+              "type": "numberField",
+              "size": "full-size",
+              "label": "Max Level",
+              "defaultValue": "1",
+              "allowDecimal": false,
+              "minVal": "0",
+              "maxVal": "10",
+              "allowRelative": true,
+              "showControls": true,
+              "controlsStyle": "hover",
+              "controlsCustomIncrements": "",
+              "inputStyle": "text"
+            },
+            {
+              "key": "isOffensiveSpell",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "isOffensiveSpell",
+              "visibilityFormula": "equalText(skill_type, \"Spell\")",
+              "type": "checkbox",
+              "size": "full-size",
+              "label": "⚡Offensive Spell",
+              "defaultChecked": false
+            },
+            {
+              "key": "",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "label",
+              "size": "full-size",
+              "icon": "",
+              "value": "",
+              "prefix": "",
+              "suffix": "",
+              "rollMessage": "",
+              "altRollMessage": "",
+              "rollMessageToChat": true,
+              "altRollMessageToChat": true,
+              "style": "label"
+            },
+            {
+              "key": "",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 0,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "label",
+              "size": "full-size",
+              "icon": "",
+              "value": "",
+              "prefix": "",
+              "suffix": "",
+              "rollMessage": "",
+              "altRollMessage": "",
+              "rollMessageToChat": true,
+              "altRollMessageToChat": true,
+              "style": "label"
+            }
+          ],
+          "flow": "grid-2",
+          "align": "center",
+          "collapsible": false,
+          "defaultCollapsed": true,
+          "title": "",
+          "titleStyle": "default"
+        },
+        {
+          "key": "",
+          "colSpan": 1,
+          "rowSpan": 1,
+          "cssClass": "item-type-css",
+          "role": "0",
+          "editRole": 0,
+          "permission": "0",
+          "tooltip": "",
+          "visibilityFormula": "isHeroic",
+          "type": "panel",
+          "contents": [
+            {
+              "key": "",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": "0",
+              "editRole": 0,
+              "permission": "0",
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "label",
+              "size": "full-size",
+              "icon": "",
+              "value": "Requirement",
+              "prefix": "",
+              "suffix": "",
+              "rollMessage": "",
+              "altRollMessage": "",
+              "rollMessageToChat": true,
+              "altRollMessageToChat": true,
+              "style": "title"
+            },
+            {
+              "key": "heroic_requirement",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": "0",
+              "editRole": 0,
+              "permission": "0",
+              "tooltip": "",
+              "visibilityFormula": "",
+              "type": "textField",
+              "size": "full-size",
+              "label": "",
+              "defaultValue": "",
+              "charList": "",
+              "autocomplete": ""
+            }
+          ],
+          "flow": "vertical",
+          "align": "left",
+          "collapsible": false,
+          "defaultCollapsed": false,
+          "title": "",
+          "titleStyle": "default"
+        }
+      ],
+      "key": "custom_header",
+      "cssClass": null,
+      "role": 0,
+      "permission": 0,
+      "tooltip": null,
+      "flow": "vertical",
+      "align": "",
+      "type": "panel",
+      "visibilityFormula": "",
+      "collapsible": false,
+      "defaultCollapsed": true,
+      "title": "",
+      "titleStyle": "default",
+      "colSpan": 1,
+      "rowSpan": 1,
+      "editRole": 0
+    },
+    "body": {
+      "contents": [
+        {
+          "key": "skill_main_tab",
+          "colSpan": 1,
+          "rowSpan": 1,
+          "cssClass": "",
+          "role": "0",
+          "editRole": 0,
+          "permission": "0",
+          "tooltip": "",
+          "visibilityFormula": "",
+          "type": "tabbedPanel",
+          "contents": [
+            {
+              "key": "main",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": "0",
+              "editRole": 0,
+              "permission": "0",
+              "tooltip": "Main Setting",
+              "visibilityFormula": "",
+              "type": "tab",
+              "contents": [
+                {
+                  "key": "",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": 0,
+                  "editRole": 0,
+                  "permission": 0,
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "rolled_atr1",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "Attribute Die 1",
+                      "visibilityFormula": "isCheck",
+                      "type": "select",
+                      "size": "full-size",
+                      "label": "🎲",
+                      "defaultValue": "-",
+                      "selectedOptionType": "custom",
+                      "options": [
+                        {
+                          "key": "DEX",
+                          "value": "DEX"
+                        },
+                        {
+                          "key": "INS",
+                          "value": "INS"
+                        },
+                        {
+                          "key": "MIG",
+                          "value": "MIG"
+                        },
+                        {
+                          "key": "WLP",
+                          "value": "WLP"
+                        },
+                        {
+                          "key": "-",
+                          "value": "-"
+                        }
+                      ]
+                    },
+                    {
+                      "key": "rolled_atr2",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "Attribute Die 2",
+                      "visibilityFormula": "isCheck",
+                      "type": "select",
+                      "size": "full-size",
+                      "label": "🎲",
+                      "defaultValue": "-",
+                      "selectedOptionType": "custom",
+                      "options": [
+                        {
+                          "key": "DEX",
+                          "value": "DEX"
+                        },
+                        {
+                          "key": "INS",
+                          "value": "INS"
+                        },
+                        {
+                          "key": "MIG",
+                          "value": "MIG"
+                        },
+                        {
+                          "key": "WLP",
+                          "value": "WLP"
+                        },
+                        {
+                          "key": "-",
+                          "value": "-"
+                        }
+                      ]
+                    },
+                    {
+                      "key": "check_bonus",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "isCheck",
+                      "type": "numberField",
+                      "size": "full-size",
+                      "label": "Check Bonus",
+                      "defaultValue": "0",
+                      "allowDecimal": false,
+                      "minVal": "0",
+                      "maxVal": "",
+                      "allowRelative": false,
+                      "showControls": false,
+                      "controlsStyle": "hover",
+                      "controlsCustomIncrements": "",
+                      "inputStyle": "text"
+                    },
+                    {
+                      "key": "damage_bonus",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "textField",
+                      "size": "full-size",
+                      "label": "Damage Bonus",
+                      "defaultValue": "",
+                      "charList": "",
+                      "maxLength": null,
+                      "autocomplete": ""
+                    },
+                    {
+                      "key": "type_damage",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "textField",
+                      "size": "full-size",
+                      "label": "Type of Damage",
+                      "defaultValue": "",
+                      "charList": "",
+                      "maxLength": null,
+                      "autocomplete": ""
+                    },
+                    {
+                      "key": "defense_target_type",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "and(isCheck, not(equalText(skill_type, 'Passive')))",
+                      "type": "select",
+                      "size": "medium",
+                      "label": "vs",
+                      "defaultValue": "def",
+                      "selectedOptionType": "custom",
+                      "options": [
+                        {
+                          "key": "def",
+                          "value": "Defense"
+                        },
+                        {
+                          "key": "mdef",
+                          "value": "Magic Defense"
+                        }
+                      ]
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "ignore_hr",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "isCheck",
+                      "type": "checkbox",
+                      "size": "full-size",
+                      "label": "Ignore HR",
+                      "defaultChecked": false
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    }
+                  ],
+                  "flow": "grid-3",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": true,
+                  "title": "",
+                  "titleStyle": "default"
+                },
+                {
+                  "key": "text_panel",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": "0",
+                  "editRole": 0,
+                  "permission": "0",
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "",
+                          "value": "Description:",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "description",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "dialog"
+                        }
+                      ],
+                      "flow": "vertical",
+                      "align": "",
+                      "collapsible": false,
+                      "defaultCollapsed": true,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": "0",
+                      "editRole": 0,
+                      "permission": "0",
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "",
+                          "value": "",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "label"
+                        },
+                        {
+                          "key": "details_roller",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "dice",
+                          "value": "Show",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "<h2>💥${ref('name')}$</h2>\n<table>\n<tr><td colspan=\"2\"><strong>Cost:</strong> ${ref('cost')}$</td></tr>\n<tr><td colspan=\"2\"><strong>Target:</strong> ${ref('skill_target')}$</td></tr>\n<tr><td colspan=\"2\"><strong>Duration:</strong> ${ref('duration')}$</td></tr>\n<tr>\n<td colspan=\"2\">${ref('description')}$</td>\n</tr>\n</table>",
+                          "altRollMessage": "",
+                          "rollMessageToChat": false,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        }
+                      ],
+                      "flow": "grid-2",
+                      "align": "center",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "skill_information_panel",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": "0",
+                      "editRole": 0,
+                      "permission": "0",
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "skill_information",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "sheet"
+                        }
+                      ],
+                      "flow": "vertical",
+                      "align": "left",
+                      "collapsible": true,
+                      "defaultCollapsed": false,
+                      "title": "Skill Information",
+                      "titleStyle": "default"
+                    }
+                  ],
+                  "flow": "vertical",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": false,
+                  "title": "",
+                  "titleStyle": "default"
+                },
+                {
+                  "key": "",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": "0",
+                  "editRole": 0,
+                  "permission": "0",
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": "0",
+                      "editRole": 0,
+                      "permission": "0",
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "use_optional_params",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "checkbox",
+                          "size": "full-size",
+                          "label": "Use Optional Parameter",
+                          "defaultChecked": false
+                        },
+                        {
+                          "key": "optional_params",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "use_optional_params",
+                          "type": "dynamicTable",
+                          "contents": [],
+                          "rowLayout": [
+                            {
+                              "key": "key",
+                              "colSpan": 1,
+                              "rowSpan": 1,
+                              "cssClass": "",
+                              "role": "0",
+                              "editRole": 0,
+                              "permission": "0",
+                              "tooltip": "",
+                              "visibilityFormula": "",
+                              "type": "textField",
+                              "size": "full-size",
+                              "label": "",
+                              "defaultValue": "",
+                              "charList": "",
+                              "autocomplete": "",
+                              "align": "left",
+                              "colName": "Key",
+                              "readonlyPredefined": false
+                            },
+                            {
+                              "key": "value",
+                              "colSpan": 1,
+                              "rowSpan": 1,
+                              "cssClass": "",
+                              "role": "0",
+                              "editRole": 0,
+                              "permission": "0",
+                              "tooltip": "",
+                              "visibilityFormula": "",
+                              "type": "textField",
+                              "size": "full-size",
+                              "label": "",
+                              "defaultValue": "",
+                              "charList": "",
+                              "autocomplete": "",
+                              "align": "left",
+                              "colName": "Value",
+                              "readonlyPredefined": false
+                            }
+                          ],
+                          "head": true,
+                          "deleteWarning": true,
+                          "predefinedLines": [],
+                          "canPlayerAdd": true,
+                          "hiddenColumns": [],
+                          "sortOption": "disabled",
+                          "sortPredicates": []
+                        },
+                        {
+                          "key": "skill_effect",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "4",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "activeEffectContainer",
+                          "contents": [],
+                          "rowLayout": [],
+                          "head": true,
+                          "deleteWarning": false,
+                          "title": "",
+                          "hideEmpty": false,
+                          "headDisplay": true,
+                          "showDelete": true,
+                          "staticRowLayout": {
+                            "active": {
+                              "enabled": true,
+                              "colName": "Active",
+                              "align": "left",
+                              "sort": 1
+                            },
+                            "name": {
+                              "enabled": true,
+                              "colName": "Name",
+                              "align": "center",
+                              "sort": 2
+                            },
+                            "origin": {
+                              "enabled": true,
+                              "colName": "Origin",
+                              "align": "center",
+                              "sort": 3
+                            },
+                            "description": {
+                              "enabled": true,
+                              "colName": "Description",
+                              "align": "left",
+                              "sort": 4,
+                              "format": "full"
+                            },
+                            "count": {
+                              "enabled": false,
+                              "colName": "Count",
+                              "align": "center",
+                              "sort": 5,
+                              "readonly": false
+                            }
+                          },
+                          "showCreateButton": true,
+                          "sortOption": "disabled",
+                          "showOnlyOwnEffects": false,
+                          "suggestExistingEffects": false,
+                          "filterTags": []
+                        },
+                        {
+                          "key": "active_effect_config_panel",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 4,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "panel",
+                          "contents": [
+                            {
+                              "key": "active_effect_config_table",
+                              "colSpan": 1,
+                              "rowSpan": 1,
+                              "cssClass": "",
+                              "role": 0,
+                              "editRole": 0,
+                              "permission": 0,
+                              "tooltip": "",
+                              "visibilityFormula": "",
+                              "type": "dynamicTable",
+                              "contents": [],
+                              "rowLayout": [
+                                {
+                                  "key": "active_effect_id",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "Insert your Active Effect Name or ID",
+                                  "visibilityFormula": "",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "",
+                                  "selectedOptionType": "formula",
+                                  "options": [],
+                                  "formulaKeyOptions": "${%{return entity.entity.effects.map((e, k) => e.id)}%}$",
+                                  "formulaLabelOptions": "${%{return entity.entity.effects.map((e, k) => e.name)}%}$",
+                                  "align": "left",
+                                  "colName": "ID",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_application",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "add",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "add",
+                                      "value": "Add"
+                                    },
+                                    {
+                                      "key": "remove",
+                                      "value": "Remove"
+                                    }
+                                  ],
+                                  "align": "left",
+                                  "colName": "Application",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_apply_mode",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "percentage",
+                                      "value": "Percentage"
+                                    },
+                                    {
+                                      "key": "opposed_check",
+                                      "value": "Opposed Check"
+                                    },
+                                    {
+                                      "key": "target_check",
+                                      "value": "Target vs DL"
+                                    },
+                                    {
+                                      "key": "owner_check",
+                                      "value": "Owner vs DL"
+                                    },
+                                    {
+                                      "key": "conquer",
+                                      "value": "Conquer"
+                                    }
+                                  ],
+                                  "align": "left",
+                                  "colName": "Mode",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_target",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "enemy",
+                                      "value": "Enemy"
+                                    },
+                                    {
+                                      "key": "ally",
+                                      "value": "Ally"
+                                    },
+                                    {
+                                      "key": "any",
+                                      "value": "Any"
+                                    },
+                                    {
+                                      "key": "self",
+                                      "value": "Self"
+                                    }
+                                  ],
+                                  "align": "left",
+                                  "colName": "Target",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_trigger",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "on_hit",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "on_hit",
+                                      "value": "On Hit"
+                                    },
+                                    {
+                                      "key": "on_attack",
+                                      "value": "On Attack"
+                                    },
+                                    {
+                                      "key": "before_attack",
+                                      "value": "Before Attack"
+                                    }
+                                  ],
+                                  "align": "left",
+                                  "colName": "Trigger",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_percent",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "% to apply this effect",
+                                  "visibilityFormula": "equalText(sameRow(\"active_effect_apply_mode\",''), \"percentage\")",
+                                  "type": "numberField",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "0",
+                                  "allowDecimal": false,
+                                  "minVal": "0",
+                                  "maxVal": "100",
+                                  "allowRelative": false,
+                                  "showControls": false,
+                                  "controlsStyle": "hover",
+                                  "controlsCustomIncrements": "",
+                                  "inputStyle": "text",
+                                  "align": "left",
+                                  "colName": "%",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_dice_1",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "or(or(equalText(sameRow(\"active_effect_apply_mode\",''), \"opposed_check\"), equalText(sameRow(\"active_effect_apply_mode\",''), \"owner_check\")), equalText(sameRow(\"active_effect_apply_mode\",''), \"target_check\"))",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "dex",
+                                      "value": "DEX"
+                                    },
+                                    {
+                                      "key": "mig",
+                                      "value": "MIG"
+                                    },
+                                    {
+                                      "key": "ins",
+                                      "value": "INS"
+                                    },
+                                    {
+                                      "key": "wlp",
+                                      "value": "WLP"
+                                    }
+                                  ],
+                                  "align": "center",
+                                  "colName": "🎲",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_dice_2",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "or(or(equalText(sameRow(\"active_effect_apply_mode\",''), \"opposed_check\"), equalText(sameRow(\"active_effect_apply_mode\",''), \"owner_check\")), equalText(sameRow(\"active_effect_apply_mode\",''), \"target_check\"))",
+                                  "type": "select",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "",
+                                  "selectedOptionType": "custom",
+                                  "options": [
+                                    {
+                                      "key": "dex",
+                                      "value": "DEX"
+                                    },
+                                    {
+                                      "key": "mig",
+                                      "value": "MIG"
+                                    },
+                                    {
+                                      "key": "ins",
+                                      "value": "INS"
+                                    },
+                                    {
+                                      "key": "wlp",
+                                      "value": "WLP"
+                                    }
+                                  ],
+                                  "align": "center",
+                                  "colName": "🎲",
+                                  "readonlyPredefined": false
+                                },
+                                {
+                                  "key": "active_effect_dl",
+                                  "colSpan": 1,
+                                  "rowSpan": 1,
+                                  "cssClass": "",
+                                  "role": 0,
+                                  "editRole": 0,
+                                  "permission": 0,
+                                  "tooltip": "",
+                                  "visibilityFormula": "switchCase(sameRow(\"active_effect_apply_mode\", ''), 'target_check', true, 'owner_check', true, 'conquer', true, false)",
+                                  "type": "numberField",
+                                  "size": "full-size",
+                                  "label": "",
+                                  "defaultValue": "0",
+                                  "allowDecimal": false,
+                                  "minVal": "0",
+                                  "maxVal": "9999",
+                                  "allowRelative": false,
+                                  "showControls": false,
+                                  "controlsStyle": "hover",
+                                  "controlsCustomIncrements": "",
+                                  "inputStyle": "text",
+                                  "align": "center",
+                                  "colName": "DL",
+                                  "readonlyPredefined": false
+                                }
+                              ],
+                              "head": true,
+                              "deleteWarning": false,
+                              "predefinedLines": [],
+                              "canPlayerAdd": true,
+                              "hiddenColumns": [],
+                              "sortOption": "manual",
+                              "sortPredicates": []
+                            }
+                          ],
+                          "flow": "vertical",
+                          "align": "center",
+                          "collapsible": false,
+                          "defaultCollapsed": false,
+                          "title": "",
+                          "titleStyle": "default"
+                        }
+                      ],
+                      "flow": "vertical",
+                      "align": "left",
+                      "collapsible": true,
+                      "defaultCollapsed": false,
+                      "title": "Active Effect",
+                      "titleStyle": "default"
+                    }
+                  ],
+                  "flow": "vertical",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": false,
+                  "title": "",
+                  "titleStyle": "default"
+                },
+                {
+                  "key": "reaction_config_panel",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": 0,
+                  "editRole": 0,
+                  "permission": 0,
+                  "tooltip": "",
+                  "visibilityFormula": "isReaction",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "",
+                          "value": "Reaction Config",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        }
+                      ],
+                      "flow": "vertical",
+                      "align": "left",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "reaction_config_table",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "dynamicTable",
+                      "contents": [],
+                      "rowLayout": [
+                        {
+                          "key": "reaction_trigger",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "conflict_start",
+                              "value": "At the start of conflict"
+                            },
+                            {
+                              "key": "round_start",
+                              "value": "At the start of the Round"
+                            },
+                            {
+                              "key": "round_end",
+                              "value": "At the end of the Round"
+                            },
+                            {
+                              "key": "turn_start",
+                              "value": "At the start of a turn"
+                            },
+                            {
+                              "key": "turn_end",
+                              "value": "At the end of a turn"
+                            },
+                            {
+                              "key": "creature_performs_check",
+                              "value": "When a creature performs a Check"
+                            },
+                            {
+                              "key": "creature_performs_action",
+                              "value": "When a creature performs an Action"
+                            },
+                            {
+                              "key": "creature_targeted_by_action",
+                              "value": "When a creature gets targeted by an action"
+                            },
+                            {
+                              "key": "creature_fumbles_check",
+                              "value": "When a creature fumbles a Check"
+                            },
+                            {
+                              "key": "creature_check_outcome_flipped",
+                              "value": "When a creature changes the outcome of a check"
+                            },
+                            {
+                              "key": "creature_hit_by_action",
+                              "value": "When a creature gets hit by an action"
+                            },
+                            {
+                              "key": "creature_critical_hit",
+                              "value": "When a creature scores a Critical Hit"
+                            },
+                            {
+                              "key": "creature_miss_action",
+                              "value": "When a creature misses an Action"
+                            },
+                            {
+                              "key": "creature_deals_damage",
+                              "value": "When a creature deals damage"
+                            },
+                            {
+                              "key": "creature_takes_damage",
+                              "value": "When a creature takes damage"
+                            },
+                            {
+                              "key": "creature_takes_vulnerable_damage",
+                              "value": "When a creature takes Vulnerable damage"
+                            },
+                            {
+                              "key": "creature_takes_weak_damage",
+                              "value": "When a creature takes Weak damage"
+                            },
+                            {
+                              "key": "creature_resists_damage",
+                              "value": "When a creature Resists damage"
+                            },
+                            {
+                              "key": "creature_absorbs_damage",
+                              "value": "When a creature Absorbs damage"
+                            },
+                            {
+                              "key": "creature_immune_damage",
+                              "value": "When a creature is Immune to damage"
+                            },
+                            {
+                              "key": "creature_shield_break",
+                              "value": "When a creature's Shield breaks"
+                            },
+                            {
+                              "key": "creature_recovers_hp",
+                              "value": "When a creature recovers HP"
+                            },
+                            {
+                              "key": "creature_lose_mp",
+                              "value": "When a creature loses MP"
+                            },
+                            {
+                              "key": "creature_recovers_mp",
+                              "value": "When a creature recovers MP"
+                            },
+                            {
+                              "key": "creature_status_applied",
+                              "value": "When a creature gains a Status Effect"
+                            },
+                            {
+                              "key": "creature_enter_crisis",
+                              "value": "When a creature enters Crisis"
+                            },
+                            {
+                              "key": "creature_exit_crisis",
+                              "value": "When a creature recovers from Crisis"
+                            },
+                            {
+                              "key": "creature_defeated",
+                              "value": "When a creature is reduced to 0 HP"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Trigger",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_source",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            },
+                            {
+                              "key": "ally",
+                              "value": "Ally"
+                            },
+                            {
+                              "key": "enemy",
+                              "value": "Enemy"
+                            },
+                            {
+                              "key": "neutral",
+                              "value": "Neutral"
+                            },
+                            {
+                              "key": "all",
+                              "value": "All"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Source",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_damage_type",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "or(or(or(or(or(or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"creature_targeted_by_action\"), equalText(sameRow(\"reaction_trigger\",''), \"creature_hit_by_action\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_deals_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_vulnerable_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_weak_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_resists_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_absorbs_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_immune_damage\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_shield_break\"))",
+                          "type": "select",
+                          "size": "m-large",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "physical",
+                              "value": "Physical"
+                            },
+                            {
+                              "key": "air",
+                              "value": "Air"
+                            },
+                            {
+                              "key": "bolt",
+                              "value": "Bolt"
+                            },
+                            {
+                              "key": "dark",
+                              "value": "Dark"
+                            },
+                            {
+                              "key": "earth",
+                              "value": "Earth"
+                            },
+                            {
+                              "key": "fire",
+                              "value": "Fire"
+                            },
+                            {
+                              "key": "ice",
+                              "value": "Ice"
+                            },
+                            {
+                              "key": "light",
+                              "value": "Light"
+                            },
+                            {
+                              "key": "poison",
+                              "value": "Poison"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Damage Type",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_damage_amount",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "or(equalText(sameRow(\"reaction_trigger\",''), \"creature_deals_damage\"), equalText(sameRow(\"reaction_trigger\",''), \"creature_takes_damage\"))",
+                          "type": "numberField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "allowDecimal": false,
+                          "minVal": "",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text",
+                          "align": "left",
+                          "colName": "Damage Amount",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_debuff_count_target",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Whose tokens to scan for debuffs (relative to the reactor). Leave blank to disable.",
+                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "",
+                              "value": "—"
+                            },
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            },
+                            {
+                              "key": "ally",
+                              "value": "Ally"
+                            },
+                            {
+                              "key": "enemy",
+                              "value": "Enemy"
+                            },
+                            {
+                              "key": "all",
+                              "value": "All"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Debuff Group",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_debuff_count_min",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Minimum total debuffs across the chosen group (blank = filter off)",
+                          "visibilityFormula": "or(or(or(or(equalText(sameRow(\"reaction_trigger\",''), \"turn_start\"), equalText(sameRow(\"reaction_trigger\",''), \"turn_end\")), equalText(sameRow(\"reaction_trigger\",''), \"round_start\")), equalText(sameRow(\"reaction_trigger\",''), \"round_end\")), equalText(sameRow(\"reaction_trigger\",''), \"creature_status_applied\"))",
+                          "type": "numberField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "allowDecimal": false,
+                          "minVal": "0",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text",
+                          "align": "left",
+                          "colName": "Min Debuffs",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_effect_ref",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Pick an effect (by label) from the Effects table below to fire when this trigger matches. Leave blank to fire only the chosen reaction skill itself.",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "formula",
+                          "options": [],
+                          "formulaKeyOptions": "${%{const t=entity.entity.system.props.reaction_effect_table; const rows=t==null?[]:(Array.isArray(t)?t:Object.values(t)); return [''].concat(rows.map(r=>r&&r.effect_label).filter(s=>typeof s==='string'&&s.length>0));}%}$",
+                          "formulaLabelOptions": "${%{const t=entity.entity.system.props.reaction_effect_table; const rows=t==null?[]:(Array.isArray(t)?t:Object.values(t)); return ['—'].concat(rows.map(r=>r&&r.effect_label).filter(s=>typeof s==='string'&&s.length>0));}%}$",
+                          "align": "left",
+                          "colName": "Effect",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_isPassive",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Check to auto trigger when condition is met",
+                          "visibilityFormula": "",
+                          "type": "checkbox",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultChecked": false,
+                          "align": "left",
+                          "colName": "Passive",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "reaction_passive_target",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "The target of passive effects",
+                          "visibilityFormula": "sameRow(\"reaction_isPassive\")",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "🎯",
+                          "readonlyPredefined": false
+                        }
+                      ],
+                      "head": true,
+                      "deleteWarning": true,
+                      "predefinedLines": [
+                        {
+                          "$deleted": true,
+                          "reaction_trigger": "",
+                          "$predefinedIdx": 0,
+                          "$deletionDisabled": false
+                        }
+                      ],
+                      "canPlayerAdd": true,
+                      "hiddenColumns": [],
+                      "sortOption": "manual",
+                      "sortPredicates": []
+                    },
+                    {
+                      "key": "reaction_effect_table",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "Effects fired by trigger rows that reference an entry here by label. Each row defines one effect.",
+                      "visibilityFormula": "",
+                      "type": "dynamicTable",
+                      "contents": [],
+                      "rowLayout": [
+                        {
+                          "key": "effect_label",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Unique label for this effect. The trigger table's Effect column lists these.",
+                          "visibilityFormula": "",
+                          "type": "textField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "align": "left",
+                          "colName": "Label",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "effect_kind",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "What kind of effect this row produces.",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "grant",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "grant",
+                              "value": "Grant Resource"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Kind",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "grant_resource",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Resource to grant. Leave blank to disable this effect.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"grant\")",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "",
+                              "value": "—"
+                            },
+                            {
+                              "key": "hp",
+                              "value": "HP"
+                            },
+                            {
+                              "key": "mp",
+                              "value": "MP"
+                            },
+                            {
+                              "key": "ip",
+                              "value": "IP"
+                            },
+                            {
+                              "key": "zero_power",
+                              "value": "Zero Power"
+                            },
+                            {
+                              "key": "zenit",
+                              "value": "Zenit"
+                            },
+                            {
+                              "key": "enmity",
+                              "value": "Enmity"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Resource",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "grant_amount",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Amount to grant. Negative values drain. Empty or 0 disables this effect.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"grant\")",
+                          "type": "numberField",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "allowDecimal": false,
+                          "minVal": "",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text",
+                          "align": "left",
+                          "colName": "Amount",
+                          "readonlyPredefined": false
+                        },
+                        {
+                          "key": "grant_target",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Who receives the grant (relative to the reactor). Default: self. Ally includes the reactor.",
+                          "visibilityFormula": "equalText(sameRow(\"effect_kind\",''), \"grant\")",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "self",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "self",
+                              "value": "Self"
+                            },
+                            {
+                              "key": "ally",
+                              "value": "Ally"
+                            },
+                            {
+                              "key": "enemy",
+                              "value": "Enemy"
+                            },
+                            {
+                              "key": "all",
+                              "value": "All"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Recipient",
+                          "readonlyPredefined": false
+                        }
+                      ],
+                      "head": true,
+                      "deleteWarning": true,
+                      "predefinedLines": [
+                        {
+                          "$deleted": true,
+                          "effect_label": "",
+                          "$predefinedIdx": 0,
+                          "$deletionDisabled": false
+                        }
+                      ],
+                      "canPlayerAdd": true,
+                      "hiddenColumns": [],
+                      "sortOption": "manual",
+                      "sortPredicates": []
+                    }
+                  ],
+                  "flow": "vertical",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": false,
+                  "title": "",
+                  "titleStyle": "default"
+                },
+                {
+                  "key": "",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": 0,
+                  "editRole": 0,
+                  "permission": 0,
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "table",
+                  "contents": [
+                    [
+                      {
+                        "key": "isCheck",
+                        "colSpan": 1,
+                        "rowSpan": 1,
+                        "cssClass": "",
+                        "role": 0,
+                        "editRole": 0,
+                        "permission": 0,
+                        "tooltip": "",
+                        "visibilityFormula": "",
+                        "type": "checkbox",
+                        "size": "full-size",
+                        "label": "❓Is Check",
+                        "defaultChecked": false
+                      },
+                      {
+                        "key": "isReaction",
+                        "colSpan": 1,
+                        "rowSpan": 1,
+                        "cssClass": "",
+                        "role": "0",
+                        "editRole": 0,
+                        "permission": "0",
+                        "tooltip": "",
+                        "visibilityFormula": "",
+                        "type": "checkbox",
+                        "size": "full-size",
+                        "label": "🍃Reaction",
+                        "defaultChecked": false
+                      },
+                      {
+                        "key": "isFacet",
+                        "colSpan": 1,
+                        "rowSpan": 1,
+                        "cssClass": "",
+                        "role": 0,
+                        "editRole": 0,
+                        "permission": 0,
+                        "tooltip": "Is this skill a Heroic Skill",
+                        "visibilityFormula": "or(equalText(skill_type, 'Active'), equalText(skill_type, 'Passive'))",
+                        "type": "checkbox",
+                        "size": "full-size",
+                        "label": "💎Facet",
+                        "defaultChecked": false
+                      },
+                      {
+                        "key": "isHeroic",
+                        "colSpan": 1,
+                        "rowSpan": 1,
+                        "cssClass": "",
+                        "role": 0,
+                        "editRole": 0,
+                        "permission": 0,
+                        "tooltip": "Is this skill a Heroic Skill",
+                        "visibilityFormula": "switchCase(skill_type, 'Active', true, 'Passive', true, 'Other', true, 'Spell', true, false)",
+                        "type": "checkbox",
+                        "size": "full-size",
+                        "label": "🔱Heroic",
+                        "defaultChecked": false
+                      },
+                      {
+                        "key": "isZeroPower",
+                        "colSpan": 1,
+                        "rowSpan": 1,
+                        "cssClass": "",
+                        "role": 0,
+                        "editRole": 0,
+                        "permission": 0,
+                        "tooltip": "Is this skill a Zero Power",
+                        "visibilityFormula": "switchCase(skill_type, 'Active', true, 'Passive', true, 'Other', true, 'Spell', true, false)",
+                        "type": "checkbox",
+                        "size": "full-size",
+                        "label": "💥Zero Power",
+                        "defaultChecked": false
+                      },
+                      null
+                    ],
+                    [
+                      null
+                    ]
+                  ],
+                  "cols": 5,
+                  "rows": 1,
+                  "layout": ""
+                }
+              ],
+              "name": "📜"
+            },
+            {
+              "key": "animation",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": "4",
+              "editRole": 0,
+              "permission": "0",
+              "tooltip": "Animation Setting",
+              "visibilityFormula": "",
+              "type": "tab",
+              "contents": [
+                {
+                  "key": "animation_panel",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": "0",
+                  "editRole": 0,
+                  "permission": "0",
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": "0",
+                      "editRole": 0,
+                      "permission": "0",
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "skill_animation_mode",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "default",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "default",
+                              "value": "Default"
+                            },
+                            {
+                              "key": "custom",
+                              "value": "Custom"
+                            }
+                          ]
+                        },
+                        {
+                          "key": "skill_animation_default",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": "0",
+                          "editRole": 0,
+                          "permission": "0",
+                          "tooltip": "",
+                          "visibilityFormula": "equalText(skill_animation_mode, \"default\")",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "Animation",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "sword",
+                              "value": "Sword"
+                            }
+                          ]
+                        }
+                      ],
+                      "flow": "grid-2",
+                      "align": "left",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "equalText(skill_animation_mode, \"custom\")",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "",
+                          "value": "Animation Script",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "animation_script",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Insert your Sequencer animation here",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "icon"
+                        }
+                      ],
+                      "flow": "horizontal",
+                      "align": "left",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "full-size",
+                          "icon": "",
+                          "value": "Damage Timing",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "animation_damage_timing_options",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "default",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "default",
+                              "value": "Default"
+                            },
+                            {
+                              "key": "offset",
+                              "value": "Use Offset"
+                            }
+                          ]
+                        },
+                        {
+                          "key": "animation_damage_timing_offset",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "equalText(animation_damage_timing_options, \"offset\")",
+                          "type": "numberField",
+                          "size": "medium",
+                          "label": "Timing Offset (ms)",
+                          "defaultValue": "0",
+                          "allowDecimal": false,
+                          "minVal": "",
+                          "maxVal": "",
+                          "allowRelative": false,
+                          "showControls": false,
+                          "controlsStyle": "hover",
+                          "controlsCustomIncrements": "",
+                          "inputStyle": "text"
+                        }
+                      ],
+                      "flow": "vertical",
+                      "align": "left",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    }
+                  ],
+                  "flow": "vertical",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": false,
+                  "title": "",
+                  "titleStyle": "default"
+                }
+              ],
+              "name": "🎬"
+            },
+            {
+              "key": "custom_logic_tab",
+              "colSpan": 1,
+              "rowSpan": 1,
+              "cssClass": "",
+              "role": 4,
+              "editRole": 0,
+              "permission": 0,
+              "tooltip": "Custom Logic",
+              "visibilityFormula": "",
+              "type": "tab",
+              "contents": [
+                {
+                  "key": "custom_logic_panel",
+                  "colSpan": 1,
+                  "rowSpan": 1,
+                  "cssClass": "item-type-css",
+                  "role": 0,
+                  "editRole": 0,
+                  "permission": 0,
+                  "tooltip": "",
+                  "visibilityFormula": "",
+                  "type": "panel",
+                  "contents": [
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "large",
+                      "icon": "",
+                      "value": "Custom Logic",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "title"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "large",
+                          "icon": "",
+                          "value": "Action",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "custom_logic_action",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "icon"
+                        }
+                      ],
+                      "flow": "horizontal",
+                      "align": "center",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "large",
+                          "icon": "",
+                          "value": "Resolution",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "custom_logic_resolution",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "icon"
+                        }
+                      ],
+                      "flow": "horizontal",
+                      "align": "center",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "full-size",
+                      "icon": "",
+                      "value": "",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "label"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "label",
+                      "size": "large",
+                      "icon": "",
+                      "value": "Passive Logic",
+                      "prefix": "",
+                      "suffix": "",
+                      "rollMessage": "",
+                      "altRollMessage": "",
+                      "rollMessageToChat": true,
+                      "altRollMessageToChat": true,
+                      "style": "title"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "large",
+                          "icon": "",
+                          "value": "Passive Action",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "passive_logic_action",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "icon"
+                        }
+                      ],
+                      "flow": "horizontal",
+                      "align": "center",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    },
+                    {
+                      "key": "",
+                      "colSpan": 1,
+                      "rowSpan": 1,
+                      "cssClass": "item-type-css",
+                      "role": 0,
+                      "editRole": 0,
+                      "permission": 0,
+                      "tooltip": "",
+                      "visibilityFormula": "",
+                      "type": "panel",
+                      "contents": [
+                        {
+                          "key": "",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "label",
+                          "size": "large",
+                          "icon": "",
+                          "value": "Passive Resolution",
+                          "prefix": "",
+                          "suffix": "",
+                          "rollMessage": "",
+                          "altRollMessage": "",
+                          "rollMessageToChat": true,
+                          "altRollMessageToChat": true,
+                          "style": "title"
+                        },
+                        {
+                          "key": "passive_logic_resolution",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "",
+                          "visibilityFormula": "",
+                          "type": "textArea",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "style": "icon"
+                        }
+                      ],
+                      "flow": "horizontal",
+                      "align": "center",
+                      "collapsible": false,
+                      "defaultCollapsed": false,
+                      "title": "",
+                      "titleStyle": "default"
+                    }
+                  ],
+                  "flow": "vertical",
+                  "align": "center",
+                  "collapsible": false,
+                  "defaultCollapsed": false,
+                  "title": "",
+                  "titleStyle": "default"
+                }
+              ],
+              "name": "🌐"
+            }
+          ]
+        }
+      ],
+      "key": "custom_body",
+      "cssClass": null,
+      "role": 0,
+      "permission": 0,
+      "tooltip": null,
+      "flow": "vertical",
+      "align": "",
+      "type": "panel",
+      "visibilityFormula": "",
+      "collapsible": false,
+      "defaultCollapsed": true,
+      "title": "",
+      "titleStyle": "default",
+      "colSpan": 1,
+      "rowSpan": 1,
+      "editRole": 0
+    },
+    "display": {
+      "width": "600",
+      "height": "600",
+      "fix_size": false,
+      "pp_width": "64",
+      "pp_height": "64"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "props": {
+      "name": "Agony",
+      "level": "1",
+      "max_level": "5",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "check_bonus": "0",
+      "damage_bonus": "",
+      "isCheck": false,
+      "isHeroic": false,
+      "isFacet": false,
+      "use_optional_params": false,
+      "optional_params": {},
+      "class": "Darkblade",
+      "skill_type": "Passive",
+      "cost": "",
+      "skill_target": "",
+      "duration": "",
+      "heroic_requirement": "",
+      "type_damage": "",
+      "description": "<p>Once per turn, after you deal damage to one or more creatures, if you have a <strong>Bond</strong> towards at least one of those creatures, you may recover <strong>【SL × 2】</strong> Hit Points and <strong>【SL × 2】</strong> Mind Points.</p>",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP and MP recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>6</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>8</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>10</strong></p></td></tr></tbody></table>",
+      "isOffensiveSpell": true,
+      "skill_range": "",
+      "skill_animation_mode": "default",
+      "ignore_hr": false,
+      "active_effect_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_trigger": "creature_deals_damage",
+          "reaction_source": "self",
+          "reaction_damage_type": "",
+          "reaction_damage_amount": "",
+          "reaction_isPassive": true,
+          "reaction_passive_target": "self"
+        }
+      },
+      "defense_target_type": "def",
+      "isReaction": true,
+      "isZeroPower": false,
+      "skill_animation_default": "",
+      "animation_damage_timing_options": "default",
+      "animation_damage_timing_offset": "0",
+      "passive_logic_resolution": "<p>async function Agony_Main() {</p><p>const MODULE_ID = \"fabula-ultima-companion\";</p><p>const TAG = \"[PASSIVE-RES][AGONY]\";</p><p>const FLAG_KEY = \"agonyOncePerTurn\";</p><p>const p =</p><p>(typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD :</p><p>(typeof payload !== \"undefined\" &amp;&amp; payload) ? payload :</p><p>{};</p><p>const argsObj =</p><p>(typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS) ? __ARGS :</p><p>(typeof args !== \"undefined\" &amp;&amp; args) ? args :</p><p>{};</p><p>const globalTargets =</p><p>(typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS :</p><p>(typeof targets !== \"undefined\" &amp;&amp; Array.isArray(targets)) ? targets :</p><p>[];</p><p>const chatMessage =</p><p>(typeof __CHAT_MSG !== \"undefined\" &amp;&amp; __CHAT_MSG) ? __CHAT_MSG :</p><p>null;</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const log = (...a) =&gt; console.log(TAG, ...a);</p><p>const warn = (...a) =&gt; console.warn(TAG, ...a);</p><p>const str = (v, d = \"\") =&gt; {</p><p>const s = String(v ?? \"\").trim();</p><p>return s.length ? s : d;</p><p>};</p><p>const norm = (v) =&gt; str(v).replace(/\\s+/g, \" \").toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const uniq = (arr) =&gt; Array.from(</p><p>new Set(asArray(arr).filter(v =&gt; v != null &amp;&amp; str(v) !== \"\").map(v =&gt; str(v)))</p><p>);</p><p>const num = (v, d = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : d;</p><p>};</p><p>const optNum = (v) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : null;</p><p>};</p><p>const clone = (obj, fallback = {}) =&gt; {</p><p>try {</p><p>return foundry?.utils?.deepClone</p><p>? foundry.utils.deepClone(obj ?? fallback)</p><p>: JSON.parse(JSON.stringify(obj ?? fallback));</p><p>} catch {</p><p>if (Array.isArray(obj)) return [...obj];</p><p>if (obj &amp;&amp; typeof obj === \"object\") return { ...obj };</p><p>return fallback;</p><p>}</p><p>};</p><p>function markSilent() {</p><p>p.meta = p.meta || {};</p><p>p.meta.hidePassiveCard = true;</p><p>p.meta.suppressPassiveCardUI = true;</p><p>p.meta.agonySilent = true;</p><p>}</p><p>function markVisible() {</p><p>p.meta = p.meta || {};</p><p>p.meta.hidePassiveCard = false;</p><p>p.meta.suppressPassiveCardUI = false;</p><p>p.meta.agonySilent = false;</p><p>}</p><p>function skip(reason = \"\", data = {}) {</p><p>markSilent();</p><p>if (reason) console.debug(TAG, \"skip:\", reason, data);</p><p>return ctx.skipPassive</p><p>? ctx.skipPassive(reason, { notify: false })</p><p>: { ok: false, skipped: true, reason, ...data };</p><p>}</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>function tokenFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\") return doc.object ?? doc;</p><p>if (doc.documentName === \"TokenDocument\") return doc.object ?? doc;</p><p>if (doc.object?.documentName === \"Token\") return doc.object;</p><p>if (doc.document?.documentName === \"Token\") return doc.document.object ?? doc.document;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>function collectionValues(collection) {</p><p>if (!collection) return [];</p><p>if (Array.isArray(collection)) return collection;</p><p>if (collection instanceof Map) return Array.from(collection.values());</p><p>if (typeof collection.values === \"function\") return Array.from(collection.values());</p><p>if (typeof collection === \"object\") return Object.values(collection);</p><p>return [];</p><p>}</p><p>function sameActor(a, b) {</p><p>if (!a || !b) return false;</p><p>if (a.uuid &amp;&amp; b.uuid &amp;&amp; a.uuid === b.uuid) return true;</p><p>if (a.id &amp;&amp; b.id &amp;&amp; a.id === b.id) return true;</p><p>return !!norm(a.name) &amp;&amp; norm(a.name) === norm(b.name);</p><p>}</p><p>async function resolveOwnerToken(owner, phase = {}) {</p><p>const refs = uniq([</p><p>phase?.sourceTokenUuid,</p><p>phase?.attackerUuid,</p><p>phase?.sourceUuid,</p><p>phase?.subjectTokenUuid,</p><p>p?.meta?.attackerUuid,</p><p>p?.attackerUuid</p><p>]);</p><p>for (const ref of refs) {</p><p>const doc = await resolveDoc(ref);</p><p>const tok = tokenFromDoc(doc);</p><p>if (tok?.actor &amp;&amp; sameActor(tok.actor, owner)) return tok;</p><p>}</p><p>try {</p><p>const active =</p><p>owner?.getActiveTokens?.(true, true)?.[0] ??</p><p>owner?.getActiveTokens?.()?.[0] ??</p><p>null;</p><p>if (active) return active;</p><p>} catch {}</p><p>return null;</p><p>}</p><p>function getPhaseEvent() {</p><p>const key = str(</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>p?.meta?.reaction_trigger_key ??</p><p>\"\"</p><p>);</p><p>const byTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const phase =</p><p>byTrigger?.creature_deals_damage ??</p><p>(key &amp;&amp; byTrigger?.[key]) ??</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const trigger = str(</p><p>phase?.trigger ??</p><p>phase?.rawTrigger ??</p><p>key</p><p>);</p><p>return { key: trigger, phase };</p><p>}</p><p>async function resolveOwnerActor() {</p><p>let helperOwner = null;</p><p>try {</p><p>helperOwner = ctx.helpers?.getPassiveOwnerActor</p><p>? await ctx.helpers.getPassiveOwnerActor()</p><p>: null;</p><p>} catch {}</p><p>const globalPassiveActor =</p><p>(typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null;</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>helperOwner ??</p><p>globalPassiveActor ??</p><p>await resolveActor(</p><p>p?.meta?.passiveOwnerActorUuid ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>return owner ?? null;</p><p>}</p><p>async function resolvePassiveItem(owner) {</p><p>let helperItem = null;</p><p>try {</p><p>helperItem = ctx.helpers?.getPassiveItem</p><p>? await ctx.helpers.getPassiveItem()</p><p>: null;</p><p>} catch {}</p><p>const globalPassiveItem =</p><p>(typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null;</p><p>return (</p><p>ctx.passiveItem ??</p><p>helperItem ??</p><p>globalPassiveItem ??</p><p>collectionValues(owner?.items).find(i =&gt; norm(i?.name) === \"agony\") ??</p><p>null</p><p>);</p><p>}</p><p>function collectBondNames(actor) {</p><p>const P = actor?.system?.props ?? {};</p><p>const names = [];</p><p>for (let i = 1; i &lt;= 6; i++) {</p><p>names.push(P[\"bond_\" + i]);</p><p>}</p><p>names.push(</p><p>P.bond_temp,</p><p>P.temp_bond,</p><p>P.temporary_bond,</p><p>P.bond_temporary</p><p>);</p><p>return uniq(names).map(norm).filter(Boolean);</p><p>}</p><p>async function collectTargetNames(phase) {</p><p>const refs = uniq([</p><p>...asArray(phase?.targetActorUuid),</p><p>...asArray(phase?.targetActorUuids),</p><p>...asArray(phase?.targetActorUUIDs),</p><p>...asArray(phase?.targetUuid),</p><p>...asArray(phase?.targetTokenUuid),</p><p>...asArray(phase?.targetTokenUuids),</p><p>...asArray(phase?.targetUUIDs),</p><p>...asArray(phase?.targets),</p><p>...globalTargets,</p><p>...asArray(p?.originalTargetActorUUIDs),</p><p>...asArray(p?.meta?.originalTargetActorUUIDs),</p><p>...asArray(p?.originalTargetUUIDs),</p><p>...asArray(p?.meta?.originalTargetUUIDs)</p><p>]);</p><p>const names = [</p><p>...asArray(phase?.targetName),</p><p>...asArray(phase?.targetNames)</p><p>];</p><p>for (const ref of refs) {</p><p>const doc = await resolveDoc(ref);</p><p>const actor = actorFromDoc(doc);</p><p>if (actor?.name) names.push(actor.name);</p><p>if (doc?.name) names.push(doc.name);</p><p>}</p><p>return uniq(names).map(norm).filter(Boolean);</p><p>}</p><p>function sourceLooksLikeOwner(phase, owner) {</p><p>const ownerActorUuid = owner?.uuid ?? null;</p><p>const sourceActorUuid = str(</p><p>phase?.sourceActorUuid ??</p><p>phase?.attackerActorUuid ??</p><p>phase?.subjectActorUuid ??</p><p>phase?.actorUuid ??</p><p>\"\"</p><p>);</p><p>if (sourceActorUuid &amp;&amp; ownerActorUuid &amp;&amp; sourceActorUuid !== ownerActorUuid) return false;</p><p>return true;</p><p>}</p><p>function getEmitterApi() {</p><p>return (</p><p>globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ??</p><p>game.modules?.get(MODULE_ID)?.api?.fabulaInitiativeTurnEmitter ??</p><p>globalThis.FUCompanion?.api?.fabulaInitiative?.turnEmitter ??</p><p>game.modules?.get(MODULE_ID)?.api?.fabulaInitiative?.turnEmitter ??</p><p>null</p><p>);</p><p>}</p><p>function getFallbackTurnKey(owner) {</p><p>const combat = game.combat ?? null;</p><p>if (!combat) {</p><p>return [</p><p>\"agony-no-combat\",</p><p>canvas?.scene?.id ?? \"no-scene\",</p><p>owner?.uuid ?? \"no-owner\"</p><p>].join(\"::\");</p><p>}</p><p>const active =</p><p>combat.combatant ??</p><p>(Array.isArray(combat.turns) &amp;&amp; typeof combat.turn === \"number\" ? combat.turns[combat.turn] : null) ??</p><p>null;</p><p>return [</p><p>\"agony-fallback\",</p><p>combat.id ?? \"no-combat-id\",</p><p>\"round\", combat.round ?? 0,</p><p>\"turn\", combat.turn ?? \"no-turn\",</p><p>\"active\", active?.id ?? \"no-active\",</p><p>\"actor\", owner?.uuid ?? \"no-owner\"</p><p>].join(\"::\");</p><p>}</p><p>function getTurnKey(owner) {</p><p>const emitterApi = getEmitterApi();</p><p>try {</p><p>const emitterKey = emitterApi?.getTurnKey?.({</p><p>actor: owner,</p><p>actorUuid: owner?.uuid ?? null</p><p>});</p><p>if (emitterKey) return emitterKey;</p><p>} catch (e) {</p><p>warn(\"Emitter getTurnKey failed; using fallback.\", e);</p><p>}</p><p>return getFallbackTurnKey(owner);</p><p>}</p><p>function getEmitterSnapshot() {</p><p>const emitterApi = getEmitterApi();</p><p>try {</p><p>return emitterApi?.getState?.() ?? null;</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>function preventWrapperAdvanceDamage() {</p><p>argsObj.hasDamageSection = false;</p><p>argsObj.__agonyAppliedViaAdvanceDamage = true;</p><p>argsObj.advPayload = argsObj.advPayload || {};</p><p>argsObj.advPayload.baseValue = \"0\";</p><p>argsObj.advPayload.bonus = 0;</p><p>argsObj.advPayload.reduction = 0;</p><p>argsObj.advPayload.multiplier = 100;</p><p>p.meta = p.meta || {};</p><p>p.meta.hasDamageSection = false;</p><p>p.advPayload = p.advPayload || {};</p><p>p.advPayload.baseValue = \"0\";</p><p>p.advPayload.bonus = 0;</p><p>p.advPayload.reduction = 0;</p><p>p.advPayload.multiplier = 100;</p><p>}</p><p>async function broadcastAgonyPassiveCard(owner, ownerToken, passiveItem) {</p><p>const passiveApi =</p><p>globalThis.FUCompanion?.api?.passiveCard?.broadcast ??</p><p>game.modules?.get(MODULE_ID)?.api?.passiveCard?.broadcast ??</p><p>globalThis.FUCompanion?.api?.passiveCardBroadcast ??</p><p>game.modules?.get(MODULE_ID)?.api?.passiveCardBroadcast ??</p><p>null;</p><p>if (typeof passiveApi !== \"function\") {</p><p>warn(\"Passive card API missing; healing card still applied.\");</p><p>return false;</p><p>}</p><p>try {</p><p>await passiveApi({</p><p>title: \"Agony\",</p><p>attackerUuid: ownerToken?.document?.uuid ?? ownerToken?.uuid ?? owner?.uuid ?? null,</p><p>actionContext: p,</p><p>item: passiveItem ?? null,</p><p>options: {</p><p>executionMode: \"passive_resolution\",</p><p>source: \"Agony\"</p><p>}</p><p>});</p><p>log(\"Passive card broadcasted.\");</p><p>return true;</p><p>} catch (e) {</p><p>warn(\"Passive card broadcast failed.\", e);</p><p>return false;</p><p>}</p><p>}</p><p>async function applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType,</p><p>amount,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>}) {</p><p>const ADV = game.macros.getName(\"AdvanceDamage\");</p><p>if (!ADV) throw new Error('Macro \"AdvanceDamage\" not found.');</p><p>const tokenId = ownerToken?.id ?? ownerToken?.document?.id ?? null;</p><p>if (!tokenId) throw new Error(\"Agony: owner token has no token id for AdvanceDamage.\");</p><p>const ownerTokenUuid = ownerToken?.document?.uuid ?? ownerToken?.uuid ?? owner?.uuid ?? null;</p><p>const damageBatchId = str(</p><p>p?.meta?.damageBatchId ??</p><p>p?.damageBatchId ??</p><p>argsObj?.damageBatchId ??</p><p>argsObj?.meta?.damageBatchId ??</p><p>\"\"</p><p>);</p><p>const isMP = resourceType === \"mp\";</p><p>const elementType = isMP ? \"mp\" : \"heal\";</p><p>const actionContext = clone(p, {});</p><p>actionContext.core = actionContext.core || {};</p><p>actionContext.meta = actionContext.meta || {};</p><p>actionContext.advPayload = actionContext.advPayload || {};</p><p>actionContext.core.skillName = \"Agony\";</p><p>actionContext.core.skillImg = passiveItem?.img ?? actionContext.core.skillImg ?? \"\";</p><p>actionContext.core.skillTypeRaw = \"Passive\";</p><p>actionContext.core.rawEffectHTML =</p><p>passiveItem?.system?.props?.description ??</p><p>actionContext.core.rawEffectHTML ??</p><p>\"\";</p><p>actionContext.meta.attackerName = owner?.name ?? \"Unknown\";</p><p>actionContext.meta.attackerUuid = ownerTokenUuid;</p><p>actionContext.meta.elementType = elementType;</p><p>actionContext.meta.declaresHealing = true;</p><p>actionContext.meta.hasDamageSection = true;</p><p>actionContext.meta.skillTypeRaw = \"Passive\";</p><p>actionContext.meta.listType = \"Passive\";</p><p>actionContext.meta.sourceType = \"Passive\";</p><p>actionContext.meta.baseValueStrForCard = String(amount);</p><p>actionContext.meta.hidePassiveCard = false;</p><p>actionContext.meta.suppressPassiveCardUI = false;</p><p>actionContext.advPayload.baseValue = \"+\" + amount;</p><p>actionContext.advPayload.bonus = 0;</p><p>actionContext.advPayload.reduction = 0;</p><p>actionContext.advPayload.multiplier = 100;</p><p>actionContext.advPayload.valueType = resourceType;</p><p>actionContext.advPayload.elementType = elementType;</p><p>actionContext.advPayload.weaponType = \"none_ef\";</p><p>actionContext.advPayload.targetAffinity = \"neutral\";</p><p>actionContext.advPayload.ignoreDamageReduction = true;</p><p>actionContext.advPayload.ignoreShield = true;</p><p>actionContext.advPayload.attackerName = owner?.name ?? \"Unknown\";</p><p>actionContext.advPayload.attackerUuid = ownerTokenUuid;</p><p>actionContext.advPayload.attackRange = \"Self\";</p><p>actionContext.advPayload.sourceType = \"Passive\";</p><p>const advPayload = {</p><p>damageBatchId,</p><p>targetIds: [tokenId],</p><p>baseValue: \"+\" + amount,</p><p>bonus: 0,</p><p>reduction: 0,</p><p>multiplier: 100,</p><p>valueType: resourceType,</p><p>elementType,</p><p>weaponType: \"none_ef\",</p><p>targetAffinity: \"neutral\",</p><p>ignoreDamageReduction: true,</p><p>ignoreShield: true,</p><p>attackerUuid: ownerTokenUuid,</p><p>attackerName: owner?.name ?? \"Unknown\",</p><p>attackRange: \"Self\",</p><p>sourceType: \"Passive\",</p><p>declaresHealing: true,</p><p>skillTypeRaw: \"Passive\",</p><p>skillTypeAlt: \"Passive\",</p><p>actionContext,</p><p>actionCardMsgId: chatMessage?.id ?? null,</p><p>agony: {</p><p>resourceType,</p><p>amount,</p><p>sourceTrigger: phase?.trigger ?? null</p><p>}</p><p>};</p><p>log(\"AdvanceDamage recovery begin.\", {</p><p>resourceType,</p><p>amount,</p><p>tokenId,</p><p>damageBatchId: damageBatchId || \"(none)\"</p><p>});</p><p>await ADV.execute({</p><p>__AUTO: true,</p><p>__PAYLOAD: advPayload</p><p>});</p><p>log(\"AdvanceDamage recovery done.\", {</p><p>resourceType,</p><p>amount</p><p>});</p><p>return true;</p><p>}</p><p>const alreadyGmBridge = !!(</p><p>globalThis.__AGONY_GM_BRIDGE ||</p><p>globalThis.__GLOBALS?.__AGONY_GM_BRIDGE ||</p><p>p?.meta?.__agonyGmBridge === true</p><p>);</p><p>if (!game.user?.isGM &amp;&amp; !alreadyGmBridge) {</p><p>const gmExecutor =</p><p>game.modules?.get(MODULE_ID)?.api?.GMExecutor ??</p><p>globalThis.FUCompanion?.api?.GMExecutor ??</p><p>null;</p><p>if (!gmExecutor?.executeSnippet) {</p><p>return skip(\"Agony: GMExecutor unavailable on player client.\");</p><p>}</p><p>const bridgeOwner = await resolveOwnerActor();</p><p>const bridgeActorUuid =</p><p>bridgeOwner?.uuid ??</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null;</p><p>if (!bridgeActorUuid) {</p><p>return skip(\"Agony: could not find owner actor UUID for GM bridge.\");</p><p>}</p><p>const bridgedPayload = clone(p, {});</p><p>bridgedPayload.meta = bridgedPayload.meta || {};</p><p>bridgedPayload.meta.__agonyGmBridge = true;</p><p>log(\"Forwarding Agony to GMExecutor.\", {</p><p>callerUserId: game.user?.id,</p><p>bridgeActorUuid,</p><p>targetsCount: globalTargets.length</p><p>});</p><p>const scriptText =</p><p>'const context = (typeof env !== \"undefined\" &amp;&amp; env?.makeContext) ? env.makeContext(\"resolution\") : {};\\n' +</p><p>'globalThis.__AGONY_GM_BRIDGE = true;\\n' +</p><p>\"return await (\" + Agony_Main.toString() + \")();\";</p><p>const remote = await gmExecutor.executeSnippet({</p><p>mode: \"resolution\",</p><p>scriptText,</p><p>payload: bridgedPayload,</p><p>args: argsObj,</p><p>targets: globalTargets,</p><p>chatMsgId: chatMessage?.id ?? null,</p><p>actorUuid: bridgeActorUuid,</p><p>metadata: { origin: \"Agony passive_logic_resolution\" }</p><p>});</p><p>if (remote?.payload &amp;&amp; p &amp;&amp; typeof p === \"object\") {</p><p>try {</p><p>foundry.utils.mergeObject(p, remote.payload, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>} catch {}</p><p>}</p><p>if (remote?.args &amp;&amp; argsObj &amp;&amp; typeof argsObj === \"object\") {</p><p>try {</p><p>foundry.utils.mergeObject(argsObj, remote.args, {</p><p>insertKeys: true,</p><p>insertValues: true,</p><p>overwrite: true,</p><p>recursive: true,</p><p>inplace: true</p><p>});</p><p>} catch {}</p><p>}</p><p>if (!remote?.ok) {</p><p>warn(\"GM bridge failed.\", remote);</p><p>return skip(\"Agony: GM bridge failed.\");</p><p>}</p><p>return remote?.resultValue ?? remote;</p><p>}</p><p>const { key: triggerName, phase } = getPhaseEvent();</p><p>if (triggerName !== \"creature_deals_damage\") {</p><p>return skip(\"Agony: wrong trigger \" + (triggerName || \"none\") + \".\");</p><p>}</p><p>const finalValue = Math.max(0, num(</p><p>phase?.finalValue ??</p><p>phase?.displayedAmount ??</p><p>phase?.baseValue ??</p><p>phase?.amount ??</p><p>0,</p><p>0</p><p>));</p><p>if (phase?.affected === false || phase?.noEffectReason) {</p><p>return skip(\"Agony: damage event had no effect.\");</p><p>}</p><p>if (finalValue &lt;= 0) {</p><p>return skip(\"Agony: no positive damage was dealt.\");</p><p>}</p><p>const valueType = norm(phase?.valueType ?? \"hp\");</p><p>if (valueType &amp;&amp; ![\"hp\", \"health\", \"hit points\", \"hit point\"].includes(valueType)) {</p><p>return skip(\"Agony: event value type is not HP damage (\" + valueType + \").\");</p><p>}</p><p>const owner = await resolveOwnerActor();</p><p>if (!owner) return skip(\"Agony: could not resolve passive owner.\");</p><p>if (!sourceLooksLikeOwner(phase, owner)) {</p><p>return skip(\"Agony: damage source is not the passive owner.\");</p><p>}</p><p>const passiveItem = await resolvePassiveItem(owner);</p><p>if (!passiveItem) return skip(\"Agony: could not resolve Agony item.\");</p><p>const P = owner.system?.props ?? {};</p><p>const itemP = passiveItem.system?.props ?? {};</p><p>const sl = Math.max(0, Math.floor(num(</p><p>itemP.level ??</p><p>itemP.active_level ??</p><p>itemP.skill_level ??</p><p>0,</p><p>0</p><p>)));</p><p>if (sl &lt;= 0) return skip(\"Agony: SL is 0.\");</p><p>const turnKey = getTurnKey(owner);</p><p>const emitterSnapshot = getEmitterSnapshot();</p><p>const oldFlag = owner.getFlag?.(MODULE_ID, FLAG_KEY) ?? null;</p><p>if (oldFlag?.triggered === true &amp;&amp; oldFlag?.turnKey === turnKey) {</p><p>return skip(\"Agony: already triggered this Fabula/Lancer turn.\", {</p><p>turnKey,</p><p>oldFlag,</p><p>emitterSnapshot</p><p>});</p><p>}</p><p>const bondNames = collectBondNames(owner);</p><p>if (!bondNames.length) return skip(\"Agony: owner has no bond names.\");</p><p>const targetNames = await collectTargetNames(phase);</p><p>if (!targetNames.length) return skip(\"Agony: could not resolve damaged target names.\");</p><p>const matchingBondName = bondNames.find(bn =&gt; targetNames.includes(bn));</p><p>if (!matchingBondName) {</p><p>return skip(\"Agony: no damaged target matches owner bonds.\", {</p><p>bondNames,</p><p>targetNames</p><p>});</p><p>}</p><p>const recover = sl * 2;</p><p>if (recover &lt;= 0) return skip(\"Agony: recovery amount is 0.\");</p><p>const curHp = num(P.current_hp, 0);</p><p>const curMp = num(P.current_mp, 0);</p><p>const maxHp = optNum(P.max_hp);</p><p>const maxMp = optNum(P.max_mp);</p><p>const hpGainPotential = maxHp != null</p><p>? Math.max(0, Math.min(maxHp, curHp + recover) - curHp)</p><p>: recover;</p><p>const mpGainPotential = maxMp != null</p><p>? Math.max(0, Math.min(maxMp, curMp + recover) - curMp)</p><p>: recover;</p><p>if (hpGainPotential &lt;= 0 &amp;&amp; mpGainPotential &lt;= 0) {</p><p>return skip(\"Agony: owner is already full on HP and MP.\");</p><p>}</p><p>const ownerToken = await resolveOwnerToken(owner, phase);</p><p>if (!ownerToken) {</p><p>return skip(\"Agony: could not resolve owner token for AdvanceDamage.\");</p><p>}</p><p>preventWrapperAdvanceDamage();</p><p>markVisible();</p><p>p.meta = p.meta || {};</p><p>p.meta.agony = {</p><p>triggered: true,</p><p>turnKey,</p><p>emitterSnapshot,</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>matchedBond: matchingBondName,</p><p>targetNames,</p><p>appliedViaAdvanceDamage: true</p><p>};</p><p>const applied = [];</p><p>if (hpGainPotential &gt; 0) {</p><p>await applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType: \"hp\",</p><p>amount: hpGainPotential,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>});</p><p>applied.push(\"hp\");</p><p>}</p><p>if (mpGainPotential &gt; 0) {</p><p>await applyAgonyRecoveryViaAdvanceDamage({</p><p>resourceType: \"mp\",</p><p>amount: mpGainPotential,</p><p>owner,</p><p>ownerToken,</p><p>passiveItem,</p><p>phase</p><p>});</p><p>applied.push(\"mp\");</p><p>}</p><p>if (!applied.length) {</p><p>return skip(\"Agony: no recovery was applied after final check.\");</p><p>}</p><p>await owner.setFlag(MODULE_ID, FLAG_KEY, {</p><p>triggered: true,</p><p>turnKey,</p><p>combatId: game.combat?.id ?? null,</p><p>round: game.combat?.round ?? null,</p><p>turn: game.combat?.turn ?? null,</p><p>emitterSerial: emitterSnapshot?.serial ?? null,</p><p>emitterTurnSerial: emitterSnapshot?.turnSerial ?? null,</p><p>emitterRoundSerial: emitterSnapshot?.roundSerial ?? null,</p><p>emitterCombatSerial: emitterSnapshot?.combatSerial ?? null,</p><p>skill: \"Agony\",</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>targetNames,</p><p>at: Date.now()</p><p>});</p><p>await broadcastAgonyPassiveCard(owner, ownerToken, passiveItem);</p><p>log(\"Agony resolved.\", {</p><p>owner: owner.name,</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>turnKey,</p><p>emitterSnapshot</p><p>});</p><p>return {</p><p>ok: true,</p><p>skill: \"Agony\",</p><p>sl,</p><p>recover,</p><p>hpGainPotential,</p><p>mpGainPotential,</p><p>applied,</p><p>matchedBond: matchingBondName,</p><p>turnKey</p><p>};</p><p>}</p><p>return await Agony_Main();</p>"
+    },
+    "modifiers": [],
+    "unique": false,
+    "container": null,
+    "uniqueId": "rERGt9WNcSfYV31k",
+    "templateSystemUniqueVersion": 1091124199
+  },
+  "effects": [],
+  "sort": 0,
+  "ownership": {
+    "default": 3,
+    "JQGNzKpDPHJmcUIW": 3
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.343",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5",
+    "createdTime": 1754347865968,
+    "modifiedTime": 1778680727579,
+    "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+  },
+  "items": []
+}

@@ -115,6 +115,7 @@ Damage Card emits per-target, so the hook fires per-target).
 |-------|------|----------|-------|
 | `reaction_trigger` | string (canonical trigger key, see list below) | yes | What event the row listens for. |
 | `reaction_source` | `"self" \| "ally" \| "enemy" \| "neutral" \| "all"` | when trigger has a subject | Whose actions/events to listen to, relative to the reactor. Hidden in the UI for global lifecycle triggers (conflict/round). |
+| `reaction_damage_source` | `"" \| "self" \| "ally" \| "enemy" \| "neutral" \| "all"` | no | Universal filter. Matches the *acting creature's* disposition relative to the reactor — orthogonal to `reaction_source` (which matches the *subject*). For `creature_takes_damage` etc. where subject = target, this filters who *caused* the event (attacker / applier / healer). Available on any trigger that declares a `damageSourceFrom` shape (action-derived events, damage triggers, status / heal triggers). Blank disables. Active filter on a trigger without a source side fails-closed. |
 | `reaction_damage_type` | `"physical" \| "air" \| "bolt" \| "dark" \| "earth" \| "fire" \| "ice" \| "light" \| "poison"` | when trigger has `damage_type` filter | Filter to a specific element. Blank = match any. |
 | `reaction_damage_amount` | number (≥0) | when trigger has `damage_amount` filter | Minimum damage amount to match. Blank = match any. |
 | `reaction_debuff_count_target` | `"self" \| "ally" \| "enemy" \| "all" \| ""` | when trigger has `debuff_count` filter | Whose tokens to scan for debuffs. Blank disables the filter. |
@@ -354,6 +355,26 @@ me instead" (Protect, Cover, Bodyguard).
 Always returns `abort: true` on success — a successful redirect means
 the reactor's own skill body must NOT continue (no Protect card created).
 
+### `effect_kind: "open_action_menu"` — spawn the action menu with a filter
+
+Used by Acceleration, Painful Lesson, and similar "free action with constraints"
+mechanics. Spawns the TurnUI command buttons over the reactor's token with only
+the requested labels enabled, and (optionally) registers a free-action grant so
+the next action bypasses the budget gate.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `allowed_types` | string | Comma-separated TurnUI button labels (`"Attack,Spell"`, `"Study"`, etc.). Other buttons render disabled. |
+| `free_mode` | boolean | When `true`, registers a pending free-action grant in `FUCompanion.api.freeActions` keyed by the reactor's actor.id. Default false. |
+| `max_mp_cost` | number | Optional cap on the MP cost of a Spell selectable through this free action. Used by playtest Acceleration. Blank/0 = no cap. |
+| `check_bonus_formula` | string (formula) | Resolved at apply time against the reactor + firing skill. Result stored in the free-action grant and applied to the next action's check. Painful Lesson uses `"SL"`. |
+| `damage_bonus_formula` | string (formula) | Same shape but applied to the next action's damage. |
+| `target_lock` | `"" \| "damage_source" \| "subject"` | Resolves a single TokenDocument UUID at apply time and stashes it on the free-action grant. Consumers (e.g. Study macro) restrict their target picker to that token. `damage_source` resolves via the trigger's `damageSourceFrom` shape; `subject` via `subjectFrom`. Painful Lesson uses `"damage_source"` to enforce "on that creature". |
+
+The formula bonuses are stamped into the free-action grant state at trigger
+time. Macros that don't flow through ADC (e.g. the Study macro) read the
+grant directly and apply / consume on confirm.
+
 ### `effect_kind: "chain"` — invoke other effect labels in order
 
 | Field | Type | Notes |
@@ -415,6 +436,42 @@ chain → first `consume_one` (aborts the chain if no charge) → then
 success, suppressing the Protect skill body so no Protect card posts).
 
 ---
+
+## Worked example — "Painful Lesson" (damage_source + open_action_menu bonus)
+
+Reaction-skill (Darkblade Heroic). RAW: "After another creature causes you to
+lose Hit Points, you may immediately perform the Study action on that creature
+for free. If you do, gain a bonus equal to SL to your Check."
+
+```jsonc
+"system.props.isReaction": true,
+"system.props.reaction_config_table": {
+  "0": {
+    "reaction_trigger":       "creature_takes_damage",
+    "reaction_source":        "self",       // reactor IS the damage target
+    "reaction_damage_source": "enemy",      // damage came from an enemy
+    "reaction_action_intent": "harmful",
+    "reaction_effect_ref":    "pl_free_study",
+    "reaction_isPassive":     false         // player picks from the picker
+  }
+},
+"system.props.effect_table": {
+  "0": {
+    "effect_label":        "pl_free_study",
+    "effect_kind":         "open_action_menu",
+    "allowed_types":       "Study",         // only Study button enabled
+    "free_mode":           true,            // bypass action budget
+    "check_bonus_formula": "SL",            // +Painful Lesson SL to Study
+    "target_lock":         "damage_source"  // Study must target the attacker
+  }
+}
+```
+
+Flow: Hina takes damage from a Bandit Archer → reaction window opens with
+Painful Lesson available → Hina picks it → TurnUI spawns with only Study
+enabled, and a free-action grant is stamped with `checkBonus: SL`. → Hina
+clicks Study → the Study macro pre-fills the modifier with SL, consumes
+the grant on confirm.
 
 ## Worked example — "Phantasmal Echo" (kind + ownership)
 

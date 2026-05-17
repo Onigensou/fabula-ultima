@@ -20,6 +20,12 @@
  *                     null   = global trigger with no per-creature subject (conflict/round)
  *                     object = ordered list of payload fields used to resolve "the
  *                              creature this trigger is talking about" for source filtering
+ *     damageSourceFrom: null OR same shape as subjectFrom
+ *                     Identifies the *damage source / acting creature* in the payload
+ *                     when it differs from the subject (e.g. creature_takes_damage:
+ *                     subject = target = reactor, source = attacker). Used by the
+ *                     universal `reaction_damage_source` row filter. Null = no
+ *                     source side declared (filter fails-closed if active).
  *     filters:        which row filters apply
  *                     ["source"]                          → reaction_source matters
  *                     ["source", "damage_type"]           → also reaction_damage_type
@@ -179,6 +185,7 @@ Hooks.once("ready", () => {
       label: "When a creature gets targeted by an action",
       bucket: "action_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"],
       aliases: ["creature_is_targeted"] // internal payload uses this
     },
@@ -203,6 +210,7 @@ Hooks.once("ready", () => {
       label: "When a creature gets hit by an action",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -231,6 +239,7 @@ Hooks.once("ready", () => {
       label: "When a creature takes damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type", "damage_amount"]
     },
     {
@@ -238,6 +247,7 @@ Hooks.once("ready", () => {
       label: "When a creature takes Vulnerable damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -245,6 +255,7 @@ Hooks.once("ready", () => {
       label: "When a creature takes Weak damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -252,6 +263,7 @@ Hooks.once("ready", () => {
       label: "When a creature Resists damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -259,6 +271,7 @@ Hooks.once("ready", () => {
       label: "When a creature Absorbs damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -266,6 +279,7 @@ Hooks.once("ready", () => {
       label: "When a creature is Immune to damage",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -273,6 +287,7 @@ Hooks.once("ready", () => {
       label: "When a creature's Shield breaks",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "damage_type"]
     },
     {
@@ -280,6 +295,7 @@ Hooks.once("ready", () => {
       label: "When a creature recovers HP",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source"]
     },
     {
@@ -287,6 +303,7 @@ Hooks.once("ready", () => {
       label: "When a creature loses MP",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source"]
     },
     {
@@ -294,6 +311,7 @@ Hooks.once("ready", () => {
       label: "When a creature recovers MP",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source"]
     },
     {
@@ -301,6 +319,7 @@ Hooks.once("ready", () => {
       label: "When a creature gains a Status Effect",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_TARGET,
+      damageSourceFrom: SUBJECT_DAMAGE_SOURCE,
       filters: ["source", "debuff_count"]
     },
     {
@@ -397,6 +416,20 @@ Hooks.once("ready", () => {
     return entry?.subjectFrom ?? null;
   }
 
+  /**
+   * Damage-source-resolution shape (or null if this trigger doesn't expose a
+   * source side distinct from its subject). Used by the universal
+   * `reaction_damage_source` row filter to identify the acting creature on
+   * triggers where subject = target (creature_takes_damage, status_applied,
+   * etc.). Returns null for triggers where source == subject
+   * (creature_deals_damage) or where there is no source at all
+   * (round/conflict lifecycle).
+   */
+  function damageSourceShapeFor(triggerKey) {
+    const entry = getTrigger(resolveKey(triggerKey));
+    return entry?.damageSourceFrom ?? null;
+  }
+
   // ---------------------------------------------------------------------------
   // Export
   // ---------------------------------------------------------------------------
@@ -407,7 +440,8 @@ Hooks.once("ready", () => {
     isValidKey,
     bucketFor,
     filtersFor,
-    subjectShapeFor
+    subjectShapeFor,
+    damageSourceShapeFor
   };
 
   console.debug("[ReactionTriggers] Installed. %d triggers registered.", TRIGGERS.length);

@@ -687,6 +687,39 @@ for (const cond of conditionList) {
   /* ───────────────────── BUILD THE DIALOG ───────────────────── */
   let dlgHTML = "";
 
+  // Free-action grant peek (e.g. Painful Lesson). Shown as a banner if the
+  // acting actor has a check-bonus grant pending. The actual bonus is applied
+  // + consumed at Study confirm time (so re-opens don't double-apply).
+  const peekFreeActionGrant = (actorId) => {
+    if (!actorId) return null;
+    try {
+      const info = globalThis.FUCompanion?.api?.freeActions?.peek?.(actorId);
+      return info ?? null;
+    } catch { return null; }
+  };
+
+  const probeActorForGrant = () => {
+    if (game.user.isGM) {
+      // GM picks acting token later — show no banner upfront. The bonus is
+      // still applied on Study confirm based on whatever token they pick.
+      return null;
+    }
+    const a = game.user.character;
+    return a ? peekFreeActionGrant(a.id) : null;
+  };
+
+  const initialGrant = probeActorForGrant();
+  const initialCheckBonus = Number(initialGrant?.checkBonus ?? 0) || 0;
+  // Locked target from free-action grant (e.g. Painful Lesson's "on that
+  // creature"). When set, the target dropdown is restricted to this token.
+  const resolveLockedToken = (uuid) => {
+    if (!uuid) return null;
+    const m = String(uuid).match(/\.Token\.([A-Za-z0-9]+)$/);
+    const tokenId = m ? m[1] : String(uuid);
+    return canvas.tokens?.get?.(tokenId) ?? null;
+  };
+  const initialLockedToken = resolveLockedToken(initialGrant?.lockedTargetTokenUuid);
+
   if (game.user.isGM) {
     dlgHTML += `<p><b>Acting character (GM only):</b><br>
       <select id="actingToken">
@@ -694,19 +727,39 @@ for (const cond of conditionList) {
       </select></p>`;
   }
 
-  dlgHTML += `
+  if (initialCheckBonus !== 0) {
+    dlgHTML += `<div style="margin:6px 0; padding:6px 10px; border:1px solid #b28b2e; background:rgba(178,139,46,0.15); border-radius:6px;">
+<b>Free Study grant active:</b> +${initialCheckBonus} to your Check (will be applied + consumed on Study).
+${initialLockedToken ? `<br><b>Locked target:</b> ${esc(initialLockedToken.name)} (the creature that caused you damage).` : ""}
+</div>`;
+  }
+
+  // When the grant locks a target, render a single-option dropdown so the
+  // user can't pick a different creature. Otherwise render the full enemy
+  // list with pre-selection from in-game target.
+  if (initialLockedToken) {
+    dlgHTML += `
+<p><b>Target (locked by free-action grant):</b></p>
+<select id="target" style="width:100%; font-size:14px; padding:6px;">
+  <option value="${initialLockedToken.id}" selected>${esc(initialLockedToken.name)}</option>
+</select>
+`;
+  } else {
+    dlgHTML += `
 <p><b>Select a target to study:</b></p>
 <select id="target" size="${targetListRows}" style="width:100%; font-size:14px; padding:6px;">
   ${enemyTokens.map(t => `<option value="${t.id}" ${preSelectedTargetId === t.id ? "selected" : ""}>${t.name}</option>`).join("")}
 </select>
 <p style="opacity:.75;margin-top:6px;">Tip: changing the selection will also change your in-game target.</p>
 `;
+  }
 
   dlgHTML += `
 <p><b>Select study method:</b></p>
 <input type="radio" name="stat" value="ins" checked> INS + INS<br>
 <input type="radio" name="stat" value="wlp"> INS + WLP<br>
 <p>Modifier: <input type="number" id="modifier" value="0" style="width:4em;"></p>
+<p style="opacity:.7; font-size:11px; margin-top:2px;">Free-action grants (e.g. Painful Lesson) are added on top of this modifier.</p>
 <p><label><input type="checkbox" id="reminder"> Reminder</label></p>`;
 
   const cursorMoveSound = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/CursorMove.mp3";
@@ -735,6 +788,14 @@ for (const cond of conditionList) {
     render: (html) => {
       const el = html[0]?.querySelector?.("#target");
       if (!el) return;
+
+      // Locked target: render as a normal single-option dropdown (no listbox
+      // sizing, no change listener — there's nothing else to pick). Sync the
+      // in-game target to the locked one for visual consistency.
+      if (initialLockedToken) {
+        syncFoundryTargets([initialLockedToken.id]);
+        return;
+      }
 
       forceListboxSizing(el, targetListRows);
 
@@ -770,8 +831,35 @@ for (const cond of conditionList) {
           /* ---------- Read dialog choices ---------- */
           const targetId    = html.find("#target").val();
           const statChoice  = html.find("input[name='stat']:checked").val();
-          const modifier    = parseInt(html.find("#modifier").val()) || 0;
+          const baseModifier = parseInt(html.find("#modifier").val()) || 0;
           const useReminder = html.find("#reminder").is(":checked");
+
+          /* ---------- Consume free-action grant (Painful Lesson etc.) ---------- */
+          // Resolve at confirm time — supports GM token switching mid-dialog.
+          // Consume on confirm only (Cancel leaves the grant intact so the
+          // player can retry; turn change auto-clears it).
+          let grantedCheckBonus = 0;
+          let consumedFreeAction = false;
+          try {
+            const faApi = globalThis.FUCompanion?.api?.freeActions;
+            const info  = faApi?.consume?.(actorToken.actor?.id);
+            if (info) {
+              consumedFreeAction = true;
+              if (info.checkBonus) grantedCheckBonus = Number(info.checkBonus) || 0;
+            }
+          } catch (e) {
+            console.warn("[ONI][Study] free-action consume failed:", e);
+          }
+          const modifier = baseModifier + grantedCheckBonus;
+
+          // Close the TurnUI command-button menu when this Study was the
+          // payoff of a free-action grant (e.g. Painful Lesson's free Study).
+          // ADF-driven actions get post-action menu cleanup for free; the
+          // Study macro skips ADF, so we have to do it here.
+          if (consumedFreeAction) {
+            try { globalThis.TurnUI?.removeButtons?.({ clearToken: true, animate: true }); }
+            catch (e) { console.warn("[ONI][Study] TurnUI.removeButtons failed:", e); }
+          }
 
           if (!targetId) return ui.notifications.warn("No target selected.");
           const targetTok = canvas.tokens.get(targetId);
@@ -785,6 +873,9 @@ for (const cond of conditionList) {
             if (!isReminder) {
               let headline = `<b>${targetTok.actor.name}</b> has been studied!<br>`;
               headline    += `🎲 Rolls: (${r1}, ${r2})<br>`;
+              if (grantedCheckBonus !== 0) {
+                headline += `📜 Free-action grant: <b>+${grantedCheckBonus}</b><br>`;
+              }
               headline    += `📖 Study Check: <b>${studyRoll}</b>`;
               if (r1 === r2) {
                 if (r1 >= 6)       headline += `<br><span style="color:green;font-weight:bold;">CRITICAL SUCCESS! Gains an Opportunity!</span>`;

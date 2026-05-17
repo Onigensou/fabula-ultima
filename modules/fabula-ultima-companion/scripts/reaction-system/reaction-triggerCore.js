@@ -413,6 +413,90 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // Damage-source token resolution (universal filter helper)
+    // -------------------------------------------------------------------------
+    //
+    // Walk the trigger's `damageSourceFrom` shape (declared in the registry)
+    // and resolve the acting creature's token. Used by `reaction_damage_source`
+    // — orthogonal to `subjectFrom` which resolves the *event's subject*. For
+    // triggers like creature_takes_damage, subject = target, source = attacker.
+    //
+    function getDamageSourceTokenForTrigger(triggerKey, phasePayload, combat) {
+      if (!phasePayload || !combat) return null;
+      const shape = registry.damageSourceShapeFor?.(triggerKey);
+      if (!shape) return null;
+
+      for (const f of shape.tokenFields ?? []) {
+        const t = findTokenByUuidish(phasePayload[f], combat);
+        if (t) return t;
+      }
+      for (const f of shape.actorFields ?? []) {
+        const t = findTokenByActorUuidInCombat(combat, phasePayload[f]);
+        if (t) return t;
+      }
+      return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // reaction_damage_source matching (universal)
+    // -------------------------------------------------------------------------
+    //
+    // Filter rows by the *acting creature's* disposition relative to the
+    // reactor. Same enum as `reaction_source` but applied to the trigger's
+    // damage source (the attacker / applier / healer), not the subject (the
+    // target). Universal: blank = inert; active filter on a trigger that
+    // declares no `damageSourceFrom` shape fails-closed.
+    //
+    function reactionDamageSourceMatchesRow(rowDamageSourceRaw, reactionToken, triggerKey, phasePayload, combat) {
+      const raw = String(rowDamageSourceRaw ?? "").trim();
+      if (!raw) return true; // blank disables the filter
+      const sourceKey = normalizeSourceKey(raw);
+
+      const sourceToken = getDamageSourceTokenForTrigger(triggerKey, phasePayload, combat);
+
+      // Empty source:
+      //   - "all" still matches (we know SOMEONE caused the event, just not who)
+      //   - more specific filters fail-closed
+      if (!sourceToken) {
+        return sourceKey === "all";
+      }
+
+      const reactDoc  = reactionToken?.document;
+      const reactDisp = normalizeDisposition(reactDoc?.disposition ?? 0);
+      const srcDoc    = sourceToken?.document;
+      const srcDisp   = normalizeDisposition(srcDoc?.disposition ?? 0);
+
+      switch (sourceKey) {
+        case "all":
+          return true;
+
+        case "self": {
+          if (!reactDoc || !srcDoc) return false;
+          if (sourceToken.id === reactionToken.id) return true;
+          const reactActorUuid = reactionToken.actor?.uuid;
+          const srcActorUuid   = sourceToken.actor?.uuid;
+          return !!reactActorUuid && reactActorUuid === srcActorUuid;
+        }
+
+        case "ally":
+          if (reactDisp === 1)  return srcDisp === 1;
+          if (reactDisp === -1) return srcDisp === -1;
+          return false;
+
+        case "enemy":
+          if (reactDisp === 1)  return srcDisp === -1;
+          if (reactDisp === -1) return srcDisp === 1;
+          return false;
+
+        case "neutral":
+          return srcDisp === 0;
+
+        default:
+          return true;
+      }
+    }
+
+    // -------------------------------------------------------------------------
     // reaction_damage_type matching
     // -------------------------------------------------------------------------
     function reactionDamageTypeMatchesRow(rowDamageTypeRaw, triggerKey, phasePayload) {
@@ -863,8 +947,13 @@ Hooks.once("ready", () => {
             const rowTrigger = mapIncomingTrigger(row.reaction_trigger);
             if (rowTrigger !== normalizedTriggerKey) continue;
 
-            // Source filter (Self / Ally / Enemy / Neutral / All)
+            // Source filter (Self / Ally / Enemy / Neutral / All) — on the subject side.
             if (!reactionSourceMatchesRow(row.reaction_source, token, normalizedTriggerKey, phasePayload, combat)) continue;
+
+            // Damage-source filter (universal) — on the acting creature's side.
+            // For triggers like creature_takes_damage where subject = target,
+            // this filters who *caused* the event (attacker / applier / healer).
+            if (!reactionDamageSourceMatchesRow(row.reaction_damage_source, token, normalizedTriggerKey, phasePayload, combat)) continue;
 
             // Damage-type filter (Physical / Fire / Ice / etc.)
             if (!reactionDamageTypeMatchesRow(row.reaction_damage_type, normalizedTriggerKey, phasePayload)) continue;
@@ -971,6 +1060,7 @@ Hooks.once("ready", () => {
       extractRows,
       extractReactionTriggers,
       reactionSourceMatchesRow,
+      reactionDamageSourceMatchesRow,
       reactionDamageTypeMatchesRow,
       reactionDebuffCountMatchesRow,
       reactionSubjectKindMatchesRow,

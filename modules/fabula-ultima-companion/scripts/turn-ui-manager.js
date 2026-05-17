@@ -1129,6 +1129,11 @@
   // (Acceleration's free action) can spawn the Octopath menu over an
   // arbitrary token with a button filter.
   TurnUI.spawnButtonsForToken = spawnButtonsForToken;
+  // Exposed so macros that consume a free-action grant outside the ADF
+  // pipeline (e.g. Study) can close the menu after the user's pick. The
+  // ADF-driven actions get this for free via the post-action cleanup; the
+  // out-of-pipeline cases need to call this directly.
+  TurnUI.removeButtons = removeButtons;
 
   // Convenience: callback-style helper for your controller script (LOCAL ONLY).
   TurnUI.withAnimationHideShow = async function(payload, workerFn) {

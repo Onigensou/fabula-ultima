@@ -74,12 +74,30 @@
       const n = Number(raw.maxMpCost);
       mpCap = Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
     }
+    // checkBonus / damageBonus: optional pre-resolved bonuses to apply to
+    // the next action taken from this free-action grant. Painful Lesson
+    // uses checkBonus=SL so the Study macro pre-fills its modifier with
+    // the reactor's Painful Lesson level. ADC-driven actions can read the
+    // same fields to apply bonuses inline.
+    const toNumberOrZero = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    // lockedTargetTokenUuid: when set, consumers should restrict the next
+    // action's target picker to this token. Painful Lesson stamps the damage
+    // source here so the resulting Study targets "that creature" per RAW.
+    const lockedToken = typeof raw.lockedTargetTokenUuid === "string" && raw.lockedTargetTokenUuid.length
+      ? raw.lockedTargetTokenUuid
+      : null;
     return {
       enabledLabels: Array.isArray(raw.enabledLabels)
         ? raw.enabledLabels.map(s => String(s))
         : [],
       sourceEffectUuid: raw.sourceEffectUuid ?? null,
       maxMpCost: mpCap,
+      checkBonus: toNumberOrZero(raw.checkBonus),
+      damageBonus: toNumberOrZero(raw.damageBonus),
+      lockedTargetTokenUuid: lockedToken,
       stampedAt: Number(raw.stampedAt) || Date.now()
     };
   }

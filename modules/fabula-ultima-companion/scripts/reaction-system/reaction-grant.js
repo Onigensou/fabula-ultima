@@ -563,6 +563,94 @@ Hooks.once("ready", () => {
       }
     }
 
+    // target_lock (optional). When set, resolves a single TokenDocument
+    // UUID at apply time and stashes it on the free-action grant; consumers
+    // (Study macro, Counterattack-style flows) restrict their target picker
+    // to that token. Mirrors the "on that creature" clause in skills like
+    // Painful Lesson.
+    //
+    //   "damage_source"  → the trigger's acting creature (attacker / applier)
+    //   "subject"        → the trigger's subject (for completeness; rarely
+    //                       useful for action menus today)
+    //   ""               → no lock (default)
+    let lockedTargetTokenUuid = null;
+    {
+      const lockMode = String(effectRow.target_lock ?? "").trim().toLowerCase();
+      const registry = window["oni.ReactionTriggers"];
+      const phasePayload = ctx?.payload ?? null;
+      const triggerKey = phasePayload?.trigger ?? null;
+      const core = window["oni.ReactionTriggerCore"];
+
+      if (lockMode === "damage_source" && phasePayload && registry?.damageSourceShapeFor) {
+        const shape = registry.damageSourceShapeFor(triggerKey);
+        if (shape) {
+          for (const f of shape.tokenFields ?? []) {
+            const v = phasePayload[f];
+            if (typeof v === "string" && v.length) { lockedTargetTokenUuid = v; break; }
+          }
+          if (!lockedTargetTokenUuid) {
+            // Fall back to actor-uuid → token via combat lookup.
+            for (const f of shape.actorFields ?? []) {
+              const actorUuid = phasePayload[f];
+              if (typeof actorUuid === "string" && actorUuid.length) {
+                const t = (game.combat?.combatants?.contents ?? game.combat?.combatants ?? [])
+                  .map(c => canvas?.tokens?.get?.(c.tokenId ?? c.token?.id))
+                  .find(tok => tok?.actor?.uuid === actorUuid);
+                if (t?.document?.uuid) { lockedTargetTokenUuid = t.document.uuid; break; }
+              }
+            }
+          }
+        }
+        if (!lockedTargetTokenUuid) {
+          console.warn(TAG, "applyOpenActionMenuEffect: target_lock=damage_source but no source resolvable from payload", { triggerKey });
+        }
+      } else if (lockMode === "subject" && phasePayload && registry?.subjectShapeFor) {
+        const shape = registry.subjectShapeFor(triggerKey);
+        if (shape) {
+          for (const f of shape.tokenFields ?? []) {
+            const v = phasePayload[f];
+            if (typeof v === "string" && v.length) { lockedTargetTokenUuid = v; break; }
+          }
+        }
+      }
+    }
+
+    // check_bonus_formula / damage_bonus_formula (optional). Resolved NOW
+    // against the reactor + firing skill, then stashed on the free-action
+    // grant so the next action's pipeline (or a special-case macro like
+    // Study) can read + apply them. Used by Painful Lesson: "perform a free
+    // Study with +SL to the Check".
+    let resolvedCheckBonus = 0;
+    let resolvedDamageBonus = 0;
+    {
+      const evaluator = globalThis?.["oni.ReactionFormula"];
+      const reactorActor = reactionToken?.actor ?? null;
+      const firingSkill = ctx?.item ?? null;
+      const formulaCtx = {
+        reactorActor,
+        firingSkill,
+        payload: ctx?.payload ?? null
+      };
+      const checkExpr = String(effectRow.check_bonus_formula ?? "").trim();
+      if (checkExpr && evaluator?.evaluate) {
+        try {
+          const v = Number(evaluator.evaluate(checkExpr, formulaCtx)) || 0;
+          if (v) resolvedCheckBonus = v;
+        } catch (e) {
+          console.warn(TAG, "applyOpenActionMenuEffect: check_bonus_formula failed", { expr: checkExpr, error: String(e?.message ?? e) });
+        }
+      }
+      const dmgExpr = String(effectRow.damage_bonus_formula ?? "").trim();
+      if (dmgExpr && evaluator?.evaluate) {
+        try {
+          const v = Number(evaluator.evaluate(dmgExpr, formulaCtx)) || 0;
+          if (v) resolvedDamageBonus = v;
+        } catch (e) {
+          console.warn(TAG, "applyOpenActionMenuEffect: damage_bonus_formula failed", { expr: dmgExpr, error: String(e?.message ?? e) });
+        }
+      }
+    }
+
     const item = ctx?.item ?? null;
     const sourceEffectUuid = item?.__sourceEffectUuid
       ?? effectRow.source_effect_uuid
@@ -599,7 +687,14 @@ Hooks.once("ready", () => {
       const faApi = globalThis.FUCompanion?.api?.freeActions ?? null;
       if (faApi?.set) {
         try {
-          faApi.set(actor.id, { enabledLabels, sourceEffectUuid, maxMpCost });
+          faApi.set(actor.id, {
+            enabledLabels,
+            sourceEffectUuid,
+            maxMpCost,
+            checkBonus: resolvedCheckBonus,
+            damageBonus: resolvedDamageBonus,
+            lockedTargetTokenUuid
+          });
         } catch (e) {
           console.warn(TAG, "applyOpenActionMenuEffect: freeActions.set threw.", e);
         }
