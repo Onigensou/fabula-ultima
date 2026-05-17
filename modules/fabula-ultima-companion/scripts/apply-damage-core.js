@@ -50,6 +50,10 @@
 //
 //   Crit:      critical_damage_bonus, critical_damage_multiplier
 //   Affinity:  affinity_1 … affinity_9  (physical → poison, see ELEMENT_AFFINITY_KEY below)
+//   Class affinity (FLAGS): flags["fabula-ultima-companion"].affinity_class_{strike,magic}
+//                          ("" | "RS" | "VU" | "IM" | "AB")
+//   Universal multiplier (FLAG): flags["fabula-ultima-companion"].damage_taken_mult
+//                                (number, default 1.0)
 //   HP/MP/Shield: current_hp, max_hp, current_mp, max_mp, shield_value
 //   Weapon efficiency: {weaponKey}_ef  (e.g. sword_ef — value 100 = full efficiency)
 //
@@ -65,8 +69,12 @@
 //   7  Clamp to 0
 //   8  ceil → finalPreAffinity
 //   9a × Weapon efficiency     (target sheet, e.g. sword_ef)
-//   9b Affinity modifier       (RS ÷2, VU ×2, IM →0, AB →healing)
+//   9b Element affinity        (RS ÷2, VU ×2, IM →0, AB →healing)
 //       + condition-forced VU  (Wet/Oil/Petrify/Hypothermia/Turbulence/Zombie)
+//   9c Damage-class affinity   (affinity_class_strike / affinity_class_magic;
+//                               same RS/VU/IM/AB semantics; HP-damage only)
+//   9d Damage-taken multiplier (props.damage_taken_mult, default 1.0;
+//                               applies to hp/mp/shield reduction paths)
 //
 //   Steps 0–8 live in compute() (pure, no side-effects).
 //   Step 9 runs inside applyToActor() after compute().
@@ -522,12 +530,48 @@
         case "IM": finalValue = 0;                                           break;
         case "AB": finalValue = -Math.ceil(finalValue); currentChangeKey = "hpRecovery"; break;
       }
+
+      // Step 9c: Damage-class affinity (parallel to element affinity).
+      //   Source: actor.flags["fabula-ultima-companion"].affinity_class_{strike|magic}
+      //   States: "" | "RS" | "VU" | "IM" | "AB"  (same semantics as element)
+      //   Stored as a flag (not a system.props field) so AEs can write to it
+      //   without requiring an extension to the CSB character template.
+      if (currentChangeKey === "hpReduction" && resolvedDamageClass) {
+        const flagKey = resolvedDamageClass === "strike"
+          ? "affinity_class_strike"
+          : "affinity_class_magic";
+        const classAff = targetActor?.flags?.["fabula-ultima-companion"]?.[flagKey] ?? null;
+        if (classAff) {
+          switch (classAff) {
+            case "RS": finalValue = Math.ceil(finalValue / 2);                  break;
+            case "VU": finalValue = Math.ceil(finalValue * 2);                  break;
+            case "IM": finalValue = 0;                                           break;
+            case "AB": finalValue = -Math.ceil(finalValue); currentChangeKey = "hpRecovery"; break;
+          }
+        }
+      }
     } else {
       // Non-HP: simple flat math, no pipeline
       finalValue = Math.ceil(
         Math.max(resolvedBase - _num(actionReductionFlat) + _num(actionBonusFlat), 0) *
         Math.max(0, _num(actionOutgoingMult, 1))
       );
+    }
+
+    // Step 9d: Universal damage-taken multiplier.
+    //   Source: actor.flags["fabula-ultima-companion"].damage_taken_mult
+    //   Multiplies finalValue on any *Reduction path. Skipped on recovery
+    //   branches (AB-absorbed damage, heals) so it never amplifies benefits
+    //   intended as drawbacks. Default 1 = no change.
+    //
+    //   Multiplicative stacking semantics: each AE that wants to scale
+    //   incoming damage should target this flag with mode 1 (MULTIPLY).
+    //   Today mode 5 (OVERRIDE) is also fine for single-source cases.
+    if (currentChangeKey === "hpReduction" || currentChangeKey === "mpReduction" || currentChangeKey === "shieldReduction") {
+      const mult = _num(targetActor?.flags?.["fabula-ultima-companion"]?.damage_taken_mult, 1);
+      if (Number.isFinite(mult) && mult > 0 && mult !== 1) {
+        finalValue = Math.ceil(finalValue * mult);
+      }
     }
 
     // ── STAT UPDATE ───────────────────────────────────────────────────
