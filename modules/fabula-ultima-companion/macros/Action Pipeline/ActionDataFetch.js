@@ -624,6 +624,11 @@ return (async () => {
     const GP = (k, d = null) =>
       foundry.utils.getProperty(skillItem, `system.props.${k}`) ?? d;
 
+    // Per-call overrides for skill props that the caller wants to set at
+    // fire time (e.g. Study lets the player pick the attribute pair). Mirrors
+    // the `PAYLOAD.overrides` mechanism already used by the Weapon path.
+    const SKILL_OV = (PAYLOAD?.overrides && typeof PAYLOAD.overrides === "object") ? PAYLOAD.overrides : null;
+
     const dmgRaw = GP("damage_bonus", null);
     const dmgParsed = parseOptionalNumber(dmgRaw);
 
@@ -636,9 +641,9 @@ return (async () => {
       isCheck      : !!GP("isCheck", false),
       isSpell      : !!GP("isSpell", false),
       isOffSpell   : !!GP("isOffensiveSpell", false),
-      rolledAtr1   : (GP("rolled_atr1", null) || "").toString().toUpperCase(),
-      rolledAtr2   : (GP("rolled_atr2", null) || "").toString().toUpperCase(),
-      checkBonus   : Number(GP("check_bonus", 0)) || 0,
+      rolledAtr1   : (SKILL_OV?.rolled_atr1 ?? GP("rolled_atr1", null) ?? "").toString().toUpperCase(),
+      rolledAtr2   : (SKILL_OV?.rolled_atr2 ?? GP("rolled_atr2", null) ?? "").toString().toUpperCase(),
+      checkBonus   : Number(SKILL_OV?.check_bonus ?? GP("check_bonus", 0)) || 0,
 
       damageBonus  : dmgParsed.value,
       damageBonusProvided: dmgParsed.provided,
@@ -965,6 +970,11 @@ meta: buildForwardMeta({
   const GP = (k, d = null) =>
     foundry.utils.getProperty(skillItem, `system.props.${k}`) ?? d;
 
+  // Per-call overrides for skill props that the caller wants to set at fire
+  // time (e.g. Study lets the player pick the attribute pair). Mirrors the
+  // `PAYLOAD.overrides` mechanism already used by the Weapon path.
+  const SKILL_OV = (PAYLOAD?.overrides && typeof PAYLOAD.overrides === "object") ? PAYLOAD.overrides : null;
+
   const dmgRaw = GP("damage_bonus", null);
   const dmgParsed = parseOptionalNumber(dmgRaw);
 
@@ -977,9 +987,9 @@ meta: buildForwardMeta({
     isCheck      : !!GP("isCheck", false),
     isSpell      : !!GP("isSpell", false),
     isOffSpell   : !!GP("isOffensiveSpell", false),
-    rolledAtr1   : (GP("rolled_atr1", null) || "").toString().toUpperCase(),
-    rolledAtr2   : (GP("rolled_atr2", null) || "").toString().toUpperCase(),
-    checkBonus   : Number(GP("check_bonus", 0)) || 0,
+    rolledAtr1   : (SKILL_OV?.rolled_atr1 ?? GP("rolled_atr1", null) ?? "").toString().toUpperCase(),
+    rolledAtr2   : (SKILL_OV?.rolled_atr2 ?? GP("rolled_atr2", null) ?? "").toString().toUpperCase(),
+    checkBonus   : Number(SKILL_OV?.check_bonus ?? GP("check_bonus", 0)) || 0,
 
     damageBonus  : dmgParsed.value,
     damageBonusProvided: dmgParsed.provided,
