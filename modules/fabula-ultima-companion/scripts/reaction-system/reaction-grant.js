@@ -44,6 +44,23 @@ Hooks.once("ready", () => {
   const TAG = "[ReactionGrant]";
 
   // ---------------------------------------------------------------------------
+  // Effect-kind registry — exposed for the AE reaction-config UI editor so
+  // the dropdown stays in sync with the dispatcher's switch (see
+  // applyEffectByLabel's switch later in this file). Single source of truth.
+  // ---------------------------------------------------------------------------
+  const EFFECT_KINDS = Object.freeze([
+    "grant",
+    "apply_ae",
+    "consume_charge",
+    "redirect_target",
+    "chain",
+    "open_action_menu"
+  ]);
+  window["oni.ReactionEffectKinds"] = Object.freeze({
+    list: () => EFFECT_KINDS
+  });
+
+  // ---------------------------------------------------------------------------
   // Resource catalog
   // ---------------------------------------------------------------------------
   // current: dot-path on actor that holds the live value.
