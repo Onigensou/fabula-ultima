@@ -115,6 +115,16 @@
   opacity: .6;
 }
 
+/* ── Inner content panel (light inset for readable text) ───────────────────── */
+.oni-camp-inner-panel {
+  background: rgba(255, 248, 232, 0.88);
+  border-radius: 10px;
+  border: 1px solid rgba(120, 80, 40, 0.2);
+  padding: 12px 16px;
+  margin: 8px 0;
+  color: var(--camp-ink);
+}
+
 /* ── JRPG Button ────────────────────────────────────────────────────────────── */
 .oni-camp-btn {
   appearance: none;
@@ -416,8 +426,9 @@
   display: flex;
   flex-direction: column;
 }
-.oni-camp-bond-panel .panel-body {
-  overflow-y: auto; flex: 1; margin-top: 8px;
+.oni-camp-bond-panel .panel-body,
+.oni-bond-summary-panel .panel-body {
+  overflow-y: auto; flex: 1; margin-top: 0;
   scrollbar-width: thin; scrollbar-color: var(--camp-wood-2) transparent;
 }
 

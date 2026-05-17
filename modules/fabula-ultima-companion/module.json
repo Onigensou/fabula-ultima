@@ -233,6 +233,7 @@
   "scripts/camp-system/camp-ui-activity-resolve.js",
   "scripts/camp-system/camp-ui-bond.js",
   "scripts/camp-system/camp-ui-bond-summary.js",
+  "scripts/camp-system/rest-api.js",
   "scripts/camp-system/camp-ui-sleep.js",
   "scripts/camp-system/camp-ui-gm-panel.js",
   "scripts/camp-system/camp-bootstrap.js"

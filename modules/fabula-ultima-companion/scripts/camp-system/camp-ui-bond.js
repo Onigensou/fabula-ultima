@@ -323,11 +323,13 @@
     overlay.innerHTML = `
       <div class="oni-camp-panel" style="width:min(480px,88vw);text-align:center;">
         <div class="oni-camp-panel__title"><i class="fas fa-heart"></i> Bond Update</div>
-        <div style="font-size:.88em;color:var(--camp-wood-2);margin:16px 0 14px;">
-          Players are updating their bonds.<br>Waiting for everyone to confirm…
-        </div>
-        <div class="oni-camp-lobby-dots" id="oni-camp-bond-wait-dots" style="justify-content:center;margin-bottom:16px;">
-          ${dots || '<span style="font-size:.75em;opacity:.5;">No active players</span>'}
+        <div class="oni-camp-inner-panel" style="text-align:center;">
+          <div style="font-size:.88em;margin-bottom:12px;">
+            Players are updating their bonds.<br>Waiting for everyone to confirm…
+          </div>
+          <div class="oni-camp-lobby-dots" id="oni-camp-bond-wait-dots" style="justify-content:center;">
+            ${dots || '<span style="font-size:.75em;opacity:.65;">No active players</span>'}
+          </div>
         </div>
         <div class="oni-camp-gm-override" style="justify-content:center;">
           <span class="gm-override-label"><i class="fas fa-shield-alt"></i> GM</span>

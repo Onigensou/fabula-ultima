@@ -94,18 +94,18 @@
     overlay.innerHTML = `
       <div class="oni-camp-panel oni-bond-summary-panel">
         <div class="oni-camp-panel__title"><i class="fas fa-heart"></i> Bond Summary</div>
-        <div style="font-size:.82em;opacity:.7;margin-bottom:10px;">
-          Here is how everyone's bonds changed tonight.
-        </div>
-        <div class="panel-body">
+        <div class="oni-camp-inner-panel panel-body">
+          <div style="font-size:.82em;margin-bottom:10px;">
+            Here is how everyone's bonds changed tonight.
+          </div>
           ${noChanges
-            ? `<div style="opacity:.6;font-style:italic;text-align:center;padding:20px;">No bond changes this camp session.</div>`
+            ? `<div style="font-style:italic;text-align:center;padding:16px 0;opacity:.7;">No bond changes this camp session.</div>`
             : entries.map(_buildEntry).join("")
           }
         </div>
         <hr>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
-          <span style="font-size:.78em;opacity:.6;">
+          <span style="font-size:.78em;opacity:.75;">
             <i class="fas fa-moon"></i> Continuing to sleep phase…
           </span>
           ${game.user?.isGM ? `<button class="oni-camp-gm-btn" id="oni-camp-bsum-force">Skip →</button>` : ""}
