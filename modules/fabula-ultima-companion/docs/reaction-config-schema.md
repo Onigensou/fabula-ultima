@@ -41,6 +41,49 @@ Use these for "after my own skill resolves, do X" mechanics — drain /
 leech, on-cast self-buff, post-damage trigger — that aren't structurally
 reactions to outside events.
 
+## Passive bonus formula props (Phase E)
+
+For passive skills that should add a flat (or formula-driven) bonus to
+**every** action the owner performs — Adversity, Magical Artillery, etc. —
+the skill's `system.props` can carry two formula-string fields read by
+the passive-modifier-engine during the action phase:
+
+| Prop | Applies to | Pipeline hook |
+|---|---|---|
+| `passive_check_bonus_formula` | `actionCtx.accuracy.bonus` (added) | `evaluatePassiveModifiers` — action phase |
+| `passive_damage_bonus_formula` | `actionCtx.advPayload.bonus` (added) | `evaluatePassiveModifiers` — action phase |
+
+Each is a formula string with the same grammar as `grant_amount` (see
+[Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload)).
+Identifiers resolve against the actor performing the action; the
+identifier `STATUS_COUNT` exposes the actor's current count of
+debuff-classified effects (see [Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload)).
+
+Blank disables. Applies on every action — gate inside the formula itself
+(e.g. `min(STATUS_COUNT, 3)` resolves to 0 when no statuses are present).
+
+### Worked example — Adversity (declarative)
+
+The Darkblade Heroic Skill *Adversity* (Jan 2025 playtest revision):
+"+1 bonus on all Checks per status effect (cap +3), +2 damage per
+status (cap +6)."
+
+```jsonc
+"system.props.passive_check_bonus_formula":  "min(STATUS_COUNT, 3)",
+"system.props.passive_damage_bonus_formula": "min(STATUS_COUNT * 2, 6)"
+```
+
+No reaction_config_table, no scripts, no AEs. The engine reads both
+formulas on every action and adds the results to check/damage. The
+formulas resolve to 0 when no statuses are present, so the skill is
+inert until at least one debuff lands on the owner.
+
+**Coverage caveat:** these fields apply inside the action pipeline
+(attack accuracy + damage). Open Checks performed outside the pipeline
+(Study, Insight, opposed skill checks narrated by the GM) won't pick up
+the bonus today — that's a pipeline scope question, not a skill-data
+question.
+
 ### Worked example — Drain Spirit (declarative)
 
 ```jsonc
@@ -253,6 +296,7 @@ Identifiers (all return 0 if unresolvable):
 | `BOND_STRENGTH` | Strength (0–3) of reactor's Bond toward the trigger subject. |
 | `BOND_COUNT` | Total non-empty bond slots on the reactor. |
 | `BOND_COUNT_<EMOTION>` | Count of reactor's bonds with that emotion. `<EMOTION>` is one of `ADMIRATION`, `INFERIORITY`, `LOYALTY`, `MISTRUST`, `AFFECTION`, `HATRED`. |
+| `STATUS_COUNT` | Count of debuff-classified active effects on the reactor (non-disabled, non-suppressed). Uses the AEM registry's `inferCategory()` classifier — same source of truth as the reaction `debuff_count` filter. |
 | `DAMAGE_DEALT` | The triggering damage-card event's `finalValue` (post-affinity), regardless of resource type. Set by Create Damage Card emits — works for `creature_takes_damage`, `creature_deals_damage`, `creature_lose_mp`, etc. |
 | `HP_DEALT` / `MP_DEALT` / `SHIELD_DEALT` | Same value but returns 0 unless the event's `valueType` matches. |
 

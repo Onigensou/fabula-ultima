@@ -720,6 +720,22 @@
       }
     }
 
+    // -----------------------------------------------------------------------
+    // Declarative passive bonus formulas (Phase E)
+    //
+    // Each item on the actor may carry `passive_check_bonus_formula` and/or
+    // `passive_damage_bonus_formula` (formula strings — same grammar as
+    // reaction grant_amount). These apply unconditionally on every action
+    // (the gating belongs in the formula itself, e.g. `min(STATUS_COUNT, 3)`
+    // resolves to 0 when no statuses are present). No per-skill JS required.
+    //
+    // Runs AFTER the script loop so any flat bonuses scripts have already
+    // applied; the formula-driven additions stack on top.
+    // -----------------------------------------------------------------------
+    if (!actionCtx?.meta?.__abortPipeline) {
+      applyDeclarativePassiveFormulas({ actor, actionCtx, items, runId, out });
+    }
+
     log(runId, "END ACTION", {
       actor: actor?.name ?? null,
       ranScripts: out.ranScripts.length,
@@ -730,6 +746,92 @@
     });
 
     return out;
+  }
+
+  function applyDeclarativePassiveFormulas({ actor, actionCtx, items, runId, out }) {
+    const evaluator = globalThis?.["oni.ReactionFormula"];
+    if (!evaluator?.evaluate) {
+      warn(runId, "oni.ReactionFormula unavailable; skipping declarative passive formulas.");
+      return;
+    }
+
+    for (const item of items) {
+      const props = getItemProps(item);
+      const checkExpr = String(props?.passive_check_bonus_formula ?? "").trim();
+      const dmgExpr   = String(props?.passive_damage_bonus_formula ?? "").trim();
+      if (!checkExpr && !dmgExpr) continue;
+
+      // Skip items that look gameplay-inert (e.g. unequipped weapons that
+      // shouldn't grant their riders). Passive skills don't have an
+      // `isEquipped` flag — they're "always on" by virtue of being owned —
+      // so we DON'T skip when isEquipped is undefined. Only skip when the
+      // item explicitly declares isEquipped=false AND has an item_type that
+      // implies equippability (weapon/armor/accessory).
+      if (props?.isEquipped === false) {
+        const t = getItemTypeNormalized(item);
+        if (t === "weapon" || t === "armor" || t === "accessory") continue;
+      }
+
+      const ctx = {
+        reactorActor: actor,
+        firingSkill: item,
+        payload: actionCtx
+      };
+
+      const itemRunId = `${runId}:${item.id ?? item.name ?? "item"}:formula`;
+
+      if (checkExpr) {
+        try {
+          const v = Number(evaluator.evaluate(checkExpr, ctx)) || 0;
+          if (v !== 0) {
+            actionCtx.accuracy = actionCtx.accuracy || {};
+            actionCtx.accuracy.bonus = Number(actionCtx.accuracy.bonus ?? 0) + v;
+            out.breakdown.push({
+              source: item.name ?? item.id ?? "Passive Formula",
+              type: "passive_check_bonus_formula",
+              fieldKey: "passive_check_bonus_formula",
+              expression: checkExpr,
+              value: v
+            });
+            log(itemRunId, "applied passive_check_bonus_formula", { expr: checkExpr, value: v });
+          }
+        } catch (e) {
+          err(itemRunId, "passive_check_bonus_formula failed", { expr: checkExpr, error: String(e?.message ?? e) });
+          out.errors.push({
+            itemId: item.id ?? null,
+            itemName: item.name ?? "",
+            fieldKey: "passive_check_bonus_formula",
+            message: String(e?.message ?? e)
+          });
+        }
+      }
+
+      if (dmgExpr) {
+        try {
+          const v = Number(evaluator.evaluate(dmgExpr, ctx)) || 0;
+          if (v !== 0) {
+            actionCtx.advPayload = actionCtx.advPayload || {};
+            actionCtx.advPayload.bonus = Number(actionCtx.advPayload.bonus ?? 0) + v;
+            out.breakdown.push({
+              source: item.name ?? item.id ?? "Passive Formula",
+              type: "passive_damage_bonus_formula",
+              fieldKey: "passive_damage_bonus_formula",
+              expression: dmgExpr,
+              value: v
+            });
+            log(itemRunId, "applied passive_damage_bonus_formula", { expr: dmgExpr, value: v });
+          }
+        } catch (e) {
+          err(itemRunId, "passive_damage_bonus_formula failed", { expr: dmgExpr, error: String(e?.message ?? e) });
+          out.errors.push({
+            itemId: item.id ?? null,
+            itemName: item.name ?? "",
+            fieldKey: "passive_damage_bonus_formula",
+            message: String(e?.message ?? e)
+          });
+        }
+      }
+    }
   }
 
   async function evaluatePassiveResolutionModifiers({

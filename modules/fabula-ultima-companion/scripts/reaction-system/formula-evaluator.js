@@ -248,6 +248,19 @@ Hooks.once("ready", () => {
     return n;
   }
 
+  function _countStatusesOnActor(reactorActor) {
+    if (!reactorActor) return 0;
+    const inferCategory = globalThis?.FUCompanion?.api?.activeEffectRegistry?._internal?.inferCategory;
+    if (typeof inferCategory !== "function") return 0;
+    const effects = reactorActor.effects?.contents ?? reactorActor.effects ?? [];
+    let n = 0;
+    for (const e of effects) {
+      if (!e || e.disabled || e.isSuppressed) continue;
+      try { if (inferCategory(e) === "Debuff") n++; } catch {}
+    }
+    return n;
+  }
+
   function _countBondsWithEmotion(reactorProps, emotion) {
     const pair = EMOTION_PAIR[_norm(emotion)];
     if (!pair) return 0;
@@ -316,6 +329,12 @@ Hooks.once("ready", () => {
         return _bondStrength(reactorProps, slot);
       }
       case "BOND_COUNT": return _countBondsAny(reactorProps);
+      // Status effects suffered by the reactor (debuff-classified, non-disabled,
+      // non-suppressed). Delegates classification to the AEM registry's
+      // inferCategory() so a single source of truth governs what counts as a
+      // status effect across the reaction debuff_count filter AND this
+      // identifier. Returns 0 if the registry is unavailable (fail-soft).
+      case "STATUS_COUNT": return _countStatusesOnActor(reactorActor);
       // Action outcomes — per-event reads on the damage-card trigger payload
       // (Create Damage Card emits one trigger per affected target with
       // finalValue + valueType set on the payload).
@@ -371,6 +390,7 @@ Hooks.once("ready", () => {
       { name: "BOND_STRENGTH",     description: "Strength (0–3) of reactor's bond toward the trigger subject." },
       { name: "BOND_COUNT",        description: "Total non-empty bond slots on the reactor." },
       { name: "BOND_COUNT_<EMOTION>", description: "Count of reactor's bonds with a specific emotion. Replace <EMOTION> with one of ADMIRATION / INFERIORITY / LOYALTY / MISTRUST / AFFECTION / HATRED." },
+      { name: "STATUS_COUNT",      description: "Count of debuff-classified active effects on the reactor (non-disabled, non-suppressed). Uses the AEM registry's inferCategory() classifier — same source of truth as the reaction debuff_count filter." },
       { name: "DAMAGE_DEALT",  description: "Damage value from the triggering event's payload (post-affinity). Each affected target gets its own event with its own value." },
       { name: "HP_DEALT",      description: "Same but 0 unless the event's valueType is hp." },
       { name: "MP_DEALT",      description: "Same but 0 unless the event's valueType is mp." },
