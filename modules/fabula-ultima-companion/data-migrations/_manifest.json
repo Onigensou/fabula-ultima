@@ -31,6 +31,14 @@
     {
       "key": "2026-05-17-drain-spirit-clear-custom-logic",
       "path": "data-migrations/2026-05-17-drain-spirit-clear-custom-logic.js"
+    },
+    {
+      "key": "2026-05-17-passive-bonus-formula-columns",
+      "path": "data-migrations/2026-05-17-passive-bonus-formula-columns.js"
+    },
+    {
+      "key": "2026-05-17-adversity-master-author",
+      "path": "data-migrations/2026-05-17-adversity-master-author.js"
     }
   ]
 }
