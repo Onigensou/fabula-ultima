@@ -38,8 +38,6 @@
       // Final fallback: look up by actorId directly
       if (!_actor && mine?.actorId) _actor = game.actors.get(mine.actorId) ?? null;
 
-      console.debug(TAG, "show() actor:", _actor?.id, _actor?.name, "isToken:", _actor?.isToken ?? false);
-
       if (!_actor) {
         ui.notifications?.warn("No character found for bond editing. Ask your GM to assign your actor.");
         return;
@@ -74,32 +72,19 @@
       const updated = _readBondsFromDOM();
       const changes = BondUpdater.buildChangelog(_originalBonds, updated);
 
-      console.debug(TAG, "confirm() changes:", changes);
-
-      // Write only the bond slots that actually changed, one at a time.
       for (const change of changes) {
         const slot = updated.find(b => b.idx === change.slot);
         if (!slot) continue;
-        console.debug(TAG, `confirm() writing slot ${slot.idx}:`, slot);
-        const result = await BondUpdater.writeSlot(_actor, slot.idx, slot);
-        if (!result) {
-          console.error(TAG, `confirm() writeSlot(${slot.idx}) returned falsy — update rejected`);
-          ui.notifications?.error("Bond update failed — check console (F12) for details.");
-          return;
-        }
-        console.debug(TAG, `confirm() slot ${slot.idx} written OK`);
+        await BondUpdater.writeSlot(_actor, slot.idx, slot);
       }
 
-      await _actor.setFlag(CAMP.MODULE_ID, MEM_FLAG, _pendingMems).catch(err =>
-        console.warn(TAG, "confirm() setFlag failed (non-fatal):", err)
-      );
+      await _actor.setFlag(CAMP.MODULE_ID, MEM_FLAG, _pendingMems).catch(() => {});
 
       CAMP.Socket.emit(CAMP.MSG.CONFIRM_BOND, {
         userId: game.user?.id,
         summary: { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _pendingMems },
       });
 
-      console.debug(TAG, "confirm() done.");
       CAMP.Sound.play(CAMP.SFX.BOND_CONFIRM);
       _setConfirmedState(true);
     },
@@ -470,5 +455,4 @@
     document.body.appendChild(overlay);
   }
 
-  console.debug(TAG, "Bond UI loaded.");
 })();

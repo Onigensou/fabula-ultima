@@ -7,9 +7,9 @@
 // Bond data schema — six fixed slots N = 1..6:
 //   system.props.bond_N           — character name (plain text)
 //   system.props.relationship_N   — relationship description (free text)
-//   system.props.emotion_N_1      — pair 1: "" | "Admiration" | "Inferiority"
-//   system.props.emotion_N_2      — pair 2: "" | "Loyalty"    | "Mistrust"
-//   system.props.emotion_N_3      — pair 3: "" | "Affection"  | "Hatred"
+//   system.props.emotion_N_1      — pair 1: "" | "admiration" | "inferiority"
+//   system.props.emotion_N_2      — pair 2: "" | "loyalty"    | "mistrust"
+//   system.props.emotion_N_3      — pair 3: "" | "affection"  | "hatred"
 //
 // All reads go through actor.system.props.
 // All writes go through actor.update() with flattened dot-notation paths.
@@ -66,7 +66,6 @@
         [`system.props.relationship_${slotIdx}`]: bondData.rel  ?? "",
       };
 
-      console.debug(TAG, `writeSlot(${slotIdx})`, payload);
       return actor.update(payload);
     },
 
@@ -85,7 +84,6 @@
         payload[`system.props.emotion_${b.idx}_3`]    = b.e3   ?? "";
         payload[`system.props.relationship_${b.idx}`] = b.rel  ?? "";
       }
-      console.debug(TAG, "writeBonds payload", payload);
       return actor.update(payload);
     },
 
@@ -128,5 +126,4 @@
     },
   };
 
-  console.debug(TAG, "Bond Updater API loaded.");
 })();
