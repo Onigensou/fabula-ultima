@@ -143,7 +143,7 @@
       _scheduleResume(jingleSound, bgmPlaylist, bgmSound);
 
       // Pause while the screen is black so the jingle plays before feedback appears.
-      await new Promise(r => setTimeout(r, 4000));
+      await new Promise(r => setTimeout(r, 5000));
 
       // 3 & 4 — Process each party member
       const actors = await _getPartyActors();
