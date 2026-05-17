@@ -93,7 +93,7 @@ to remember which is authoritative. When in doubt, prefer `meta.*`.
 | `isPassiveExecution` | `boolean` | ADC | (mirror only) | Top-level mirror of `meta.isPassiveExecution`. |
 | `attackerActorUuid` | `string` (Actor UUID) | ADF | ADC, AEC | The attacker's *actor* UUID (not token). ADC resolves this into `useActor`. |
 | `dataCore` | `object` | ADF | ADC | The pre-computation skill/weapon snapshot. See "dataCore" section. |
-| `overrides` | `object` | Caller (Weapon branch) | ADF, ADC | Raw weapon-attack overrides (rolled attrs, damage bonus, etc.). Weapon branch only. |
+| `overrides` | `object` | Caller (Weapon / Skill branch) | ADF, ADC | Per-call overrides applied on top of the resolved item's props. **Weapon branch:** raw weapon-attack overrides (rolled attrs, damage bonus, etc.). **Skill branch:** optional `{ rolled_atr1, rolled_atr2, check_bonus }` for skills where the caller picks the formula at fire time (e.g. Study). |
 | `skillUuid` | `string` | ADF | ADC | Skill item UUID. Skill / Item branch only. |
 | `weaponUuid` | `string` | ADF | ADC | Weapon item UUID. Weapon branch only. |
 | `itemUuid` | `string` | Caller (Item branch) | ADF | Owning item UUID for an Item-fastpath skill. Mirrored to `meta.itemUuid`. |
@@ -441,7 +441,8 @@ The payload's contents differ by `source`:
 
 ### Skill / Spell branch (`source === "Skill"`)
 
-- `skillUuid` is set; `weaponUuid` and `overrides` are unset.
+- `skillUuid` is set; `weaponUuid` is unset.
+- `overrides` is optional: `{ rolled_atr1?, rolled_atr2?, check_bonus? }`. When present, ADF reads each field from `PAYLOAD.overrides[k]` in preference to the skill's `system.props[k]`. Used by Study (player picks INS+INS vs INS+WLP at fire time) and similar dynamic-formula skills.
 - `meta.isSpellish = !!dataCore.isSpell` (true for normal Spells; Offensive Spells set `dataCore.isOffSpell` separately).
 - `accuracy` is `null` when `dataCore.isCheck === false`.
 - `costRaw` carries the skill's `props.cost`.

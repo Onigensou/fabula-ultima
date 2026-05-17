@@ -1494,7 +1494,12 @@ const explicitAutoHit = !!(
   )
 );
 
-const treatAutoHit = (!mergedArgs.hasAccuracy) || explicitAutoHit;
+// Check-only actions (e.g. Study — has an Open Check roll but no damage to
+// land) have no meaningful hit/miss concept. Treat them as auto-hit so the
+// pipeline skips Miss.js entirely. Without this, the accuracy total is
+// pointlessly compared against the target's DEF/MDEF and the action half the
+// time posts a misleading "miss" log.
+const treatAutoHit = (!mergedArgs.hasAccuracy) || (!mergedArgs.hasDamageSection) || explicitAutoHit;
 
 const missUUIDs = [];
 const hitUUIDs = [];
@@ -2105,6 +2110,20 @@ if (!animPrecheck.hasRunnableScript) {
       }
 
       log(runId, "COMPLETE", summary);
+
+      // Emit a generic "action resolved" hook for downstream listeners
+      // (e.g. Encyclopedia for Study). Local to this client — listeners are
+      // responsible for routing writes to GM if needed. Skipped in dryRun.
+      if (!dryRun) {
+        try {
+          Hooks.callAll("oni:action:resolved", { payload, summary, runId });
+        } catch (hookErr) {
+          warn(runId, "oni:action:resolved hook listener threw (non-fatal).", {
+            error: String(hookErr?.message ?? hookErr)
+          });
+        }
+      }
+
       return summary;
         } catch (e) {
       err(runId, "FAILED", e);
