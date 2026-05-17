@@ -39,6 +39,10 @@
   from { opacity: 0; transform: translateX(-16px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+@keyframes campRowSlideIn {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 @keyframes campPulse {
   0%, 100% { box-shadow: 0 0 8px var(--camp-glow); }
   50%       { box-shadow: 0 0 20px var(--camp-glow), 0 0 40px rgba(250,230,160,.3); }
@@ -228,6 +232,13 @@
   background: rgba(202,164,77,.14);
   border-color: rgba(202,164,77,.38);
 }
+.oni-camp-spectator .oni-camp-act-row {
+  cursor: default;
+}
+.oni-camp-spectator .oni-camp-act-row:hover {
+  background: transparent;
+  border-color: transparent;
+}
 .oni-camp-act-row.act-focused {
   background: rgba(202,164,77,.1);
   border-color: rgba(202,164,77,.28);
@@ -237,7 +248,6 @@
   border-color: rgba(100,190,95,.55);
 }
 .oni-camp-act-row.locked-other {
-  opacity: .4;
   cursor: not-allowed;
 }
 .oni-camp-act-row.hov-self { border-color: var(--camp-gold-2); }
@@ -439,21 +449,58 @@
 }
 
 .oni-bond-slot {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 6px;
-  align-items: center;
-  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1.5px solid rgba(92,66,30,.25);
-  margin-bottom: 6px;
-  background: linear-gradient(180deg, rgba(255,255,255,.3) 0%, rgba(255,255,255,.05) 100%);
+  margin-bottom: 8px;
+  background: rgba(255, 250, 238, 0.82);
   transition: border-color .15s ease, box-shadow .15s ease;
+  animation: campRowSlideIn .24s ease both;
 }
-.oni-bond-slot:hover { border-color: rgba(202,164,77,.5); }
-.oni-bond-slot.empty { opacity: .5; }
-.oni-bond-slot.modified { border-color: rgba(126,200,122,.7); box-shadow: 0 0 0 2px rgba(126,200,122,.2); }
+.oni-bond-slot:hover           { border-color: rgba(202,164,77,.5); }
+.oni-bond-slot.modified        { border-color: rgba(126,200,122,.65); box-shadow: 0 0 0 2px rgba(126,200,122,.18); }
+.oni-bond-slot.gate-active     { border-color: var(--camp-gold-2); box-shadow: 0 0 0 2px rgba(202,164,77,.2); }
 
+/* Slot header: label left, hearts right */
+.bond-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bond-slot-label {
+  font-size: .74em; font-weight: 700; opacity: .6; letter-spacing: .3px;
+}
+.bond-hearts { display: flex; gap: 4px; font-size: .9em; }
+.bond-heart.positive { color: #e8729a; }
+.bond-heart.negative { color: #9b5fb5; }
+.bond-heart.empty    { color: #bbb; opacity: .55; }
+
+/* Name → Relationship row */
+.bond-name-rel-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.bond-name-rel-row .bond-name-input { flex: 1; }
+.bond-arrow {
+  color: var(--camp-wood-2); opacity: .65;
+  font-size: 1em; flex-shrink: 0; user-select: none;
+}
+.bond-name-rel-row .bond-rel-input { flex: 1.6; }
+
+/* Emotion row */
+.bond-em-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bond-em-row select { flex: 1; }
+.slot-actions { display: flex; gap: 5px; flex-shrink: 0; }
+
+/* Shared input/select */
 .oni-bond-slot input[type="text"],
 .oni-bond-slot select {
   width: 100%;
@@ -472,25 +519,42 @@
   box-shadow: 0 0 0 2px rgba(202,164,77,.25);
 }
 
-.oni-bond-slot .slot-label {
-  grid-column: 1 / -1;
-  font-size: .75em; font-weight: 700; opacity: .6;
-  margin-bottom: 2px;
-}
-.oni-bond-slot .bond-name   { grid-column: 1 / 2; }
-.oni-bond-slot .bond-rel    { grid-column: 2 / 4; }
-.oni-bond-slot .bond-em-row { grid-column: 1 / 4; display: flex; gap: 5px; }
-.oni-bond-slot .bond-em-row select { flex: 1; }
-.oni-bond-slot .slot-actions { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+/* Slot buttons */
 .oni-bond-slot .slot-btn {
   font-size: .72em; padding: 3px 8px; white-space: nowrap;
   border-radius: 6px; border: 1px solid rgba(90,60,34,.4); cursor: pointer;
-  background: rgba(255,255,255,.5); color: var(--camp-ink);
+  background: rgba(255,255,255,.5); color: var(--camp-ink); font-family: inherit;
   transition: background .12s ease;
 }
-.oni-bond-slot .slot-btn:hover { background: rgba(202,164,77,.5); }
+.oni-bond-slot .slot-btn:hover  { background: rgba(202,164,77,.5); }
 .oni-bond-slot .slot-btn.to-mem { color: #7a4a10; }
 .oni-bond-slot .slot-btn.clear  { color: #9a2020; }
+
+/* Add Bond button */
+.bond-add-new-btn {
+  width: 100%;
+  padding: 9px;
+  margin-top: 2px;
+  border: 1.5px dashed rgba(92,66,30,.35);
+  border-radius: 8px;
+  background: rgba(255,255,255,.12);
+  color: var(--camp-wood-2);
+  font-family: inherit;
+  font-size: .84em;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background .12s ease, border-color .12s ease;
+}
+.bond-add-new-btn:hover {
+  background: rgba(202,164,77,.15);
+  border-color: rgba(202,164,77,.5);
+}
+
+/* Bond subtitle */
+.bond-subtitle {
+  font-size: .8em; opacity: .65; margin-bottom: 8px;
+}
 
 /* Memory list */
 .oni-memory-item {
