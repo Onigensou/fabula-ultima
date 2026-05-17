@@ -179,11 +179,49 @@ in the UI but harmless in JSON.
 | Field | Type | Notes |
 |-------|------|-------|
 | `grant_resource` | `"hp" \| "mp" \| "ip" \| "zero_power" \| "zenit" \| "enmity"` | Required. Blank = effect disabled. |
-| `grant_amount` | number | Positive grants; negative drains. Blank or 0 = effect disabled. |
+| `grant_amount` | number OR formula string | Positive grants; negative drains. Blank or 0 = effect disabled. **Formulas are supported** — see "Formula identifiers" below. |
 | `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. `"ally"` includes the reactor. |
 
 Resource caps: `hp/mp/ip` clamp to actor's `max_*`; `zero_power` clamps
 to [0, 6]; `zenit/enmity` are uncapped. Floor is always 0.
+
+#### Formula identifiers (resolved against the reactor + trigger payload)
+
+`grant_amount` accepts a literal number (`"10"`) OR a safe arithmetic
+expression with whitelisted identifiers and functions. Evaluated by
+`window["oni.ReactionFormula"]`. No `eval` / `new Function`.
+
+Operators: `+` `-` `*` `/`, unary minus, parentheses.
+Functions: `floor`, `ceil`, `round`, `abs`, `min`, `max`.
+
+Identifiers (all return 0 if unresolvable):
+
+| Name | Resolves to |
+|---|---|
+| `SL` | Firing skill/AE's level. |
+| `MAX_HP` / `CUR_HP` | Reactor's HP. |
+| `MAX_MP` / `CUR_MP` | Reactor's MP. |
+| `MAX_IP` / `CUR_IP` | Reactor's IP. |
+| `BOND_STRENGTH` | Strength (0–3) of reactor's Bond toward the trigger subject. |
+| `BOND_COUNT` | Total non-empty bond slots on the reactor. |
+| `BOND_COUNT_<EMOTION>` | Count of reactor's bonds with that emotion. `<EMOTION>` is one of `ADMIRATION`, `INFERIORITY`, `LOYALTY`, `MISTRUST`, `AFFECTION`, `HATRED`. |
+| `DAMAGE_DEALT` | The triggering damage-card event's `finalValue` (post-affinity), regardless of resource type. Set by Create Damage Card emits — works for `creature_takes_damage`, `creature_deals_damage`, `creature_lose_mp`, etc. |
+| `HP_DEALT` / `MP_DEALT` / `SHIELD_DEALT` | Same value but returns 0 unless the event's `valueType` matches. |
+
+Per-target semantics: damage triggers fire once per affected target, so a
+grant that uses `DAMAGE_DEALT` also fires once per target — cumulatively
+correct for drain-style effects ("recover an amount equal to half the
+damage you dealt"). `DAMAGE_DEALT_TOTAL` / `HP_DEALT_TOTAL` etc. are
+aliases for the per-event reads.
+
+Examples:
+
+```text
+grant_amount: "SL * 2"           // Agony — recover 10 at SL 5
+grant_amount: "MP_DEALT / 2"     // Drain Spirit — half the MP burned
+grant_amount: "BOND_STRENGTH"    // recover equal to bond strength toward target
+grant_amount: "floor(CUR_HP / 4)"  // self-sacrifice scaling
+```
 
 ### `effect_kind: "apply_ae"` — apply an Active Effect
 

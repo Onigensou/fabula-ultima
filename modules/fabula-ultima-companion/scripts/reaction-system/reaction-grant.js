@@ -247,7 +247,7 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
   // Effect dispatch
   // ---------------------------------------------------------------------------
-  async function applyGrantEffect(effectRow, reactionToken, combat) {
+  async function applyGrantEffect(effectRow, reactionToken, combat, ctx) {
     const resourceKey = (effectRow.grant_resource ?? "").toString().trim().toLowerCase();
     if (!resourceKey) {
       return { ok: true, skipped: true, reason: "no_resource", applied: [] };
@@ -262,9 +262,26 @@ Hooks.once("ready", () => {
     if (amountStr === "") {
       return { ok: true, skipped: true, reason: "no_amount", applied: [] };
     }
-    const amount = Number(amountStr);
+
+    // Evaluate the amount expression. Falls through to plain-number parsing
+    // for literals (e.g. "10"); identifiers / arithmetic require the formula
+    // evaluator. Authors can write "SL * 2", "MP_DEALT_TOTAL / 2", etc.
+    let amount;
+    const formula = window["oni.ReactionFormula"];
+    if (formula?.evaluate) {
+      const formulaContext = {
+        reactorActor: reactionToken?.actor ?? null,
+        reactorToken: reactionToken ?? null,
+        firingSkill: ctx?.item ?? null,
+        subjectToken: ctx?.subjectToken ?? null,
+        payload: ctx?.payload ?? null
+      };
+      amount = formula.evaluate(amountStr, formulaContext);
+    } else {
+      amount = Number(amountStr);
+    }
     if (!Number.isFinite(amount) || amount === 0) {
-      return { ok: true, skipped: true, reason: "zero_or_invalid_amount", applied: [] };
+      return { ok: true, skipped: true, reason: "zero_or_invalid_amount", applied: [], amountExpr: amountStr };
     }
 
     const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
@@ -742,7 +759,7 @@ Hooks.once("ready", () => {
     let result;
     switch (kind) {
       case "grant":
-        result = await applyGrantEffect(effectRow, reactionToken, combat);
+        result = await applyGrantEffect(effectRow, reactionToken, combat, ctx);
         break;
       case "apply_ae":
         result = await applyApplyAeEffect(effectRow, reactionToken, combat);

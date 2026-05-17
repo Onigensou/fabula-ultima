@@ -178,6 +178,7 @@
   "scripts/battle-end/battleEnd-summaryUI-listener.js",
   "scripts/reaction-system/reaction-triggers.config.js",
   "scripts/reaction-system/reaction-formulaFunctions.js",
+  "scripts/reaction-system/formula-evaluator.js",
   "scripts/reaction-system/reaction-triggerCore.js",
   "scripts/reaction-system/reaction-grant.js",
   "scripts/csb-extensions/CompactDynamicTable.js",
