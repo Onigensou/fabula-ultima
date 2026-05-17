@@ -5,59 +5,59 @@
 // • Players: click Confirm → request GM to resolve via module socket (module.fabula-ultima-companion)
 // • GM: click Confirm OR receives socket request → resolves immediately on GM client
 //
+// Architecture (2026-05-17 refactor):
+// • Click listener is bound per-chat-message via `renderChatMessage` hook,
+//   gated by `canConfirmCardForCurrentUser()` — players who don't own
+//   the attacker never get a listener at all. Permission is enforced at
+//   bind time, not in the click handler.
+// • Listener is bound to the button DOM node directly, with an idempotency
+//   flag on `btn.dataset.fuConfirmBound`. Foundry re-fires renderChatMessage
+//   when the message re-renders, producing fresh DOM that gets a fresh
+//   listener — survives any sidebar / popout re-render naturally.
+// • Socket listener (GM-side handling of player confirm requests, and
+//   confirm-broadcast handling on all clients) is installed once on ready
+//   with a `window` idempotency flag so it survives reloads.
+//
 // Notes:
-// - This version delegates actual action execution to:
+// - Action execution delegates to:
 //     window.FUCompanion.api.actionExecution.execute(...)
 // - Chat button locking, card stamping, and socket sync remain here.
-// - This keeps manual Confirm behavior intact while making the execution backend reusable
-//   for future Auto Passive / Auto Reaction flows.
 
 const MODULE_ID = "fu-chatbtn";
 const MODULE_NS = "fabula-ultima-companion";
 const SOCKET_NS = "module.fabula-ultima-companion";
 
-Hooks.once("ready", async () => {
-  // Bind at the document level (rather than #chat-log) so the listener
-  // survives Foundry's sidebar re-renders that destroy the original
-  // #chat-log node. The `closest("[data-fu-confirm]")` filter inside the
-  // click handler keeps the scope to our confirm buttons only.
-  //
-  // Idempotency guard moves from a DOM property (which dies with the node)
-  // to a window-level flag.
-  if (window.__fuChatBtnBound) return;
-  window.__fuChatBtnBound = true;
-  const root = document;
+// ============================================================================
+// Helpers
+// ============================================================================
 
-  // ------------------------------------------------------------
-  // Helpers
-  // ------------------------------------------------------------
-  async function resolveAttackerActor(attackerUuid) {
-    const doc = await fromUuid(attackerUuid).catch(() => null);
-    return (
-      doc?.actor ??
-      (doc?.documentName === "Actor" ? doc : null) ??
-      (doc?.documentName === "Token" ? doc.actor : null) ??
-      (doc?.documentName === "TokenDocument" ? doc.actor : null)
-    );
-  }
+async function resolveAttackerActor(attackerUuid) {
+  const doc = await fromUuid(attackerUuid).catch(() => null);
+  return (
+    doc?.actor ??
+    (doc?.documentName === "Actor" ? doc : null) ??
+    (doc?.documentName === "Token" ? doc.actor : null) ??
+    (doc?.documentName === "TokenDocument" ? doc.actor : null)
+  );
+}
 
-  function lockButton(btn, text = "Confirming…") {
-    if (!btn) return;
-    btn.disabled = true;
-    btn.textContent = text;
-    btn.style.filter = "grayscale(.25)";
-    btn.dataset.fuLock = "1";
-  }
+function lockButton(btn, text = "Confirming…") {
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = text;
+  btn.style.filter = "grayscale(.25)";
+  btn.dataset.fuLock = "1";
+}
 
-  function unlockButton(btn, text = "✅ Confirm") {
-    if (!btn) return;
-    btn.disabled = false;
-    btn.textContent = text;
-    btn.style.filter = "";
-    btn.dataset.fuLock = "0";
-  }
+function unlockButton(btn, text = "✅ Confirm") {
+  if (!btn) return;
+  btn.disabled = false;
+  btn.textContent = text;
+  btn.style.filter = "";
+  btn.dataset.fuLock = "0";
+}
 
-  function getPrimaryActiveGM() {
+function getPrimaryActiveGM() {
   const activeGMs = Array.from(game.users ?? [])
     .filter(u => u.active && u.isGM)
     .sort((a, b) => String(a.id).localeCompare(String(b.id)));
@@ -240,18 +240,19 @@ function buildSafeExecutionArgsFromFlaggedPayload(flagged, incomingArgs = {}, ch
     ),
 
     forceMiss: !!(
-  accuracy?.forceMiss ||
-  accuracy?.isFumble ||
-  meta.forceMiss ||
-  adv.forceMiss ||
-  adv.isFumble
-),
+      accuracy?.forceMiss ||
+      accuracy?.isFumble ||
+      meta.forceMiss ||
+      adv.forceMiss ||
+      adv.isFumble
+    ),
 
     targets: savedTargets,
     originalTargetUUIDs: savedTargets,
     originalTargetActorUUIDs: savedTargetActors
   };
 }
+
 async function setChatFlagNoRender(chatMsg, scope, key, value) {
   if (!chatMsg) return null;
 
@@ -290,90 +291,121 @@ async function setActionCardState(chatMsg, state, extra = {}) {
   await setChatFlagNoRender(chatMsg, MODULE_NS, "actionCard", flag);
 }
 
-  // ------------------------------------------------------------
-  // Core resolver (GM only)
-  // ------------------------------------------------------------
-  async function runConfirm(chatMsg, args = {}, confirmingUserId = null) {
-    const RUN_TAG = "[fu-chatbtn][Confirm]";
-    const runId = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+// ============================================================================
+// Permission gate (sync — used to decide whether to bind on this client)
+// ============================================================================
 
-    const msgEl =
-      document.querySelector(`#chat-log .message[data-message-id="${chatMsg.id}"]`) ||
-      document.querySelector(`.chat-popout .message[data-message-id="${chatMsg.id}"]`) ||
-      null;
+function canConfirmCardForCurrentUser(chatMsg) {
+  if (!chatMsg) return false;
+  if (game.user?.isGM) return true;
 
-    const btn = msgEl?.querySelector?.("[data-fu-confirm]") ?? null;
+  const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
+  if (!flagged) return false;
 
-    // double-click guard
-    if (btn?.dataset?.fuLock === "1") return;
-    if (btn) lockButton(btn, "Confirming…");
+  const ownerUserId = flagged?.meta?.ownerUserId ?? null;
+  if (ownerUserId && ownerUserId === game.userId) return true;
 
-    console.groupCollapsed(`${RUN_TAG} START runId=${runId} msgId=${chatMsg.id}`);
-    console.log(`${RUN_TAG} meta`, {
-      runId,
-      msgId: chatMsg.id,
-      confirmingUserId,
-      gm: !!game.user?.isGM,
-      argsKeys: Object.keys(args || {})
+  const attackerUuid = flagged?.meta?.attackerUuid ?? null;
+  if (attackerUuid) {
+    try {
+      const doc = fromUuidSync(attackerUuid);
+      const actor =
+        doc?.actor ??
+        (doc?.documentName === "Actor" ? doc : null) ??
+        (doc?.documentName === "Token" ? doc.actor : null) ??
+        (doc?.documentName === "TokenDocument" ? doc.actor : null);
+      if (actor?.isOwner) return true;
+    } catch {}
+  }
+
+  return false;
+}
+
+// ============================================================================
+// Core resolver (GM only)
+// ============================================================================
+
+async function runConfirm(chatMsg, args = {}, confirmingUserId = null) {
+  const RUN_TAG = "[fu-chatbtn][Confirm]";
+  const runId = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+  const msgEl =
+    document.querySelector(`#chat-log .message[data-message-id="${chatMsg.id}"]`) ||
+    document.querySelector(`.chat-popout .message[data-message-id="${chatMsg.id}"]`) ||
+    null;
+
+  const btn = msgEl?.querySelector?.("[data-fu-confirm]") ?? null;
+
+  // double-click guard
+  if (btn?.dataset?.fuLock === "1") return;
+  if (btn) lockButton(btn, "Confirming…");
+
+  console.groupCollapsed(`${RUN_TAG} START runId=${runId} msgId=${chatMsg.id}`);
+  console.log(`${RUN_TAG} meta`, {
+    runId,
+    msgId: chatMsg.id,
+    confirmingUserId,
+    gm: !!game.user?.isGM,
+    argsKeys: Object.keys(args || {})
+  });
+
+  try {
+    const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
+    const executor = globalThis.FUCompanion?.api?.actionExecution?.execute ?? null;
+
+    console.log(`${RUN_TAG} flagged payload`, {
+      hasFlagged: !!flagged,
+      hasMeta: !!flagged?.meta,
+      hasCore: !!flagged?.core,
+      hasExecutor: !!executor
     });
 
-    try {
-      const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
-      const executor = globalThis.FUCompanion?.api?.actionExecution?.execute ?? null;
+    if (!flagged?.meta || !flagged?.core) {
+      ui.notifications?.error("Confirm: missing action payload on chat card.");
+      throw new Error("Missing action payload");
+    }
 
-      console.log(`${RUN_TAG} flagged payload`, {
-        hasFlagged: !!flagged,
-        hasMeta: !!flagged?.meta,
-        hasCore: !!flagged?.core,
-        hasExecutor: !!executor
-      });
+    if (!executor) {
+      ui.notifications?.error("Confirm: Action Execution Core API not found.");
+      throw new Error("Action Execution Core API not found");
+    }
 
-      if (!flagged?.meta || !flagged?.core) {
-        ui.notifications?.error("Confirm: missing action payload on chat card.");
-        throw new Error("Missing action payload");
-      }
+    // Prevent double-confirm (server-side-ish)
+    const already = await chatMsg.getFlag(MODULE_NS, "actionApplied");
+    if (already) {
+      console.warn(`${RUN_TAG} already applied, abort`, already);
+      return;
+    }
 
-      if (!executor) {
-        ui.notifications?.error("Confirm: Action Execution Core API not found.");
-        throw new Error("Action Execution Core API not found");
-      }
+    await setActionCardState(chatMsg, "confirming", {
+      actionCardConfirmingByUserId: confirmingUserId ?? game.userId,
+      actionCardConfirmingRunId: runId
+    });
 
-      // Prevent double-confirm (server-side-ish)
-      const already = await chatMsg.getFlag(MODULE_NS, "actionApplied");
-      if (already) {
-        console.warn(`${RUN_TAG} already applied, abort`, already);
-        return;
-      }
+    const executionArgs = buildSafeExecutionArgsFromFlaggedPayload(flagged, args, chatMsg.id);
 
-      await setActionCardState(chatMsg, "confirming", {
-        actionCardConfirmingByUserId: confirmingUserId ?? game.userId,
-        actionCardConfirmingRunId: runId
-      });
+    console.log(`${RUN_TAG} execution handoff`, {
+      runId,
+      executionMode: "manualCard",
+      chatMsgId: chatMsg.id,
+      attackerUuid: flagged?.meta?.attackerUuid ?? null,
+      skillName: flagged?.core?.skillName ?? null
+    });
 
-      const executionArgs = buildSafeExecutionArgsFromFlaggedPayload(flagged, args, chatMsg.id);
+    const result = await executor({
+      actionContext: flagged,
+      args: executionArgs,
+      chatMsgId: chatMsg.id,
+      executionMode: "manualCard",
+      confirmingUserId,
+      skipVisualFeedback: false
+    });
 
-      console.log(`${RUN_TAG} execution handoff`, {
-        runId,
-        executionMode: "manualCard",
-        chatMsgId: chatMsg.id,
-        attackerUuid: flagged?.meta?.attackerUuid ?? null,
-        skillName: flagged?.core?.skillName ?? null
-      });
+    console.log(`${RUN_TAG} execution result`, { runId, result });
 
-      const result = await executor({
-        actionContext: flagged,
-        args: executionArgs,
-        chatMsgId: chatMsg.id,
-        executionMode: "manualCard",
-        confirmingUserId,
-        skipVisualFeedback: false
-      });
-
-      console.log(`${RUN_TAG} execution result`, { runId, result });
-
-      if (!result?.ok) {
-        const reason = result?.reason ?? "unknown";
-        console.warn(`${RUN_TAG} executor reported non-ok result`, { runId, reason, result });
+    if (!result?.ok) {
+      const reason = result?.reason ?? "unknown";
+      console.warn(`${RUN_TAG} executor reported non-ok result`, { runId, reason, result });
 
       await setActionCardState(chatMsg, "pending", {
         actionCardLastConfirmFailedByUserId: confirmingUserId ?? game.userId,
@@ -405,7 +437,176 @@ async function setActionCardState(chatMsg, state, extra = {}) {
       console.warn(`${RUN_TAG} closeWindowsForActionCard failed (non-fatal):`, rsErr);
     }
 
-      // Stamp + disable button (GM client)
+    // Stamp + disable button (GM client)
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Confirmed ✔";
+      btn.style.filter = "grayscale(1)";
+      btn.dataset.fuLock = "1";
+    }
+
+    const stamp = msgEl?.querySelector?.("[data-fu-stamp]");
+    if (stamp) {
+      const by = confirmingUserId ? (game.users.get(confirmingUserId)?.name ?? "Player") : game.user.name;
+      stamp.textContent = `Confirmed by: ${by}`;
+      stamp.style.opacity = ".9";
+    }
+
+    await setChatFlagNoRender(chatMsg, MODULE_NS, "actionApplied", {
+      by: confirmingUserId ?? game.userId,
+      at: Date.now(),
+      executionMode: "manualCard",
+      result: {
+        hitUUIDs: Array.isArray(result?.hitUUIDs) ? result.hitUUIDs : [],
+        missUUIDs: Array.isArray(result?.missUUIDs) ? result.missUUIDs : []
+      }
+    });
+
+    // Broadcast to all clients so their Confirm button greys out too
+    game.socket.emit(SOCKET_NS, {
+      type: "fu.actionConfirmed",
+      messageId: chatMsg.id,
+      by: confirmingUserId ?? game.userId
+    });
+
+    console.log(`[${MODULE_ID}] Confirm resolved`, {
+      chatMsgId: chatMsg.id,
+      hitUUIDs: result?.hitUUIDs ?? [],
+      missUUIDs: result?.missUUIDs ?? []
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    await setActionCardState(chatMsg, "pending", {
+      actionCardLastConfirmError: String(err?.message ?? err),
+      actionCardLastConfirmFailedByUserId: confirmingUserId ?? game.userId,
+      actionCardLastConfirmFailedRunId: runId
+    });
+
+    ui.notifications?.error("Confirm failed (see console).");
+    if (btn) unlockButton(btn);
+  } finally {
+    console.groupEnd();
+  }
+}
+
+// ============================================================================
+// Per-message click handler
+// ============================================================================
+
+async function onConfirmButtonClick(chatMsg, btn /*, ev */) {
+  // Double-click guard
+  if (btn.dataset.fuLock === "1") return;
+
+  // Parse dataset args
+  let args = {};
+  try { args = btn.dataset.fuArgs ? JSON.parse(btn.dataset.fuArgs) : {}; }
+  catch { args = {}; }
+
+  // Player path: emit socket to GM
+  if (!game.user?.isGM) {
+    btn.dataset.fuLock = "1";
+    lockButton(btn, "Confirming…");
+    game.socket.emit(SOCKET_NS, {
+      type: "fu.actionConfirm",
+      messageId: chatMsg.id,
+      userId: game.userId,
+      args
+    });
+    return;
+  }
+
+  // GM path: resolve locally
+  await runConfirm(chatMsg, args, game.userId);
+}
+
+// ============================================================================
+// Per-message bind (renderChatMessage hook)
+//
+// Fires on every chat render (initial + every re-render). Permission gate
+// runs BEFORE the bind, so clients without permission never get a listener.
+// Idempotency lives on the button DOM node itself (`dataset.fuConfirmBound`)
+// so a re-render that produces a fresh button gets a fresh listener.
+// ============================================================================
+
+Hooks.on("renderChatMessage", (chatMsg, html) => {
+  if (!canConfirmCardForCurrentUser(chatMsg)) return;
+
+  const root = html?.[0] ?? null;
+  if (!root) return;
+
+  const btn = root.querySelector?.("[data-fu-confirm]");
+  if (!btn || btn.dataset.fuConfirmBound === "1") return;
+  btn.dataset.fuConfirmBound = "1";
+
+  btn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    onConfirmButtonClick(chatMsg, btn, ev).catch(err => {
+      console.error("[fu-chatbtn] click handler failed:", err);
+    });
+  });
+});
+
+// ============================================================================
+// Socket handler — GM-side handling of player confirm requests, and
+// confirm-broadcast handling on all clients.
+// ============================================================================
+
+async function onSocketMessage(data) {
+  try {
+    // GM-only: player requests confirm
+    if (data?.type === "fu.actionConfirm") {
+      if (!game.user?.isGM) return;
+
+      // IMPORTANT: only one full GM client handles player confirm requests
+      if (!isPrimaryActiveGMClient()) {
+        console.log("[fu-chatbtn] Skip confirm on non-primary GM", {
+          thisUser: game.userId,
+          primaryGM: getPrimaryActiveGM()?.id ?? null,
+          messageId: data.messageId ?? null
+        });
+        return;
+      }
+
+      const chatMsg = data.messageId ? game.messages.get(data.messageId) : null;
+      if (!chatMsg) return;
+
+      const already = await chatMsg.getFlag(MODULE_NS, "actionApplied");
+      if (already) return;
+
+      // Validate: confirming user must own the attacker OR match ownerUserId
+      const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
+      const ownerUserId = flagged?.meta?.ownerUserId ?? null;
+
+      let ok = false;
+      if (ownerUserId && ownerUserId === data.userId) ok = true;
+      else {
+        const attackerUuid = flagged?.meta?.attackerUuid ?? null;
+        if (attackerUuid) {
+          const actor = await resolveAttackerActor(attackerUuid);
+          const user = game.users.get(data.userId);
+          if (actor && user) ok = actor.testUserPermission(user, "OWNER");
+        }
+      }
+      if (!ok) return;
+
+      await runConfirm(chatMsg, data.args ?? {}, data.userId);
+      return;
+    }
+
+    // ALL clients: GM broadcasts that this action is confirmed
+    if (data?.type === "fu.actionConfirmed") {
+      const msgId = data.messageId;
+      if (!msgId) return;
+
+      const msgEl =
+        document.querySelector(`#chat-log .message[data-message-id="${msgId}"]`) ||
+        document.querySelector(`.chat-popout .message[data-message-id="${msgId}"]`) ||
+        null;
+
+      const btn = msgEl?.querySelector?.("[data-fu-confirm]") ?? null;
       if (btn) {
         btn.disabled = true;
         btn.textContent = "Confirmed ✔";
@@ -413,177 +614,21 @@ async function setActionCardState(chatMsg, state, extra = {}) {
         btn.dataset.fuLock = "1";
       }
 
-      const stamp = msgEl?.querySelector?.("[data-fu-stamp]");
-      if (stamp) {
-        const by = confirmingUserId ? (game.users.get(confirmingUserId)?.name ?? "Player") : game.user.name;
-        stamp.textContent = `Confirmed by: ${by}`;
-        stamp.style.opacity = ".9";
-      }
-
-await setChatFlagNoRender(chatMsg, MODULE_NS, "actionApplied", {
-  by: confirmingUserId ?? game.userId,
-  at: Date.now(),
-  executionMode: "manualCard",
-  result: {
-    hitUUIDs: Array.isArray(result?.hitUUIDs) ? result.hitUUIDs : [],
-    missUUIDs: Array.isArray(result?.missUUIDs) ? result.missUUIDs : []
-  }
-});
-
-      // Broadcast to all clients so their Confirm button greys out too
-      game.socket.emit(SOCKET_NS, {
-        type: "fu.actionConfirmed",
-        messageId: chatMsg.id,
-        by: confirmingUserId ?? game.userId
-      });
-
-      console.log(`[${MODULE_ID}] Confirm resolved`, {
-        chatMsgId: chatMsg.id,
-        hitUUIDs: result?.hitUUIDs ?? [],
-        missUUIDs: result?.missUUIDs ?? []
-      });
-
-} catch (err) {
-  console.error(err);
-
-  await setActionCardState(chatMsg, "pending", {
-    actionCardLastConfirmError: String(err?.message ?? err),
-    actionCardLastConfirmFailedByUserId: confirmingUserId ?? game.userId,
-    actionCardLastConfirmFailedRunId: runId
-  });
-
-  ui.notifications?.error("Confirm failed (see console).");
-  if (btn) unlockButton(btn);
-} finally {
-      console.groupEnd();
+      return;
     }
+  } catch (err) {
+    console.error("[fu-chatbtn] socket handler failed:", err);
   }
-
-  // ------------------------------------------------------------
-  // Socket receiver
-  // ------------------------------------------------------------
-  game.socket.on(SOCKET_NS, async (data) => {
-    try {
-      // GM-only: player requests confirm
-      if (data?.type === "fu.actionConfirm") {
-  if (!game.user?.isGM) return;
-
-  // IMPORTANT: only one full GM client handles player confirm requests
-  if (!isPrimaryActiveGMClient()) {
-    console.log("[fu-chatbtn] Skip confirm on non-primary GM", {
-      thisUser: game.userId,
-      primaryGM: getPrimaryActiveGM()?.id ?? null,
-      messageId: data.messageId ?? null
-    });
-    return;
-  }
-
-  const chatMsg = data.messageId ? game.messages.get(data.messageId) : null;
-  if (!chatMsg) return;
-
-  const already = await chatMsg.getFlag(MODULE_NS, "actionApplied");
-  if (already) return;
-
-  // Validate: confirming user must own the attacker OR match ownerUserId
-  const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
-  const ownerUserId = flagged?.meta?.ownerUserId ?? null;
-
-  let ok = false;
-  if (ownerUserId && ownerUserId === data.userId) ok = true;
-  else {
-    const attackerUuid = flagged?.meta?.attackerUuid ?? null;
-    if (attackerUuid) {
-      const actor = await resolveAttackerActor(attackerUuid);
-      const user = game.users.get(data.userId);
-      if (actor && user) ok = actor.testUserPermission(user, "OWNER");
-    }
-  }
-  if (!ok) return;
-
-  await runConfirm(chatMsg, data.args ?? {}, data.userId);
-  return;
 }
 
-      // ALL clients: GM broadcasts that this action is confirmed
-      if (data?.type === "fu.actionConfirmed") {
-        const msgId = data.messageId;
-        if (!msgId) return;
+function installSocketOnce() {
+  if (window.__fuChatBtnSocketInstalled) return;
+  window.__fuChatBtnSocketInstalled = true;
+  game.socket.on(SOCKET_NS, onSocketMessage);
+  console.debug(`[${MODULE_ID}] socket listener installed`);
+}
 
-        const msgEl =
-          document.querySelector(`#chat-log .message[data-message-id="${msgId}"]`) ||
-          document.querySelector(`.chat-popout .message[data-message-id="${msgId}"]`) ||
-          null;
-
-        const btn = msgEl?.querySelector?.("[data-fu-confirm]") ?? null;
-        if (btn) {
-          btn.disabled = true;
-          btn.textContent = "Confirmed ✔";
-          btn.style.filter = "grayscale(1)";
-          btn.dataset.fuLock = "1";
-        }
-
-        return;
-      }
-    } catch (err) {
-      console.error("[fu-chatbtn] socket handler failed:", err);
-    }
-  });
-
-  // ------------------------------------------------------------
-  // Click handler (all clients)
-  // ------------------------------------------------------------
-  root.addEventListener("click", async (ev) => {
-    const btn = ev.target.closest?.("[data-fu-confirm]");
-    if (!btn) return;
-
-    // Double-click guard
-    if (btn.dataset.fuLock === "1") return;
-
-    const msgEl = btn.closest?.(".message");
-    const msgId = msgEl?.dataset?.messageId;
-    const chatMsg = msgId ? game.messages.get(msgId) : null;
-    if (!chatMsg) return;
-
-    // Parse dataset args
-    let args = {};
-    try { args = btn.dataset.fuArgs ? JSON.parse(btn.dataset.fuArgs) : {}; }
-    catch { args = {}; }
-
-    // Permission: GM always; otherwise must own attacker (or match ownerUserId)
-    const flagged = chatMsg.getFlag(MODULE_NS, "actionCard")?.payload ?? null;
-    const ownerUserId = flagged?.meta?.ownerUserId ?? null;
-
-    let ownsAttacker = false;
-    try {
-      const attackerUuid = flagged?.meta?.attackerUuid ?? null;
-      if (attackerUuid) {
-        const actor = await resolveAttackerActor(attackerUuid);
-        ownsAttacker = !!actor?.isOwner;
-      }
-    } catch {}
-
-    const canConfirm = !!game.user?.isGM || (ownerUserId && ownerUserId === game.userId) || ownsAttacker;
-    if (!canConfirm) {
-      ui.notifications?.warn("You can only confirm actions for a character you own.");
-      return;
-    }
-
-    // If player: request GM to resolve via socket
-    if (!game.user?.isGM) {
-      btn.dataset.fuLock = "1";
-      lockButton(btn, "Confirming…");
-      game.socket.emit(SOCKET_NS, {
-        type: "fu.actionConfirm",
-        messageId: msgId,
-        userId: game.userId,
-        args
-      });
-      return;
-    }
-
-    // GM click: resolve locally
-    await runConfirm(chatMsg, args, game.userId);
-  }, { capture: false });
-
-  console.debug(`[${MODULE_ID}] ready — global Confirm listener installed on this client`);
-});
+// Resilient: if game is already ready, install immediately;
+// otherwise wait for the ready hook.
+if (game?.ready) installSocketOnce();
+else Hooks.once("ready", installSocketOnce);

@@ -756,59 +756,93 @@ const choice = await new Promise((resolve) => new Dialog({
   });
 }
 
-  // ---------- binder (single listener handles both buttons) ----------
-  function bindInvokeButtons() {
-    // Bind at the document level so the listener survives Foundry's
-    // sidebar re-renders that destroy #chat-log. The `closest()` filters
-    // inside the handler scope it to invoke-trait / invoke-bond buttons.
-    if (window.__fuInvokeButtonsBound) return;
-    window.__fuInvokeButtonsBound = true;
-    const root = document;
+  // ---------- Permission gate (sync — used at bind time) ----------
+  function canInvokeForCurrentUser(chatMsg) {
+    if (!chatMsg) return false;
+    if (game.user?.isGM) return true;
 
-    root.addEventListener("click", async (ev) => {
-      // NOTE: keep selectors EXACTLY as used in your chat card HTML
-      const btnTrait = ev.target.closest?.("[data-fu-trait]");
-      const btnBond  = btnTrait ? null : ev.target.closest?.("[data-fu-bond]"); // avoid double hits
+    // getFlag is sync in v12; can call it here without await.
+    const flag = chatMsg.getFlag(MODULE_NS, CARD_FLAG);
+    const payload = flag?.payload ?? flag ?? null;
+    if (!payload) return false;
 
-if (!btnTrait && !btnBond) return;
+    const ownerUserId = payload?.meta?.ownerUserId ?? null;
+    if (ownerUserId && ownerUserId === game.userId) return true;
 
-const btn = btnTrait || btnBond;
-
-// Visual-lock guard.
-// New fumble cards still render Invoke buttons, but they are marked as locked.
-// This catches the click immediately and gives the player a clear reason.
-if (btn?.dataset?.fuInvokeLocked === "fumble") {
-  ui.notifications?.warn(
-    btnTrait
-      ? "Invoke Trait cannot be used on a Fumble."
-      : "Invoke Bond cannot be used on a Fumble."
-  );
-  return;
-}
-
-if (lock(btn)) return;
-
+    const attackerUuid =
+      payload?.meta?.attackerUuid ??
+      payload?.attackerUuid ??
+      null;
+    if (attackerUuid) {
       try {
-        // Locate message (both buttons share same lookup)
-        const msgEl   = btn.closest?.(".message");
-        const msgId   = msgEl?.dataset?.messageId;
-        const chatMsg = msgId ? game.messages.get(msgId) : null;
-        if (!chatMsg) return;
+        const doc = fromUuidSync(attackerUuid);
+        const actor =
+          doc?.actor ??
+          (doc?.documentName === "Actor" ? doc : null) ??
+          (doc?.documentName === "Token" ? doc.actor : null) ??
+          (doc?.documentName === "TokenDocument" ? doc.actor : null);
+        if (actor?.isOwner) return true;
+      } catch {}
+    }
 
-        if (btnTrait) await handleInvokeTrait(btnTrait, chatMsg);
-        else          await handleInvokeBond(btnBond,  chatMsg);
-      } catch (err) {
-        console.error(err);
-        ui.notifications?.error("Invoke failed (see console).");
-      } finally {
-        unlock(btn);
-      }
-    }, { capture: false });
-
-    console.debug("[fu-invokeButtons] ready — installed chat listener");
+    return false;
   }
 
-  // Bind even if loaded after 'ready'
-  if (window.game?.ready) bindInvokeButtons();
-  else Hooks.once("ready", bindInvokeButtons);
+  // ---------- Click handler (per-button, called from renderChatMessage bind) ----------
+  async function onInvokeButtonClick(chatMsg, btn) {
+    const isTrait = btn.hasAttribute("data-fu-trait");
+    const isBond  = !isTrait && btn.hasAttribute("data-fu-bond");
+    if (!isTrait && !isBond) return;
+
+    // Visual-lock guard for fumble cards.
+    if (btn.dataset.fuInvokeLocked === "fumble") {
+      ui.notifications?.warn(
+        isTrait
+          ? "Invoke Trait cannot be used on a Fumble."
+          : "Invoke Bond cannot be used on a Fumble."
+      );
+      return;
+    }
+
+    if (lock(btn)) return;
+
+    try {
+      if (isTrait) await handleInvokeTrait(btn, chatMsg);
+      else         await handleInvokeBond(btn,  chatMsg);
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error("Invoke failed (see console).");
+    } finally {
+      unlock(btn);
+    }
+  }
+
+  // ---------- Per-message bind (renderChatMessage hook) ----------
+  //
+  // Fires on every chat render (initial + every re-render). Permission gate
+  // runs BEFORE the bind, so non-owner / non-GM clients never get a listener.
+  // Idempotency lives on each button's dataset, so a re-render that produces
+  // fresh DOM gets a fresh listener.
+  function bindInvokeOnMessage(chatMsg, html /*, data */) {
+    if (!canInvokeForCurrentUser(chatMsg)) return;
+
+    const root = html?.[0] ?? null;
+    if (!root) return;
+
+    const buttons = root.querySelectorAll?.("[data-fu-trait], [data-fu-bond]") ?? [];
+    for (const btn of buttons) {
+      if (btn.dataset.fuInvokeBound === "1") continue;
+      btn.dataset.fuInvokeBound = "1";
+      btn.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        onInvokeButtonClick(chatMsg, btn).catch(err => {
+          console.error("[fu-invokeButtons] click handler failed:", err);
+        });
+      });
+    }
+  }
+
+  Hooks.on("renderChatMessage", bindInvokeOnMessage);
+  console.debug("[fu-invokeButtons] renderChatMessage bind registered");
 })();
