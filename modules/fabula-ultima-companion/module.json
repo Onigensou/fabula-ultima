@@ -17,6 +17,7 @@
     "scripts": [
   "scripts/_console-tap.js",
   "scripts/_module-boot.js",
+  "scripts/data-migration-runner.js",
   "scripts/shared-utils.js",
   "scripts/reload-broadcast.js",
   "scripts/db-resolver.js",
