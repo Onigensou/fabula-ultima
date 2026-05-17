@@ -71,6 +71,28 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Jingle preload cache
+  // ---------------------------------------------------------------------------
+  // Warm the jingle into the browser's audio cache as soon as possible so
+  // AudioHelper.play() fires instantly on first use instead of stalling to fetch.
+  function _preloadJingle(src) {
+    const AH = getAudioHelper();
+    if (!AH) return;
+    try {
+      if (typeof AH.preload === "function") {
+        AH.preload(src).catch(() => {});
+      } else {
+        // Fallback: HTMLAudio preload hint (triggers HTTP fetch + cache)
+        const a = new Audio();
+        a.preload = "auto";
+        a.src = src;
+      }
+    } catch (e) {
+      console.warn(TAG, "Jingle preload failed:", e);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // BGM helpers
   // ---------------------------------------------------------------------------
 
@@ -231,6 +253,17 @@
       document.head.appendChild(style);
     }
   }
+
+  // Warm the jingle cache when the world is ready, and again when the party
+  // reaches SLEEP_LOBBY (covers scene reloads that bypass the ready hook window).
+  Hooks.once("ready", () => _preloadJingle(CAMP.RestAPI.jingle));
+
+  Hooks.on("updateSetting", (setting) => {
+    const key = `${CAMP.MODULE_ID}.${CAMP.SETTING?.PHASE}`;
+    if (setting?.key === key && game.settings.get(CAMP.MODULE_ID, CAMP.SETTING.PHASE) === CAMP.PHASE.SLEEP_LOBBY) {
+      _preloadJingle(CAMP.RestAPI.jingle);
+    }
+  });
 
   console.debug(TAG, "Rest API loaded.");
 })();

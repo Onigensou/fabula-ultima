@@ -51,8 +51,12 @@
     return new Promise(resolve => {
       const el = document.getElementById(SCREEN_ID);
       if (!el) return resolve();
-      el.classList.add("dark");
-      setTimeout(resolve, 1300); // matches CSS transition
+      // Double-rAF: let the browser paint opacity:0 before adding .dark,
+      // otherwise the element goes from "not rendered" → opacity:1 with no transition.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.classList.add("dark");
+        setTimeout(resolve, 1300); // matches CSS transition duration
+      }));
     });
   }
 
