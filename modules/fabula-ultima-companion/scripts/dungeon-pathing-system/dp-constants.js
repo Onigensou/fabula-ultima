@@ -13,7 +13,8 @@
   DP.SCENE_MODE = Object.freeze({
     NONE:        "none",
     EXPLORATION: "exploration",
-    DUNGEON:     "dungeon"
+    DUNGEON:     "dungeon",
+    CAMP:        "camp",
   });
 
   DP.HOOKS = Object.freeze({

@@ -60,7 +60,7 @@
   function getSceneMode(scene) {
     const fab  = scene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY];
     const mode = fab?.[DP.SCENE_MODE_KEY];
-    if (mode === DP.SCENE_MODE.DUNGEON || mode === DP.SCENE_MODE.EXPLORATION || mode === DP.SCENE_MODE.NONE) return mode;
+    if (mode === DP.SCENE_MODE.DUNGEON || mode === DP.SCENE_MODE.EXPLORATION || mode === DP.SCENE_MODE.NONE || mode === DP.SCENE_MODE.CAMP) return mode;
     const legacy = fab?.cameraFollowToken;
     if (legacy === true || legacy === "true" || legacy === 1) return DP.SCENE_MODE.EXPLORATION;
     return DP.SCENE_MODE.NONE;
