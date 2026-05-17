@@ -126,6 +126,35 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
 
   Hooks.on("oni:reactionPhase", async (payload) => {
+    // Contract with the substrate: if this emit carries an `__emitId`
+    // (stamped by reactionSystem.openWindow), we MUST fire exactly one
+    // `oni:reactionWindow:reactorsFound` before this handler returns —
+    // including on early-return and exception paths. The substrate is
+    // waiting on that hook; if we don't fire it, openWindow hangs to its
+    // diagnostic backstop (~30s). All explicit fires below are gated by
+    // _reactorsFoundFired so the finally block doesn't double-fire.
+    const _emitId = payload?.__emitId ?? null;
+    const _emitActionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
+    let _phaseBucketForFire = null;
+    let _reactorsFoundFired = false;
+
+    const _fireReactorsFound = (reactorTokenIds) => {
+      if (!_emitId) return;
+      if (_reactorsFoundFired) return;
+      _reactorsFoundFired = true;
+      try {
+        Hooks.callAll("oni:reactionWindow:reactorsFound", {
+          emitId: _emitId,
+          bucket: _phaseBucketForFire,
+          actionCardId: _emitActionCardId,
+          reactorTokenIds: Array.from(reactorTokenIds ?? [])
+        });
+      } catch (rsErr) {
+        console.warn("[ReactionManager] reactionWindow:reactorsFound hook failed:", rsErr);
+      }
+    };
+
+    try {
     const triggerApi = window["oni.ReactionTriggerCore"];
     if (!triggerApi) {
       console.error("[ReactionManager] oni:reactionPhase fired, but oni.ReactionTriggerCore is not installed.");
@@ -153,6 +182,7 @@ Hooks.once("ready", () => {
     }
 
     const phaseBucket = registry.bucketFor(triggerKey);
+    _phaseBucketForFire = phaseBucket;
 
     console.log("[ReactionManager] (GM) Received reaction trigger:", {
       rawTrigger,
@@ -182,27 +212,6 @@ Hooks.once("ready", () => {
     //    nuke an action_phase Warning Shot button that the user is still
     //    deciding on).
     _currentPhaseBucket = phaseBucket;
-
-    // Phase R Slice 1.5 helper: every early-exit path below must signal the
-    // awaitable substrate's openWindow that no manual reactors were found
-    // (so the outer promise resolves no_match instead of waiting for the
-    // safety timeout). Action-card-bound emits carry __emitId on the
-    // payload; lifecycle emits don't.
-    const _emitId = payload?.__emitId ?? null;
-    const _emitActionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
-    const _fireReactorsFound = (reactorTokenIds) => {
-      if (!_emitId) return;
-      try {
-        Hooks.callAll("oni:reactionWindow:reactorsFound", {
-          emitId: _emitId,
-          bucket: phaseBucket,
-          actionCardId: _emitActionCardId,
-          reactorTokenIds: Array.from(reactorTokenIds ?? [])
-        });
-      } catch (rsErr) {
-        console.warn("[ReactionManager] reactionWindow:reactorsFound hook failed:", rsErr);
-      }
-    };
 
     // 2) Compute matching candidates.
     const matches = triggerApi.collectReactionsForTrigger(triggerKey, payload);
@@ -320,6 +329,20 @@ Hooks.once("ready", () => {
           console.warn("[ReactionManager] (GM) game.socket is not available when emitting OniReactionOffer.");
         }
       }
+    }
+    } catch (handlerErr) {
+      // Last-resort handler — keeps the contract even if anything above
+      // throws (collectReactionsForTrigger, mergeMatchIntoWindow, the
+      // spawn loop, etc.). The finally below will still fire
+      // reactorsFound([]) so the substrate doesn't hang.
+      console.error("[ReactionManager] (GM) oni:reactionPhase handler threw:", handlerErr);
+    } finally {
+      // Safety net: if no explicit `_fireReactorsFound(...)` ran above
+      // (early non-GM return, invalid trigger, missing triggerApi, or
+      // an exception) AND this emit carried an __emitId, fire with []
+      // so the substrate's openWindow promise resolves no_match instead
+      // of hanging to its diagnostic backstop.
+      _fireReactorsFound([]);
     }
   });
 

@@ -414,7 +414,36 @@
    *                                pickedItem?, effectResult? }, ...] }
    */
   async function openWindow(payload, opts = {}) {
-    const { timeoutMs = 5000, reason: tag = "action" } = opts;
+    // timeoutMs           — per-sub-window timeout once a sub is created.
+    // managerBugTimeoutMs — DIAGNOSTIC backstop. The manager is contractually
+    //                       required to fire `reactorsFound` (with [] if no
+    //                       matches) for every `oni:reactionPhase` it sees.
+    //                       This timer is not a race target — it only fires
+    //                       if the manager threw mid-processing and never
+    //                       completed its contract, which is a bug to fix
+    //                       in the manager, not a fallback to absorb. 30s
+    //                       is comfortably above any legitimate processing
+    //                       time (passive logic is capped at 5s per skill).
+    const {
+      timeoutMs = 5000,
+      managerBugTimeoutMs = 30000,
+      reason: tag = "action"
+    } = opts;
+
+    // Presence check. The manager installs at world ready and registers
+    // window["oni.ReactionManager"]. If it's missing at call time, no
+    // listener exists for `oni:reactionPhase` — waiting for `reactorsFound`
+    // would hang to the diagnostic backstop. Surface loudly and return
+    // synchronously instead. (Module.json load order puts the manager
+    // before this substrate, and all phase emits happen post-ready, so
+    // this branch shouldn't fire in normal operation.)
+    if (!window["oni.ReactionManager"]) {
+      warn("openWindow called but ReactionManager is not installed.", {
+        trigger: payload?.trigger,
+        tag
+      });
+      return { outcome: "no_match", reason: "no_manager", subResults: [] };
+    }
 
     if (!game.user?.isGM) {
       // Non-GM: still emit so the GM (running this client's payload) sees
@@ -480,14 +509,19 @@
 
       Hooks.on("oni:reactionWindow:reactorsFound", onReactorsFound);
 
-      // Safety net: manager never fires reactorsFound (loaded out of order,
-      // etc.) — resolve as no_match after 500ms.
+      // Diagnostic backstop — see managerBugTimeoutMs comment at top of
+      // openWindow. If this ever fires, the manager threw mid-processing
+      // and didn't complete its contract. Log loudly as a bug, not as a
+      // routine fallback.
       safetyTimer = setTimeout(() => {
         if (received) return;
         Hooks.off("oni:reactionWindow:reactorsFound", onReactorsFound);
-        warn("openWindow safety timeout — no reactorsFound received.", { emitId });
-        finish({ outcome: "no_match", reason: "manager_timeout", subResults: [] });
-      }, 500);
+        console.error(
+          `${TAG} BUG: manager did not fire reactorsFound within ${managerBugTimeoutMs}ms — its oni:reactionPhase handler likely threw before reaching _fireReactorsFound. Audit the manager.`,
+          { trigger: payload?.trigger, emitId, tag }
+        );
+        finish({ outcome: "no_match", reason: "manager_bug", subResults: [] });
+      }, managerBugTimeoutMs);
 
       try { globalThis.ONI?.emit?.("oni:reactionPhase", stamped, { local: true, world: false }); } catch (_) {}
     });
