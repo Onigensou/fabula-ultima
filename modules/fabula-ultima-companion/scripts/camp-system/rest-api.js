@@ -185,12 +185,24 @@
   }
 
   async function _clearTemporaryEffects(actor) {
-    const ids = actor.effects
-      .filter(e => !isPermanent(e))
-      .map(e => e.id);
-    if (ids.length) {
-      await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
-      console.debug(TAG, `Cleared ${ids.length} effect(s) from ${actor.name}.`);
+    // Only delete effects that live directly on the actor (not transferred from
+    // equipped items). Item-sourced effects have an origin pointing to an Item UUID.
+    const toDelete = actor.effects.filter(e => {
+      if (isPermanent(e)) return false;
+      const origin = e.origin ?? "";
+      return !origin || origin.startsWith("Actor.");
+    });
+
+    for (const effect of toDelete) {
+      try {
+        await actor.deleteEmbeddedDocuments("ActiveEffect", [effect.id]);
+      } catch (e) {
+        console.warn(TAG, `Could not delete effect "${effect.name}" (${effect.id}) from ${actor.name}:`, e.message);
+      }
+    }
+
+    if (toDelete.length) {
+      console.debug(TAG, `Cleared ${toDelete.length} effect(s) from ${actor.name}.`);
     }
   }
 

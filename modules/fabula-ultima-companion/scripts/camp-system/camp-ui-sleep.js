@@ -15,7 +15,11 @@
       await _fadeToBlack();
 
       if (game.user?.isGM) {
-        await CAMP.RestAPI.perform();
+        try {
+          await CAMP.RestAPI.perform();
+        } catch (e) {
+          console.error("[CampSystem][SleepUI]", "RestAPI.perform() failed:", e);
+        }
         await new Promise(r => setTimeout(r, 500));
         await CAMP.State.setPhase(CAMP.PHASE.SET_OUT_LOBBY);
       }
