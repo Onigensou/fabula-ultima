@@ -17,12 +17,16 @@ const MODULE_NS = "fabula-ultima-companion";
 const SOCKET_NS = "module.fabula-ultima-companion";
 
 Hooks.once("ready", async () => {
-  const root = document.querySelector("#chat-log") || document.body;
-  if (!root) return;
-
-  // Prevent double-binding on this client
-  if (root.__fuChatBtnBound) return;
-  root.__fuChatBtnBound = true;
+  // Bind at the document level (rather than #chat-log) so the listener
+  // survives Foundry's sidebar re-renders that destroy the original
+  // #chat-log node. The `closest("[data-fu-confirm]")` filter inside the
+  // click handler keeps the scope to our confirm buttons only.
+  //
+  // Idempotency guard moves from a DOM property (which dies with the node)
+  // to a window-level flag.
+  if (window.__fuChatBtnBound) return;
+  window.__fuChatBtnBound = true;
+  const root = document;
 
   // ------------------------------------------------------------
   // Helpers

@@ -758,9 +758,12 @@ const choice = await new Promise((resolve) => new Dialog({
 
   // ---------- binder (single listener handles both buttons) ----------
   function bindInvokeButtons() {
-    const root = document.querySelector("#chat-log") || document.body;
-    if (!root || root.__fuInvokeButtonsBound) return;
-    root.__fuInvokeButtonsBound = true;
+    // Bind at the document level so the listener survives Foundry's
+    // sidebar re-renders that destroy #chat-log. The `closest()` filters
+    // inside the handler scope it to invoke-trait / invoke-bond buttons.
+    if (window.__fuInvokeButtonsBound) return;
+    window.__fuInvokeButtonsBound = true;
+    const root = document;
 
     root.addEventListener("click", async (ev) => {
       // NOTE: keep selectors EXACTLY as used in your chat card HTML
