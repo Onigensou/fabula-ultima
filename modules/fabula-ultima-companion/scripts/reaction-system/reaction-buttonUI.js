@@ -137,6 +137,43 @@ Hooks.once("ready", () => {
           display: inline-flex;
         }
 
+        /* Countdown badge — shows the live "seconds left" tick streamed by
+           the reaction-window substrate. Hidden by default; .has-countdown
+           on the blade reveals it. Colors shift as time runs out. */
+        #oni-reaction-root .oni-reaction-blade .countdown {
+          display: none;
+          min-width: 20px;
+          height: 20px;
+          padding: 0 6px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          border: 1px solid rgba(122,106,85,.9);
+          background: linear-gradient(180deg,
+            rgba(213,182,122,0.65),
+            rgba(183,147,90,0.65)
+          );
+          box-shadow: 0 1px 0 rgba(255,255,255,.55) inset;
+          font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+          font-size: 11px;
+          font-weight: 800;
+          line-height: 1;
+          color: #2b2218;
+          text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        #oni-reaction-root .oni-reaction-blade.has-countdown .countdown {
+          display: inline-flex;
+        }
+
+        /* Last 2 seconds — warn color. */
+        #oni-reaction-root .oni-reaction-blade.has-countdown.urgent .countdown {
+          background: linear-gradient(180deg, #e9a36c, #c87038);
+          border-color: #7a4022;
+          color: #fff;
+          text-shadow: 0 1px 0 rgba(0,0,0,.4);
+        }
+
         #oni-reaction-root .oni-reaction-blade:hover {
           filter: brightness(1.04);
           box-shadow:
@@ -147,6 +184,47 @@ Hooks.once("ready", () => {
 
         #oni-reaction-root .oni-reaction-blade:active {
           transform: translateY(0) scale(.97);
+        }
+
+        /* Cancel pip — square red ✕ matching the reaction blade height.
+           Width is set explicitly in JS after the blade renders (the
+           aspect-ratio CSS hint is unreliable on stretched flex children
+           because the cross-axis size is determined after layout). */
+        #oni-reaction-root .oni-reaction-item {
+          display: inline-flex;
+          align-items: stretch; /* let the cancel grow to the blade height */
+          gap: 6px;
+        }
+        #oni-reaction-root .oni-reaction-cancel {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border-radius: 10px;
+          border: 2px solid #6f1b1b;
+          background: linear-gradient(180deg, #d4554b, #a82e26);
+          box-shadow:
+            0 3px 0 rgba(80,12,12,.55),
+            0 0 0 1px rgba(255,255,255,.45) inset;
+          color: #fff;
+          font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+          font-weight: 900;
+          font-size: 14px;
+          line-height: 1;
+          cursor: pointer;
+          text-shadow: 0 1px 0 rgba(0,0,0,.45);
+          user-select: none;
+          box-sizing: border-box;
+        }
+        #oni-reaction-root .oni-reaction-cancel:hover {
+          filter: brightness(1.08);
+          transform: translateY(-1px);
+          box-shadow:
+            0 4px 0 rgba(80,12,12,.65),
+            0 0 0 1px rgba(255,255,255,.55) inset;
+        }
+        #oni-reaction-root .oni-reaction-cancel:active {
+          transform: translateY(0) scale(.96);
         }
       `;
 
@@ -475,9 +553,21 @@ function updateExistingButton(rec, context, onClick) {
       blade.innerHTML = `
         <span class="label">Reaction</span>
         <span class="count" aria-hidden="true">1</span>
+        <span class="countdown" aria-hidden="true"></span>
       `;
 
+      // Cancel pip — quick-dismiss this reactor's window without opening
+      // the picker dialog. Wired AFTER `rec` is built so the click handler
+      // can compute this rec's subKey.
+      const cancel = document.createElement("div");
+      cancel.className = "oni-reaction-cancel";
+      cancel.setAttribute("role", "button");
+      cancel.setAttribute("title", "Cancel reaction");
+      cancel.setAttribute("aria-label", "Cancel reaction");
+      cancel.textContent = "✕";
+
       wrap.appendChild(blade);
+      wrap.appendChild(cancel);
       root.appendChild(wrap);
 
 const rec = {
@@ -494,8 +584,51 @@ const rec = {
   respawnTimer: null
 };
 
+      // Cancel pip — fires pickerClosed (picked: false) for this reactor's
+      // sub-window, which the substrate resolves as "pass" and broadcasts
+      // a close tick → the tick listener below removes this rec's button.
+      // Other reactors' buttons (different subKeys) are untouched.
+      cancel.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        try {
+          const subKey = computeSubKeyForRec(rec);
+          if (subKey) {
+            Hooks.callAll("oni:reactionWindow:pickerClosed", { subKey, picked: false });
+          } else {
+            // Substrate missing or payload not yet attached — fall back to
+            // a local remove so the user still gets immediate feedback.
+            try { removeButton(rec.tokenId); } catch (_) {}
+          }
+        } catch (e) {
+          console.warn("[ReactionButtonUI] Cancel pip handler threw:", e);
+          try { removeButton(rec.tokenId); } catch (_) {}
+        }
+      });
+
       blade.addEventListener("click", (ev) => {
         ev.stopPropagation();
+
+        // Phase R Slice 1.5: each button corresponds to ONE reactor's
+        // sub-window (keyed by bucket + actionCardId + this rec's
+        // tokenId). Firing pickerOpened with that sub-key pauses ONLY
+        // this reactor's authoritative timer on the GM — other reactors'
+        // timers keep ticking down independently. The local hook is
+        // socket-forwarded to GM by reaction-window.js when the click
+        // happens on a player client.
+        try {
+          const rs = globalThis.FUCompanion?.api?.reactionSystem;
+          const payload = rec?.context?.latestPhasePayload ?? rec?.context?.phasePayload ?? null;
+          if (rs?._internals?.buildSubKey && payload) {
+            const bucket = rs._internals.computeBucket(payload);
+            const actionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
+            const subKey = rs._internals.buildSubKey({
+              bucket, actionCardId, reactorTokenId: rec.tokenId
+            });
+            if (subKey) Hooks.callAll("oni:reactionWindow:pickerOpened", { subKey });
+          }
+        } catch (rsErr) {
+          console.warn("[ReactionButtonUI] reactionWindow:pickerOpened hook failed (non-fatal).", rsErr);
+        }
 
         if (typeof rec.onClick === "function") {
           try {
@@ -513,6 +646,31 @@ const rec = {
       requestAnimationFrame(() => {
         if (!wrap.isConnected) return;
         wrap.classList.add("is-visible");
+        // Force the cancel pip square: measure the blade's rendered
+        // height (post-layout) and lock the cancel to that as both
+        // width AND height. CSS `aspect-ratio: 1` is unreliable on
+        // stretched flex children because the cross-axis size isn't
+        // known until layout completes.
+        try {
+          const h = blade.getBoundingClientRect().height;
+          if (h > 0) {
+            cancel.style.width = `${h}px`;
+            cancel.style.minWidth = `${h}px`;
+            cancel.style.height = `${h}px`;
+          }
+        } catch (_) {}
+        // Paint the initial countdown badge with the substrate's CURRENT
+        // secondsLeft. The substrate's first emitTick (5) fires before
+        // this button exists in the tracker, so without this catch-up
+        // the badge starts at the next tick (4) and the width jumps.
+        try {
+          const subKey = computeSubKeyForRec(rec);
+          const rsApi = globalThis.FUCompanion?.api?.reactionSystem;
+          const secondsLeft = subKey && rsApi?.getSecondsLeftFor
+            ? rsApi.getSecondsLeftFor(subKey)
+            : null;
+          if (secondsLeft != null) applyCountdownToBlade(blade, secondsLeft);
+        } catch (_) {}
       });
 
       ReactionUI.buttons[tokenId] = rec;
@@ -577,6 +735,60 @@ const rec = {
         removeButton(tokenId);
       }
     }
+
+    // ---------------------------------------------------------------------
+    // Countdown badge: listen for tick events streamed by reaction-window
+    // and update the blade whose tokenId is this sub-window's reactor.
+    // ---------------------------------------------------------------------
+    function computeSubKeyForRec(rec) {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      const buildSubKey = rs?._internals?.buildSubKey;
+      const computeBucket = rs?._internals?.computeBucket;
+      if (!buildSubKey || !computeBucket) return null;
+      const payload = rec?.context?.latestPhasePayload ?? rec?.context?.phasePayload ?? null;
+      if (!payload || !rec?.tokenId) return null;
+      try {
+        const bucket = computeBucket(payload);
+        const actionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
+        return buildSubKey({ bucket, actionCardId, reactorTokenId: rec.tokenId });
+      } catch { return null; }
+    }
+
+    function applyCountdownToBlade(blade, secondsLeft) {
+      if (!blade) return;
+      const badge = blade.querySelector(".countdown");
+      if (!badge) return;
+
+      if (secondsLeft == null) {
+        blade.classList.remove("has-countdown", "urgent");
+        badge.textContent = "";
+        return;
+      }
+      badge.textContent = String(secondsLeft);
+      blade.classList.add("has-countdown");
+      if (secondsLeft <= 2) blade.classList.add("urgent");
+      else blade.classList.remove("urgent");
+    }
+
+    Hooks.on("oni:reactionWindow:tick", ({ subKey, secondsLeft, paused, closed } = {}) => {
+      if (!subKey) return;
+      // Snapshot first — we may remove buttons inside the loop, so don't
+      // iterate the live values() view.
+      const recsSnapshot = Object.values(ReactionUI.buttons).slice();
+      for (const rec of recsSnapshot) {
+        if (computeSubKeyForRec(rec) !== subKey) continue;
+        if (closed) {
+          // Sub-window has resolved (timeout / pass / pick) — clear the
+          // badge and remove THIS reactor's button. Other reactors'
+          // buttons (different subKey) are unaffected.
+          applyCountdownToBlade(rec?.blade, null);
+          try { removeButton(rec.tokenId); } catch (_) {}
+          continue;
+        }
+        const value = paused ? null : secondsLeft;
+        applyCountdownToBlade(rec?.blade, value);
+      }
+    });
 
     window[KEY] = {
       spawnButton,

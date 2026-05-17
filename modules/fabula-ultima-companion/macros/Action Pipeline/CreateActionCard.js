@@ -595,6 +595,11 @@ cacLog("ACTION CARD RENDER MODE", {
   }
 
     // --- ONI Reaction Phase beacons: action declared / checks / targeting ---
+  // Deferred so the card is posted to chat BEFORE reactor buttons appear —
+  // reactors need to see the attack / accuracy details to decide. Assigned
+  // inside the try below (captures the helper + payload via closure) and
+  // invoked from the CREATE NEW branch after `saveActionCardFlagToMessage`.
+  let __fireReactionsLater = () => {};
   try {
         if (!skipReactionEmit && globalThis.ONI?.emit) {
       const targetsFromPayload = [...originalTargetUUIDs];
@@ -634,97 +639,128 @@ cacLog("ACTION CARD RENDER MODE", {
         actionCardMessageId: PAYLOAD?.meta?.actionCardMessageId ?? PAYLOAD?.actionCardMessageId ?? null
       };
 
-      function emitReactionPhaseForActionCard(payload) {
-  const cleanPayload = {
-    ...payload,
-    requestedByUserId: game.user?.id ?? null,
-    requestedByUserName: game.user?.name ?? null
-  };
+      // Phase R Slice 1: when the awaitable reaction substrate is loaded,
+      // route GM-side emits through `openWindow` so the action-card flow
+      // pauses for the reaction window (5s default, indefinite once a
+      // picker opens). All same-tick emits with the same action_phase +
+      // actionCardId merge into ONE window so the caller's Promise.all
+      // resolves on a single 5s timer, not five sequential ones.
+      //
+      // Player-initiated emits keep the existing fire-and-forget
+      // socket→GM path (player-side awaitable comes in a later slice).
+      async function emitReactionPhaseForActionCard(payload) {
+        const cleanPayload = {
+          ...payload,
+          requestedByUserId: game.user?.id ?? null,
+          requestedByUserName: game.user?.name ?? null
+        };
 
-  // GM-created action cards can process locally.
-  if (game.user?.isGM) {
-    ONI.emit("oni:reactionPhase", cleanPayload, {
-      local: true,
-      world: false
-    });
-    return;
+        if (game.user?.isGM) {
+          const rs = globalThis.FUCompanion?.api?.reactionSystem;
+          if (rs?.openWindow) {
+            return await rs.openWindow(cleanPayload, { reason: "action_card" });
+          }
+          // Fallback when the substrate isn't loaded yet.
+          ONI.emit("oni:reactionPhase", cleanPayload, { local: true, world: false });
+          return null;
+        }
+
+        // Player path — fire-and-forget to GM. The substrate tracks per-card
+        // pending sub-windows on GM and broadcasts `OniReactionCardSettled`
+        // when they all close; that drives the action-card UI lock via
+        // the `reactionsPending` message flag (see reaction-cardLock.js).
+        const channel = `module.${MODULE_NS}`;
+        if (game.socket) {
+          game.socket.emit(channel, {
+            type: "OniReactionPhaseRequest",
+            payload: cleanPayload
+          });
+          console.log("[CreateActionCard] Sent OniReactionPhaseRequest to GM.", {
+            trigger: cleanPayload.trigger,
+            actionId: cleanPayload.actionId,
+            actionCardId: cleanPayload.actionCardId,
+            requestedByUserId: cleanPayload.requestedByUserId
+          });
+        } else {
+          console.warn("[CreateActionCard] game.socket unavailable; cannot forward reaction phase to GM.", cleanPayload);
+        }
+
+        // Keep local debug visibility. Non-GM ReactionManager will ignore this.
+        ONI.emit("oni:reactionPhase", cleanPayload, { local: true, world: false });
+        return null;
+      }
+
+// Build the deferred emit closure. We DON'T fire anything here — the
+// caller (the CREATE NEW branch below) calls __fireReactionsLater()
+// AFTER ChatMessage.create so reactors see the attack/accuracy
+// details on the card before deciding. Per-card pending tracking in
+// reaction-window.js clears the `reactionsPending` flag (and the
+// card UI lock in reaction-cardLock.js) when every sub-window settles.
+__fireReactionsLater = () => {
+  const reactionPromises = [];
+
+  // 1) Trigger: "When a creature performs an action"
+  reactionPromises.push(emitReactionPhaseForActionCard({
+    ...baseReactionPayload,
+    trigger: "creature_performs_action"
+  }));
+
+  // 2) Trigger: "When a creature performs a check"
+  if (accuracy) {
+    reactionPromises.push(emitReactionPhaseForActionCard({
+      ...baseReactionPayload,
+      trigger: "creature_performs_check"
+    }));
   }
 
-  // Player-created action cards must ask the GM to process the trigger.
-  const channel = `module.${MODULE_NS}`;
-
-  if (game.socket) {
-    game.socket.emit(channel, {
-      type: "OniReactionPhaseRequest",
-      payload: cleanPayload
-    });
-
-    console.log("[CreateActionCard] Sent OniReactionPhaseRequest to GM.", {
-      trigger: cleanPayload.trigger,
-      actionId: cleanPayload.actionId,
-      actionCardId: cleanPayload.actionCardId,
-      requestedByUserId: cleanPayload.requestedByUserId
-    });
-  } else {
-    console.warn("[CreateActionCard] game.socket unavailable; cannot forward reaction phase to GM.", cleanPayload);
+  // 3) Trigger: "When a creature gets targeted by an action"
+  for (const targetUuid of targetsFromPayload) {
+    reactionPromises.push(emitReactionPhaseForActionCard({
+      ...baseReactionPayload,
+      trigger: "creature_is_targeted",
+      targetUuid
+    }));
   }
 
-  // Keep local debug visibility. Non-GM ReactionManager will ignore this.
-  ONI.emit("oni:reactionPhase", cleanPayload, {
-    local: true,
-    world: false
-  });
-}
+  // 4) Trigger: "When a creature scores a Critical Hit" / "fumbles a Check"
+  //    Both rely on the resolved accuracy result.
+  const isCrit   = !!(accuracy?.isCrit   || advPayload?.isCrit);
+  const isFumble = !!(accuracy?.isFumble || advPayload?.isFumble);
 
-// 1) Trigger: "When a creature performs an action"
-emitReactionPhaseForActionCard({
-  ...baseReactionPayload,
-  trigger: "creature_performs_action"
-});
+  if (isCrit && !isFumble) {
+    reactionPromises.push(emitReactionPhaseForActionCard({
+      ...baseReactionPayload,
+      trigger: "creature_critical_hit",
+      isCrit: true,
+      isFumble: false,
+      accuracyTotal: accuracy?.total ?? null
+    }));
+  }
+  if (isFumble) {
+    reactionPromises.push(emitReactionPhaseForActionCard({
+      ...baseReactionPayload,
+      trigger: "creature_fumbles_check",
+      isCrit: false,
+      isFumble: true,
+      accuracyTotal: accuracy?.total ?? null
+    }));
+  }
 
-// 2) Trigger: "When a creature performs a check"
-if (accuracy) {
-  emitReactionPhaseForActionCard({
-    ...baseReactionPayload,
-    trigger: "creature_performs_check"
+  // Fire-and-forget. Don't block the macro on the 5s windows — the
+  // card UI is already locked via the message flag, and the
+  // substrate clears it when sub-windows settle.
+  Promise.all(reactionPromises).then((results) => {
+    console.log("[CreateActionCard] Reaction window settled.", {
+      actionCardId: actionCardIdentity.actionCardId,
+      results: results.map(r => r ? { outcome: r.outcome, reason: r.reason } : null)
+    });
+  }).catch((waitErr) => {
+    console.warn("[CreateActionCard] Reaction promise chain threw (non-fatal):", waitErr);
   });
-}
-
-// 3) Trigger: "When a creature gets targeted by an action"
-for (const targetUuid of targetsFromPayload) {
-  emitReactionPhaseForActionCard({
-    ...baseReactionPayload,
-    trigger: "creature_is_targeted",
-    targetUuid
-  });
-}
-
-// 4) Trigger: "When a creature scores a Critical Hit" / "fumbles a Check"
-//    Both rely on the resolved accuracy result.
-const isCrit   = !!(accuracy?.isCrit   || advPayload?.isCrit);
-const isFumble = !!(accuracy?.isFumble || advPayload?.isFumble);
-
-if (isCrit && !isFumble) {
-  emitReactionPhaseForActionCard({
-    ...baseReactionPayload,
-    trigger: "creature_critical_hit",
-    isCrit: true,
-    isFumble: false,
-    accuracyTotal: accuracy?.total ?? null
-  });
-}
-if (isFumble) {
-  emitReactionPhaseForActionCard({
-    ...baseReactionPayload,
-    trigger: "creature_fumbles_check",
-    isCrit: false,
-    isFumble: true,
-    accuracyTotal: accuracy?.total ?? null
-  });
-}
+};
     }
   } catch (err) {
-    console.warn("[CreateActionCard] ReactionPhase emit failed (safe to ignore for now):", err);
+    console.warn("[CreateActionCard] ReactionPhase emit setup failed (safe to ignore for now):", err);
   }
 
   // --- Critical Cut-In (unchanged behavior timing) ---
@@ -1445,6 +1481,82 @@ ${attackerBox}
       actionCardId: actionCardIdentity.actionCardId,
       actionCardVersion: actionCardIdentity.actionCardVersion
     });
+
+    // Stamp the card UI lock. reaction-cardLock.js disables action-card
+    // buttons (Apply Damage etc.) while this flag is true; the
+    // per-card pending tracker in reaction-window.js clears it once
+    // every reactor sub-window for this actionCardId settles.
+    if (posted && !skipReactionEmit) {
+      try {
+        await posted.update({
+          [`flags.${MODULE_NS}.actionCard.reactionsPending`]: true
+        });
+      } catch (lockErr) {
+        console.warn("[CreateActionCard] Could not stamp reactionsPending flag:", lockErr);
+      }
+
+      // Safety: if the substrate never clears the flag (e.g. GM
+      // disconnects, openWindow throws, etc.) force-clear after 60s
+      // so the card isn't permanently locked.
+      const lockSafetyId = setTimeout(async () => {
+        try {
+          const msg = game.messages?.get?.(posted.id);
+          if (!msg) return;
+          const flag = msg.getFlag?.(MODULE_NS, "actionCard");
+          if (flag?.reactionsPending) {
+            console.warn("[CreateActionCard] reactionsPending safety timeout — force-clearing.", {
+              actionCardId: actionCardIdentity.actionCardId
+            });
+            await msg.update({ [`flags.${MODULE_NS}.actionCard.reactionsPending`]: false });
+          }
+        } catch (_) {}
+      }, 60000);
+      try { lockSafetyId.unref?.(); } catch (_) {}
+
+      // Now that the card is live in chat AND the lock is set, fire
+      // the reaction triggers. Reactor buttons appear with the card
+      // already visible — reactors can read the attack/accuracy
+      // details before deciding.
+      //
+      // Wrap the batch in beginCardEmit / endCardEmit so the per-card
+      // pending counter stays >0 while we're still STARTING openWindow
+      // calls — without the guard, the first no-reactor emit
+      // decrements to zero and prematurely fires cardSettled (clearing
+      // the lock) before the reactor-bearing emit even reaches its
+      // async pause.
+      const __rsForLock = globalThis.FUCompanion?.api?.reactionSystem;
+      if (__rsForLock?.beginCardEmit) {
+        try { __rsForLock.beginCardEmit(actionCardIdentity.actionCardId); }
+        catch (e) { console.warn("[CreateActionCard] beginCardEmit threw:", e); }
+      }
+      try {
+        __fireReactionsLater();
+      } catch (e) {
+        console.warn("[CreateActionCard] __fireReactionsLater threw:", e);
+      } finally {
+        if (__rsForLock?.endCardEmit) {
+          try { __rsForLock.endCardEmit(actionCardIdentity.actionCardId); }
+          catch (e) { console.warn("[CreateActionCard] endCardEmit threw:", e); }
+        }
+      }
+    }
+
+    // Phase R Slice 1 (#3): the action menu floats over the active
+    // combatant until they pick a skill. Once the action card is live in
+    // chat the menu is just visual noise — the player's intent has
+    // already been committed to the card, and the next user-input is the
+    // Confirm button on the card itself. Hide locally + broadcast so the
+    // active combatant's client (which may not be `this` client when the
+    // GM creates a card for a player's PC) drops the menu too.
+    try {
+      const uiPayload = { sceneId: canvas.scene?.id ?? null };
+      const SOCKET_CHANNEL = `module.${MODULE_NS}`;
+      try { game.socket?.emit?.(SOCKET_CHANNEL, { type: "ONI_TURNUI_HIDE_FOR_ANIMATION", payload: uiPayload }); } catch {}
+      try { game.socket?.emit?.("world", { _oniTurnUI: "HIDE_FOR_ANIMATION", payload: uiPayload }); } catch {}
+      try { globalThis.TurnUI?.hideUIForAnimation?.(uiPayload); } catch {}
+    } catch (hideErr) {
+      console.warn("[CreateActionCard] Could not hide action menu after card creation (non-fatal):", hideErr);
+    }
   }
 
     // Dedicated Action Card preview roll system.

@@ -223,6 +223,146 @@
     return false;
   }
 
+  // ── Turn-state cache (Phase 1 + 2a) ──────────────────────────
+  // Persists a small snapshot of turn state on the Combat doc so that
+  // any client (notably the action pipeline) can answer "whose turn is it
+  // and who has already acted this round" without re-deriving from
+  // Lancer activations + combat.turn.
+  //
+  // Schema (combat.flags["fabula-ultima-companion"].turnState):
+  //   { combatId, round, turn, combatantId, turnSerial, roundSerial,
+  //     actedThisRound: { [combatantId]: true },
+  //     actionsUsedThisTurn: number,        // <- Phase 2a
+  //     baseActionsPerTurn: number,         // <- Phase 2a (FU default = 1)
+  //     lastWriteAt, lastReason }
+  //
+  // Phase 1 limitation: actedThisRound entries are NOT cleared on undo
+  // (clearCurrent / undoCurrent on the turn bar). They clear at round
+  // change. Promote stamps to "consumed" semantics later if needed.
+  //
+  // Phase 2a: actionsUsedThisTurn resets to 0 on every turnStarted.
+  // baseActionsPerTurn is read from the current actor's
+  // system.props.baseActionsPerTurn (defaults to 1 — FU baseline).
+  // Bonus action grants (Acceleration, etc.) are NOT counted here —
+  // those live as AE-flag-driven Charges. See
+  // [[ActiveEffectManager-bonus-actions]] and bonus-action gate logic
+  // in ActionDataFetch.
+  async function writeTurnState(reason, payload, {
+    reset = false,
+    resetActedThisRound = false,
+    resetBudget = false,
+    baseActionsPerTurnOverride = null,
+    stampActedFor = null,
+    clearCurrent = false
+  } = {}) {
+    if (!game.user?.isGM) return;
+    if (!isPrimaryActiveGM()) return;
+
+    const combat = game.combats?.get(payload?.combatId) ?? game.combat ?? null;
+    if (!combat) return;
+
+    try {
+      const existing = combat.getFlag(MODULE_ID, "turnState") ?? null;
+
+      const actedThisRound = (reset || resetActedThisRound)
+        ? {}
+        : { ...(existing?.actedThisRound ?? {}) };
+
+      if (stampActedFor && typeof stampActedFor === "string") {
+        actedThisRound[stampActedFor] = true;
+      }
+
+      const nextCombatantId = clearCurrent
+        ? null
+        : (payload?.currentCombatant?.combatantId ?? combat.combatant?.id ?? null);
+
+      let actionsUsedThisTurn;
+      let baseActionsPerTurn;
+      if (reset || resetBudget) {
+        actionsUsedThisTurn = 0;
+      } else {
+        actionsUsedThisTurn = Number(existing?.actionsUsedThisTurn ?? 0) || 0;
+      }
+
+      if (baseActionsPerTurnOverride != null) {
+        baseActionsPerTurn = Number(baseActionsPerTurnOverride) || 1;
+      } else if (reset || resetBudget) {
+        // Derive from the new current actor's props, default 1 (FU baseline).
+        const currCombatant = nextCombatantId
+          ? combat.combatants?.get?.(nextCombatantId) ?? null
+          : null;
+        const currActor = currCombatant?.actor ?? null;
+        const fromProps = Number(currActor?.system?.props?.baseActionsPerTurn);
+        baseActionsPerTurn = Number.isFinite(fromProps) && fromProps > 0 ? fromProps : 1;
+      } else {
+        baseActionsPerTurn = Number(existing?.baseActionsPerTurn ?? 1) || 1;
+      }
+
+      const next = {
+        combatId: combat.id ?? null,
+        round: combat.round ?? null,
+        turn: clearCurrent ? null : (combat.turn ?? null),
+        combatantId: nextCombatantId,
+        turnSerial: state.turnSerial,
+        roundSerial: state.roundSerial,
+        actedThisRound,
+        actionsUsedThisTurn,
+        baseActionsPerTurn,
+        lastWriteAt: Date.now(),
+        lastReason: reason
+      };
+
+      await combat.setFlag(MODULE_ID, "turnState", next);
+      log("turnState written.", { reason, next });
+    } catch (e) {
+      warn("Failed to write turnState.", { reason, error: e });
+    }
+  }
+
+  // Action-execution-core calls this when a base-budget action commits.
+  // Idempotent on the same combatant; rejects bumps for a non-current
+  // combatant (caller should reservation-check before invoking).
+  async function bumpActionsUsedThisTurn(combatantId, { by = 1 } = {}) {
+    if (!game.user?.isGM) return false;
+    if (!isPrimaryActiveGM()) return false;
+
+    const combat = game.combat ?? null;
+    if (!combat) return false;
+
+    try {
+      const existing = combat.getFlag(MODULE_ID, "turnState") ?? null;
+      if (!existing) {
+        warn("bumpActionsUsedThisTurn: no turnState cache yet — skipping.");
+        return false;
+      }
+      if (existing.combatantId && combatantId && existing.combatantId !== combatantId) {
+        warn("bumpActionsUsedThisTurn: combatantId mismatch — skipping.", {
+          cachedCombatantId: existing.combatantId,
+          requestedCombatantId: combatantId
+        });
+        return false;
+      }
+
+      const cur = Number(existing.actionsUsedThisTurn ?? 0) || 0;
+      const next = {
+        ...existing,
+        actionsUsedThisTurn: cur + Number(by || 0),
+        lastWriteAt: Date.now(),
+        lastReason: "bump-actionsUsedThisTurn"
+      };
+      await combat.setFlag(MODULE_ID, "turnState", next);
+      log("Bumped actionsUsedThisTurn.", {
+        combatantId,
+        from: cur,
+        to: next.actionsUsedThisTurn
+      });
+      return true;
+    } catch (e) {
+      warn("bumpActionsUsedThisTurn failed.", { error: e });
+      return false;
+    }
+  }
+
   async function clearRegisteredOncePerTurnFlags(reason, payload) {
     if (!game.user?.isGM) return;
     if (!isPrimaryActiveGM()) return;
@@ -332,6 +472,41 @@
         return state.registeredFlags.delete(`${scope}.${key}`);
       },
 
+      // Read-only snapshot of the persisted turn-state cache on the
+      // current combat. Falls back to a derived snapshot if no cache
+      // has been written yet (e.g., right after install before the
+      // first turn/round event). Phase 1: action pipeline uses this
+      // to gate out-of-turn actions.
+      getTurnState() {
+        const combat = game.combat ?? null;
+        if (!combat) return null;
+
+        const cached = combat.getFlag?.(MODULE_ID, "turnState") ?? null;
+        if (cached) return foundry.utils.deepClone(cached);
+
+        return {
+          combatId: combat.id ?? null,
+          round: combat.round ?? null,
+          turn: combat.turn ?? null,
+          combatantId: combat.combatant?.id ?? null,
+          turnSerial: state.turnSerial,
+          roundSerial: state.roundSerial,
+          actedThisRound: {},
+          lastWriteAt: 0,
+          lastReason: "derived-fallback"
+        };
+      },
+
+      hasActedThisRound(combatantId) {
+        if (!combatantId) return false;
+        const ts = this.getTurnState();
+        return !!ts?.actedThisRound?.[combatantId];
+      },
+
+      // Phase 2a: action-execution-core calls this when a base-budget
+      // reservation is consumed on the success terminal.
+      bumpActionsUsedThisTurn,
+
       async clearOncePerTurnFlagsNow(reason = "manual") {
         const payload = buildEventPayload({
           type: "manualClear",
@@ -392,6 +567,7 @@
         });
 
         emit("combatStarted", payload);
+        await writeTurnState("combat-start", payload, { reset: true });
         await clearRegisteredOncePerTurnFlags("combat-start", payload);
       }
 
@@ -429,6 +605,7 @@
         emit("roundChanged", payload);
         emit("turnBoundary", { ...payload, type: "turnBoundary", reason: "round-change" });
 
+        await writeTurnState("round-change", payload, { resetActedThisRound: true });
         await clearRegisteredOncePerTurnFlags("round-change", payload);
       }
 
@@ -461,6 +638,7 @@
           emit("turnEnded", payload);
           emit("turnBoundary", { ...payload, type: "turnBoundary", reason: "turn-ended" });
 
+          await writeTurnState("turn-ended", payload, { clearCurrent: true });
           await clearRegisteredOncePerTurnFlags("turn-ended", payload);
         }
 
@@ -484,6 +662,10 @@
           emit("turnStarted", payload);
           emit("turnBoundary", { ...payload, type: "turnBoundary", reason: "turn-started" });
 
+          await writeTurnState("turn-started", payload, {
+            stampActedFor: currentCombatant?.id ?? payload?.currentCombatant?.combatantId ?? null,
+            resetBudget: true
+          });
           await clearRegisteredOncePerTurnFlags("turn-started", payload);
         }
       }
@@ -505,6 +687,7 @@
       emit("roundChanged", payload);
       emit("turnBoundary", { ...payload, type: "turnBoundary", reason: "combatRound-hook" });
 
+      await writeTurnState("combatRound-hook", payload, { resetActedThisRound: true });
       await clearRegisteredOncePerTurnFlags("combatRound-hook", payload);
     });
 

@@ -278,8 +278,6 @@ Hooks.once("ready", () => {
 
   // Small helper: build & emit a reactionPhase payload
   function emitReactionPhase(trigger, extra = {}) {
-    if (!globalThis.ONI?.emit) return;
-
     // IMPORTANT (Module Mode):
     // - Only the GM should broadcast reaction phases.
     //   (Non-GM clients ignore phases and wait for GM offers via socket.)
@@ -292,8 +290,30 @@ Hooks.once("ready", () => {
       ...extra,
     };
 
-    // Emit locally on the GM only (no world broadcast).
-    // This avoids duplicate processing and reduces network spam.
+    // Route through the awaitable substrate (Phase R Slice 1.5) so a
+    // per-reactor sub-window is created for each manual match. Without
+    // this, lifecycle reactions (conflict_start / round_start /
+    // round_end / turn_start / turn_end) have no sub-window — the dialog
+    // fires pickerPicked, GM calls resolveSub(subKey), but
+    // _subWindows.get(subKey) returns undefined and the close-tick is
+    // never broadcast, leaving the floating reaction button stuck on
+    // screen. openWindow stamps the payload with __emitId (which the
+    // manager keys reactorsFound on) and itself emits `oni:reactionPhase`,
+    // so all existing listeners still see the phase. Fire-and-forget:
+    // lifecycle phases are not awaited by any flow; the returned promise
+    // resolves when subs settle and is discarded.
+    const rs = globalThis.FUCompanion?.api?.reactionSystem;
+    if (rs?.openWindow) {
+      try { rs.openWindow(payload, { reason: "lifecycle" }); }
+      catch (e) { console.warn("[PhaseHandler] openWindow threw for lifecycle phase:", trigger, e); }
+      return;
+    }
+
+    // Fallback path — substrate not loaded yet. Buttons spawned from this
+    // emit will not get a substrate-driven close (no sub-window exists),
+    // but the manager still sees the phase so passive auto-fire and the
+    // legacy hook listeners keep working.
+    if (!globalThis.ONI?.emit) return;
     ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
   }
 

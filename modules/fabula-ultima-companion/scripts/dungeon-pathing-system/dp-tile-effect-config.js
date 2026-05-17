@@ -310,49 +310,6 @@
             </select>
           </div>
 
-          <!-- Skill Check -->
-          <div class="form-group">
-            <label>Use Skill Check</label>
-            <input type="checkbox" name="${fl("useSkillCheck")}"
-                   data-dtype="Boolean" data-oni-ec="skill-check-toggle"
-                   ${chk(cfg.useSkillCheck)} />
-            <p class="notes">Targeted actors must pass a skill check before effects apply.</p>
-          </div>
-          <div class="oni-ec-indent" data-oni-ec-skill-check="1"
-               ${cfg.useSkillCheck ? "" : 'style="display:none"'}>
-            <div class="form-group">
-              <label>Attribute A</label>
-              <select name="${fl("checkAttrA")}">
-                <option value="DEX" ${sel("DEX", cfg.checkAttrA)}>DEX — Dexterity</option>
-                <option value="MIG" ${sel("MIG", cfg.checkAttrA)}>MIG — Might</option>
-                <option value="INS" ${sel("INS", cfg.checkAttrA)}>INS — Insight</option>
-                <option value="WLP" ${sel("WLP", cfg.checkAttrA)}>WLP — Willpower</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Attribute B</label>
-              <select name="${fl("checkAttrB")}">
-                <option value="DEX" ${sel("DEX", cfg.checkAttrB)}>DEX — Dexterity</option>
-                <option value="MIG" ${sel("MIG", cfg.checkAttrB)}>MIG — Might</option>
-                <option value="INS" ${sel("INS", cfg.checkAttrB)}>INS — Insight</option>
-                <option value="WLP" ${sel("WLP", cfg.checkAttrB)}>WLP — Willpower</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Difficulty (DL)</label>
-              <input type="number" name="${fl("checkDl")}"
-                     data-dtype="Number" min="1" max="40" value="${cfg.checkDl}" />
-            </div>
-            <div class="form-group">
-              <label>Apply effect on</label>
-              <select name="${fl("checkApplyOn")}">
-                <option value="fail" ${sel("fail", cfg.checkApplyOn)}>Check Failure (default)</option>
-                <option value="pass" ${sel("pass", cfg.checkApplyOn)}>Check Success</option>
-              </select>
-              <p class="notes">Effects only apply to actors who meet this condition.</p>
-            </div>
-          </div>
-
           <!-- Resource Change -->
           <h3><i class="fas fa-heartbeat"></i> Resource Change</h3>
           <div class="form-group">
@@ -579,11 +536,6 @@
     const body     = $("[data-oni-ec-body='1']");
     masterCb?.addEventListener("change", () => { toggle(body, masterCb.checked); resize(); });
 
-    // Skill check toggle
-    const scCb   = $("[data-oni-ec='skill-check-toggle']");
-    const scBody = $("[data-oni-ec-skill-check='1']");
-    scCb?.addEventListener("change", () => { toggle(scBody, scCb.checked); resize(); });
-
     // Resource toggle
     const resCb   = $("[data-oni-ec='resource-toggle']");
     const resBody = $("[data-oni-ec-resource='1']");
@@ -666,11 +618,6 @@
         activeEffects,
         activeEffectsJson: raw.activeEffectsJson ?? "",
         targetMode:        String(raw.targetMode      ?? "all"),
-        useSkillCheck:     bool(raw.useSkillCheck),
-        checkAttrA:        String(raw.checkAttrA      ?? "DEX"),
-        checkAttrB:        String(raw.checkAttrB      ?? "MIG"),
-        checkDl:           Number(raw.checkDl         ?? 10),
-        checkApplyOn:      String(raw.checkApplyOn    ?? "fail"),
         silent:            bool(raw.silent),
         vfxType:           String(raw.vfxType         ?? "none"),
         vfxFile:           String(raw.vfxFile         ?? ""),

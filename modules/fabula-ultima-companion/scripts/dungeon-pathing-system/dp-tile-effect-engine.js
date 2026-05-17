@@ -20,10 +20,9 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG       = "[DungeonPathing][TileEffectEngine]";
   const PATHING   = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
-  const SOCKET_CH        = `module.${MODULE_ID}`;
-  const MSG_APPLY        = "DP_TILE_EFFECT_APPLY";
-  const MSG_VFX          = "DP_TILE_EFFECT_VFX";
-  const MSG_SKILL_CHECK  = "DP_TILE_EFFECT_SKILL_CHECK";
+  const SOCKET_CH = `module.${MODULE_ID}`;
+  const MSG_APPLY = "DP_TILE_EFFECT_APPLY";
+  const MSG_VFX   = "DP_TILE_EFFECT_VFX";
 
   // ── Resource type map ──────────────────────────────────────────────────────
   const RESOURCE_TYPES = Object.freeze({
@@ -68,11 +67,6 @@
       useActiveEffect:   bool(raw.useActiveEffect),
       activeEffects,
       targetMode:        String(raw.targetMode         ?? "all"),
-      useSkillCheck:     bool(raw.useSkillCheck),
-      checkAttrA:        String(raw.checkAttrA         ?? "DEX"),
-      checkAttrB:        String(raw.checkAttrB         ?? "MIG"),
-      checkDl:           Number(raw.checkDl            ?? 10),
-      checkApplyOn:      String(raw.checkApplyOn       ?? "fail"),
       silent:            bool(raw.silent),
       vfxType:           String(raw.vfxType            ?? "none"),
       vfxFile:           String(raw.vfxFile            ?? ""),
@@ -343,28 +337,6 @@
         return;
       }
 
-      // ── GM: player-delegated skill-check + effect flow ────────────────────
-      if (msg?.type === MSG_SKILL_CHECK && game.user?.isGM) {
-        const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
-        const actors = [];
-        for (const uuid of (actorUuids ?? [])) {
-          const a = await fromUuid(uuid).catch(() => null);
-          if (a) actors.push(a);
-        }
-        if (!actors.length) { console.warn(TAG, "GM skill-check: no actors resolved."); return; }
-
-        const tokenDoc = { id: tokenId };
-        let targets = await runSkillCheckGate(actors, cfg, tileLabel, tokenDoc, null);
-        if (targets.length && (cfg.useResourceChange || cfg.useActiveEffect)) {
-          const results = await applyToActors(targets, cfg);
-          if (!cfg.silent) {
-            await createChatCard(results, cfg, tileLabel);
-            broadcastVfx(cfg, tokenDoc, sceneId);
-          }
-        }
-        return;
-      }
-
       // ── All clients: play VFX/SFX ──────────────────────────────────────────
       if (msg?.type === MSG_VFX) {
         const { cfg, tokenId, sceneId } = msg.payload ?? {};
@@ -377,21 +349,6 @@
     console.debug(TAG, "Socket listeners installed.");
   }
 
-  // ── Skill-check gate (GM-side) ─────────────────────────────────────────────
-  async function runSkillCheckGate(targets, cfg, tileLabel, tokenDoc, scene) {
-    const SC = DP.TileSkillCheck;
-    if (!SC?.request) {
-      console.warn(TAG, "TileSkillCheck not loaded — skipping check gate.");
-      return targets; // fail open so effects still run
-    }
-    const checkResults = await SC.request(targets, cfg, { tileLabel });
-    const applyOnPass  = cfg.checkApplyOn === "pass";
-    return targets.filter(actor => {
-      const r = checkResults.find(r => r.actorUuid === actor.uuid);
-      return r && (applyOnPass ? r.pass : !r.pass);
-    });
-  }
-
   // ── Main run() ─────────────────────────────────────────────────────────────
   async function run(cfg, tileDoc, tokenDoc, scene) {
     if (!cfg.enabled) return;
@@ -399,41 +356,10 @@
         && cfg.vfxType === "none" && !cfg.sfxUrl) return;
 
     const allMembers = await resolvePartyMembers();
-    let targets      = selectTargets(allMembers, cfg.targetMode);
+    const targets    = selectTargets(allMembers, cfg.targetMode);
     const tileLabel  = tileDoc?.name ?? "Tile Event";
     const sceneId    = scene?.id ?? canvas.scene?.id ?? null;
 
-    // ── Skill-check path (always GM-orchestrated) ──────────────────────────
-    if (cfg.useSkillCheck && targets.length) {
-      if (game.user?.isGM) {
-        // GM runs the full check + conditional application.
-        targets = await runSkillCheckGate(targets, cfg, tileLabel, tokenDoc, scene);
-        if (targets.length && (cfg.useResourceChange || cfg.useActiveEffect)) {
-          const results = await applyToActors(targets, cfg);
-          if (!cfg.silent) {
-            await createChatCard(results, cfg, tileLabel);
-            broadcastVfx(cfg, tokenDoc, sceneId);
-          }
-        }
-        if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
-      } else {
-        // Player → delegate entire flow to GM (fire-and-forget; GM will drive
-        // the overlay and apply effects on its own).
-        game.socket.emit(SOCKET_CH, {
-          type: MSG_SKILL_CHECK,
-          payload: {
-            actorUuids: targets.map(a => a.uuid).filter(Boolean),
-            cfg,
-            tileLabel,
-            tokenId:  tokenDoc?.id ?? null,
-            sceneId,
-          },
-        });
-      }
-      return;
-    }
-
-    // ── Standard (no skill check) path ────────────────────────────────────
     // VFX/SFX plays locally on the triggering client immediately.
     if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
 

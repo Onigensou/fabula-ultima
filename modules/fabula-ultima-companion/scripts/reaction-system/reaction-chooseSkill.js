@@ -540,8 +540,40 @@ Hooks.once("ready", () => {
         dlg.render(true);
       });
 
+      // Phase R Slice 1.5: compute the per-reactor sub-key for THIS
+      // dialog (one dialog = one reactor's response). Notify the
+      // awaitable substrate on close / pick so only this reactor's
+      // sub-window resolves — other reactors' windows continue ticking
+      // independently. The local hook is socket-forwarded to GM by
+      // reaction-window.js when this dialog runs on a player client.
+      const _rsApi = globalThis.FUCompanion?.api?.reactionSystem ?? null;
+      const _rsPayload = ctx?.latestPhasePayload ?? ctx?.phasePayload ?? null;
+      const _rsReactorTokenId =
+        ctx?.token?.id ??
+        ctx?.combatant?.tokenId ??
+        null;
+      const _rsSubKey = (_rsApi?._internals?.buildSubKey && _rsPayload && _rsReactorTokenId)
+        ? (() => {
+            try {
+              const bucket = _rsApi._internals.computeBucket(_rsPayload);
+              const actionCardId = _rsPayload?.actionCardId ?? _rsPayload?.meta?.actionCardId ?? null;
+              return _rsApi._internals.buildSubKey({
+                bucket,
+                actionCardId,
+                reactorTokenId: _rsReactorTokenId
+              });
+            } catch { return null; }
+          })()
+        : null;
+      const _fireRsHook = (event, extra = {}) => {
+        if (!_rsSubKey) return;
+        try { Hooks.callAll(event, { subKey: _rsSubKey, ...extra }); }
+        catch (e) { console.warn(`[ReactionChooseSkill] ${event} hook failed:`, e); }
+      };
+
       if (!chosenGroup?.item) {
         console.log("[ReactionChooseSkill] Reaction dialog closed without choice.");
+        _fireRsHook("oni:reactionWindow:pickerClosed", { picked: false });
         return;
       }
 
@@ -625,7 +657,13 @@ Hooks.once("ready", () => {
       // action pipeline. A row that returns `{ abort: true }` (e.g. a
       // `consume_charge` gate that found no charges) stops dispatch AND
       // skips the skill body entirely.
+      //
+      // A row that returns `{ skipBody: true }` (e.g. `open_action_menu`
+      // for Acceleration) is self-contained: skip ADF.execute(synth) but
+      // don't show an abort warning and don't fire pickerClosed (the
+      // effect already fired pickerPicked).
       let dispatchAborted = false;
+      let dispatchSkipBody = false;
       try {
         const grantApi = window["oni.ReactionGrant"]
           ?? globalThis.FUCompanion?.api?.reactionGrant
@@ -636,6 +674,7 @@ Hooks.once("ready", () => {
           // (redirect_target, etc.) can find the source action card and the
           // reactor identity. Resource-only kinds ignore it.
           const dispatchResult = await grantApi.applyEffectsForGroup(chosenGroup, reactToken, game.combat, payload);
+          if (dispatchResult?.skipBody) dispatchSkipBody = true;
           if (dispatchResult?.aborted) {
             dispatchAborted = true;
             console.warn("[ReactionChooseSkill] Reaction aborted by effect-table gate.", dispatchResult.abortInfo);
@@ -647,7 +686,27 @@ Hooks.once("ready", () => {
         console.warn("[ReactionChooseSkill] Reaction effect dispatch threw; continuing with skill execution.", grantErr);
       }
 
-      if (dispatchAborted) return;
+      if (dispatchAborted) {
+        // Aborted gate (e.g. consume_charge with no charges) — treat as a
+        // pass: the reaction did not actually fire.
+        _fireRsHook("oni:reactionWindow:pickerClosed", { picked: false });
+        return;
+      }
+
+      if (dispatchSkipBody) {
+        // Self-contained effect (e.g. open_action_menu) already drove the
+        // next step + fired its own pickerPicked. Skip ADF.
+        console.log("[ReactionChooseSkill] Reaction handled by effect (skipBody) — skipping ADF.execute.", {
+          itemName: chosenGroup?.item?.name ?? null
+        });
+        return;
+      }
+
+      // Notify the awaitable substrate that a reaction was picked + its
+      // declarative effects fired. The skill body (ADF.execute) runs after
+      // this — emit sites that need to await the body itself can chain a
+      // separate openWindow later.
+      _fireRsHook("oni:reactionWindow:pickerPicked", { item: chosenGroup.item });
 
       window.__PAYLOAD = payload;
       await ADF.execute({ __AUTO: true, __PAYLOAD: payload });

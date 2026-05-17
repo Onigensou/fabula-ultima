@@ -204,11 +204,19 @@ const sourceDisp = "neutral";
 // Headless override: accept explicit target token IDs from payload to avoid UI targeting.
 let targets = [];
 if (AUTO && Array.isArray(PAYLOAD.targetIds) && PAYLOAD.targetIds.length) {
-  const idSet = new Set(PAYLOAD.targetIds);
-  // Try by document id, then by object id (depending on what caller passes)
-  targets = canvas.tokens?.placeables
-    ?.filter(t => idSet.has(t.id) || idSet.has(t.document?.id))
-    ?? [];
+  // Preserve duplicate target ids per slot — Protect-style redirects can
+  // legitimately put the same reactor in the array twice (RAW: "if the
+  // danger already affected you, it affects you twice"). The old code
+  // wrapped PAYLOAD.targetIds in a Set, collapsing duplicates and dropping
+  // one hit. Resolve by id, then preserve the per-slot order.
+  const byId = new Map();
+  for (const t of (canvas.tokens?.placeables ?? [])) {
+    if (t?.id) byId.set(t.id, t);
+    if (t?.document?.id) byId.set(t.document.id, t);
+  }
+  targets = PAYLOAD.targetIds
+    .map((id) => byId.get(id) ?? null)
+    .filter(Boolean);
 } else {
   const foundryTargets   = Array.from(game.user?.targets ?? []);
   const selectedTokens   = canvas.tokens?.controlled ?? [];

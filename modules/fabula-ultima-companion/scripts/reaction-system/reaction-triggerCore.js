@@ -91,6 +91,80 @@ Hooks.once("ready", () => {
       return rows;
     }
 
+    /**
+     * Synthesize a virtual reaction "item" from an ActiveEffect whose
+     * flags carry `fabula-ultima-companion.reactionConfig`. The shape
+     * mimics a CSB skill item closely enough for the matcher + picker
+     * + dispatcher to treat it the same as a real item.
+     *
+     * Used so AE-borne reactions (e.g. Acceleration's free-action
+     * offer) appear in the reaction picker without polluting the
+     * affected actor's sheet with a transient skill item.
+     *
+     * Returns null if the AE has no reactionConfig flag (so the caller
+     * can ignore it).
+     */
+    function synthesizeReactionItemFromAE(effect) {
+      if (!effect) return null;
+      const flag = effect?.flags?.["fabula-ultima-companion"]?.reactionConfig;
+      if (!flag) return null;
+
+      const reactionConfigTable = flag?.reaction_config_table ?? flag?.configTable ?? null;
+      const reactionEffectTable = flag?.reaction_effect_table ?? flag?.effectTable ?? null;
+      if (!reactionConfigTable && !reactionEffectTable) return null;
+
+      // If the AE carries a charges flag (e.g. bonusActionGrant), don't
+      // synthesize a reaction offer when the charge is drained. The AE
+      // itself sticks around (e.g. waiting for scene cleanup) but it
+      // shouldn't show up in the reaction picker anymore.
+      const chargesFlag = Number(effect?.flags?.["fabula-ultima-companion"]?.charges ?? NaN);
+      if (Number.isFinite(chargesFlag) && chargesFlag <= 0) return null;
+
+      // Tag the synth UUID so downstream consumers (picker / dispatcher)
+      // can recognize it. We don't try to make this a real Foundry UUID —
+      // nothing inside the substrate dereferences it via fromUuid().
+      const synthUuid = `${effect.uuid}::synth-reaction`;
+
+      return {
+        // Item-shaped facade
+        id: `synth-${effect.id}`,
+        uuid: synthUuid,
+        name: flag.name ?? effect.name ?? "Reaction",
+        img: flag.img ?? effect.icon ?? effect.img ?? "icons/svg/aura.svg",
+        type: "equippableItem",
+
+        // Mark for debugging / safe-checks; downstream code that needs
+        // to distinguish a synth from a real item can read these.
+        __synthFromActiveEffect: true,
+        __sourceEffectUuid: effect.uuid,
+        __sourceEffectId: effect.id,
+
+        system: {
+          props: {
+            isReaction: true,
+            name: flag.name ?? effect.name ?? "Reaction",
+            reaction_config_table: reactionConfigTable ?? {},
+            reaction_effect_table: reactionEffectTable ?? {}
+          }
+        }
+      };
+    }
+
+    /**
+     * Iterate every "reaction-bearing item" on an actor — real items
+     * plus virtual items synthesized from any ActiveEffect that carries
+     * a `reactionConfig` flag.
+     */
+    function* enumerateActorReactionItems(actor) {
+      if (!actor) return;
+      for (const item of actor.items ?? []) yield item;
+      for (const effect of actor.effects ?? []) {
+        if (effect?.disabled || effect?.isSuppressed) continue;
+        const synth = synthesizeReactionItemFromAE(effect);
+        if (synth) yield synth;
+      }
+    }
+
     function extractReactionTriggers(item) {
       const sys   = item.system ?? {};
       const props = sys.props ?? sys;
@@ -586,7 +660,7 @@ Hooks.once("ready", () => {
         const tokenDoc = token.document;
         const actorReactions = [];
 
-        for (const item of actor.items ?? []) {
+        for (const item of enumerateActorReactionItems(actor)) {
           const sys   = item.system ?? {};
           const props = sys.props ?? sys;
           if (!props?.isReaction) continue;

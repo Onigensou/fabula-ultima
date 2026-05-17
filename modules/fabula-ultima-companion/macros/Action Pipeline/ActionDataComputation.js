@@ -1485,7 +1485,14 @@ autoHit   : (_isCritFinal === true && _isFumbleFinal !== true)
         customLogicActionRaw,
         customLogicResolutionRaw,
         hasCustomLogicAction,
-        hasCustomLogicResolution
+        hasCustomLogicResolution,
+
+        // Phase 2a: action-budget reservation set by ADF gate. Must survive
+        // the meta rebuild here so it reaches the action-card flag and the
+        // AEC consume hook on Confirm. Without this carry-through, the
+        // consume hook reads `meta.budgetReservation === undefined` and the
+        // turn never ends.
+        budgetReservation: PAYLOAD?.meta?.budgetReservation ?? null
       },
 accuracy: {
   ...accRoll,
@@ -1819,7 +1826,14 @@ const totalFlatBonus =
         customLogicActionRaw,
         customLogicResolutionRaw,
         hasCustomLogicAction,
-        hasCustomLogicResolution
+        hasCustomLogicResolution,
+
+        // Phase 2a: action-budget reservation set by ADF gate. Must survive
+        // the meta rebuild here so it reaches the action-card flag and the
+        // AEC consume hook on Confirm. Without this carry-through, the
+        // consume hook reads `meta.budgetReservation === undefined` and the
+        // turn never ends.
+        budgetReservation: PAYLOAD?.meta?.budgetReservation ?? null
       },
       accuracy: hasAccuracy
         ? {

@@ -386,6 +386,21 @@ async function setActionCardState(chatMsg, state, extra = {}) {
       actionCardResolvedRunId: runId
     });
 
+    // Phase R Slice 1: close any awaitable reaction windows still open for
+    // this action card. Today's CreateActionCard emit resolves its window
+    // before the user can confirm, but resolution_phase emits (damage,
+    // crisis, defeated) migrated in later slices fire after this point
+    // and rely on this signal so the action card's resolve = window close.
+    try {
+      const actionCardId = flagged?.meta?.actionCardId ?? flagged?.actionCardId ?? null;
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      if (actionCardId && rs?.closeWindowsForActionCard) {
+        await rs.closeWindowsForActionCard(actionCardId, "card_resolved");
+      }
+    } catch (rsErr) {
+      console.warn(`${RUN_TAG} closeWindowsForActionCard failed (non-fatal):`, rsErr);
+    }
+
       // Stamp + disable button (GM client)
       if (btn) {
         btn.disabled = true;
