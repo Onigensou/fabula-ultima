@@ -199,9 +199,13 @@
   }
 
   // ── Slot element factory ──────────────────────────────────────────────────────
+  function _capitalize(str) {
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+  }
+
   function _emSelect(pairIdx, selected, cls) {
     const opts = BondUpdater.optionsForPair(pairIdx).map(v =>
-      `<option value="${v}" ${v === selected ? "selected" : ""}>${v || "—"}</option>`
+      `<option value="${v}" ${v === selected ? "selected" : ""}>${v ? _capitalize(v) : "—"}</option>`
     ).join("");
     const pair  = BondUpdater.PAIRS[pairIdx];
     const title = `${pair.pos} / ${pair.neg}`;
