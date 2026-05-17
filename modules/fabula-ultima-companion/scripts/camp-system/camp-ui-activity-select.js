@@ -23,6 +23,7 @@
       _focusedKey  = null;
       _buildOverlay(this._party);
       this.refresh();
+      CAMP.Sound.play(CAMP.SFX.CAMP_START);
     },
 
     hide() {
@@ -52,7 +53,7 @@
           if (hk === key) { hoveredBy = aid; break; }
         }
 
-        const isMine      = myActorId === lockedBy;
+        const isMine      = !!myActorId && myActorId === lockedBy;
         const lockedOther = !!(lockedBy && !isMine);
         const hovSelf     = !myLocked && hoveredBy === myActorId;
 
@@ -62,14 +63,30 @@
         row.classList.toggle("act-focused",      key === _focusedKey);
         row.classList.toggle("confirmed-locked", iAmConfirmed);
 
+        // Color-code other players' selections using their Foundry user color
+        let otherUserColor = null;
+        if (lockedOther) {
+          const owner = this._party.find(e => e.actorId === lockedBy);
+          const user  = owner?.userId ? game.users?.get(owner.userId) : null;
+          otherUserColor = String(user?.color ?? "#8a6030");
+          row.style.borderColor = otherUserColor;
+          row.style.background  = _hexToRgba(otherUserColor, 0.13);
+        } else {
+          row.style.borderColor = "";
+          row.style.background  = "";
+        }
+
         const tagEl = row.querySelector(".act-row-tag");
         if (tagEl) {
           if (lockedBy) {
             const owner = this._party.find(e => e.actorId === lockedBy);
-            tagEl.textContent = isMine ? "✓ You" : `🔒 ${owner?.userName ?? "Other"}`;
+            const actorName = game.actors?.get(lockedBy)?.name ?? owner?.userName ?? "?";
+            tagEl.textContent  = isMine ? "✓ You" : actorName;
+            tagEl.style.color  = otherUserColor ?? "";
             tagEl.style.display = "";
           } else {
             tagEl.style.display = "none";
+            tagEl.style.color   = "";
           }
         }
       });
@@ -114,6 +131,14 @@
   };
 
   // ---------------------------------------------------------------------------
+
+  function _hexToRgba(hex, alpha) {
+    const h = String(hex).replace("#", "");
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
 
   function activePlayerCount() {
     return (game.users?.contents ?? []).filter(u => u.active && !u.isGM).length;
@@ -165,8 +190,11 @@
         <span id="oni-camp-act-status" class="act-footer-status">0 / 0 confirmed</span>
       </div>`;
 
+    const isSpectator = !_getMyActorId();
+
     const overlay = document.createElement("div");
     overlay.id = OVL_ID;
+    if (isSpectator) overlay.classList.add("oni-camp-spectator");
     overlay.innerHTML = `
       <div class="oni-camp-panel oni-camp-activity-panel">
         <div class="oni-camp-panel__title"><i class="fas fa-campfire"></i> Camp Activities</div>
@@ -193,10 +221,12 @@
 
     // Build activity rows
     const rows = overlay.querySelector("#oni-camp-act-rows");
-    CAMP.ACTIVITY_DEFS.forEach(def => {
+    CAMP.ACTIVITY_DEFS.forEach((def, i) => {
       const row = document.createElement("div");
       row.className = "oni-camp-act-row";
       row.dataset.activityKey = def.key;
+      row.style.animation      = `campRowSlideIn 0.24s ease both`;
+      row.style.animationDelay = `${i * 48}ms`;
       row.innerHTML = `
         <span class="act-row-icon"><i class="${def.icon}"></i></span>
         <span class="act-row-name">${def.name}</span>
@@ -206,15 +236,20 @@
         _focusedKey = def.key;
         _setDesc(def);
         _onHover(def.key);
+        CAMP.Sound.play(CAMP.SFX.ACTIVITY_HOVER);
         CAMP.ActivitySelectUI.refresh();
       });
       row.addEventListener("mouseleave", () => _onHover(null));
-      row.addEventListener("click",      () => _onClickActivity(def.key));
+      row.addEventListener("click",      () => {
+        CAMP.Sound.play(CAMP.SFX.ACTIVITY_SELECT);
+        _onClickActivity(def.key);
+      });
       rows.appendChild(row);
     });
 
     // Confirm button (players only)
     overlay.querySelector("#oni-camp-act-confirm")?.addEventListener("click", () => {
+      CAMP.Sound.play(CAMP.SFX.ACTIVITY_CONFIRM);
       CAMP.Socket.emit(CAMP.MSG.TOGGLE_READY, { userId: game.user?.id });
     });
 
@@ -242,10 +277,7 @@
     if (CAMP.State.getReady()[userId]) return;
 
     const myActorId = _getMyActorId();
-    if (!myActorId) {
-      ui.notifications?.warn("No character found. Make sure your actor is assigned.");
-      return;
-    }
+    if (!myActorId) return; // spectator — no party actor, silently block
 
     const sel      = CAMP.State.getSelections();
     const myLocked = sel[myActorId]?.locked ?? null;

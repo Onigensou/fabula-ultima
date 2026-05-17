@@ -38,6 +38,8 @@
       // Final fallback: look up by actorId directly
       if (!_actor && mine?.actorId) _actor = game.actors.get(mine.actorId) ?? null;
 
+      console.debug(TAG, "show() actor:", _actor?.id, _actor?.name, "isToken:", _actor?.isToken ?? false);
+
       if (!_actor) {
         ui.notifications?.warn("No character found for bond editing. Ask your GM to assign your actor.");
         return;
@@ -70,15 +72,34 @@
       }
 
       const updated = _readBondsFromDOM();
-      await BondUpdater.writeBonds(_actor, updated);
-      await _actor.setFlag(CAMP.MODULE_ID, MEM_FLAG, _pendingMems);
-
       const changes = BondUpdater.buildChangelog(_originalBonds, updated);
+
+      console.debug(TAG, "confirm() changes:", changes);
+
+      // Write only the bond slots that actually changed, one at a time.
+      for (const change of changes) {
+        const slot = updated.find(b => b.idx === change.slot);
+        if (!slot) continue;
+        console.debug(TAG, `confirm() writing slot ${slot.idx}:`, slot);
+        const result = await BondUpdater.writeSlot(_actor, slot.idx, slot);
+        if (!result) {
+          console.error(TAG, `confirm() writeSlot(${slot.idx}) returned falsy — update rejected`);
+          ui.notifications?.error("Bond update failed — check console (F12) for details.");
+          return;
+        }
+        console.debug(TAG, `confirm() slot ${slot.idx} written OK`);
+      }
+
+      await _actor.setFlag(CAMP.MODULE_ID, MEM_FLAG, _pendingMems).catch(err =>
+        console.warn(TAG, "confirm() setFlag failed (non-fatal):", err)
+      );
+
       CAMP.Socket.emit(CAMP.MSG.CONFIRM_BOND, {
         userId: game.user?.id,
         summary: { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _pendingMems },
       });
 
+      console.debug(TAG, "confirm() done.");
       CAMP.Sound.play(CAMP.SFX.BOND_CONFIRM);
       _setConfirmedState(true);
     },
@@ -86,8 +107,22 @@
 
   // ── DOM read ─────────────────────────────────────────────────────────────────
   function _readBondsFromDOM() {
-    // Start from a full copy so un-shown empty slots keep their original data
-    const result = _originalBonds.map(b => ({ ...b }));
+    // Build set of slot indices currently visible in the DOM
+    const visibleIndices = new Set();
+    document.querySelectorAll(".oni-bond-slot[data-slot-index]").forEach(el => {
+      const idx = parseInt(el.dataset.slotIndex);
+      if (idx) visibleIndices.add(idx);
+    });
+
+    // Start from a full copy; slots removed from the DOM (Cleared) are blanked out
+    const result = _originalBonds.map(b => {
+      if (b.name && !visibleIndices.has(b.idx)) {
+        // Slot was visible originally but was cleared by the user — zero it out
+        return { ...b, name: "", e1: "", e2: "", e3: "", rel: "" };
+      }
+      return { ...b };
+    });
+
     document.querySelectorAll(".oni-bond-slot[data-slot-index]").forEach(el => {
       const idx   = parseInt(el.dataset.slotIndex);
       const entry = result.find(b => b.idx === idx);

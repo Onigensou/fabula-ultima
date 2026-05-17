@@ -47,7 +47,14 @@
       );
     } catch (_) { /* noop */ }
 
-    setTimeout(() => location.reload(), Math.max(0, delayMs));
+    // Stagger non-initiator reloads so clients don't all disconnect simultaneously.
+    // Simultaneous mass-disconnect crashes the local Foundry V12 Electron app at 3+ clients.
+    const activeNonInitiators = game.users.contents
+      .filter(u => u.active && u.id !== initiatorId)
+      .sort((a, b) => a.id.localeCompare(b.id));
+    const myIndex = activeNonInitiators.findIndex(u => u.id === game.userId);
+    const staggerMs = myIndex >= 0 ? myIndex * 600 : 0;
+    setTimeout(() => location.reload(), Math.max(0, delayMs + staggerMs));
   }
 
   Hooks.once("ready", () => {
