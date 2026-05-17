@@ -540,6 +540,7 @@
                 <option value="none">None (Normal Foundry movement)</option>
                 <option value="exploration">Exploration (Camera Follow Token)</option>
                 <option value="dungeon">Dungeon (Tile-Based Movement)</option>
+                <option value="camp">Camp (Camp Activity System)</option>
               </select>
             </div>
             <p class="notes">
@@ -772,7 +773,7 @@
       if (sel) {
         // Read new sceneMode value, or migrate from legacy cameraFollowToken boolean
         let mode = safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp"].includes(mode)) {
           const legacy = safeGet(fabulaData, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
@@ -947,6 +948,7 @@
       function syncResetVisibility() {
         const mode = modeSel?.value ?? "";
         resetSection.style.display = (mode === "dungeon" || mode === "exploration") ? "" : "none";
+
       }
 
       syncResetVisibility();
@@ -1066,7 +1068,7 @@
       readGeneral(scene = canvas.scene) {
         const fabula = readFabulaData(scene);
         let mode = safeGet(fabula, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
-        if (!mode || !["none", "exploration", "dungeon"].includes(mode)) {
+        if (!mode || !["none", "exploration", "dungeon", "camp"].includes(mode)) {
           const legacy = safeGet(fabula, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
           mode = normalizeBoolean(legacy, false) ? "exploration" : "none";
         }
