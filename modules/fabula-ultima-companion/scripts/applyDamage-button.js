@@ -23,9 +23,13 @@
 //     window.FUCompanion.api.actionExecution.execute(...)
 // - Chat button locking, card stamping, and socket sync remain here.
 
+(() => {
+
 const MODULE_ID = "fu-chatbtn";
 const MODULE_NS = "fabula-ultima-companion";
 const SOCKET_NS = "module.fabula-ultima-companion";
+
+console.debug("[fu-chatbtn] script file executing (top-level)");
 
 // ============================================================================
 // Helpers
@@ -632,3 +636,5 @@ function installSocketOnce() {
 // otherwise wait for the ready hook.
 if (game?.ready) installSocketOnce();
 else Hooks.once("ready", installSocketOnce);
+
+})();
