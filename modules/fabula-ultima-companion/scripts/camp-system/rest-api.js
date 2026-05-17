@@ -11,20 +11,55 @@
   const CAMP      = globalThis.CampSystem ??= {};
   const TAG       = "[CampSystem][RestAPI]";
 
-  // Path candidates for HP/MP, checked in order.
-  const HP_CUR = ["system.props.current_hp", "system.attributes.hp.value"];
-  const HP_MAX = ["system.props.max_hp",     "system.attributes.hp.max"];
-  const MP_CUR = ["system.props.current_mp", "system.attributes.mp.value"];
-  const MP_MAX = ["system.props.max_mp",     "system.attributes.mp.max"];
-
   // Jingle played during rest. Override CAMP.RestAPI.jingle before calling perform().
   const DEFAULT_JINGLE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Inn_A.mp3";
 
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
-  function resolvePath(actor, paths) {
-    return paths.find(p => foundry.utils.hasProperty(actor, p)) ?? null;
+
+  /**
+   * Resolve all party actor IDs from the Database Actor via db-resolver.
+   * The DB actor stores party members as member_id_1..member_id_4.
+   * Returns an array of resolved Actor documents.
+   */
+  async function _getPartyActors() {
+    const api = window.FUCompanion?.api;
+    if (!api?.getCurrentGameDb) {
+      console.warn(TAG, "db-resolver not available.");
+      return [];
+    }
+
+    const { db, source } = await api.getCurrentGameDb();
+    const dbActor = source ?? db;
+    if (!dbActor) {
+      console.warn(TAG, "Database actor not found.");
+      return [];
+    }
+
+    const props = dbActor.system?.props ?? {};
+    const actors = [];
+
+    for (let i = 1; i <= 4; i++) {
+      const raw = String(props[`member_id_${i}`] ?? "").trim();
+      if (!raw) continue;
+
+      let actor = game.actors?.get(raw) ?? null;
+      if (!actor && raw.includes(".")) {
+        actor = await fromUuid(raw).catch(() => null);
+      }
+      if (!actor) {
+        actor = await fromUuid(`Actor.${raw}`).catch(() => null);
+      }
+
+      if (actor) {
+        actors.push(actor);
+      } else {
+        console.warn(TAG, `member_id_${i} could not be resolved: "${raw}"`);
+      }
+    }
+
+    return actors;
   }
 
   function isPermanent(effect) {
@@ -111,13 +146,13 @@
       await new Promise(r => setTimeout(r, 4000));
 
       // 3 & 4 — Process each party member
-      const party = await CAMP.Party.resolve();
-      if (!party.length) {
-        console.warn(TAG, "No party members resolved; skipping restore.");
+      const actors = await _getPartyActors();
+      if (!actors.length) {
+        console.warn(TAG, "No party actors found in DB; skipping restore.");
         return;
       }
 
-      for (const { actor } of party) {
+      for (const actor of actors) {
         await _restoreResources(actor);
         await _clearTemporaryEffects(actor);
       }
