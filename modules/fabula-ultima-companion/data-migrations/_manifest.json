@@ -23,6 +23,14 @@
     {
       "key": "2026-05-17-drain-spirit-master-author",
       "path": "data-migrations/2026-05-17-drain-spirit-master-author.js"
+    },
+    {
+      "key": "2026-05-17-skill-effects-panel-extract",
+      "path": "data-migrations/2026-05-17-skill-effects-panel-extract.js"
+    },
+    {
+      "key": "2026-05-17-drain-spirit-clear-custom-logic",
+      "path": "data-migrations/2026-05-17-drain-spirit-clear-custom-logic.js"
     }
   ]
 }
