@@ -75,6 +75,7 @@
     BOND_SUM_LEVEL_2:      "bond.summary.level_2",
     BOND_SUM_LEVEL_3:      "bond.summary.level_3",
     BOND_SUM_GENERIC:      "bond.summary.generic",
+    BOND_SUM_CLEARED:      "bond.summary.cleared",
   });
 
   // ── Sound definitions ─────────────────────────────────────────────────────
@@ -104,6 +105,7 @@
   CAMP.Sound.register(CAMP.SFX.BOND_SUM_LEVEL_2,     { src: `${_BASE}bond_level_2.wav`,   volume: 0.75, push: false });
   CAMP.Sound.register(CAMP.SFX.BOND_SUM_LEVEL_3,     { src: `${_BASE}bond_level_3.wav`,   volume: 0.75, push: false });
   CAMP.Sound.register(CAMP.SFX.BOND_SUM_GENERIC,     { src: `${_BASE}BattleCursor_2.wav`, volume: 0.55, push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_CLEARED,    { src: `${_BASE}bond_cleared.wav`,   volume: 0.7,  push: false });
 
   console.debug(TAG, "Sound manager loaded.");
 })();

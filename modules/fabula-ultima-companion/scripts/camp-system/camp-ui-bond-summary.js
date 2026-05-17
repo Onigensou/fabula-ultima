@@ -114,7 +114,22 @@
         }
       }
 
-      // P3: New Emotion Added (slot was empty before, now filled)
+      // P3: Bond Released / Cleared (removed without going to memory)
+      for (const c of changes) {
+        if (c.type === "remove" && c.before?.name) {
+          logs.push({ priority: 3, logType: "bondReleased", bondName: c.before.name });
+        }
+      }
+
+      // P3: Memory Released / Cleared (deleted from memory list)
+      const memRemovals = entry.memRemovals ?? [];
+      for (const mem of memRemovals) {
+        if (mem.name) {
+          logs.push({ priority: 3, logType: "memoryReleased", bondName: mem.name });
+        }
+      }
+
+      // P4: New Emotion Added (slot was empty before, now filled)
       for (const c of changes) {
         if (c.type !== "update" && c.type !== "add") continue;
         const before    = c.before ?? { e1: "", e2: "", e3: "" };
@@ -123,7 +138,7 @@
         for (const key of ["e1", "e2", "e3"]) {
           if (!before[key] && after[key]) {
             logs.push({
-              priority: 3, logType: "newEmotion",
+              priority: 4, logType: "newEmotion",
               bondName, emotion: after[key],
               polarity: BondUpdater.emotionPolarity(after[key]),
             });
@@ -131,7 +146,7 @@
         }
       }
 
-      // P4: Emotion Updated (both non-empty, different values)
+      // P5: Emotion Updated (both non-empty, different values)
       for (const c of changes) {
         if (c.type !== "update") continue;
         const before   = c.before ?? {};
@@ -140,7 +155,7 @@
         for (const key of ["e1", "e2", "e3"]) {
           if (before[key] && after[key] && before[key] !== after[key]) {
             logs.push({
-              priority: 4, logType: "emotionUpdated",
+              priority: 5, logType: "emotionUpdated",
               bondName, oldEmotion: before[key], newEmotion: after[key],
               polarity: BondUpdater.emotionPolarity(after[key]),
             });
@@ -148,7 +163,7 @@
         }
       }
 
-      // P5: Bond Level Milestone (count of filled emotions increased)
+      // P6: Bond Level Milestone (count of filled emotions increased)
       for (const c of changes) {
         if (c.type !== "update" && c.type !== "add") continue;
         const before     = c.before ?? { e1: "", e2: "", e3: "" };
@@ -157,11 +172,11 @@
         const lvlBefore  = [before.e1, before.e2, before.e3].filter(Boolean).length;
         const lvlAfter   = [after.e1,  after.e2,  after.e3 ].filter(Boolean).length;
         if (lvlAfter > lvlBefore) {
-          logs.push({ priority: 5, logType: "bondLevel", bondName, level: lvlAfter });
+          logs.push({ priority: 6, logType: "bondLevel", bondName, level: lvlAfter });
         }
       }
 
-      // P6: Relationship Add / Update
+      // P7: Relationship Add / Update
       for (const c of changes) {
         if (c.type === "remove") continue;
         const before   = c.before ?? {};
@@ -169,7 +184,7 @@
         const bondName = after.name || before.name || "?";
         if (after.rel && after.rel !== before.rel) {
           logs.push({
-            priority: 6, logType: "relationship",
+            priority: 7, logType: "relationship",
             bondName, oldRel: before.rel || "", newRel: after.rel,
           });
         }
@@ -190,6 +205,8 @@
   function _sfxForLog(log) {
     switch (log.logType) {
       case "newBond":       return CAMP.SFX.BOND_SUM_NEW_BOND;
+      case "bondReleased":
+      case "memoryReleased": return CAMP.SFX.BOND_SUM_CLEARED;
       case "newEmotion":
       case "emotionUpdated":
         return log.polarity === "positive"
@@ -222,6 +239,14 @@
         return `<span class="bse-log-icon"><i class="fas fa-archive"></i></span>
                 <span class="bse-log-text">Bond with <strong>${log.bondName}</strong> moved to memory</span>`;
 
+      case "bondReleased":
+        return `<span class="bse-log-icon"><i class="fas fa-heart-broken"></i></span>
+                <span class="bse-log-text">The bond with <strong>${log.bondName}</strong> has faded.</span>`;
+
+      case "memoryReleased":
+        return `<span class="bse-log-icon"><i class="fas fa-wind"></i></span>
+                <span class="bse-log-text">The memory of <strong>${log.bondName}</strong> has been let go.</span>`;
+
       case "newEmotion":
         return `<span class="bse-log-icon"><i class="fas fa-heart"></i></span>
                 <span class="bse-log-text"><em>${_cap(log.emotion)}</em> added to bond with <strong>${log.bondName}</strong></span>`;
@@ -237,9 +262,9 @@
       case "relationship":
         return log.oldRel
           ? `<span class="bse-log-icon"><i class="fas fa-pen"></i></span>
-             <span class="bse-log-text">Relationship with <strong>${log.bondName}</strong> updated: <em>${log.newRel}</em></span>`
+             <span class="bse-log-text"><strong>${log.bondName}</strong> is now <em>${log.newRel}</em></span>`
           : `<span class="bse-log-icon"><i class="fas fa-pen"></i></span>
-             <span class="bse-log-text">Relationship with <strong>${log.bondName}</strong> set: <em>${log.newRel}</em></span>`;
+             <span class="bse-log-text"><strong>${log.bondName}</strong> has become <em>${log.newRel}</em></span>`;
 
       default:
         return `<span class="bse-log-text">${JSON.stringify(log)}</span>`;
