@@ -32,6 +32,7 @@ runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
 | `reaction_debuff_count_min` | number (≥0) | when trigger has `debuff_count` filter | Minimum total debuffs across the chosen group. Blank disables the filter. |
 | `reaction_subject_kind` | string (a `system.props.*` boolean flag, e.g. `"isPhantasm"`) | no | Subject-creature kind filter. When non-blank, the subject's `actor.system.props[<value>]` must be truthy. Available on any trigger whose subject is a creature (i.e. `subjectFrom !== null`). Blank disables the filter. |
 | `reaction_ownership` | `"" \| "own_summon"` | no | Subject/reactor relationship filter. `own_summon` requires the subject token's `flags["fabula-ultima-companion"].summonedBy` to equal the reactor's actor UUID — i.e. "I summoned this creature." Available on any trigger with a creature subject. Blank disables the filter. |
+| `reaction_action_intent` | `"" \| "harmful" \| "aid" \| "neutral"` | no | Action-intent filter. `harmful` matches only when ADC classifies the triggering action as harmful (attack, offensive spell, damage source) — the gate Protect / Cover / Counterattack need so they don't fire on an ally's buff/heal. `aid` matches heals / buff spells / utility actives. `neutral` matches Passive / Item / Other. Blank disables the filter. Lifecycle phase payloads (turn_start, round_end, etc.) carry no `actionIntent`, so a row with this filter active against such a payload fails-closed (no match). |
 | `reaction_effect_ref` | string (an `effect_label` from `reaction_effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
@@ -96,12 +97,39 @@ write them in JSON regardless — they just won't be evaluated.
 template UI is one behind. It still works correctly at runtime; just
 type the key directly.)
 
-**`reaction_subject_kind` and `reaction_ownership` are universal across all
-subject-bearing triggers** (any trigger whose Subject side is not `—`), so
-they're omitted from the matrix above. The runtime matchers self-skip when
-the trigger has no per-creature subject, so authoring them on
-`conflict_start` / `round_start` / `round_end` is a no-op (the rows still
-match).
+**`reaction_subject_kind`, `reaction_ownership`, and `reaction_action_intent`
+are universal across all subject-bearing triggers** (any trigger whose Subject
+side is not `—`), so they're omitted from the matrix above. The runtime
+matchers self-skip when the trigger has no per-creature subject, so authoring
+them on `conflict_start` / `round_start` / `round_end` is a no-op (the rows
+still match). `reaction_action_intent` additionally requires the phase payload
+to carry an `actionIntent` field (set by ADC for action-driven triggers, not
+for lifecycle triggers) — when the field is absent and the filter is set, the
+row fails-closed.
+
+### `actionIntent` inference (ADC)
+
+`meta.actionIntent` is populated by ActionDataComputation and emitted on every
+action-driven reaction-phase payload (`creature_performs_action`,
+`creature_targeted_by_action`, `creature_hit_by_action`, damage / heal /
+status triggers from Create Damage Card, etc.).
+
+Priority order (first match wins):
+
+1. Explicit author override: `props.action_intent` on the skill item
+   (`"harmful" | "aid" | "neutral"`, blank = auto).
+2. Weapon attacks → `"harmful"`.
+3. `skill_type === "Attack"` → `"harmful"`.
+4. `isOffensiveSpell` → `"harmful"`.
+5. `declaresHealing` (HP or MP recovery) → `"aid"`.
+6. `hasDamageSection && !declaresHealing` (covers MP burn) → `"harmful"`.
+7. `skill_type === "Spell"` (non-offensive) → `"aid"`.
+8. `skill_type === "Active"` without damage → `"aid"` (buffs / utility actives).
+9. Otherwise (`Passive` / `Item` / `Other`) → `"neutral"`.
+
+"neutral" deliberately fails the harmful and aid filters — reactions opt-in by
+declaring intent. Authors of edge-case skills can pin the classification via
+the `action_intent` prop override.
 
 ### `reaction_source` semantics (relative to the reactor)
 
@@ -190,8 +218,11 @@ Aborts the whole chain (and the skill body) when any step does.
 
 ## Worked example — "Protect"
 
-Reaction-skill that intercepts a single-target attack on an ally, redirects
-it onto the reactor, and consumes one Protect charge.
+Reaction-skill that intercepts a single-target *harmful* action on an ally,
+redirects it onto the reactor, and consumes one Protect charge. The
+`reaction_action_intent: "harmful"` gate keeps Protect from firing when an
+ally targets another ally with a heal or buff — per RAW, only "attack, spell
+or other danger" qualifies.
 
 ```jsonc
 "reaction_config_table": {
@@ -199,6 +230,7 @@ it onto the reactor, and consumes one Protect charge.
     "reaction_trigger": "creature_targeted_by_action",
     "reaction_source": "ally",
     "reaction_damage_type": "",
+    "reaction_action_intent": "harmful",
     "reaction_effect_ref": "do_protect",
     "reaction_isPassive": false
   }

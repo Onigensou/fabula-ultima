@@ -527,6 +527,11 @@ return (async () => {
         skillTypeRaw: resolvedSkillTypeRaw || null,
         skill_type: resolvedSkillTypeRaw || null,
         isSpellish: resolvedIsSpellish,
+        // Harmful/aid classification carried through from the action card
+        // (ADC populates `meta.actionIntent`). Lets reaction rows that hit
+        // on resolution-phase triggers filter on intent the same way the
+        // action_phase rows can.
+        actionIntent: actionContext?.meta?.actionIntent ?? null,
         actionContext: reactionActionContext,
 
         // Numbers / flags

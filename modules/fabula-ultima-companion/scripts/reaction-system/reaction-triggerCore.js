@@ -34,6 +34,9 @@ Hooks.once("ready", () => {
   //   reactionSourceMatchesRow(rowSource, reactionToken, triggerKey, phasePayload, combat)
   //   reactionDamageTypeMatchesRow(rowDamageType, triggerKey, phasePayload)
   //   reactionDebuffCountMatchesRow(rowTarget, rowMin, reactionToken, triggerKey, combat)
+  //   reactionSubjectKindMatchesRow(rowKind, triggerKey, phasePayload, combat)
+  //   reactionOwnershipMatchesRow(rowOwnership, reactionToken, triggerKey, phasePayload, combat)
+  //   reactionActionIntentMatchesRow(rowIntent, phasePayload)
   // ============================================================================
   (() => {
     const KEY = "oni.ReactionTriggerCore";
@@ -521,6 +524,49 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // reaction_action_intent matching
+    // -------------------------------------------------------------------------
+    //
+    // Universal filter: "this row only matches when the triggering action is
+    // harmful / aid / neutral." Set on `reaction_config_table` rows.
+    //
+    // Possible row values:
+    //   ""        — filter disabled (any intent matches; default).
+    //   "harmful" — match only when the phase payload classifies the action
+    //               as harmful (attack, offensive spell, damage source).
+    //               This is the gate Protect/Cover/Counterattack need so
+    //               they don't fire on an ally's buff/heal.
+    //   "aid"     — match only when the action is aid (heal, recovery, buff
+    //               spell, utility active). Niche; e.g. an aura that procs
+    //               on incoming healing.
+    //   "neutral" — match only when classification is "neutral" (Passive,
+    //               Item, Other).
+    //
+    // The payload's `actionIntent` is set by ADC from the action's
+    // skill_type / isOffensiveSpell / declaresHealing / damage signals,
+    // with optional `props.action_intent` author override. Lifecycle phase
+    // payloads (turn_start, round_end, etc.) carry no intent — a row with
+    // an active intent filter against such a payload returns no-match
+    // (fail-closed), which is the desired behavior for reactions like
+    // Protect that only make sense around actions.
+    function reactionActionIntentMatchesRow(rowIntentRaw, phasePayload) {
+      const desired = String(rowIntentRaw ?? "").trim().toLowerCase();
+      if (!desired) return true; // empty = filter inactive
+
+      if (!(desired === "harmful" || desired === "aid" || desired === "neutral")) {
+        console.warn("[ReactionTriggerCore] reaction_action_intent: unknown value, treating as no-match.", rowIntentRaw);
+        return false;
+      }
+
+      if (!phasePayload || typeof phasePayload !== "object") return false;
+
+      const actual = String(phasePayload.actionIntent ?? "").trim().toLowerCase();
+      if (!actual) return false; // payload doesn't carry intent → fail-closed
+
+      return actual === desired;
+    }
+
+    // -------------------------------------------------------------------------
     // reaction_debuff_count_* matching
     // -------------------------------------------------------------------------
     // Off semantics: an empty/zero `_min` always matches (filter inactive).
@@ -705,6 +751,12 @@ Hooks.once("ready", () => {
               combat
             )) continue;
 
+            // Action-intent filter (harmful vs aid vs neutral).
+            if (!reactionActionIntentMatchesRow(
+              row.reaction_action_intent,
+              phasePayload
+            )) continue;
+
             matchingRows.push(row);
           }
 
@@ -760,7 +812,8 @@ Hooks.once("ready", () => {
       reactionDamageTypeMatchesRow,
       reactionDebuffCountMatchesRow,
       reactionSubjectKindMatchesRow,
-      reactionOwnershipMatchesRow
+      reactionOwnershipMatchesRow,
+      reactionActionIntentMatchesRow
     };
 
     console.debug("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");

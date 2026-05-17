@@ -1182,6 +1182,58 @@ function getUniversalDamageBonus(props) {
     };
   }
 
+  // Action-intent inference. Returns "harmful" | "aid" | "neutral".
+  //
+  // Used by reaction triggers that need to gate on "this action threatens the
+  // target" vs. "this action helps the target" (Protect, Cover, Counterattack,
+  // ...). Per RAW Protect: "threatened by an attack, spell or other danger" —
+  // an ally's heal/buff is not a danger and must not surface Protect.
+  //
+  // Sources (in priority order):
+  //   1. Explicit author override via `props.action_intent`
+  //      (`"harmful"|"aid"|"neutral"`, blank = auto).
+  //   2. Weapon attacks → "harmful" (no choice exists).
+  //   3. `skill_type === "Attack"` → "harmful".
+  //   4. `isOffensiveSpell` → "harmful".
+  //   5. `declaresHealing` (HP or MP recovery) → "aid".
+  //   6. `hasDamageSection && !declaresHealing` (covers MP burn) → "harmful".
+  //   7. `skill_type === "Spell"` (non-offensive) → "aid".
+  //   8. `skill_type === "Active"` without damage → "aid"
+  //      (buffs / utility actives).
+  //   9. Anything else (Passive, Item, Other) → "neutral".
+  //
+  // "neutral" deliberately fails harmful/aid filters — reactions opt-in by
+  // declaring intent. Authors of edge-case skills can pin the result via the
+  // `action_intent` prop override.
+  function inferActionIntent({
+    sourceType,
+    intentOverride,
+    skillTypeRaw,
+    isOffSpell,
+    declaresHealing,
+    hasDamageSection,
+    valueType
+  }) {
+    const override = String(intentOverride ?? "").trim().toLowerCase();
+    if (override === "harmful" || override === "aid" || override === "neutral") {
+      return override;
+    }
+
+    const stype = String(skillTypeRaw ?? "").trim().toLowerCase();
+
+    if (sourceType === "Weapon") return "harmful";
+    if (stype === "attack") return "harmful";
+    if (isOffSpell === true) return "harmful";
+
+    if (declaresHealing === true) return "aid";
+    if (hasDamageSection === true) return "harmful";
+
+    if (stype === "spell") return "aid";
+    if (stype === "active") return "aid";
+
+    return "neutral";
+  }
+
   // 
   //  Pull-through: Custom Logic scripts (already converted to plain JS in Fetch)
   //  Blank => no custom logic (as per Oni plan)
@@ -1372,6 +1424,16 @@ if (cardPayload?.meta?.__abortPipeline) {
 
     const nonDamageAction = !damageBonusProvided;
 
+    const actionIntent = inferActionIntent({
+      sourceType,
+      intentOverride: null,
+      skillTypeRaw: dataCore.skillTypeRaw,
+      isOffSpell: !!dataCore.isOffSpell,
+      declaresHealing,
+      hasDamageSection: damageBonusProvided,
+      valueType
+    });
+
     const baseValueNumber     = nonDamageAction ? 0 : Math.max(0, Number(dataCore.damageBonus ?? 0));
     const hrBonus             = (!nonDamageAction && !declaresHealing && hasAccuracy && accRoll?.hr && !ignoreHR)
       ? Number(accRoll.hr || 0)
@@ -1451,6 +1513,7 @@ autoHit   : (_isCritFinal === true && _isFumbleFinal !== true)
         isSpellish   : false,
         weaponTypeLabel: (dataCore.weaponType || ""),
         elementType, declaresHealing, hasDamageSection, hasAnimationScript,
+        actionIntent,
         baseValueStrForCard, hrBonus, ignoreHR, attackRange,
 
         attackerUuid : attackerMetaUuid,
@@ -1664,6 +1727,18 @@ return await cardMacro.execute({
 
     const nonDamageAction = !damageBonusProvided;
 
+    const actionIntent = inferActionIntent({
+      sourceType,
+      intentOverride: skillItem?.system?.props?.action_intent
+                      ?? skillItem?.system?.action_intent
+                      ?? null,
+      skillTypeRaw: dataCore.skillTypeRaw,
+      isOffSpell: !!dataCore.isOffSpell,
+      declaresHealing,
+      hasDamageSection: damageBonusProvided,
+      valueType
+    });
+
     const baseValueNumber     = nonDamageAction ? 0 : Math.max(0, Number(dataCore.damageBonus ?? 0));
     const hrBonus             = (!nonDamageAction && !declaresHealing && hasAccuracy && accRoll?.hr && !ignoreHR)
       ? Number(accRoll.hr || 0)
@@ -1780,6 +1855,7 @@ const totalFlatBonus =
         isSpellish   : !!dataCore.isSpell,
         weaponTypeLabel: dataCore.isSpell ? "arcane" : (dataCore.weaponType || ""),
         elementType, declaresHealing, hasDamageSection, hasAnimationScript,
+        actionIntent,
         baseValueStrForCard, hrBonus, attackRange,
         ignoreHR,
 

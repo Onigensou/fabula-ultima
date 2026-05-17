@@ -1874,6 +1874,43 @@
                           "readonlyPredefined": false
                         },
                         {
+                          "key": "reaction_action_intent",
+                          "colSpan": 1,
+                          "rowSpan": 1,
+                          "cssClass": "",
+                          "role": 0,
+                          "editRole": 0,
+                          "permission": 0,
+                          "tooltip": "Match only on actions with this intent. \"harmful\" = attack / offensive spell / damage source (Protect, Counterattack, Cover). \"aid\" = heal / buff spell / utility active. \"neutral\" = Passive / Item / Other. Blank = no filter.",
+                          "visibilityFormula": "triggerHasSubject(sameRow(\"reaction_trigger\",''))",
+                          "type": "select",
+                          "size": "full-size",
+                          "label": "",
+                          "defaultValue": "",
+                          "selectedOptionType": "custom",
+                          "options": [
+                            {
+                              "key": "",
+                              "value": "—"
+                            },
+                            {
+                              "key": "harmful",
+                              "value": "Harmful"
+                            },
+                            {
+                              "key": "aid",
+                              "value": "Aid"
+                            },
+                            {
+                              "key": "neutral",
+                              "value": "Neutral"
+                            }
+                          ],
+                          "align": "left",
+                          "colName": "Action Intent",
+                          "readonlyPredefined": false
+                        },
+                        {
                           "key": "reaction_effect_ref",
                           "colSpan": 1,
                           "rowSpan": 1,

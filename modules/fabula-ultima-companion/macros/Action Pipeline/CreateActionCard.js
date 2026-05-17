@@ -624,6 +624,13 @@ cacLog("ACTION CARD RENDER MODE", {
         skillName: skillName ?? null,
         skillTypeRaw: skillTypeRaw ?? null,
 
+        // Harmful vs aid classification — used by reaction_action_intent
+        // filters (Protect, Cover, Counterattack, ...) so they don't fire
+        // on an ally's buff/heal targeting another ally. Computed by ADC
+        // from skill_type / isOffensiveSpell / declaresHealing / damage,
+        // with optional `props.action_intent` author override.
+        actionIntent: meta?.actionIntent ?? null,
+
         // Check info
         isCheck: !!accuracy,
         hasAccuracy: !!accuracy,
