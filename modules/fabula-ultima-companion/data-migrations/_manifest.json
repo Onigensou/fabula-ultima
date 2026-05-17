@@ -15,6 +15,14 @@
     {
       "key": "2026-05-17-drain-spirit-declarative",
       "path": "data-migrations/2026-05-17-drain-spirit-declarative.js"
+    },
+    {
+      "key": "2026-05-17-skill-template-fire-points",
+      "path": "data-migrations/2026-05-17-skill-template-fire-points.js"
+    },
+    {
+      "key": "2026-05-17-drain-spirit-master-author",
+      "path": "data-migrations/2026-05-17-drain-spirit-master-author.js"
     }
   ]
 }
