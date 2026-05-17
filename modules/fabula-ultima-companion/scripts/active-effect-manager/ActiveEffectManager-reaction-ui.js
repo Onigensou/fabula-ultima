@@ -91,18 +91,25 @@
   }
 
   function blankBlob() {
-    return { name: "", reaction_config_table: {}, reaction_effect_table: {} };
+    return { name: "", reaction_config_table: {}, effect_table: {} };
   }
 
   function readExistingBlob(effect) {
     const raw = effect?.flags?.[MODULE_ID]?.reactionConfig ?? null;
     if (!raw || typeof raw !== "object") return blankBlob();
+    // Phase D rename: prefer new `effect_table`, fall back to legacy
+    // `reaction_effect_table` for any AEs still on the old key. The blob
+    // is normalized so the rest of the editor only sees `effect_table`.
+    const effectTable = (raw.effect_table && typeof raw.effect_table === "object")
+      ? raw.effect_table
+      : (raw.reaction_effect_table && typeof raw.reaction_effect_table === "object"
+        ? raw.reaction_effect_table
+        : null);
     return {
       name: typeof raw.name === "string" ? raw.name : "",
       reaction_config_table: raw.reaction_config_table && typeof raw.reaction_config_table === "object"
         ? deepClone(raw.reaction_config_table) : {},
-      reaction_effect_table: raw.reaction_effect_table && typeof raw.reaction_effect_table === "object"
-        ? deepClone(raw.reaction_effect_table) : {}
+      effect_table: effectTable ? deepClone(effectTable) : {}
     };
   }
 
@@ -412,7 +419,7 @@
   function validate(blob) {
     const warnings = [];
     const triggerRows = listLiveRows(blob.reaction_config_table);
-    const effectRows  = listLiveRows(blob.reaction_effect_table);
+    const effectRows  = listLiveRows(blob.effect_table);
 
     const labels = effectRows.map(r => String(r.row.effect_label ?? "").trim()).filter(Boolean);
     const labelSet = new Set(labels);
@@ -439,7 +446,7 @@
   // Panel HTML
   // ---------------------------------------------------------------------------
   function buildEffectLabelDatalistHtml(datalistId, blob) {
-    const labels = listLiveRows(blob.reaction_effect_table)
+    const labels = listLiveRows(blob.effect_table)
       .map(r => String(r.row.effect_label ?? "").trim())
       .filter(Boolean);
     const unique = Array.from(new Set(labels));
@@ -460,7 +467,7 @@
   function buildPanelHtml(effect, blob) {
     const datalistId = `oni-effect-labels-${escapeHtml(effect?.id ?? "x")}`;
     const triggerRows = listLiveRows(blob.reaction_config_table);
-    const effectRows  = listLiveRows(blob.reaction_effect_table);
+    const effectRows  = listLiveRows(blob.effect_table);
     const triggersHtml = triggerRows.length
       ? triggerRows.map(({ key, row }) => buildTriggerRowHtml(key, row, datalistId)).join("")
       : `<p class="notes" data-empty-trigger>No trigger rows. Click "Add Trigger Row" to start.</p>`;
@@ -560,7 +567,7 @@
       if (!key) return;
       newEffects[key] = readEffectRowFromDom(rowEl);
     });
-    blob.reaction_effect_table = newEffects;
+    blob.effect_table = newEffects;
   }
 
   function serializeBlobToHiddenInput(panelEl, blob) {
@@ -650,8 +657,8 @@
         ev.preventDefault();
         const blob = getState(uuid);
         if (!blob) return;
-        const key = nextRowKey(blob.reaction_effect_table);
-        blob.reaction_effect_table[key] = blankEffectRow();
+        const key = nextRowKey(blob.effect_table);
+        blob.effect_table[key] = blankEffectRow();
         setState(uuid, blob);
         rerenderPanel(panelEl, effect, app);
       } else if (action === "delete-trigger-row" || action === "delete-effect-row") {
@@ -661,7 +668,7 @@
         const key = rowEl.getAttribute("data-row-key");
         const tableField = action === "delete-trigger-row"
           ? "reaction_config_table"
-          : "reaction_effect_table";
+          : "effect_table";
         const confirmed = await Dialog.confirm({
           title: "Delete row",
           content: `<p>Delete this ${action === "delete-trigger-row" ? "trigger" : "effect"} row?</p>`,
@@ -759,7 +766,7 @@
         appName: app?.constructor?.name ?? "(unknown)",
         effectName: effect?.name ?? null,
         triggerRows: Object.keys(blob.reaction_config_table ?? {}).length,
-        effectRows:  Object.keys(blob.reaction_effect_table ?? {}).length
+        effectRows:  Object.keys(blob.effect_table ?? {}).length
       });
     } catch (e) {
       console.warn(`${TAG} render hook failed`, e);
@@ -787,6 +794,12 @@
       if (typeof raw !== "string") return;
       const parsed = JSON.parse(raw);
       foundry.utils.setProperty(change, `flags.${MODULE_ID}.reactionConfig`, parsed);
+      // Phase D rename: Foundry's flag update deep-merges. If the AE still
+      // carries the legacy `reaction_effect_table` key, an effect_table write
+      // would leave both keys in place. Explicitly drop the legacy key.
+      if (effect?.flags?.[MODULE_ID]?.reactionConfig?.reaction_effect_table !== undefined) {
+        foundry.utils.setProperty(change, `flags.${MODULE_ID}.reactionConfig.-=reaction_effect_table`, null);
+      }
     } catch (e) {
       console.warn(`${TAG} preUpdate JSON parse failed (left raw)`, e);
     }

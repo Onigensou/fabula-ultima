@@ -82,7 +82,10 @@ Hooks.once("ready", () => {
   function readEffectRows(item) {
     const sys = item?.system ?? {};
     const props = sys.props ?? sys;
-    const tbl = props?.reaction_effect_table;
+    // Phase D rename: prefer `effect_table` (the table is general-purpose
+    // skill effects, not reaction-specific). Fall back to the legacy
+    // `reaction_effect_table` for back-compat during migration.
+    const tbl = props?.effect_table ?? props?.reaction_effect_table;
     if (!tbl) return [];
     if (Array.isArray(tbl)) return tbl.filter(r => r && typeof r === "object");
     if (typeof tbl === "object") return Object.values(tbl).filter(r => r && typeof r === "object");

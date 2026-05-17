@@ -5,9 +5,12 @@ reaction behavior on a skill item:
 
 - `system.props.reaction_config_table` — *trigger* rows. Each row says
   "when this trigger matches under these filters, fire effect X."
-- `system.props.reaction_effect_table` — *effect* rows. Each row defines
-  what to do (grant a resource, apply an AE, consume a charge, redirect
-  a pending action card, or chain other effects).
+- `system.props.effect_table` — *effect* rows. Each row defines what to
+  do (grant a resource, apply an AE, consume a charge, redirect a pending
+  action card, or chain other effects). **Renamed from
+  `reaction_effect_table` (Phase D, commit pending) — the runtime reads
+  either key, preferring `effect_table`. The legacy key remains valid for
+  back-compat.**
 
 Rows are stored as objects keyed by row id (CSB numeric rowKeys), e.g.
 `{ "0": {...}, "1": {...} }`. Order within the object is the row order in
@@ -17,6 +20,49 @@ When writing a skill spec, you populate these two tables. The matching
 runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
 (trigger registry) and `scripts/reaction-system/reaction-grant.js`
 (effect dispatch).
+
+## Skill-activation fire points (Phase D)
+
+The `effect_table` is **not reaction-specific** — it's a general-purpose
+catalog of "things this skill can do." A skill's own action pipeline can
+fire effects from its table without going through the reaction registry,
+via these skill props:
+
+| Prop | Fires when | Payload context |
+|---|---|---|
+| `on_activate_effect_ref` | Skill body activates (reserved — pipeline hook pending) | SL + BOND_* + reactor resources; no damage payload |
+| `post_damage_effect_ref` | After Create Damage Card resolves, **per affected target** | Full damage payload (`finalValue`, `valueType`, target uuids) — `*_DEALT` formula identifiers resolve here |
+
+Each prop is just a reference to an `effect_label` in this skill's
+`effect_table`. No new effect_kinds; the existing handlers (`grant`,
+`apply_ae`, `consume_charge`, `chain`) run as-is.
+
+Use these for "after my own skill resolves, do X" mechanics — drain /
+leech, on-cast self-buff, post-damage trigger — that aren't structurally
+reactions to outside events.
+
+### Worked example — Drain Spirit (declarative)
+
+```jsonc
+"system.props.post_damage_effect_ref": "drain_recover",
+"system.props.effect_table": {
+  "0": {
+    "effect_label": "drain_recover",
+    "effect_kind":  "grant",
+    "grant_resource": "mp",
+    "grant_amount":   "MP_DEALT / 2",
+    "grant_target":   "self"
+  }
+}
+```
+
+Flow: Hina casts Drain Spirit → Create Damage Card resolves the MP burn
+on the target → post_damage hook fires `drain_recover` on Hina with
+`payload.finalValue` = MP loss inflicted and `payload.valueType = "mp"` →
+`MP_DEALT / 2` evaluates to half the loss → Hina's MP grant applied.
+
+No reaction config. Per-target semantics correct out of the box (Create
+Damage Card emits per-target, so the hook fires per-target).
 
 ---
 
@@ -35,7 +81,7 @@ runtime code is in `scripts/reaction-system/reaction-triggers.config.js`
 | `reaction_action_intent` | `"" \| "harmful" \| "aid" \| "neutral"` | no | Action-intent filter. `harmful` matches only when ADC classifies the triggering action as harmful (attack, offensive spell, damage source) — the gate Protect / Cover / Counterattack need so they don't fire on an ally's buff/heal. `aid` matches heals / buff spells / utility actives. `neutral` matches Passive / Item / Other. Blank disables the filter. Lifecycle phase payloads (turn_start, round_end, etc.) carry no `actionIntent`, so a row with this filter active against such a payload fails-closed (no match). |
 | `reaction_bond_presence` | `"" \| "present" \| "absent"` | no | Bond gate against the trigger's subject creature. `present` matches when at least one of the reactor's `bond_N` slots (1–6 + `bond_temp`) holds a name equal to a subject's `actor.name` or `token.name` (case-insensitive). `absent` is the inverse — "no bond toward any subject." Blank disables the filter. Available on any trigger with a creature subject; inert on lifecycle triggers. |
 | `reaction_bond_emotion` | `"" \| "admiration" \| "inferiority" \| "loyalty" \| "mistrust" \| "affection" \| "hatred"` | no | Specific-emotion filter on the Bond toward the subject. Maps to the three RAW pairings (Admiration/Inferiority, Loyalty/Mistrust, Affection/Hatred) stored on the actor as `emotion_N_1` / `emotion_N_2` / `emotion_N_3` respectively. Implies presence (the matched Bond must exist) and is checked case-insensitively. Blank disables. |
-| `reaction_effect_ref` | string (an `effect_label` from `reaction_effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
+| `reaction_effect_ref` | string (an `effect_label` from `effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
 
@@ -162,7 +208,9 @@ the `action_intent` prop override.
 
 ---
 
-## `reaction_effect_table` — effect row fields
+## `effect_table` — effect row fields
+
+(Legacy name: `reaction_effect_table`. Runtime reads either.)
 
 Common to every row:
 
@@ -292,7 +340,7 @@ or other danger" qualifies.
     "reaction_isPassive": false
   }
 },
-"reaction_effect_table": {
+"effect_table": {
   "0": {
     "effect_label": "do_protect",
     "effect_kind": "chain",

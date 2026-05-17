@@ -744,6 +744,71 @@ return (async () => {
               `${TRACE_ID}-shield-break`
             );
           }
+
+          // Phase D: post_damage self-effect hook.
+          // If the firing skill (the caster's skill that produced this damage
+          // card) has `system.props.post_damage_effect_ref`, dispatch that
+          // effect against the caster as the reactor. Used for declarative
+          // "after my skill deals damage, do X to self" patterns (drain,
+          // leech) that aren't structurally reactions to outside events.
+          //
+          // The dispatched payload includes finalValue + valueType so the
+          // formula evaluator's *_DEALT identifiers resolve correctly.
+          try {
+            const firingSkillUuid =
+              payload?.meta?.skillUuid ??
+              payload?.skillUuid ??
+              actionContext?.meta?.skillUuid ??
+              actionContext?.dataCore?.skillUuid ??
+              null;
+            const grantApi = window["oni.ReactionGrant"];
+            if (firingSkillUuid && grantApi?.applyEffectByLabel) {
+              const firingSkill = await fromUuid(firingSkillUuid).catch(() => null);
+              const ref = String(firingSkill?.system?.props?.post_damage_effect_ref ?? "").trim();
+              if (firingSkill && ref) {
+                const reactorTokenDoc = attackerTokenDoc;
+                if (reactorTokenDoc) {
+                  const postDamagePayload = {
+                    ...baseReactionPayload,
+                    trigger: "__post_damage_self",
+                    finalValue,
+                    valueType
+                  };
+                  const postRes = await grantApi.applyEffectByLabel(
+                    firingSkill, ref, reactorTokenDoc, game.combat ?? null, postDamagePayload
+                  );
+                  dbg("post_damage_effect_ref:dispatched", {
+                    TRACE_ID,
+                    firingSkillName: firingSkill?.name,
+                    ref,
+                    finalValue,
+                    valueType,
+                    ok: postRes?.ok
+                  });
+                } else {
+                  dbg("post_damage_effect_ref:skipped:no-reactor-token", {
+                    TRACE_ID, firingSkillName: firingSkill?.name, ref
+                  });
+                }
+              } else if (firingSkill) {
+                // Skill resolved but no post_damage_effect_ref configured —
+                // not noteworthy, skip silently.
+              } else {
+                dbg("post_damage_effect_ref:skipped:skill-uuid-unresolvable", {
+                  TRACE_ID, firingSkillUuid
+                });
+              }
+            } else if (!firingSkillUuid) {
+              dbg("post_damage_effect_ref:skipped:no-skill-uuid-in-payload", {
+                TRACE_ID,
+                payloadMetaKeys: Object.keys(payload?.meta ?? {}),
+                actionContextMetaKeys: Object.keys(actionContext?.meta ?? {}),
+                actionContextDataCoreKeys: Object.keys(actionContext?.dataCore ?? {})
+              });
+            }
+          } catch (postErr) {
+            console.warn(`${RUN_TAG} post_damage_effect_ref dispatch failed:`, postErr, { TRACE_ID });
+          }
         } else if (!primaryTrigger) {
           dbg("reaction-branch:emit-resource:skip-target:no-trigger", {
             TRACE_ID,

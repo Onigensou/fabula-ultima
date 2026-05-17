@@ -115,7 +115,9 @@ Hooks.once("ready", () => {
       if (!flag) return null;
 
       const reactionConfigTable = flag?.reaction_config_table ?? flag?.configTable ?? null;
-      const reactionEffectTable = flag?.reaction_effect_table ?? flag?.effectTable ?? null;
+      // Phase D rename: prefer `effect_table` (general-purpose), fall back
+      // to legacy `reaction_effect_table` for back-compat.
+      const reactionEffectTable = flag?.effect_table ?? flag?.reaction_effect_table ?? flag?.effectTable ?? null;
       if (!reactionConfigTable && !reactionEffectTable) return null;
 
       // If the AE carries a charges flag (e.g. bonusActionGrant), don't
@@ -149,7 +151,10 @@ Hooks.once("ready", () => {
             isReaction: true,
             name: flag.name ?? effect.name ?? "Reaction",
             reaction_config_table: reactionConfigTable ?? {},
-            reaction_effect_table: reactionEffectTable ?? {}
+            // Phase D rename: synth always emits the new key (`effect_table`).
+            // readEffectRows still falls back to `reaction_effect_table` for
+            // any non-AE callers that haven't migrated yet.
+            effect_table: reactionEffectTable ?? {}
           }
         }
       };
