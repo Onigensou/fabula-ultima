@@ -145,12 +145,15 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
   // Target resolution
   // ---------------------------------------------------------------------------
+  // Returns [{ actor, token }] pairs. Token is best-effort — used by the
+  // resource handler to position floating-number scrolling text on the canvas.
+  // Null token = silent update (still works, just no visual feedback).
   function resolveTargetActors(targetMode, reactionToken, combat) {
     const mode = (targetMode || "self").toLowerCase();
     const reactActor = reactionToken?.actor ?? null;
 
     if (mode === "self") {
-      return reactActor ? [reactActor] : [];
+      return reactActor ? [{ actor: reactActor, token: reactionToken ?? null }] : [];
     }
 
     if (!combat) return [];
@@ -165,7 +168,9 @@ Hooks.once("ready", () => {
       if (!actor || !actor.uuid) continue;
       if (seen.has(actor.uuid)) continue;
 
-      const tokenDoc = cmbt.token ?? canvas?.tokens?.get(cmbt.tokenId)?.document ?? null;
+      const tokenId = cmbt.tokenId ?? cmbt.token?.id;
+      const token = (tokenId && canvas?.tokens?.get(tokenId)) || null;
+      const tokenDoc = cmbt.token ?? token?.document ?? null;
       const subDisp = normalizeDisposition(tokenDoc?.disposition ?? 0);
 
       let included = false;
@@ -187,7 +192,7 @@ Hooks.once("ready", () => {
 
       if (included) {
         seen.add(actor.uuid);
-        out.push(actor);
+        out.push({ actor, token });
       }
     }
     return out;
@@ -196,7 +201,11 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
   // Per-actor resource update
   // ---------------------------------------------------------------------------
-  async function applyOneActor(actor, resourceKey, delta) {
+  // For hp/mp/shield resources, delegates to FUCompanion.api.applyDamage.applyToActor
+  // so the floating scrolling number (and VFX/SFX where relevant) shows up — same
+  // visuals as Create Damage Card. Other resource types (ip/zenit/enmity/zero_power)
+  // don't have a damage-pipeline shape, so they use the legacy actor.update path.
+  async function applyOneActor(actor, resourceKey, delta, opts = {}) {
     const def = RESOURCE_MAP[resourceKey];
     if (!def) return { ok: false, reason: "unknown_resource", resourceKey };
 
@@ -211,6 +220,40 @@ Hooks.once("ready", () => {
 
     if (next === cur) {
       return { ok: true, noop: true, resourceKey, before: cur, after: next, cap };
+    }
+
+    // Path A: use applyDamage.applyToActor for the resources it supports so the
+    // floating heal/damage number renders at the target token. Verbosity is "fx"
+    // — caller (e.g. autoPassive) handles its own chat-card broadcast. We want
+    // numbers + FX + audio but NOT a duplicate damage card.
+    const supportsAV = (resourceKey === "hp" || resourceKey === "mp" || resourceKey === "shield");
+    const applyDamageApi = supportsAV ? globalThis?.FUCompanion?.api?.applyDamage : null;
+    if (applyDamageApi?.applyToActor) {
+      try {
+        const adResult = await applyDamageApi.applyToActor({
+          baseDamage: Math.abs(delta),
+          valueType: resourceKey,
+          isRecovery: delta > 0,
+          targetActor: actor,
+          targetToken: opts.targetToken ?? null,
+          attackerName: opts.attackerName ?? "Reaction",
+          attackerUuid: opts.attackerUuid ?? "",
+          sourceType: opts.sourceType ?? "Reaction",
+          verbosity: "fx"
+        });
+        // Prefer the real post values from applyToActor; fall back to current
+        // actor doc if it didn't return them.
+        const after = (() => {
+          const k = resourceKey;
+          if (k === "hp"     && Number.isFinite(adResult?.postHP))     return adResult.postHP;
+          if (k === "mp"     && Number.isFinite(adResult?.postMP))     return adResult.postMP;
+          if (k === "shield" && Number.isFinite(adResult?.postShield)) return adResult.postShield;
+          return readNumberAt(actor, def.current) ?? next;
+        })();
+        return { ok: true, noop: false, resourceKey, before: cur, after, cap };
+      } catch (e) {
+        console.warn(TAG, "applyDamage.applyToActor threw; falling back to plain update.", { actor: actor?.name, resourceKey, error: String(e?.message ?? e) });
+      }
     }
 
     const update = {};
@@ -288,8 +331,8 @@ Hooks.once("ready", () => {
     }
 
     const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
-    const targetActors = resolveTargetActors(targetMode, reactionToken, combat);
-    if (!targetActors.length) {
+    const targetPairs = resolveTargetActors(targetMode, reactionToken, combat);
+    if (!targetPairs.length) {
       console.warn(TAG, "applyGrantEffect: no target actors resolved", {
         targetMode,
         reactorName: reactionToken?.actor?.name,
@@ -298,9 +341,16 @@ Hooks.once("ready", () => {
       return { ok: false, reason: "no_targets", applied: [] };
     }
 
+    const reactorActor = reactionToken?.actor ?? null;
+    const firingItem = ctx?.item ?? null;
     const applied = [];
-    for (const actor of targetActors) {
-      const res = await applyOneActor(actor, resourceKey, amount);
+    for (const { actor, token } of targetPairs) {
+      const res = await applyOneActor(actor, resourceKey, amount, {
+        targetToken: token,
+        attackerName: firingItem?.name ?? "Reaction",
+        attackerUuid: reactorActor?.uuid ?? "",
+        sourceType: "Reaction"
+      });
       applied.push({ actorUuid: actor.uuid, actorName: actor.name, ...res });
     }
     return { ok: true, applied, kind: "grant", resourceKey, amount, targetMode };
@@ -563,6 +613,18 @@ Hooks.once("ready", () => {
       }
     }
 
+    // Unwrap the dispatcher's chosen-skill wrapper to find the *real* phase
+    // payload (with trigger key + source uuids + damage values). The reaction
+    // chooseSkill dispatcher places the phase payload at
+    // `ctx.payload.reaction_phase_payload`; synthetic tests pass the raw
+    // phase payload directly. Handle both shapes.
+    const outerPayload = ctx?.payload ?? null;
+    const phasePayload =
+      (outerPayload?.reaction_phase_payload && typeof outerPayload.reaction_phase_payload === "object" && Object.keys(outerPayload.reaction_phase_payload).length)
+        ? outerPayload.reaction_phase_payload
+        : outerPayload;
+    const triggerKey = phasePayload?.trigger ?? outerPayload?.reaction_trigger_key ?? null;
+
     // target_lock (optional). When set, resolves a single TokenDocument
     // UUID at apply time and stashes it on the free-action grant; consumers
     // (Study macro, Counterattack-style flows) restrict their target picker
@@ -577,9 +639,6 @@ Hooks.once("ready", () => {
     {
       const lockMode = String(effectRow.target_lock ?? "").trim().toLowerCase();
       const registry = window["oni.ReactionTriggers"];
-      const phasePayload = ctx?.payload ?? null;
-      const triggerKey = phasePayload?.trigger ?? null;
-      const core = window["oni.ReactionTriggerCore"];
 
       if (lockMode === "damage_source" && phasePayload && registry?.damageSourceShapeFor) {
         const shape = registry.damageSourceShapeFor(triggerKey);
@@ -626,10 +685,13 @@ Hooks.once("ready", () => {
       const evaluator = globalThis?.["oni.ReactionFormula"];
       const reactorActor = reactionToken?.actor ?? null;
       const firingSkill = ctx?.item ?? null;
+      // For formula identifiers like DAMAGE_DEALT to resolve, the evaluator
+      // needs the real phase payload (with finalValue + valueType), not the
+      // dispatcher's outer wrapper. Use the same unwrap as target_lock above.
       const formulaCtx = {
         reactorActor,
         firingSkill,
-        payload: ctx?.payload ?? null
+        payload: phasePayload
       };
       const checkExpr = String(effectRow.check_bonus_formula ?? "").trim();
       if (checkExpr && evaluator?.evaluate) {

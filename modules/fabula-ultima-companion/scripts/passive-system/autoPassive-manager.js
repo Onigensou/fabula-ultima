@@ -691,6 +691,38 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
             err: String(cardErr?.message ?? cardErr)
           });
         }
+
+        // After the passive card broadcasts, skip the skill body's action
+        // pipeline. Rationale: passive reactions that author a
+        // reaction_effect_ref are saying "the declarative effect IS the
+        // reaction" — running ADF on the skill body afterwards either
+        // double-doses (legacy code paths) or, for skills with no meaningful
+        // body (e.g. Absorb MP with no Attack section), surfaces a useless
+        // Miss card from ADC's default classification.
+        //
+        // Passive reactions that rely on the skill body (e.g. Phantasmal Echo)
+        // leave `reaction_effect_ref` blank — grantApplied stays false there,
+        // so they continue to run through ADF unchanged.
+        log("Declarative grant landed; skipping skill body to avoid double-dose.", {
+          actorName: actor?.name,
+          itemName: item?.name,
+          triggerKey,
+          rowIndex
+        });
+        return {
+          ok: true,
+          grantOnly: true,
+          executionKey,
+          rootKey,
+          passiveIdentity,
+          actor,
+          token,
+          item,
+          row,
+          rowIndex,
+          triggerKey,
+          passiveTargetMode
+        };
       }
 
 const preferredPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);

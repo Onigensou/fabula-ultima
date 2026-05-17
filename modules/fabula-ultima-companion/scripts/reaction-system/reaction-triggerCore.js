@@ -78,10 +78,18 @@ Hooks.once("ready", () => {
     function extractRows(tableValue) {
       if (!tableValue) return [];
       const rows = [];
+      // Filter out CSB-soft-deleted rows: when authors remove a row via the
+      // dynamic-table editor it gets `$deleted: true` rather than being
+      // hard-removed from the object. The matcher must respect that flag, or
+      // soft-deleted rows continue to surface reactions in the picker and
+      // double-count `matchingRowCount` (e.g. an old PL row 0 lingering after
+      // dedupe). Strictly `$deleted === true` to leave `false`/missing as
+      // active.
+      const isActive = (row) => row && typeof row === "object" && row.$deleted !== true;
 
       if (Array.isArray(tableValue)) {
         for (const row of tableValue) {
-          if (row && typeof row === "object") rows.push(row);
+          if (isActive(row)) rows.push(row);
         }
         return rows;
       }
@@ -89,7 +97,7 @@ Hooks.once("ready", () => {
       if (typeof tableValue === "object") {
         for (const k of Object.keys(tableValue)) {
           const row = tableValue[k];
-          if (row && typeof row === "object") rows.push(row);
+          if (isActive(row)) rows.push(row);
         }
       }
 

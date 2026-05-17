@@ -679,6 +679,15 @@
       return;
     }
     console.info(`${TAG} activation sentinel consumed (${token.slice(0, 24)}...). Starting bridge.`);
+    // Auto-re-arm: keep the bridge alive across reloads automatically. To
+    // disable, comment out this re-arm and the next boot will be dormant
+    // unless explicitly activated.
+    try {
+      await armActivationSentinel("auto-re-arm-on-boot");
+      console.info(`${TAG} sentinel re-armed for next boot (auto-keepalive).`);
+    } catch (e) {
+      console.warn(`${TAG} auto-re-arm failed (non-fatal)`, e);
+    }
     await boot();
   }
 
