@@ -72,7 +72,7 @@ const SOUND_COOLDOWN_MS = 80;
       .filter(Boolean);
   }
 
-  function makeSpendPlan(item, actorProps, T) {
+  function makeSpendPlan(item, actorProps, T, opts = {}) {
     const raw = S(item?.system?.props?.cost ?? item?.system?.cost ?? "");
     if (!raw) return { plan: [], ok: true, msg: "" };
     const tokens = parseCostList(raw, T);
@@ -87,9 +87,28 @@ const SOUND_COOLDOWN_MS = 80;
       return { label: defs.label, cur, mx, req };
     });
 
+    // Free-action MP cap: when this picker is being opened as part of a
+    // pending free Spell action (e.g. playtest Acceleration: "total MP
+    // cost ≤ 10"), the cap applies AS WELL AS the normal affordability
+    // check. Reject spells whose total MP requirement exceeds the cap;
+    // attach a custom message so the disabled-button tooltip explains
+    // why. Cap is applied to the MP line in `plan`; IP / other costs are
+    // unaffected.
+    const cap = Number(opts.maxMpCost ?? 0) || 0;
+    let capMsg = "";
+    if (cap > 0) {
+      const mpEntry = plan.find(x => x.label === "MP");
+      const mpReq = Number(mpEntry?.req ?? 0) || 0;
+      if (mpReq > cap) {
+        capMsg = `Free Spell limit: MP cost ${mpReq} > ${cap}`;
+      }
+    }
+
     const lacking = plan.filter(x => x.cur < x.req);
-    const ok  = lacking.length === 0;
-    const msg = ok ? "" : lacking.map(x => `${x.label} ${x.req} needed (you have ${x.cur})`).join(", ");
+    const lackingMsg = lacking.map(x => `${x.label} ${x.req} needed (you have ${x.cur})`).join(", ");
+
+    const ok = !capMsg && lacking.length === 0;
+    const msg = ok ? "" : (capMsg || lackingMsg);
     return { plan, ok, msg };
   }
 
@@ -166,6 +185,15 @@ const SOUND_COOLDOWN_MS = 80;
 
   // Targets count for T-multiplied costs (use current selected targets; fallback 1)
   const TARGETS_COUNT = (Array.from(game.user?.targets ?? []).length) || 1;
+
+  // Free-action context: when the Octopath menu was spawned by a reaction
+  // (Acceleration: "free Spell ≤ 10 MP"), the reactor's freeActions store
+  // entry carries a `maxMpCost` cap. Peek (don't consume — ActionDataFetch
+  // consumes the entry when it runs the chosen spell). Null when this is
+  // a normal Spell click.
+  const faApi = globalThis.FUCompanion?.api?.freeActions ?? null;
+  const FREE_ACTION_INFO = (faApi?.peek && actor?.id) ? faApi.peek(actor.id) : null;
+  const MAX_MP_COST = Number(FREE_ACTION_INFO?.maxMpCost ?? 0) || 0;
 
    // ---------- collect spells ----------
   const pluck = (obj) => (obj && typeof obj === "object")
@@ -251,7 +279,7 @@ const SOUND_COOLDOWN_MS = 80;
     if (!item) return null;
     const kind = detectSpellKind(item);
     if (!kind) return null;
-    const afford = makeSpendPlan(item, actorProps, TARGETS_COUNT);
+    const afford = makeSpendPlan(item, actorProps, TARGETS_COUNT, { maxMpCost: MAX_MP_COST });
     return { ...c, item, kind, afford };
   }))).filter(Boolean);
 

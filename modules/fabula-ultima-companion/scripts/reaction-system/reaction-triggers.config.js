@@ -138,6 +138,25 @@ Hooks.once("ready", () => {
       filters: ["source", "debuff_count"],
       aliases: ["end_of_turn"]
     },
+    {
+      // Fires AFTER the active combatant's normal actions resolve, but
+      // BEFORE `combat.update({turn:null})` runs (i.e. before turn_end
+      // fires and before buffs/debuffs with "until end of your turn"
+      // duration expire). Used by Acceleration: the playtest rewrite says
+      // "at the end of each of their turns, the target may choose one
+      // option [free attack | free Spell ≤10 MP]". Doing this BEFORE
+      // turn_end means the free action runs while end-of-turn buffs are
+      // still active. Emitted by `endCurrentActivation`; player turns
+      // round-trip through the GM via OniReactionPhaseRequest with
+      // `awaitable: true` so the player's auto-end logic can await the
+      // substrate before committing combat.update.
+      key: "pre_turn_end",
+      label: "Right before the turn ends (after actions resolve)",
+      bucket: "turn_end",
+      subjectFrom: SUBJECT_TURN,
+      filters: ["source", "debuff_count"],
+      aliases: ["pre_end_of_turn"]
+    },
 
     // ----- Action declaration / check triggers -------------------------------
     {

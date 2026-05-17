@@ -581,6 +581,135 @@
   globalThis.__ONI_FABULA_INITIATIVE__ = ctrl;
 
   // =========================================================
+  // Public API: FUCompanion.api.fabulaInitiative
+  // -----------------------------------------------
+  // Exposed at script-load time (not gated on ready) so callers in the
+  // action pipeline can reach it without waiting on Hooks.once("ready").
+  // =========================================================
+  {
+    const _root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
+    _root.api = _root.api ?? {};
+
+    // Per-(combatId+combatantId+round) memo so the pre_turn_end emit fires
+    // at most once per turn. Free actions re-enter endCurrentActivation,
+    // but per playtest Acceleration may "choose one option" per turn — we
+    // must not re-offer the picker after the user already took (or passed
+    // on) one. Map key embeds round so it auto-stales when the round
+    // advances. In-memory only; survives until reload.
+    const _preTurnEndOffered = new Map(); // key → true
+
+    function preTurnEndKey(combat, combatantId) {
+      return `${combat.id}::${combatantId}::r${combat.round ?? 0}`;
+    }
+
+    _root.api.fabulaInitiative = {
+      /**
+       * End the current Lancer Initiative activation by setting
+       * combat.turn = null. Permission-gated by canUserControlCombatant:
+       * only the owner of the current combatant (or GM) succeeds.
+       *
+       * Behaviour:
+       *   • Emits the `pre_turn_end` reaction phase BEFORE committing the
+       *     combat.update — gives Acceleration-style end-of-turn options a
+       *     chance to fire while end-of-turn buffs/debuffs are still
+       *     active.
+       *   • If a free action was stamped during the emit (peek the
+       *     freeActions store), DEFERS the actual end. The free action's
+       *     auto-end will call back into endCurrentActivation; the
+       *     pre_turn_end memo ensures we don't re-offer the picker on
+       *     re-entry.
+       *   • opts.skipReactions = true bypasses the emit entirely (useful
+       *     for forced/admin ends; the X button currently still emits).
+       *
+       * Returns true on success, false if deferred or failed.
+       */
+      endCurrentActivation: async (opts = {}) => {
+        const combat = game.combat;
+        const currentId = combat?.combatant?.id ?? null;
+        if (!combat || !currentId) return false;
+        if (!canUserControlCombatant(combat, currentId)) return false;
+
+        const skipReactions = !!opts.skipReactions;
+        const memoKey = preTurnEndKey(combat, currentId);
+        const alreadyOffered = _preTurnEndOffered.has(memoKey);
+
+        // ── pre_turn_end emit (gated by memo + skipReactions opt) ──
+        if (!skipReactions && !alreadyOffered) {
+          _preTurnEndOffered.set(memoKey, true);
+
+          const rmApi = globalThis.FUCompanion?.api?.reactionManager;
+          if (rmApi?.requestEmitPhaseAwaitable) {
+            const combatant = combat.combatant;
+            const actor = combatant?.actor ?? null;
+            const tokenDoc = combatant?.token ?? null;
+
+            const phasePayload = {
+              trigger: "pre_turn_end",
+              kind: "lifecycle",
+              phase: "pre_turn_end",
+              combatId: combat.id,
+              sceneId: combat.scene?.id ?? combat.sceneId ?? null,
+              round: combat.round ?? 1,
+              turn: combat.turn,
+              combatantId: currentId,
+              combatantName: combatant?.name ?? null,
+              actorId: actor?.id ?? null,
+              actorUuid: actor?.uuid ?? null,
+              tokenId: tokenDoc?.id ?? combatant?.tokenId ?? null,
+              tokenUuid: tokenDoc?.uuid ?? null,
+              userId: game.user?.id ?? null,
+              timestamp: Date.now()
+            };
+
+            try {
+              const res = await rmApi.requestEmitPhaseAwaitable(phasePayload);
+              if (!res?.ok) {
+                console.warn(`${TAG} pre_turn_end emit failed (continuing to end).`, res);
+              }
+            } catch (e) {
+              console.warn(`${TAG} pre_turn_end emit threw (continuing to end).`, e);
+            }
+
+            // After the substrate resolves, check whether a free action was
+            // stamped on this actor's local store. If yes, defer the end —
+            // the free action's auto-end will call us back, this time
+            // bypassing the emit because `_preTurnEndOffered` is set.
+            const faApi = globalThis.FUCompanion?.api?.freeActions;
+            const actorId = actor?.id ?? null;
+            if (faApi?.peek && actorId && faApi.peek(actorId)) {
+              console.log(`${TAG} endCurrentActivation: free action pending, deferring activation end.`, {
+                combatantId: currentId, actorId
+              });
+              return false;
+            }
+          }
+        }
+
+        try {
+          const turnIndex = (combat.turns ?? []).findIndex((t) => t?.id === currentId);
+          if (turnIndex < 0) return false;
+          if (turnIndex !== combat.turn) return false;
+
+          // Clear the memo so a future round (same combatant) gets a fresh
+          // pre_turn_end offer. The key encodes round, so this is mostly
+          // defensive — a stale entry from this round's offer would be
+          // overwritten anyway when the next round hits.
+          _preTurnEndOffered.delete(memoKey);
+
+          await combat.update(
+            { turn: null },
+            { direction: 0, worldTime: { delta: 0 } }
+          );
+          return true;
+        } catch (e) {
+          console.warn(`${TAG} endCurrentActivation failed`, e);
+          return false;
+        }
+      },
+    };
+  }
+
+  // =========================================================
   // Auto-lifecycle: combat start/end (per-client)
   // =========================================================
   const shouldShowForCurrentClient = () => {

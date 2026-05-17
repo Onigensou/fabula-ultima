@@ -2020,6 +2020,90 @@ if (!animPrecheck.hasRunnableScript) {
         summary.dryRunReport = dryRunReport;
       }
 
+      // ── Phase 2a: consume budget reservation on success terminal ──
+      // The gate in ActionDataFetch wrote `meta.budgetReservation` if the
+      // action consumed a base or grant slot. Earmark-then-consume: we
+      // only consume here, on the success path, so cancels (user dismiss /
+      // throw before commit) never drain a charge. Skipped in dryRun.
+      if (!dryRun) {
+        const reservation = payload?.meta?.budgetReservation ?? null;
+        if (reservation?.kind === "base") {
+          try {
+            const turnEmitter = globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ?? null;
+            const ok = await turnEmitter?.bumpActionsUsedThisTurn?.(reservation.combatantId, { by: 1 });
+            log(runId, "Budget consume (base).", { ok, combatantId: reservation.combatantId });
+          } catch (be) {
+            warn(runId, "Budget consume (base) failed (non-fatal).", { error: String(be?.message ?? be) });
+          }
+        } else if (reservation?.kind === "grant") {
+          try {
+            const bonusActions = globalThis.FUCompanion?.api?.bonusActions ?? null;
+            const ok = await bonusActions?.consumeReservation?.(reservation);
+            log(runId, "Budget consume (grant).", {
+              ok,
+              effectUuid: reservation.effectUuid,
+              sourceLabel: reservation.sourceLabel ?? null
+            });
+          } catch (be) {
+            warn(runId, "Budget consume (grant) failed (non-fatal).", { error: String(be?.message ?? be) });
+          }
+        } else if (reservation?.kind === "free_action") {
+          // No-op here. Free-action charge consume happens at REACTION PICK
+          // TIME in reaction-grant.js applyOpenActionMenuEffect — pick-time
+          // consume is robust against pipeline short-circuits and reflects
+          // the spec ("you picked it, you used it"). This branch exists only
+          // to keep the reservation taxonomy explicit and to swallow the
+          // reservation without falling through to "base"/"grant" logic.
+          log(runId, "Budget reservation (free_action): consumed at pick-time, no-op here.", {
+            sourceEffectUuid: reservation.sourceEffectUuid ?? null
+          });
+        }
+        if (reservation && payload?.meta) {
+          // Clear so a re-run / re-consume wouldn't drain twice. Defensive.
+          payload.meta.budgetReservation = null;
+        }
+
+        // ── Phase 2a follow-up: auto-end Lancer activation when fully spent ──
+        // After consuming this slot, if the active combatant has no more base
+        // budget AND no applicable in-turn grants, end their Lancer activation
+        // (combat.turn = null). The natural turn-change flow then clears the
+        // action menu and lets the next combatant be picked from the tracker.
+        //
+        // Permission: endCurrentActivation gates on combatant ownership — for
+        // player turns the player who acted is the owner; for monster turns
+        // the GM is. Anyone else attempting to read/run this just no-ops.
+        try {
+          const turnEmitter = globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ?? null;
+          const bonusActions = globalThis.FUCompanion?.api?.bonusActions ?? null;
+          const fabulaInit = globalThis.FUCompanion?.api?.fabulaInitiative ?? null;
+
+          const ts = turnEmitter?.getTurnState?.() ?? null;
+          const used = Number(ts?.actionsUsedThisTurn ?? 0) || 0;
+          const base = Number(ts?.baseActionsPerTurn ?? 1) || 1;
+
+          if (used >= base) {
+            const combat = game.combat;
+            const currentActor = combat?.combatant?.actor ?? null;
+            const grants = (currentActor && bonusActions)
+              ? bonusActions.findApplicable(currentActor, { condition: "in_turn" }) ?? []
+              : [];
+            if (!grants.length) {
+              const ok = await fabulaInit?.endCurrentActivation?.();
+              log(runId, "Budget exhausted — ended Lancer activation.", {
+                actionsUsedThisTurn: used,
+                baseActionsPerTurn: base,
+                combatantId: combat?.combatant?.id ?? null,
+                ended: !!ok
+              });
+            }
+          }
+        } catch (autoEndErr) {
+          warn(runId, "Auto-end activation check failed (non-fatal).", {
+            error: String(autoEndErr?.message ?? autoEndErr)
+          });
+        }
+      }
+
       log(runId, "COMPLETE", summary);
       return summary;
         } catch (e) {

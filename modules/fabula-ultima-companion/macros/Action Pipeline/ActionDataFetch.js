@@ -240,6 +240,178 @@ return (async () => {
   }
   if (!useActor) return ui.notifications.warn("Could not determine the attacker. (No linked character and no valid selection.)");
 
+  // ── Turn-state gate (Phase 1 + 2a) ─────────────────────────────
+  // Three-state decision when the gate is active:
+  //   1. Attacker is current combatant + base budget left → reserve "base"
+  //   2. Attacker is current combatant + base spent + matching in-turn
+  //      grant available → reserve "grant"
+  //   3. Otherwise → block (player) or soft-warn (GM)
+  //
+  // The reservation is written to PAYLOAD.meta.budgetReservation; the
+  // success terminal in action-execution-core consumes it. Cancel paths
+  // (user dismisses card, error before commit) leave the reservation
+  // unconsumed — earmark-then-consume is the invariant.
+  //
+  // Bypasses (no gate, no reservation):
+  //   - No active combat (out-of-combat skill use).
+  //   - combat.turn == null (between turns / nobody currently active).
+  //   - autoPassive execution (reactions / passive auto-fires).
+  //   - meta.outOfTurn === true (explicit caller escape hatch).
+  //   - GM mismatch case still proceeds (soft-warn), no reservation either.
+  {
+    const _gateCombat = game.combat ?? null;
+    const _gateExecMode = String(
+      PAYLOAD?.meta?.executionMode ?? (PAYLOAD?.autoPassive ? "autoPassive" : "manual")
+    ).trim() || "manual";
+    const _gateIsAutoPassive =
+      _gateExecMode === "autoPassive" ||
+      !!PAYLOAD?.meta?.isPassiveExecution ||
+      !!PAYLOAD?.autoPassive;
+    const _gateOutOfTurn = !!PAYLOAD?.meta?.outOfTurn;
+    const _gateActive =
+      !!_gateCombat &&
+      _gateCombat.turn != null &&
+      !_gateIsAutoPassive &&
+      !_gateOutOfTurn;
+
+    // Free-action bypass: a prior reaction (e.g. Acceleration) registered an
+    // entry in the in-memory free-action store (FUCompanion.api.freeActions).
+    // Consume it atomically and stash a `free_action` reservation so the
+    // success terminal in action-execution-core can drain the bonus-action
+    // AE charge. Skip the normal turn-budget gate entirely.
+    if (_gateActive) {
+      try {
+        const _faApi = globalThis.FUCompanion?.api?.freeActions ?? null;
+        const _faPending = (_faApi?.consume && useActor?.id)
+          ? _faApi.consume(useActor.id)
+          : null;
+        if (_faPending) {
+          PAYLOAD.meta = PAYLOAD.meta ?? {};
+          PAYLOAD.meta.budgetReservation = {
+            kind: "free_action",
+            sourceEffectUuid: _faPending.sourceEffectUuid ?? null,
+            enabledLabels: Array.isArray(_faPending.enabledLabels) ? _faPending.enabledLabels : null,
+            reservedAt: Date.now()
+          };
+          _adfLog("TurnGate allow (free action via reaction).", {
+            sourceEffectUuid: _faPending.sourceEffectUuid ?? null,
+            enabledLabels: _faPending.enabledLabels ?? null
+          });
+        }
+      } catch (_) {}
+    }
+
+    if (_gateActive && !(PAYLOAD?.meta?.budgetReservation?.kind === "free_action")) {
+      const _curr = _gateCombat.combatant ?? null;
+      const _currActorUuid = _curr?.actor?.uuid ?? null;
+      const _currTokenUuid =
+        _curr?.token?.uuid ??
+        (_curr?.tokenId ? canvas?.tokens?.get(_curr.tokenId)?.document?.uuid : null) ??
+        null;
+
+      const _attackerActorUuid = useActor?.uuid ?? null;
+      const _attackerTokenUuid =
+        attacker?.token?.document?.uuid ?? attacker?.token?.uuid ?? null;
+
+      const _matchesActor =
+        !!_attackerActorUuid && !!_currActorUuid && _attackerActorUuid === _currActorUuid;
+      const _matchesToken =
+        !!_attackerTokenUuid && !!_currTokenUuid && _attackerTokenUuid === _currTokenUuid;
+      const _isCurrent = _matchesActor || _matchesToken;
+
+      if (_isCurrent) {
+        // Read budget. Falls back to a derived snapshot if cache not yet
+        // written (e.g., first turn after install).
+        const _emitterApi = globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ?? null;
+        const _ts = _emitterApi?.getTurnState?.() ?? null;
+        const _used = Number(_ts?.actionsUsedThisTurn ?? 0) || 0;
+        const _base = Number(_ts?.baseActionsPerTurn ?? 1) || 1;
+
+        if (_used < _base) {
+          PAYLOAD.meta = PAYLOAD.meta ?? {};
+          PAYLOAD.meta.budgetReservation = {
+            kind: "base",
+            combatantId: _curr?.id ?? null,
+            reservedAt: Date.now()
+          };
+          _adfLog("TurnGate allow (base budget).", {
+            actionsUsedThisTurn: _used,
+            baseActionsPerTurn: _base,
+            combatantId: _curr?.id ?? null
+          });
+        } else {
+          // Base spent — look for an in-turn grant on the attacker.
+          const _bonus = globalThis.FUCompanion?.api?.bonusActions ?? null;
+          let _grants = [];
+          try {
+            _grants = _bonus?.findApplicable?.(useActor, {
+              condition: "in_turn",
+              skillType: null
+            }) ?? [];
+          } catch (e) {
+            _adfWarn("TurnGate: bonusActions.findApplicable threw.", { error: String(e?.message ?? e) });
+          }
+
+          if (_grants.length) {
+            const _pick = _grants[0]; // earliest-applied first per facade ordering
+            const _reservation = _bonus?.reserve?.(_pick) ?? null;
+            if (_reservation) {
+              PAYLOAD.meta = PAYLOAD.meta ?? {};
+              PAYLOAD.meta.budgetReservation = _reservation;
+              _adfLog("TurnGate allow (bonus grant).", {
+                actionsUsedThisTurn: _used,
+                baseActionsPerTurn: _base,
+                sourceLabel: _pick.spec?.sourceLabel ?? null,
+                effectUuid: _pick.effectUuid,
+                charges: _pick.charges
+              });
+              const _label = _pick.spec?.sourceLabel ?? "bonus action";
+              ui.notifications?.info?.(
+                `Using ${_label} (${_pick.charges} ${_pick.charges === 1 ? "use" : "uses"} left before this).`
+              );
+            } else {
+              // Reservation failed despite grant found — fail closed.
+              ui.notifications?.warn?.("You've used all your actions this turn.");
+              _adfWarn("TurnGate block: grant reserve failed.", { effectUuid: _pick.effectUuid });
+              return;
+            }
+          } else {
+            // No grants → hard block for everyone, GM included.
+            // GM bypass was removed intentionally so we can verify the turn
+            // system end-to-end; GM-initiated actions for non-current actors
+            // will get their own UX/UI path later.
+            const _msg = "You've used all your actions this turn.";
+            ui.notifications?.warn?.(_msg);
+            _adfWarn("TurnGate hard-block (budget exhausted, no grants).", {
+              isGM: !!game.user?.isGM,
+              actionsUsedThisTurn: _used,
+              baseActionsPerTurn: _base,
+              combatantId: _curr?.id ?? null
+            });
+            return;
+          }
+        }
+      } else {
+        // Not the current combatant — hard block for everyone, GM included.
+        // GM bypass was removed intentionally so we can verify the turn
+        // system end-to-end; GM-driven out-of-turn actions will get their
+        // own dedicated UX/UI path later.
+        const _currName = _curr?.name ?? _curr?.actor?.name ?? "another combatant";
+        const _msg = `Not your turn — current turn is ${_currName}.`;
+        ui.notifications?.warn?.(_msg);
+        _adfWarn("TurnGate hard-block.", {
+          isGM: !!game.user?.isGM,
+          attackerActorUuid: _attackerActorUuid,
+          attackerTokenUuid: _attackerTokenUuid,
+          currentCombatantId: _curr?.id ?? null,
+          currentName: _currName,
+          skillUuid: PAYLOAD?.skillUuid ?? null
+        });
+        return;
+      }
+    }
+  }
+
   function inferListTypeFromItem(itemDoc) {
     const p = itemDoc?.system?.props ?? {};
     const skillTypeRaw = String(p.skill_type ?? "").trim().toLowerCase();

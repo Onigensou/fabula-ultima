@@ -136,6 +136,16 @@
         margin-left:-6px; filter:brightness(1.04);
         box-shadow:0 6px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
       }
+      /* free-action filter: button label not in the enabledLabels set */
+      #oni-octopath .blade.fu-free-action-disabled{
+        cursor:not-allowed;
+        filter:grayscale(0.6) brightness(0.85);
+        opacity:0.55;
+      }
+      #oni-octopath .blade.fu-free-action-disabled:hover{
+        margin-left:0; filter:grayscale(0.6) brightness(0.85);
+        box-shadow:0 4px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
+      }
       #oni-octopath .blade::before{
         content:""; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
         width:12px; height:76%;
@@ -144,7 +154,8 @@
         box-shadow:0 0 0 1px var(--bd-highlight) inset;
       }
       #oni-octopath .pager{
-        position:absolute; display:flex; align-items:center; gap:8px; pointer-events:auto;
+        position:absolute; display:flex; align-items:center; justify-content:space-between;
+        gap:8px; pointer-events:auto;
         font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
         color:var(--bd-ink-soft); font-weight:800; letter-spacing:.32px; text-transform:uppercase;
         z-index:2;
@@ -166,6 +177,51 @@
       }
       #oni-octopath .pager .arrow:hover{ transform:translateY(-1px); filter:brightness(1.05) }
       #oni-octopath .pager .arrow:active{ transform:translateY(0) scale(.98) }
+
+      /* Budget label (Phase 2a): same parchment+gold language as .pager .title,
+         smaller and with a coloured pip on the left to signal action kind.
+         Width is matched to the pager's full span via JS so the box aligns
+         with the left arrow on the left and the right arrow on the right. */
+      #oni-octopath .budget-label{
+        position:absolute; display:flex; align-items:center; gap:8px;
+        padding:5px 12px 5px 12px;
+        border-radius:10px;
+        box-sizing:border-box;
+        font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+        color:var(--bd-ink-soft);
+        font-weight:800; letter-spacing:.32px; text-transform:uppercase;
+        font-size:11px;
+        background:linear-gradient(180deg,var(--bd-parchment-top),var(--bd-parchment-bot));
+        border:2px solid var(--bd-stroke);
+        box-shadow:0 3px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
+        text-shadow:0 1px 0 var(--bd-highlight);
+        white-space:nowrap;
+        pointer-events:none;
+        z-index:2;
+        opacity:0;
+        transition:opacity 200ms ease-out, filter 150ms ease, color 150ms ease;
+      }
+      #oni-octopath .budget-label::before{
+        content:""; width:8px; height:8px; border-radius:50%;
+        background:linear-gradient(180deg,var(--bd-gold-1),var(--bd-gold-2));
+        border:1.5px solid var(--bd-stroke);
+        box-shadow:0 0 0 1px var(--bd-highlight) inset;
+        flex-shrink:0;
+      }
+      #oni-octopath .budget-label .uses{
+        margin-left:auto; padding-left:8px;
+        opacity:.75; font-weight:700; letter-spacing:.2px; text-transform:none;
+      }
+      #oni-octopath .budget-label.is-grant::before{
+        background:linear-gradient(180deg,#cba7e8,#9c6cc7);
+      }
+      #oni-octopath .budget-label.is-empty{
+        filter:saturate(.45) brightness(.94);
+        color:#8a7466;
+      }
+      #oni-octopath .budget-label.is-empty::before{
+        background:linear-gradient(180deg,#b1a89a,#8a7d68);
+      }
     `;
     document.head.appendChild(css);
   }
@@ -338,8 +394,15 @@
 
   // === Command buttons UI (owner-only) ====================================
 
-  // Helper to run a Macro by name mapped from button label
-  async function runByButtonLabel(label) {
+  // Helper to run a Macro by name mapped from button label.
+  // `spawnToken` is the token the menu was spawned for — passing it lets us
+  // ensure the GM's selection matches the menu owner before the macro runs.
+  // The downstream Command Button macros (Attack, Skill, Spell, …) all
+  // re-resolve attacker from canvas.tokens.controlled[0], so a stale or
+  // mismatched selection would either fire the wrong actor or hard-block at
+  // the ADF turn gate. Auto-selecting on click eliminates that drift without
+  // having to plumb an attacker payload through every command macro.
+  async function runByButtonLabel(label, spawnToken) {
     const macroName = MACRO_NAME[label] ?? null;
 
     if (!macroName) {
@@ -353,6 +416,11 @@
       return;
     }
 
+    if (spawnToken && !spawnToken.destroyed && !spawnToken.controlled) {
+      try { spawnToken.control({ releaseOthers: true }); }
+      catch (e) { console.warn("[Turn UI] Failed to auto-select spawning token", e); }
+    }
+
     try {
       await macro.execute();
     } catch (err) {
@@ -361,7 +429,7 @@
     }
   }
 
-  function spawnButtonsForToken(token) {
+  function spawnButtonsForToken(token, opts = {}) {
     removeButtons();
     ensureBaseStyles();
     playSfxOpen();
@@ -371,6 +439,26 @@
       { name: "System",  cmds: ["Equipment","Study","Hinder","Objective","Switch"] }
     ];
     let pageIndex = 0;
+
+    // Free-action filter: when an `enabledLabels` set is provided,
+    // every button whose label isn't in the set renders disabled
+    // (grayed out + click-blocked). Used by the Acceleration reaction's
+    // `open_action_menu` effect to gate the menu to "Attack" + "Spell".
+    const enabledLabels = Array.isArray(opts.enabledLabels) && opts.enabledLabels.length
+      ? new Set(opts.enabledLabels.map(s => String(s)))
+      : null;
+    const isLabelEnabled = (label) => !enabledLabels || enabledLabels.has(label);
+    const freeMode = !!opts.freeMode;
+
+    // Budget-label override: when the caller knows what label this menu
+    // represents (e.g. "Acceleration" for a free-action menu spawned by
+    // reaction-grant), it's passed in here as the single source of truth
+    // for the menu's lifetime. updateBudgetLabel renders it verbatim with
+    // is-grant styling and skips all dynamic budget computation. When
+    // absent, the label is derived dynamically from turn state.
+    const budgetLabelOverride = (typeof opts.budgetLabel === "string" && opts.budgetLabel.trim())
+      ? opts.budgetLabel.trim()
+      : null;
 
     const root  = document.createElement("div");
     root.id     = "oni-octopath";
@@ -385,10 +473,32 @@
     const rightA = document.createElement("div"); rightA.className = "arrow"; rightA.textContent = "▶";
     pager.append(leftA, title, rightA);
     root.appendChild(pager);
+
+    // Budget label (Phase 2a): shows what kind of action the next button click
+    // will consume — base turn action, a named bonus grant (e.g. Acceleration),
+    // or "No Action Left" when the budget is exhausted. Uses the same parchment
+    // + gold-pip styling as .pager .title; pip switches colour/state via the
+    // `.is-grant` / `.is-empty` modifier classes set in updateBudgetLabel().
+    const budgetLabel = document.createElement("div");
+    budgetLabel.className = "budget-label";
+    const budgetMain = document.createElement("span");
+    const budgetUses = document.createElement("span");
+    budgetUses.className = "uses";
+    budgetLabel.append(budgetMain, budgetUses);
+    root.appendChild(budgetLabel);
+
     document.body.appendChild(root);
 
     const DURATION_MS = 360, STAGGER_MS = 30, SPIN_DEG = 360, SCALE_MIN = 0.93;
-    const EDGE_PAD_X = 12, EDGE_PAD_Y = 50, GAP_PX = 6, PAGER_LIFT = 1.25;
+    // Phase 2a: budget label sits between pager and the first button (Attack).
+    // Vertical position is computed from each element's actual offsetHeight
+    // (not from rowH multiples) so the gaps are honest visible whitespace
+    // regardless of font metrics, padding tweaks, or DPI.
+    //   Attack top edge ─ LABEL_TO_ATTACK_GAP ─ label bottom
+    //   label top edge  ─ PAGER_TO_LABEL_GAP  ─ pager bottom
+    const EDGE_PAD_X = 12, EDGE_PAD_Y = 50, GAP_PX = 6;
+    const LABEL_TO_ATTACK_GAP = 10;  // visible px between label box and Attack box
+    const PAGER_TO_LABEL_GAP  = 8;   // visible px between pager box and label box
     const clamp01 = v => Math.max(0, Math.min(1, v));
     const easeOutQuint = t => 1 - Math.pow(1 - t, 5);
     const easeOutBack  = (t, s = 0.90) => 1 + ((t = t - 1) * ((s + 1) * t + s) * t);
@@ -420,8 +530,16 @@
         btn.innerHTML = `<span class="label">${label}</span>`;
         btn.style.pointerEvents = "none";
 
+        const enabled = isLabelEnabled(label);
+        if (!enabled) {
+          btn.classList.add("fu-free-action-disabled");
+          btn.title = freeMode
+            ? "Free action available only for: " + Array.from(enabledLabels).join(", ")
+            : "Disabled";
+        }
+
         wrap.appendChild(btn); root.appendChild(wrap);
-        items.push({ wrap, btn, tStart: 0, slotX: 0, slotY: 0, bound: false, label });
+        items.push({ wrap, btn, tStart: 0, slotX: 0, slotY: 0, bound: false, label, enabled });
       }
       title.textContent = PAGES[pageIndex].name;
       startClock = performance.now();
@@ -442,10 +560,115 @@
       pivot.style.left = `${ctr.x}px`; pivot.style.top = `${ctr.y}px`;
       const first = items[0];
       if (first) {
-        pager.style.left = `${first.slotX}px`;
-        pager.style.top  = `${first.slotY - (rowH * PAGER_LIFT)}px`;
+        // Reset widths so we measure natural content widths first; page
+        // flips (Actions ↔ System) can shrink/grow the pager title.
+        pager.style.width = "";
+        budgetLabel.style.width = "";
+
+        // Build the stack bottom-up from the Attack button's top edge,
+        // using each container's real offsetHeight so the visible gaps
+        // match the constants above (not approximate row-height fractions).
+        // Items use transform:translate(0,-50%) so item.slotY is their
+        // CENTRE — Attack's top edge is slotY - (itemHeight / 2).
+        const itemH = hProbe;
+        const pagerH = pager.offsetHeight || 28;
+        const labelH = budgetLabel.offsetHeight || 24;
+
+        const attackTopY  = first.slotY - itemH / 2;
+        const labelBotY   = attackTopY - LABEL_TO_ATTACK_GAP;
+        const labelTopY   = labelBotY - labelH;
+        const pagerBotY   = labelTopY - PAGER_TO_LABEL_GAP;
+        const pagerTopY   = pagerBotY - pagerH;
+
+        pager.style.left       = `${first.slotX}px`;
+        pager.style.top        = `${pagerTopY}px`;
+        budgetLabel.style.left = `${first.slotX}px`;
+        budgetLabel.style.top  = `${labelTopY}px`;
+
+        // Match left/right edges by stretching both to whichever is wider.
+        const pw = pager.offsetWidth;
+        const lw = budgetLabel.offsetWidth;
+        const maxW = Math.max(pw, lw);
+        if (maxW > 0) {
+          pager.style.width = `${maxW}px`;
+          budgetLabel.style.width = `${maxW}px`;
+        }
       }
     }
+
+    function updateBudgetLabel() {
+      const actor = token?.actor ?? null;
+      const emitterApi = globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ?? null;
+      const bonusApi = globalThis.FUCompanion?.api?.bonusActions ?? null;
+
+      const ts = emitterApi?.getTurnState?.() ?? null;
+      const used = Number(ts?.actionsUsedThisTurn ?? 0) || 0;
+      const base = Number(ts?.baseActionsPerTurn ?? 1) || 1;
+
+      // Reset modifier classes; default state is "base/turn action" (gold pip).
+      budgetLabel.classList.remove("is-grant", "is-empty");
+
+      // Caller-supplied budget label (e.g. Acceleration's free-action menu
+      // passes "Acceleration"). When present, render it verbatim and skip
+      // dynamic budget computation — the menu's label is the caller's
+      // responsibility for the menu's whole lifetime, not a derived value
+      // that races with store updates / AE lookups / turn-state writes.
+      if (budgetLabelOverride) {
+        budgetMain.textContent = budgetLabelOverride;
+        budgetUses.textContent = "";
+        budgetLabel.classList.add("is-grant");
+        return;
+      }
+
+      if (used < base) {
+        budgetMain.textContent = "Turn Action";
+        budgetUses.textContent = "";
+      } else {
+        const grants = (actor && bonusApi)
+          ? (bonusApi.findApplicable(actor, { condition: "in_turn" }) ?? [])
+          : [];
+        if (grants.length) {
+          const g = grants[0];
+          const label = g.spec?.sourceLabel ?? "Bonus";
+          budgetMain.textContent = label;
+          budgetUses.textContent = "";
+          budgetLabel.classList.add("is-grant");
+        } else {
+          budgetMain.textContent = "No Action Left";
+          budgetUses.textContent = "";
+          budgetLabel.classList.add("is-empty");
+        }
+      }
+    }
+
+    // Initial state + reveal
+    updateBudgetLabel();
+    requestAnimationFrame(() => { budgetLabel.style.opacity = "1"; });
+
+    // Refresh hooks: turnState changes via combat flag write, plus grant
+    // AE lifecycle on the current actor.
+    const currentActorUuid = token?.actor?.uuid ?? null;
+    const matchesActor = (effect) => {
+      const aUuid = effect?.parent?.uuid ?? null;
+      return !!aUuid && aUuid === currentActorUuid;
+    };
+    const h3 = Hooks.on("updateCombat", (combat, changed) => {
+      if (!combat || combat.id !== game.combat?.id) return;
+      if (!changed || !("flags" in changed)) return;
+      updateBudgetLabel();
+    });
+    const h4 = Hooks.on("createActiveEffect", (effect) => {
+      if (!matchesActor(effect)) return;
+      updateBudgetLabel();
+    });
+    const h5 = Hooks.on("updateActiveEffect", (effect) => {
+      if (!matchesActor(effect)) return;
+      updateBudgetLabel();
+    });
+    const h6 = Hooks.on("deleteActiveEffect", (effect) => {
+      if (!matchesActor(effect)) return;
+      updateBudgetLabel();
+    });
 
     function render() {
       if (!document.body.contains(root)) return;
@@ -477,14 +700,20 @@
         if (!it.bound && p >= 1) {
           bindHoverSound(it.btn);
 
-          // === WIRED: call your macro by button label ======================
-          it.btn.addEventListener("click", async (ev) => {
-            ev.stopPropagation();
-            await runByButtonLabel(it.label);
-          });
-          // =================================================================
-
-          it.btn.style.pointerEvents = "auto";
+          if (it.enabled === false) {
+            // Disabled (filter-blocked) buttons stay click-dead.
+            it.btn.style.pointerEvents = "none";
+          } else {
+            // === WIRED: call your macro by button label ====================
+            // Pass the spawning `token` so the macro inherits a consistent
+            // selection — see runByButtonLabel for rationale.
+            it.btn.addEventListener("click", async (ev) => {
+              ev.stopPropagation();
+              await runByButtonLabel(it.label, token);
+            });
+            // ===============================================================
+            it.btn.style.pointerEvents = "auto";
+          }
           it.bound = true;
         }
       }
@@ -516,6 +745,10 @@
       ticker.remove(tickFn);
       Hooks.off("updateToken", h1);
       Hooks.off("canvasPan", h2);
+      Hooks.off("updateCombat", h3);
+      Hooks.off("createActiveEffect", h4);
+      Hooks.off("updateActiveEffect", h5);
+      Hooks.off("deleteActiveEffect", h6);
       window.removeEventListener("keydown", keyListener, true);
       try { root.remove(); } catch {}
     }
@@ -707,8 +940,16 @@
     // If token isn't on this scene/canvas, just clear
     if (!token) { clearAllUI(); return; }
 
-    // If we're already showing UI for this token, skip re-spawn
-    if (TurnUI.state.currentTokenId === token.id) return;
+    // If we're already showing UI for this token AND it's actually visible,
+    // skip re-spawn. The buttons/indicator check catches the case where
+    // hideUIForAnimation hid the UI and showUIAfterAnimation never arrived
+    // (Alt-Tab mid-animation, dropped socket packet, etc.) — without this
+    // guard the next turn change wouldn't recover because currentTokenId
+    // would still match.
+    if (
+      TurnUI.state.currentTokenId === token.id &&
+      (TurnUI.state.buttons || TurnUI.state.indicator)
+    ) return;
 
     // Swap to new turn owner
     clearAllUI();
@@ -843,6 +1084,33 @@
         return;
       }
 
+      // Budget gate: if this token is the active combatant AND their action
+      // budget is exhausted AND no in-turn grants remain, don't respawn the
+      // action menu. The consume hook in action-execution-core also ends the
+      // Lancer activation in this state — that triggers handleTurnChange to
+      // clear UI fully — but checking here preempts a brief visual flash
+      // between respawn and turn-change clear.
+      try {
+        const turnEmitter = globalThis.FUCompanion?.api?.fabulaInitiativeTurnEmitter ?? null;
+        const bonusApi    = globalThis.FUCompanion?.api?.bonusActions ?? null;
+        const actor       = token?.actor ?? null;
+        const currentCombatantActorUuid = game.combat?.combatant?.actor?.uuid ?? null;
+        if (actor && currentCombatantActorUuid && actor.uuid === currentCombatantActorUuid) {
+          const ts = turnEmitter?.getTurnState?.() ?? null;
+          const used = Number(ts?.actionsUsedThisTurn ?? 0) || 0;
+          const base = Number(ts?.baseActionsPerTurn ?? 1) || 1;
+          if (used >= base) {
+            const grants = bonusApi?.findApplicable?.(actor, { condition: "in_turn" }) ?? [];
+            if (!grants.length) {
+              console.log("[Turn UI Manager] showUIAfterAnimation: budget exhausted + no grants — skipping menu respawn.");
+              return;
+            }
+          }
+        }
+      } catch (gateErr) {
+        console.warn("[Turn UI Manager] showUIAfterAnimation budget-gate failed (non-fatal); respawning anyway.", gateErr);
+      }
+
       console.log("[Turn UI Manager] showUIAfterAnimation: respawning UI via forLocalClient_spawnWhat.");
       // Re-evaluate what this client should see:
       // - If this client owns the token → spawn command buttons.
@@ -857,6 +1125,10 @@
   // can call them directly using the callback pattern.
   TurnUI.hideUIForAnimation   = hideUIForAnimation;
   TurnUI.showUIAfterAnimation = showUIAfterAnimation;
+  // Exposed so the reaction system's `open_action_menu` effect_kind
+  // (Acceleration's free action) can spawn the Octopath menu over an
+  // arbitrary token with a button filter.
+  TurnUI.spawnButtonsForToken = spawnButtonsForToken;
 
   // Convenience: callback-style helper for your controller script (LOCAL ONLY).
   TurnUI.withAnimationHideShow = async function(payload, workerFn) {
@@ -929,12 +1201,37 @@
     handleTurnChange(combat);
   });
 
-  // 3) On ready: initialize + install socket listeners
+  // 3a) On canvasReady: re-sync UI to current combat state.
+  //     This is the recovery path for "after page refresh, no buttons":
+  //     when Hooks.once("ready") fires, canvas tokens may not yet be on the
+  //     scene — handleTurnChange's byIdOnCanvas returns null, clearAllUI
+  //     wipes state, and nothing else triggers a retry. canvasReady fires
+  //     once the canvas (and its tokens) are actually drawn, so we replay
+  //     the current-combatant check from a fresh state.
+  //
+  //     We force-reset currentTokenId so the dedup in handleTurnChange
+  //     doesn't short-circuit when the UI is missing but state thinks it
+  //     should be visible.
+  Hooks.on("canvasReady", () => {
+    const c = game.combats?.active ?? game.combat ?? null;
+    if (!c?.combatant) {
+      if (TurnUI.state.currentTokenId || TurnUI.state.buttons || TurnUI.state.indicator) {
+        clearAllUI();
+      }
+      return;
+    }
+    TurnUI.state.currentTokenId = null;
+    handleTurnChange(c);
+  });
+
+  // 3b) On ready: initialize + install socket listeners
   Hooks.once("ready", () => {
     cacheSFX();
     const c = game.combats?.active;
     if (c && (c.started || (c.round ?? 0) > 0)) {
-      // Fire once to match current state
+      // Fire once to match current state. If canvas isn't ready yet, this
+      // will no-op (byIdOnCanvas returns null) and the canvasReady hook
+      // above will retry.
       handleTurnChange(c);
     }
 

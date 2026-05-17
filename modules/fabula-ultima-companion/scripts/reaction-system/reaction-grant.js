@@ -484,6 +484,177 @@ Hooks.once("ready", () => {
   }
 
   // ---------------------------------------------------------------------------
+  // open_action_menu effect_kind — spawn the Octopath action menu over the
+  // reactor's token with a button-label filter and a one-shot "free action"
+  // flag stamped on the reactor's actor.
+  // ---------------------------------------------------------------------------
+  // Row fields:
+  //   allowed_types  string — comma-separated TurnUI button labels
+  //                           (e.g. "Attack,Spell"). Other buttons render
+  //                           disabled (grayed out, click-blocked).
+  //   free_mode      boolean — when true, registers a pending free action
+  //                            in `FUCompanion.api.freeActions` keyed by the
+  //                            reactor's actor.id; ActionDataFetch consumes
+  //                            the entry and bypasses the budget gate for
+  //                            the next action.
+  //   source_effect_uuid string — optional. Set automatically when the
+  //                               trigger row came from a synthesized AE
+  //                               item; the consume-charge step uses it
+  //                               to drain the bonus-action grant after
+  //                               the free action completes.
+  //
+  // Use case: Acceleration. Player picks "Acceleration" from the reaction
+  // picker at turn_end; the action menu pops up with only Attack and Spell
+  // enabled; whichever they click runs as a free action consuming the AE
+  // charge.
+  async function applyOpenActionMenuEffect(effectRow, reactionToken, combat, ctx) {
+    const allowedRaw = String(effectRow.allowed_types ?? "").trim();
+    const enabledLabels = allowedRaw
+      ? allowedRaw.split(/[,\n]/).map(s => s.trim()).filter(Boolean)
+      : [];
+    const freeMode = !!effectRow.free_mode;
+
+    // max_mp_cost (optional, integer string). Caps the MP of any spell
+    // selectable through the free Spell action; null/0/blank = no cap.
+    // Used by playtest Acceleration ("a spell with total MP cost ≤ 10").
+    let maxMpCost = null;
+    {
+      const raw = effectRow.max_mp_cost;
+      if (raw != null && String(raw).trim() !== "") {
+        const n = Number(raw);
+        if (Number.isFinite(n) && n > 0) maxMpCost = Math.floor(n);
+      }
+    }
+
+    const item = ctx?.item ?? null;
+    const sourceEffectUuid = item?.__sourceEffectUuid
+      ?? effectRow.source_effect_uuid
+      ?? null;
+
+    const turnUI = globalThis.TurnUI ?? null;
+    if (!turnUI?.spawnButtonsForToken) {
+      console.warn(TAG, "applyOpenActionMenuEffect: TurnUI.spawnButtonsForToken not available.");
+      return { ok: false, reason: "no_turnui", applied: [] };
+    }
+
+    const actor = reactionToken?.actor ?? null;
+
+    // Resolve the budget label NOW (rather than letting the menu peek the
+    // store later). Source of truth: the source AE's bonusActionGrant
+    // .sourceLabel (e.g. "Acceleration"). Fall back to the item name and
+    // then to the generic "Free Action" so the menu always shows SOMETHING
+    // meaningful instead of "No Action Left".
+    let budgetLabel = "Free Action";
+    try {
+      if (sourceEffectUuid) {
+        const eff = fromUuidSync(sourceEffectUuid);
+        const srcLabel = eff?.flags?.["fabula-ultima-companion"]?.bonusActionGrant?.sourceLabel;
+        if (srcLabel) budgetLabel = String(srcLabel);
+        else if (eff?.name) budgetLabel = String(eff.name);
+      } else if (item?.name) {
+        budgetLabel = String(item.name);
+      }
+    } catch (e) {
+      console.warn(TAG, "applyOpenActionMenuEffect: budget label resolve threw (non-fatal); using fallback.", e);
+    }
+
+    if (freeMode && actor) {
+      const faApi = globalThis.FUCompanion?.api?.freeActions ?? null;
+      if (faApi?.set) {
+        try {
+          faApi.set(actor.id, { enabledLabels, sourceEffectUuid, maxMpCost });
+        } catch (e) {
+          console.warn(TAG, "applyOpenActionMenuEffect: freeActions.set threw.", e);
+        }
+      } else {
+        console.warn(TAG, "applyOpenActionMenuEffect: FUCompanion.api.freeActions unavailable; ADF gate bypass will NOT fire.");
+      }
+
+      // Drain one charge from the source AE NOW (at pick time), not at the
+      // action's success terminal. Reasons:
+      //   1. The action pipeline can short-circuit before reaching the
+      //      success terminal (cancelled targeting, blocked execution,
+      //      `combat.turn === null` causing ADF to skip the gate block) —
+      //      pick-time consume is robust against all of those.
+      //   2. Semantically: once the reactor picks Acceleration, they have
+      //      committed to using one charge of the grant. Whether they then
+      //      take the free action is a separate choice; the charge is
+      //      already spent.
+      // `charges.consume` with `deleteWhenEmpty: true` auto-deletes the AE
+      // when the last charge drains, so an Acceleration with chargesMax=2
+      // self-removes after the second pick.
+      if (sourceEffectUuid) {
+        const chargesApi = globalThis.FUCompanion?.api?.charges ?? null;
+        if (chargesApi?.consume) {
+          try {
+            const eff = await fromUuid(sourceEffectUuid);
+            if (eff) {
+              const res = await chargesApi.consume(eff, { count: 1, deleteWhenEmpty: true });
+              console.log(TAG, "applyOpenActionMenuEffect: drained 1 charge on pick.", {
+                sourceEffectUuid, before: res?.before, after: res?.after, deleted: res?.deleted
+              });
+            } else {
+              console.warn(TAG, "applyOpenActionMenuEffect: source AE not found for charge consume.", { sourceEffectUuid });
+            }
+          } catch (e) {
+            console.warn(TAG, "applyOpenActionMenuEffect: charges.consume threw (non-fatal).", e);
+          }
+        } else {
+          console.warn(TAG, "applyOpenActionMenuEffect: charges API unavailable; charge NOT drained.");
+        }
+      }
+    }
+
+    try {
+      turnUI.spawnButtonsForToken(reactionToken, { enabledLabels, freeMode, budgetLabel });
+    } catch (e) {
+      console.warn(TAG, "applyOpenActionMenuEffect: spawnButtonsForToken threw.", e);
+      return { ok: false, reason: "spawn_threw", error: String(e?.message ?? e), applied: [] };
+    }
+
+    // Fire pickerPicked manually so the substrate marks this reactor's
+    // sub-window as "chose" (semantically correct — the user did pick
+    // Acceleration) BEFORE we return skipBody:true. The substrate will
+    // then broadcast a close tick → the reaction-buttonUI tick listener
+    // schedules a 250ms leave animation. To dodge any race where an
+    // unrelated spawnButton call would revive the leaving rec via
+    // updateExistingButton (cancelling the finish timer), we also
+    // FORCE-remove the button directly right after.
+    try {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      const phasePayload = ctx?.payload?.reaction_phase_payload ?? ctx?.payload ?? null;
+      if (rs?._internals?.buildSubKey && phasePayload) {
+        const bucket = rs._internals.computeBucket(phasePayload);
+        const actionCardId = phasePayload?.actionCardId ?? phasePayload?.meta?.actionCardId ?? null;
+        const subKey = rs._internals.buildSubKey({
+          bucket, actionCardId, reactorTokenId: reactionToken.id
+        });
+        if (subKey) {
+          Hooks.callAll("oni:reactionWindow:pickerPicked", { subKey, item });
+        }
+      }
+      const uiApi = window["oni.ReactionButtonUI"];
+      if (uiApi?.removeButton) uiApi.removeButton(reactionToken.id);
+    } catch (e) {
+      console.warn(TAG, "applyOpenActionMenuEffect: pickerPicked fire threw (non-fatal).", e);
+    }
+
+    return {
+      ok: true,
+      // skipBody is a softer cousin of `abort`: skip the chooseSkill
+      // dispatcher's ADF.execute(synth) (which would pop a mysterious
+      // second menu) but DON'T show a "could not fire" warning, and
+      // DON'T fire pickerClosed (we already fired pickerPicked above).
+      skipBody: true,
+      kind: "open_action_menu",
+      enabledLabels,
+      freeMode,
+      sourceEffectUuid,
+      applied: [{ ok: true, info: { tokenId: reactionToken.id, enabledLabels, freeMode } }]
+    };
+  }
+
+  // ---------------------------------------------------------------------------
   // chain effect_kind — invoke other effect labels in order
   // ---------------------------------------------------------------------------
   // Row fields:
@@ -568,6 +739,9 @@ Hooks.once("ready", () => {
       case "chain":
         result = await applyChainEffect(effectRow, reactionToken, combat, ctx);
         break;
+      case "open_action_menu":
+        result = await applyOpenActionMenuEffect(effectRow, reactionToken, combat, ctx);
+        break;
       default:
         console.warn(TAG, `applyEffectByLabel: unknown effect_kind "${kind}" on label "${ref}"`);
         return { ok: false, reason: "unknown_effect_kind", effectKind: kind, effectLabel: ref, applied: [] };
@@ -595,8 +769,9 @@ Hooks.once("ready", () => {
   // that mutate the source action card (redirect_target, etc.).
   async function applyEffectsForGroup(chosenGroup, reactionToken, combat = game.combat, payload = null) {
     const results = [];
-    if (!chosenGroup) return { results, aborted: false };
+    if (!chosenGroup) return { results, aborted: false, skipBody: false };
 
+    let skipBody = false;
     const entries = Array.isArray(chosenGroup.entries) ? chosenGroup.entries : [];
     for (const entry of entries) {
       const item = entry?.item ?? chosenGroup.item ?? null;
@@ -607,16 +782,18 @@ Hooks.once("ready", () => {
         if (!ref) continue;
         const res = await applyEffectByLabel(item, ref, reactionToken, combat, payload);
         results.push(res);
+        if (res?.skipBody) skipBody = true;
         if (res?.abort) {
           return {
             results,
             aborted: true,
+            skipBody,
             abortInfo: { itemName: item?.name ?? null, effectLabel: ref, result: res }
           };
         }
       }
     }
-    return { results, aborted: false };
+    return { results, aborted: false, skipBody };
   }
 
   // ---------------------------------------------------------------------------
