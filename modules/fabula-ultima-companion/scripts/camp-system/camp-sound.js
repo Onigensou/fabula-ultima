@@ -66,6 +66,16 @@
     BOND_HOVER:            "bond.hover",
     BOND_CONFIRM:          "bond.confirm",
     BOND_DROPDOWN_CHANGE:  "bond.dropdown.change",
+    // Bond Summary screen
+    BOND_SUM_ENTER:        "bond.summary.enter",
+    BOND_SUM_NEW_BOND:     "bond.summary.new_bond",
+    BOND_SUM_EMOTION_UP:   "bond.summary.emotion_up",
+    BOND_SUM_EMOTION_DN:   "bond.summary.emotion_down",
+    BOND_SUM_LEVEL_1:      "bond.summary.level_1",
+    BOND_SUM_LEVEL_2:      "bond.summary.level_2",
+    BOND_SUM_LEVEL_3:      "bond.summary.level_3",
+    BOND_SUM_GENERIC:      "bond.summary.generic",
+    BOND_SUM_CLEARED:      "bond.summary.cleared",
   });
 
   // ── Sound definitions ─────────────────────────────────────────────────────
@@ -85,6 +95,17 @@
   CAMP.Sound.register(CAMP.SFX.BOND_HOVER,           { src: `${_BASE}BattleCursor_4.wav`, volume: 0.45, push: false });
   CAMP.Sound.register(CAMP.SFX.BOND_CONFIRM,         { src: `${_BASE}Success_1.wav`,      volume: 0.65, push: false });
   CAMP.Sound.register(CAMP.SFX.BOND_DROPDOWN_CHANGE, { src: `${_BASE}BattleCursor_2.wav`, volume: 0.5,  push: false });
+
+  // Bond Summary screen — play locally; show() runs on every client so sync is natural
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_ENTER,       { src: `${_BASE}check_start.wav`,    volume: 0.7,  push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_NEW_BOND,    { src: `${_BASE}bond_create.wav`,    volume: 0.7,  push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_EMOTION_UP,  { src: `${_BASE}emotion_up.wav`,     volume: 0.7,  push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_EMOTION_DN,  { src: `${_BASE}emotion_down.wav`,   volume: 0.7,  push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_LEVEL_1,     { src: `${_BASE}bond_level_1.wav`,   volume: 0.75, push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_LEVEL_2,     { src: `${_BASE}bond_level_2.wav`,   volume: 0.75, push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_LEVEL_3,     { src: `${_BASE}bond_level_3.wav`,   volume: 0.75, push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_GENERIC,     { src: `${_BASE}BattleCursor_2.wav`, volume: 0.55, push: false });
+  CAMP.Sound.register(CAMP.SFX.BOND_SUM_CLEARED,    { src: `${_BASE}bond_cleared.wav`,   volume: 0.7,  push: false });
 
   console.debug(TAG, "Sound manager loaded.");
 })();

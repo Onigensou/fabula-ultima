@@ -51,6 +51,14 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+@keyframes campPanelSlideUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes campLogSlideIn {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
 /* ── Parchment panel (base) ─────────────────────────────────────────────────── */
 .oni-camp-panel {
@@ -535,9 +543,9 @@
   width: 100%;
   padding: 9px;
   margin-top: 2px;
-  border: 1.5px dashed rgba(92,66,30,.35);
+  border: 1.5px dashed rgba(92,66,30,.45);
   border-radius: 8px;
-  background: rgba(255,255,255,.12);
+  background: rgba(236, 226, 206, 0.90);
   color: var(--camp-wood-2);
   font-family: inherit;
   font-size: .84em;
@@ -547,8 +555,8 @@
   transition: background .12s ease, border-color .12s ease;
 }
 .bond-add-new-btn:hover {
-  background: rgba(202,164,77,.15);
-  border-color: rgba(202,164,77,.5);
+  background: rgba(202,164,77,.35);
+  border-color: rgba(202,164,77,.65);
 }
 
 /* Bond subtitle */
@@ -558,28 +566,88 @@
 
 /* Memory list */
 .oni-memory-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px; border: 1px solid rgba(92,66,30,.2);
-  margin-bottom: 5px;
-  background: rgba(0,0,0,.06);
-  opacity: .85;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(92,66,30,.22);
+  margin-bottom: 8px;
+  background: rgba(236, 226, 206, 0.95);
+  animation: campRowSlideIn .24s ease both;
 }
-.oni-memory-item .mem-name { font-weight: 600; font-size: .88em; flex: 1; }
-.oni-memory-item .mem-emotions { font-size: .75em; opacity: .7; }
-.oni-memory-item .mem-actions { display: flex; gap: 4px; }
+.oni-memory-item input[type="text"],
+.oni-memory-item select {
+  width: 100%;
+  padding: 4px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(92,66,30,.28);
+  background: rgba(205,193,172,.55);
+  color: var(--camp-ink);
+  font-family: inherit;
+  font-size: .82em;
+  cursor: default;
+  opacity: .88;
+}
+.oni-memory-item .slot-btn {
+  font-size: .72em; padding: 3px 8px; white-space: nowrap;
+  border-radius: 6px; border: 1px solid rgba(90,60,34,.4); cursor: pointer;
+  background: rgba(255,255,255,.5); color: var(--camp-ink); font-family: inherit;
+  transition: background .12s ease;
+}
+.oni-memory-item .slot-btn:hover { background: rgba(202,164,77,.5); }
+.oni-memory-item .slot-btn.from-mem  { color: #2a6a18; }
+.oni-memory-item .slot-btn.clear-mem { color: #9a2020; }
 
 /* Bond summary */
 .oni-bond-summary-panel {
   width: min(700px, 92vw);
   max-height: 82vh;
   display: flex; flex-direction: column;
+  animation: campPanelSlideUp .52s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* Actor group */
+.oni-bond-log-group {
+  margin-bottom: 16px;
+}
+.oni-bond-log-actor-header {
+  padding: 6px 12px 5px;
+  background: linear-gradient(90deg, var(--camp-wood-2), var(--camp-wood-3));
+  color: #f5ebd3;
+  font-weight: 700; font-size: .9em;
+  border-radius: 6px 6px 0 0;
+}
+.oni-bond-log-item {
+  font-size: .82em;
+  padding: 5px 12px;
+  border-bottom: 1px solid rgba(92,66,30,.12);
+  display: flex; gap: 8px; align-items: flex-start;
+  background: rgba(255,255,255,.22);
+}
+.oni-bond-log-item:last-child { border-bottom: none; border-radius: 0 0 6px 6px; }
+
+/* Log entries start invisible; .visible triggers the slide-in */
+.oni-bond-log-entry {
+  opacity: 0;
+  pointer-events: none;
+}
+.oni-bond-log-entry.visible {
+  opacity: 1;
+  pointer-events: auto;
+  animation: campLogSlideIn .38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bse-log-icon { color: var(--camp-wood-2); width: 16px; flex-shrink: 0; margin-top: 1px; }
+.bse-log-text { flex: 1; line-height: 1.45; }
+.bse-log-text strong { color: #5c3a1a; }
+.bse-log-text em { opacity: .72; font-style: italic; }
+
+/* Legacy — keep for any existing code that references these */
 .oni-bond-summary-entry {
   margin-bottom: 14px;
   border-radius: 8px;
   overflow: hidden;
-  animation: campSlideIn .3s ease both;
 }
 .oni-bond-summary-entry .bse-header {
   padding: 7px 12px;

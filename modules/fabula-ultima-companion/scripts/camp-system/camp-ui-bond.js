@@ -15,11 +15,13 @@
   const OVL_ID   = "oni-camp-overlay";
   const MEM_FLAG = "campBondMemories";
 
-  let _actor         = null;
-  let _originalBonds = [];   // pristine snapshot from BondUpdater.readBonds()
-  let _pendingMems   = [];
+  let _actor                   = null;
+  let _originalBonds           = [];   // pristine snapshot from BondUpdater.readBonds()
+  let _pendingMems             = [];   // current full memory list (mirrors memories_list)
+  let _newlyMovedToMemory      = [];   // bonds moved to memory THIS session (for summary)
+  let _newlyRemovedFromMemory  = [];   // memories cleared THIS session (for summary)
   // Tracks the one allowed emotion change: { slotIdx, emClass, origValue } | null
-  let _gatedField    = null;
+  let _gatedField         = null;
 
   // ── Public API ──────────────────────────────────────────────────────────────
   CAMP.BondUI = {
@@ -43,9 +45,11 @@
         return;
       }
 
-      _originalBonds = BondUpdater.readBonds(_actor);
-      _pendingMems   = _actor.getFlag(CAMP.MODULE_ID, MEM_FLAG) ?? [];
-      _gatedField    = null;
+      _originalBonds      = BondUpdater.readBonds(_actor);
+      _pendingMems            = _readMemoriesFromActor(_actor);
+      _newlyMovedToMemory     = [];
+      _newlyRemovedFromMemory = [];
+      _gatedField             = null;
       _buildOverlay();
     },
 
@@ -78,11 +82,13 @@
         await BondUpdater.writeSlot(_actor, slot.idx, slot);
       }
 
-      await _actor.setFlag(CAMP.MODULE_ID, MEM_FLAG, _pendingMems).catch(() => {});
+      // Write memories to the actor sheet's memories_list dynamic table and clear old flag
+      await _actor.update({ 'system.props.memories_list': _buildMemoriesPayload(_pendingMems) }).catch(() => {});
+      await _actor.unsetFlag(CAMP.MODULE_ID, MEM_FLAG).catch(() => {});
 
       CAMP.Socket.emit(CAMP.MSG.CONFIRM_BOND, {
         userId: game.user?.id,
-        summary: { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _pendingMems },
+        summary: { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _newlyMovedToMemory, memRemovals: _newlyRemovedFromMemory },
       });
 
       CAMP.Sound.play(CAMP.SFX.BOND_CONFIRM);
@@ -199,9 +205,13 @@
   }
 
   // ── Slot element factory ──────────────────────────────────────────────────────
+  function _capitalize(str) {
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+  }
+
   function _emSelect(pairIdx, selected, cls) {
     const opts = BondUpdater.optionsForPair(pairIdx).map(v =>
-      `<option value="${v}" ${v === selected ? "selected" : ""}>${v || "—"}</option>`
+      `<option value="${v}" ${v === selected ? "selected" : ""}>${v ? _capitalize(v) : "—"}</option>`
     ).join("");
     const pair  = BondUpdater.PAIRS[pairIdx];
     const title = `${pair.pos} / ${pair.neg}`;
@@ -291,60 +301,149 @@
     btn.style.display = hasSlot ? "" : "none";
   }
 
+  // ── Memory persistence helpers ────────────────────────────────────────────────
+
+  /** Read memories from actor's memories_list dynamic table.
+   *  Falls back to old campBondMemories flag for one-time migration. */
+  function _readMemoriesFromActor(actor) {
+    const tbl = actor?.system?.props?.memories_list ?? {};
+    const rows = Object.values(tbl).filter(r => !r.$deleted && r.memory_x?.trim());
+    if (rows.length) {
+      return rows.map(r => ({
+        name: r.memory_x       ?? "",
+        e1:   r.emotion_x      ?? "",
+        e2:   r.emotion_y      ?? "",
+        e3:   r.emotion_z      ?? "",
+        rel:  r.relationship_x ?? "",
+      }));
+    }
+    // Migration fallback: read from old flag
+    return actor.getFlag(CAMP.MODULE_ID, MEM_FLAG) ?? [];
+  }
+
+  /** Convert _pendingMems array to the object format expected by memories_list. */
+  function _buildMemoriesPayload(mems) {
+    const result = {};
+    mems.forEach((m, i) => {
+      result[String(i)] = {
+        $deleted:       false,
+        memory_x:       m.name ?? "",
+        emotion_x:      m.e1   ?? "",
+        emotion_y:      m.e2   ?? "",
+        emotion_z:      m.e3   ?? "",
+        relationship_x: m.rel  ?? "",
+      };
+    });
+    return result;
+  }
+
   // ── Memory operations ─────────────────────────────────────────────────────────
   function _moveToMemory(slotIdx) {
     const el   = document.querySelector(`.oni-bond-slot[data-slot-index="${slotIdx}"]`);
     const name = el?.querySelector(".bond-name-input")?.value?.trim() ?? "";
     if (!name) return;
-    _pendingMems.push({
+    const mem = {
       name,
       e1:  el.querySelector(".em-1")?.value              ?? "",
       e2:  el.querySelector(".em-2")?.value              ?? "",
       e3:  el.querySelector(".em-3")?.value              ?? "",
       rel: el.querySelector(".bond-rel-input")?.value?.trim() ?? "",
-    });
+    };
+    _pendingMems.push(mem);
+    _newlyMovedToMemory.push({ ...mem });
     _removeSlotEl(el, slotIdx);
     _rebuildMemoryList();
   }
 
   function _moveFromMemory(memIdx) {
-    const mem  = _pendingMems[memIdx];
+    const mem     = _pendingMems[memIdx];
     if (!mem) return;
-    const next = _originalBonds.find(b =>
-      !b.name && !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
-    );
-    if (!next) { ui.notifications?.warn("No empty bond slots available."); return; }
 
-    const slotsEl = document.getElementById("oni-bond-slots");
-    const order   = slotsEl?.querySelectorAll(".oni-bond-slot").length ?? 0;
-    slotsEl?.appendChild(_createSlotEl({ ...next, ...mem }, order));
+    const slotsEl     = document.getElementById("oni-bond-slots");
+    const visibleCount = slotsEl?.querySelectorAll(".oni-bond-slot[data-slot-index]").length ?? 0;
+
+    if (visibleCount >= BondUpdater.MAX_BONDS) {
+      ui.notifications?.warn("Bond limit reached (max 6). Clear a bond slot first.");
+      return;
+    }
+
+    // Find any slot not currently visible in the DOM — includes originally-empty
+    // slots AND slots that were moved to memory or cleared, freeing their index.
+    const next = _originalBonds.find(b =>
+      !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
+    );
+    if (!next) { ui.notifications?.warn("No available bond slot found."); return; }
+
+    slotsEl?.appendChild(_createSlotEl({ ...next, ...mem }, visibleCount));
+
+    // If this memory was moved here THIS session, un-track it — net effect is no change
+    const nmIdx = _newlyMovedToMemory.findIndex(m => m.name === mem.name);
+    if (nmIdx >= 0) _newlyMovedToMemory.splice(nmIdx, 1);
 
     _pendingMems.splice(memIdx, 1);
     _rebuildMemoryList();
     _refreshAddNewBtn();
   }
 
+  function _removeFromMemory(memIdx) {
+    const mem = _pendingMems[memIdx];
+    if (!mem) return;
+
+    // If moved here THIS session, un-track it (bond changelog already captures the release).
+    // If it was a pre-existing memory, track it for the summary "memoryReleased" log.
+    const nmIdx = _newlyMovedToMemory.findIndex(m => m.name === mem.name);
+    if (nmIdx >= 0) {
+      _newlyMovedToMemory.splice(nmIdx, 1);
+    } else {
+      _newlyRemovedFromMemory.push({ ...mem });
+    }
+
+    _pendingMems.splice(memIdx, 1);
+    _rebuildMemoryList();
+  }
+
+  function _memItemHTML(m, i) {
+    const heartsHtml = _heartHTML(m.e1 ?? "", m.e2 ?? "", m.e3 ?? "");
+    const emOpts = (val, pairIdx) => BondUpdater.optionsForPair(pairIdx).map(v =>
+      `<option value="${v}" ${v === val ? "selected" : ""}>${v ? _capitalize(v) : "—"}</option>`
+    ).join("");
+    const p = BondUpdater.PAIRS;
+    return `
+      <div class="oni-memory-item" data-mem-index="${i}">
+        <div class="bond-slot-header">
+          <span class="bond-slot-label">Memory ${i + 1}</span>
+          <span class="bond-hearts">${heartsHtml}</span>
+        </div>
+        <div class="bond-name-rel-row">
+          <input class="bond-name-input" type="text" value="${m.name ?? ""}" disabled />
+          <span class="bond-arrow">→</span>
+          <input class="bond-rel-input" type="text" value="${m.rel ?? ""}" placeholder="Relationship…" disabled />
+        </div>
+        <div class="bond-em-row">
+          <select title="${p[0].pos} / ${p[0].neg}" disabled>${emOpts(m.e1 ?? "", 0)}</select>
+          <select title="${p[1].pos} / ${p[1].neg}" disabled>${emOpts(m.e2 ?? "", 1)}</select>
+          <select title="${p[2].pos} / ${p[2].neg}" disabled>${emOpts(m.e3 ?? "", 2)}</select>
+          <div class="slot-actions">
+            <button class="slot-btn from-mem"  data-mem="${i}">↑ Bond</button>
+            <button class="slot-btn clear-mem" data-mem="${i}">✕ Clear</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
   function _rebuildMemoryList(root = document) {
-    const list = (root.getElementById ?? root.querySelector.bind(root))("oni-memory-list")
-               ?? root.querySelector("#oni-memory-list");
+    const list = root.querySelector("#oni-memory-list");
     if (!list) return;
     if (!_pendingMems.length) {
       list.innerHTML = `<div style="opacity:.5;font-size:.82em;font-style:italic;">No memories yet.</div>`;
       return;
     }
-    list.innerHTML = _pendingMems.map((m, i) => {
-      const ems = [m.e1, m.e2, m.e3].filter(Boolean).join(", ") || "no emotions";
-      return `
-        <div class="oni-memory-item" data-mem-index="${i}">
-          <div class="mem-name">${m.name}</div>
-          <div class="mem-emotions">${ems}</div>
-          <div class="mem-actions">
-            <button class="slot-btn from-mem" data-mem="${i}">↑ Bond</button>
-          </div>
-        </div>`;
-    }).join("");
+    list.innerHTML = _pendingMems.map((m, i) => _memItemHTML(m, i)).join("");
     list.querySelectorAll(".slot-btn.from-mem").forEach(btn =>
       btn.addEventListener("click", () => _moveFromMemory(parseInt(btn.dataset.mem)))
+    );
+    list.querySelectorAll(".slot-btn.clear-mem").forEach(btn =>
+      btn.addEventListener("click", () => _removeFromMemory(parseInt(btn.dataset.mem)))
     );
   }
 
