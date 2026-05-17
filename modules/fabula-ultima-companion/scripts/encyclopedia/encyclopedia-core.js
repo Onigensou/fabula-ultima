@@ -22,6 +22,18 @@
  *                  studierActorId,
  *                  isCrit, isFumble })
  *   renderPage(actorUuid)               → Promise<string> (HTML body)
+ *   getStudySkill()                     → Item (the world Study skill, auto-
+ *                                         created on first GM boot)
+ *   getStudySkillUuid()                 → string | null (same, just the UUID)
+ *
+ * Boot-time (GM only, fires from the `ready` hook):
+ *   1. Ensure the "Monster Encyclopedia" world JournalEntry exists; create
+ *      with Observer permission if missing. UUID cached in a world setting.
+ *   2. Ensure the world Study skill exists; if missing, invoke the
+ *      `CreateSkillFromSpec` macro with an inline canonical spec. UUID
+ *      cached in a world setting. The Study macro + this script's hook
+ *      listener both resolve the skill via getStudySkillUuid() so no caller
+ *      ever hardcodes a world-specific Item UUID.
  *
  * Page flag (flags."fabula-ultima-companion".encyclopedia):
  *   { actorUuid, bestResult, bestResultBy, lastUpdated, isPlaceholder }
@@ -29,15 +41,18 @@
  * Hook on successful recordResult:
  *   "oni:encyclopedia:updated"  { actorUuid, previousBest, newBest, changed }
  *
- * Permissioning: writes (upsertPage / recordResult) require GM. Non-GM calls
- * log a warning and return null. Phase 4 wires gm-executor routing so player
- * Confirm clicks can land the update.
+ * Permissioning: writes (upsertPage / recordResult, plus boot-time creation
+ * of the entry and Study skill) require GM. Non-GM calls log a warning and
+ * return null. The `oni:action:resolved` listener routes player Confirm
+ * writes through gm-executor so they still land.
  */
 (() => {
   const TAG = "[ONI][Encyclopedia]";
   const MODULE_ID = "fabula-ultima-companion";
   const SETTING_KEY = "encyclopediaJournalUuid";
+  const STUDY_SETTING_KEY = "studySkillUuid";
   const ENTRY_NAME = "Monster Encyclopedia";
+  const STUDY_SKILL_NAME = "Study";
   const FLAG_NAMESPACE = MODULE_ID;
   const FLAG_KEY = "encyclopedia";
 
@@ -45,10 +60,32 @@
   const TIER_STATS    = 8;
   const TIER_DETAILS  = 13;
 
-  // The world Study skill (CreateSkillFromSpec output). Hook listener uses
-  // this to gate `oni:action:resolved` events down to "this was a Study fire".
-  // Update if the skill is ever rebuilt.
-  const STUDY_SKILL_UUID = "Item.BIpjMuwVyKvxcP1S";
+  /**
+   * Canonical spec for the world Study skill. Used by ensureStudySkill at
+   * boot to auto-provision the skill in any world that doesn't already have
+   * one. The skill props match the original CreateSkillFromSpec payload from
+   * phase 1 — `damage_bonus: ""` puts the action on the check-only path,
+   * `ignore_hr: true` skips the HR add since Open Checks don't use it.
+   */
+  const STUDY_SKILL_SPEC = {
+    name: STUDY_SKILL_NAME,
+    img: "icons/sundries/books/book-eye-purple.webp",
+    props: {
+      skill_type: "Active",
+      isCheck: true,
+      isOffensiveSpell: false,
+      rolled_atr1: "INS",
+      rolled_atr2: "INS",
+      damage_bonus: "",
+      type_damage: "",
+      skill_target: "One creature",
+      skill_range: "Sight",
+      cost: "",
+      check_bonus: "0",
+      ignore_hr: true,
+      description: "<p>Focus your attention on a creature to learn about its profile. Make an Open Check (INS+INS, or INS+WLP for inquiry-based studies). Result thresholds reveal progressively more about the target. Each successful study updates the party-wide Monster Encyclopedia with the highest result achieved so far.</p>"
+    }
+  };
 
   const ATTACK_ICON   = "icons/svg/sword.svg";
   const ABILITY_ICON  = "icons/svg/aura.svg";
@@ -63,12 +100,23 @@
     return;
   }
 
-  // ───────────────────── Setting / Entry resolution ─────────────────────
+  // ───────────────────── Settings / Entry resolution ─────────────────────
   function registerSetting() {
     try {
       game.settings.register(MODULE_ID, SETTING_KEY, {
         name: "Monster Encyclopedia Journal UUID",
         hint: "Cached UUID of the world Journal Entry used by the Monster Encyclopedia.",
+        scope: "world",
+        config: false,
+        type: String,
+        default: ""
+      });
+    } catch (e) { /* already registered — fine */ }
+
+    try {
+      game.settings.register(MODULE_ID, STUDY_SETTING_KEY, {
+        name: "Study Skill UUID",
+        hint: "Cached UUID of the world Study skill (auto-created on first boot if missing).",
         scope: "world",
         config: false,
         type: String,
@@ -85,6 +133,16 @@
   async function setCachedUuid(uuid) {
     try { await game.settings.set(MODULE_ID, SETTING_KEY, String(uuid ?? "")); }
     catch (e) { console.warn(TAG, "Failed to cache journal UUID:", e); }
+  }
+
+  function getCachedStudySkillUuid() {
+    try { return String(game.settings.get(MODULE_ID, STUDY_SETTING_KEY) ?? ""); }
+    catch { return ""; }
+  }
+
+  async function setCachedStudySkillUuid(uuid) {
+    try { await game.settings.set(MODULE_ID, STUDY_SETTING_KEY, String(uuid ?? "")); }
+    catch (e) { console.warn(TAG, "Failed to cache Study skill UUID:", e); }
   }
 
   async function findEntry() {
@@ -120,6 +178,86 @@
     if (entry) return entry;
     if (game.user?.isGM) entry = await createEntry();
     return entry;
+  }
+
+  // ───────────────────── Study skill resolution ─────────────────────
+  /**
+   * Try to find the world Study skill. Resolution order:
+   *   1. Cached UUID from the world setting (fastest, survives renames).
+   *   2. World Item with name === STUDY_SKILL_NAME and the expected
+   *      check-only-Active shape (so we don't false-match a player-authored
+   *      "Study" item that happens to share the name).
+   * Returns the Item document or null. Does NOT create.
+   */
+  async function findStudySkill() {
+    const cached = getCachedStudySkillUuid();
+    if (cached) {
+      try {
+        const doc = await fromUuid(cached);
+        if (doc?.documentName === "Item") return doc;
+      } catch { /* fall through */ }
+    }
+
+    const byName = game.items?.find?.(i => {
+      if (!i || i.name !== STUDY_SKILL_NAME) return false;
+      const p = i.system?.props ?? {};
+      // Must look like the Study skill — Active, isCheck, no damage.
+      return p.skill_type === "Active"
+        && !!p.isCheck
+        && (p.damage_bonus === "" || p.damage_bonus == null);
+    });
+    if (byName) {
+      if (byName.uuid !== cached) await setCachedStudySkillUuid(byName.uuid);
+      return byName;
+    }
+
+    return null;
+  }
+
+  async function createStudySkill() {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} createStudySkill refused: GM only.`);
+      return null;
+    }
+    const createMacro = game.macros?.getName?.("CreateSkillFromSpec");
+    if (!createMacro) {
+      console.error(`${TAG} CreateSkillFromSpec macro not found. Cannot auto-create the Study skill.`);
+      return null;
+    }
+    let result = null;
+    try {
+      result = await createMacro.execute({ __AUTO: true, __PAYLOAD: { spec: STUDY_SKILL_SPEC } });
+    } catch (e) {
+      console.error(`${TAG} createStudySkill: CreateSkillFromSpec threw:`, e);
+      return null;
+    }
+    if (!result?.ok || !result?.uuid) {
+      console.error(`${TAG} createStudySkill: CreateSkillFromSpec failed.`, result);
+      return null;
+    }
+    await setCachedStudySkillUuid(result.uuid);
+    console.info(`${TAG} Created Study skill at ${result.uuid}.`);
+    let doc = null;
+    try { doc = await fromUuid(result.uuid); } catch { /* tolerate */ }
+    return doc;
+  }
+
+  /**
+   * Resolve the world Study skill, creating it (GM only) if missing. This is
+   * the public lookup the macro + hook listener both use — never bake a
+   * world-specific UUID into a caller again. Returns the Item document or
+   * null if non-GM and not yet provisioned.
+   */
+  async function getStudySkill() {
+    let doc = await findStudySkill();
+    if (doc) return doc;
+    if (game.user?.isGM) doc = await createStudySkill();
+    return doc;
+  }
+
+  async function getStudySkillUuid() {
+    const doc = await getStudySkill();
+    return doc?.uuid ?? null;
   }
 
   // ───────────────────── Page helpers ─────────────────────
@@ -648,17 +786,31 @@
       upsertPage,
       recordResult,
       renderPage,
-      _internals: { findEntry, createEntry, getCachedUuid, setCachedUuid, ENTRY_NAME, SETTING_KEY, TIER_IDENTITY, TIER_STATS, TIER_DETAILS }
+      // Study skill resolver — exposed so [Macro] Study.js and any future
+      // caller can find the world's Study skill UUID without hardcoding it.
+      getStudySkill,
+      getStudySkillUuid,
+      _internals: {
+        findEntry, createEntry, getCachedUuid, setCachedUuid,
+        findStudySkill, createStudySkill, getCachedStudySkillUuid, setCachedStudySkillUuid,
+        STUDY_SKILL_SPEC, STUDY_SKILL_NAME,
+        ENTRY_NAME, SETTING_KEY, STUDY_SETTING_KEY,
+        TIER_IDENTITY, TIER_STATS, TIER_DETAILS
+      }
     };
     console.info(`${TAG} API mounted at FUCompanion.api.encyclopedia.`);
   }
 
-  async function ensureEntryAtReady() {
+  async function ensureArtifactsAtReady() {
     if (!game.user?.isGM) return;
     try {
       const entry = await getEntry();
       if (entry) console.info(`${TAG} Entry ready: ${entry.uuid}`);
     } catch (e) { console.error(`${TAG} Boot ensureEntry failed:`, e); }
+    try {
+      const skill = await getStudySkill();
+      if (skill) console.info(`${TAG} Study skill ready: ${skill.uuid}`);
+    } catch (e) { console.error(`${TAG} Boot ensureStudySkill failed:`, e); }
   }
 
   /**
@@ -707,7 +859,13 @@
       // We fall back to top-level keys so simpler synthetic callers — and
       // the autoPassive branch, where shape differs — still work.
       const skillUuid = payload.meta?.skillUuid ?? payload.skillUuid ?? null;
-      if (skillUuid !== STUDY_SKILL_UUID) return;
+      if (!skillUuid) return;
+
+      // Resolve Study skill UUID at fire time (auto-creates on first boot
+      // if missing). Cached after the first call, so this is cheap on the
+      // hot path.
+      const studyUuid = await getStudySkillUuid();
+      if (!studyUuid || skillUuid !== studyUuid) return;
       if (payload.executionMode === "autoPassive") return; // never auto-write from passives
 
       const accuracy = payload.accuracy ?? null;
@@ -804,9 +962,9 @@
     registerSetting();
     mountApi();
     registerHookListener();
-    ensureEntryAtReady();
+    ensureArtifactsAtReady();
   } else {
     Hooks.once("init", () => { registerSetting(); mountApi(); });
-    Hooks.once("ready", () => { registerHookListener(); ensureEntryAtReady(); });
+    Hooks.once("ready", () => { registerHookListener(); ensureArtifactsAtReady(); });
   }
 })();

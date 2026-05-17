@@ -21,7 +21,20 @@
  *********************************************************/
 (async () => {
   const TAG = "[ONI][Study]";
-  const STUDY_SKILL_UUID = "Item.BIpjMuwVyKvxcP1S";
+
+  // Resolve the world Study skill via the encyclopedia API so other worlds
+  // adopting this branch don't have to inherit a foreign Item UUID. The
+  // skill is auto-created on first GM boot by encyclopedia-core's
+  // ensureArtifactsAtReady. If the API isn't loaded yet (unlikely outside
+  // a fresh-install race) we abort with a clear message.
+  const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+  if (!encApi?.getStudySkillUuid) {
+    return ui.notifications.error("Study: Monster Encyclopedia API not loaded yet. Try again after the world finishes booting.");
+  }
+  const STUDY_SKILL_UUID = await encApi.getStudySkillUuid();
+  if (!STUDY_SKILL_UUID) {
+    return ui.notifications.error("Study: world Study skill not found and could not be auto-created. Ask the GM to log in once so it can be provisioned.");
+  }
 
   // ───────────────────── Resolve acting token ─────────────────────
   let actorToken = null;
