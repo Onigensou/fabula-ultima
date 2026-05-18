@@ -64,6 +64,26 @@
           return;
         }
 
+        // ── Cartography animation (GM → all) ────────────────────────────
+        if (type === CAMP.MSG.CARTOGRAPHY_START) {
+          CAMP.CartographyUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_DONE) {
+          CAMP.CartographyUI?.hide();
+          return;
+        }
+
+        // ── Cartography animation (GM → all) ────────────────────────────
+        if (type === CAMP.MSG.CARTOGRAPHY_START) {
+          CAMP.CartographyUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_DONE) {
+          CAMP.CartographyUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 

@@ -177,6 +177,7 @@
       for (const actor of actors) {
         await _restoreResources(actor);
         await _clearTemporaryEffects(actor);
+        await _tickCampRestEffects(actor);
       }
 
       // Clear exploration debuffs now that rest has applied them
@@ -237,6 +238,41 @@
 
     if (toDelete.length) {
       console.debug(TAG, `Cleared ${toDelete.length} effect(s) from ${actor.name}.`);
+    }
+  }
+
+  // Generic rest-charge tick.
+  // Any AE with flags["fabula-ultima-companion"].campRestCharges: N is decremented
+  // each rest. When the value is already 0 at tick time the AE is deleted.
+  // Convention:
+  //   campRestCharges: 0  → expires at the very next rest
+  //   campRestCharges: 1  → survives 1 rest, expires at the following one
+  //   campRestCharges: N  → survives N rests, expires at rest N+1
+  // The AE must also carry statuses: ["permanent"] so _clearTemporaryEffects
+  // does not remove it on the same pass.
+  async function _tickCampRestEffects(actor) {
+    const MODULE_ID = "fabula-ultima-companion";
+    const snapshot  = Array.from(actor.effects);
+    for (const effect of snapshot) {
+      const charges = effect.flags?.[MODULE_ID]?.campRestCharges;
+      if (charges === undefined || charges === null) continue;
+      const n = Number(charges);
+      if (!Number.isFinite(n)) continue;
+      if (n <= 0) {
+        try {
+          await effect.delete();
+          console.debug(TAG, `campRestCharges expired — deleted "${effect.name}" from ${actor.name}.`);
+        } catch (e) {
+          console.warn(TAG, `Could not delete rest-charge effect "${effect.name}":`, e.message);
+        }
+      } else {
+        try {
+          await effect.setFlag(MODULE_ID, "campRestCharges", n - 1);
+          console.debug(TAG, `campRestCharges decremented to ${n - 1} on "${effect.name}" (${actor.name}).`);
+        } catch (e) {
+          console.warn(TAG, `Could not decrement rest charges on "${effect.name}":`, e.message);
+        }
+      }
     }
   }
 

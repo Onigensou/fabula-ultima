@@ -57,6 +57,9 @@
     EXPLORATION_RESULT:  "CAMP_EXPLORATION_RESULT",
     EXPLORATION_PROCEED: "CAMP_EXPLORATION_PROCEED",
     EXPLORATION_DONE:    "CAMP_EXPLORATION_DONE",
+    // Cartography (GM → all)
+    CARTOGRAPHY_START:   "CAMP_CARTOGRAPHY_START",
+    CARTOGRAPHY_DONE:    "CAMP_CARTOGRAPHY_DONE",
   });
 
   // ---------------------------------------------------------------------------

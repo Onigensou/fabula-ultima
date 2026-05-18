@@ -278,6 +278,10 @@
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.item"]`).value       = safeGet(data, "loot.item", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.zenit"]`).value      = safeGet(data, "loot.zenit", "");
     dungeonPanel.querySelector(`input[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.loot.treasure"]`).value   = safeGet(data, "loot.treasure", "");
+
+    // Threat level prefill
+    const threatSelect = dungeonPanel.querySelector(`select[name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.threatLevel"]`);
+    if (threatSelect) threatSelect.value = safeGet(data, "threatLevel", "medium");
   }
 
   // -----------------------------
@@ -644,6 +648,22 @@
 
         <!-- SUBTAB: DUNGEON (your existing UI) -->
         <div class="oni-fabula-subpanel" data-subtab="${SUBTAB_DUNGEON_ID}">
+          <h3>Travel</h3>
+
+          <div class="form-group">
+            <label>Threat Level</label>
+            <div class="form-fields">
+              <select name="flags.${MODULE_ID}.${DUNGEON_ROOT_KEY}.threatLevel">
+                <option value="minimal">Minimal — d6</option>
+                <option value="low">Low — d8</option>
+                <option value="medium">Medium — d10</option>
+                <option value="high">High — d12</option>
+                <option value="very_high">Very High — d20</option>
+              </select>
+            </div>
+            <p class="notes">Die rolled when the party makes a Travel Roll through this area. Default: Medium (d10).</p>
+          </div>
+
           <h3>Battle</h3>
 
           <div class="form-group">
