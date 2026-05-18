@@ -402,6 +402,10 @@ Hooks.once("ready", () => {
         skillUuid,
         skillName: String(params.skillName ?? "").trim() || skillUuid,
         sourceTriggerKey: String(params.sourceTriggerKey ?? "").trim() || null,
+        // effectRefs: the reaction_effect_ref labels to fire when this entry
+        // resolves. Pre-resolved at queue time from the matched rows so the
+        // resolver doesn't have to re-run the matcher.
+        effectRefs: _stringArray(params.effectRefs),
         predictedTriggers: _normalizeTriggers(params.predictedTriggers),
         targeting: params.targeting && typeof params.targeting === "object"
           ? _clone(params.targeting) : {},
@@ -570,6 +574,7 @@ Hooks.once("ready", () => {
           reactorActorUuid: String(c.reactorActorUuid ?? "").trim() || null,
           reactorName: String(c.reactorName ?? "").trim() || null,
           sourceTriggerKey: String(c.sourceTriggerKey ?? "").trim() || null,
+          effectRefs: _stringArray(c.effectRefs),
           predictedTriggers: _normalizeTriggers(c.predictedTriggers),
           img: c.img ? String(c.img) : null,
           available: c.available !== false,

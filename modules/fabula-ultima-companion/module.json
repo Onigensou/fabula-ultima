@@ -188,6 +188,7 @@
     "scripts/reaction-system/reaction-exchange.js",
     "scripts/reaction-system/reaction-exchange-sync.js",
     "scripts/reaction-system/reaction-exchange-resolver.js",
+    "scripts/reaction-system/reaction-exchange-matcher.js",
     "scripts/reaction-system/reaction-exchange-ui.js",
     "scripts/reaction-system/reaction-exchange-test-helpers.js",
     "scripts/csb-extensions/CompactDynamicTable.js",

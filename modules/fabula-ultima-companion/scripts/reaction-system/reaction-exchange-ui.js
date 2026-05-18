@@ -450,6 +450,7 @@ Hooks.once("ready", () => {
             skillUuid: cand.skillUuid,
             skillName: cand.skillName,
             sourceTriggerKey: cand.sourceTriggerKey,
+            effectRefs: cand.effectRefs,
             predictedTriggers: cand.predictedTriggers
           });
         } catch (e) {

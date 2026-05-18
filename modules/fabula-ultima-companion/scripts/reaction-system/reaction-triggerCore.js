@@ -1075,7 +1075,11 @@ Hooks.once("ready", () => {
       reactionOwnershipMatchesRow,
       reactionActionIntentMatchesRow,
       reactionBondPresenceMatchesRow,
-      reactionBondEmotionMatchesRow
+      reactionBondEmotionMatchesRow,
+      // Exchange resolver needs to re-synthesize the virtual item for
+      // AE-borne reactions at fire time (entry stored only skillUuid).
+      synthesizeReactionItemFromAE,
+      enumerateActorReactionItems
     };
 
     console.debug("[ReactionTriggerCore] Installed (registry-driven). Exposed on window['oni.ReactionTriggerCore'].");

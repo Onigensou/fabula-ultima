@@ -312,6 +312,17 @@ Hooks.once("ready", () => {
       let failedStep = null;
       const failures = [];
 
+      // Suspend auto-resolve for the duration of the scenario so the
+      // runResolution op fires deterministically with the supplied mock
+      // runners. Auto-resolve fires on `oni:exchange:resolving` with the
+      // default (real-actor) runners which would explode on the fake
+      // skillUuids / tokenIds the scenarios use.
+      const resolver = _resolverApi();
+      const autoResolveWas = !!resolver?.isAutoResolveEnabled?.();
+      if (autoResolveWas) {
+        try { resolver.disableAutoResolve(); } catch (_) {}
+      }
+
       try {
         if (scenario.reset) exchangeApi._testReset();
 
@@ -358,6 +369,10 @@ Hooks.once("ready", () => {
         }
       } catch (e) {
         failures.push(`setup: ${String(e?.message ?? e)}`);
+      } finally {
+        if (autoResolveWas && resolver?.enableAutoResolve) {
+          try { resolver.enableAutoResolve(); } catch (_) {}
+        }
       }
 
       const finalSnapshot = exchangeId ? exchangeApi.snapshot(exchangeId) : null;

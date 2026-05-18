@@ -128,11 +128,103 @@ Hooks.once("ready", () => {
       return { ok: true };
     }
 
-    async function defaultEffectRunner(_entry, _snapshot) {
-      // Step 2 default: no-op success. Step 4 will route through
-      // oni.ReactionGrant.applyEffectByLabel, wrapped in a trigger
-      // collector that captures any emit attempts during the call.
-      return { ok: true, capturedTriggers: [] };
+    // ---- Helpers for the real effect runner ----
+
+    function _resolveReactionToken(tokenId) {
+      if (!tokenId) return null;
+      const onCanvas = canvas?.tokens?.get?.(tokenId);
+      if (onCanvas) return onCanvas;
+      // Fallback: derive from scene's TokenDocument when not placed on canvas.
+      const scene = canvas?.scene ?? game?.scenes?.active ?? null;
+      const tokenDoc = scene?.tokens?.get?.(tokenId);
+      return tokenDoc?.object ?? null;
+    }
+
+    /**
+     * Resolve a skill item from an Exchange entry's skillUuid. Handles
+     * both real item UUIDs and the AE-borne synth-reaction case (where
+     * the skillUuid is `<effectUuid>::synth-reaction`).
+     */
+    function _resolveSkillItem(skillUuid) {
+      if (!skillUuid) return null;
+      const synthSuffix = "::synth-reaction";
+      if (skillUuid.endsWith(synthSuffix)) {
+        const effectUuid = skillUuid.slice(0, -synthSuffix.length);
+        let effect = null;
+        try { effect = fromUuidSync(effectUuid); } catch (_) {}
+        if (!effect) return null;
+        const triggerCore = window["oni.ReactionTriggerCore"];
+        if (!triggerCore?.synthesizeReactionItemFromAE) {
+          console.warn(`${TAG} synthesizeReactionItemFromAE unavailable; can't resolve synth skill ${skillUuid}`);
+          return null;
+        }
+        return triggerCore.synthesizeReactionItemFromAE(effect);
+      }
+      try { return fromUuidSync(skillUuid); } catch (_) { return null; }
+    }
+
+    async function defaultEffectRunner(entry, snapshot) {
+      // Step 4 wiring: delegate to oni.ReactionGrant.applyEffectByLabel
+      // for each effect_ref declared on the entry. The matcher pre-resolves
+      // these from the matching rows at queue time, so the resolver doesn't
+      // need to re-run the matcher.
+      //
+      // capturedTriggers is left empty for now — the existing effect handlers
+      // emit follow-up triggers through the legacy `emitPhaseSequential`
+      // path, which is harmless under single-stack-per-phase (those emits
+      // open new Exchanges or fall back to ONI.emit). A proper trigger
+      // collector wrapper is step 4 polish if/when we author a skill that
+      // needs follow-up triggers captured into the same Exchange's log.
+      const reactionToken = _resolveReactionToken(entry.reactorTokenId);
+      if (!reactionToken) {
+        return { ok: false, error: `reactor_token_missing:${entry.reactorTokenId}` };
+      }
+
+      const item = _resolveSkillItem(entry.skillUuid);
+      if (!item) {
+        return { ok: false, error: `skill_item_missing:${entry.skillUuid}` };
+      }
+
+      const grant = window["oni.ReactionGrant"];
+      if (!grant?.applyEffectByLabel) {
+        return { ok: false, error: "reaction_grant_api_unavailable" };
+      }
+
+      const refs = Array.isArray(entry.effectRefs) ? entry.effectRefs : [];
+      if (!refs.length) {
+        // No effect refs declared — the matched row(s) had no
+        // reaction_effect_ref. Treat as silent success (the skill row
+        // exists but has nothing to fire).
+        return { ok: true, capturedTriggers: [] };
+      }
+
+      const payload = snapshot.payload ?? {};
+      const applied = [];
+      for (const ref of refs) {
+        let res;
+        try {
+          res = await grant.applyEffectByLabel(
+            item, ref, reactionToken, game.combat ?? null, payload, { isPassive: false }
+          );
+        } catch (e) {
+          return {
+            ok: false,
+            error: `effect_threw:${ref}:${e?.message ?? e}`,
+            capturedTriggers: []
+          };
+        }
+        applied.push({ effectRef: ref, result: res });
+        if (res?.abort) {
+          return {
+            ok: false,
+            error: `aborted_at:${ref}:${res?.reason ?? "no_reason"}`,
+            capturedTriggers: [],
+            applied
+          };
+        }
+      }
+
+      return { ok: true, capturedTriggers: [], applied };
     }
 
     /** @type {{triggerRechecker:Function, capabilityChecker:Function, costChecker:Function, effectRunner:Function}} */
@@ -215,6 +307,19 @@ Hooks.once("ready", () => {
      *                                                   pacing tool, not gameplay-load-bearing.
      * @returns {Promise<object>} resolution result
      */
+    /** @type {Set<string>} active resolution exchangeIds (in-flight markers). */
+    const _activeResolutions = new Set();
+
+    function isResolving(exchangeId) {
+      return _activeResolutions.has(exchangeId);
+    }
+    function isAnyResolving() {
+      return _activeResolutions.size > 0;
+    }
+    function getActiveResolutionIds() {
+      return Array.from(_activeResolutions);
+    }
+
     async function runResolution(exchangeId, opts = {}) {
       const initialSnapshot = exchangeApi.snapshot(exchangeId);
       if (!initialSnapshot) {
@@ -226,6 +331,8 @@ Hooks.once("ready", () => {
           `must be "resolving".`
         );
       }
+
+      _activeResolutions.add(exchangeId);
 
       const runners = { ..._defaults, ...(opts.runners ?? {}) };
       const closeReason = String(opts.closeReason ?? "completed");
@@ -309,7 +416,11 @@ Hooks.once("ready", () => {
       }
 
       // Commit final state to the state machine + close.
-      exchangeApi.markResolved(exchangeId, { usedSkillUuids, resolutionLog });
+      try {
+        exchangeApi.markResolved(exchangeId, { usedSkillUuids, resolutionLog });
+      } finally {
+        _activeResolutions.delete(exchangeId);
+      }
       const closedSnapshot = exchangeApi.close(exchangeId, closeReason);
 
       return {
@@ -377,6 +488,11 @@ Hooks.once("ready", () => {
       enableAutoResolve,
       disableAutoResolve,
       isAutoResolveEnabled,
+      // In-flight resolution markers — used by the matcher to suppress
+      // follow-up Exchange opens during resolution (single-stack-per-phase).
+      isResolving,
+      isAnyResolving,
+      getActiveResolutionIds,
       // Exposed for tests / step 4
       _defaults
     };
@@ -387,6 +503,14 @@ Hooks.once("ready", () => {
     globalThis.FUCompanion.api ??= {};
     globalThis.FUCompanion.api.reactionExchangeResolver = api;
 
-    console.debug(`${TAG} Installed (engine; auto-resolve off).`);
+    // Production default: auto-resolve enabled on the GM client. Test
+    // scenarios (via reaction-exchange-test-helpers.runScenario) disable
+    // it for the duration of each scripted run so they can call
+    // runResolution deterministically with mock runners.
+    if (game.user?.isGM) {
+      enableAutoResolve();
+    }
+
+    console.debug(`${TAG} Installed (auto-resolve=${_autoResolveActive ? "on" : "off"}).`);
   })();
 });
