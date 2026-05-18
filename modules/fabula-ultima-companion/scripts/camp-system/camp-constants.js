@@ -212,6 +212,14 @@
       desc:          "Once before the next rest, after the target performs a Group Check as leader or a Check to examine someone/something, they may add +4 to the Result.",
     },
     {
+      key:           "sing",
+      name:          "Sing",
+      target:        "One ally",
+      icon:          "fas fa-music",
+      requiredClass: ["Chanter", "Dancer"],
+      desc:          "Sing an inspiring song for an ally. Choose one attribute (DEX, INS, MIG, or WLP); the target's chosen attribute increases by one stage until the end of their next rest.",
+    },
+    {
       key:           "sleep_soundly",
       name:          "Sleep Soundly",
       target:        "Yourself",
