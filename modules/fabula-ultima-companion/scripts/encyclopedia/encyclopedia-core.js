@@ -108,20 +108,23 @@
     style.id = PAGE_STYLE_ID;
     style.textContent = `
 .oni-enc-root { font-family: Signika, sans-serif; font-size: 14px; color: #2b241a; }
-.oni-enc-card { background: linear-gradient(160deg, #f3ead6 0%, #ead9b5 100%); border: 2px solid #b28b2e; border-radius: 14px; padding: 16px; box-shadow: 0 4px 18px rgba(0,0,0,.18); box-sizing: border-box; }
-.oni-enc-header { display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+.oni-enc-card { background: linear-gradient(160deg, #f3ead6 0%, #ead9b5 100%); border: 2px solid #c2bab0; border-radius: 14px; padding: 16px; box-shadow: 0 3px 14px rgba(0,0,0,.14); box-sizing: border-box; }
+.oni-enc-header { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
 .oni-enc-portrait { width:92px; height:92px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; flex:0 0 auto; }
 .oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
-.oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; line-height:1.6; }
+.oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.oni-enc-traits-inline { flex:0 0 auto; max-width:190px; text-align:right; font-size:12px; line-height:1.45; }
+.oni-enc-traits-inline-label { font-size:10px; font-weight:900; opacity:.6; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
 .oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed rgba(0,0,0,.15); }
-.oni-enc-box { margin:10px 0; border:1px solid rgba(178,139,46,.35); background:rgba(255,255,255,.22); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
-.oni-enc-box-title { font-weight:900; margin-bottom:6px; font-size:12px; opacity:.8; text-transform:uppercase; letter-spacing:.04em; }
+.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.32); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
+.oni-enc-box-title { font-weight:900; margin-bottom:6px; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; }
 .oni-enc-badge-wrap { display:flex; flex-wrap:wrap; gap:6px; }
-.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(178,139,46,.4); background:rgba(255,255,255,.28); font-weight:700; font-size:13px; white-space:nowrap; }
+.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.42); font-weight:700; font-size:13px; white-space:nowrap; }
 .oni-enc-2col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 16px; }
-.oni-enc-2col-row { display:flex; align-items:center; gap:6px; min-width:0; }
-.oni-enc-2col-label { font-weight:700; min-width:0; white-space:nowrap; flex:1; }
+.oni-enc-2col-row { display:flex; align-items:center; gap:6px; min-width:0; cursor:default; }
+.oni-enc-2col-label { font-weight:700; min-width:0; flex:0 0 auto; }
+.oni-enc-2col-pct { flex:1; }
 .oni-enc-eff-pos { color:#1f7a3a; font-weight:700; }
 .oni-enc-eff-neg { color:#b02a2a; font-weight:700; }
 .oni-enc-ability-list { list-style:none; margin:0; padding:0; }
@@ -132,7 +135,7 @@
 .oni-enc-ability-item li { margin: 2px 0; }
 .oni-enc-ability-icon { width:24px; height:24px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
 .oni-enc-muted { opacity:.65; font-style:italic; }
-.oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(178,139,46,.3); opacity:.65; font-size:11px; }
+.oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
     `.trim();
     document.head.appendChild(style);
   }
@@ -451,24 +454,28 @@
   }
 
   // ───────────────────── Render — primitives ─────────────────────
-  function renderHeader(actor, p, showMeta) {
+  function renderHeader(actor, p, showMeta, traitsText = null) {
     let metaHtml;
     if (showMeta) {
-      const rankLv = [p.npc_rank, p.level ? `Lv ${p.level}` : null].filter(Boolean).map(ESC).join(" · ");
-      const type    = ESC(p.species      ?? "—");
-      const subtype = ESC(p.subtype_list ?? "—");
-      const attr    = ESC(p.attribute    ?? "—");
-      metaHtml = `<div>${rankLv || "—"}</div><div>Type: ${type} · Sub-Type: ${subtype} · Attribute: ${attr}</div>`;
+      const parts = [];
+      if (p.level) parts.push(`Lv ${ESC(p.level)}`);
+      parts.push(`Type: ${ESC(p.species ?? "—")} · Sub-Type: ${ESC(p.subtype_list ?? "—")} · Attribute: ${ESC(p.attribute ?? "—")}`);
+      metaHtml = parts.join(" · ");
     } else {
-      metaHtml = `<span class="oni-enc-muted">Rank · Level · Species · Attribute unknown</span>`;
+      metaHtml = `<span class="oni-enc-muted">Level · Species · Attribute unknown</span>`;
     }
+    const traitsBlock = traitsText ? `
+  <div class="oni-enc-traits-inline">
+    <div class="oni-enc-traits-inline-label">Traits</div>
+    <div>${ESC(traitsText)}</div>
+  </div>` : "";
     return `
 <div class="oni-enc-header">
   <img class="oni-enc-portrait" src="${ESC(actor.img || PORTRAIT_FALLBACK)}" alt="">
   <div style="flex:1;min-width:0;">
     <div class="oni-enc-title">${ESC(actor.name ?? "Unknown")}</div>
     <div class="oni-enc-sub">${metaHtml}</div>
-  </div>
+  </div>${traitsBlock}
 </div>`;
   }
 
@@ -541,9 +548,9 @@
       const cls = !isNeutral ? (val > 100 ? "oni-enc-eff-pos" : "oni-enc-eff-neg") : "";
       const rowStyle = isNeutral ? ` style="opacity:.42;"` : "";
       rows.push(`
-<div class="oni-enc-2col-row"${rowStyle}>
-  <span class="oni-enc-2col-label"><i class="fa-solid ${WEP_ICONS[wt]}" title="${ESC(label)}"></i> ${ESC(label)}</span>
-  <span${cls ? ` class="${cls}"` : ""}>${ESC(val)}%</span>
+<div class="oni-enc-2col-row"${rowStyle} title="${ESC(label)}">
+  <span class="oni-enc-2col-label"><i class="fa-solid ${WEP_ICONS[wt]}"></i></span>
+  <span class="oni-enc-2col-pct${cls ? ` ${cls}` : ""}">${ESC(val)}%</span>
 </div>`);
     }
     return renderSection("Weapon Efficiency", `<div class="oni-enc-2col">${rows.join("")}</div>`, "details");
@@ -770,6 +777,11 @@
 
     const p = actor.system?.props ?? {};
 
+    // Extract traits as plain text for inline header display (identity tier)
+    const inlineTraitsText = showIdentity
+      ? String(p.traits ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null
+      : null;
+
     // Unstudied — full guide message, no individual placeholders needed
     if (!showIdentity) {
       return `<div class="oni-enc-root"><div class="oni-enc-card">${
@@ -777,7 +789,8 @@
       }</div></div>`;
     }
 
-    // All sections in display order, tagged with their unlock tier
+    // All sections in display order, tagged with their unlock tier.
+    // Traits are shown inline in the header; not repeated as a section.
     const SECTION_DEFS = [
       { tier: "identity", render: () => renderCoreStatsBlock(p) },
       { tier: "stats",    render: () => renderAttributesBlock(p) },
@@ -785,7 +798,6 @@
       { tier: "details",  render: () => renderWeaponEff(p) },
       { tier: "details",  render: () => renderConditionBadges(p) },
       { tier: "identity", render: () => renderDescription(p) },
-      { tier: "identity", render: () => renderTraits(p) },
       { tier: "identity", render: async () => await renderStealables(actor, p) },
       { tier: "details",  render: () => renderAttacks(actor, p) },
       { tier: "details",  render: () => renderActiveSkills(actor, p) },
@@ -818,7 +830,7 @@
 </div>`);
 
     const bodyParts = [
-      renderHeader(actor, p, true),
+      renderHeader(actor, p, true, inlineTraitsText),
       ...unlockedParts,
       ...lockedParts,
       renderFooter(best, bestBy, tierLabel, lastUpdated)
