@@ -124,18 +124,15 @@ Hooks.once("ready", () => {
 
   function startTickMetronome({
     intervalMs = 72,
-    volume = 0.55,
-    playbackRate = 1.35,
-    poolSize = 4
   } = {}) {
     try {
       const ms = Math.max(30, Number(intervalMs) || 72);
-      const pool = createTickPool({ poolSize, volume, playbackRate });
-      let idx = 0;
+      // Reuse the hoisted pool — elements are already preloaded from install time.
+      const pool = __TICK_POOL__;
 
       const timerId = setInterval(() => {
-        const a = pool[idx];
-        idx = (idx + 1) % pool.length;
+        const a = pool[__TICK_POOL_IDX__];
+        __TICK_POOL_IDX__ = (__TICK_POOL_IDX__ + 1) % pool.length;
         try {
           a.pause();
           a.currentTime = 0;
@@ -160,7 +157,8 @@ Hooks.once("ready", () => {
         try {
           a.pause();
           a.currentTime = 0;
-          a.src = "";
+          // NOTE: do NOT set a.src = "" — pool is the shared hoisted instance and
+          // clearing src would release preloaded audio data, forcing a refetch next run.
         } catch {}
       }
     } catch (err) {
@@ -191,6 +189,11 @@ Hooks.once("ready", () => {
 
   const __LEVELUP_POOL__ = createLevelUpPool({ poolSize: 6, volume: 0.8, playbackRate: 1.0 });
   let __LEVELUP_POOL_IDX__ = 0;
+
+  // Tick pool hoisted to install time (same pattern as level-up pool) so Audio elements
+  // are preloaded before the first battle ends rather than allocated fresh each run.
+  const __TICK_POOL__ = createTickPool({ poolSize: 4, volume: 0.55, playbackRate: 1.35 });
+  let __TICK_POOL_IDX__ = 0;
 
   // Dedupe guard: only allow ONE level-up sound per animation frame
   let __LEVELUP_SFX_SCHEDULED__ = false;
@@ -333,14 +336,14 @@ Hooks.once("ready", () => {
     const b = Number(to) || 0;
 
     return runSafeRafTween(duration, (u) => {
-      if (!document.body.contains(el)) return;
+      if (!el.isConnected) return;
       const e = 1 - Math.pow(1 - u, 3); // easeOutCubic
       const v = a + (b - a) * e;
       el.textContent = formatter(Math.round(v));
     }, {
       label: "animateNumber",
       onFinish: () => {
-        if (document.body.contains(el)) {
+        if (el.isConnected) {
           el.textContent = formatter(Math.round(b));
         }
       }
@@ -353,7 +356,8 @@ Hooks.once("ready", () => {
   function ensureStyles() {
     const id = "oni-battleend-summaryui-style";
     const old = document.getElementById(id);
-    if (old) old.remove();
+    // CSS is entirely static (all values are session-constants). Skip recreation after first install.
+    if (old) return;
 
     const underlineDisplay = TITLE_UNDERLINE_ENABLED ? "block" : "none";
 
@@ -1033,7 +1037,11 @@ Hooks.once("ready", () => {
 
     const lv = document.createElement("div");
     lv.className = "oni-sum-lv";
-    lv.innerHTML = `Lv <strong class="oni-sum-lv-num">${Number(entry.level?.before ?? 1)}</strong>`;
+    const lvNumEl = document.createElement("strong");
+    lvNumEl.className = "oni-sum-lv-num";
+    lvNumEl.textContent = String(Number(entry.level?.before ?? 1));
+    lv.appendChild(document.createTextNode("Lv "));
+    lv.appendChild(lvNumEl);
 
     header.appendChild(name);
     header.appendChild(lv);
@@ -1080,7 +1088,8 @@ Hooks.once("ready", () => {
     card.appendChild(zRow);
 
     item.appendChild(card);
-    return { item, card, sprite, levelUp };
+    // Return cached element refs so animation helpers avoid querySelector in the RAF hot path.
+    return { item, card, sprite, levelUp, fillEl: fill, pctEl: pct, lvNumEl, zenitEl: zNum };
   }
 
   function buildFooter({ totalDamage, totalHealing, totalZenit, totalRounds, rankLetter }) {
@@ -1156,18 +1165,14 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
   // Animation helpers (bar / level / zenit)
   // ---------------------------------------------------------------------------
-  function setBar(card, pct) {
-    const fill = card.querySelector(".oni-sum-bar-fill");
-    const pctEl = card.querySelector(".oni-sum-exp-pct");
+  function setBar(fillEl, pctEl, pct) {
     const p = clamp(Number(pct), 0, 100);
-
-    if (fill) fill.style.width = `${p.toFixed(2)}%`;
+    if (fillEl) fillEl.style.width = `${p.toFixed(2)}%`;
     if (pctEl) pctEl.textContent = `${Math.round(p)}%`;
   }
 
-  function setLevel(card, levelNumber) {
-    const lvNum = card.querySelector(".oni-sum-lv-num");
-    if (lvNum) lvNum.textContent = String(Math.floor(Number(levelNumber)));
+  function setLevel(lvNumEl, levelNumber) {
+    if (lvNumEl) lvNumEl.textContent = String(Math.floor(Number(levelNumber)));
   }
 
   function flashLevelUp(levelUpEl) {
@@ -1177,12 +1182,11 @@ Hooks.once("ready", () => {
     levelUpEl.classList.add("is-show");
   }
 
-  function setZenit(card, value) {
-    const el = card.querySelector(".oni-sum-zenit-num");
-    if (el) el.textContent = String(Math.floor(Number(value) || 0));
+  function setZenit(zenitEl, value) {
+    if (zenitEl) zenitEl.textContent = String(Math.floor(Number(value) || 0));
   }
 
-  async function animateSegment(card, pctFrom, pctTo, durationMs) {
+  async function animateSegment(fillEl, pctEl, pctFrom, pctTo, durationMs) {
     const a = Number(pctFrom);
     const b = Number(pctTo);
     const d = Math.max(60, Number(durationMs));
@@ -1193,40 +1197,40 @@ Hooks.once("ready", () => {
         : 1 - Math.pow(-2 * u + 2, 2) / 2; // easeInOutQuad
 
       const v = a + (b - a) * eased;
-      setBar(card, v);
+      setBar(fillEl, pctEl, v);
     }, {
       label: "animateSegment",
-      onFinish: () => setBar(card, b)
+      onFinish: () => setBar(fillEl, pctEl, b)
     });
   }
 
-  async function animateCountUp(card, fromVal, toVal, durationMs) {
+  async function animateCountUp(zenitEl, fromVal, toVal, durationMs) {
     const a = Math.floor(Number(fromVal) || 0);
     const b = Math.floor(Number(toVal) || 0);
     const d = Math.max(120, Number(durationMs) || 600);
 
-    setZenit(card, a);
+    setZenit(zenitEl, a);
 
     return runSafeRafTween(d, (u) => {
       const eased = 1 - Math.pow(1 - u, 3); // easeOutCubic
       const v = Math.round(a + (b - a) * eased);
-      setZenit(card, v);
+      setZenit(zenitEl, v);
     }, {
       label: "animateCountUp",
-      onFinish: () => setZenit(card, b)
+      onFinish: () => setZenit(zenitEl, b)
     });
   }
 
-  async function playCardExpAnimation(card, levelUpEl, entry, rule) {
+  async function playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl }, entry, rule) {
     const expStart = Number(rule?.expStart ?? 1);
     const levelUpAt = Number(rule?.levelUpAt ?? 10);
 
     const beforeExp = Number(entry?.exp?.before ?? expStart);
     const beforePct = expToPct(beforeExp, expStart, levelUpAt);
-    setBar(card, beforePct);
+    setBar(fillEl, pctEl, beforePct);
 
     const baseLevel = Number(entry?.level?.before ?? 1);
-    setLevel(card, baseLevel);
+    setLevel(lvNumEl, baseLevel);
 
     const segments = Array.isArray(entry?.segments) ? entry.segments : [];
     if (!segments.length) return;
@@ -1246,32 +1250,32 @@ Hooks.once("ready", () => {
       const delta = Math.abs(toPct - fromPct);
       const dur = Math.max(minSegMs, delta * msPerPercent);
 
-      await animateSegment(card, fromPct, toPct, dur);
+      await animateSegment(fillEl, pctEl, fromPct, toPct, dur);
 
       if (seg?.levelUp === true) {
         playLevelUpSfx();
         flashLevelUp(levelUpEl);
 
         currentLevel += 1;
-        setLevel(card, currentLevel);
+        setLevel(lvNumEl, currentLevel);
 
         await sleep(120);
-        setBar(card, 0);
+        setBar(fillEl, pctEl, 0);
         await sleep(140);
       }
     }
   }
 
-  async function playCardZenitAnimation(card, entry) {
+  async function playCardZenitAnimation({ zenitEl }, entry) {
     const before = safeInt(entry?.zenitBefore, safeInt(entry?.zenitAfter, 0));
     const after  = safeInt(entry?.zenitAfter, before);
 
-    setZenit(card, before);
+    setZenit(zenitEl, before);
     if (after <= before) return;
 
     const delta = after - before;
     const dur = clamp(650 + delta * 6, 700, 1800);
-    await animateCountUp(card, before, after, dur);
+    await animateCountUp(zenitEl, before, after, dur);
   }
 
   // ---------------------------------------------------------------------------
@@ -1444,11 +1448,12 @@ const footerData = {
         poolSize: 4
       });
 
-      // 1) EXP animations (parallel)
-      await Promise.all(cards.map(({ card, levelUp, entry }) => playCardExpAnimation(card, levelUp, entry, rule)));
+      // 1) EXP animations (parallel) — pass cached element refs, no querySelector in hot path
+      await Promise.all(cards.map(({ fillEl, pctEl, lvNumEl, levelUp, entry }) =>
+        playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl: levelUp }, entry, rule)));
 
       // 2) Per-actor Zenit animations (parallel) — AFTER EXP finishes
-      await Promise.all(cards.map(({ card, entry }) => playCardZenitAnimation(card, entry)));
+      await Promise.all(cards.map(({ zenitEl, entry }) => playCardZenitAnimation({ zenitEl }, entry)));
 
     } finally {
       stopTickMetronome(tickMetro);

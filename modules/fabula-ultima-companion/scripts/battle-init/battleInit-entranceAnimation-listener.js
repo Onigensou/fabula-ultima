@@ -361,7 +361,7 @@ Hooks.once("ready", () => {
         return false;
       }
 
-      await wait(50);
+      await wait(16);
     }
   }
 
@@ -527,9 +527,7 @@ Hooks.once("ready", () => {
   }
 
   sprite.zIndex = 5000;
-  canvas.stage.sortableChildren = true;
   canvas.stage.addChild(sprite);
-  canvas.stage.sortChildren();
 
   return sprite;
 }
@@ -659,14 +657,17 @@ Hooks.once("ready", () => {
 
       const partyMoves = [];
 
-      for (const tok of partyTokens) {
-        const spr = await createSpriteFromToken(tok);
+      // Load all party textures concurrently; set sortable flag once before adding to stage.
+      canvas.stage.sortableChildren = true;
+      const _partyLoaded = await Promise.all(partyTokens.map(tok => createSpriteFromToken(tok)));
+      for (let i = 0; i < partyTokens.length; i++) {
+        const tok = partyTokens[i];
+        const spr = _partyLoaded[i];
 
         spr.x = tok.center.x + PARTY_START_OFFSET_X;
         spr.y = tok.center.y;
         spr.alpha = 1;
 
-        // NEW: Face according to actor props (default_facing_direction vs battle_facing_direction)
         applyBattleFacingToSprite(spr, tok);
 
         partySprites.push(spr);
@@ -679,6 +680,8 @@ Hooks.once("ready", () => {
           )
         );
       }
+      // Single sort after all party sprites are on stage.
+      canvas.stage.sortChildren();
 
       await Promise.all(partyMoves);
       log("PARTY tween done", { runId, mode });
@@ -766,13 +769,16 @@ Hooks.once("ready", () => {
     try {
       const enemyFades = [];
 
-      for (const tok of enemyTokens) {
-                const spr = await createSpriteFromToken(tok);
+      // Load all enemy textures concurrently; set sortable flag once before adding to stage.
+      canvas.stage.sortableChildren = true;
+      const _enemyLoaded = await Promise.all(enemyTokens.map(tok => createSpriteFromToken(tok)));
+      for (let i = 0; i < enemyTokens.length; i++) {
+        const tok = enemyTokens[i];
+        const spr = _enemyLoaded[i];
         spr.x = tok.center.x;
         spr.y = tok.center.y;
         spr.alpha = 0;
 
-        // NEW: Face according to actor props (default_facing_direction vs battle_facing_direction)
         applyBattleFacingToSprite(spr, tok);
 
         enemySprites.push(spr);
@@ -785,6 +791,8 @@ Hooks.once("ready", () => {
           )
         );
       }
+      // Single sort after all enemy sprites are on stage.
+      canvas.stage.sortChildren();
 
       await Promise.all(enemyFades);
       log("ENEMY tween done", { runId, mode });
