@@ -92,6 +92,14 @@
       desc:          "Once before the next rest, after the target makes an Accuracy Check or Magic Check for an offensive spell, they may add +4 to the Result.",
     },
     {
+      key:           "curse",
+      name:          "Curse",
+      target:        "One Villain",
+      icon:          "fas fa-skull",
+      requiredClass: ["Hexer", "Necromancer"],
+      desc:          "Perform dark magic to curse your enemy. The next time you enter a conflict scene, if a Villain is present, they are inflicted with a random debuff. This effect lasts until it triggers or until your next rest.",
+    },
+    {
       key:           "cooking",
       name:          "Cooking",
       target:        "Yourself + up to 3 allies",
