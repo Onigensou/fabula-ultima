@@ -47,11 +47,112 @@ Hooks.once("ready", () => {
     }
 
     const TAG = "[ReactionExchangeMatcher]";
+    const MODULE_ID = "fabula-ultima-companion";
+    const SOCKET_CHANNEL = `module.${MODULE_ID}`;
 
     const exchangeApi = window["oni.ReactionExchange"];
     if (!exchangeApi) {
       console.error(`${TAG} oni.ReactionExchange not loaded.`);
       return;
+    }
+
+    function _randId(prefix) {
+      const rnd = foundry?.utils?.randomID?.()
+        ?? (Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+      return `${prefix}-${rnd}`;
+    }
+
+    // -------------------------------------------------------------------------
+    // GM-routing for player-side openReactionExchange calls
+    // -------------------------------------------------------------------------
+    //
+    // Pending request map: requestId → resolver. Non-GM client populates this
+    // when it sends a socket Open:Request; the entry resolves when the GM
+    // returns the Open:Result (which it does only after the Exchange has
+    // closed — single round-trip semantics).
+    const _pendingOpens = new Map();
+    const OPEN_REQUEST_TIMEOUT_MS = 180000; // 3 minutes; long because the GM
+                                            // may be awaiting full resolution.
+
+    function _requestOpenOnGM(opts) {
+      if (!game.socket) {
+        return Promise.resolve({ opened: false, reason: "no_socket" });
+      }
+      const requestId = _randId("rx-open");
+      const originUserId = game.user?.id ?? null;
+      const promise = new Promise((resolve) => {
+        const timer = setTimeout(() => {
+          _pendingOpens.delete(requestId);
+          console.warn(`${TAG} Open:Request timed out`, { requestId });
+          resolve({ opened: false, reason: "gm_timeout" });
+        }, OPEN_REQUEST_TIMEOUT_MS);
+        _pendingOpens.set(requestId, { resolve, timer });
+      });
+      try {
+        game.socket.emit(SOCKET_CHANNEL, {
+          type: "OniReactionExchange:Open:Request",
+          payload: { requestId, originUserId, opts }
+        });
+      } catch (e) {
+        _pendingOpens.delete(requestId);
+        console.warn(`${TAG} Open:Request emit failed`, e);
+        return Promise.resolve({ opened: false, reason: "emit_failed" });
+      }
+      return promise;
+    }
+
+    async function _handleOpenRequest(msg) {
+      if (!game.user?.isGM) return;
+      const payload = msg?.payload ?? {};
+      const { requestId, originUserId, opts } = payload;
+      if (!requestId || !originUserId || !opts) return;
+
+      let result;
+      try {
+        // Re-enter the local function; since we're GM, it'll skip the
+        // socket-routing branch and run the matcher locally.
+        result = await openReactionExchange(opts);
+      } catch (e) {
+        console.warn(`${TAG} Open:Request handler threw`, e);
+        result = { opened: false, reason: `gm_threw:${e?.message ?? e}` };
+      }
+      try {
+        game.socket?.emit(SOCKET_CHANNEL, {
+          type: "OniReactionExchange:Open:Result",
+          payload: { requestId, originUserId, result }
+        });
+      } catch (e) {
+        console.warn(`${TAG} Open:Result emit failed`, e);
+      }
+    }
+
+    function _handleOpenResult(msg) {
+      const payload = msg?.payload ?? {};
+      const { requestId, originUserId, result } = payload;
+      if (!requestId) return;
+      // Result is broadcast to all clients; only the originator reacts.
+      if (originUserId !== (game.user?.id ?? null)) return;
+      const pending = _pendingOpens.get(requestId);
+      if (!pending) return;
+      _pendingOpens.delete(requestId);
+      try { clearTimeout(pending.timer); } catch (_) {}
+      pending.resolve(result ?? { opened: false, reason: "empty_result" });
+    }
+
+    function _onSocketMessage(msg) {
+      if (!msg || typeof msg !== "object") return;
+      switch (msg.type) {
+        case "OniReactionExchange:Open:Request": return _handleOpenRequest(msg);
+        case "OniReactionExchange:Open:Result":  return _handleOpenResult(msg);
+        default: return;
+      }
+    }
+
+    if (game.socket) {
+      game.socket.on(SOCKET_CHANNEL, _onSocketMessage);
+      console.debug(`${TAG} Socket listener attached on ${SOCKET_CHANNEL} (user ${game.user?.id ?? "(unknown)"}; isGM=${!!game.user?.isGM}).`);
+    } else {
+      console.warn(`${TAG} game.socket unavailable at ready; GM-routing disabled.`);
     }
 
     function _triggerCoreApi()   { return window["oni.ReactionTriggerCore"] ?? null; }
@@ -255,10 +356,25 @@ Hooks.once("ready", () => {
      */
     async function _splitPassives(triggers, payload) {
       const matches = _runMatcher(triggers, payload);
+      console.log(`${TAG} _splitPassives: matcher returned`, {
+        triggerKeys: triggers.map(t => t?.key),
+        matchCount: matches.length,
+        matches: matches.map(m => ({
+          actorName: m.actor?.name,
+          itemName: m.item?.name,
+          sourceTrigger: m.sourceTriggerKey,
+          rowCount: m.rows?.length,
+          rowIsPassiveFlags: (m.rows ?? []).map(r => ({
+            trigger: r?.reaction_trigger,
+            isPassive: r?.reaction_isPassive,
+            effectRef: r?.reaction_effect_ref
+          }))
+        }))
+      });
       const autoApi = _autoPassiveApi();
       const registry = _registryApi();
       if (!autoApi?.processMatches) {
-        // No passive system → all matches are manual.
+        console.warn(`${TAG} _splitPassives: AutoPassiveManager unavailable; treating all matches as manual.`);
         return matches;
       }
       const helpers = _helpersApi();
@@ -316,20 +432,58 @@ Hooks.once("ready", () => {
 
       // processMatches returns { manualMatches: groupedShape[] }; expand back
       // to flat matches keyed by (actor, item, trigger).
+      //
+      // IMPORTANT — alias normalization. The trigger value in `rx.triggers`
+      // is the RAW row.reaction_trigger (possibly an alias like
+      // "hp_reduced"), while my flat `m.sourceTriggerKey` is the
+      // NORMALIZED key ("creature_takes_damage"). Normalize both sides.
       const manualGrouped = Array.isArray(processed?.manualMatches) ? processed.manualMatches : [];
+      const triggerCore = window["oni.ReactionTriggerCore"];
+      const normalizeTrigger = (t) =>
+        triggerCore?.mapIncomingTrigger?.(t) ?? String(t ?? "").trim();
+
       const manualKeys = new Set();
+      const manualRowsByKey = new Map();
       for (const g of manualGrouped) {
         for (const rx of (g.reactions ?? [])) {
           for (const tk of (rx.triggers ?? [])) {
-            manualKeys.add(`${g.actor?.uuid ?? ""}::${rx.item?.uuid ?? ""}::${tk}`);
+            const k = `${g.actor?.uuid ?? ""}::${rx.item?.uuid ?? ""}::${normalizeTrigger(tk)}`;
+            manualKeys.add(k);
+            // shallowCloneReactionGroup already filtered rx.rows to manual-only.
+            if (!manualRowsByKey.has(k)) manualRowsByKey.set(k, []);
+            manualRowsByKey.get(k).push(...(rx.rows ?? []));
           }
         }
       }
-      // Filter the original flat match list.
-      return matches.filter(m => {
-        const key = `${m.actor?.uuid ?? ""}::${m.item?.uuid ?? ""}::${m.sourceTriggerKey}`;
-        return manualKeys.has(key);
+
+      console.log(`${TAG} _splitPassives: processMatches returned`, {
+        manualGroupCount: manualGrouped.length,
+        manualKeys: Array.from(manualKeys),
+        passiveResultCount: Array.isArray(processed?.passiveResults) ? processed.passiveResults.length : 0
       });
+
+      // Filter the original flat match list AND replace each survivor's
+      // rows with manual-only rows. Otherwise candidate.effectRefs would
+      // include passive-row refs that already auto-fired.
+      const filtered = [];
+      for (const m of matches) {
+        const key = `${m.actor?.uuid ?? ""}::${m.item?.uuid ?? ""}::${m.sourceTriggerKey}`;
+        if (!manualKeys.has(key)) {
+          console.log(`${TAG} _splitPassives: filtered out`, {
+            actor: m.actor?.name,
+            item: m.item?.name,
+            sourceTrigger: m.sourceTriggerKey,
+            key
+          });
+          continue;
+        }
+        const manualRows = manualRowsByKey.get(key);
+        if (Array.isArray(manualRows) && manualRows.length) {
+          m.rows = manualRows;
+        }
+        filtered.push(m);
+      }
+      return filtered;
     }
 
     // -------------------------------------------------------------------------
@@ -424,6 +578,19 @@ Hooks.once("ready", () => {
         return { opened: false, exchangeId: null, hadMatches: false, reason: "no_triggers" };
       }
 
+      // GM-authoritative: only the GM client runs the matcher + opens the
+      // Exchange. Non-GM clients (player damage card emits) send the open
+      // request via socket, wait for the GM to either decline (no manual
+      // matches) or open + run to close, then receive the final result.
+      //
+      // Reason: AutoPassiveManager.processMatches short-circuits on non-GM
+      // and returns the input list unchanged. Running the matcher on a
+      // non-GM client would leak passive rows into the candidate list AND
+      // skip auto-passive execution. Centralizing on GM fixes both.
+      if (!game.user?.isGM) {
+        return await _requestOpenOnGM({ kind, boundaryKey, payload, triggers, awaitClose: opts.awaitClose !== false });
+      }
+
       // Suspend during in-flight resolution. Per design (single-stack-per-
       // phase), follow-up triggers fired while another Exchange is mid-
       // resolve are logged + discarded — they don't open a new Exchange.
@@ -437,8 +604,17 @@ Hooks.once("ready", () => {
         return { opened: false, exchangeId: null, hadMatches: false, reason: "in_flight_resolution" };
       }
 
+      console.log(`${TAG} openReactionExchange (GM-side): entry`, {
+        kind, boundaryKey,
+        triggerKeys: triggers.map(t => t?.key),
+        payloadKeys: Object.keys(payload ?? {})
+      });
+
       // 1) Resolve passives first; only manual reactions feed the Exchange.
       const manualMatches = await _splitPassives(triggers, payload);
+      console.log(`${TAG} openReactionExchange: after passive split`, {
+        manualMatchCount: manualMatches.length
+      });
       if (!manualMatches.length) {
         return { opened: false, exchangeId: null, hadMatches: false, reason: "no_manual_matches" };
       }

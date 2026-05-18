@@ -345,6 +345,14 @@ Hooks.once("ready", () => {
       const queue = initialSnapshot.queue;
       const lastIdx = queue.length - 1;
 
+      console.log(`${TAG} runResolution: begin`, {
+        exchangeId,
+        queueLen: queue.length,
+        perEntryDelayMs,
+        usingMockRunners: !!opts.runners,
+        firstEntry: queue[0] ? { entryId: queue[0].entryId, skillUuid: queue[0].skillUuid, effectRefs: queue[0].effectRefs } : null
+      });
+
       for (let i = 0; i < queue.length; i++) {
         const entry = queue[i];
         // Refresh snapshot before each entry — the per-entry hook listeners
@@ -416,12 +424,28 @@ Hooks.once("ready", () => {
       }
 
       // Commit final state to the state machine + close.
+      console.log(`${TAG} runResolution: loop complete, committing`, {
+        exchangeId,
+        usedCount: usedSkillUuids.length,
+        logCount: resolutionLog.length
+      });
       try {
         exchangeApi.markResolved(exchangeId, { usedSkillUuids, resolutionLog });
+      } catch (e) {
+        console.error(`${TAG} markResolved threw`, e);
+        _activeResolutions.delete(exchangeId);
+        throw e;
       } finally {
         _activeResolutions.delete(exchangeId);
       }
-      const closedSnapshot = exchangeApi.close(exchangeId, closeReason);
+      let closedSnapshot;
+      try {
+        closedSnapshot = exchangeApi.close(exchangeId, closeReason);
+      } catch (e) {
+        console.error(`${TAG} close threw`, e);
+        throw e;
+      }
+      console.log(`${TAG} runResolution: complete`, { exchangeId, closeReason });
 
       return {
         ok: true,
@@ -456,6 +480,7 @@ Hooks.once("ready", () => {
       _autoResolveHandlerId = Hooks.on("oni:exchange:resolving", ({ exchangeId }) => {
         // GM-only: only the authoritative client should drive resolution.
         if (!game.user?.isGM) return;
+        console.log(`${TAG} auto-resolve: triggered by oni:exchange:resolving`, { exchangeId });
         // Fire-and-forget; resolution failures bubble as console warnings.
         runResolution(exchangeId).catch(e => {
           console.error(`${TAG} auto-resolve threw for exchange ${exchangeId}`, e);

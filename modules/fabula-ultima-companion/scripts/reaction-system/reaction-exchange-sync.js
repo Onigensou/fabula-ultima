@@ -388,7 +388,11 @@ Hooks.once("ready", () => {
 
     async function requestAddEntry(exchangeId, params) {
       if (_isGM()) {
-        const entryId = exchangeApi.addEntry(exchangeId, params, _userId());
+        // GM-local path: ensure userId is present (defaults to current
+        // user). Non-GM path forces it server-side via _handleRequest.
+        const p = { ...(params ?? {}) };
+        if (!p.userId) p.userId = _userId();
+        const entryId = exchangeApi.addEntry(exchangeId, p, _userId());
         return { entryId };
       }
       return _sendRequest("addEntry", { exchangeId, params });

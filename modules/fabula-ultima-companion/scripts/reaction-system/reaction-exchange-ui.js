@@ -443,7 +443,14 @@ Hooks.once("ready", () => {
         const sync = _syncApi();
         if (!sync) return;
         try {
+          // userId is REQUIRED by addEntry. Default to the current user
+          // — the queuer owns the entry (mutations gated by entry.userId).
+          // Symmetric queue: GM queueing a PC's reaction yields an entry
+          // owned by GM (the queuer). The PC's player still sees it in
+          // the shared queue but can't remove/reorder it without GM
+          // override (matches the "GM is just another participant" model).
           await sync.requestAddEntry(snapshot.exchangeId, {
+            userId: _userId(),
             reactorTokenId: cand.reactorTokenId,
             reactorActorUuid: cand.reactorActorUuid,
             reactorName: cand.reactorName,
