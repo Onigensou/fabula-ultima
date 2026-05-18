@@ -26,7 +26,7 @@
   const SFX = {
     COUNTDOWN: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_ready.wav",
     GO:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Critical_1.wav",
-    SUCCESS:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Success_1.wav",
+    SUCCESS:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/success_4.wav",
     FAIL:      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/failed_1.wav",
     RESULT:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Up3.ogg",
   };
@@ -324,6 +324,57 @@
       }
       .oni-dd-proceed-btn:hover { filter:brightness(1.15); }
       .oni-dd-proceed-btn:disabled { opacity:.5;cursor:not-allowed; }
+
+      /* Hit-window zone indicator (pulsing ring at apex) */
+      .oni-dd-hit-zone {
+        position:absolute;width:44px;height:44px;
+        border:2.5px solid rgba(244,212,136,.85);border-radius:50%;
+        pointer-events:none;z-index:5;
+        box-shadow:0 0 12px rgba(244,212,136,.55),inset 0 0 8px rgba(244,212,136,.25);
+        animation:oni-dd-hit-pulse 0.38s ease-in-out infinite;
+      }
+      @keyframes oni-dd-hit-pulse {
+        0%,100%{ transform:scale(1);   opacity:.85; }
+        50%    { transform:scale(1.16);opacity:.45; }
+      }
+
+      /* Success burst particles */
+      .oni-dd-particle {
+        position:absolute;width:7px;height:7px;border-radius:50%;
+        pointer-events:none;z-index:20;
+        animation:oni-dd-particle-fly 0.42s ease-out forwards;
+      }
+      @keyframes oni-dd-particle-fly {
+        0%  { transform:translate(0,0) scale(1);   opacity:1; }
+        100%{ transform:translate(var(--px),var(--py)) scale(0); opacity:0; }
+      }
+      /* Floating score pop */
+      .oni-dd-score-pop {
+        position:absolute;font-size:1.1rem;font-weight:900;
+        color:#f4d488;text-shadow:0 0 8px rgba(244,212,136,.9);
+        pointer-events:none;z-index:20;white-space:nowrap;
+        animation:oni-dd-float-up 0.55s ease-out forwards;
+      }
+      @keyframes oni-dd-float-up {
+        0%  { transform:translate(-50%,0);     opacity:1; }
+        60% { transform:translate(-50%,-26px); opacity:1; }
+        100%{ transform:translate(-50%,-40px); opacity:0; }
+      }
+
+      /* Fail flash */
+      .oni-dd-fail-flash {
+        position:absolute;inset:0;border-radius:6px;
+        background:rgba(220,50,50,.28);pointer-events:none;z-index:20;
+        animation:oni-dd-fail-fade 0.34s ease forwards;
+      }
+      @keyframes oni-dd-fail-fade { 0%{opacity:1}100%{opacity:0} }
+      /* Floating fail mark */
+      .oni-dd-fail-x {
+        position:absolute;font-size:1.4rem;font-weight:900;
+        color:#ff6464;text-shadow:0 0 8px rgba(255,80,80,.8);
+        pointer-events:none;z-index:20;white-space:nowrap;
+        animation:oni-dd-float-up 0.48s ease-out forwards;
+      }
     `;
     document.head.appendChild(s);
   }
@@ -348,6 +399,11 @@
     stage.appendChild(el);
     setTimeout(() => el.remove(), dur + 150);
 
+    // Hit-zone indicator: only for scoreable sheep, only visible to owner
+    if (_isOwner && !isFake && type !== "offbeat") {
+      setTimeout(() => _spawnHitZone(false), HIT_WIN_START);
+    }
+
     if (isGroup) {
       // Second sheep on an upper track
       const el2 = document.createElement("div");
@@ -356,7 +412,87 @@
       el2.style.cssText = `animation:oni-dd-jump-b ${JUMP_MS}ms ease-in-out forwards;`;
       stage.appendChild(el2);
       setTimeout(() => el2.remove(), JUMP_MS + 150);
+
+      if (_isOwner) setTimeout(() => _spawnHitZone(true), HIT_WIN_START);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Hit-zone indicator — pulsing ring at the sheep's apex during press window
+  // trackB = true → use the group's upper-track apex position
+  // ---------------------------------------------------------------------------
+  function _spawnHitZone(trackB) {
+    const stage = document.getElementById("oni-dd-stage");
+    if (!stage) return;
+    const z = document.createElement("div");
+    z.className = "oni-dd-hit-zone";
+    // Apex of track-A: left≈54%, bottom≈92px → center zone (44px) at 54%−22px, bottom 70px
+    // Apex of track-B: left≈52%, bottom≈108px → bottom 86px
+    z.style.left   = trackB ? "calc(52% - 22px)" : "calc(54% - 22px)";
+    z.style.bottom = trackB ? "86px" : "70px";
+    stage.appendChild(z);
+    setTimeout(() => z.remove(), (HIT_WIN_END - HIT_WIN_START) + 60);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Success visual — burst particles + floating "+1" at apex
+  // ---------------------------------------------------------------------------
+  function _flashSuccess() {
+    const stage = document.getElementById("oni-dd-stage");
+    if (!stage) return;
+    const sw = stage.offsetWidth;
+    const sh = stage.offsetHeight;
+    const cx = sw * 0.54;          // apex x (54% of stage width)
+    const cy = sh - 92;            // apex distance from top (stage height − bottom:92)
+
+    const COLORS = ["#f4d488", "#ffe566", "#c8a84b", "#ffffff", "#ffcc44"];
+    for (let i = 0; i < 10; i++) {
+      const p   = document.createElement("div");
+      p.className = "oni-dd-particle";
+      const ang = (i / 10) * Math.PI * 2;
+      const r   = 28 + Math.random() * 22;
+      p.style.left       = `${cx - 3}px`;
+      p.style.bottom     = `${sh - cy - 3}px`;   // convert top-offset to bottom css
+      p.style.background = COLORS[i % COLORS.length];
+      p.style.setProperty("--px", `${Math.cos(ang) * r}px`);
+      p.style.setProperty("--py", `${-Math.sin(ang) * r}px`); // negative = upward in CSS
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 450);
+    }
+
+    // Floating "+1" text drifts upward
+    const txt = document.createElement("div");
+    txt.className   = "oni-dd-score-pop";
+    txt.textContent = "+1";
+    txt.style.left   = `${cx}px`;
+    txt.style.bottom = `${sh - cy + 12}px`;
+    stage.appendChild(txt);
+    setTimeout(() => txt.remove(), 580);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Fail visual — red overlay flash + floating "✗"
+  // ---------------------------------------------------------------------------
+  function _flashFail() {
+    const stage = document.getElementById("oni-dd-stage");
+    if (!stage) return;
+    const sw = stage.offsetWidth;
+    const sh = stage.offsetHeight;
+    const cx = sw * 0.54;
+    const cy = sh - 92;
+
+    const fl = document.createElement("div");
+    fl.className = "oni-dd-fail-flash";
+    stage.appendChild(fl);
+    setTimeout(() => fl.remove(), 360);
+
+    const txt = document.createElement("div");
+    txt.className   = "oni-dd-fail-x";
+    txt.textContent = "✗";
+    txt.style.left   = `${cx}px`;
+    txt.style.bottom = `${sh - cy + 12}px`;
+    stage.appendChild(txt);
+    setTimeout(() => txt.remove(), 500);
   }
 
   // ---------------------------------------------------------------------------
@@ -433,6 +569,7 @@
           ev.hit = true;
           _score++;
           _playSound(SFX.SUCCESS, 0.8);
+          _flashSuccess();
           scored = true;
           const scoreEl = document.getElementById("oni-dd-score-val");
           if (scoreEl) scoreEl.textContent = _score;
@@ -442,7 +579,10 @@
         }
       }
 
-      if (!scored && trapped) _playSound(SFX.FAIL, 0.7);
+      if (!scored && trapped) {
+        _playSound(SFX.FAIL, 0.7);
+        _flashFail();
+      }
     };
 
     document.addEventListener("keydown", _spaceHandler, { capture: true });

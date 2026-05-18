@@ -15,7 +15,7 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG       = "[CampSystem][Daydream]";
 
-  const DAYDREAM_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/Chivalry.png";
+  const DAYDREAM_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaSkill3.png";
 
   const MAX_SCORE = 7; // must match activity-daydream-ui.js
 
