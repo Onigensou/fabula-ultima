@@ -131,17 +131,18 @@
         if (existing) await existing.delete();
 
         await targetActor.createEmbeddedDocuments("ActiveEffect", [{
-          name:     "Combat Lesson",
-          img:      LESSON_ICON,
-          origin:   `Actor.${actor.id}`,
-          disabled: false,
-          changes:  [],
-          statuses: ["permanent"],
+          name:        "Combat Lesson",
+          img:         LESSON_ICON,
+          description: `Once before the next rest, after making an Accuracy Check or a Magic Check for an offensive spell, you may add +${bonus} to the Result of the Check.`,
+          origin:      `Actor.${actor.id}`,
+          disabled:    false,
+          changes:     [],
+          statuses:    ["permanent"],
           flags: {
             [MODULE_ID]: {
-              campRestCharges:        1,
-              combatLessonBonus:      bonus,
-              combatLessonTeacherId:  actor.id,
+              campRestCharges:       1,
+              combatLessonBonus:     bonus,
+              combatLessonTeacherId: actor.id,
             },
           },
         }]);

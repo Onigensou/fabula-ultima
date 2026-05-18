@@ -135,16 +135,17 @@
         //     campRestCharges: 1      — generic tick: survives 1 rest, expires at the 2nd
         //     cartographyReroll: true — marker read by TravelRoll API
         await actor.createEmbeddedDocuments("ActiveEffect", [{
-          name:     "Cartography",
-          img:      MAP_ICON,
-          origin:   `Actor.${actor.id}`,
-          disabled: false,
-          changes:  [],
-          statuses: ["permanent"],
+          name:        "Cartography",
+          img:         MAP_ICON,
+          description: "Once before the next rest, when your group makes a Travel Roll, you may reroll the die and keep the new result.",
+          origin:      `Actor.${actor.id}`,
+          disabled:    false,
+          changes:     [],
+          statuses:    ["permanent"],
           flags: {
             [MODULE_ID]: {
-              campRestCharges:   1,
-              cartographyReroll: true,
+              campRestCharges:    1,
+              cartographyReroll:  true,
               cartographyActorId: actor.id,
             },
           },
