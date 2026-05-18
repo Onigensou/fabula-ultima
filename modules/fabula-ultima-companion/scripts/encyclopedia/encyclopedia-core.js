@@ -772,6 +772,11 @@
 
     await page.update(updates);
 
+    // Keep the encyclopedia in (rank, name) order. Cheap when nothing moved —
+    // sortPages only writes pages whose sort key would actually change.
+    try { await sortPages(); }
+    catch (e) { console.warn(`${TAG} sortPages after recordResult failed:`, e); }
+
     try { Hooks.callAll("oni:encyclopedia:updated", { actorUuid, previousBest, newBest, changed }); }
     catch (e) { console.warn(TAG, "oni:encyclopedia:updated hook listener threw.", e); }
 
@@ -790,12 +795,21 @@
       // caller can find the world's Study skill UUID without hardcoding it.
       getStudySkill,
       getStudySkillUuid,
+      // Open helpers — used by the action-resolved auto-open and by the
+      // initiative-bar info-badge click handler.
+      openEncyclopediaForActor,
+      openEncyclopediaForToken,
+      resolveActorPrototypeUuid,
+      // Re-sort pages by (rank, name). Called automatically after writes;
+      // exposed for manual triggering / debugging.
+      sortPages,
       _internals: {
         findEntry, createEntry, getCachedUuid, setCachedUuid,
         findStudySkill, createStudySkill, getCachedStudySkillUuid, setCachedStudySkillUuid,
         STUDY_SKILL_SPEC, STUDY_SKILL_NAME,
         ENTRY_NAME, SETTING_KEY, STUDY_SETTING_KEY,
-        TIER_IDENTITY, TIER_STATS, TIER_DETAILS
+        TIER_IDENTITY, TIER_STATS, TIER_DETAILS,
+        handleCombatStart
       }
     };
     console.info(`${TAG} API mounted at FUCompanion.api.encyclopedia.`);
@@ -811,6 +825,19 @@
       const skill = await getStudySkill();
       if (skill) console.info(`${TAG} Study skill ready: ${skill.uuid}`);
     } catch (e) { console.error(`${TAG} Boot ensureStudySkill failed:`, e); }
+
+    // Backfill placeholders if the world booted with an active combat. The
+    // combatStart hook only fires when combat is begun fresh, so without this
+    // a mid-combat boot would leave enemy combatants without their pages.
+    try {
+      const active = game.combat;
+      if (active?.started) await handleCombatStart(active);
+    } catch (e) { console.error(`${TAG} Boot combat backfill failed:`, e); }
+
+    // Normalize sort on existing pages (handles legacy pages written before
+    // sortPages existed, or any drift from manual reordering).
+    try { await sortPages(); }
+    catch (e) { console.warn(`${TAG} Boot sortPages failed:`, e); }
   }
 
   /**
@@ -949,13 +976,136 @@
     }
   }
 
+  /**
+   * Open the encyclopedia page for the given token. Resolves the actor
+   * prototype UUID for unlinked NPC tokens. Used by the initiative-bar
+   * info badge click handler in fabula-initiative-ui.
+   */
+  async function openEncyclopediaForToken(tokenUuid) {
+    const actorUuid = await resolveActorPrototypeUuid(tokenUuid);
+    if (!actorUuid) {
+      console.warn(`${TAG} openEncyclopediaForToken: could not resolve actor prototype UUID for ${tokenUuid}.`);
+      return;
+    }
+    return openEncyclopediaForActor(actorUuid);
+  }
+
+  /**
+   * Primary sort key for NPC ranks. Accepts both full names (`"soldier"`)
+   * and 3-letter abbreviations (`"sol"`) since both shapes are present in
+   * authored monster data. Unknown / empty ranks sort last so unranked
+   * homebrew pages don't shuffle into the middle of the list.
+   */
+  function rankSortKey(rawRank) {
+    const head = String(rawRank ?? "").trim().toLowerCase().slice(0, 3);
+    switch (head) {
+      case "sol": return 1; // soldier
+      case "eli": return 2; // elite
+      case "cha": return 3; // champion
+      case "vil": return 4; // villain
+      default:    return 99;
+    }
+  }
+
+  /**
+   * Resort every page in the encyclopedia entry by (rank, name). Idempotent —
+   * only writes pages whose sort field would change. GM-only.
+   *
+   * Sort source: actor.system.props.npc_rank for the primary key,
+   * actor.name (falling back to page.name) for the alphabetical tie-break.
+   * Pages whose actor is unresolvable sort to the end with rank=99.
+   */
+  async function sortPages() {
+    if (!game.user?.isGM) return;
+    const entry = await getEntry();
+    if (!entry) return;
+    const pages = entry.pages?.contents ?? Array.from(entry.pages?.values?.() ?? []);
+    if (!pages.length) return;
+
+    const enriched = await Promise.all(pages.map(async (p) => {
+      const actorUuid = getFlag(p, "actorUuid");
+      let rank = null;
+      let displayName = p.name ?? "";
+      if (actorUuid) {
+        try {
+          const actor = await fromUuid(actorUuid);
+          if (actor) {
+            rank = actor.system?.props?.npc_rank ?? null;
+            displayName = actor.name ?? displayName;
+          }
+        } catch { /* tolerate dead UUID */ }
+      }
+      return { id: p.id, currentSort: p.sort ?? 0, rankKey: rankSortKey(rank), name: displayName };
+    }));
+
+    enriched.sort((a, b) => {
+      if (a.rankKey !== b.rankKey) return a.rankKey - b.rankKey;
+      return a.name.localeCompare(b.name);
+    });
+
+    const updates = [];
+    let nextSort = 100000;
+    for (const e of enriched) {
+      if (e.currentSort !== nextSort) {
+        updates.push({ _id: e.id, sort: nextSort });
+      }
+      nextSort += 100000;
+    }
+
+    if (updates.length) {
+      await entry.updateEmbeddedDocuments("JournalEntryPage", updates);
+    }
+  }
+
+  /**
+   * combatStart hook handler — auto-spawn placeholder pages for every
+   * enemy combatant so the Pokédex feels populated from round 1 of every
+   * fight. GM-only; players' clients no-op (placeholders need a GM write).
+   *
+   * Idempotent: upsertPage returns the existing page if there is one,
+   * so re-entries of the same combat don't duplicate.
+   */
+  async function handleCombatStart(combat) {
+    if (!game.user?.isGM) return;
+    if (!combat) return;
+    const combatants = combat.combatants?.contents ?? [];
+    const enemies = combatants.filter(c => {
+      const disp = c?.token?.disposition ?? c?.token?.document?.disposition ?? null;
+      return disp === -1;
+    });
+    if (!enemies.length) return;
+
+    const results = [];
+    for (const c of enemies) {
+      try {
+        const tokenUuid = c.token?.uuid ?? null;
+        if (!tokenUuid) continue;
+        const actorUuid = await resolveActorPrototypeUuid(tokenUuid);
+        if (!actorUuid) continue;
+        // Skip duplicates from multiple instances of the same prototype.
+        if (results.some(r => r.actorUuid === actorUuid)) continue;
+        const page = await upsertPage(actorUuid);
+        if (page) results.push({ actorUuid, name: c.name });
+      } catch (e) {
+        console.warn(`${TAG} handleCombatStart: upsert failed for ${c.name}:`, e);
+      }
+    }
+
+    if (results.length) {
+      console.info(`${TAG} combatStart: ensured ${results.length} placeholder page(s) for enemies.`, results.map(r => r.name));
+      try { await sortPages(); }
+      catch (e) { console.warn(`${TAG} sortPages after combatStart failed:`, e); }
+    }
+  }
+
   function registerHookListener() {
     // Idempotent: if we re-bootstrap via evalGM during a session, the previous
     // listener has already been removed by our `if (existing API) return` guard
     // at the top of the IIFE. But that guard short-circuits before this point
     // runs, so we never double-register from a single session anyway.
     Hooks.on("oni:action:resolved", handleActionResolved);
-    console.info(`${TAG} oni:action:resolved listener registered.`);
+    Hooks.on("combatStart", handleCombatStart);
+    console.info(`${TAG} oni:action:resolved + combatStart listeners registered.`);
   }
 
   if (typeof game !== "undefined" && game?.ready) {
