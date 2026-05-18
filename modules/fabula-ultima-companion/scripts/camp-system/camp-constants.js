@@ -60,6 +60,12 @@
     // Cartography (GM → all)
     CARTOGRAPHY_START:   "CAMP_CARTOGRAPHY_START",
     CARTOGRAPHY_DONE:    "CAMP_CARTOGRAPHY_DONE",
+    // Combat Lesson minigame
+    COMBAT_LESSON_START:   "CAMP_COMBAT_LESSON_START",
+    COMBAT_LESSON_TARGET:  "CAMP_COMBAT_LESSON_TARGET",   // owner → GM (ally chosen)
+    COMBAT_LESSON_RESULT:  "CAMP_COMBAT_LESSON_RESULT",   // GM → all (roll totals + bonus)
+    COMBAT_LESSON_PROCEED: "CAMP_COMBAT_LESSON_PROCEED",  // owner → GM
+    COMBAT_LESSON_DONE:    "CAMP_COMBAT_LESSON_DONE",
   });
 
   // ---------------------------------------------------------------------------
