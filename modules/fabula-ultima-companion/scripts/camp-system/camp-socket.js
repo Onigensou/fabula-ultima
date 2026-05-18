@@ -74,6 +74,21 @@
           return;
         }
 
+        // ── Daydream minigame (GM → all, owner → GM) ─────────────────────
+        if (type === CAMP.MSG.DAYDREAM_START) {
+          CAMP.DaydreamUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.DAYDREAM_RESULT && payload?.reduction != null) {
+          // Full result from GM — reveal phase
+          CAMP.DaydreamUI?.applyResult(payload.actorId, payload.score, payload.reduction);
+          return;
+        }
+        if (type === CAMP.MSG.DAYDREAM_DONE) {
+          CAMP.DaydreamUI?.hide();
+          return;
+        }
+
         // ── Combat Lesson minigame (GM → all, owner → GM) ────────────────
         if (type === CAMP.MSG.COMBAT_LESSON_START) {
           CAMP.CombatLessonUI?.show(payload?.actorId, payload?.allies);
@@ -131,6 +146,14 @@
 
           case CAMP.MSG.TOGGLE_SET_OUT:
             await _handleToggleSetOut(payload);
+            break;
+
+          case CAMP.MSG.DAYDREAM_RESULT:   // owner → GM: score submitted
+            CAMP.DaydreamUI?.resolveScore(payload?.actorId, payload?.score);
+            break;
+
+          case CAMP.MSG.DAYDREAM_PROCEED:
+            CAMP.DaydreamUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.COMBAT_LESSON_TARGET:
