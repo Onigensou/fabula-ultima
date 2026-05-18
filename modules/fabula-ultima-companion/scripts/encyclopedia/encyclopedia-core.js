@@ -114,7 +114,7 @@
 .oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
 .oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:italic; }
-.oni-enc-desc-inline { flex:0 0 auto; max-width:240px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border-left:1px solid rgba(0,0,0,.12); padding-left:12px; opacity:.85; }
+.oni-enc-desc-inline { flex:0 0 auto; max-width:340px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border-left:1px solid rgba(0,0,0,.12); padding-left:12px; opacity:.85; }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
 .oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding-top:6px; }
 .oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.42); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
@@ -656,6 +656,12 @@
 </li>`;
   }
 
+  function renderActionHeader() {
+    return `<div style="margin:20px 0 -2px;">
+  <div style="font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;border-bottom:2px solid rgba(0,0,0,.18);padding-bottom:8px;opacity:.75;">Actions</div>
+</div>`;
+  }
+
   function renderAttacks(actor, p) {
     const newList = objectToList(p.attack_list).filter(e => !e?.$deleted);
     if (newList.length) {
@@ -808,25 +814,32 @@
     const bodyParts = [
       renderHeader(actor, p, true, descHtml, traitsText),
 
-      // ── Identity tier ──────────────────────────────────────────────
+      // ── Identity: core stats ────────────────────────────────────────
       renderCoreStatsBlock(p),
-      await renderStealables(actor, p),
 
       // ── Stats tier ─────────────────────────────────────────────────
       showStats
         ? renderAttributesBlock(p)
         : renderLockedPlaceholder("Statistics", TIER_STATS),
 
-      // ── Details tier ───────────────────────────────────────────────
+      // ── Details tier: affinity block ───────────────────────────────
       ...(showDetails ? [
         renderAffinities(p),
         renderWeaponEff(p),
         renderConditionBadges(p),
+      ] : [renderLockedPlaceholder("Detailed Profile", TIER_DETAILS)]),
+
+      // ── Identity: stealables (always visible once identity unlocked) ─
+      await renderStealables(actor, p),
+
+      // ── Details tier: action block ─────────────────────────────────
+      ...(showDetails ? [
+        renderActionHeader(),
         renderAttacks(actor, p),
         renderActiveSkills(actor, p),
         renderSpells(actor, p),
         renderPassiveSkills(actor, p),
-      ] : [renderLockedPlaceholder("Detailed Profile", TIER_DETAILS)]),
+      ] : []),
 
       renderFooter(best, bestBy, tierLabel, lastUpdated),
     ].join("\n");
