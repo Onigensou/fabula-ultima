@@ -750,7 +750,13 @@
 
     const previousBest = Number(getFlag(page, "bestResult")) || 0;
     const totalN = Number(total) || 0;
-    const newBest = Math.max(previousBest, totalN);
+    // Critical Success on a Study Check reveals everything regardless of the
+    // raw total — promote the effective value to the Details threshold so
+    // the highest tier unlocks. A low-roll crit (e.g. 6+6=12) would otherwise
+    // fall just short of Details despite being thematically a "you got lucky
+    // and learned a lot" moment.
+    const effectiveTotal = isCrit ? Math.max(totalN, TIER_DETAILS) : totalN;
+    const newBest = Math.max(previousBest, effectiveTotal);
     const changed = newBest > previousBest;
 
     const flagUpdate = {
@@ -912,22 +918,40 @@
         ?? rootEl.querySelector(`.journal-entry-page[data-page-id="${page.id}"]`)
         ?? rootEl;
 
-      let applied = 0;
+      // Collect every section we plan to animate, across all crossed tiers,
+      // so we can find the topmost one in document order and scroll the
+      // sheet to it before the animation plays. Otherwise unlocks below the
+      // current scroll position would animate offscreen.
+      const targets = [];
       for (const tier of info.tiers) {
-        const sections = pageScope.querySelectorAll(`section[data-enc-tier="${tier}"]`);
-        sections.forEach(el => {
-          // Force-restart the animation if it's already running. Clearing
-          // then re-adding the class on the next frame triggers reflow so
-          // the @keyframes plays from 0.
+        pageScope.querySelectorAll(`section[data-enc-tier="${tier}"]`).forEach(el => targets.push(el));
+      }
+      if (!targets.length) continue;
+
+      // Sort by document position; first in DOM = topmost on screen.
+      targets.sort((a, b) =>
+        (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1
+      );
+
+      try {
+        targets[0].scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch { /* tolerate browsers without smooth-scroll */ }
+
+      // Wait ~350ms for the smooth scroll to land, then animate. If we
+      // animated immediately the slide-down keyframe would race the scroll
+      // and the section would appear mid-air below its final spot.
+      const playAnim = () => {
+        for (const el of targets) {
           el.classList.remove(ANIM_CLASS);
           // eslint-disable-next-line no-unused-expressions
-          void el.offsetWidth;
+          void el.offsetWidth; // force reflow so the class re-trigger plays
           el.classList.add(ANIM_CLASS);
-          applied++;
           setTimeout(() => el.classList.remove(ANIM_CLASS), ANIM_DURATION_MS + 50);
-        });
-      }
-      if (applied > 0) pendingUnlocks.delete(actorUuid);
+        }
+      };
+      setTimeout(playAnim, 350);
+
+      pendingUnlocks.delete(actorUuid);
     }
   }
 
