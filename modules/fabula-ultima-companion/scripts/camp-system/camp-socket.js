@@ -43,6 +43,22 @@
           return;
         }
 
+        // ── Exploration roulette (any client, processed by all) ──────────
+        if (type === CAMP.MSG.EXPLORATION_START) {
+          CAMP.ExplorationUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.EXPLORATION_DONE) {
+          CAMP.ExplorationUI?.hide(payload?.actorId);
+          return;
+        }
+        // Result processed on all clients — syncs GM spectator view
+        if (type === CAMP.MSG.EXPLORATION_RESULT) {
+          CAMP.ExplorationUI?.applyResult(payload?.actorId, payload?.roll);
+          if (game.user?.isGM) CAMP.ExplorationUI?.resolveRoll(payload?.actorId, payload?.roll);
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -78,6 +94,8 @@
           case CAMP.MSG.TOGGLE_SET_OUT:
             await _handleToggleSetOut(payload);
             break;
+
+          // EXPLORATION_RESULT is handled in the all-clients section above
         }
       });
 

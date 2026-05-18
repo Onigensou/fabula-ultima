@@ -668,6 +668,184 @@
 .bse-change-icon { color: var(--camp-wood-2); width: 16px; flex-shrink: 0; }
 .bse-change-text { flex: 1; line-height: 1.4; }
 .bse-change-text strong { color: #5c3a1a; }
+
+/* ── Exploration Roulette Overlay ────────────────────────────────────────── */
+
+@keyframes expl-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes expl-stage-in {
+  from { opacity: 0; transform: scale(.88) translateY(24px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+@keyframes expl-flip {
+  0%   { transform: translateY(-18px); opacity: 0; }
+  50%  { transform: translateY(4px);  opacity: 1; }
+  100% { transform: translateY(0);    opacity: 1; }
+}
+@keyframes expl-reveal {
+  from { opacity: 0; transform: scale(.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes expl-locked-glow {
+  0%, 100% { text-shadow: 0 0 14px currentColor; }
+  50%       { text-shadow: 0 0 36px currentColor, 0 0 60px currentColor; }
+}
+
+#oni-camp-exploration-ovl {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(12, 6, 2, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: expl-overlay-in .3s ease both;
+}
+#oni-camp-exploration-ovl.out {
+  animation: campFadeOut .3s ease both;
+}
+
+/* Square stage — placeholder backdrop, activity art goes here later */
+.oni-camp-expl-stage {
+  position: relative;
+  width: min(420px, 92vw);
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #2a1a0a 0%, #1a0e05 60%, #0e0805 100%);
+  border: 3px solid var(--camp-wood-2);
+  box-shadow:
+    0 0 0 1px var(--camp-wood-3),
+    0 0 0 8px rgba(60,35,10,.55),
+    0 0 0 9px rgba(20,10,2,.7),
+    0 28px 60px rgba(0,0,0,.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: expl-stage-in .42s cubic-bezier(.22,1,.36,1) both;
+  overflow: hidden;
+}
+
+/* Placeholder backdrop icon */
+.oni-camp-expl-backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8em;
+  color: rgba(255,255,255,.04);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Roulette panel — floats above backdrop */
+.oni-camp-expl-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 32px;
+  border-radius: 14px;
+  background: rgba(246, 235, 211, 0.92);
+  border: 2px solid var(--camp-wood-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.6),
+    0 0 0 4px rgba(90,60,34,.4),
+    0 12px 32px rgba(0,0,0,.6);
+  min-width: 220px;
+  text-align: center;
+}
+
+.oni-camp-expl-actor-label {
+  font-size: .78em;
+  font-weight: 700;
+  color: var(--camp-wood-2);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+.oni-camp-expl-dice-icon {
+  font-size: 1.8em;
+  line-height: 1;
+}
+
+/* The big spinning number */
+.oni-camp-expl-number {
+  font-size: 7em;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--camp-ink);
+  min-width: 1ch;
+  font-variant-numeric: tabular-nums;
+  transition: color .3s ease;
+}
+.oni-camp-expl-number.expl-flip {
+  animation: expl-flip .12s ease both;
+}
+.oni-camp-expl-number.expl-locked {
+  animation: expl-locked-glow 1.2s ease infinite;
+}
+
+/* STOP button */
+.oni-camp-expl-stop-btn {
+  appearance: none;
+  padding: 10px 36px;
+  font-size: 1.05em;
+  font-weight: 800;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 1.5px solid rgba(160,40,40,.7);
+  cursor: pointer;
+  background: linear-gradient(180deg, #e07070 0%, #c05050 55%, #a03030 100%);
+  color: #fff;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 0 0 2px rgba(160,40,40,.25),
+    0 8px 18px rgba(0,0,0,.25);
+  transition: filter .1s ease, transform .08s ease;
+}
+.oni-camp-expl-stop-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.oni-camp-expl-stop-btn:active:not(:disabled) { transform: translateY(1px); }
+.oni-camp-expl-stop-btn:disabled { opacity: .5; cursor: default; }
+
+/* Spectator waiting text */
+.oni-camp-expl-waiting {
+  font-size: .85em;
+  font-style: italic;
+  color: var(--camp-wood-2);
+  opacity: .7;
+  padding: 6px 0;
+}
+
+/* Result reveal */
+.oni-camp-expl-result {
+  margin-top: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255,250,238,.75);
+  border: 1px solid rgba(92,66,30,.25);
+  text-align: center;
+}
+.oni-camp-expl-result.expl-reveal {
+  animation: expl-reveal .35s cubic-bezier(.22,1,.36,1) both;
+}
+.expl-result-heading {
+  font-size: .95em;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.expl-result-sub {
+  font-size: .8em;
+  color: var(--camp-ink);
+  opacity: .8;
+  margin-top: 2px;
+}
   `;
 
   document.head.appendChild(style);

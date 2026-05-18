@@ -181,7 +181,7 @@
       wrap.classList.add("hidden");
     },
 
-    async render() {
+    render() {
       const wrap = document.getElementById(WRAP_ID);
       if (!wrap) return;
 
@@ -191,16 +191,11 @@
 
       if (!cfg) { this.hide(); return; }
 
-      const userId   = game.user?.id;
-      const readyMap = _getReadyMap(phase);
-
-      // allReady: no players online = GM solo test, treat as all-ready
+      const userId      = game.user?.id;
+      const readyMap    = _getReadyMap(phase);
       const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
       const allReady    = activeUsers.length === 0 || activeUsers.every(u => readyMap[u.id]);
       const iAmReady    = !!readyMap[userId];
-
-      // Party resolution is best-effort (dots only); fall back to active users
-      const party = await CAMP.Party.resolve().catch(() => []);
 
       wrap.classList.remove("hidden");
 
@@ -209,17 +204,12 @@
       const dotsEl   = wrap.querySelector(".oni-camp-lobby-dots");
 
       if (isGM) {
-        // GM: hide player button, show Start only when all ready
         if (phaseBtn) phaseBtn.style.display = "none";
         if (startBtn) {
-          const show = allReady;
-          startBtn.style.display = show ? "" : "none";
-          if (show) {
-            startBtn.classList.add("visible");
-          }
+          startBtn.style.display = allReady ? "" : "none";
+          if (allReady) startBtn.classList.add("visible");
         }
       } else {
-        // Player: show phase button, hide Start
         if (phaseBtn) {
           phaseBtn.style.display = "";
           phaseBtn.querySelector(".btn-emoji").textContent = cfg.emoji;
@@ -229,14 +219,11 @@
         if (startBtn) startBtn.style.display = "none";
       }
 
-      // Lobby dots: party members if resolved, otherwise all active non-GM users
+      // Lobby dots — always keyed by active non-GM users
       if (dotsEl) {
-        const dotList = party.length > 0
-          ? party
-          : activeUsers.map(u => ({ userId: u.id, userName: u.name }));
-        dotsEl.innerHTML = dotList.map(({ userId: uid, userName }) => {
-          const r = !!readyMap[uid];
-          return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${userName}"></div>`;
+        dotsEl.innerHTML = activeUsers.map(u => {
+          const r = !!readyMap[u.id];
+          return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
         }).join("");
       }
     },

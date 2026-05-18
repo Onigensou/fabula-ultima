@@ -179,6 +179,9 @@
         await _clearTemporaryEffects(actor);
       }
 
+      // Clear exploration debuffs now that rest has applied them
+      await CAMP.State?.clearExplorationDebuffs?.();
+
       // 5 — Chat message
       await _postChatMessage();
 
@@ -199,11 +202,20 @@
       console.warn(TAG, `max_hp/max_mp undefined on ${actor.name}; skipping restore.`);
       return;
     }
+
+    // Check for Exploration "Ouch!" debuff — recover only half the missing HP/MP
+    const debuffs  = CAMP.State?.getExplorationDebuffs?.() ?? {};
+    const halfRest = !!debuffs[actor.id]?.halfRest;
+    const curHp    = parseInt(props.current_hp) || 0;
+    const curMp    = parseInt(props.current_mp) || 0;
+    const newHp    = halfRest ? curHp + Math.floor((props.max_hp - curHp) / 2) : props.max_hp;
+    const newMp    = halfRest ? curMp + Math.floor((props.max_mp - curMp) / 2) : props.max_mp;
+
     await actor.update({
-      "system.props.current_hp": props.max_hp,
-      "system.props.current_mp": props.max_mp,
+      "system.props.current_hp": newHp,
+      "system.props.current_mp": newMp,
     });
-    console.debug(TAG, `Restored ${actor.name}: HP=${props.max_hp} MP=${props.max_mp}`);
+    console.debug(TAG, `Restored ${actor.name}: HP=${newHp} MP=${newMp}${halfRest ? " (Ouch! — halved)" : ""}`);
   }
 
   async function _clearTemporaryEffects(actor) {

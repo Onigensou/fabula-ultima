@@ -15,14 +15,15 @@
   // ---------------------------------------------------------------------------
   function registerSettings() {
     const defs = [
-      { key: CAMP.SETTING.PHASE,          type: String,  default: CAMP.PHASE.FREE_ROAM },
-      { key: CAMP.SETTING.READY,          type: String,  default: "{}" },
-      { key: CAMP.SETTING.SELECTIONS,     type: String,  default: "{}" },
-      { key: CAMP.SETTING.RESOLVED,       type: String,  default: "{}" },
-      { key: CAMP.SETTING.BOND_CONFIRMED, type: String,  default: "{}" },
-      { key: CAMP.SETTING.BOND_SUMMARY,   type: String,  default: "{}" },
-      { key: CAMP.SETTING.SLEEP_READY,    type: String,  default: "{}" },
-      { key: CAMP.SETTING.SET_OUT_READY,  type: String,  default: "{}" },
+      { key: CAMP.SETTING.PHASE,               type: String,  default: CAMP.PHASE.FREE_ROAM },
+      { key: CAMP.SETTING.READY,               type: String,  default: "{}" },
+      { key: CAMP.SETTING.SELECTIONS,          type: String,  default: "{}" },
+      { key: CAMP.SETTING.RESOLVED,            type: String,  default: "{}" },
+      { key: CAMP.SETTING.BOND_CONFIRMED,      type: String,  default: "{}" },
+      { key: CAMP.SETTING.BOND_SUMMARY,        type: String,  default: "{}" },
+      { key: CAMP.SETTING.SLEEP_READY,         type: String,  default: "{}" },
+      { key: CAMP.SETTING.SET_OUT_READY,       type: String,  default: "{}" },
+      { key: CAMP.SETTING.EXPLORATION_DEBUFFS, type: String,  default: "{}" },
     ];
 
     for (const { key, type, default: def } of defs) {
@@ -164,6 +165,15 @@
       return activeUserIds.length > 0 && activeUserIds.every(id => m[id]);
     },
 
+    // ── Exploration debuffs ─────────────────────────────────────────────────
+    getExplorationDebuffs() { return getJSON(CAMP.SETTING.EXPLORATION_DEBUFFS); },
+    async setExplorationDebuff(actorId, debuff) {
+      const d = this.getExplorationDebuffs();
+      d[actorId] = { ...(d[actorId] ?? {}), ...debuff };
+      await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, d);
+    },
+    async clearExplorationDebuffs() { await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {}); },
+
     // ── Set Out lobby ready ─────────────────────────────────────────────────
     getSetOutReady() { return getJSON(CAMP.SETTING.SET_OUT_READY); },
     async toggleSetOutReady(userId) {
@@ -188,6 +198,7 @@
       await setJSON(CAMP.SETTING.BOND_SUMMARY, {});
       await setJSON(CAMP.SETTING.SLEEP_READY, {});
       await setJSON(CAMP.SETTING.SET_OUT_READY, {});
+      await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {});
       console.debug(TAG, "State reset to FREE_ROAM.");
     },
   };

@@ -25,14 +25,15 @@
   // World setting keys  (registered under MODULE_ID scope)
   // ---------------------------------------------------------------------------
   CAMP.SETTING = Object.freeze({
-    PHASE:           "campPhase",
-    READY:           "campReady",           // JSON { [userId]: true }
-    SELECTIONS:      "campSelections",      // JSON { [actorId]: { locked: key|null, lockedAt: ms|null } }
-    RESOLVED:        "campResolved",        // JSON { [actorId]: true }
-    BOND_CONFIRMED:  "campBondConfirmed",   // JSON { [userId]: true }
-    BOND_SUMMARY:    "campBondSummary",     // JSON { [actorId]: BondSummaryEntry }
-    SLEEP_READY:     "campSleepReady",      // JSON { [userId]: true }
-    SET_OUT_READY:   "campSetOutReady",     // JSON { [userId]: true }
+    PHASE:                "campPhase",
+    READY:                "campReady",                // JSON { [userId]: true }
+    SELECTIONS:           "campSelections",           // JSON { [actorId]: { locked: key|null, lockedAt: ms|null } }
+    RESOLVED:             "campResolved",             // JSON { [actorId]: true }
+    BOND_CONFIRMED:       "campBondConfirmed",        // JSON { [userId]: true }
+    BOND_SUMMARY:         "campBondSummary",          // JSON { [actorId]: BondSummaryEntry }
+    SLEEP_READY:          "campSleepReady",           // JSON { [userId]: true }
+    SET_OUT_READY:        "campSetOutReady",          // JSON { [userId]: true }
+    EXPLORATION_DEBUFFS:  "campExplorationDebuffs",   // JSON { [actorId]: { halfRest: true } }
   });
 
   // ---------------------------------------------------------------------------
@@ -41,16 +42,20 @@
   CAMP.SOCKET_CH = `module.${CAMP.MODULE_ID}`;
   CAMP.MSG = Object.freeze({
     // Client → GM requests
-    TOGGLE_READY:      "CAMP_TOGGLE_READY",
-    LOCK_ACTIVITY:     "CAMP_LOCK_ACTIVITY",
-    UNLOCK_ACTIVITY:   "CAMP_UNLOCK_ACTIVITY",
-    CONFIRM_BOND:      "CAMP_CONFIRM_BOND",
-    UNCONFIRM_BOND:    "CAMP_UNCONFIRM_BOND",
-    ACTIVITY_DONE:     "CAMP_ACTIVITY_DONE",
-    TOGGLE_SLEEP:      "CAMP_TOGGLE_SLEEP",
-    TOGGLE_SET_OUT:    "CAMP_TOGGLE_SET_OUT",
+    TOGGLE_READY:       "CAMP_TOGGLE_READY",
+    LOCK_ACTIVITY:      "CAMP_LOCK_ACTIVITY",
+    UNLOCK_ACTIVITY:    "CAMP_UNLOCK_ACTIVITY",
+    CONFIRM_BOND:       "CAMP_CONFIRM_BOND",
+    UNCONFIRM_BOND:     "CAMP_UNCONFIRM_BOND",
+    ACTIVITY_DONE:      "CAMP_ACTIVITY_DONE",
+    TOGGLE_SLEEP:       "CAMP_TOGGLE_SLEEP",
+    TOGGLE_SET_OUT:     "CAMP_TOGGLE_SET_OUT",
     // Ephemeral broadcast (any → all)
-    HOVER_ACTIVITY:    "CAMP_HOVER_ACTIVITY",
+    HOVER_ACTIVITY:     "CAMP_HOVER_ACTIVITY",
+    // Exploration roulette (GM → all, owner → GM)
+    EXPLORATION_START:  "CAMP_EXPLORATION_START",
+    EXPLORATION_RESULT: "CAMP_EXPLORATION_RESULT",
+    EXPLORATION_DONE:   "CAMP_EXPLORATION_DONE",
   });
 
   // ---------------------------------------------------------------------------

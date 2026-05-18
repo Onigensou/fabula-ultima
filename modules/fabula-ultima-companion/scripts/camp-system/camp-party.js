@@ -25,7 +25,7 @@
       const entries = [];
 
       for (let i = 1; i <= 4; i++) {
-        const raw = String(props[`party_member_${i}`] ?? "").trim();
+        const raw = String(props[`member_id_${i}`] ?? "").trim();
         if (!raw) continue;
 
         // Resolve actor (plain ID or UUID)
