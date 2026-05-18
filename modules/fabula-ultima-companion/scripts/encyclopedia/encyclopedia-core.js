@@ -117,7 +117,7 @@
 .oni-enc-desc-inline { flex:0 0 auto; max-width:340px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border:1px solid rgba(0,0,0,.12); border-radius:8px; padding:8px 10px; background:rgba(255,255,255,.28); }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
 .oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid rgba(0,0,0,.14); border-radius:8px; overflow:hidden; margin-top:6px; }
-.oni-enc-stat-cell { padding:6px 4px; text-align:center; border-right:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.22); }
+.oni-enc-stat-cell { padding:8px 6px; text-align:center; border-right:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.22); }
 .oni-enc-stat-cell:last-child { border-right:none; }
 .oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.26); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
 .oni-enc-box-title { font-weight:900; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid rgba(0,0,0,.12); padding-bottom:6px; margin-bottom:8px; }
@@ -129,13 +129,13 @@
 .oni-enc-2col-pct { flex:1; }
 .oni-enc-eff-pos { color:#1f7a3a; font-weight:700; }
 .oni-enc-eff-neg { color:#b02a2a; font-weight:700; }
-.oni-enc-ability-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-.oni-enc-ability-item { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:rgba(255,255,255,.36); }
+.oni-enc-ability-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+.oni-enc-ability-item { display:flex; align-items:flex-start; gap:7px; padding:5px 8px; border:1px solid rgba(0,0,0,.1); border-radius:7px; background:rgba(255,255,255,.36); }
 .oni-enc-ability-item p { margin: 3px 0; }
 .oni-enc-ability-item ul { padding-left: 18px; margin: 3px 0; }
 .oni-enc-ability-item li { margin: 2px 0; }
 .oni-enc-ability-icon { width:24px; height:24px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
-.oni-enc-atr-icon { width:22px; height:22px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 3px; cursor:default; }
+.oni-enc-atr-icon { width:26px; height:26px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 3px; cursor:default; }
 .oni-enc-muted { opacity:.65; font-style:italic; }
 .oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
     `.trim();
@@ -520,7 +520,7 @@
     const stat = (label, v) => `
 <div class="oni-enc-stat-cell">
   <img class="oni-enc-atr-icon" src="${ATR_ICONS[label]}" title="${label}" alt="${label}">
-  <div style="font-size:15px;font-weight:900;">${v != null ? ESC(String(v)) : "—"}</div>
+  <div style="font-size:16px;font-weight:900;">${v != null ? ESC(String(v)) : "—"}</div>
 </div>`;
     return renderSection("Attributes", `<div class="oni-enc-stat-row">${stat("MIG", p.mig_base)}${stat("DEX", p.dex_base)}${stat("INS", p.ins_base)}${stat("WLP", p.wlp_base)}</div>`, "stats");
   }
@@ -660,50 +660,38 @@
 
   function renderAttacks(actor, p) {
     const newList = objectToList(p.attack_list).filter(e => !e?.$deleted);
-    if (newList.length) {
+    if (newList.length)
       return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${newList.map(e => renderAttackEntry(actor, e, "new")).join("")}</ul>`, "details");
-    }
     const oldList = objectToList(p.basic_attacks).filter(e => !e?.$deleted);
-    const body = oldList.length
-      ? `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`
-      : `<p style="margin:0;" class="oni-enc-muted">None.</p>`;
-    return renderSection("Basic Attacks", body, "details");
+    if (!oldList.length) return null;
+    return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   function renderActiveSkills(actor, p) {
     const newList = objectToList(p.skill_active_list).filter(e => !e?.$deleted);
-    if (newList.length) {
-      return renderSection("Special Abilities", `<ul class="oni-enc-ability-list">${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`, "details");
-    }
+    if (newList.length)
+      return renderSection("Skills", `<ul class="oni-enc-ability-list">${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`, "details");
     const oldList = objectToList(p.special_list).filter(e => !e?.$deleted);
-    const body = oldList.length
-      ? `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`
-      : `<p style="margin:0;" class="oni-enc-muted">None.</p>`;
-    return renderSection("Special Abilities", body, "details");
+    if (!oldList.length) return null;
+    return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   function renderPassiveSkills(actor, p) {
     const newList = objectToList(p.skill_passive_list).filter(e => !e?.$deleted);
-    if (newList.length) {
-      return renderSection("Passive Abilities", `<ul class="oni-enc-ability-list">${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`, "details");
-    }
+    if (newList.length)
+      return renderSection("Passive", `<ul class="oni-enc-ability-list">${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`, "details");
     const oldList = objectToList(p.other_list).filter(e => !e?.$deleted);
-    const body = oldList.length
-      ? `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`
-      : `<p style="margin:0;" class="oni-enc-muted">None.</p>`;
-    return renderSection("Passive Abilities", body, "details");
+    if (!oldList.length) return null;
+    return renderSection("Passive", `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   function renderSpells(actor, p) {
     const newList = objectToList(p.normal_spell_list).filter(e => !e?.$deleted);
-    if (newList.length) {
+    if (newList.length)
       return renderSection("Spells", `<ul class="oni-enc-ability-list">${newList.map(e => renderSpellEntry(actor, e, "new")).join("")}</ul>`, "details");
-    }
     const oldList = objectToList(p.spell_list).filter(e => !e?.$deleted);
-    const body = oldList.length
-      ? `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`
-      : `<p style="margin:0;" class="oni-enc-muted">None.</p>`;
-    return renderSection("Spells", body, "details");
+    if (!oldList.length) return null;
+    return renderSection("Spells", `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   async function renderStealables(actor, p) {
@@ -828,14 +816,16 @@
       // ── Identity: stealables (always visible once identity unlocked) ─
       await renderStealables(actor, p),
 
-      // ── Details tier: action block ─────────────────────────────────
-      ...(showDetails ? [
-        renderActionHeader(),
-        renderAttacks(actor, p),
-        renderActiveSkills(actor, p),
-        renderSpells(actor, p),
-        renderPassiveSkills(actor, p),
-      ] : []),
+      // ── Details tier: action block (auto-hide empty sections) ─────
+      ...(showDetails ? (() => {
+        const sections = [
+          renderAttacks(actor, p),
+          renderActiveSkills(actor, p),
+          renderSpells(actor, p),
+          renderPassiveSkills(actor, p),
+        ].filter(Boolean);
+        return sections.length ? [renderActionHeader(), ...sections] : [];
+      })() : []),
 
       renderFooter(best, bestBy, tierLabel, lastUpdated),
     ].join("\n");
