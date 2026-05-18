@@ -276,8 +276,15 @@ Hooks.once("ready", () => {
     }
   }
 
-  // Small helper: build & emit a reactionPhase payload
-  function emitReactionPhase(trigger, extra = {}) {
+  // Small helper: build & emit a reactionPhase payload.
+  //
+  // Returns a Promise that resolves when this lifecycle reaction has FULLY
+  // settled — every spawned sub-window closed (user pick / cancel /
+  // timeout) and any chained effects ran to completion. Routes through
+  // `emitPhaseSequential` so concurrent lifecycle triggers serialize —
+  // turn_start can't open while end_of_round is mid-prompt, for instance.
+  // Callers that genuinely want fire-and-forget can simply not await.
+  async function emitReactionPhase(trigger, extra = {}) {
     // IMPORTANT (Module Mode):
     // - Only the GM should broadcast reaction phases.
     //   (Non-GM clients ignore phases and wait for GM offers via socket.)
@@ -290,29 +297,19 @@ Hooks.once("ready", () => {
       ...extra,
     };
 
-    // Route through the awaitable substrate (Phase R Slice 1.5) so a
-    // per-reactor sub-window is created for each manual match. Without
-    // this, lifecycle reactions (conflict_start / round_start /
-    // round_end / turn_start / turn_end) have no sub-window — the dialog
-    // fires pickerPicked, GM calls resolveSub(subKey), but
-    // _subWindows.get(subKey) returns undefined and the close-tick is
-    // never broadcast, leaving the floating reaction button stuck on
-    // screen. openWindow stamps the payload with __emitId (which the
-    // manager keys reactorsFound on) and itself emits `oni:reactionPhase`,
-    // so all existing listeners still see the phase. Fire-and-forget:
-    // lifecycle phases are not awaited by any flow; the returned promise
-    // resolves when subs settle and is discarded.
     const rs = globalThis.FUCompanion?.api?.reactionSystem;
+    if (rs?.emitPhaseSequential) {
+      try { return await rs.emitPhaseSequential(payload, { reason: "lifecycle" }); }
+      catch (e) { console.warn("[PhaseHandler] emitPhaseSequential threw for lifecycle phase:", trigger, e); return; }
+    }
     if (rs?.openWindow) {
-      try { rs.openWindow(payload, { reason: "lifecycle" }); }
-      catch (e) { console.warn("[PhaseHandler] openWindow threw for lifecycle phase:", trigger, e); }
-      return;
+      // Legacy fallback if the sequential helper isn't installed yet —
+      // still better than ONI.emit because at least sub-windows track.
+      try { return await rs.openWindow(payload, { reason: "lifecycle" }); }
+      catch (e) { console.warn("[PhaseHandler] openWindow threw for lifecycle phase:", trigger, e); return; }
     }
 
-    // Fallback path — substrate not loaded yet. Buttons spawned from this
-    // emit will not get a substrate-driven close (no sub-window exists),
-    // but the manager still sees the phase so passive auto-fire and the
-    // legacy hook listeners keep working.
+    // Last-resort fallback — substrate not loaded yet.
     if (!globalThis.ONI?.emit) return;
     ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
   }

@@ -198,21 +198,28 @@ return (async () => {
       });
 
       try {
-        // Route through reactionSystem.openWindow when available so the
-        // substrate creates per-reactor sub-windows (countdown + cancel +
-        // pickerClosed lifecycle). The legacy direct `ONI.emit` path still
-        // fires reactions for the manager BUT bypasses the substrate, so
-        // blade buttons spawn without a countdown badge and cancel clicks
-        // have no sub-window to resolve. openWindow internally stamps an
-        // emitId and emits oni:reactionPhase, so the manager still sees the
-        // trigger exactly as before. We fire-and-forget (no await) so the
-        // damage card resolution does not block on user reaction picks.
+        // Route through reactionSystem.emitPhaseSequential when available so
+        // the substrate (a) creates per-reactor sub-windows and (b) serializes
+        // this emission behind any in-flight reaction prompt. Without
+        // serialization, a damage card that emits creature_takes_damage and
+        // then triggers creature_enter_crisis (via auto-crisis-detection)
+        // produces overlapping reaction UIs — Painful Lesson and Heart of
+        // Darkness racing for the same modal slot. emitPhaseSequential awaits
+        // the previous reaction's full resolution (sub-windows closed, chain
+        // dispatch complete) before emitting this one. Fire-and-forget so the
+        // damage card pipeline itself doesn't block — the serialization is at
+        // the substrate level.
         const rs = globalThis.FUCompanion?.api?.reactionSystem;
-        if (rs?.openWindow) {
+        if (rs?.emitPhaseSequential) {
+          rs.emitPhaseSequential(payload, { reason: "damage_card_emit" })
+            .catch(err => console.warn(`${RUN_TAG} emitPhaseSequential rejected`, err));
+          observedSync = true;
+          console.log(`${RUN_TAG} reactionSystem.emitPhaseSequential dispatched`, { trigger: payload?.trigger });
+        } else if (rs?.openWindow) {
           rs.openWindow(payload, { reason: "damage_card_emit" })
             .catch(err => console.warn(`${RUN_TAG} openWindow rejected`, err));
           observedSync = true;
-          console.log(`${RUN_TAG} reactionSystem.openWindow dispatched`, { trigger: payload?.trigger });
+          console.log(`${RUN_TAG} reactionSystem.openWindow dispatched (legacy; emitPhaseSequential unavailable)`, { trigger: payload?.trigger });
         } else {
           emit("oni:reactionPhase", payload, { local: true, world: false });
           observedSync = true;

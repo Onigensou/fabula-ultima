@@ -623,7 +623,10 @@ function stampDamageBatchMap(phasePayloadByTrigger = {}, damageBatchId) {
           // (redirect_target, future damage_change, ...) can find the source
           // action card. Resource-only kinds ignore it.
           const dispatchPayload = pickPreferredPayload(triggerKey, phasePayload, phasePayloadByTrigger);
-          const grantResult = await grantApi.applyEffectByLabel(item, effectRef, token, game.combat, dispatchPayload);
+          // Mark this dispatch as a passive run so downstream handlers can
+          // auto-resolve user prompts when the result is unambiguous (see
+          // applyApplyAeEffect target_prompt auto-skip).
+          const grantResult = await grantApi.applyEffectByLabel(item, effectRef, token, game.combat, dispatchPayload, { isPassive: true });
           grantApplied =
             !!grantResult?.ok &&
             !grantResult?.skipped &&

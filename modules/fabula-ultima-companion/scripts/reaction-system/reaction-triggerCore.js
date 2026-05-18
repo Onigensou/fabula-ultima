@@ -690,10 +690,10 @@ Hooks.once("ready", () => {
     });
 
     function _collectBondedNames(actor) {
-      const props = actor?.system?.props ?? {};
       const out = new Set();
-      for (const slot of BOND_SLOTS) {
-        const v = String(props[`bond_${slot}`] ?? "").trim().toLowerCase();
+      const bonds = globalThis.BondUpdater?.readBondsAll?.(actor) ?? [];
+      for (const b of bonds) {
+        const v = String(b?.name ?? "").trim().toLowerCase();
         if (v) out.add(v);
       }
       return out;
@@ -786,16 +786,16 @@ Hooks.once("ready", () => {
       const creatures = _collectBondCheckCreatures(triggerKey, phasePayload, combat);
       if (!creatures.length) return false;
 
-      const props = reactActor.system?.props ?? {};
+      const bonds = globalThis.BondUpdater?.readBondsAll?.(reactActor) ?? [];
 
       return creatures.some(subj => {
         const an = String(subj?.actor?.name ?? "").trim().toLowerCase();
         const tn = String(subj?.document?.name ?? subj?.name ?? "").trim().toLowerCase();
-        for (const slot of BOND_SLOTS) {
-          const bondName = String(props[`bond_${slot}`] ?? "").trim().toLowerCase();
+        for (const b of bonds) {
+          const bondName = String(b?.name ?? "").trim().toLowerCase();
           if (!bondName) continue;
           if (bondName !== an && bondName !== tn) continue;
-          const emoVal = String(props[`emotion_${slot}_${pair}`] ?? "").trim().toLowerCase();
+          const emoVal = String(b?.[`e${pair}`] ?? "").trim().toLowerCase();
           if (emoVal === v) return true;
         }
         return false;

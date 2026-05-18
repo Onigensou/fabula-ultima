@@ -413,6 +413,66 @@
    *                 subResults: [{ subKey, reactorTokenId, outcome, reason,
    *                                pickedItem?, effectResult? }, ...] }
    */
+  // ---------------------------------------------------------------------------
+  // Sequential trigger emission (Phase H — multi-trigger ordering)
+  // ---------------------------------------------------------------------------
+  // Problem: two reaction triggers firing in quick succession (e.g. Painful
+  // Lesson's `creature_takes_damage` plus Heart of Darkness's
+  // `creature_enter_crisis` on the same damage card) produce overlapping
+  // reaction UIs — the player sees two buttons / two modals competing for
+  // input. Same goes for turn-start lifecycle reactions vs the player's
+  // action menu opening.
+  //
+  // Fix: chain emissions through a module-level promise. Each call to
+  // `emitPhaseSequential` waits for the previous call's `openWindow` to
+  // fully resolve (sub-windows closed, chain dispatch complete) before
+  // emitting its own trigger. Conversion of fire-and-forget ONI.emit
+  // call sites to `emitPhaseSequential` extends serialization to direct
+  // emit paths (auto-crisis-detection, creature-defeated, etc.).
+  //
+  // GM-only: non-GM clients fall through openWindow's existing passthrough
+  // branch and never block.
+  let _phaseChain = Promise.resolve();
+
+  async function emitPhaseSequential(payload, opts = {}) {
+    if (!game.user?.isGM) {
+      // Non-GM: no serialization; just emit through openWindow's passthrough.
+      return openWindow(payload, opts);
+    }
+    const prior = _phaseChain;
+    let release;
+    _phaseChain = new Promise((r) => { release = r; });
+    try {
+      // Don't let an upstream rejection break the chain — log and continue.
+      try { await prior; } catch (e) { console.warn(TAG, "prior phase rejected:", e?.message ?? e); }
+      return await openWindow(payload, opts);
+    } finally {
+      release();
+    }
+  }
+
+  // Returns when all in-flight sequential emissions have settled. Useful for
+  // UI surfaces (e.g. the turn-start action menu) that want to defer opening
+  // until any in-flight reaction prompt fully resolves.
+  async function waitForIdle({ timeoutMs = 60000 } = {}) {
+    const current = _phaseChain;
+    if (!timeoutMs) {
+      try { await current; } catch (_) {}
+      return { timedOut: false };
+    }
+    let to;
+    const timeoutP = new Promise((r) => { to = setTimeout(() => r({ timedOut: true }), timeoutMs); });
+    try {
+      const result = await Promise.race([
+        current.then(() => ({ timedOut: false }), () => ({ timedOut: false })),
+        timeoutP
+      ]);
+      return result;
+    } finally {
+      try { clearTimeout(to); } catch (_) {}
+    }
+  }
+
   async function openWindow(payload, opts = {}) {
     // timeoutMs           — per-sub-window timeout once a sub is created.
     // managerBugTimeoutMs — DIAGNOSTIC backstop. The manager is contractually
@@ -796,6 +856,8 @@
   root.api.reactionSystem = {
     __installed: true,
     openWindow,
+    emitPhaseSequential,
+    waitForIdle,
     closeWindowsForActionCard,
     closeWindowsForToken,
     closeAll,

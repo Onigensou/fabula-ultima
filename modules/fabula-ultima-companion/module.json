@@ -192,6 +192,7 @@
     "scripts/reaction-system/reaction-chooseSkill.js",
     "scripts/reaction-system/reaction-rebuildActionCard.js",
     "scripts/reaction-system/reaction-redirectPendingAction.js",
+    "scripts/reaction-system/visible-token-picker.js",
     "scripts/reaction-system/reaction-manager-helpers.js",
     "scripts/reaction-system/reaction-manager.js",
     "scripts/reaction-system/reaction-phaseHandler.js",

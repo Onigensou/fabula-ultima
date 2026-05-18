@@ -240,6 +240,17 @@
           toRemove.push(eff.id);
         }
       }
+
+      // Generic scene-expiry: any AE with `flags.fabula-ultima-companion.sceneExpiry: true`
+      // is cleaned at combat end, regardless of chargeKey. Used by AEs that
+      // aren't bonus-action grants but still need scene-scoped lifetime
+      // (e.g. Heart of Darkness's "Bond of Hatred" bond AE).
+      for (const eff of (actor.effects?.contents ?? actor.effects ?? [])) {
+        if (!eff?.id || toRemove.includes(eff.id)) continue;
+        const sceneExpiry = !!eff?.flags?.["fabula-ultima-companion"]?.sceneExpiry;
+        if (sceneExpiry) toRemove.push(eff.id);
+      }
+
       if (!toRemove.length) continue;
       try {
         await actor.deleteEmbeddedDocuments("ActiveEffect", toRemove);

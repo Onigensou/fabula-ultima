@@ -369,7 +369,24 @@ Hooks.once("ready", () => {
   // Authors create the AE itself on a skill item / via the AEM registry and
   // reference it by string here. Inline JSON authoring was removed — keep the
   // single source of truth in the AE document.
-  async function applyApplyAeEffect(effectRow, reactionToken, combat) {
+  //
+  // target_prompt mode (Phase G — Heart of Darkness):
+  //   target_prompt          "" | "visible"   — when "visible", open the
+  //                                              visible-token picker and
+  //                                              stamp the picked target's
+  //                                              name into the applied AE's
+  //                                              flags.fabula-ultima-companion.bondAE.bond_name.
+  //                                              grant_target is ignored when
+  //                                              prompt mode is active — the
+  //                                              AE always lands on the reactor
+  //                                              (the bond exists on the reactor,
+  //                                              not the picked target).
+  //   target_prompt_filter   "" | "no_existing_bond"
+  //                          — excludes candidates already in the reactor's
+  //                            bond set (props + AE-borne, via BondUpdater).
+  //   target_prompt_title    optional Dialog title
+  //   target_prompt_message  optional body text
+  async function applyApplyAeEffect(effectRow, reactionToken, combat, ctx) {
     const aem = globalThis?.FUCompanion?.api?.activeEffectManager;
     if (typeof aem?.applyEffects !== "function") {
       return { ok: false, reason: "aem_unavailable", applied: [] };
@@ -380,16 +397,119 @@ Hooks.once("ready", () => {
       return { ok: true, skipped: true, reason: "no_ae_template_ref", applied: [] };
     }
 
+    const dup = (effectRow.ae_duplicate_mode ?? "replace").toString().trim().toLowerCase() || "replace";
+    const promptMode = String(effectRow.target_prompt ?? "").trim().toLowerCase();
+    const isPassive = !!ctx?.isPassive;
+
+    // -------- prompt-target branch --------
+    if (promptMode === "visible") {
+      const picker = globalThis["oni.VisibleTokenPicker"];
+      if (typeof picker?.pickVisibleToken !== "function" || typeof picker?._collectCandidates !== "function") {
+        return { ok: false, reason: "picker_unavailable", applied: [] };
+      }
+      const reactorActor = reactionToken?.actor ?? null;
+      if (!reactorActor) {
+        return { ok: false, reason: "no_reactor_actor", applied: [] };
+      }
+
+      // Build exclusion set if filter is active.
+      const filter = String(effectRow.target_prompt_filter ?? "").trim().toLowerCase();
+      let excludeNames = [];
+      if (filter === "no_existing_bond") {
+        const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
+        excludeNames = bonds.map(b => String(b?.name ?? "").trim()).filter(Boolean);
+      }
+
+      // Auto-skip policy: passive reactions shouldn't open a picker when the
+      // result is unambiguous. Resolve candidates up front; if isPassive and
+      // exactly one survives the filter, auto-pick. Manual reactions always
+      // prompt so the player can cancel.
+      const candidates = picker._collectCandidates({
+        reactorToken: reactionToken,
+        excludeNames
+      });
+
+      let pick;
+      if (!candidates.length) {
+        pick = { ok: false, reason: "no_candidates" };
+      } else if (isPassive && candidates.length === 1) {
+        const c = candidates[0];
+        pick = {
+          ok: true,
+          tokenUuid: c.tokenUuid,
+          actorUuid: c.actorUuid,
+          tokenName: c.tokenName,
+          actorName: c.actorName,
+          autoResolved: true
+        };
+      } else {
+        pick = await picker.pickVisibleToken({
+          reactorToken: reactionToken,
+          excludeNames,
+          title: effectRow.target_prompt_title || "Choose a Target",
+          prompt: effectRow.target_prompt_message || "Choose a creature you can see."
+        });
+      }
+
+      if (!pick?.ok) {
+        return { ok: !!pick?.cancelled, abort: !pick?.cancelled, applied: [], reason: pick?.reason ?? "picker_no_pick", kind: "apply_ae", templateRef: ref };
+      }
+
+      // Resolve the template AE and patch its bondAE.bond_name with the pick.
+      let templateDoc;
+      try { templateDoc = await fromUuid(ref); }
+      catch (e) { return { ok: false, reason: "template_uuid_invalid", applied: [], error: String(e?.message ?? e) }; }
+      if (!templateDoc) return { ok: false, reason: "template_not_found", applied: [] };
+
+      const baked = templateDoc.toObject?.() ?? foundry.utils.deepClone(templateDoc);
+      // Strip ids that would collide on create.
+      delete baked._id; delete baked.id; delete baked.folder; delete baked.sort; delete baked.ownership; delete baked._stats;
+      baked.flags = baked.flags ?? {};
+      baked.flags["fabula-ultima-companion"] = baked.flags["fabula-ultima-companion"] ?? {};
+      const bondAE = baked.flags["fabula-ultima-companion"].bondAE ?? null;
+      if (bondAE) {
+        baked.flags["fabula-ultima-companion"].bondAE = {
+          ...bondAE,
+          bond_name: pick.tokenName || pick.actorName || bondAE.bond_name
+        };
+      }
+      // Optionally retitle the AE so the actor inventory shows the target name.
+      if (bondAE && (pick.tokenName || pick.actorName)) {
+        const targetLabel = pick.actorName || pick.tokenName;
+        baked.name = baked.name?.includes("{target}")
+          ? baked.name.replaceAll("{target}", targetLabel)
+          : `${baked.name ?? "Bond"} — ${targetLabel}`;
+      }
+
+      try {
+        const res = await aem.applyEffects({
+          actorUuids: [reactorActor.uuid],
+          effects: [{ effectData: baked }],
+          duplicateMode: dup
+        });
+        return {
+          ok: true,
+          applied: [{ actorUuid: reactorActor.uuid, actorName: reactorActor.name, ok: res?.ok !== false, report: res }],
+          kind: "apply_ae",
+          targetMode: "self",
+          duplicateMode: dup,
+          templateRef: ref,
+          promptPick: { tokenUuid: pick.tokenUuid, actorUuid: pick.actorUuid, name: pick.tokenName || pick.actorName }
+        };
+      } catch (e) {
+        return { ok: false, reason: "apply_threw", error: String(e?.message ?? e), applied: [], kind: "apply_ae", templateRef: ref };
+      }
+    }
+
+    // -------- default branch (no prompt) --------
     const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
     const targetActors = resolveTargetActors(targetMode, reactionToken, combat);
     if (!targetActors.length) {
       return { ok: false, reason: "no_targets", applied: [] };
     }
 
-    const dup = (effectRow.ae_duplicate_mode ?? "replace").toString().trim().toLowerCase() || "replace";
-
     const applied = [];
-    for (const actor of targetActors) {
+    for (const { actor } of targetActors) {
       try {
         const res = await aem.applyEffects({
           actorUuids: [actor.uuid],
@@ -454,7 +574,7 @@ Hooks.once("ready", () => {
     let anyConsumed = false;
     let anyEmpty = false;
 
-    for (const actor of targetActors) {
+    for (const { actor } of targetActors) {
       const owned = chargesApi.findOnActor(actor, { key: chargeKey });
       if (!owned.length) {
         applied.push({
@@ -869,7 +989,7 @@ Hooks.once("ready", () => {
 
     const stepResults = [];
     for (const stepLabel of steps) {
-      const res = await applyEffectByLabel(item, stepLabel, reactionToken, combat, ctx?.payload);
+      const res = await applyEffectByLabel(item, stepLabel, reactionToken, combat, ctx?.payload, { isPassive: !!ctx?.isPassive });
       stepResults.push({ stepLabel, result: res });
       if (res?.abort) {
         return {
@@ -901,7 +1021,7 @@ Hooks.once("ready", () => {
   // `payload` is the reaction phase payload (or chosen-skill payload) and
   // is passed via `ctx.payload` to handlers that mutate the action card
   // (redirect_target, future damage_change/etc.). Resource handlers ignore it.
-  async function applyEffectByLabel(item, effectLabel, reactionToken, combat = game.combat, payload = null) {
+  async function applyEffectByLabel(item, effectLabel, reactionToken, combat = game.combat, payload = null, opts = {}) {
     if (!item) return { ok: false, reason: "missing_item", applied: [] };
     if (!reactionToken) return { ok: false, reason: "missing_reaction_token", applied: [] };
 
@@ -915,14 +1035,20 @@ Hooks.once("ready", () => {
     }
 
     const kind = (effectRow.effect_kind ?? "").toString().trim().toLowerCase() || "grant";
-    const ctx = { item, payload };
+    // ctx threads cross-handler context: item (for chain step lookups),
+    // payload (trigger phase data), and isPassive (true when this came from
+    // the auto-passive runner, false when the player accepted a manual
+    // reaction prompt). Handlers can use isPassive to skip user-facing UI
+    // when the result is unambiguous — e.g. apply_ae's target_prompt auto-
+    // resolves to the only candidate without opening the picker.
+    const ctx = { item, payload, isPassive: !!opts.isPassive };
     let result;
     switch (kind) {
       case "grant":
         result = await applyGrantEffect(effectRow, reactionToken, combat, ctx);
         break;
       case "apply_ae":
-        result = await applyApplyAeEffect(effectRow, reactionToken, combat);
+        result = await applyApplyAeEffect(effectRow, reactionToken, combat, ctx);
         break;
       case "consume_charge":
         result = await applyConsumeChargeEffect(effectRow, reactionToken, combat);

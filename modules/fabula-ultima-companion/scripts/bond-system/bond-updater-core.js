@@ -49,6 +49,64 @@
       return out;
     },
 
+    // AE-borne bonds. An ActiveEffect carrying
+    // flags.fabula-ultima-companion.bondAE contributes one virtual bond slot.
+    // Used by Heart of Darkness (scene-duration Bond of hatred) and any future
+    // skill that creates a temporary bond — keeps system.props.bond_temp clean.
+    readAEBonds(actor) {
+      const effects = actor?.effects?.contents ?? actor?.effects ?? [];
+      const out = [];
+      for (const eff of effects) {
+        if (!eff || eff.disabled || eff.isSuppressed) continue;
+        let data = null;
+        try { data = eff.getFlag?.("fabula-ultima-companion", "bondAE") ?? null; }
+        catch (_) { data = eff?.flags?.["fabula-ultima-companion"]?.bondAE ?? null; }
+        if (!data) continue;
+        const name = String(data.bond_name ?? "").trim();
+        if (!name) continue;
+        out.push({
+          idx:      `ae:${eff.id}`,
+          name,
+          e1:       String(data.emotion_1 ?? ""),
+          e2:       String(data.emotion_2 ?? ""),
+          e3:       String(data.emotion_3 ?? ""),
+          rel:      String(data.relationship ?? ""),
+          source:   "ae",
+          effectId: eff.id ?? null,
+        });
+      }
+      return out;
+    },
+
+    // Read the legacy `bond_temp` props slot. Returns an entry or null.
+    // bond_temp is used by the camp/rest system for temporary bonds; Heart
+    // of Darkness and other AE-based temp bonds use AE flags instead.
+    readTempBond(actor) {
+      const p = actor?.system?.props ?? {};
+      const name = String(p.bond_temp ?? "").trim();
+      if (!name) return null;
+      return {
+        idx:  "temp",
+        name,
+        e1:   String(p.emotion_temp_1    ?? ""),
+        e2:   String(p.emotion_temp_2    ?? ""),
+        e3:   String(p.emotion_temp_3    ?? ""),
+        rel:  String(p.relationship_temp ?? ""),
+        source: "props",
+      };
+    },
+
+    // Aggregated read — system.props slots (1–6) + bond_temp + AE-borne bonds
+    // in one array. Use this from any reader that needs the actor's "effective"
+    // bond set (bond filters, BOND_COUNT formulas, bond-strength resolution).
+    // Slots with an empty `name` are dropped, so the result is "real bonds only."
+    readBondsAll(actor) {
+      const all = this.readBonds(actor).filter(b => b.name && b.name.trim() !== "");
+      const temp = this.readTempBond(actor);
+      const aeBonds = this.readAEBonds(actor);
+      return temp ? all.concat([temp], aeBonds) : all.concat(aeBonds);
+    },
+
     /**
      * Write a single bond slot (N = 1–6) via actor.update().
      * Only the five canonical props for that slot are touched.

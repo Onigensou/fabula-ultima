@@ -38,18 +38,24 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  function emitReactionPhase(payload) {
+  async function emitReactionPhase(payload) {
+    const rs = globalThis.FUCompanion?.api?.reactionSystem;
+    if (rs?.emitPhaseSequential) {
+      try { return await rs.emitPhaseSequential(payload, { reason: "defeated" }); }
+      catch (e) { warn("emitPhaseSequential threw:", e?.message ?? e, payload); return; }
+    }
+    if (rs?.openWindow) {
+      try { return await rs.openWindow(payload, { reason: "defeated" }); }
+      catch (e) { warn("openWindow threw:", e?.message ?? e, payload); return; }
+    }
     try {
       if (globalThis?.ONI?.emit) {
         globalThis.ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
         return;
       }
     } catch (_e) {}
-    try {
-      Hooks.callAll?.("oni:reactionPhase", payload);
-    } catch (_e) {
-      warn("Could not emit oni:reactionPhase (no ONI.emit or Hooks.callAll).", payload);
-    }
+    try { Hooks.callAll?.("oni:reactionPhase", payload); }
+    catch (_e) { warn("Could not emit oni:reactionPhase (no substrate, no ONI.emit, no Hooks).", payload); }
   }
 
   function buildPayload(actor, tokenDoc) {

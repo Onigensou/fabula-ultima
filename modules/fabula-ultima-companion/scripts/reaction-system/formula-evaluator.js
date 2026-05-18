@@ -219,33 +219,30 @@ Hooks.once("ready", () => {
 
   function _norm(v) { return String(v ?? "").trim().toLowerCase(); }
 
-  function _bondedSlotMatchingSubject(reactorProps, subjectToken) {
+  // Returns the bond entry whose `name` matches the subject token's actor
+  // or token name (case-insensitive). Aggregates props slots + AE-borne bonds
+  // via BondUpdater.readBondsAll.
+  function _bondMatchingSubject(reactorActor, subjectToken) {
     if (!subjectToken) return null;
     const an = _norm(subjectToken?.actor?.name);
     const tn = _norm(subjectToken?.document?.name ?? subjectToken?.name);
-    for (const slot of BOND_SLOTS) {
-      const bn = _norm(reactorProps[`bond_${slot}`]);
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
+    for (const b of bonds) {
+      const bn = _norm(b?.name);
       if (!bn) continue;
-      if (bn === an || (tn && bn === tn)) return slot;
+      if (bn === an || (tn && bn === tn)) return b;
     }
     return null;
   }
 
-  function _bondStrength(reactorProps, slot) {
-    if (!slot) return 0;
-    let n = 0;
-    for (const i of [1, 2, 3]) {
-      if (_norm(reactorProps[`emotion_${slot}_${i}`])) n++;
-    }
-    return n;
+  function _bondStrength(bond) {
+    if (!bond) return 0;
+    return (_norm(bond.e1) ? 1 : 0) + (_norm(bond.e2) ? 1 : 0) + (_norm(bond.e3) ? 1 : 0);
   }
 
-  function _countBondsAny(reactorProps) {
-    let n = 0;
-    for (const slot of BOND_SLOTS) {
-      if (_norm(reactorProps[`bond_${slot}`])) n++;
-    }
-    return n;
+  function _countBondsAny(reactorActor) {
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
+    return bonds.length;
   }
 
   function _countStatusesOnActor(reactorActor) {
@@ -261,13 +258,13 @@ Hooks.once("ready", () => {
     return n;
   }
 
-  function _countBondsWithEmotion(reactorProps, emotion) {
+  function _countBondsWithEmotion(reactorActor, emotion) {
     const pair = EMOTION_PAIR[_norm(emotion)];
     if (!pair) return 0;
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
     let n = 0;
-    for (const slot of BOND_SLOTS) {
-      if (!_norm(reactorProps[`bond_${slot}`])) continue;
-      if (_norm(reactorProps[`emotion_${slot}_${pair}`]) === _norm(emotion)) n++;
+    for (const b of bonds) {
+      if (_norm(b?.[`e${pair}`]) === _norm(emotion)) n++;
     }
     return n;
   }
@@ -325,10 +322,10 @@ Hooks.once("ready", () => {
       case "CUR_IP": return Number(reactorProps.current_ip ?? 0) || 0;
       // Bonds
       case "BOND_STRENGTH": {
-        const slot = _bondedSlotMatchingSubject(reactorProps, subjectToken);
-        return _bondStrength(reactorProps, slot);
+        const bond = _bondMatchingSubject(reactorActor, subjectToken);
+        return _bondStrength(bond);
       }
-      case "BOND_COUNT": return _countBondsAny(reactorProps);
+      case "BOND_COUNT": return _countBondsAny(reactorActor);
       // Status effects suffered by the reactor (debuff-classified, non-disabled,
       // non-suppressed). Delegates classification to the AEM registry's
       // inferCategory() so a single source of truth governs what counts as a
@@ -351,7 +348,7 @@ Hooks.once("ready", () => {
 
     // BOND_COUNT_<EMOTION>
     const emoMatch = name.match(/^BOND_COUNT_(ADMIRATION|INFERIORITY|LOYALTY|MISTRUST|AFFECTION|HATRED)$/);
-    if (emoMatch) return _countBondsWithEmotion(reactorProps, emoMatch[1].toLowerCase());
+    if (emoMatch) return _countBondsWithEmotion(reactorActor, emoMatch[1].toLowerCase());
 
     console.warn(TAG, `Unknown identifier: ${name}`);
     return 0;

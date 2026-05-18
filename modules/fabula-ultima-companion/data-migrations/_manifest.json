@@ -59,6 +59,10 @@
     {
       "key": "2026-05-18-absorb-mp-declarative",
       "path": "data-migrations/2026-05-18-absorb-mp-declarative.js"
+    },
+    {
+      "key": "2026-05-18-heart-of-darkness-author",
+      "path": "data-migrations/2026-05-18-heart-of-darkness-author.js"
     }
   ]
 }
