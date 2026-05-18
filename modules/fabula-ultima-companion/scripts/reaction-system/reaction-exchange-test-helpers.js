@@ -70,6 +70,53 @@ Hooks.once("ready", () => {
       console.error(`${TAG} oni.ReactionExchange not loaded.`);
       return;
     }
+    // Optional: resolver may or may not be installed (load order varies
+    // during step 1 vs step 2). Look up lazily at op invocation time.
+    function _resolverApi() {
+      return window["oni.ReactionExchangeResolver"] ?? null;
+    }
+
+    /**
+     * Build runner overrides from a declarative mockOutcomes map.
+     *
+     * mockOutcomes is keyed by skillUuid; values:
+     *   "fire"               — pass all checks; effect fires successfully
+     *   "fizzle:trigger"     — triggerRechecker returns false
+     *   "fizzle:capability"  — capabilityChecker returns false
+     *   "fizzle:cost"        — costChecker returns false
+     *   "throw:effect"       — effect runner throws
+     *   "error:effect"       — effect runner returns { ok: false, error }
+     *
+     * Skills not listed in mockOutcomes use the resolver's defaults.
+     */
+    function _buildRunnerOverrides(mockOutcomes) {
+      if (!mockOutcomes || typeof mockOutcomes !== "object") return {};
+      const outcomes = { ...mockOutcomes };
+      function _get(entry) { return outcomes[entry.skillUuid] ?? null; }
+      return {
+        triggerRechecker: async (entry) => {
+          const o = _get(entry);
+          if (o === "fizzle:trigger") return { ok: false, reason: "trigger_no_longer_matches" };
+          return { ok: true };
+        },
+        capabilityChecker: async (entry) => {
+          const o = _get(entry);
+          if (o === "fizzle:capability") return { ok: false, reason: "reactor_incapacitated" };
+          return { ok: true };
+        },
+        costChecker: async (entry) => {
+          const o = _get(entry);
+          if (o === "fizzle:cost") return { ok: false, reason: "cost_cannot_pay" };
+          return { ok: true };
+        },
+        effectRunner: async (entry) => {
+          const o = _get(entry);
+          if (o === "throw:effect") throw new Error("mock_effect_threw");
+          if (o === "error:effect") return { ok: false, error: "mock_effect_errored" };
+          return { ok: true, capturedTriggers: [] };
+        }
+      };
+    }
 
     function _clone(v) {
       if (foundry?.utils?.deepClone) return foundry.utils.deepClone(v);
@@ -112,7 +159,7 @@ Hooks.once("ready", () => {
       }
     }
 
-    function _runStep(state, step) {
+    async function _runStep(state, step) {
       const { op } = step;
       const exchangeId = state.exchangeId;
 
@@ -180,7 +227,7 @@ Hooks.once("ready", () => {
           let threw = false;
           let captured = null;
           try {
-            _runStep(state, inner);
+            await _runStep(state, inner);
           } catch (e) {
             threw = true;
             captured = String(e?.message ?? e);
@@ -189,6 +236,23 @@ Hooks.once("ready", () => {
             throw new Error(`expectThrows: inner op "${inner.op}" did not throw`);
           }
           return { innerOp: inner.op, captured };
+        }
+        case "runResolution": {
+          const resolver = _resolverApi();
+          if (!resolver) throw new Error("oni.ReactionExchangeResolver not loaded");
+          const runners = _buildRunnerOverrides(step.mockOutcomes);
+          const result = await resolver.runResolution(exchangeId, {
+            runners,
+            closeReason: step.closeReason ?? "completed"
+          });
+          // close() runs inside runResolution; the closed snapshot comes
+          // back so we can echo it into snapshotAfter via the same
+          // __closedSnapshot convention used by op:"close".
+          return {
+            usedSkillUuids: result.usedSkillUuids,
+            resolutionLog: result.resolutionLog,
+            __closedSnapshot: result.closedSnapshot
+          };
         }
         default:
           throw new Error(`unknown op "${op}"`);
@@ -217,10 +281,11 @@ Hooks.once("ready", () => {
     }
 
     /**
-     * Run a scenario synchronously. Returns a result object suitable
-     * for JSON serialization (no live state references).
+     * Run a scenario. Returns a result object suitable for JSON
+     * serialization (no live state references). Returns a Promise
+     * because runResolution is async; the bridge dispatch awaits it.
      */
-    function runScenario(scenario) {
+    async function runScenario(scenario) {
       if (!scenario || typeof scenario !== "object") {
         return { ok: false, failures: ["scenario must be an object"], log: [], failedStep: null };
       }
@@ -247,10 +312,10 @@ Hooks.once("ready", () => {
         for (let i = 0; i < script.length; i++) {
           const step = script[i];
           try {
-            const result = _runStep(state, step);
-            // close / abort return the final snapshot via __closedSnapshot
-            // because exchangeApi.snapshot() returns null once the exchange
-            // is GC'd from the active map.
+            const result = await _runStep(state, step);
+            // close / abort / runResolution return the final snapshot via
+            // __closedSnapshot because exchangeApi.snapshot() returns null
+            // once the exchange is GC'd from the active map.
             const closedSnap = result?.__closedSnapshot ?? null;
             const cleanResult = result ? { ...result } : {};
             delete cleanResult.__closedSnapshot;

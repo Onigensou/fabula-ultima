@@ -1,0 +1,28 @@
+{
+  "name": "14-resolve-cost-fizzle",
+  "description": "Entry fizzles via costChecker (MP/IP unavailable in real impl; mocked here).",
+  "scenario": {
+    "reset": true,
+    "open": {
+      "kind": "action_card",
+      "boundaryKey": "card-cost-fizzle",
+      "payload": {},
+      "initialTriggers": [ { "key": "creature_takes_damage" } ],
+      "eligibleUserIds": ["user-hina"]
+    },
+    "script": [
+      { "op": "addEntry", "actor": "user-hina", "params": {
+          "skillUuid": "Item.expensive", "skillName": "Expensive Skill"
+      } },
+      { "op": "setReady", "actor": "user-hina", "isReady": true },
+
+      { "op": "runResolution", "mockOutcomes": {
+          "Item.expensive": "fizzle:cost"
+      } }
+    ],
+    "expectations": {
+      "finalStatus": "closed",
+      "usedSkillUuids": []
+    }
+  }
+}

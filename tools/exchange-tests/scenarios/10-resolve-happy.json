@@ -1,0 +1,35 @@
+{
+  "name": "10-resolve-happy",
+  "description": "Two entries; both pass preFire and fire. usedSkillUuids reflects both; resolution log says fired,fired; status=closed.",
+  "scenario": {
+    "reset": true,
+    "open": {
+      "kind": "action_card",
+      "boundaryKey": "card-resolve-happy",
+      "payload": {},
+      "initialTriggers": [ { "key": "creature_takes_damage" } ],
+      "eligibleUserIds": ["user-hina", "GM"]
+    },
+    "script": [
+      { "op": "addEntry", "actor": "user-hina", "params": {
+          "skillUuid": "Item.fire-A", "skillName": "Fire A"
+      } },
+      { "op": "addEntry", "actor": "GM", "params": {
+          "userId": "GM", "skillUuid": "Item.fire-B", "skillName": "Fire B"
+      } },
+      { "op": "setReady", "actor": "user-hina", "isReady": true },
+      { "op": "setReady", "actor": "GM", "isReady": true },
+      { "op": "expect", "path": "status", "value": "resolving" },
+
+      { "op": "runResolution", "mockOutcomes": {
+          "Item.fire-A": "fire",
+          "Item.fire-B": "fire"
+      } }
+    ],
+    "expectations": {
+      "finalStatus": "closed",
+      "queueSize": 2,
+      "usedSkillUuids": ["Item.fire-A", "Item.fire-B"]
+    }
+  }
+}
