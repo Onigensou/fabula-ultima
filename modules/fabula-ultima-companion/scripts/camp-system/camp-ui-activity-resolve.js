@@ -59,6 +59,7 @@
 
       for (const entry of this._queue) {
         this.markRunning(entry.actorId);
+        CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
         try {
           const def = CAMP.ActivityRegistry?.get(entry.activityKey);
           if (def?.execute) {
