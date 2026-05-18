@@ -845,4 +845,124 @@ const choice = await new Promise((resolve) => new Dialog({
 
   Hooks.on("renderChatMessage", bindInvokeOnMessage);
   console.debug("[fu-invokeButtons] renderChatMessage bind registered");
+
+  // ==========================================================================
+  // Combat Lesson — "may use" invoke button
+  //
+  // When an attacker with a combatLessonBonus AE makes a harmful attack/spell,
+  // inject a "⚔️ Use Combat Lesson (+N)" button onto their action card.
+  // Click: patch checkBonus, rebuild card, delete AE.
+  // ==========================================================================
+
+  const CL_MODULE = "fabula-ultima-companion";
+  const CL_ICON   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/Chivalry.png";
+
+  function _clFindAe(actor) {
+    if (!actor) return null;
+    for (const ae of actor.effects) {
+      const bonus = ae.flags?.[CL_MODULE]?.combatLessonBonus;
+      if (bonus != null) return { ae, bonus: Number(bonus) };
+    }
+    return null;
+  }
+
+  function _clIsEligibleCard(payload) {
+    if (!payload) return false;
+    const state  = payload.meta?.actionCardState ?? payload.actionCardState ?? "pending";
+    if (state !== "pending") return false;
+    const intent = payload.meta?.actionIntent;
+    const type   = payload.core?.skillTypeRaw;
+    return intent === "harmful" || type === "Attack";
+  }
+
+  async function _handleCombatLessonInvoke(chatMsg) {
+    const flag    = chatMsg.getFlag(CL_MODULE, "actionCard");
+    const payload = flag?.payload ?? flag ?? null;
+    if (!payload) return;
+
+    const atkUuid = payload?.meta?.attackerUuid ?? payload?.meta?.attacker_uuid ?? null;
+    const attacker = await getActorFromUuid(atkUuid);
+    if (!attacker) return;
+    if (!ensureOwner(attacker, payload, "Use Combat Lesson")) return;
+
+    const found = _clFindAe(attacker);
+    if (!found) { ui.notifications?.warn("Combat Lesson buff no longer available."); return; }
+    const { ae, bonus } = found;
+
+    const A = payload.accuracy;
+    if (!A) return;
+
+    const next     = foundry.utils.deepClone(payload);
+    const oldBonus = Number(next.accuracy.checkBonus || 0);
+    const newBonus = oldBonus + bonus;
+    const rA       = Number(next.accuracy.rA?.total ?? 0);
+    const rB       = Number(next.accuracy.rB?.total ?? 0);
+
+    next.accuracy = {
+      ...next.accuracy,
+      rA: { total: rA, result: next.accuracy.rA?.result ?? rA },
+      rB: { total: rB, result: next.accuracy.rB?.result ?? rB },
+      checkBonus: newBonus,
+      total: rA + rB + newBonus,
+    };
+
+    await rebuildCard(next, chatMsg);
+    await ae.delete();
+  }
+
+  function _bindCombatLessonButton(chatMsg, html) {
+    if (!canInvokeForCurrentUser(chatMsg)) return;
+
+    const flag    = chatMsg.getFlag(CL_MODULE, "actionCard");
+    const payload = flag?.payload ?? flag ?? null;
+    if (!_clIsEligibleCard(payload)) return;
+
+    const atkUuid = payload?.meta?.attackerUuid ?? payload?.meta?.attacker_uuid ?? null;
+    if (!atkUuid) return;
+
+    let actor;
+    try {
+      const doc = fromUuidSync(atkUuid);
+      actor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
+    } catch { return; }
+    if (!actor) return;
+
+    const found = _clFindAe(actor);
+    if (!found) return;
+    const { bonus } = found;
+
+    const root = html?.[0] ?? null;
+    if (!root) return;
+
+    if (root.querySelector(".oni-cl-invoke-btn")) return; // already injected
+
+    // Find the invoke button row (contains trait/bond buttons); fall back to card root
+    const btnRow = root.querySelector("[data-fu-trait], [data-fu-bond]")?.closest("div, p, footer") ?? null;
+    const container = btnRow ?? root.querySelector(".message-content") ?? root;
+
+    const btn = document.createElement("button");
+    btn.className   = "oni-cl-invoke-btn";
+    btn.type        = "button";
+    btn.innerHTML   = `<img src="${CL_ICON}" style="width:15px;height:15px;border:none;vertical-align:middle;margin-right:4px;">Use Combat Lesson (+${bonus})`;
+    btn.style.cssText = "margin-top:4px;padding:4px 10px;font-size:.82rem;cursor:pointer;";
+    btn.title = "May use once. Adds to this action's accuracy check result. Consumes the Combat Lesson buff.";
+
+    btn.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (btn.disabled) return;
+      btn.disabled = true;
+      try {
+        await _handleCombatLessonInvoke(chatMsg);
+      } catch (err) {
+        console.error("[fu-invokeButtons] Combat Lesson invoke failed:", err);
+        ui.notifications?.error("Combat Lesson invoke failed (see console).");
+      }
+    });
+
+    container.appendChild(btn);
+  }
+
+  Hooks.on("renderChatMessage", _bindCombatLessonButton);
+  console.debug("[fu-invokeButtons] Combat Lesson invoke hook registered");
 })();

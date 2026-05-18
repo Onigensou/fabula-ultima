@@ -74,13 +74,26 @@
           return;
         }
 
-        // ── Cartography animation (GM → all) ────────────────────────────
-        if (type === CAMP.MSG.CARTOGRAPHY_START) {
-          CAMP.CartographyUI?.show(payload?.actorId, payload?.actorName);
+        // ── Combat Lesson minigame (GM → all, owner → GM) ────────────────
+        if (type === CAMP.MSG.COMBAT_LESSON_START) {
+          CAMP.CombatLessonUI?.show(payload?.actorId, payload?.allies);
           return;
         }
-        if (type === CAMP.MSG.CARTOGRAPHY_DONE) {
-          CAMP.CartographyUI?.hide();
+        if (type === CAMP.MSG.COMBAT_LESSON_RESULT) {
+          if (payload?.bonus != null) {
+            // Full result — reveal phase
+            CAMP.CombatLessonUI?.applyResult(
+              payload.actorId, payload.targetActorId,
+              payload.teacherTotal, payload.targetTotal, payload.bonus
+            );
+          } else {
+            // IDs only — rolling phase
+            CAMP.CombatLessonUI?.showRolling(payload?.actorId, payload?.targetActorId);
+          }
+          return;
+        }
+        if (type === CAMP.MSG.COMBAT_LESSON_DONE) {
+          CAMP.CombatLessonUI?.hide();
           return;
         }
 
@@ -118,6 +131,14 @@
 
           case CAMP.MSG.TOGGLE_SET_OUT:
             await _handleToggleSetOut(payload);
+            break;
+
+          case CAMP.MSG.COMBAT_LESSON_TARGET:
+            CAMP.CombatLessonUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.COMBAT_LESSON_PROCEED:
+            CAMP.CombatLessonUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
