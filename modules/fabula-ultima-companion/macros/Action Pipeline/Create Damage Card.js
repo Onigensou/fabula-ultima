@@ -576,92 +576,44 @@ return (async () => {
         commonPayload
       });
 
-      if (isMissCard) {
-        const missPayload = {
-          ...commonPayload,
-          kind: "miss_resolution",
-          trigger: "creature_miss_action",
-          result: "miss",
+      // ----------------------------------------------------------------
+      // Reaction Exchange migration (step 4D).
+      // ----------------------------------------------------------------
+      // Old flow: emit N sequential `oni:reactionPhase` events via
+      // `emitReactionPhaseLocalOnGM`, each awaiting its own reaction
+      // window. Replaced with a SINGLE `openReactionExchange` call that
+      // owns one shared queue per action card. The new matcher fans
+      // candidates per-user, opens the pinned UI, and the resolver fires
+      // each queued reaction in order.
+      //
+      // Boundary is the actionCardId — multi-damage-card-per-action-card
+      // (AoE) join the same Exchange via idempotent open.
+      //
+      // Fallback: if the new matcher isn't installed (e.g., cold-boot
+      // race), this block bails and the post_damage handler still runs.
+      // ----------------------------------------------------------------
 
-          // Extra explicit miss semantics
-          missSourceTokenUuid: commonPayload.sourceTokenUuid ?? null,
-          missSourceActorUuid: commonPayload.sourceActorUuid ?? null,
-          missTargetTokenUuid: commonPayload.targetTokenUuid ?? null,
-          missTargetActorUuid: commonPayload.targetActorUuid ?? null
-        };
+      // Resource / change classification (kept verbatim from old flow;
+      // shared by the trigger collector below and the resource-resolution
+      // payload kind).
+      const normalizedChangeKey = isMissCard ? "" : String(changeKey ?? "").trim();
+      const normalizedValueType = isMissCard ? "" : String(valueType ?? "").trim().toLowerCase();
 
-        dbg("reaction-branch:emit-miss:payload", {
-          TRACE_ID,
-          missPayload
-        });
+      let resourceType = null;
+      let changeKind = null;
+      let primaryTrigger = null;
+      let emitDealsDamage = false;
 
-        const emitted = await emitReactionPhaseLocalOnGM(missPayload, `${TRACE_ID}-miss`);
-        dbg("reaction-branch:emit-miss:result", {
-          TRACE_ID,
-          emitted
-        });
-            } else {
-        // Successful hit branch:
-        // this card only exists for a resolved non-miss target result,
-        // so emit the generic "got hit by an action" trigger once here.
-        if (targetTokenUuid) {
-          const hitPayload = {
-            ...commonPayload,
-            kind: "hit_resolution",
-            trigger: "creature_hit_by_action",
-            result: "hit"
-          };
-
-          dbg("reaction-branch:emit-hit:payload", {
-            TRACE_ID,
-            hitPayload
-          });
-
-          const hitEmitted = await emitReactionPhaseLocalOnGM(
-            hitPayload,
-            `${TRACE_ID}-hit`
-          );
-
-          dbg("reaction-branch:emit-hit:result", {
-            TRACE_ID,
-            hitEmitted
-          });
-        } else {
-          dbg("reaction-branch:emit-hit:skip:no-target", {
-            TRACE_ID
-          });
-        }
-
-        const normalizedChangeKey = String(changeKey ?? "").trim();
-        const normalizedValueType = String(valueType ?? "").trim().toLowerCase();
-
-        let resourceType = null;
-        let changeKind = null;
-        let primaryTrigger = null;
-        let emitDealsDamage = false;
-
+      if (!isMissCard) {
         switch (normalizedChangeKey) {
           case "hpReduction":
-            resourceType = "hp";
-            changeKind = "loss";
-            primaryTrigger = "creature_takes_damage";
-            emitDealsDamage = true;
-            break;
+            resourceType = "hp"; changeKind = "loss"; primaryTrigger = "creature_takes_damage"; emitDealsDamage = true; break;
           case "hpRecovery":
-            resourceType = "hp";
-            changeKind = "gain";
-            primaryTrigger = "creature_recovers_hp";
-            break;
+            resourceType = "hp"; changeKind = "gain"; primaryTrigger = "creature_recovers_hp"; break;
           case "mpReduction":
-            resourceType = "mp";
-            changeKind = "loss";
-            primaryTrigger = "creature_lose_mp";
-            break;
+            resourceType = "mp"; changeKind = "loss"; primaryTrigger = "creature_lose_mp"; break;
           case "mpRecovery":
-            resourceType = "mp";
-            changeKind = "gain";
-            primaryTrigger = "creature_recovers_mp";
-            break;
+            resourceType = "mp"; changeKind = "gain"; primaryTrigger = "creature_recovers_mp"; break;
           default:
             if (normalizedValueType === "hp") {
               resourceType = "hp";
@@ -675,71 +627,40 @@ return (async () => {
             }
             break;
         }
+      }
 
-        const baseReactionPayload = {
-          ...commonPayload,
-          kind: resourceType ? "resource_resolution" : "damage_resolution",
-          trigger: null,
-          resourceType,
-          changeKind,
-          changeKeyNormalized: normalizedChangeKey || null
-        };
+      const baseReactionPayload = {
+        ...commonPayload,
+        kind: isMissCard
+          ? "miss_resolution"
+          : (resourceType ? "resource_resolution" : "damage_resolution"),
+        resourceType,
+        changeKind,
+        changeKeyNormalized: normalizedChangeKey || null,
+        result: isMissCard ? "miss" : "hit"
+      };
 
-        dbg("reaction-branch:emit-resource:payload-base", {
-          TRACE_ID,
-          normalizedChangeKey,
-          normalizedValueType,
-          resourceType,
-          changeKind,
-          primaryTrigger,
-          emitDealsDamage,
-          baseReactionPayload
+      // Collect every trigger this damage card should fire.
+      const exchangeTriggers = [];
+      if (isMissCard) {
+        exchangeTriggers.push({
+          key: "creature_miss_action",
+          payload: {
+            missSourceTokenUuid: commonPayload.sourceTokenUuid ?? null,
+            missSourceActorUuid: commonPayload.sourceActorUuid ?? null,
+            missTargetTokenUuid: commonPayload.targetTokenUuid ?? null,
+            missTargetActorUuid: commonPayload.targetActorUuid ?? null
+          }
         });
-
-        if (emitDealsDamage) {
-          const dealsEmitted = await emitReactionPhaseLocalOnGM(
-            {
-              ...baseReactionPayload,
-              trigger: "creature_deals_damage"
-            },
-            `${TRACE_ID}-deals`
-          );
-
-          dbg("reaction-branch:emit-resource:deals-result", {
-            TRACE_ID,
-            dealsEmitted
-          });
-        } else {
-          dbg("reaction-branch:emit-resource:skip-deals", {
-            TRACE_ID,
-            normalizedChangeKey,
-            normalizedValueType,
-            resourceType,
-            changeKind
-          });
+      } else {
+        if (targetTokenUuid) {
+          exchangeTriggers.push({ key: "creature_hit_by_action", payload: {} });
         }
-
+        if (emitDealsDamage) {
+          exchangeTriggers.push({ key: "creature_deals_damage", payload: {} });
+        }
         if (primaryTrigger && targetTokenUuid) {
-          const targetEmitted = await emitReactionPhaseLocalOnGM(
-            {
-              ...baseReactionPayload,
-              trigger: primaryTrigger
-            },
-            `${TRACE_ID}-${primaryTrigger}`
-          );
-
-          dbg("reaction-branch:emit-resource:target-result", {
-            TRACE_ID,
-            primaryTrigger,
-            targetEmitted
-          });
-
-          // Affinity-derived triggers: piggyback on the resource resolution event
-          // so reactions like "When you Absorb fire damage" can fire alongside
-          // creature_takes_damage / creature_recovers_hp.
-          //
-          // Affinity codes (system convention):
-          //   vu = Vulnerable, wp = Weak, rs = Resists, ab = Absorbs, im = Immune
+          exchangeTriggers.push({ key: primaryTrigger, payload: {} });
           const AFFINITY_TO_TRIGGER = {
             vu: "creature_takes_vulnerable_damage",
             wp: "creature_takes_weak_damage",
@@ -748,28 +669,63 @@ return (async () => {
             im: "creature_immune_damage"
           };
           const affinityTrigger = AFFINITY_TO_TRIGGER[String(commonPayload.effectivenessLabel ?? "").toLowerCase()];
-          if (affinityTrigger) {
-            await emitReactionPhaseLocalOnGM(
-              {
-                ...baseReactionPayload,
-                trigger: affinityTrigger
-              },
-              `${TRACE_ID}-${affinityTrigger}`
-            );
-          }
+          if (affinityTrigger) exchangeTriggers.push({ key: affinityTrigger, payload: {} });
+          if (commonPayload.shieldBreak)  exchangeTriggers.push({ key: "creature_shield_break", payload: {} });
+        }
+      }
 
-          // Shield break: fires whenever the damage card flagged a broken shield,
-          // regardless of affinity outcome.
-          if (commonPayload.shieldBreak) {
-            await emitReactionPhaseLocalOnGM(
-              {
-                ...baseReactionPayload,
-                trigger: "creature_shield_break"
-              },
-              `${TRACE_ID}-shield-break`
-            );
-          }
+      dbg("reaction-exchange:plan", {
+        TRACE_ID,
+        isMissCard,
+        primaryTrigger,
+        emitDealsDamage,
+        triggerCount: exchangeTriggers.length,
+        triggerKeys: exchangeTriggers.map(t => t.key),
+        baseReactionPayload
+      });
 
+      const matcherApi = globalThis.FUCompanion?.api?.reactionExchangeMatcher
+        ?? window["oni.ReactionExchangeMatcher"]
+        ?? null;
+
+      const actionCardId =
+        payload?.actionCardId ??
+        payload?.meta?.actionCardId ??
+        actionContext?.meta?.actionCardId ??
+        actionContext?.actionCardId ??
+        null;
+
+      if (matcherApi?.openReactionExchange && exchangeTriggers.length > 0) {
+        try {
+          const exResult = await matcherApi.openReactionExchange({
+            kind: "action_card",
+            boundaryKey: actionCardId ? `card:${actionCardId}` : `damage:${TRACE_ID}`,
+            triggers: exchangeTriggers,
+            payload: baseReactionPayload,
+            awaitClose: true
+          });
+          dbg("reaction-exchange:complete", {
+            TRACE_ID,
+            opened: exResult.opened,
+            reason: exResult.reason,
+            exchangeId: exResult.exchangeId
+          });
+        } catch (e) {
+          console.warn(`${RUN_TAG} openReactionExchange threw — reactions skipped for this card`, e, { TRACE_ID });
+        }
+      } else if (!matcherApi?.openReactionExchange) {
+        console.warn(`${RUN_TAG} ReactionExchangeMatcher not installed — reactions skipped for this card`, { TRACE_ID });
+      } else {
+        dbg("reaction-exchange:skip:no-triggers", { TRACE_ID });
+      }
+
+      // ----------------------------------------------------------------
+      // Post-damage self-effect hook (unchanged).
+      // ----------------------------------------------------------------
+      // The `if (!isMissCard && primaryTrigger && targetTokenUuid)` gate
+      // mirrors the old code's nested condition for the
+      // post_damage_effect_ref dispatch site.
+      if (!isMissCard && primaryTrigger && targetTokenUuid) {
           // Phase D: post_damage self-effect hook.
           // If the firing skill (the caster's skill that produced this damage
           // card) has `system.props.post_damage_effect_ref`, dispatch that
@@ -834,20 +790,6 @@ return (async () => {
           } catch (postErr) {
             console.warn(`${RUN_TAG} post_damage_effect_ref dispatch failed:`, postErr, { TRACE_ID });
           }
-        } else if (!primaryTrigger) {
-          dbg("reaction-branch:emit-resource:skip-target:no-trigger", {
-            TRACE_ID,
-            normalizedChangeKey,
-            normalizedValueType,
-            valueType,
-            changeKey
-          });
-        } else {
-          dbg("reaction-branch:emit-resource:skip-target:no-target", {
-            TRACE_ID,
-            primaryTrigger
-          });
-        }
       }
     } else {
       dbg("reaction-branch:skipped", {

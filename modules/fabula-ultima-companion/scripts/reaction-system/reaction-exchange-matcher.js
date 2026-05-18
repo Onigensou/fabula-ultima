@@ -372,6 +372,31 @@ Hooks.once("ready", () => {
     // -------------------------------------------------------------------------
 
     /**
+     * Wait for the Exchange with `exchangeId` to close. Resolves with the
+     * final snapshot. Used by callers (damage card, lifecycle handlers)
+     * that need to gate downstream work on resolution completion.
+     */
+    function _awaitClose(exchangeId, { timeoutMs = 120000 } = {}) {
+      return new Promise((resolve) => {
+        let timer = null;
+        const handler = (data) => {
+          if (data?.exchangeId !== exchangeId) return;
+          try { Hooks.off("oni:exchange:closed", handler); } catch (_) {}
+          if (timer != null) clearTimeout(timer);
+          resolve(data.snapshot ?? null);
+        };
+        Hooks.on("oni:exchange:closed", handler);
+        if (timeoutMs > 0) {
+          timer = setTimeout(() => {
+            try { Hooks.off("oni:exchange:closed", handler); } catch (_) {}
+            console.warn(`${TAG} _awaitClose timeout after ${timeoutMs}ms for ${exchangeId}`);
+            resolve(null);
+          }, timeoutMs);
+        }
+      });
+    }
+
+    /**
      * Open a Reaction Exchange (or join an existing one with the same
      * boundaryKey).
      *
@@ -380,8 +405,14 @@ Hooks.once("ready", () => {
      * @param {string} opts.boundaryKey
      * @param {Array<{key:string,payload?:object}>} opts.triggers
      * @param {object} opts.payload
+     * @param {boolean} [opts.awaitClose=true]   - if true, the returned Promise
+     *                                             only resolves when the Exchange
+     *                                             closes (resolution complete or
+     *                                             aborted). Set false for
+     *                                             fire-and-forget emit sites.
+     * @param {number} [opts.awaitTimeoutMs=120000] - safety bound for awaitClose
      *
-     * @returns {Promise<object>} { opened: bool, exchangeId, snapshot, hadMatches }
+     * @returns {Promise<object>} { opened: bool, exchangeId, hadMatches, finalSnapshot?, reason? }
      */
     async function openReactionExchange(opts = {}) {
       const kind = opts.kind ?? "standalone";
@@ -444,11 +475,24 @@ Hooks.once("ready", () => {
         }
       }
 
+      const awaitClose = opts.awaitClose !== false;
+      if (!awaitClose) {
+        return {
+          opened: true,
+          exchangeId,
+          snapshot: exchangeApi.snapshot(exchangeId),
+          hadMatches: true
+        };
+      }
+
+      const finalSnapshot = await _awaitClose(exchangeId, {
+        timeoutMs: Number(opts.awaitTimeoutMs ?? 120000)
+      });
       return {
         opened: true,
         exchangeId,
-        snapshot: exchangeApi.snapshot(exchangeId),
-        hadMatches: true
+        hadMatches: true,
+        finalSnapshot
       };
     }
 
