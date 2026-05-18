@@ -1,0 +1,88 @@
+{
+  "name": "20-visual-smoke",
+  "description": "Visual exercise of the UI: open Exchange, populate candidates, queue entries, Ready everyone, run resolution. Run while watching the Foundry window to see the UI animate through the full lifecycle. Includes waits between mutations so each state is visible.",
+  "scenario": {
+    "reset": true,
+    "open": {
+      "kind": "action_card",
+      "boundaryKey": "card-visual-001",
+      "payload": {
+        "actionCardId": "card-visual-001",
+        "actionId": "act-visual-001"
+      },
+      "initialTriggers": [
+        { "key": "creature_hit_by_action", "payload": { "targetActorUuid": "Actor.fakeHina" } },
+        { "key": "creature_takes_damage",  "payload": { "targetActorUuid": "Actor.fakeHina", "amount": 40 } }
+      ],
+      "eligibleUserIds": ["__GM__"]
+    },
+    "script": [
+      { "op": "setCandidates", "userId": "__GM__", "actor": "__GM__", "candidates": [
+          { "skillUuid": "Item.fake-painful-lesson", "skillName": "Painful Lesson",
+            "reactorName": "Hina", "reactorTokenId": "tk-hina", "reactorActorUuid": "Actor.fakeHina",
+            "sourceTriggerKey": "creature_takes_damage",
+            "predictedTriggers": [ { "key": "creature_recovers_hp", "payload": {} } ],
+            "available": true },
+          { "skillUuid": "Item.fake-counter", "skillName": "Counterattack",
+            "reactorName": "Hina", "reactorTokenId": "tk-hina", "reactorActorUuid": "Actor.fakeHina",
+            "sourceTriggerKey": "creature_hit_by_action",
+            "predictedTriggers": [ { "key": "creature_deals_damage", "payload": {} } ],
+            "available": true },
+          { "skillUuid": "Item.fake-heart-of-darkness", "skillName": "Heart of Darkness",
+            "reactorName": "Hina", "reactorTokenId": "tk-hina", "reactorActorUuid": "Actor.fakeHina",
+            "sourceTriggerKey": "creature_enter_crisis",
+            "predictedTriggers": [],
+            "available": false, "disabledReason": "trigger not yet fired" },
+          { "skillUuid": "Item.fake-soporific-aura", "skillName": "Soporific Aura",
+            "reactorName": "Vengeful Spirit", "reactorTokenId": "tk-spirit", "reactorActorUuid": "Actor.fakeSpirit",
+            "sourceTriggerKey": "creature_hit_by_action",
+            "predictedTriggers": [ { "key": "creature_status_applied", "payload": { "status": "sleep" } } ],
+            "available": true }
+      ] },
+      { "op": "wait", "ms": 800 },
+
+      { "op": "addEntry", "actor": "__GM__", "params": {
+          "userId": "__GM__",
+          "reactorName": "Hina", "reactorTokenId": "tk-hina", "reactorActorUuid": "Actor.fakeHina",
+          "skillUuid": "Item.fake-painful-lesson", "skillName": "Painful Lesson",
+          "sourceTriggerKey": "creature_takes_damage"
+      } },
+      { "op": "wait", "ms": 600 },
+
+      { "op": "addEntry", "actor": "__GM__", "params": {
+          "userId": "__GM__",
+          "reactorName": "Hina", "reactorTokenId": "tk-hina", "reactorActorUuid": "Actor.fakeHina",
+          "skillUuid": "Item.fake-counter", "skillName": "Counterattack",
+          "sourceTriggerKey": "creature_hit_by_action"
+      } },
+      { "op": "wait", "ms": 600 },
+
+      { "op": "addEntry", "actor": "__GM__", "params": {
+          "userId": "__GM__",
+          "reactorName": "Vengeful Spirit", "reactorTokenId": "tk-spirit", "reactorActorUuid": "Actor.fakeSpirit",
+          "skillUuid": "Item.fake-soporific-aura", "skillName": "Soporific Aura",
+          "sourceTriggerKey": "creature_hit_by_action"
+      } },
+      { "op": "wait", "ms": 800 },
+
+      { "op": "setReady", "actor": "__GM__", "isReady": true },
+      { "op": "wait", "ms": 2000 },
+
+      { "op": "runResolution", "perEntryDelayMs": 1500, "mockOutcomes": {
+          "Item.fake-painful-lesson": "fire",
+          "Item.fake-counter":         "fire",
+          "Item.fake-soporific-aura":  "fire"
+      } },
+      { "op": "wait", "ms": 1000 }
+    ],
+    "expectations": {
+      "finalStatus": "closed",
+      "queueSize": 3,
+      "usedSkillUuids": [
+        "Item.fake-painful-lesson",
+        "Item.fake-counter",
+        "Item.fake-soporific-aura"
+      ]
+    }
+  }
+}

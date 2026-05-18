@@ -188,6 +188,7 @@
     "scripts/reaction-system/reaction-exchange.js",
     "scripts/reaction-system/reaction-exchange-sync.js",
     "scripts/reaction-system/reaction-exchange-resolver.js",
+    "scripts/reaction-system/reaction-exchange-ui.js",
     "scripts/reaction-system/reaction-exchange-test-helpers.js",
     "scripts/csb-extensions/CompactDynamicTable.js",
     "scripts/csb-extensions/visibilityPresetPicker.js",
@@ -310,7 +311,8 @@
   ],
   "styles": [
     "styles/style.css",
-    "styles/shop-content-links.css"
+    "styles/shop-content-links.css",
+    "styles/reaction-exchange.css"
   ],
   "packs": [],
   "manifest": "https://raw.githubusercontent.com/Onigensou/FabulaUltimaCompanion/refs/heads/main/module.json",

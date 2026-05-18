@@ -209,6 +209,10 @@ Hooks.once("ready", () => {
      * @param {object} [opts]
      * @param {object} [opts.runners]                  - override runners for this run
      * @param {string} [opts.closeReason="completed"]  - reason for the final close
+     * @param {number} [opts.perEntryDelayMs=0]        - sleep N ms between entries
+     *                                                   so per-entry flash animations
+     *                                                   have time to play. Visual /
+     *                                                   pacing tool, not gameplay-load-bearing.
      * @returns {Promise<object>} resolution result
      */
     async function runResolution(exchangeId, opts = {}) {
@@ -225,13 +229,17 @@ Hooks.once("ready", () => {
 
       const runners = { ..._defaults, ...(opts.runners ?? {}) };
       const closeReason = String(opts.closeReason ?? "completed");
+      const perEntryDelayMs = Math.max(0, Math.min(60000, Number(opts.perEntryDelayMs ?? 0)));
 
       const usedSkillUuids = [];
       const resolutionLog = [];
 
       let snapshot = initialSnapshot;
+      const queue = initialSnapshot.queue;
+      const lastIdx = queue.length - 1;
 
-      for (const entry of initialSnapshot.queue) {
+      for (let i = 0; i < queue.length; i++) {
+        const entry = queue[i];
         // Refresh snapshot before each entry — the per-entry hook listeners
         // (UI) may read state in between. For step 2 the snapshot doesn't
         // change between entries (we batch markResolved at the end), but
@@ -293,6 +301,10 @@ Hooks.once("ready", () => {
           };
           resolutionLog.push(logRow);
           _fireEntryResolved(exchangeId, entry, logRow, snapshot);
+        }
+
+        if (perEntryDelayMs > 0 && i < lastIdx) {
+          await new Promise(r => setTimeout(r, perEntryDelayMs));
         }
       }
 

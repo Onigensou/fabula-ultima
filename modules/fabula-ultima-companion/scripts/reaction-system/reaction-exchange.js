@@ -347,6 +347,7 @@ Hooks.once("ready", () => {
         eligibleUserIds: _stringArray(opts.eligibleUserIds),
         queue: [],
         readyUsers: {},
+        candidatesByUser: {},          // userId → [Candidate]; step 4 populates from matcher
         resolutionLog: [],
         closeReason: null,
         openedAt: _now(),
@@ -517,6 +518,70 @@ Hooks.once("ready", () => {
     }
 
     /**
+     * Set the candidate list for a user. Candidates are skills the user
+     * (or GM, for monsters) may add to the queue right now. Step 4's
+     * matcher integration calls this whenever queue mutations change
+     * the speculative trigger set; step 3's UI reads the list to render
+     * the "Your reactions" panel.
+     *
+     * Caller authority: any user can set their own candidates; GM can set
+     * any user's. (Players don't compute candidates themselves; they ask
+     * the GM via socket. Step 4 wires that path.)
+     *
+     * Candidate shape:
+     *   {
+     *     skillUuid:         string
+     *     skillName:         string
+     *     reactorTokenId:    string
+     *     reactorActorUuid:  string
+     *     reactorName:       string            - display label (e.g. "Hina" or "Vengeful Spirit")
+     *     sourceTriggerKey:  string            - which trigger surfaced this candidate
+     *     predictedTriggers: [{key,payload?}]
+     *     img:               string|null       - icon for the UI
+     *     available:         boolean           - false = greyed/disabled
+     *     disabledReason:    string|null       - "already_queued" | "already_used" | "blocks_reactions" | ...
+     *   }
+     */
+    function setCandidates(exchangeId, userId, candidates, actorUserId = null) {
+      const state = _requireExchange(exchangeId, "setCandidates");
+      _requireStatus(state, ["queueing", "resolving"], "setCandidates");
+
+      const u = String(userId ?? "").trim();
+      if (!u) throw new Error(`${TAG} setCandidates: userId required.`);
+
+      const acting = actorUserId ?? u;
+      if (acting !== u && !_isGmUser(acting)) {
+        throw new Error(
+          `${TAG} setCandidates: user ${acting} cannot set candidates for ${u} ` +
+          `without GM privileges.`
+        );
+      }
+
+      const list = Array.isArray(candidates) ? candidates : [];
+      const normalized = [];
+      for (const c of list) {
+        if (!c || typeof c !== "object") continue;
+        const skillUuid = String(c.skillUuid ?? "").trim();
+        if (!skillUuid) continue;
+        normalized.push({
+          skillUuid,
+          skillName: String(c.skillName ?? "").trim() || skillUuid,
+          reactorTokenId: String(c.reactorTokenId ?? "").trim() || null,
+          reactorActorUuid: String(c.reactorActorUuid ?? "").trim() || null,
+          reactorName: String(c.reactorName ?? "").trim() || null,
+          sourceTriggerKey: String(c.sourceTriggerKey ?? "").trim() || null,
+          predictedTriggers: _normalizeTriggers(c.predictedTriggers),
+          img: c.img ? String(c.img) : null,
+          available: c.available !== false,
+          disabledReason: c.disabledReason ? String(c.disabledReason) : null
+        });
+      }
+
+      state.candidatesByUser[u] = normalized;
+      _bumpAndBroadcast(state, "setCandidates", { userId: u, count: normalized.length });
+    }
+
+    /**
      * Step 2's resolution engine calls this when it has finished processing
      * the queue. In step 1 it's the bridge's responsibility (the bridge
      * scenario explicitly calls markResolved + close to drive lifecycle
@@ -611,6 +676,7 @@ Hooks.once("ready", () => {
       reorderEntry,
       setReady,
       forceResolve,
+      setCandidates,
       markResolved,
       close,
       abort,

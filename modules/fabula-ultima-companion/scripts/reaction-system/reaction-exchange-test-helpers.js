@@ -243,7 +243,8 @@ Hooks.once("ready", () => {
           const runners = _buildRunnerOverrides(step.mockOutcomes);
           const result = await resolver.runResolution(exchangeId, {
             runners,
-            closeReason: step.closeReason ?? "completed"
+            closeReason: step.closeReason ?? "completed",
+            perEntryDelayMs: Number(step.perEntryDelayMs ?? 0)
           });
           // close() runs inside runResolution; the closed snapshot comes
           // back so we can echo it into snapshotAfter via the same
@@ -253,6 +254,22 @@ Hooks.once("ready", () => {
             resolutionLog: result.resolutionLog,
             __closedSnapshot: result.closedSnapshot
           };
+        }
+        case "setCandidates": {
+          exchangeApi.setCandidates(
+            exchangeId,
+            step.userId,
+            step.candidates ?? [],
+            step.actor ?? null
+          );
+          return { userId: step.userId, count: (step.candidates ?? []).length };
+        }
+        case "wait": {
+          // Useful for visual smoke scenarios — let the user see a state
+          // between mutations.
+          const ms = Math.max(0, Math.min(60000, Number(step.ms ?? 500)));
+          await new Promise(r => setTimeout(r, ms));
+          return { ms };
         }
         default:
           throw new Error(`unknown op "${op}"`);
