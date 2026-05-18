@@ -53,121 +53,191 @@
     // Ephemeral broadcast (any → all)
     HOVER_ACTIVITY:     "CAMP_HOVER_ACTIVITY",
     // Exploration roulette (GM → all, owner → GM)
-    EXPLORATION_START:  "CAMP_EXPLORATION_START",
-    EXPLORATION_RESULT: "CAMP_EXPLORATION_RESULT",
-    EXPLORATION_DONE:   "CAMP_EXPLORATION_DONE",
+    EXPLORATION_START:   "CAMP_EXPLORATION_START",
+    EXPLORATION_RESULT:  "CAMP_EXPLORATION_RESULT",
+    EXPLORATION_PROCEED: "CAMP_EXPLORATION_PROCEED",
+    EXPLORATION_DONE:    "CAMP_EXPLORATION_DONE",
   });
 
   // ---------------------------------------------------------------------------
   // Activity definitions  (metadata only — execute() lives in each activity file)
+  //
+  // requiredClass: "any"              → available to everyone
+  //               "Foo"               → single class (case-insensitive)
+  //               ["Foo", "Bar", …]  → available if actor has ANY of these classes
   // ---------------------------------------------------------------------------
   CAMP.ACTIVITY_DEFS = [
     {
-      key:    "camp_forge",
-      name:   "Camp Forge",
-      target: "Yourself",
-      icon:   "fas fa-hammer",
-      desc:   "Repair a damaged item; or create a basic weapon, armor, or shield without paying its cost; or destroy equipment to obtain a material of equal value.",
+      key:           "camp_forge",
+      name:          "Camp Forge",
+      target:        "Yourself",
+      icon:          "fas fa-hammer",
+      requiredClass: ["Merchant", "Tinkerer", "Pilot"],
+      desc:          "Repair a damaged item; or create a basic weapon, armor, or shield without paying its cost; or destroy equipment to obtain a material of equal value.",
     },
     {
-      key:    "cartography",
-      name:   "Cartography",
-      target: "Yourself",
-      icon:   "fas fa-map",
-      desc:   "Once before the next rest, after your group makes a travel roll, you may reroll the die and keep the new result.",
+      key:           "cartography",
+      name:          "Cartography",
+      target:        "Yourself",
+      icon:          "fas fa-map",
+      requiredClass: ["Wayfarer", "Rogue", "Merchant", "Pirate", "Hunter", "Loremaster"],
+      desc:          "Once before the next rest, after your group makes a travel roll, you may reroll the die and keep the new result.",
     },
     {
-      key:    "combat_lesson",
-      name:   "Combat Lesson",
-      target: "One ally",
-      icon:   "fas fa-fist-raised",
-      desc:   "Once before the next rest, after the target makes an Accuracy Check or Magic Check for an offensive spell, they may add +4 to the Result.",
+      key:           "combat_lesson",
+      name:          "Combat Lesson",
+      target:        "One ally",
+      icon:          "fas fa-fist-raised",
+      requiredClass: ["Commander", "Weaponmaster", "Sharpshooter", "Guardian", "Darkblade", "Spell Fencer", "Loremaster"],
+      desc:          "Once before the next rest, after the target makes an Accuracy Check or Magic Check for an offensive spell, they may add +4 to the Result.",
     },
     {
-      key:    "daydream",
-      name:   "Daydream",
-      target: "Yourself",
-      icon:   "fas fa-cloud",
-      desc:   "Once before the next rest, when you lose Hit Points for any reason, you may choose to halve that HP loss.",
+      key:           "cooking",
+      name:          "Cooking",
+      target:        "Yourself + up to 3 allies",
+      icon:          "fas fa-fire",
+      requiredClass: "any",
+      desc:          "Cook a delicious meal with your friends whom you share precious bonds with. Meals grant benefits until your next rest.",
     },
     {
-      key:    "double_portion",
-      name:   "Double Portion",
-      target: "One ally",
-      icon:   "fas fa-utensils",
-      desc:   "Once before the next rest, if the target is about to recover Hit Points, they may double the amount recovered.",
+      key:           "daydream",
+      name:          "Daydream",
+      target:        "Yourself",
+      icon:          "fas fa-cloud",
+      requiredClass: "any",
+      desc:          "Once before the next rest, when you lose Hit Points for any reason, you may choose to halve that HP loss.",
     },
     {
-      key:    "exploration",
-      name:   "Exploration",
-      target: "Yourself",
-      icon:   "fas fa-search",
-      desc:   "Spend your time looking for useful items; describe how, then roll 1d6 to determine what you find.",
+      key:           "double_portion",
+      name:          "Double Portion",
+      target:        "One ally",
+      icon:          "fas fa-utensils",
+      requiredClass: ["Wayfarer", "Gourmet", "Merchant"],
+      desc:          "Once before the next rest, if the target is about to recover Hit Points, they may double the amount recovered.",
     },
     {
-      key:    "gathering",
-      name:   "Gathering",
-      target: "A character with the Gourmet Class",
-      icon:   "fas fa-leaf",
-      desc:   "Look for ingredients in the area; describe how, then roll 1d6. You may gain ingredients or accidentally trigger a conflict.",
+      key:           "exploration",
+      name:          "Exploration",
+      target:        "Yourself",
+      icon:          "fas fa-search",
+      requiredClass: ["Wayfarer", "Rogue", "Pirate", "Hunter", "Floralist"],
+      desc:          "Spend your time looking for useful items; describe how, then roll 1d6 to determine what you find.",
     },
     {
-      key:    "magic_lesson",
-      name:   "Magic Lesson",
-      target: "One ally",
-      icon:   "fas fa-magic",
-      desc:   "Choose a single spell you know. Once before the next rest, the target may cast that spell (still paying MP cost and performing checks).",
+      key:           "fishing",
+      name:          "Fishing",
+      target:        "Yourself",
+      icon:          "fas fa-fish",
+      requiredClass: "any",
+      desc:          "Cast your line into the nearest body of water and wait for a bite. Describe where you fish and how, then roll 1d6 to see what you catch.",
     },
     {
-      key:    "martial_practice",
-      name:   "Martial Practice",
-      target: "Yourself",
-      icon:   "fas fa-dumbbell",
-      desc:   "Once before the next rest, when you perform an attack, you may grant that attack multi (2) or increase its multi property by one.",
+      key:           "gathering",
+      name:          "Gathering",
+      target:        "Yourself",
+      icon:          "fas fa-leaf",
+      requiredClass: ["Gourmet", "Merchant", "Hunter", "Floralist"],
+      desc:          "Look for ingredients in the area; describe how, then roll 1d6. You may gain ingredients or accidentally trigger a conflict.",
     },
     {
-      key:    "massage",
-      name:   "Massage",
-      target: "One ally",
-      icon:   "fas fa-hand-paper",
-      desc:   "Once before the next rest, if the target is about to pay a Mind Point cost, they may halve it. Cannot apply to a Ritual's MP cost.",
+      key:           "magic_lesson",
+      name:          "Magic Lesson",
+      target:        "One ally",
+      icon:          "fas fa-magic",
+      requiredClass: ["Elementalist", "Entropist", "Spiritist", "Illusionist", "Necromancer", "Spell Fencer", "Loremaster", "Chimerist", "Arcanist", "Symbolist"],
+      desc:          "Choose a single spell you know. Once before the next rest, the target may cast that spell (still paying MP cost and performing checks).",
     },
     {
-      key:    "midnight_oil",
-      name:   "Midnight Oil",
-      target: "Yourself",
-      icon:   "fas fa-scroll",
-      desc:   "Generate 3 points of progress for a single Project of your choice.",
+      key:           "martial_practice",
+      name:          "Martial Practice",
+      target:        "Yourself",
+      icon:          "fas fa-dumbbell",
+      requiredClass: ["Weaponmaster", "Sharpshooter", "Darkblade", "Guardian", "Fury"],
+      desc:          "Once before the next rest, when you perform an attack, you may grant that attack multi (2) or increase its multi property by one.",
     },
     {
-      key:    "pep_talk",
-      name:   "Pep Talk",
-      target: "One ally",
-      icon:   "fas fa-comment",
-      desc:   "Once before the next rest, if the target is about to recover Mind Points, they may double the amount recovered.",
+      key:           "massage",
+      name:          "Massage",
+      target:        "One ally",
+      icon:          "fas fa-hand-paper",
+      requiredClass: "any",
+      desc:          "Once before the next rest, if the target is about to pay a Mind Point cost, they may halve it. Cannot apply to a Ritual's MP cost.",
     },
     {
-      key:    "planning",
-      name:   "Planning",
-      target: "One ally",
-      icon:   "fas fa-chess",
-      desc:   "Once before the next rest, after the target performs a Group Check as leader or a Check to examine someone/something, they may add +4 to the Result.",
+      key:           "meditate",
+      name:          "Meditate",
+      target:        "Yourself",
+      icon:          "fas fa-yin-yang",
+      requiredClass: ["Monk", "Invoker"],
+      desc:          "Still your mind and calm your spirit through quiet contemplation. Once before the next rest, when you spend MP, you may reduce that cost by 30 (to a minimum of 0).",
     },
     {
-      key:    "sleep_soundly",
-      name:   "Sleep Soundly",
-      target: "Yourself",
-      icon:   "fas fa-bed",
-      desc:   "Once before the next rest, you may perform an additional action on your turn during a conflict scene. This action must be Equipment, Hinder, or Inventory.",
+      key:           "mending",
+      name:          "Mending",
+      target:        "One ally",
+      icon:          "fas fa-band-aid",
+      requiredClass: ["Spiritist", "Tailor", "Wayfarer"],
+      desc:          "Tend to your ally's wounds with careful hands. They gain Shield equal to half their level (rounded down).",
     },
     {
-      key:    "training",
-      name:   "Training",
-      target: "Yourself",
-      icon:   "fas fa-shield-alt",
-      desc:   "Once before the next rest, if you are about to suffer one or more status effects from the same source, you may instead choose to suffer none of them.",
+      key:           "midnight_oil",
+      name:          "Midnight Oil",
+      target:        "Yourself",
+      icon:          "fas fa-scroll",
+      requiredClass: ["Tinkerer", "Merchant", "Pilot"],
+      desc:          "Generate 3 points of progress for a single Project of your choice.",
+    },
+    {
+      key:           "pep_talk",
+      name:          "Pep Talk",
+      target:        "One ally",
+      icon:          "fas fa-comment",
+      requiredClass: ["Orator", "Dancer", "Loremaster", "Chanter", "Commander"],
+      desc:          "Once before the next rest, if the target is about to recover Mind Points, they may double the amount recovered.",
+    },
+    {
+      key:           "planning",
+      name:          "Planning",
+      target:        "One ally",
+      icon:          "fas fa-chess",
+      requiredClass: ["Commander", "Loremaster"],
+      desc:          "Once before the next rest, after the target performs a Group Check as leader or a Check to examine someone/something, they may add +4 to the Result.",
+    },
+    {
+      key:           "sleep_soundly",
+      name:          "Sleep Soundly",
+      target:        "Yourself",
+      icon:          "fas fa-bed",
+      requiredClass: "any",
+      desc:          "Once before the next rest, you may perform an additional action on your turn during a conflict scene. This action must be Equipment, Hinder, or Inventory.",
+    },
+    {
+      key:           "training",
+      name:          "Training",
+      target:        "Yourself",
+      icon:          "fas fa-shield-alt",
+      requiredClass: "any",
+      desc:          "Once before the next rest, if you are about to suffer one or more status effects from the same source, you may instead choose to suffer none of them.",
     },
   ];
+
+  // ---------------------------------------------------------------------------
+  // Class gate utility
+  // requiredClass can be "any", a single string, or an array of strings.
+  // Returns true if the actor has ANY of the required classes.
+  // Reads class_list from actor.system.props (CSB dynamic table).
+  // Each row: { $deleted: bool, class_name: string, level: string, benefit: string }
+  // ---------------------------------------------------------------------------
+  CAMP.actorHasClass = function(actor, requiredClass) {
+    if (!requiredClass) return true;
+    const classes = Array.isArray(requiredClass) ? requiredClass : [requiredClass];
+    if (classes.every(c => !c || c === "any")) return true;
+    const classList = actor?.system?.props?.class_list ?? {};
+    const actorClasses = Object.values(classList)
+      .filter(row => !row?.$deleted)
+      .map(row => String(row.class_name ?? "").toLowerCase().trim());
+    return classes.some(req => actorClasses.includes(String(req).toLowerCase().trim()));
+  };
 
   // ---------------------------------------------------------------------------
   // Bond emotion options

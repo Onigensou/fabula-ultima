@@ -814,6 +814,31 @@
 .oni-camp-expl-stop-btn:active:not(:disabled) { transform: translateY(1px); }
 .oni-camp-expl-stop-btn:disabled { opacity: .5; cursor: default; }
 
+/* "Click to Proceed" button — owner only, appears after result */
+.oni-camp-expl-proceed-btn {
+  appearance: none;
+  padding: 9px 28px;
+  font-size: .92em;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 1.5px solid rgba(40,110,40,.6);
+  cursor: pointer;
+  background: linear-gradient(180deg, #6db86d 0%, #4a9a4a 55%, #357535 100%);
+  color: #fff;
+  letter-spacing: .8px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.3),
+    0 0 0 2px rgba(40,110,40,.18),
+    0 6px 14px rgba(0,0,0,.2);
+  transition: filter .1s ease, transform .08s ease;
+  animation: expl-reveal .35s cubic-bezier(.22,1,.36,1) both;
+}
+.oni-camp-expl-proceed-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.oni-camp-expl-proceed-btn:active:not(:disabled) { transform: translateY(1px); }
+.oni-camp-expl-proceed-btn:disabled { opacity: .5; cursor: default; }
+
 /* Spectator waiting text */
 .oni-camp-expl-waiting {
   font-size: .85em;
@@ -845,6 +870,97 @@
   color: var(--camp-ink);
   opacity: .8;
   margin-top: 2px;
+}
+
+/* ── Activity Select — Tab bar ────────────────────────────────────────────── */
+.oni-camp-act-tab-bar {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+.oni-camp-act-tab {
+  flex: 1;
+  appearance: none;
+  border: 1.5px solid rgba(92,66,30,.3);
+  border-radius: 7px;
+  padding: 4px 6px;
+  font-size: .76em;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: rgba(220,200,160,.3);
+  color: var(--camp-wood-2);
+  text-align: center;
+  white-space: nowrap;
+  transition: background .12s ease, color .12s ease;
+}
+.oni-camp-act-tab:hover:not(.is-active) {
+  background: rgba(220,200,160,.55);
+}
+.oni-camp-act-tab.is-active {
+  background: var(--camp-parchment-2);
+  color: var(--camp-ink);
+  border-color: rgba(92,66,30,.5);
+  font-weight: 700;
+}
+.act-tab-count {
+  opacity: .7;
+  font-size: .9em;
+}
+
+/* ── Unavailable activity row ─────────────────────────────────────────────── */
+.oni-camp-act-row-unavail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  margin-bottom: 2px;
+  user-select: none;
+  position: relative;
+  opacity: 0.42;
+  filter: grayscale(0.4);
+  cursor: pointer;
+  transition: opacity .14s ease, border-color .12s ease, background .12s ease;
+}
+.oni-camp-act-row-unavail:hover {
+  opacity: 0.68;
+  background: rgba(180,80,80,.07);
+  border-color: rgba(180,80,80,.22);
+}
+.act-row-lock {
+  font-size: .72em;
+  color: #9a4040;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── Required class notice in description panel ───────────────────────────── */
+.act-desc-req-class {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .78em;
+  color: var(--camp-wood-2);
+  padding: 2px 0;
+}
+.act-desc-req-class.is-locked {
+  color: #9a3030;
+  font-weight: 600;
+}
+.act-desc-unavail-notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78em;
+  color: #9a3030;
+  padding: 5px 9px;
+  margin-top: 5px;
+  background: rgba(200,80,80,.1);
+  border: 1px solid rgba(200,80,80,.25);
+  border-radius: 7px;
 }
   `;
 

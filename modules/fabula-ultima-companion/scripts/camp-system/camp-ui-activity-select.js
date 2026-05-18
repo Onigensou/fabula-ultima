@@ -11,16 +11,20 @@
   const TAG    = "[CampSystem][ActivitySelect]";
   const OVL_ID = "oni-camp-overlay";
 
-  let _localHovers = {};
-  let _focusedKey  = null;
+  let _localHovers     = {};
+  let _focusedKey      = null;
+  let _activeTab       = "available"; // "available" | "unavailable"
+  let _unavailableKeys = new Set();   // activity keys the current actor cannot perform
 
   CAMP.ActivitySelectUI = {
     _party: [],
 
     async show() {
       this._party = await CAMP.Party.resolve().catch(() => []);
-      _localHovers = {};
-      _focusedKey  = null;
+      _localHovers     = {};
+      _focusedKey      = null;
+      _activeTab       = "available";
+      _computeUnavailableKeys(this._party);
       _buildOverlay(this._party);
       this.refresh();
       CAMP.Sound.play(CAMP.SFX.CAMP_START);
@@ -151,27 +155,58 @@
         ?? null;
   }
 
-  function _setDesc(def) {
+  function _setDesc(def, available = true) {
     const panel = document.getElementById("oni-camp-act-desc-panel");
     if (!panel) return;
     if (!def) {
       panel.innerHTML = `<p class="act-desc-placeholder">Hover an activity to see its description.</p>`;
       return;
     }
+    const req        = def.requiredClass;
+    const classes    = Array.isArray(req) ? req : (req ? [req] : []);
+    const isAny      = classes.length === 0 || classes.every(c => !c || c === "any");
+    const reqClass   = isAny ? "Any" : classes.join(", ");
+    const lockIcon   = available ? "fas fa-graduation-cap" : "fas fa-lock";
+    const reqCls     = available ? "act-desc-req-class" : "act-desc-req-class is-locked";
+    const unavailMsg = available ? "" : `
+      <div class="act-desc-unavail-notice">
+        <i class="fas fa-ban"></i> This activity is not available to your character.
+      </div>`;
     panel.innerHTML = `
       <div class="act-desc-icon"><i class="${def.icon}"></i></div>
       <div class="act-desc-name">${def.name}</div>
       <div class="act-desc-target">${def.target}</div>
       <div class="act-desc-divider"></div>
       <div class="act-desc-body">${def.desc}</div>
+      <div class="act-desc-divider"></div>
+      <div class="${reqCls}"><i class="${lockIcon}"></i> Required class: <strong>${reqClass}</strong></div>
+      ${unavailMsg}
     `;
   }
 
   // ---------------------------------------------------------------------------
+  function _computeUnavailableKeys(party) {
+    _unavailableKeys = new Set();
+    if (game.user?.isGM) return; // GM bypasses class gate
+    const userId    = game.user?.id;
+    const myEntry   = party.find(e => e.userId === userId);
+    const myActorId = myEntry?.actorId ?? game.user?.character?.id ?? null;
+    const myActor   = myActorId ? game.actors?.get(myActorId) : null;
+    for (const def of CAMP.ACTIVITY_DEFS) {
+      if (!CAMP.actorHasClass(myActor, def.requiredClass)) {
+        _unavailableKeys.add(def.key);
+      }
+    }
+  }
+
   function _buildOverlay(party) {
     document.getElementById(OVL_ID)?.remove();
 
-    const isGM = game.user?.isGM;
+    const isGM        = game.user?.isGM;
+    const isSpectator = !_getMyActorId();
+    const showTabs    = !isGM && !isSpectator;
+    const availCount   = CAMP.ACTIVITY_DEFS.length - _unavailableKeys.size;
+    const unavailCount = _unavailableKeys.size;
 
     const gmBar = isGM ? `
       <div class="oni-camp-gm-override">
@@ -190,8 +225,6 @@
         <span id="oni-camp-act-status" class="act-footer-status">0 / 0 confirmed</span>
       </div>`;
 
-    const isSpectator = !_getMyActorId();
-
     const overlay = document.createElement("div");
     overlay.id = OVL_ID;
     if (isSpectator) overlay.classList.add("oni-camp-spectator");
@@ -201,7 +234,15 @@
         <div class="oni-camp-act-body">
 
           <div class="oni-camp-act-list-col">
-            <div class="oni-camp-act-rows" id="oni-camp-act-rows"></div>
+            ${showTabs ? `
+            <div class="oni-camp-act-tab-bar">
+              <button class="oni-camp-act-tab is-active" data-tab="available">Available <span class="act-tab-count">(${availCount})</span></button>
+              <button class="oni-camp-act-tab" data-tab="unavailable">Unavailable <span class="act-tab-count">(${unavailCount})</span></button>
+            </div>` : ""}
+            <div class="oni-camp-act-rows" id="oni-camp-act-rows">
+              <div id="oni-camp-rows-available"></div>
+              <div id="oni-camp-rows-unavailable" style="display:none;"></div>
+            </div>
           </div>
 
           <div class="oni-camp-act-desc-col">
@@ -219,9 +260,9 @@
       </div>
     `;
 
-    // Build activity rows
-    const rows = overlay.querySelector("#oni-camp-act-rows");
-    CAMP.ACTIVITY_DEFS.forEach((def, i) => {
+    // Build available activity rows
+    const availRowsEl = overlay.querySelector("#oni-camp-rows-available");
+    CAMP.ACTIVITY_DEFS.filter(d => !_unavailableKeys.has(d.key)).forEach((def, i) => {
       const row = document.createElement("div");
       row.className = "oni-camp-act-row";
       row.dataset.activityKey = def.key;
@@ -234,18 +275,65 @@
       `;
       row.addEventListener("mouseenter", () => {
         _focusedKey = def.key;
-        _setDesc(def);
+        _setDesc(def, true);
         _onHover(def.key);
         CAMP.Sound.play(CAMP.SFX.ACTIVITY_HOVER);
         CAMP.ActivitySelectUI.refresh();
       });
       row.addEventListener("mouseleave", () => _onHover(null));
-      row.addEventListener("click",      () => {
+      row.addEventListener("click", () => {
         CAMP.Sound.play(CAMP.SFX.ACTIVITY_SELECT);
         _onClickActivity(def.key);
       });
-      rows.appendChild(row);
+      availRowsEl.appendChild(row);
     });
+
+    // Build unavailable activity rows (inspect-only)
+    const unavailRowsEl = overlay.querySelector("#oni-camp-rows-unavailable");
+    CAMP.ACTIVITY_DEFS.filter(d => _unavailableKeys.has(d.key)).forEach((def, i) => {
+      const row = document.createElement("div");
+      row.className = "oni-camp-act-row-unavail";
+      row.dataset.activityKey = def.key;
+      row.style.animation      = `campRowSlideIn 0.24s ease both`;
+      row.style.animationDelay = `${i * 48}ms`;
+      row.innerHTML = `
+        <span class="act-row-icon"><i class="${def.icon}"></i></span>
+        <span class="act-row-name">${def.name}</span>
+        <span class="act-row-lock"><i class="fas fa-lock"></i></span>
+      `;
+      row.addEventListener("mouseenter", () => {
+        _focusedKey = def.key;
+        _setDesc(def, false);
+        CAMP.Sound.play(CAMP.SFX.ACTIVITY_HOVER);
+      });
+      row.addEventListener("mouseleave", () => {
+        _setDesc(null);
+        _focusedKey = null;
+      });
+      // Click: show full description (inspect) but do not lock/select
+      row.addEventListener("click", () => {
+        _setDesc(def, false);
+        CAMP.Sound.play(CAMP.SFX.ACTIVITY_HOVER);
+      });
+      unavailRowsEl.appendChild(row);
+    });
+
+    // Tab switching
+    if (showTabs) {
+      overlay.querySelectorAll(".oni-camp-act-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tab = btn.dataset.tab;
+          _activeTab = tab;
+          overlay.querySelectorAll(".oni-camp-act-tab").forEach(b =>
+            b.classList.toggle("is-active", b.dataset.tab === tab)
+          );
+          overlay.querySelector("#oni-camp-rows-available").style.display   = tab === "available"   ? "" : "none";
+          overlay.querySelector("#oni-camp-rows-unavailable").style.display = tab === "unavailable" ? "" : "none";
+          _setDesc(null);
+          _focusedKey = null;
+        });
+      });
+    }
 
     // Confirm button (players only)
     overlay.querySelector("#oni-camp-act-confirm")?.addEventListener("click", () => {
@@ -272,6 +360,9 @@
   }
 
   function _onClickActivity(activityKey) {
+    // Unavailable activities are inspect-only — no selection allowed
+    if (_unavailableKeys.has(activityKey)) return;
+
     const userId = game.user?.id;
     // Blocked while confirmed — must un-confirm first via Confirm button
     if (CAMP.State.getReady()[userId]) return;
