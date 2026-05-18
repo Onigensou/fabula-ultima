@@ -1008,11 +1008,16 @@
   }
 
   /**
-   * Resort every page in the encyclopedia entry by (rank, name). Idempotent —
-   * only writes pages whose sort field would change. GM-only.
+   * Resort every page in the encyclopedia entry by (rank, level, name).
+   * Idempotent — only writes pages whose sort field would change. GM-only.
    *
-   * Sort source: actor.system.props.npc_rank for the primary key,
-   * actor.name (falling back to page.name) for the alphabetical tie-break.
+   * Sort source:
+   *   1. actor.system.props.npc_rank — primary, normalized via rankSortKey
+   *   2. actor.system.props.level    — secondary, numeric ascending. Unknown
+   *      / non-numeric levels sort to the end of their rank group (999).
+   *   3. actor.name                  — final tiebreaker, alphabetical, for
+   *      stable ordering when rank + level both tie.
+   *
    * Pages whose actor is unresolvable sort to the end with rank=99.
    */
   async function sortPages() {
@@ -1025,21 +1030,31 @@
     const enriched = await Promise.all(pages.map(async (p) => {
       const actorUuid = getFlag(p, "actorUuid");
       let rank = null;
+      let levelRaw = null;
       let displayName = p.name ?? "";
       if (actorUuid) {
         try {
           const actor = await fromUuid(actorUuid);
           if (actor) {
             rank = actor.system?.props?.npc_rank ?? null;
+            levelRaw = actor.system?.props?.level ?? null;
             displayName = actor.name ?? displayName;
           }
         } catch { /* tolerate dead UUID */ }
       }
-      return { id: p.id, currentSort: p.sort ?? 0, rankKey: rankSortKey(rank), name: displayName };
+      const lvlNum = Number(levelRaw);
+      return {
+        id: p.id,
+        currentSort: p.sort ?? 0,
+        rankKey: rankSortKey(rank),
+        levelKey: Number.isFinite(lvlNum) ? lvlNum : 999,
+        name: displayName
+      };
     }));
 
     enriched.sort((a, b) => {
       if (a.rankKey !== b.rankKey) return a.rankKey - b.rankKey;
+      if (a.levelKey !== b.levelKey) return a.levelKey - b.levelKey;
       return a.name.localeCompare(b.name);
     });
 
