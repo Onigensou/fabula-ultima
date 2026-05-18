@@ -108,32 +108,32 @@
     style.id = PAGE_STYLE_ID;
     style.textContent = `
 .oni-enc-root { font-family: Signika, sans-serif; font-size: 14px; color: #2b241a; }
-.oni-enc-card { background: linear-gradient(160deg, #f3ead6 0%, #ead9b5 100%); border: 2px solid #c2bab0; border-radius: 14px; padding: 16px; box-shadow: 0 3px 14px rgba(0,0,0,.14); box-sizing: border-box; }
+.oni-enc-card { background: linear-gradient(160deg, #f5f3f0 0%, #ece9e5 100%); border: 2px solid #c2bab0; border-radius: 14px; padding: 16px; box-shadow: 0 3px 14px rgba(0,0,0,.14); box-sizing: border-box; }
 .oni-enc-header { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
 .oni-enc-portrait { width:92px; height:92px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; flex:0 0 auto; }
 .oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
 .oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.oni-enc-traits-inline { flex:0 0 auto; max-width:190px; text-align:right; font-size:12px; line-height:1.45; }
-.oni-enc-traits-inline-label { font-size:10px; font-weight:900; opacity:.6; text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+.oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:italic; }
+.oni-enc-desc-inline { flex:0 0 auto; max-width:240px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border-left:1px solid rgba(0,0,0,.12); padding-left:12px; opacity:.85; }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
-.oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed rgba(0,0,0,.15); }
-.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.32); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
-.oni-enc-box-title { font-weight:900; margin-bottom:6px; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; }
+.oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding-top:6px; }
+.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.42); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
+.oni-enc-box-title { font-weight:900; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid rgba(0,0,0,.12); padding-bottom:6px; margin-bottom:8px; }
 .oni-enc-badge-wrap { display:flex; flex-wrap:wrap; gap:6px; }
-.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.42); font-weight:700; font-size:13px; white-space:nowrap; }
+.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.55); font-weight:700; font-size:13px; white-space:nowrap; }
 .oni-enc-2col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 16px; }
 .oni-enc-2col-row { display:flex; align-items:center; gap:6px; min-width:0; cursor:default; }
 .oni-enc-2col-label { font-weight:700; min-width:0; flex:0 0 auto; }
 .oni-enc-2col-pct { flex:1; }
 .oni-enc-eff-pos { color:#1f7a3a; font-weight:700; }
 .oni-enc-eff-neg { color:#b02a2a; font-weight:700; }
-.oni-enc-ability-list { list-style:none; margin:0; padding:0; }
-.oni-enc-ability-item { display:flex; align-items:flex-start; gap:8px; margin-bottom:8px; }
-.oni-enc-ability-item:last-child { margin-bottom:0; }
+.oni-enc-ability-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.oni-enc-ability-item { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:rgba(255,255,255,.55); }
 .oni-enc-ability-item p { margin: 3px 0; }
 .oni-enc-ability-item ul { padding-left: 18px; margin: 3px 0; }
 .oni-enc-ability-item li { margin: 2px 0; }
 .oni-enc-ability-icon { width:24px; height:24px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
+.oni-enc-atr-icon { width:30px; height:30px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 4px; cursor:default; }
 .oni-enc-muted { opacity:.65; font-style:italic; }
 .oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
     `.trim();
@@ -454,36 +454,43 @@
   }
 
   // ───────────────────── Render — primitives ─────────────────────
-  function renderHeader(actor, p, showMeta, traitsText = null) {
-    let metaHtml;
+  function renderHeader(actor, p, showMeta, descHtml = null, traitsText = null) {
+    let metaHtml, traitsHtml;
     if (showMeta) {
-      const parts = [];
-      if (p.level) parts.push(`Lv ${ESC(p.level)}`);
-      parts.push(`Type: ${ESC(p.species ?? "—")} · Sub-Type: ${ESC(p.subtype_list ?? "—")} · Attribute: ${ESC(p.attribute ?? "—")}`);
-      metaHtml = parts.join(" · ");
+      const lvPart  = p.level ? `Lv ${ESC(p.level)} · ` : "";
+      const type    = ESC(p.species      || "—");
+      const subtype = ESC(p.subtype_list || "—");
+      const attr    = ESC(p.attribute    || "—");
+      metaHtml  = `${lvPart}Type: ${type} · Sub-Type: ${subtype} · Attribute: ${attr}`;
+      traitsHtml = traitsText ? `<div class="oni-enc-traits-sub">${ESC(traitsText)}</div>` : "";
     } else {
-      metaHtml = `<span class="oni-enc-muted">Level · Species · Attribute unknown</span>`;
+      metaHtml  = `<span class="oni-enc-muted">Level · Species · Attribute unknown</span>`;
+      traitsHtml = "";
     }
-    const traitsBlock = traitsText ? `
-  <div class="oni-enc-traits-inline">
-    <div class="oni-enc-traits-inline-label">Traits</div>
-    <div>${ESC(traitsText)}</div>
-  </div>` : "";
+    const descBlock = descHtml
+      ? `\n  <div class="oni-enc-desc-inline">${descHtml}</div>`
+      : "";
     return `
 <div class="oni-enc-header">
   <img class="oni-enc-portrait" src="${ESC(actor.img || PORTRAIT_FALLBACK)}" alt="">
   <div style="flex:1;min-width:0;">
     <div class="oni-enc-title">${ESC(actor.name ?? "Unknown")}</div>
     <div class="oni-enc-sub">${metaHtml}</div>
-  </div>${traitsBlock}
+    ${traitsHtml}
+  </div>${descBlock}
 </div>`;
   }
 
   function renderTierSection(tierLabel, threshold, showTier, innerHtml) {
     if (showTier) return innerHtml;
-    return `
-<div class="oni-enc-box" style="text-align:center;">
-  <div style="font-size:13px;opacity:.8;">🔒 <strong>${ESC(tierLabel)}</strong> &mdash; requires a Study Check of <strong>${threshold}</strong> or higher.</div>
+    return renderLockedPlaceholder(tierLabel, threshold);
+  }
+
+  function renderLockedPlaceholder(label, threshold) {
+    return `<div class="oni-enc-box" style="text-align:center;padding:18px 12px;background:rgba(0,0,0,.04);border-style:dashed;">
+  <div style="font-size:26px;line-height:1;opacity:.35;margin-bottom:6px;">🔒</div>
+  <div style="font-weight:900;font-size:14px;margin-bottom:4px;">${ESC(label)}</div>
+  <div style="font-size:12px;opacity:.75;">Requires a Study Check of <strong>${threshold}+</strong> to reveal.</div>
 </div>`;
   }
 
@@ -510,8 +517,8 @@
   function renderAttributesBlock(p) {
     const stat = (label, v) => `
 <div style="text-align:center;">
-  <div style="font-size:11px;opacity:.7;font-weight:700;">${ESC(label)}</div>
-  <div style="font-size:18px;font-weight:900;">${v != null ? `d${ESC(v)}` : "—"}</div>
+  <img class="oni-enc-atr-icon" src="${ATR_ICONS[label]}" title="${label}" alt="${label}">
+  <div style="font-size:18px;font-weight:900;">${v != null ? ESC(String(v)) : "—"}</div>
 </div>`;
     return renderSection("Attributes", `
 <div class="oni-enc-stat-row">
@@ -524,6 +531,12 @@
 
   const AFF_SYM = { RS: "🛡", VU: "💥", AB: "♻", IM: "🚫" };
   const WEP_ICONS = { arcane:"fa-book", bow:"fa-bow-arrow", brawling:"fa-hand-fist", dagger:"fa-dagger", firearm:"fa-gun", flail:"fa-mace", heavy:"fa-hammer-war", spear:"fa-location-arrow", sword:"fa-sword", thrown:"fa-bomb" };
+  const ATR_ICONS = {
+    MIG: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/asan.png",
+    DEX: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+    INS: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+    WLP: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/stat.png",
+  };
 
   function renderAffinities(p) {
     const badges = [];
@@ -777,63 +790,45 @@
 
     const p = actor.system?.props ?? {};
 
-    // Extract traits as plain text for inline header display (identity tier)
-    const inlineTraitsText = showIdentity
-      ? String(p.traits ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null
+    // Description rendered inline in the header; traits as plain text below sub-line
+    const descHtml     = showIdentity ? (sanitizeRichHtml(p.study_text ?? "") || null) : null;
+    const traitsText   = showIdentity
+      ? (String(p.traits ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null)
       : null;
 
-    // Unstudied — full guide message, no individual placeholders needed
+    // Unstudied — full guide message, no tier placeholders needed
     if (!showIdentity) {
       return `<div class="oni-enc-root"><div class="oni-enc-card">${
         [renderHeader(actor, p, false), renderUnstudied(), renderFooter(best, bestBy, tierLabel, lastUpdated)].join("\n")
       }</div></div>`;
     }
 
-    // All sections in display order, tagged with their unlock tier.
-    // Traits are shown inline in the header; not repeated as a section.
-    const SECTION_DEFS = [
-      { tier: "identity", render: () => renderCoreStatsBlock(p) },
-      { tier: "stats",    render: () => renderAttributesBlock(p) },
-      { tier: "details",  render: () => renderAffinities(p) },
-      { tier: "details",  render: () => renderWeaponEff(p) },
-      { tier: "details",  render: () => renderConditionBadges(p) },
-      { tier: "identity", render: () => renderDescription(p) },
-      { tier: "identity", render: async () => await renderStealables(actor, p) },
-      { tier: "details",  render: () => renderAttacks(actor, p) },
-      { tier: "details",  render: () => renderActiveSkills(actor, p) },
-      { tier: "details",  render: () => renderSpells(actor, p) },
-      { tier: "details",  render: () => renderPassiveSkills(actor, p) },
-    ];
-    const tierUnlocked = { identity: showIdentity, stats: showStats, details: showDetails };
-
-    // Render unlocked sections in display order; track which tiers are locked
-    const unlockedParts = [];
-    const lockedTiersSeen = new Set();
-    for (const def of SECTION_DEFS) {
-      if (tierUnlocked[def.tier]) {
-        unlockedParts.push(await def.render());
-      } else {
-        lockedTiersSeen.add(def.tier);
-      }
-    }
-
-    // One locked placeholder per locked tier, always at the bottom
-    const TIER_META = {
-      identity: { label: "Identity",         threshold: TIER_IDENTITY },
-      stats:    { label: "Statistics",        threshold: TIER_STATS   },
-      details:  { label: "Detailed Profile",  threshold: TIER_DETAILS },
-    };
-    const lockedParts = ["identity", "stats", "details"]
-      .filter(t => lockedTiersSeen.has(t))
-      .map(t => `<div class="oni-enc-box" style="text-align:center;">
-  <div style="font-size:13px;opacity:.8;">🔒 <strong>${ESC(TIER_META[t].label)}</strong> &mdash; requires a Study Check of <strong>${TIER_META[t].threshold}</strong> or higher.</div>
-</div>`);
-
+    // Fixed section layout. Locked tiers show an inline placeholder at their
+    // natural position rather than being pushed to the bottom.
     const bodyParts = [
-      renderHeader(actor, p, true, inlineTraitsText),
-      ...unlockedParts,
-      ...lockedParts,
-      renderFooter(best, bestBy, tierLabel, lastUpdated)
+      renderHeader(actor, p, true, descHtml, traitsText),
+
+      // ── Identity tier ──────────────────────────────────────────────
+      renderCoreStatsBlock(p),
+      await renderStealables(actor, p),
+
+      // ── Stats tier ─────────────────────────────────────────────────
+      showStats
+        ? renderAttributesBlock(p)
+        : renderLockedPlaceholder("Statistics", TIER_STATS),
+
+      // ── Details tier ───────────────────────────────────────────────
+      ...(showDetails ? [
+        renderAffinities(p),
+        renderWeaponEff(p),
+        renderConditionBadges(p),
+        renderAttacks(actor, p),
+        renderActiveSkills(actor, p),
+        renderSpells(actor, p),
+        renderPassiveSkills(actor, p),
+      ] : [renderLockedPlaceholder("Detailed Profile", TIER_DETAILS)]),
+
+      renderFooter(best, bestBy, tierLabel, lastUpdated),
     ].join("\n");
 
     return `<div class="oni-enc-root"><div class="oni-enc-card">${bodyParts}</div></div>`;
