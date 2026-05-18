@@ -34,37 +34,67 @@
   // ---------------------------------------------------------------------------
   // Sheep schedule — deterministic, same on all clients
   // t = ms after game start when sheep appears
-  // valid opportunities: 5 normal + 2 group = MAX_SCORE 7
+  //
+  // Types:
+  //   normal        — standard arc jump (700ms), valid press window
+  //   group         — two sheep at once (700ms), one press scores
+  //   approach      — walks to fence then jumps (1300ms), valid press window at apex
+  //   fake          — starts arc but retreats (950ms), trap — slightly slower than normal
+  //   approach_stop — walks slowly toward fence then turns back (1700ms), trap
+  //   super_slow    — very slow creep then jumps (1800ms), valid — fights muscle memory
+  //
+  // Phase 1 (0–5s):  normals only — player learns the baseline rhythm
+  // Phase 2 (5–15s): all patterns introduced gradually
+  //
+  // Score: 6 normal + 2 approach + 1 super_slow + 1 group = MAX_SCORE 10
+  // Traps: 1 approach_stop + 2 fake
   // ---------------------------------------------------------------------------
-  // valid #s: 8 normal + 2 group = MAX_SCORE 10
-  // traps: 4 offbeat + 4 fake — denser trap density for real difficulty
+  // Schedule must be sorted ascending by t.
+  // approach hit window ends at t+871ms; spacebar active until GAME_DURATION_MS+150=15150ms.
+  // → approach must start by t≤14279ms; group/normal must start by t≤14723ms.
   const SCHEDULE = [
-    { t:  600, type: "normal",  id:  0 },  // valid #1
-    { t: 1350, type: "normal",  id:  1 },  // valid #2
-    { t: 2100, type: "offbeat", id:  2 },  // trap
-    { t: 2800, type: "normal",  id:  3 },  // valid #3
-    { t: 3500, type: "fake",    id:  4 },  // trap
-    { t: 4200, type: "normal",  id:  5 },  // valid #4
-    { t: 4900, type: "group",   id:  6 },  // valid #5
-    { t: 5800, type: "normal",  id:  7 },  // valid #6
-    { t: 6500, type: "offbeat", id:  8 },  // trap
-    { t: 7200, type: "normal",  id:  9 },  // valid #7
-    { t: 7900, type: "fake",    id: 10 },  // trap
-    { t: 8600, type: "normal",  id: 11 },  // valid #8
-    { t: 9300, type: "offbeat", id: 12 },  // trap
-    { t:10000, type: "group",   id: 13 },  // valid #9
-    { t:10900, type: "normal",  id: 14 },  // valid #10
-    { t:11700, type: "fake",    id: 15 },  // trap
-    { t:12600, type: "offbeat", id: 16 },  // trap
-    { t:13500, type: "fake",    id: 17 },  // trap — final test of patience
+    // ── Phase 1: normals only ────────────────────────────────────────────────
+    { t:  700, type: "normal",        id:  0 },  // valid #1
+    { t: 2000, type: "normal",        id:  1 },  // valid #2
+    { t: 3500, type: "normal",        id:  2 },  // valid #3
+    { t: 4400, type: "normal",        id:  3 },  // valid #4  — clears 5100ms
+
+    // ── Phase 2: introduce new patterns ─────────────────────────────────────
+    { t: 5000, type: "approach_stop", id:  4 },  // trap #1   — slow walker, never jumps (clears 6700ms)
+    { t: 7000, type: "approach",      id:  5 },  // valid #5  — walk 600ms then jump; hit 7859–8027ms ✓
+    { t: 8500, type: "super_slow",    id:  6 },  // valid #6  — walk 1100ms then jump; hit 9859–10027ms ✓
+    { t:10400, type: "fake",          id:  7 },  // trap #2   — slow arc abort (clears 11350ms)
+    { t:11500, type: "approach",      id:  8 },  // valid #7  — hit 12359–12527ms ✓ (clears ~12800ms)
+    { t:12900, type: "normal",        id:  9 },  // valid #8  — hit 13159–13327ms ✓
+    { t:13700, type: "group",         id: 10 },  // valid #9  — hit 13959–14127ms ✓
+    { t:14300, type: "normal",        id: 11 },  // valid #10 — hit 14559–14727ms ✓
+    { t:14600, type: "fake",          id: 12 },  // trap #3   — slow arc abort (starts as group exits)
   ];
 
-  const MAX_SCORE        = 10;        // 8 normal + 2 group
+  const MAX_SCORE        = 10;
   const GAME_DURATION_MS = 15_000;
-  const JUMP_MS          = 700;       // normal/group jump animation duration
-  const FAKE_MS          = 800;       // fake jump animation duration
-  const HIT_WIN_START    = JUMP_MS * 0.37;  // ~259 ms — tighter window (~168 ms total)
-  const HIT_WIN_END      = JUMP_MS * 0.61;  // ~427 ms
+  const JUMP_MS          = 700;        // normal/group jump animation duration
+  const FAKE_MS          = 950;        // fake — visibly slower arc than normal
+  const APPROACH_MS      = 1300;       // approach-jump: walk → pause → arc over fence
+  const APPROACH_STOP_MS = 1700;       // approach-stop: slow walk → bob → retreat
+  const SUPER_SLOW_MS    = 1800;       // super-slow: long creep across ground, then jumps
+
+  // Walk phase durations (used in both physics and hit windows)
+  const APPROACH_WALK_MS   = 600;
+  const SUPER_SLOW_WALK_MS = 1100;
+  // Stage geometry (must match CSS)
+  const STAGE_W = 560;
+
+  // Hit windows — ms after sheep spawn when SPACE scores.
+  // Physics apex is always at WALK_MS + JUMP_MS/2; window is ±84ms around that.
+  const _JW = Math.round(JUMP_MS * 0.37);  // jump-window start offset: ~259ms
+  const _JE = Math.round(JUMP_MS * 0.61);  // jump-window end   offset: ~427ms
+  const HIT_WINDOWS = {
+    normal:     { start: _JW,                       end: _JE                       },  // 259–427ms
+    group:      { start: _JW,                       end: _JE                       },  // same as normal
+    approach:   { start: APPROACH_WALK_MS   + _JW,  end: APPROACH_WALK_MS   + _JE  },  // 859–1027ms
+    super_slow: { start: SUPER_SLOW_WALK_MS + _JW,  end: SUPER_SLOW_WALK_MS + _JE  },  // 1359–1527ms
+  };
 
   // ---------------------------------------------------------------------------
   // Module state
@@ -75,6 +105,8 @@
   let _gameStartMs   = null;
   let _scheduleIdx   = 0;
   let _activeEvents  = [];   // { id, type, startMs, hit }
+  let _physicsObjs   = [];   // JS-driven sheep: { el, el2?, phase, x, y, vx, vy, g, ... }
+  let _lastFrameMs   = 0;
   let _rafId         = null;
   let _spaceHandler  = null;
   let _endTimer      = null;
@@ -87,13 +119,87 @@
       document.removeEventListener("keydown", _spaceHandler, { capture: true });
       _spaceHandler = null;
     }
+    for (const o of _physicsObjs) { o.el?.remove(); o.el2?.remove(); }
     _actorId      = null;
     _isOwner      = false;
     _score        = 0;
     _gameStartMs  = null;
     _scheduleIdx  = 0;
     _activeEvents = [];
+    _physicsObjs  = [];
+    _lastFrameMs  = 0;
     _resultShown  = false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Physics helpers (normal / group / approach / super_slow)
+  // Gravity is derived so the jump arc reaches the correct apex in JUMP_MS/2 ms.
+  // ---------------------------------------------------------------------------
+  function _makePhysicsObj(type, now) {
+    const xStart = STAGE_W * 0.04;
+    const xEnd   = STAGE_W * 0.95;
+
+    function _jumpParams(apexPx, xFrom, xTo) {
+      const tApex = JUMP_MS / 2;                  // 350ms to apex
+      const g     = 2 * apexPx / (tApex * tApex); // px/ms²
+      const vy0   = tApex * g;                     // px/ms upward
+      const vx    = (xTo - xFrom) / JUMP_MS;       // constant horizontal
+      return { g, vy0, vx };
+    }
+
+    switch (type) {
+      case "normal":
+      case "group": {
+        const { g, vy0, vx } = _jumpParams(92, xStart, xEnd);
+        return { phase: "jump", x: xStart, y: 3, vx, vy: vy0, g, groundY: 3, spawnMs: now };
+      }
+      case "approach": {
+        const xWalk = STAGE_W * 0.44;
+        const { g, vy0, vx: jumpVx } = _jumpParams(88, xWalk, xEnd);
+        return {
+          phase: "walk", x: xStart, y: 3, vx: (xWalk - xStart) / APPROACH_WALK_MS,
+          vy: 0, g, vy0, jumpVx, groundY: 3, walkMs: APPROACH_WALK_MS, spawnMs: now,
+        };
+      }
+      case "super_slow": {
+        const xWalk = STAGE_W * 0.32;
+        const { g, vy0, vx: jumpVx } = _jumpParams(88, xWalk, xEnd);
+        return {
+          phase: "walk", x: xStart, y: 3, vx: (xWalk - xStart) / SUPER_SLOW_WALK_MS,
+          vy: 0, g, vy0, jumpVx, groundY: 3, walkMs: SUPER_SLOW_WALK_MS, spawnMs: now,
+        };
+      }
+    }
+    return null;
+  }
+
+  function _stepPhysics(obj, now, dt) {
+    if (obj.phase === "walk") {
+      obj.x += obj.vx * dt;
+      if (now - obj.spawnMs >= obj.walkMs) {
+        obj.phase = "jump";
+        obj.vy    = obj.vy0;
+        obj.vx    = obj.jumpVx;
+      }
+    } else if (obj.phase === "jump") {
+      obj.vy -= obj.g * dt;
+      obj.y  += obj.vy * dt;
+      obj.x  += obj.vx * dt;
+      if (obj.y <= obj.groundY) {
+        obj.y     = obj.groundY;
+        obj.phase = "done";
+        setTimeout(() => { obj.el?.remove(); obj.el2?.remove(); }, 80);
+      }
+    }
+    if (obj.phase !== "done") {
+      const left = `${(obj.x / STAGE_W * 100).toFixed(2)}%`;
+      obj.el.style.left   = left;
+      obj.el.style.bottom = `${obj.y.toFixed(1)}px`;
+      if (obj.el2) {
+        obj.el2.style.left   = left;
+        obj.el2.style.bottom = `${(obj.y + 15).toFixed(1)}px`; // track-B offset
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -283,6 +389,33 @@
         80%  { left:10%; bottom:6px; }
         100% { left:4%;  bottom:3px; }
       }
+      /* approach-jump: walks to fence at medium pace, crouches, then arcs high over */
+      @keyframes oni-dd-approach-jump {
+        0%   { left:4%;  bottom:3px; }
+        38%  { left:41%; bottom:4px; }
+        46%  { left:44%; bottom:1px; }
+        62%  { left:54%; bottom:90px; }
+        78%  { left:68%; bottom:50px; }
+        100% { left:95%; bottom:3px; }
+      }
+      /* approach-stop: walks slowly toward fence, bobs once (never high), retreats */
+      @keyframes oni-dd-approach-stop {
+        0%   { left:4%;  bottom:3px; }
+        52%  { left:36%; bottom:4px; }
+        60%  { left:34%; bottom:13px; }
+        68%  { left:31%; bottom:3px; }
+        82%  { left:18%; bottom:3px; }
+        100% { left:4%;  bottom:3px; }
+      }
+      /* super-slow: very long creep across ground then finally launches — apex at 48% */
+      @keyframes oni-dd-super-slow {
+        0%   { left:4%;  bottom:3px; }
+        15%  { left:12%; bottom:3px; }
+        38%  { left:32%; bottom:3px; }
+        48%  { left:54%; bottom:88px; }
+        66%  { left:68%; bottom:44px; }
+        100% { left:95%; bottom:3px; }
+      }
 
       /* Spacebar key indicator */
       .oni-dd-key-hint {
@@ -400,57 +533,82 @@
 
   // ---------------------------------------------------------------------------
   // Sheep spawner
+  // Physics types (normal/group/approach/super_slow) — JS-driven projectile arc.
+  // Trap types (fake/approach_stop) — CSS animation only.
   // ---------------------------------------------------------------------------
   function _spawnSheep(type, id) {
     const stage = document.getElementById("oni-dd-stage");
     if (!stage) return;
 
-    const isGroup = type === "group";
-    const isFake  = type === "fake";
-    const dur     = isFake ? FAKE_MS : JUMP_MS;
-    const anim    = isFake ? "oni-dd-fake" : "oni-dd-jump";
-
-    const el = document.createElement("div");
-    el.className     = "oni-dd-sheep";
-    el.dataset.sheepId = id;
-    el.textContent   = "🐑";
-    el.style.cssText = `animation:${anim} ${dur}ms ease-in-out forwards;`;
-    stage.appendChild(el);
-    setTimeout(() => el.remove(), dur + 150);
-
-    // Hit-zone indicator: only for scoreable sheep, only visible to owner
-    if (_isOwner && !isFake && type !== "offbeat") {
-      setTimeout(() => _spawnHitZone(false), HIT_WIN_START);
+    // ── CSS-only trap types ──────────────────────────────────────────────────
+    if (type === "fake" || type === "approach_stop") {
+      const dur  = type === "fake" ? FAKE_MS : APPROACH_STOP_MS;
+      const anim = type === "fake" ? "oni-dd-fake" : "oni-dd-approach-stop";
+      const el   = document.createElement("div");
+      el.className       = "oni-dd-sheep";
+      el.dataset.sheepId = id;
+      el.textContent     = "🐑";
+      el.style.cssText   = `animation:${anim} ${dur}ms ease-in-out forwards;`;
+      stage.appendChild(el);
+      setTimeout(() => el.remove(), dur + 200);
+      return;
     }
 
-    if (isGroup) {
-      // Second sheep on an upper track
+    // ── Physics-driven types ─────────────────────────────────────────────────
+    const now = Date.now();
+    const obj = _makePhysicsObj(type, now);
+    if (!obj) return;
+
+    const el = document.createElement("div");
+    el.className       = "oni-dd-sheep";
+    el.dataset.sheepId = id;
+    el.textContent     = "🐑";
+    el.style.left      = `${(obj.x / STAGE_W * 100).toFixed(2)}%`;
+    el.style.bottom    = `${obj.y}px`;
+    stage.appendChild(el);
+    obj.el = el;
+
+    if (type === "group") {
       const el2 = document.createElement("div");
       el2.className   = "oni-dd-sheep";
       el2.textContent = "🐑";
-      el2.style.cssText = `animation:oni-dd-jump-b ${JUMP_MS}ms ease-in-out forwards;`;
+      el2.style.left   = el.style.left;
+      el2.style.bottom = `${obj.y + 15}px`;  // track-B starts 15px above track-A
       stage.appendChild(el2);
-      setTimeout(() => el2.remove(), JUMP_MS + 150);
+      obj.el2 = el2;
+    }
 
-      if (_isOwner) setTimeout(() => _spawnHitZone(true), HIT_WIN_START);
+    _physicsObjs.push(obj);
+
+    // Hit-zone indicator (owner only, for all scoreable physics types)
+    if (_isOwner) {
+      const win = HIT_WINDOWS[type === "group" ? "normal" : type];
+      if (win) {
+        // Zone positioned at apex: apex_bottom - 22px (half 44px zone height)
+        // normal/group apex ~92px → zone bottom 70px
+        // approach/super_slow apex ~88px → zone bottom 66px
+        const zoneBottom = (type === "approach" || type === "super_slow") ? "66px" : "70px";
+        // For group, also show zone on track-B apex (~107px → bottom 85px)
+        if (type === "group") {
+          setTimeout(() => _spawnHitZone("calc(54% - 22px)", "85px", win.end - win.start), win.start);
+        }
+        setTimeout(() => _spawnHitZone("calc(54% - 22px)", zoneBottom, win.end - win.start), win.start);
+      }
     }
   }
 
   // ---------------------------------------------------------------------------
-  // Hit-zone indicator — pulsing ring at the sheep's apex during press window
-  // trackB = true → use the group's upper-track apex position
+  // Hit-zone indicator — pulsing ring at apex position during press window
   // ---------------------------------------------------------------------------
-  function _spawnHitZone(trackB) {
+  function _spawnHitZone(left, bottom, duration) {
     const stage = document.getElementById("oni-dd-stage");
     if (!stage) return;
     const z = document.createElement("div");
-    z.className = "oni-dd-hit-zone";
-    // Apex of track-A: left≈54%, bottom≈92px → center zone (44px) at 54%−22px, bottom 70px
-    // Apex of track-B: left≈52%, bottom≈108px → bottom 86px
-    z.style.left   = trackB ? "calc(52% - 22px)" : "calc(54% - 22px)";
-    z.style.bottom = trackB ? "86px" : "70px";
+    z.className    = "oni-dd-hit-zone";
+    z.style.left   = left;
+    z.style.bottom = bottom;
     stage.appendChild(z);
-    setTimeout(() => z.remove(), (HIT_WIN_END - HIT_WIN_START) + 60);
+    setTimeout(() => z.remove(), duration + 60);
   }
 
   // ---------------------------------------------------------------------------
@@ -520,12 +678,20 @@
   function _startGameLoop(isOwnerLoop) {
     _scheduleIdx  = 0;
     _activeEvents = [];
+    _physicsObjs  = [];
+    _lastFrameMs  = Date.now();
 
     function _frame() {
       if (!document.getElementById(OVL_ID)) return; // overlay removed — stop
 
       const now     = Date.now();
+      const dt      = Math.min(now - _lastFrameMs, 50); // cap at 50ms to survive tab switches
+      _lastFrameMs  = now;
       const elapsed = now - _gameStartMs;
+
+      // Step JS physics for all active physics sheep
+      for (const obj of _physicsObjs) _stepPhysics(obj, now, dt);
+      _physicsObjs = _physicsObjs.filter(o => o.phase !== "done");
 
       // Fire scheduled sheep events
       while (_scheduleIdx < SCHEDULE.length && SCHEDULE[_scheduleIdx].t <= elapsed) {
@@ -535,8 +701,8 @@
         _scheduleIdx++;
       }
 
-      // Expire events past jump window + buffer
-      const expireMs = Math.max(JUMP_MS, FAKE_MS) + 200;
+      // Expire events past the longest possible window + buffer
+      const expireMs = Math.max(JUMP_MS, FAKE_MS, APPROACH_MS, APPROACH_STOP_MS, SUPER_SLOW_MS) + 200;
       _activeEvents = _activeEvents.filter(ev => (now - ev.startMs) <= expireMs);
 
       // Update timer bar (owner view only)
@@ -572,8 +738,7 @@
         setTimeout(() => keyEl.classList.remove("pressed"), 120);
       }
 
-      const validTypes = new Set(["normal", "group"]);
-      const trapTypes  = new Set(["offbeat", "fake"]);
+      const trapTypes = new Set(["fake", "approach_stop"]);
 
       let scored  = false;
       let trapped = false;
@@ -581,20 +746,26 @@
       for (const ev of _activeEvents) {
         if (ev.hit) continue;
         const age = now - ev.startMs;
-        const inWindow = age >= HIT_WIN_START && age <= HIT_WIN_END;
-        if (!inWindow) continue;
 
-        if (validTypes.has(ev.type)) {
-          ev.hit = true;
-          _score++;
-          _playSound(SFX.SUCCESS, 0.8);
-          _flashSuccess();
-          scored = true;
-          const scoreEl = document.getElementById("oni-dd-score-val");
-          if (scoreEl) scoreEl.textContent = _score;
-          break;
+        const win = HIT_WINDOWS[ev.type === "group" ? "normal" : ev.type];
+        if (win) {
+          // Scoreable type — check hit window
+          if (age >= win.start && age <= win.end) {
+            ev.hit = true;
+            _score++;
+            _playSound(SFX.SUCCESS, 0.8);
+            _flashSuccess();
+            scored = true;
+            const scoreEl = document.getElementById("oni-dd-score-val");
+            if (scoreEl) scoreEl.textContent = _score;
+            break;
+          }
         } else if (trapTypes.has(ev.type)) {
-          trapped = true;
+          // Trap type — any press while event is active counts as a mistake
+          const maxDur = ev.type === "fake" ? FAKE_MS : APPROACH_STOP_MS;
+          if (age >= 0 && age <= maxDur) {
+            trapped = true;
+          }
         }
       }
 

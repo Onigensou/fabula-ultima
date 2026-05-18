@@ -17,10 +17,10 @@
 
   const DAYDREAM_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaSkill3.png";
 
-  const MAX_SCORE = 7; // must match activity-daydream-ui.js
+  const MAX_SCORE = 10; // must match activity-daydream-ui.js
 
   // ---------------------------------------------------------------------------
-  // Reduction formula: score 0/7 → 25%, 7/7 → 75%
+  // Reduction formula: score 0/10 → 25%, 10/10 → 75%
   // ---------------------------------------------------------------------------
   function _calcReduction(score) {
     const ratio = Math.max(0, Math.min(1, score / MAX_SCORE));
