@@ -60,6 +60,11 @@
   const TIER_STATS    = 8;
   const TIER_DETAILS  = 13;
 
+  const SOCKET_CHANNEL = `module.${MODULE_ID}`;
+  const ANIM_STYLE_ID  = "oni-encyclopedia-anim-styles";
+  const ANIM_CLASS     = "oni-enc-unlocking";
+  const ANIM_DURATION_MS = 1000; // keep in sync with the CSS keyframe
+
   /**
    * Canonical spec for the world Study skill. Used by ensureStudySkill at
    * boot to auto-provision the skill in any world that doesn't already have
@@ -313,11 +318,14 @@
   /**
    * Card-style wrapper around a titled section. Used by every Identity / Stats
    * / Details subsection so the page reads as a stack of distinct cards rather
-   * than a flat run of h3 + content.
+   * than a flat run of h3 + content. The optional `tier` parameter stamps the
+   * section's reveal tier as a data attribute so the unlock animation can
+   * target only the newly-revealed cards.
    */
-  function renderSection(title, innerHtml) {
+  function renderSection(title, innerHtml, tier = null) {
+    const tierAttr = tier ? ` data-enc-tier="${ESC(tier)}"` : "";
     return `
-<section style="margin:10px 0;padding:12px 14px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);border-radius:8px;">
+<section${tierAttr} style="margin:10px 0;padding:12px 14px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);border-radius:8px;">
   <h3 style="margin:0 0 8px;border:0;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.1);font-size:15px;">${ESC(title)}</h3>
   <div>${innerHtml}</div>
 </section>`;
@@ -451,17 +459,17 @@
     ${cell("MDEF", p.magic_defense)}
   </tr>
 </table>`;
-    return renderSection("Vital Statistics", table);
+    return renderSection("Vital Statistics", table, "identity");
   }
 
   function renderDescription(p) {
     const html = sanitizeRichHtml(p.study_text ?? "");
-    return renderSection("Description", html || `<p style="margin:0;"><em>No description.</em></p>`);
+    return renderSection("Description", html || `<p style="margin:0;"><em>No description.</em></p>`, "identity");
   }
 
   function renderTraits(p) {
     const html = sanitizeRichHtml(p.traits ?? "");
-    return renderSection("Traits", html || `<p style="margin:0;"><em>None recorded.</em></p>`);
+    return renderSection("Traits", html || `<p style="margin:0;"><em>None recorded.</em></p>`, "identity");
   }
 
   function renderAttributesBlock(p) {
@@ -475,7 +483,7 @@
     ${cell("WLP", p.wlp_base)}
   </tr>
 </table>`;
-    return renderSection("Attributes", table);
+    return renderSection("Attributes", table, "stats");
   }
 
   function renderAffinities(p) {
@@ -486,7 +494,7 @@
       const right = known ? ESC(AFFINITY_SYM[code] ?? code) : NEUTRAL_LABEL;
       rows.push(`<li style="${known ? "" : "opacity:.55;"}padding:2px 0;"><strong>${ESC(AFFINITY_NAME[i])}</strong> · ${right}</li>`);
     }
-    return renderSection("Type Affinities", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`);
+    return renderSection("Type Affinities", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`, "details");
   }
 
   function renderWeaponEff(p) {
@@ -501,7 +509,7 @@
         : NEUTRAL_LABEL;
       rows.push(`<li style="${known ? "" : "opacity:.55;"}padding:2px 0;"><strong>${ESC(label)}</strong> · ${right}</li>`);
     }
-    return renderSection("Weapon Efficiency", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`);
+    return renderSection("Weapon Efficiency", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`, "details");
   }
 
   function renderConditionAffinities(p) {
@@ -515,7 +523,7 @@
     const body = rows.length
       ? `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`
       : `<p style="margin:0;"><em>Neutral to every condition.</em></p>`;
-    return renderSection("Condition Affinities", body);
+    return renderSection("Condition Affinities", body, "details");
   }
 
   function renderAttackEntry(actor, entry) {
@@ -562,7 +570,7 @@
     const body = list.length
       ? `<ul style="margin:0;padding:0;list-style:none;">${list.join("")}</ul>`
       : `<p style="margin:0;"><em>None.</em></p>`;
-    return renderSection("Basic Attacks", body);
+    return renderSection("Basic Attacks", body, "details");
   }
 
   function renderActiveSkills(actor, p) {
@@ -570,7 +578,7 @@
     const body = list.length
       ? `<ul style="margin:0;padding:0;list-style:none;">${list.join("")}</ul>`
       : `<p style="margin:0;"><em>None.</em></p>`;
-    return renderSection("Special Abilities", body);
+    return renderSection("Special Abilities", body, "details");
   }
 
   async function renderStealables(actor, p) {
@@ -602,7 +610,7 @@
     const body = rows.length
       ? `<ul style="margin:0;padding:0;list-style:none;">${rows.join("")}</ul>`
       : `<p style="margin:0;"><em>Nothing of value.</em></p>`;
-    return renderSection("Stealable Items", body);
+    return renderSection("Stealable Items", body, "identity");
   }
 
   function renderUnstudied() {
@@ -777,10 +785,162 @@
     try { await sortPages(); }
     catch (e) { console.warn(`${TAG} sortPages after recordResult failed:`, e); }
 
+    // Trigger the unlock animation locally + broadcast to other clients when
+    // this study crossed at least one tier threshold for the first time.
+    if (changed) {
+      const tiers = crossedTiersFor(previousBest, newBest);
+      if (tiers.length) {
+        try { queueUnlock(actorUuid, tiers); }
+        catch (e) { console.warn(`${TAG} queueUnlock failed:`, e); }
+      }
+    }
+
     try { Hooks.callAll("oni:encyclopedia:updated", { actorUuid, previousBest, newBest, changed }); }
     catch (e) { console.warn(TAG, "oni:encyclopedia:updated hook listener threw.", e); }
 
     return { previousBest, newBest, changed };
+  }
+
+  // ───────────────────── Unlock animation ─────────────────────
+  /**
+   * When a Study Check crosses a tier threshold (7 / 8 / 13), the newly-
+   * revealed sections animate in with a slide-down + fade + golden glow.
+   * Strictly visual; no game state. Runs locally on each client (sender
+   * triggers locally + broadcasts to others via the module socket).
+   *
+   * The flow:
+   *   1. recordResult computes which tiers were just crossed for this study.
+   *   2. queueUnlock writes { actorUuid → { tiers, timestamp } } into a
+   *      module-local Map and tries to flush immediately.
+   *   3. queueUnlock also broadcasts to other clients via SOCKET_CHANNEL.
+   *   4. flushPendingUnlocks walks the Map; for each entry, looks up the
+   *      currently-rendered journal sheet for that page and applies the
+   *      animation class to <section data-enc-tier="X"> elements where X is
+   *      one of the just-crossed tiers. Cleared from the Map on success.
+   *   5. A renderJournalSheet hook re-runs the flush so the animation lands
+   *      whenever the sheet (re-)renders — handles auto-open after Confirm,
+   *      doc-update re-render, and manual re-opens of an entry that has a
+   *      pending unlock.
+   *   6. Entries older than 30s are evicted from the Map even if never
+   *      consumed (e.g., the sheet was never opened).
+   */
+  const pendingUnlocks = new Map();
+  const PENDING_UNLOCK_TTL_MS = 30000;
+
+  /** Compute which tier thresholds the (prev → next) study just crossed. */
+  function crossedTiersFor(previousBest, newBest) {
+    const tiers = [];
+    const prev = Number(previousBest) || 0;
+    const next = Number(newBest) || 0;
+    if (prev < TIER_IDENTITY && next >= TIER_IDENTITY) tiers.push("identity");
+    if (prev < TIER_STATS    && next >= TIER_STATS)    tiers.push("stats");
+    if (prev < TIER_DETAILS  && next >= TIER_DETAILS)  tiers.push("details");
+    return tiers;
+  }
+
+  /** Inject the @keyframes + animation class once per client. */
+  function ensureAnimStyles() {
+    if (typeof document === "undefined") return;
+    if (document.getElementById(ANIM_STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = ANIM_STYLE_ID;
+    style.textContent = `
+      @keyframes oni-enc-unlock-reveal {
+        0%   { opacity: 0; transform: translateY(-10px); box-shadow: 0 0 0 0 rgba(255, 198, 76, 0); }
+        25%  { opacity: 0.6; box-shadow: 0 0 14px 4px rgba(255, 198, 76, 0.55); }
+        70%  { opacity: 1; transform: translateY(0); box-shadow: 0 0 18px 4px rgba(255, 198, 76, 0.35); }
+        100% { opacity: 1; transform: translateY(0); box-shadow: 0 0 0 0 rgba(255, 198, 76, 0); }
+      }
+      section[data-enc-tier].${ANIM_CLASS} {
+        animation: oni-enc-unlock-reveal ${ANIM_DURATION_MS}ms ease-out;
+        will-change: transform, opacity, box-shadow;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Add the unlock to the local queue, broadcast to other clients, and try
+   * to flush immediately so the animation plays without waiting for the
+   * next render if the sheet is already on screen.
+   */
+  function queueUnlock(actorUuid, tiers, { broadcast = true } = {}) {
+    if (!actorUuid || !Array.isArray(tiers) || !tiers.length) return;
+    pendingUnlocks.set(actorUuid, { tiers: [...tiers], timestamp: Date.now() });
+
+    if (broadcast) {
+      try {
+        // game.socket.emit fires only to OTHER clients (sender is excluded
+        // by Foundry). We trigger locally below via flushPendingUnlocks.
+        game.socket?.emit?.(SOCKET_CHANNEL, {
+          type: "encyclopedia:unlock",
+          actorUuid,
+          tiers
+        });
+      } catch (e) {
+        console.warn(`${TAG} socket emit failed:`, e);
+      }
+    }
+
+    // Defer slightly so any in-flight page re-render from page.update has
+    // a chance to land in the DOM before we look for the new sections.
+    setTimeout(flushPendingUnlocks, 100);
+  }
+
+  function flushPendingUnlocks() {
+    if (!pendingUnlocks.size) return;
+    const now = Date.now();
+    for (const [actorUuid, info] of pendingUnlocks) {
+      if (now - info.timestamp > PENDING_UNLOCK_TTL_MS) {
+        pendingUnlocks.delete(actorUuid);
+        continue;
+      }
+      const page = getPageForActor(actorUuid);
+      if (!page) continue;
+      const sheetApp = page.parent?.sheet;
+      if (!sheetApp?.rendered) continue;
+
+      const rootEl = (sheetApp.element?.[0] ?? sheetApp.element);
+      if (!rootEl?.querySelector) continue;
+
+      // Find the rendered page container. The journal sheet places the
+      // page-id on TWO elements: the sidebar TOC `<li>` and the page-body
+      // `<article>`. We want the article (which holds the rendered HTML);
+      // matching the LI gives an empty scope and the animation no-ops.
+      const pageScope =
+        rootEl.querySelector(`article[data-page-id="${page.id}"]`)
+        ?? rootEl.querySelector(`.journal-entry-page[data-page-id="${page.id}"]`)
+        ?? rootEl;
+
+      let applied = 0;
+      for (const tier of info.tiers) {
+        const sections = pageScope.querySelectorAll(`section[data-enc-tier="${tier}"]`);
+        sections.forEach(el => {
+          // Force-restart the animation if it's already running. Clearing
+          // then re-adding the class on the next frame triggers reflow so
+          // the @keyframes plays from 0.
+          el.classList.remove(ANIM_CLASS);
+          // eslint-disable-next-line no-unused-expressions
+          void el.offsetWidth;
+          el.classList.add(ANIM_CLASS);
+          applied++;
+          setTimeout(() => el.classList.remove(ANIM_CLASS), ANIM_DURATION_MS + 50);
+        });
+      }
+      if (applied > 0) pendingUnlocks.delete(actorUuid);
+    }
+  }
+
+  function registerSocketListener() {
+    try {
+      game.socket?.on?.(SOCKET_CHANNEL, (payload) => {
+        if (payload?.type !== "encyclopedia:unlock") return;
+        // Receivers don't re-broadcast — that would loop.
+        queueUnlock(payload.actorUuid, payload.tiers, { broadcast: false });
+      });
+    } catch (e) {
+      console.warn(`${TAG} socket listener registration failed:`, e);
+    }
   }
 
   // ───────────────────── Boot ─────────────────────
@@ -809,7 +969,10 @@
         STUDY_SKILL_SPEC, STUDY_SKILL_NAME,
         ENTRY_NAME, SETTING_KEY, STUDY_SETTING_KEY,
         TIER_IDENTITY, TIER_STATS, TIER_DETAILS,
-        handleCombatStart
+        handleCombatStart,
+        // Unlock animation infra — exposed for diagnostics / manual testing.
+        queueUnlock, flushPendingUnlocks, crossedTiersFor, pendingUnlocks,
+        SOCKET_CHANNEL, ANIM_CLASS
       }
     };
     console.info(`${TAG} API mounted at FUCompanion.api.encyclopedia.`);
@@ -1120,16 +1283,28 @@
     // runs, so we never double-register from a single session anyway.
     Hooks.on("oni:action:resolved", handleActionResolved);
     Hooks.on("combatStart", handleCombatStart);
-    console.info(`${TAG} oni:action:resolved + combatStart listeners registered.`);
+    // Flush pending unlocks whenever the encyclopedia sheet (re-)renders.
+    // Covers the auto-open-after-Confirm path: the sheet may not be on screen
+    // when recordResult fires, so we keep the unlock pending and replay it
+    // here once the sheet is mounted.
+    Hooks.on("renderJournalSheet", () => flushPendingUnlocks());
+    console.info(`${TAG} oni:action:resolved + combatStart + renderJournalSheet listeners registered.`);
   }
 
   if (typeof game !== "undefined" && game?.ready) {
     registerSetting();
     mountApi();
+    ensureAnimStyles();
+    registerSocketListener();
     registerHookListener();
     ensureArtifactsAtReady();
   } else {
     Hooks.once("init", () => { registerSetting(); mountApi(); });
-    Hooks.once("ready", () => { registerHookListener(); ensureArtifactsAtReady(); });
+    Hooks.once("ready", () => {
+      ensureAnimStyles();
+      registerSocketListener();
+      registerHookListener();
+      ensureArtifactsAtReady();
+    });
   }
 })();
