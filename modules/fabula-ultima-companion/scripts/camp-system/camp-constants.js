@@ -66,6 +66,13 @@
     COMBAT_LESSON_RESULT:  "CAMP_COMBAT_LESSON_RESULT",   // GM → all (roll totals + bonus)
     COMBAT_LESSON_PROCEED: "CAMP_COMBAT_LESSON_PROCEED",  // owner → GM
     COMBAT_LESSON_DONE:    "CAMP_COMBAT_LESSON_DONE",
+    // Daydream minigame (Counting Sheep)
+    DAYDREAM_START:           "CAMP_DAYDREAM_START",
+    DAYDREAM_RESULT:          "CAMP_DAYDREAM_RESULT",          // owner → GM (score) / GM → all (score+reduction)
+    DAYDREAM_PROCEED:         "CAMP_DAYDREAM_PROCEED",         // owner → GM
+    DAYDREAM_DONE:            "CAMP_DAYDREAM_DONE",
+    DAYDREAM_CHOICE_REQUEST:  "CAMP_DAYDREAM_CHOICE_REQUEST",  // GM → owner (in-combat "you may" dialog)
+    DAYDREAM_CHOICE_RESPONSE: "CAMP_DAYDREAM_CHOICE_RESPONSE", // owner → GM
   });
 
   // ---------------------------------------------------------------------------
