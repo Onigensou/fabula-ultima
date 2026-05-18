@@ -579,6 +579,10 @@
     return renderSection("Condition Affinities", body, "details");
   }
 
+  const ACTION_LI = `style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;"`;
+  const ACTION_ICON = `style="width:28px;height:28px;object-fit:contain;border:0;flex:0 0 auto;margin-top:2px;"`;
+  const ACTION_UL  = `style="margin:0;padding:0;list-style:none;"`;
+
   function renderAttackEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
@@ -586,36 +590,26 @@
     const atr1 = entry?.attribute_die1 ?? entry?.attrib_1 ?? null;
     const atr2 = entry?.attribute_die2 ?? entry?.attrib_2 ?? null;
     const formula = atr1 && atr2 ? ESC(`${atr1} + ${atr2}`) : null;
-    const target = entry?.active_target ? ESC(entry.active_target) : null;
-    const meta = [formula, target].filter(Boolean).join(" · ");
     const desc = sanitizeRichHtml(entry?.attack_description ?? entry?.detail ?? "");
-    return `
-<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+    return `<li ${ACTION_LI}><img ${ACTION_ICON} src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
-  </div>
-</li>`;
+    <div><strong>${name}</strong>${formula ? ` &middot; <span style="opacity:.75;">${formula}</span>` : ""}</div>
+    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+  </div></li>`;
   }
 
   function renderAbilityEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.special_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
-    const cost     = entry?.active_cost ?? null;
-    const duration = entry?.active_duration ?? null;
-    const target   = entry?.active_target ?? null;
-    const meta = [cost, duration, target].filter(Boolean).filter(s => s !== "-").map(ESC).join(" · ");
+    const cost = entry?.active_cost ?? null;
+    const meta = cost && cost !== "-" ? ESC(cost) : null;
     const desc = sanitizeRichHtml(entry?.active_description ?? entry?.details ?? entry?.detail ?? "");
-    return `
-<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+    return `<li ${ACTION_LI}><img ${ACTION_ICON} src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
-  </div>
-</li>`;
+    <div><strong>${name}</strong>${meta ? ` &middot; <span style="opacity:.75;">${meta}</span>` : ""}</div>
+    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+  </div></li>`;
   }
 
   function renderPassiveEntry(actor, entry, fmt = "new") {
@@ -623,33 +617,25 @@
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
     const desc = sanitizeRichHtml(entry?.passive_description ?? entry?.details ?? entry?.detail ?? "");
-    return `
-<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+    return `<li ${ACTION_LI}><img ${ACTION_ICON} src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div><strong>${name}</strong></div>
-    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
-  </div>
-</li>`;
+    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+  </div></li>`;
   }
 
   function renderSpellEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.spell_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || SPELL_ICON;
-    const cost     = entry?.cost ?? null;
-    const target   = entry?.spell_target ?? null;
-    const duration = entry?.duration ?? null;
-    const meta = [cost, target, duration].filter(Boolean).filter(s => s !== "-").map(ESC).join(" · ");
+    const cost = entry?.cost ?? null;
+    const meta = cost && cost !== "-" ? ESC(cost) : null;
     const desc = sanitizeRichHtml(entry?.spell_description ?? entry?.details ?? entry?.detail ?? "");
-    return `
-<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+    return `<li ${ACTION_LI}><img ${ACTION_ICON} src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
-  </div>
-</li>`;
+    <div><strong>${name}</strong>${meta ? ` &middot; <span style="opacity:.75;">${meta}</span>` : ""}</div>
+    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+  </div></li>`;
   }
 
   function renderActionHeader() {
@@ -658,40 +644,47 @@
 </div>`;
   }
 
+  function renderActionSection(title, innerHtml) {
+    return `<section data-enc-tier="details" style="margin:10px 0;padding:12px 14px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);border-radius:8px;">
+  <h3 style="margin:0 0 8px;border:0;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.1);font-size:15px;">${ESC(title)}</h3>
+  <div>${innerHtml}</div>
+</section>`;
+  }
+
   function renderAttacks(actor, p) {
     const newList = objectToList(p.attack_list).filter(e => !e?.$deleted);
     if (newList.length)
-      return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${newList.map(e => renderAttackEntry(actor, e, "new")).join("")}</ul>`, "details");
+      return renderActionSection("Basic Attacks", `<ul ${ACTION_UL}>${newList.map(e => renderAttackEntry(actor, e, "new")).join("")}</ul>`);
     const oldList = objectToList(p.basic_attacks).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderActionSection("Basic Attacks", `<ul ${ACTION_UL}>${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`);
   }
 
   function renderActiveSkills(actor, p) {
     const newList = objectToList(p.skill_active_list).filter(e => !e?.$deleted);
     if (newList.length)
-      return renderSection("Skills", `<ul class="oni-enc-ability-list">${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`, "details");
+      return renderActionSection("Skills", `<ul ${ACTION_UL}>${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`);
     const oldList = objectToList(p.special_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderActionSection("Skills", `<ul ${ACTION_UL}>${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`);
   }
 
   function renderPassiveSkills(actor, p) {
     const newList = objectToList(p.skill_passive_list).filter(e => !e?.$deleted);
     if (newList.length)
-      return renderSection("Passive", `<ul class="oni-enc-ability-list">${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`, "details");
+      return renderActionSection("Passive", `<ul ${ACTION_UL}>${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`);
     const oldList = objectToList(p.other_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Passive", `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderActionSection("Passive", `<ul ${ACTION_UL}>${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`);
   }
 
   function renderSpells(actor, p) {
     const newList = objectToList(p.normal_spell_list).filter(e => !e?.$deleted);
     if (newList.length)
-      return renderSection("Spells", `<ul class="oni-enc-ability-list">${newList.map(e => renderSpellEntry(actor, e, "new")).join("")}</ul>`, "details");
+      return renderActionSection("Spells", `<ul ${ACTION_UL}>${newList.map(e => renderSpellEntry(actor, e, "new")).join("")}</ul>`);
     const oldList = objectToList(p.spell_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Spells", `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderActionSection("Spells", `<ul ${ACTION_UL}>${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`);
   }
 
   async function renderStealables(actor, p) {
