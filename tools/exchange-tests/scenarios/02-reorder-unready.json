@@ -1,0 +1,35 @@
+{
+  "name": "02-reorder-unready",
+  "description": "Editing your own queue (reorder) auto-unreadies you, so the resolving transition is gated until you re-Ready.",
+  "scenario": {
+    "reset": true,
+    "open": {
+      "kind": "action_card",
+      "boundaryKey": "card-test-002",
+      "payload": {},
+      "initialTriggers": [ { "key": "creature_takes_damage" } ],
+      "eligibleUserIds": ["user-hina"]
+    },
+    "script": [
+      { "op": "addEntry", "actor": "user-hina", "params": {
+          "skillUuid": "Item.skill-A", "skillName": "Skill A"
+      } },
+      { "op": "addEntry", "actor": "user-hina", "params": {
+          "skillUuid": "Item.skill-B", "skillName": "Skill B"
+      } },
+      { "op": "expect", "path": "queue.length", "value": 2 },
+
+      { "op": "setReady", "actor": "user-hina", "isReady": true },
+      { "op": "expect", "path": "status", "value": "resolving" },
+
+      { "op": "expectThrows", "inner": {
+          "op": "reorderEntry", "actor": "user-hina",
+          "entryRef": "byIndex", "entryIndex": 0, "newIndex": 1
+      } }
+    ],
+    "expectations": {
+      "finalStatus": "resolving",
+      "queueSize": 2
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "01-happy-path",
+  "description": "Open Exchange with 2 eligible users, both add an entry, both Ready, transitions to resolving, markResolved, close.",
+  "scenario": {
+    "reset": true,
+    "open": {
+      "kind": "action_card",
+      "boundaryKey": "card-test-001",
+      "payload": { "actionCardId": "card-test-001", "actionId": "act-001" },
+      "initialTriggers": [
+        { "key": "creature_takes_damage", "payload": { "targetActorUuid": "Actor.fakeHina" } }
+      ],
+      "eligibleUserIds": ["user-hina", "GM"]
+    },
+    "script": [
+      { "op": "addEntry", "actor": "user-hina", "params": {
+          "reactorTokenId": "tk-hina",
+          "reactorActorUuid": "Actor.fakeHina",
+          "reactorName": "Hina",
+          "skillUuid": "Item.painful-lesson",
+          "skillName": "Painful Lesson",
+          "sourceTriggerKey": "creature_takes_damage",
+          "predictedTriggers": [ { "key": "creature_recovers_hp", "payload": {} } ]
+      } },
+      { "op": "expect", "path": "queue.length", "value": 1 },
+      { "op": "expect", "path": "status", "value": "queueing" },
+
+      { "op": "addEntry", "actor": "GM", "params": {
+          "userId": "GM",
+          "reactorTokenId": "tk-spirit",
+          "reactorActorUuid": "Actor.fakeSpirit",
+          "reactorName": "Vengeful Spirit",
+          "skillUuid": "Item.soporific-aura",
+          "skillName": "Soporific Aura"
+      } },
+      { "op": "expect", "path": "queue.length", "value": 2 },
+
+      { "op": "setReady", "actor": "user-hina", "isReady": true },
+      { "op": "expect", "path": "status", "value": "queueing" },
+      { "op": "setReady", "actor": "GM", "isReady": true },
+      { "op": "expect", "path": "status", "value": "resolving" },
+
+      { "op": "markResolved", "usedSkillUuids": ["Item.painful-lesson", "Item.soporific-aura"], "resolutionLog": [
+          { "entryId": "e1", "outcome": "fired", "skillUuid": "Item.painful-lesson" },
+          { "entryId": "e2", "outcome": "fired", "skillUuid": "Item.soporific-aura" }
+      ] },
+      { "op": "close", "reason": "completed" }
+    ],
+    "expectations": {
+      "finalStatus": "closed",
+      "queueSize": 2,
+      "usedSkillUuids": ["Item.painful-lesson", "Item.soporific-aura"]
+    }
+  }
+}
