@@ -58,6 +58,11 @@
           if (game.user?.isGM) CAMP.ExplorationUI?.resolveRoll(payload?.actorId, payload?.roll);
           return;
         }
+        // Owner signals ready to dismiss — GM only resolves the proceed gate
+        if (type === CAMP.MSG.EXPLORATION_PROCEED) {
+          if (game.user?.isGM) CAMP.ExplorationUI?.resolveProceed(payload?.actorId);
+          return;
+        }
 
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;

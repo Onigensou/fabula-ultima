@@ -70,7 +70,7 @@
         const src  = _audioCtx.createBufferSource();
         const gain = _audioCtx.createGain();
         src.buffer      = _tickBuffer;
-        gain.gain.value = 0.45;
+        gain.gain.value = 0.25;
         src.connect(gain);
         gain.connect(_audioCtx.destination);
         src.start(0);
@@ -79,7 +79,7 @@
     }
     // HTMLAudio fallback
     try {
-      if (!_tickAudio) { _tickAudio = new Audio(SFX.TICK); _tickAudio.volume = 0.45; }
+      if (!_tickAudio) { _tickAudio = new Audio(SFX.TICK); _tickAudio.volume = 0.25; }
       _tickAudio.currentTime = 0;
       _tickAudio.play().catch(() => {});
     } catch {}
@@ -112,8 +112,9 @@
 
   // ── Roulette state ────────────────────────────────────────────────────────
 
-  let _rafId       = null;
-  let _lastFrameMs = 0;
+  let _currentActorId = null;   // set in show(), cleared in hide()
+  let _rafId          = null;
+  let _lastFrameMs    = 0;
   const SPIN_MS    = 40;   // faster spin
   let _currentRoll = 1;
   let _stopping    = false;
@@ -132,10 +133,12 @@
 
   CAMP.ExplorationUI = {
     pendingResolvers: {},
+    proceedResolvers: {},
 
     show(actorId, actorName) {
       document.getElementById(OVL_ID)?.remove();
       _clearRoulette();
+      _currentActorId = actorId;
 
       const actor   = game.actors?.get(actorId);
       const isOwner = _isOwner(actor);
@@ -148,6 +151,7 @@
 
     hide() {
       _clearRoulette();
+      _currentActorId = null;
       const el = document.getElementById(OVL_ID);
       if (!el) return;
       el.classList.add("out");
@@ -159,6 +163,13 @@
       if (!resolver) return;
       delete this.pendingResolvers[actorId];
       resolver(roll);
+    },
+
+    resolveProceed(actorId) {
+      const resolver = this.proceedResolvers?.[actorId];
+      if (!resolver) return;
+      delete this.proceedResolvers[actorId];
+      resolver();
     },
 
     // Called on all clients when the owner's result arrives via socket
@@ -191,6 +202,7 @@
             : `<div class="oni-camp-expl-waiting" id="oni-expl-waiting">Waiting for ${ownerName}…</div>`
           }
           <div class="oni-camp-expl-result" id="oni-expl-result" style="display:none;"></div>
+          <button class="oni-camp-expl-proceed-btn" id="oni-expl-proceed" style="display:none;">Click to Proceed</button>
         </div>
       </div>
     `;
@@ -274,6 +286,23 @@
     if (roll === 6)      _playSound(SFX.JACKPOT, 0.8);
     else if (roll === 1) _playSound(SFX.OUCH,    0.75);
     else                 _playSound(SFX.RESULT,  0.65);
+
+    // Show "Click to Proceed" only for the activity owner — spectators wait passively
+    const proceedBtn = document.getElementById("oni-expl-proceed");
+    if (proceedBtn && _currentActorId) {
+      const actor = game.actors?.get(_currentActorId);
+      if (_isOwner(actor)) {
+        proceedBtn.style.display = "";
+        proceedBtn.addEventListener("click", () => {
+          proceedBtn.disabled = true;
+          if (game.user?.isGM) {
+            CAMP.ExplorationUI.resolveProceed(_currentActorId);
+          } else {
+            CAMP.Socket.emit(CAMP.MSG.EXPLORATION_PROCEED, { actorId: _currentActorId });
+          }
+        }, { once: true });
+      }
+    }
   }
 
   console.debug(TAG, "Exploration UI loaded.");

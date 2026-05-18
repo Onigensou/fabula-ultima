@@ -42,8 +42,8 @@
         // 4 — Chat announcement
         await _postChatResult(actor, roll);
 
-        // 5 — Hold result screen visible for players to read before dismissing
-        await new Promise(r => setTimeout(r, 5000));
+        // 5 — Wait for owner to click "Click to Proceed" before dismissing
+        await _waitForProceed(actor);
 
         // 6 — Hide roulette overlay on all clients.
         //     Broadcast doesn't echo back to sender, so also call hide() directly on GM.
@@ -52,6 +52,17 @@
       },
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Wait for owner to click "Click to Proceed" after result is shown
+  // ---------------------------------------------------------------------------
+  function _waitForProceed(actor) {
+    return new Promise(resolve => {
+      CAMP.ExplorationUI ??= {};
+      CAMP.ExplorationUI.proceedResolvers ??= {};
+      CAMP.ExplorationUI.proceedResolvers[actor.id] = resolve;
+    });
+  }
 
   // ---------------------------------------------------------------------------
   // Wait for roll from owner (or GM fallback)
