@@ -114,13 +114,15 @@
 .oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
 .oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:italic; }
-.oni-enc-desc-inline { flex:0 0 auto; max-width:340px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border-left:1px solid rgba(0,0,0,.12); padding-left:12px; opacity:.85; }
+.oni-enc-desc-inline { flex:0 0 auto; max-width:340px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border:1px solid rgba(0,0,0,.12); border-radius:8px; padding:8px 10px; background:rgba(255,255,255,.28); }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
-.oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding-top:6px; }
-.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.42); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
+.oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid rgba(0,0,0,.14); border-radius:8px; overflow:hidden; margin-top:6px; }
+.oni-enc-stat-cell { padding:10px 8px; text-align:center; border-right:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.22); }
+.oni-enc-stat-cell:last-child { border-right:none; }
+.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.26); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
 .oni-enc-box-title { font-weight:900; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid rgba(0,0,0,.12); padding-bottom:6px; margin-bottom:8px; }
 .oni-enc-badge-wrap { display:flex; flex-wrap:wrap; gap:6px; }
-.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.55); font-weight:700; font-size:13px; white-space:nowrap; }
+.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.42); font-weight:700; font-size:13px; white-space:nowrap; }
 .oni-enc-2col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 16px; }
 .oni-enc-2col-row { display:flex; align-items:center; gap:6px; min-width:0; cursor:default; }
 .oni-enc-2col-label { font-weight:700; min-width:0; flex:0 0 auto; }
@@ -128,7 +130,7 @@
 .oni-enc-eff-pos { color:#1f7a3a; font-weight:700; }
 .oni-enc-eff-neg { color:#b02a2a; font-weight:700; }
 .oni-enc-ability-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-.oni-enc-ability-item { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:rgba(255,255,255,.55); }
+.oni-enc-ability-item { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; border:1px solid rgba(0,0,0,.1); border-radius:8px; background:rgba(255,255,255,.36); }
 .oni-enc-ability-item p { margin: 3px 0; }
 .oni-enc-ability-item ul { padding-left: 18px; margin: 3px 0; }
 .oni-enc-ability-item li { margin: 2px 0; }
@@ -516,17 +518,11 @@
 
   function renderAttributesBlock(p) {
     const stat = (label, v) => `
-<div style="text-align:center;">
+<div class="oni-enc-stat-cell">
   <img class="oni-enc-atr-icon" src="${ATR_ICONS[label]}" title="${label}" alt="${label}">
   <div style="font-size:18px;font-weight:900;">${v != null ? ESC(String(v)) : "—"}</div>
 </div>`;
-    return renderSection("Attributes", `
-<div class="oni-enc-stat-row">
-  ${stat("MIG", p.mig_base)}
-  ${stat("DEX", p.dex_base)}
-  ${stat("INS", p.ins_base)}
-  ${stat("WLP", p.wlp_base)}
-</div>`, "stats");
+    return renderSection("Attributes", `<div class="oni-enc-stat-row">${stat("MIG", p.mig_base)}${stat("DEX", p.dex_base)}${stat("INS", p.ins_base)}${stat("WLP", p.wlp_base)}</div>`, "stats");
   }
 
   const AFF_SYM = { RS: "🛡", VU: "💥", AB: "♻", IM: "🚫" };
@@ -598,7 +594,7 @@
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
   }
@@ -617,7 +613,7 @@
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
   }
@@ -632,7 +628,7 @@
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div><strong>${name}</strong></div>
-    ${desc ? `<div style="margin-top:2px;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
   }
@@ -651,7 +647,7 @@
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div><strong>${name}</strong>${meta ? ` <span style="opacity:.7;">&middot; ${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
   }
@@ -731,7 +727,7 @@
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div>${labelHtml}</div>
-    ${desc ? `<div style="margin-top:2px;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
     }));
