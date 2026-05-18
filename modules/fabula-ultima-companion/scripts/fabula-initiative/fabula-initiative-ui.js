@@ -494,6 +494,47 @@
           diamond.appendChild(imgEl);
           btn.appendChild(diamond);
 
+          // Encyclopedia info badge — enemies only. Click opens the Monster
+          // Encyclopedia for this token; stopPropagation keeps the click off
+          // the parent button (so activation-start doesn't fire). Span (not
+          // button) avoids nested-button invalid HTML; role+tabindex give
+          // proper a11y semantics.
+          if (Number(icon.disposition ?? 0) === -1) {
+            const infoBadge = document.createElement("span");
+            infoBadge.className = "oni-turnbar-info-badge";
+            infoBadge.setAttribute("role", "button");
+            infoBadge.setAttribute("tabindex", "0");
+            infoBadge.setAttribute("aria-label", "Open Monster Encyclopedia");
+            infoBadge.title = "Open Monster Encyclopedia";
+            infoBadge.innerHTML = `<i class="fas fa-book"></i>`;
+
+            const openEncyclopedia = async (ev) => {
+              ev.stopPropagation();
+              ev.preventDefault();
+              try {
+                const api = globalThis.FUCompanion?.api?.encyclopedia;
+                if (!api?.openEncyclopediaForToken) {
+                  console.warn("[FU][Initiative] Encyclopedia API not ready.");
+                  return;
+                }
+                const tokenId = btn.dataset.tokenId;
+                const tokenDoc = canvas?.tokens?.get?.(tokenId)?.document;
+                const tokenUuid = tokenDoc?.uuid ?? null;
+                if (!tokenUuid) return;
+                await api.openEncyclopediaForToken(tokenUuid);
+              } catch (e) {
+                console.warn("[FU][Initiative] Encyclopedia open failed:", e);
+              }
+            };
+            infoBadge.addEventListener("click", openEncyclopedia);
+            // Keyboard activation for the role=button span.
+            infoBadge.addEventListener("keydown", (ev) => {
+              if (ev.key === "Enter" || ev.key === " ") openEncyclopedia(ev);
+            });
+
+            btn.appendChild(infoBadge);
+          }
+
           // Tooltip
           btn.addEventListener("pointerenter", () => showTooltip(btn, icon.name));
           btn.addEventListener("pointerleave", () => hideTooltip());
@@ -1065,6 +1106,43 @@
             transition: transform 120ms ease;
           }
           .oni-turnbar-icon:hover, .oni-turnbar-current:hover { transform: translateY(-1px) scale(1.02); }
+
+          /* Encyclopedia info badge — small book icon at the top-right of
+             each enemy portrait. Different click target = no collision with
+             activation-start. Brightens on hover so it reads as interactive. */
+          .oni-turnbar-icon {
+            position: relative;
+          }
+          .oni-turnbar-info-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.72);
+            color: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 50%;
+            font-size: 9px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            transition: transform 100ms ease, color 100ms ease, background 100ms ease;
+            z-index: 2;
+          }
+          .oni-turnbar-info-badge:hover {
+            background: rgba(178, 139, 46, 0.92);
+            color: #fff;
+            transform: scale(1.12);
+          }
+          .oni-turnbar-info-badge:focus-visible {
+            outline: 2px solid rgba(178, 139, 46, 1);
+            outline-offset: 1px;
+          }
+          .oni-turnbar-info-badge i { pointer-events: none; }
 
           /* Diamond frame */
           .oni-turnbar-diamond {
