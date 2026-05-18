@@ -109,13 +109,14 @@
       CAMP.DaydreamUI ??= {};
       CAMP.DaydreamUI.scoreResolvers ??= {};
 
+      // Timeout: 90 s covers "Click to Begin" wait + 3.7 s countdown + 15 s game
       const timer = setTimeout(() => {
         if (CAMP.DaydreamUI.scoreResolvers[actor.id]) {
           console.warn(TAG, "Score timeout — defaulting to 0 for", actor.name);
           delete CAMP.DaydreamUI.scoreResolvers[actor.id];
           resolve(0);
         }
-      }, 20_000);
+      }, 90_000);
 
       CAMP.DaydreamUI.scoreResolvers[actor.id] = (score) => {
         clearTimeout(timer);

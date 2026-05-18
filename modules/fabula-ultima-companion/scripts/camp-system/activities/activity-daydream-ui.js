@@ -36,27 +36,35 @@
   // t = ms after game start when sheep appears
   // valid opportunities: 5 normal + 2 group = MAX_SCORE 7
   // ---------------------------------------------------------------------------
+  // valid #s: 8 normal + 2 group = MAX_SCORE 10
+  // traps: 4 offbeat + 4 fake — denser trap density for real difficulty
   const SCHEDULE = [
-    { t: 600,  type: "normal",  id: 0 },
-    { t: 1600, type: "normal",  id: 1 },
-    { t: 2500, type: "offbeat", id: 2 },  // trap
-    { t: 3300, type: "normal",  id: 3 },
-    { t: 4000, type: "fake",    id: 4 },  // trap
-    { t: 4800, type: "group",   id: 5 },
-    { t: 5700, type: "normal",  id: 6 },
-    { t: 6500, type: "offbeat", id: 7 },  // trap
-    { t: 7300, type: "normal",  id: 8 },
-    { t: 8100, type: "fake",    id: 9 },  // trap
-    { t: 8900, type: "normal",  id: 10 },
-    { t: 9500, type: "group",   id: 11 },
+    { t:  600, type: "normal",  id:  0 },  // valid #1
+    { t: 1350, type: "normal",  id:  1 },  // valid #2
+    { t: 2100, type: "offbeat", id:  2 },  // trap
+    { t: 2800, type: "normal",  id:  3 },  // valid #3
+    { t: 3500, type: "fake",    id:  4 },  // trap
+    { t: 4200, type: "normal",  id:  5 },  // valid #4
+    { t: 4900, type: "group",   id:  6 },  // valid #5
+    { t: 5800, type: "normal",  id:  7 },  // valid #6
+    { t: 6500, type: "offbeat", id:  8 },  // trap
+    { t: 7200, type: "normal",  id:  9 },  // valid #7
+    { t: 7900, type: "fake",    id: 10 },  // trap
+    { t: 8600, type: "normal",  id: 11 },  // valid #8
+    { t: 9300, type: "offbeat", id: 12 },  // trap
+    { t:10000, type: "group",   id: 13 },  // valid #9
+    { t:10900, type: "normal",  id: 14 },  // valid #10
+    { t:11700, type: "fake",    id: 15 },  // trap
+    { t:12600, type: "offbeat", id: 16 },  // trap
+    { t:13500, type: "fake",    id: 17 },  // trap — final test of patience
   ];
 
-  const MAX_SCORE        = 7;
-  const GAME_DURATION_MS = 10_000;
+  const MAX_SCORE        = 10;        // 8 normal + 2 group
+  const GAME_DURATION_MS = 15_000;
   const JUMP_MS          = 700;       // normal/group jump animation duration
   const FAKE_MS          = 800;       // fake jump animation duration
-  const HIT_WIN_START    = JUMP_MS * 0.30;  // 210 ms
-  const HIT_WIN_END      = JUMP_MS * 0.70;  // 490 ms
+  const HIT_WIN_START    = JUMP_MS * 0.37;  // ~259 ms — tighter window (~168 ms total)
+  const HIT_WIN_END      = JUMP_MS * 0.61;  // ~427 ms
 
   // ---------------------------------------------------------------------------
   // Module state
@@ -324,6 +332,17 @@
       }
       .oni-dd-proceed-btn:hover { filter:brightness(1.15); }
       .oni-dd-proceed-btn:disabled { opacity:.5;cursor:not-allowed; }
+
+      /* Click to Begin button */
+      .oni-dd-begin-btn {
+        margin-top:4px;padding:10px 34px;
+        background:linear-gradient(180deg,#c8a84b,#9a7a2b);
+        color:#1a0e00;border:2px solid #7a5c15;border-radius:8px;
+        font-weight:800;font-size:1rem;cursor:pointer;letter-spacing:.04em;
+        box-shadow:0 4px 14px rgba(0,0,0,.4);transition:filter .15s,transform .1s;
+      }
+      .oni-dd-begin-btn:hover { filter:brightness(1.15);transform:translateY(-1px); }
+      .oni-dd-begin-btn:active{ transform:translateY(1px);filter:brightness(.95); }
 
       /* Hit-window zone indicator (pulsing ring at apex) */
       .oni-dd-hit-zone {
@@ -688,7 +707,28 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Countdown helper (used inside show())
+  // Transition from "Click to Begin" panel → countdown panel
+  // Called when the owner clicks the begin button
+  // ---------------------------------------------------------------------------
+  function _showCountdownPanel(actorId, actor, tokenImg, displayName) {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl) return;
+    ovl.innerHTML = `
+      <div class="oni-dd-panel">
+        <div class="oni-dd-title">💭 Daydream</div>
+        <div class="oni-dd-actor-area">
+          <div class="oni-dd-bubble">🐑</div>
+          <div class="oni-dd-token"><img src="${tokenImg}" alt="${displayName}"></div>
+          <div class="oni-dd-actor-name">${displayName}</div>
+        </div>
+        <div class="oni-dd-countdown-num" id="oni-dd-count">3</div>
+      </div>
+    `;
+    _runCountdown(actorId, actor, 3, () => _startMinigame(actorId, actor));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Countdown helper
   // ---------------------------------------------------------------------------
   function _runCountdown(actorId, actor, count, onDone) {
     const el = document.getElementById("oni-dd-count");
@@ -720,7 +760,8 @@
     proceedResolvers: {},
 
     // --------------------------------------------------------------------
-    // Stage 1 — Countdown → then transitions to minigame
+    // Stage 1 — "Click to Begin" gate → countdown → minigame
+    // Owner sees the begin button; spectators see a waiting message.
     // --------------------------------------------------------------------
     show(actorId, actorName) {
       document.getElementById(OVL_ID)?.remove();
@@ -736,20 +777,39 @@
 
       const ovl = document.createElement("div");
       ovl.id = OVL_ID;
-      ovl.innerHTML = `
-        <div class="oni-dd-panel">
-          <div class="oni-dd-title">💭 Daydream</div>
-          <div class="oni-dd-actor-area">
-            <div class="oni-dd-bubble">🐑</div>
-            <div class="oni-dd-token"><img src="${tokenImg}" alt="${displayName}"></div>
-            <div class="oni-dd-actor-name">${displayName}</div>
-          </div>
-          <div class="oni-dd-countdown-num" id="oni-dd-count">3</div>
+
+      const actorArea = `
+        <div class="oni-dd-actor-area">
+          <div class="oni-dd-bubble">🐑</div>
+          <div class="oni-dd-token"><img src="${tokenImg}" alt="${displayName}"></div>
+          <div class="oni-dd-actor-name">${displayName}</div>
         </div>
       `;
-      document.body.appendChild(ovl);
 
-      _runCountdown(actorId, actor, 3, () => _startMinigame(actorId, actor));
+      if (_isOwner) {
+        ovl.innerHTML = `
+          <div class="oni-dd-panel">
+            <div class="oni-dd-title">💭 Daydream</div>
+            ${actorArea}
+            <button class="oni-dd-begin-btn" id="oni-dd-begin">Click to Begin</button>
+          </div>
+        `;
+        document.body.appendChild(ovl);
+        document.getElementById("oni-dd-begin").addEventListener("click", () => {
+          _showCountdownPanel(actorId, actor, tokenImg, displayName);
+        }, { once: true });
+      } else {
+        const ownerUid  = actor ? _getOwnerUserId(actor) : null;
+        const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? displayName) : displayName;
+        ovl.innerHTML = `
+          <div class="oni-dd-panel">
+            <div class="oni-dd-title">💭 Daydream</div>
+            ${actorArea}
+            <div class="oni-dd-waiting">Waiting for ${ownerName} to begin…</div>
+          </div>
+        `;
+        document.body.appendChild(ovl);
+      }
     },
 
     // --------------------------------------------------------------------
