@@ -144,7 +144,7 @@
         transform: translateY(-3px);
         box-shadow: 0 6px 18px rgba(0,0,0,.35);
       }
-      .oni-cl-ally-card img  { width:52px; height:52px; border-radius:8px; border:none; object-fit:cover; }
+      .oni-cl-ally-card img  { width:64px; height:64px; border:none; border-radius:0; background:transparent; object-fit:contain; }
       .oni-cl-ally-card span { font-size:.82rem; font-weight:700; color:#5a3010; text-align:center; }
       .oni-cl-waiting-txt    { font-size:1rem; color:#c8a84b; font-style:italic; }
 
@@ -165,10 +165,10 @@
         display: flex; flex-direction: column; align-items: center; gap: 8px;
       }
       .oni-cl-token-wrap img {
-        width: 80px; height: 80px;
-        border-radius: 12px; border: 3px solid rgba(255,220,120,.6);
-        box-shadow: 0 0 20px rgba(200,168,75,.5);
-        object-fit: cover;
+        width: 96px; height: 96px;
+        border: none; border-radius: 0; background: transparent;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(200,168,75,.5));
       }
       .oni-cl-token-flip img {
         transform: scaleX(-1);
