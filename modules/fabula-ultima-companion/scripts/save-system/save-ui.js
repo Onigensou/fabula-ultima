@@ -32,161 +32,220 @@
 
   // ── Stylesheet ─────────────────────────────────────────────────────────────
   const CSS = `
-    /* === overlay === */
+    /* === overlay — warm dark backdrop === */
     #save-system-overlay {
       position: fixed; inset: 0; z-index: 2147483647;
-      background: #020b1e;
+      background: radial-gradient(ellipse at 50% 40%, #2a1608 0%, #130a02 100%);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       font-family: 'Lucida Console', 'Courier New', monospace;
-      color: #7aabda;
+      color: #3d2208;
       user-select: none;
     }
-    /* scanlines */
+    /* subtle warm ambient vignette */
     #save-system-overlay::before {
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 50%,
+        rgba(200,140,40,0.07) 0%, transparent 68%);
+    }
+    .ss-layer { position: relative; z-index: 1; }
+
+    /* === parchment panel — the JRPG dialog frame === */
+    .ss-panel {
+      position: relative; z-index: 1;
+      background: linear-gradient(168deg, #f8f0d4 0%, #f0e3b8 45%, #e8d8a4 100%);
+      border: 2px solid #c9a44a;
+      box-shadow:
+        0 0 0 3px #7a4e20,
+        0 0 0 6px #b8865a,
+        0 0 0 8px #5c3210,
+        0 0 70px rgba(0,0,0,0.88),
+        inset 0 1px 0 rgba(255,245,200,0.70),
+        inset 0 -1px 0 rgba(120,70,20,0.18);
+      border-radius: 2px;
+      padding: 34px 46px 28px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    /* ruled parchment lines */
+    .ss-panel::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
       background: repeating-linear-gradient(
-        0deg, transparent, transparent 3px,
-        rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px
+        0deg, transparent, transparent 23px,
+        rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px
       );
     }
-    /* keep content above scanlines */
-    .ss-layer { position: relative; z-index: 1; }
+    .ss-panel > * { position: relative; z-index: 1; }
 
     /* === header === */
     .ss-title {
-      font-size: 22px; letter-spacing: 10px;
-      color: #c8e4ff;
-      text-shadow: 0 0 20px rgba(60,140,255,0.55);
+      font-size: 20px; letter-spacing: 9px;
+      color: #3a1e06;
+      text-shadow: 0 1px 0 rgba(255,220,130,0.55), 0 2px 10px rgba(160,90,10,0.18);
       margin-bottom: 4px;
     }
     .ss-byline {
-      font-size: 9px; letter-spacing: 5px; color: #1e3a60;
-      margin-bottom: 6px;
+      font-size: 8px; letter-spacing: 4px; color: #9b7040;
+      margin-bottom: 5px;
     }
     .ss-mode-label {
-      font-size: 10px; letter-spacing: 4px; color: #2c5080;
-      margin-bottom: 30px; text-transform: uppercase;
+      font-size: 9px; letter-spacing: 3px; color: #7a5428;
+      margin-bottom: 26px; text-transform: uppercase;
+      border-bottom: 1px solid rgba(140,90,30,0.22);
+      padding-bottom: 10px; width: 100%; text-align: center;
     }
 
     /* === slot cards === */
-    .ss-slots { display: flex; gap: 18px; margin-bottom: 26px; }
+    .ss-slots { display: flex; gap: 14px; margin-bottom: 20px; }
 
     .ss-slot {
-      width: 200px; min-height: 148px;
-      border: 1px solid #0c1e3a;
-      background: linear-gradient(155deg, #050e22 0%, #030a18 100%);
+      width: 194px; min-height: 142px;
+      border: 1px solid #c4a260;
+      background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
       padding: 0; cursor: pointer; position: relative; overflow: hidden;
       transition: border-color .13s, box-shadow .13s;
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 5px rgba(80,40,8,0.18);
     }
-    .ss-slot:hover { border-color: #153a6a; }
+    .ss-slot:hover {
+      border-color: #9b6a28;
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 3px 10px rgba(80,40,8,0.28);
+    }
     .ss-slot.is-sel {
-      border-color: #0092cc;
-      box-shadow: 0 0 22px rgba(0,146,204,0.22), inset 0 0 28px rgba(0,0,0,0.45);
+      border-color: #c9a22a;
+      box-shadow:
+        0 0 0 1px #c9a22a,
+        0 0 18px rgba(201,162,42,0.38),
+        inset 0 0 22px rgba(201,162,42,0.09),
+        inset 0 1px 0 rgba(255,245,200,0.75);
     }
 
     /* blurred scene thumbnail */
     .ss-slot-bg {
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
-      opacity: 0.11; filter: blur(3px); pointer-events: none;
+      opacity: 0.13; filter: blur(3px) sepia(0.25); pointer-events: none;
     }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 12px 13px; height: 100%;
+      padding: 11px 12px; height: 100%;
       display: flex; flex-direction: column;
     }
-    .ss-slot-num  { font-size: 9px; letter-spacing: 4px; color: #1e3a5a; margin-bottom: 8px; }
-    .ss-slot-icon { font-size: 22px; margin-bottom: 7px; }
+    .ss-slot-num  { font-size: 8px; letter-spacing: 3px; color: #b8945a; margin-bottom: 7px; }
+    .ss-slot-icon { font-size: 20px; margin-bottom: 6px; }
     .ss-slot-name {
-      font-size: 11px; color: #b8d8f8; letter-spacing: 1px;
+      font-size: 11px; color: #3a1e06; letter-spacing: 1px;
       margin-bottom: 5px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .ss-slot-date  { font-size: 9px; color: #2e5070; letter-spacing: 1px; margin-bottom: 3px; }
-    .ss-slot-party { font-size: 9px; color: #4a7a9a; letter-spacing: 1px; }
+    .ss-slot-date  { font-size: 8px; color: #8b6838; letter-spacing: 1px; margin-bottom: 3px; }
+    .ss-slot-party { font-size: 8px; color: #7a5828; letter-spacing: 1px; }
     .ss-slot-empty {
-      font-size: 10px; letter-spacing: 2px; color: #152640;
-      text-align: center; margin-top: 22px; flex: 1;
+      font-size: 9px; letter-spacing: 2px; color: #c8aa70;
+      text-align: center; flex: 1;
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* selection cursor on slot */
+    /* selection cursor */
     .ss-sel-cursor {
-      position: absolute; top: 7px; right: 9px; z-index: 2;
-      font-size: 9px; color: #0092cc;
+      position: absolute; top: 6px; right: 8px; z-index: 2;
+      font-size: 9px; color: #c9a22a;
       animation: ss-blink .75s step-end infinite;
     }
 
     /* === mode tabs === */
-    .ss-tabs { display: flex; margin-bottom: 16px; }
+    .ss-tabs { display: flex; margin-bottom: 13px; }
     .ss-tab {
-      padding: 8px 22px;
-      font-family: inherit; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
-      border: 1px solid #0c1e3a; background: #030a18; color: #2c5080;
+      padding: 7px 20px;
+      font-family: inherit; font-size: 9px;
+      letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid #9b7040;
+      background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
+      color: #c8a05a;
       cursor: pointer; transition: all .12s;
     }
     .ss-tab:not(:last-child) { border-right: none; }
-    .ss-tab:hover:not(:disabled) { color: #5080a8; border-color: #1a3a60; }
-    .ss-tab.is-active          { color: #00c0f0; border-color: #005890; background: #060f20; box-shadow: 0 -2px 0 #00c0f0 inset; }
-    .ss-tab.tab-del.is-active  { color: #ff4060; border-color: #6a0020; box-shadow: 0 -2px 0 #ff3050 inset; }
+    .ss-tab:hover:not(:disabled) {
+      color: #f4e8c0;
+      background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
+    }
+    .ss-tab.is-active {
+      color: #f8f0d0;
+      background: linear-gradient(180deg, #8b6030 0%, #6a4018 100%);
+      border-color: #c9a22a;
+      box-shadow: 0 -2px 0 #c9a22a inset;
+    }
+    .ss-tab.tab-del.is-active {
+      color: #f4d0c0;
+      background: linear-gradient(180deg, #6a2e18 0%, #4a1c08 100%);
+      border-color: #8b3820;
+      box-shadow: 0 -2px 0 #cc3820 inset;
+    }
 
     /* === confirm button === */
-    .ss-confirm-wrap { margin-bottom: 16px; }
+    .ss-confirm-wrap { margin-bottom: 13px; }
     .ss-confirm {
-      padding: 9px 38px; min-width: 210px;
-      font-family: inherit; font-size: 11px;
+      padding: 9px 36px; min-width: 206px;
+      font-family: inherit; font-size: 10px;
       letter-spacing: 3px; text-transform: uppercase;
-      border: 1px solid #0c1e3a; background: #030a18; color: #2c5080;
+      border: 1px solid #9b7040;
+      background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
+      color: #f4e8c0;
       cursor: pointer; transition: all .12s;
+      box-shadow: 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
     }
     .ss-confirm:hover:not(:disabled) {
-      border-color: #0090d0; color: #00c8ff;
-      box-shadow: 0 0 14px rgba(0,160,220,0.28);
+      border-color: #c9a22a; color: #fff8e0;
+      background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
+      box-shadow: 0 0 16px rgba(201,162,42,0.28), 0 2px 5px rgba(40,18,4,0.38),
+                  inset 0 1px 0 rgba(255,225,140,0.22);
     }
-    .ss-confirm:disabled { opacity: 0.28; cursor: not-allowed; }
+    .ss-confirm:disabled { opacity: 0.30; cursor: not-allowed; }
     .ss-confirm.is-del:hover:not(:disabled) {
-      border-color: #aa0030; color: #ff4060;
-      box-shadow: 0 0 14px rgba(255,40,70,0.28);
+      border-color: #8b3820; color: #ffd0c0;
+      background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
+      box-shadow: 0 0 16px rgba(180,52,28,0.28), 0 2px 5px rgba(40,18,4,0.38);
     }
 
     /* === status line === */
-    .ss-status { font-size: 10px; letter-spacing: 2px; color: #00b8e8; min-height: 17px; }
-    .ss-status.is-err { color: #ff4060; }
-    .ss-status.is-ok  { color: #40e090; }
+    .ss-status { font-size: 9px; letter-spacing: 2px; color: #7a5428; min-height: 16px; }
+    .ss-status.is-err { color: #8b2210; }
+    .ss-status.is-ok  { color: #3a6228; }
 
-    /* === close hint === */
+    /* === close hint (top-right) === */
     .ss-esc {
       position: fixed; top: 18px; right: 24px; z-index: 10;
-      font-size: 9px; letter-spacing: 4px; color: #1a3050;
+      font-size: 9px; letter-spacing: 3px; color: #5c3810;
       cursor: pointer; transition: color .12s;
     }
-    .ss-esc:hover { color: #ff4060; }
+    .ss-esc:hover { color: #aa3010; }
 
     /* === back button === */
     .ss-back-btn {
-      padding: 7px 28px;
-      font-family: inherit; font-size: 10px;
+      padding: 7px 26px;
+      font-family: inherit; font-size: 9px;
       letter-spacing: 3px; text-transform: uppercase;
-      border: 1px solid #0c1e3a; background: #030a18; color: #2c5080;
+      border: 1px solid #9b7040;
+      background: linear-gradient(180deg, #6a4828 0%, #4e3014 100%);
+      color: #c8a05a;
       cursor: pointer; transition: all .12s;
+      box-shadow: 0 2px 4px rgba(40,18,4,0.30), inset 0 1px 0 rgba(255,225,140,0.10);
     }
     .ss-back-btn:hover {
-      border-color: #aa0030; color: #ff4060;
-      box-shadow: 0 0 12px rgba(255,40,70,0.22);
+      border-color: #8b3820; color: #ffd0c0;
+      background: linear-gradient(180deg, #7a3020 0%, #5c1c10 100%);
+      box-shadow: 0 0 10px rgba(180,52,28,0.24), 0 2px 4px rgba(40,18,4,0.30);
     }
 
     /* === footer === */
-    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 4px; }
+    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-top: 4px; }
 
     /* === key hints === */
-    .ss-hints { font-size: 9px; letter-spacing: 2px; color: #122030; }
+    .ss-hints { font-size: 8px; letter-spacing: 2px; color: #b8945a; }
 
     /* === animations === */
     @keyframes ss-blink   { 0%,100%{opacity:1} 50%{opacity:0} }
-    @keyframes ss-breathe { 0%,100%{opacity:.55} 50%{opacity:1} }
+    @keyframes ss-breathe { 0%,100%{opacity:.60} 50%{opacity:1} }
     .ss-breathe { animation: ss-breathe .65s ease-in-out infinite; }
   `;
 
@@ -285,26 +344,28 @@
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
 
-        <div class="ss-title  ss-layer">✦  MEMORY CARD  ✦</div>
-        <div class="ss-byline ss-layer">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
-        <div class="ss-mode-label ss-layer">${modeHdr}</div>
+        <div class="ss-panel ss-layer">
+          <div class="ss-title">✦  MEMORY CARD  ✦</div>
+          <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
+          <div class="ss-mode-label">${modeHdr}</div>
 
-        <div class="ss-slots ss-layer">${slots}</div>
+          <div class="ss-slots">${slots}</div>
 
-        <div class="ss-tabs ss-layer">
-          <button class="ss-tab ${this._mode==="save"   ? "is-active":""}" data-act="mode" data-mode="save">SAVE</button>
-          <button class="ss-tab ${this._mode==="load"   ? "is-active":""}" data-act="mode" data-mode="load">LOAD</button>
-          <button class="ss-tab tab-del ${this._mode==="delete" ? "is-active":""}" data-act="mode" data-mode="delete">DELETE</button>
-        </div>
+          <div class="ss-tabs">
+            <button class="ss-tab ${this._mode==="save"   ? "is-active":""}" data-act="mode" data-mode="save">SAVE</button>
+            <button class="ss-tab ${this._mode==="load"   ? "is-active":""}" data-act="mode" data-mode="load">LOAD</button>
+            <button class="ss-tab tab-del ${this._mode==="delete" ? "is-active":""}" data-act="mode" data-mode="delete">DELETE</button>
+          </div>
 
-        <div class="ss-confirm-wrap ss-layer">
-          <button class="ss-confirm ${isDelMode}" data-act="confirm" ${canConfirm?"":"disabled"}>${confirmLbl}</button>
-        </div>
+          <div class="ss-confirm-wrap">
+            <button class="ss-confirm ${isDelMode}" data-act="confirm" ${canConfirm?"":"disabled"}>${confirmLbl}</button>
+          </div>
 
-        <div class="ss-status ss-layer ${this._statusCls}">${statusHtml}</div>
-        <div class="ss-footer ss-layer">
-          <button class="ss-back-btn" data-act="close">◄ BACK</button>
-          <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ESC / BACK to close</div>
+          <div class="ss-status ${this._statusCls}">${statusHtml}</div>
+          <div class="ss-footer">
+            <button class="ss-back-btn" data-act="close">◄ BACK</button>
+            <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ESC / BACK to close</div>
+          </div>
         </div>
       `;
     }
