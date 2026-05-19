@@ -47,6 +47,14 @@
     state = "COVERED";
   }
 
+  // ── Flag check — read the destination scene's disableTransition flag ─────────
+
+  function isTransitionDisabled() {
+    try {
+      return !!canvas?.scene?.flags?.["fabula-ultima-companion"]?.oniFabula?.general?.disableTransition;
+    } catch { return false; }
+  }
+
   // ── reveal: rAF-gated ease-out ───────────────────────────────────────────────
   // canvasReady fires when Foundry's canvas data is ready, but PIXI may not have
   // painted its first frame yet. Two requestAnimationFrame calls step past that
@@ -54,6 +62,18 @@
 
   function reveal() {
     if (state !== "COVERED") return;
+
+    // If the destination scene has disableTransition set, skip the animation
+    // entirely and snap the overlay off immediately.
+    if (isTransitionDisabled()) {
+      overlay.style.transition    = "none";
+      overlay.style.opacity       = "0";
+      overlay.style.pointerEvents = "none";
+      forceReflow();
+      state = "IDLE";
+      return;
+    }
+
     state = "FADING_OUT";
 
     requestAnimationFrame(() => {
