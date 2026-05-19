@@ -32,6 +32,7 @@
     "scripts/dialog-system/dialog-core.js",
     "scripts/dialog-system/dialog-examineUI.js",
     "scripts/command-system/command-itemCreate.js",
+    "scripts/screen-transition/screen-transition.js",
     "scripts/main.js",
     "scripts/speech-bubble.js",
     "scripts/free-action-state.js",

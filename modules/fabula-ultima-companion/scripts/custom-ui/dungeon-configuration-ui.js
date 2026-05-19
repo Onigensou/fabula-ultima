@@ -50,9 +50,10 @@
   const IS_OVERWORLD_KEY   = "isOverworld";         // boolean: scene is an overworld map
   const IS_TOWN_KEY        = "isTown";              // boolean: scene is a town map
   const IS_DUNGEON_KEY     = "isDungeon";           // boolean: scene is a dungeon map
-  const SCENE_VISITED_KEY  = "sceneVisited";         // boolean: set true when scene activated once
-  const SPAWN_POINT_KEY    = "spawnPoint";           // { x, y } — manual spawn for scene travel
-  const NAV_NAME_KEY       = "navigationName";       // string: display name in Travel dialog
+  const SCENE_VISITED_KEY       = "sceneVisited";         // boolean: set true when scene activated once
+  const SPAWN_POINT_KEY         = "spawnPoint";           // { x, y } — manual spawn for scene travel
+  const NAV_NAME_KEY            = "navigationName";       // string: display name in Travel dialog
+  const DISABLE_TRANSITION_KEY  = "disableTransition";    // boolean: skip screen-fade when entering this scene
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -574,6 +575,14 @@
             <p class="notes">Allow the Main Controller to use Fast Travel and Scene Travel. Applies in Dungeon and Exploration modes.</p>
           </div>
 
+          <div class="form-group">
+            <label>Disable Transition</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DISABLE_TRANSITION_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Skip the screen-fade animation when entering this scene. Useful for scenes that load instantly or where the effect is unwanted.</p>
+          </div>
+
           <h3 style="margin:12px 0 6px;"><i class="fas fa-tag"></i> Scene Type</h3>
           <p class="notes" style="margin:0 0 8px;">Tag this scene for the Travel system. Used to categorise destinations in the Travel dialog.</p>
 
@@ -813,6 +822,12 @@
       if (ftCheckbox) {
         const ftRaw = safeGet(fabulaData, `${GENERAL_KEY}.${FT_ENABLED_KEY}`, null);
         ftCheckbox.checked = (ftRaw === null) ? true : normalizeBoolean(ftRaw, true);
+      }
+
+      // Disable Transition prefill
+      const disableTransCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DISABLE_TRANSITION_KEY}"]`);
+      if (disableTransCb) {
+        disableTransCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${DISABLE_TRANSITION_KEY}`, false), false);
       }
 
       // Scene type checkboxes prefill
