@@ -309,6 +309,7 @@
         el.addEventListener("click", () => {
           if (this._busy) return;
           this._mode      = el.dataset.mode;
+          this._sel       = null;
           this._status    = "";
           this._statusCls = "";
           sfx("select");
