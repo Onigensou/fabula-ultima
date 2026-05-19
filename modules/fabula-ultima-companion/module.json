@@ -259,7 +259,13 @@
     "scripts/camp-system/rest-api.js",
     "scripts/camp-system/camp-ui-sleep.js",
     "scripts/camp-system/camp-ui-gm-panel.js",
-    "scripts/camp-system/camp-bootstrap.js"
+    "scripts/camp-system/camp-bootstrap.js",
+    "scripts/save-system/save-constants.js",
+    "scripts/save-system/save-storage.js",
+    "scripts/save-system/save-core.js",
+    "scripts/save-system/save-extractors.js",
+    "scripts/save-system/save-ui.js",
+    "scripts/save-system/save-bootstrap.js"
   ],
   "esmodules": [
     "scripts/shop-system/shopOpen-bootstrap.js",
