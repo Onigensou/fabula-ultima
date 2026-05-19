@@ -9,10 +9,14 @@
 //   5.  activeScene         – which scene is currently active
 //   6.  sceneBackgrounds    – background image per scene (story progression)
 //   7.  dungeonTileData     – DungeonPathing flags (tileStates + visitedTiles)
-//   8.  sceneTileVisibility – tile.hidden per scene (treasure chests etc.)
-//   9.  campState           – CampSystem world settings
-//   10. encyclopediaData    – Monster Encyclopedia journal page flags + content
-//   11. journalOwnership    – ownership map of every journal entry
+//                             filtered to Dungeon/Exploration/Camp scenes only
+//   8.  sceneTileVisibility – tile.hidden per Dungeon/Exploration/Camp scene;
+//                             tiles added after save are deleted on load
+//   9.  sceneDrawingData    – full Drawing document state for Dungeon scenes;
+//                             drawings added after save are deleted, missing recreated
+//   10. campState           – CampSystem world settings
+//   11. encyclopediaData    – Monster Encyclopedia journal page flags + content
+//   12. journalOwnership    – ownership map of every journal entry
 //
 // To add a new domain in future: call SS.registerExtractor({ key, label, extract, apply })
 // anywhere that runs before the first save.
@@ -29,6 +33,12 @@
     const rawId = uuid.startsWith("Actor.") ? uuid.slice(6) : uuid;
     return game.actors.get(rawId) ?? null;
   }
+
+  // Scene mode is stored by the DungeonPathing / Fabula configuration system.
+  function getSceneMode(scene) {
+    return scene?.flags?.[MOD]?.oniFabula?.general?.sceneMode ?? "none";
+  }
+  const TILE_SAVE_MODES = new Set(["dungeon", "exploration", "camp"]);
 
   // ── 1. Database Pointer ────────────────────────────────────────────────────
   SS.registerExtractor({
@@ -192,6 +202,7 @@
       const DP_KEY = "dungeonPathing";
       const result = {};
       for (const scene of game.scenes.contents) {
+        if (!TILE_SAVE_MODES.has(getSceneMode(scene))) continue;
         const dp = scene.flags?.[MOD]?.[DP_KEY];
         if (!dp || (!dp.tileStates && !dp.visitedTiles)) continue;
         result[scene.id] = {
@@ -219,8 +230,8 @@
   });
 
   // ── 8. Scene Tile Visibility ───────────────────────────────────────────────
-  // Saves tile.hidden for every tile in every scene.
-  // Treasure chests opened (hidden) in session A must be visible again in session B.
+  // Saves tile.hidden for Dungeon/Exploration/Camp scenes only.
+  // On load: tiles added after save are deleted; hidden state is restored.
   SS.registerExtractor({
     key:   "sceneTileVisibility",
     label: "Scene Tile Visibility",
@@ -228,6 +239,7 @@
     async extract() {
       const result = {};
       for (const scene of game.scenes.contents) {
+        if (!TILE_SAVE_MODES.has(getSceneMode(scene))) continue;
         if (!scene.tiles?.size) continue;
         const states = {};
         for (const tile of scene.tiles.values()) {
@@ -244,6 +256,13 @@
         Object.entries(data).map(async ([sceneId, tileStates]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
+          const savedIds = new Set(Object.keys(tileStates));
+          // Delete tiles that were added after this save was made
+          const toDelete = [...scene.tiles.values()]
+            .filter(t => !savedIds.has(t.id))
+            .map(t => t.id);
+          if (toDelete.length) await scene.deleteEmbeddedDocuments("Tile", toDelete);
+          // Restore hidden state for tiles that existed at save time
           const updates = Object.entries(tileStates)
             .filter(([id, hidden]) => {
               const tile = scene.tiles.get(id);
@@ -256,7 +275,55 @@
     },
   });
 
-  // ── 9. Camp State ──────────────────────────────────────────────────────────
+  // ── 9. Scene Drawing Data ──────────────────────────────────────────────────
+  // Full Drawing document state for Dungeon-mode scenes only (drawings wire
+  // tiles together as graph edges in the DungeonPathing system).
+  // On load: drawings added after save are deleted; missing drawings are
+  // recreated from saved data; existing drawings are updated to saved state.
+  SS.registerExtractor({
+    key:   "sceneDrawingData",
+    label: "Scene Drawings (Dungeon)",
+
+    async extract() {
+      const result = {};
+      for (const scene of game.scenes.contents) {
+        if (getSceneMode(scene) !== "dungeon") continue;
+        if (!scene.drawings?.size) continue;
+        const drawings = {};
+        for (const drawing of scene.drawings.values()) {
+          drawings[drawing.id] = foundry.utils.deepClone(drawing.toObject());
+        }
+        result[scene.id] = drawings;
+      }
+      return result;
+    },
+
+    async apply(ctx, data) {
+      if (!data) return;
+      await Promise.all(
+        Object.entries(data).map(async ([sceneId, drawings]) => {
+          const scene = game.scenes.get(sceneId);
+          if (!scene) return;
+          const savedIds = new Set(Object.keys(drawings));
+          // Delete drawings added after this save was made
+          const toDelete = [...scene.drawings.values()]
+            .filter(d => !savedIds.has(d.id))
+            .map(d => d.id);
+          if (toDelete.length) await scene.deleteEmbeddedDocuments("Drawing", toDelete);
+          // Recreate drawings that existed at save time but are now missing
+          const toCreate = Object.values(drawings)
+            .filter(d => !scene.drawings.has(d._id));
+          if (toCreate.length) await scene.createEmbeddedDocuments("Drawing", toCreate, { keepId: true });
+          // Update drawings that still exist to their saved state
+          const toUpdate = Object.values(drawings)
+            .filter(d => scene.drawings.has(d._id));
+          if (toUpdate.length) await scene.updateEmbeddedDocuments("Drawing", toUpdate);
+        })
+      );
+    },
+  });
+
+  // ── 10. Camp State ─────────────────────────────────────────────────────────
   // Captures all CampSystem world settings (phase, selections, bonds, etc.)
   SS.registerExtractor({
     key:   "campState",
@@ -282,7 +349,7 @@
     },
   });
 
-  // ── 10. Monster Encyclopedia ───────────────────────────────────────────────
+  // ── 11. Monster Encyclopedia ───────────────────────────────────────────────
   // Saves the study result flags and rendered content for every encyclopedia page.
   SS.registerExtractor({
     key:   "encyclopediaData",
@@ -323,7 +390,7 @@
     },
   });
 
-  // ── 11. Journal Ownership ──────────────────────────────────────────────────
+  // ── 12. Journal Ownership ──────────────────────────────────────────────────
   // Journals revealed in session A should remain hidden when loading session B.
   SS.registerExtractor({
     key:   "journalOwnership",
