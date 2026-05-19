@@ -83,7 +83,7 @@
       border-radius: 4px;
       padding: 42px 56px 34px;
       display: flex; flex-direction: column; align-items: center;
-      width: clamp(600px, 82vw, 1000px);
+      width: clamp(720px, 92vw, 1200px);
       max-height: 90vh; overflow: visible;
     }
     .ss-panel::before {
@@ -148,7 +148,7 @@
       position: relative; width: 100%;
       display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;
       overflow-y: auto; overflow-x: visible;
-      max-height: calc(90vh - 260px);
+      max-height: calc(90vh - 230px);
     }
     .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 12px; transition: opacity .20s, filter .20s; padding: 8px 2px; overflow: visible; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
@@ -181,10 +181,10 @@
     .ss-slot-portraits {
       display: flex; flex-direction: row; gap: 4px; align-items: flex-end;
       flex-shrink: 0; pointer-events: none;
-      max-width: 320px; overflow: hidden;
+      max-width: 420px; overflow: hidden;
     }
     .ss-slot-portrait {
-      height: 100px; width: auto; max-width: 68px;
+      height: 130px; width: auto; max-width: 95px;
       object-fit: contain; object-position: center bottom;
       image-rendering: pixelated;
       flex-shrink: 0;
@@ -200,13 +200,12 @@
     .ss-slot-date   { font-size: 9px; color: #8b6838; letter-spacing: 1px; }
     .ss-slot-empty  { flex: 1; font-size: 10px; letter-spacing: 2px; color: #c8aa70; }
 
-    /* === confirm overlay (floats over dimmed slots) === */
+    /* === confirm overlay — fixed so it escapes scroll containers entirely === */
     .ss-conf-overlay {
-      position: absolute; inset: -8px;
+      position: fixed; inset: 0;
       display: flex; align-items: center; justify-content: center;
-      z-index: 5;
-      background: rgba(232, 218, 172, 0.65);
-      border-radius: 10px;
+      z-index: 2147483646;
+      background: rgba(18, 8, 1, 0.38);
     }
     .ss-conf-inner {
       position: relative;
@@ -224,7 +223,7 @@
     }
     .ss-conf-inner > * { position: relative; z-index: 1; }
     .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; border-radius: 8px; padding: 12px 32px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
-    .ss-conf-slot-label { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 2px; margin-bottom: 5px; }
+    .ss-conf-slot-label { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 2px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; }
     .ss-conf-slot-date  { font-size: 9px;  color: #8b6838; letter-spacing: 1px; }
     .ss-conf-text { font-size: 11px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase; }
     .ss-conf-text.is-del { color: #8b2210; }
@@ -233,23 +232,19 @@
     .ss-conf-exec.is-err { color: #8b2210; }
     .ss-conf-exec.is-ok  { color: #3a6228; }
 
-    /* PS1/PS2 retro progress bar */
+    /* PS1/PS2 retro progress bar — transform-based (GPU composited, no layout reflow) */
     .ss-prog-track {
-      width: 100%; height: 20px;
-      background: #120801; border: 1px solid #7a5428; border-radius: 2px;
+      width: 100%; height: 12px;
+      background: #120801; border: 1px solid #7a5428; border-radius: 1px;
       overflow: hidden;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.60), 0 0 0 1px rgba(200,160,60,0.10);
     }
     .ss-prog-fill {
-      height: 100%; width: 0%;
-      background: repeating-linear-gradient(
-        90deg,
-        #e8a820 0px, #e8a820 12px,
-        #c4861a 12px, #c4861a 14px
-      );
-      box-shadow: 0 0 14px rgba(232,168,32,0.70), inset 0 1px 0 rgba(255,220,100,0.45);
+      height: 100%; width: 100%;
+      transform: scaleX(0); transform-origin: left center;
+      background: linear-gradient(90deg, #c47a10 0%, #e8a820 60%, #f5c840 100%);
+      box-shadow: inset 0 1px 0 rgba(255,230,110,0.45);
     }
-    .ss-prog-label { font-size: 10px; letter-spacing: 3px; color: #c8a05a; text-align: center; margin-top: 10px; }
+    .ss-prog-label { font-size: 10px; letter-spacing: 3px; color: #c8a05a; text-align: center; margin-top: 8px; }
     .ss-conf-choices { display: flex; gap: 16px; }
     .ss-choice-btn {
       padding: 11px 40px; font-family: inherit; font-size: 11px;
@@ -796,7 +791,7 @@
         const t = Math.min((now - start) / duration, 1);
         this._progress = (1 - Math.pow(1 - t, 3)) * target;  // ease-out cubic
         const fill = this._el.querySelector(".ss-prog-fill");
-        if (fill) fill.style.width = `${this._progress * 100}%`;
+        if (fill) fill.style.transform = `scaleX(${this._progress})`;
         if (t < 1) this._progressRaf = requestAnimationFrame(tick);
       };
       this._progressRaf = requestAnimationFrame(tick);
@@ -813,7 +808,7 @@
           const t = Math.min((now - start) / duration, 1);
           const pct = startPct + remaining * t;
           const fill = this._el?.querySelector(".ss-prog-fill");
-          if (fill) fill.style.width = `${pct * 100}%`;
+          if (fill) fill.style.transform = `scaleX(${pct})`;
           if (t < 1) requestAnimationFrame(tick);
           else resolve();
         };
