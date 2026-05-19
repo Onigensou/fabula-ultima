@@ -36,13 +36,25 @@
 
   // Delete-all + recreate-all for items and effects so mergeObject semantics
   // in updateEmbeddedDocuments can never leave stale flag values behind.
+  // Some NPC actors carry synthetic/template items that have no DB record;
+  // a batch delete throws for those, so fall back to individual deletes and
+  // silently skip any ID the server reports as missing.
+  async function deleteEmbeds(actor, type, ids) {
+    if (!ids.length) return;
+    try {
+      await actor.deleteEmbeddedDocuments(type, ids);
+    } catch {
+      await Promise.all(ids.map(id =>
+        actor.deleteEmbeddedDocuments(type, [id]).catch(() => {})
+      ));
+    }
+  }
+
   async function applyActorEmbeds(actor, { items = [], effects = [] }) {
-    const itemIds = [...actor.items.values()].map(i => i.id);
-    if (itemIds.length)   await actor.deleteEmbeddedDocuments("Item", itemIds);
-    if (items.length)     await actor.createEmbeddedDocuments("Item", items, { keepId: true });
-    const effectIds = [...actor.effects.values()].map(e => e.id);
-    if (effectIds.length) await actor.deleteEmbeddedDocuments("ActiveEffect", effectIds);
-    if (effects.length)   await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
+    await deleteEmbeds(actor, "Item",         [...actor.items.values()].map(i => i.id));
+    if (items.length)   await actor.createEmbeddedDocuments("Item",         items,   { keepId: true });
+    await deleteEmbeds(actor, "ActiveEffect", [...actor.effects.values()].map(e => e.id));
+    if (effects.length) await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
