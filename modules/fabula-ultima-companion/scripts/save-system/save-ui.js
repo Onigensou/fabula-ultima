@@ -124,10 +124,10 @@
       border-color: #8b3820;
       box-shadow: 0 0 0 1px #8b3820, 0 0 18px rgba(180,52,28,0.28), inset 0 1px 0 rgba(255,245,200,0.75);
     }
-    .ss-mode-card-icon  { font-size: 28px; pointer-events: none; flex-shrink: 0; }
-    .ss-mode-card-text  { display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
-    .ss-mode-card-label { font-family: inherit; font-size: 13px; letter-spacing: 3px; color: #3a1e06; text-transform: uppercase; }
-    .ss-mode-card-desc  { font-family: inherit; font-size: 8px; letter-spacing: 1px; color: #9b7040; }
+    .ss-mode-card-icon  { font-size: 26px; pointer-events: none; flex-shrink: 0; width: 32px; text-align: center; color: #5a3210; }
+    .ss-mode-card.is-del .ss-mode-card-icon { color: #7a2e18; }
+    .ss-mode-card-text  { display: flex; flex-direction: column; pointer-events: none; }
+    .ss-mode-card-label { font-family: inherit; font-size: 16px; font-weight: bold; letter-spacing: 4px; color: #3a1e06; text-transform: uppercase; }
 
     /* === file screen body + slots === */
     .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; }
@@ -157,13 +157,14 @@
       padding: 14px 18px;
       display: flex; flex-direction: row; align-items: center; gap: 14px;
     }
-    .ss-slot-num   { width: 52px; flex-shrink: 0; font-size: 8px; letter-spacing: 3px; color: #b8945a; }
-    .ss-slot-icon  { font-size: 20px; flex-shrink: 0; }
-    .ss-slot-info  { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .ss-slot-name  { font-size: 11px; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-party { font-size: 8px; color: #7a5828; letter-spacing: 1px; }
-    .ss-slot-date  { font-size: 8px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
-    .ss-slot-empty { flex: 1; font-size: 9px; letter-spacing: 2px; color: #c8aa70; }
+    .ss-slot-num       { width: 52px; flex-shrink: 0; font-size: 8px; letter-spacing: 3px; color: #b8945a; }
+    .ss-slot-portraits { display: flex; flex-direction: row; gap: 5px; flex-shrink: 0; align-items: center; }
+    .ss-slot-portrait  { width: 36px; height: 36px; border-radius: 5px; object-fit: cover; object-position: top; border: 1px solid rgba(180,140,70,0.55); background: #f0e8d0; }
+    .ss-slot-info      { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .ss-slot-name      { font-size: 11px; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-loc       { font-size: 8px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-date      { font-size: 8px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
+    .ss-slot-empty     { flex: 1; font-size: 9px; letter-spacing: 2px; color: #c8aa70; }
 
     /* === confirm overlay (floats over dimmed slots) === */
     .ss-conf-overlay {
@@ -362,19 +363,18 @@
 
     _htmlModeScreen() {
       const META = {
-        save:   { icon: "💾", label: "SAVE",   desc: "Write current game data", cls: ""       },
-        load:   { icon: "📖", label: "LOAD",   desc: "Read saved game data",    cls: ""       },
-        delete: { icon: "🗑️", label: "DELETE", desc: "Erase a saved file",      cls: "is-del" },
+        save:   { icon: '<i class="fas fa-floppy-disk"></i>', label: "SAVE",   cls: ""       },
+        load:   { icon: '<i class="fas fa-book-open"></i>',   label: "LOAD",   cls: ""       },
+        delete: { icon: '<i class="fas fa-trash"></i>',       label: "DELETE", cls: "is-del" },
       };
       const cards = MODES.map(m => {
-        const { icon, label, desc, cls } = META[m];
+        const { icon, label, cls } = META[m];
         const focus = (this._mode === m && this._focusArea === "main") ? "is-focus" : "";
         return `
           <button class="ss-mode-card ${cls} ${focus}" data-act="mode" data-mode="${m}">
             <div class="ss-mode-card-icon">${icon}</div>
             <div class="ss-mode-card-text">
               <div class="ss-mode-card-label">${label}</div>
-              <div class="ss-mode-card-desc">${desc}</div>
             </div>
           </button>`;
       }).join("");
@@ -406,25 +406,46 @@
         const selC  = (this._sel === id &&  isConfirm) ? "is-sel" : "";
         const valid = this._mode === "save" || d !== null;
         const inv   = !valid ? "is-invalid" : "";
-        const bg    = d?.thumbnail
-          ? `<div class="ss-slot-bg" style="background-image:url('${d.thumbnail}')"></div>` : "";
-        const gameName = d?.data?.partyActorData?.props?.game_name ?? "—";
 
-        const body = d ? `
-          ${bg}
-          <div class="ss-slot-body">
-            <div class="ss-slot-num">SLOT ${id}</div>
-            <div class="ss-slot-icon">💾</div>
-            <div class="ss-slot-info">
-              <div class="ss-slot-name">${d.label ?? "Unnamed"}</div>
-              <div class="ss-slot-party">${gameName}</div>
-            </div>
-            <div class="ss-slot-date">${fmtDate(d.savedAt)}</div>
-          </div>` : `
-          <div class="ss-slot-body">
-            <div class="ss-slot-num">SLOT ${id}</div>
-            <div class="ss-slot-empty">— NO DATA —</div>
-          </div>`;
+        let body;
+        if (d) {
+          // Navigation name via live scene lookup (falls back to stored scene name)
+          const sceneId   = d.data?.activeScene?.sceneId;
+          const liveScene = sceneId ? game.scenes?.get(sceneId) : null;
+          const locName   = liveScene?.navName || d.data?.activeScene?.sceneName || "—";
+          const gameName  = d.data?.partyActorData?.system?.props?.game_name ?? "—";
+
+          // Portrait images of active party members at save time (member_id_N only, not bench)
+          const partyProps = d.data?.partyActorData?.system?.props ?? {};
+          const portraits  = [];
+          for (let j = 1; j <= 10; j++) {
+            const mid = partyProps[`member_id_${j}`];
+            if (!mid) break;
+            const rawId = mid.startsWith("Actor.") ? mid.slice(6) : mid;
+            const actor = game.actors?.get(rawId);
+            if (actor?.img) portraits.push({ img: actor.img, name: actor.name });
+          }
+          const portraitHtml = portraits
+            .map(p => `<img class="ss-slot-portrait" src="${p.img}" title="${p.name}">`)
+            .join("");
+
+          body = `
+            <div class="ss-slot-body">
+              <div class="ss-slot-num">SLOT ${id}</div>
+              <div class="ss-slot-portraits">${portraitHtml}</div>
+              <div class="ss-slot-info">
+                <div class="ss-slot-name">${gameName}</div>
+                <div class="ss-slot-loc">${locName}</div>
+              </div>
+              <div class="ss-slot-date">${fmtDate(d.savedAt)}</div>
+            </div>`;
+        } else {
+          body = `
+            <div class="ss-slot-body">
+              <div class="ss-slot-num">SLOT ${id}</div>
+              <div class="ss-slot-empty">— NO DATA —</div>
+            </div>`;
+        }
 
         return `<div class="ss-slot ss-layer ${sel} ${selC} ${inv}" data-slot="${id}" data-valid="${valid}">${body}</div>`;
       }).join("");
