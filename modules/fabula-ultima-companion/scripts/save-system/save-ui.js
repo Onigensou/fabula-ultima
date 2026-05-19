@@ -324,6 +324,43 @@
     @keyframes ss-blink   { 0%,100%{opacity:1} 50%{opacity:0} }
     @keyframes ss-breathe { 0%,100%{opacity:.60} 50%{opacity:1} }
     .ss-breathe { animation: ss-breathe .65s ease-in-out infinite; }
+
+    /* === entrance / exit animations === */
+    @keyframes ss-overlay-in  { from{opacity:0} to{opacity:1} }
+    @keyframes ss-overlay-out { from{opacity:1} to{opacity:0} }
+    @keyframes ss-panel-in {
+      from { opacity: 0; transform: translateX(-28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes ss-slot-in {
+      from { opacity: 0; transform: translateX(-56px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes ss-conf-in {
+      from { opacity: 0; transform: scale(0.93) translateY(12px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+
+    /* Overlay: fade in on open, fade out on close */
+    #save-system-overlay { animation: ss-overlay-in 0.18s ease-out both; }
+    #save-system-overlay.is-closing {
+      animation: ss-overlay-out 0.20s ease-in forwards;
+      pointer-events: none;
+    }
+
+    /* Panel: slides in from left on every screen render */
+    .ss-panel { animation: ss-panel-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    /* Slots: staggered slide-in — larger offset than panel for visual hierarchy */
+    .ss-slot { animation: ss-slot-in 0.30s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .ss-slot:nth-child(1) { animation-delay:   0ms; }
+    .ss-slot:nth-child(2) { animation-delay:  85ms; }
+    .ss-slot:nth-child(3) { animation-delay: 170ms; }
+    .ss-slot:nth-child(4) { animation-delay: 255ms; }
+    .ss-slot:nth-child(5) { animation-delay: 340ms; }
+
+    /* Confirm inner: spring pop-in */
+    .ss-conf-inner { animation: ss-conf-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
   `;
 
   // ── UI class ──────────────────────────────────────────────────────────────────
@@ -374,8 +411,14 @@
       this._el.focus();
     }
 
-    close() {
+    close(_skipAnim = false) {
       if (!this._el) return;
+      if (!_skipAnim) {
+        if (this._el.classList.contains("is-closing")) return;
+        this._el.classList.add("is-closing");
+        setTimeout(() => this.close(true), 220);
+        return;
+      }
       cancelAnimationFrame(this._progressRaf);
       this._progress = 0;
       this._el.remove();
@@ -784,12 +827,12 @@
       this._progress = 0;
       cancelAnimationFrame(this._progressRaf);
       const start    = performance.now();
-      const duration = 2800;   // fills to ~88% over 2.8s
+      const duration = 3200;   // fills to ~88% over 3.2s
       const target   = 0.88;
       const tick = (now) => {
         if (!this._el || !this._busy) return;
         const t = Math.min((now - start) / duration, 1);
-        this._progress = (1 - Math.pow(1 - t, 3)) * target;  // ease-out cubic
+        this._progress = t * target;  // linear — starts visibly from 0
         const fill = this._el.querySelector(".ss-prog-fill");
         if (fill) fill.style.transform = `scaleX(${this._progress})`;
         if (t < 1) this._progressRaf = requestAnimationFrame(tick);
