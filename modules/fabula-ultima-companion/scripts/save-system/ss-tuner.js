@@ -130,7 +130,15 @@
     <pre id="ss-t-out" style="display:none;margin:8px 0 0;background:#0d0600;border:1px solid #5a3810;border-radius:4px;padding:7px;font-size:8px;color:#c8a870;max-height:140px;overflow-y:auto;white-space:pre-wrap;"></pre>
   `;
 
-  // Append INSIDE the overlay — not body — so it's within the same stacking context
+  // ── Survive _render() ── each render replaces overlay.innerHTML, destroying tuner.
+  // Monkey-patch _render to re-append el after every call.
+  const _origRender = SS.UI._render.bind(SS.UI);
+  SS.UI._render = function() {
+    _origRender();
+    if (SS.UI._el && !SS.UI._el.contains(el)) SS.UI._el.appendChild(el);
+  };
+
+  // Initial append
   overlay.appendChild(el);
 
   // ── Stop save-system keyboard capture from swallowing slider arrow keys ────────
@@ -162,6 +170,7 @@
 
   // ── Close ──────────────────────────────────────────────────────────────────────
   el.querySelector("#ss-t-close").addEventListener("click", () => {
+    SS.UI._render = _origRender;   // restore before removing
     el.remove();
     document.getElementById("ss-tuner-css")?.remove();
   });
