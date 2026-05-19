@@ -2022,9 +2022,12 @@
         btn.type = "button";
         btn.innerHTML = '<i class="fa-solid fa-gear"></i> GM Controls';
         btn.title = "Encyclopedia global GM controls";
-        btn.style.cssText = "width:calc(100% - 8px);display:block;margin:0 4px 4px;box-sizing:border-box;text-align:center;";
         btn.addEventListener("click", () => openGmGlobalDialog(sheetApp));
-        parent.insertBefore(btn, insertTarget);
+        // Wrapper prevents the button from being flex-stretched by the sidebar layout.
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "flex:0 0 auto;padding:2px 6px 4px;text-align:center;";
+        wrap.appendChild(btn);
+        parent.insertBefore(wrap, insertTarget);
       }
     }
   }
