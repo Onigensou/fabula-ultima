@@ -19,8 +19,13 @@
 
   // ── Sounds ──────────────────────────────────────────────────────────────────
   const SFX = {
-    select: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
-    cancel: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
+    navigate: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+    cancel:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav",
+    opStart:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_start.wav",
+    opOk:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/emotion_up.wav",
+    opFail:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Buzzer2.ogg",
+    sysOpen:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_start.wav",
+    fileOpen: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/file_selector_screen.wav",
   };
   function sfx(key) {
     try { AudioHelper?.play({ src: SFX[key], volume: 0.45, loop: false }); } catch {}
@@ -395,6 +400,7 @@
     open() {
       if (this._el) { this._el.focus(); return; }
       this._injectCSS();
+      sfx("sysOpen");
 
       this._screen      = "mode";
       this._focusArea   = "main";
@@ -666,13 +672,14 @@
           this._sel       = 1;
           this._status    = "";
           this._statusCls = "";
-          sfx("select");
+          sfx("fileOpen");
           this._screen    = "file";
           this._focusArea = "main";
           this._render();
         });
         el.addEventListener("mouseenter", () => {
           if (this._busy) return;
+          sfx("navigate");
           this._mode      = el.dataset.mode;
           this._focusArea = "main";
           this._el.querySelectorAll("[data-act='mode']").forEach(c =>
@@ -693,13 +700,14 @@
           this._status       = "";
           this._statusCls    = "";
           this._focusArea    = "main";
-          sfx("select");
+          sfx("navigate");
           this._screen = "confirm";
           this._render();
         });
         el.addEventListener("mouseenter", () => {
           if (this._busy || this._screen === "confirm") return;
           if (el.dataset.valid !== "true") return;
+          sfx("navigate");
           const id = parseInt(el.dataset.slot);
           this._sel       = id;
           this._focusArea = "main";
@@ -726,6 +734,7 @@
         });
         el.addEventListener("mouseenter", () => {
           if (this._busy) return;
+          sfx("navigate");
           this._confirmFocus = el.dataset.choice;
           this._el.querySelectorAll("[data-act='choice']").forEach(c =>
             c.classList.toggle("is-focus", c === el));
@@ -742,6 +751,7 @@
         });
         backBtn.addEventListener("mouseenter", () => {
           if (this._busy) return;
+          sfx("navigate");
           this._focusArea = "back";
           backBtn.classList.add("is-focus");
           this._el.querySelectorAll("[data-act='mode'], [data-slot], [data-act='choice']").forEach(c =>
@@ -877,6 +887,7 @@
 
       if (this._mode === "save") {
         this._status = "WRITING DATA…";
+        sfx("opStart");
         this._render();
         this._startProgress();
 
@@ -886,7 +897,7 @@
         if (res.ok) {
           this._status    = `DATA WRITTEN — SLOT ${this._sel}`;
           this._statusCls = "is-ok";
-          sfx("select");
+          sfx("opOk");
           this._render();
           setTimeout(() => {
             if (!this._el) return;
@@ -899,7 +910,7 @@
           this._status       = `ERROR: ${res.error}`;
           this._statusCls    = "is-err";
           this._confirmFocus = "no";
-          sfx("cancel");
+          sfx("opFail");
           this._render();
         }
         return;
@@ -907,6 +918,7 @@
 
       if (this._mode === "load") {
         this._status = "READING DATA…";
+        sfx("opStart");
         this._render();
         this._startProgress();
 
@@ -916,14 +928,14 @@
         if (res.ok) {
           this._status    = `DATA LOADED — ${res.label}`;
           this._statusCls = "is-ok";
-          sfx("select");
+          sfx("opOk");
           this._render();
           setTimeout(() => this.close(), 1400);
         } else {
           this._status       = `ERROR: ${res.error}`;
           this._statusCls    = "is-err";
           this._confirmFocus = "no";
-          sfx("cancel");
+          sfx("opFail");
           this._render();
         }
         return;
@@ -931,6 +943,7 @@
 
       if (this._mode === "delete") {
         this._status = "ERASING DATA…";
+        sfx("opStart");
         this._render();
         this._startProgress();
 
@@ -940,7 +953,7 @@
         this._sel       = null;
         this._status    = "DATA ERASED.";
         this._statusCls = "";
-        sfx("cancel");
+        sfx("opOk");
         this._render();
         setTimeout(() => {
           if (!this._el) return;
@@ -984,7 +997,7 @@
           const idx     = modeNav.indexOf(cur);
           const newIdx  = (idx + dir + modeNav.length) % modeNav.length;
           const newItem = modeNav[newIdx];
-          sfx("select");
+          sfx("navigate");
           if (newItem === "back") {
             this._focusArea = "back";
             this._el.querySelectorAll("[data-act='mode']").forEach(c => c.classList.remove("is-focus"));
@@ -1004,7 +1017,7 @@
           const idx     = Math.max(0, fileNav.indexOf(cur));
           const newIdx  = (idx + dir + fileNav.length) % fileNav.length;
           const newItem = fileNav[newIdx];
-          sfx("select");
+          sfx("navigate");
           if (newItem === "back") {
             this._focusArea = "back";
             this._el.querySelectorAll("[data-slot]").forEach(c => c.classList.remove("is-sel"));
@@ -1034,7 +1047,7 @@
           e.preventDefault();
           this._sel    = 1;
           this._screen = "file";
-          sfx("select");
+          sfx("fileOpen");
           this._render();
         }
         return;
@@ -1051,7 +1064,7 @@
             this._status       = "";
             this._statusCls    = "";
             this._screen       = "confirm";
-            sfx("select");
+            sfx("navigate");
             this._render();
           }
         }
@@ -1063,7 +1076,7 @@
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
           this._confirmFocus = this._confirmFocus === "yes" ? "no" : "yes";
-          sfx("select");
+          sfx("navigate");
           this._render();
         }
         if (e.key === "Enter") {
