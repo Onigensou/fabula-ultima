@@ -29,19 +29,21 @@
   const P = {
     panelWidthMin:    720,
     panelWidthPct:    92,
-    panelWidthMax:    1200,
-    panelPadH:        56,
-    panelPadV:        42,
-    slotGap:          12,
-    slotBodyPad:      14,
-    slotBodyGap:      16,
-    portraitH:        130,
-    portraitMaxW:     95,
-    portraitsMaxW:    420,
-    confInnerMinW:    340,
-    titleSize:        24,
-    slotNameSize:     13,
-    slotNumSize:      9,
+    panelWidthMax:    1570,
+    panelPadH:        63,
+    panelPadV:        59,
+    slotGap:          28,
+    slotBodyPad:      28,
+    slotBodyGap:      40,
+    portraitH:        125,
+    portraitMaxW:     160,
+    portraitsMaxW:    387,
+    portraitGap:      4,
+    confInnerMinW:    457,
+    titleSize:        28,
+    slotNameSize:     16,
+    slotNumSize:      16,
+    blendMode:        0,    // 0=normal, 1=multiply
   };
 
   // ── CSS injector (overrides save-ui.js values) ────────────────────────────────
@@ -53,10 +55,11 @@
         width: clamp(${p.panelWidthMin}px, ${p.panelWidthPct}vw, ${p.panelWidthMax}px) !important;
         padding: ${p.panelPadV}px ${p.panelPadH}px !important;
       }
-      .ss-slots       { gap: ${p.slotGap}px !important; }
-      .ss-slot-body   { padding: ${p.slotBodyPad}px 22px !important; gap: ${p.slotBodyGap}px !important; }
-      .ss-slot-portrait  { height: ${p.portraitH}px !important; max-width: ${p.portraitMaxW}px !important; }
-      .ss-slot-portraits { max-width: ${p.portraitsMaxW}px !important; }
+      .ss-slots          { gap: ${p.slotGap}px !important; }
+      .ss-slot-body      { padding: ${p.slotBodyPad}px 22px !important; gap: ${p.slotBodyGap}px !important; }
+      .ss-slot-portrait  { height: ${p.portraitH}px !important; max-width: ${p.portraitMaxW}px !important;
+                           mix-blend-mode: ${p.blendMode ? "multiply" : "normal"} !important; }
+      .ss-slot-portraits { max-width: ${p.portraitsMaxW}px !important; gap: ${p.portraitGap}px !important; }
       .ss-conf-inner     { min-width: ${p.confInnerMinW}px !important; }
       .ss-title          { font-size: ${p.titleSize}px !important; }
       .ss-slot-name      { font-size: ${p.slotNameSize}px !important; }
@@ -78,8 +81,9 @@
     ["Body gap px",      "slotBodyGap",    4,    40  ],
     ["— Portraits —",    null,             0,    0   ],
     ["Height px",        "portraitH",      40,   220 ],
-    ["Max-width px",     "portraitMaxW",   30,   160 ],
+    ["Max-width px",     "portraitMaxW",   30,   200 ],
     ["Container px",     "portraitsMaxW",  100,  700 ],
+    ["Gap px",           "portraitGap",    0,    40  ],
     ["— Confirm —",      null,             0,    0   ],
     ["Inner min-w px",   "confInnerMinW",  200,  700 ],
     ["— Text —",         null,             0,    0   ],
@@ -124,7 +128,11 @@
     </div>
     <div style="font-size:8px;color:#7a5428;margin-bottom:4px;">drag sliders with mouse · use arrow keys to step</div>
     ${rows}
-    <div style="margin-top:10px;display:flex;gap:6px;">
+    <div style="margin-top:10px;display:flex;gap:6px;align-items:center;">
+      <span style="font-size:9px;color:#c8a05a;flex-shrink:0;">Sprite blend</span>
+      <button id="ss-t-blend" style="flex:1;padding:5px;background:#1e1006;border:1px solid #7a5428;color:#c8a05a;cursor:pointer;font-family:monospace;font-size:9px;border-radius:4px;">NORMAL</button>
+    </div>
+    <div style="margin-top:6px;display:flex;gap:6px;">
       <button id="ss-t-export" style="flex:1;padding:6px;background:#2e1a06;border:1px solid #c9a22a;color:#f5d060;cursor:pointer;font-family:monospace;font-size:9px;letter-spacing:2px;border-radius:4px;">EXPORT JSON</button>
     </div>
     <pre id="ss-t-out" style="display:none;margin:8px 0 0;background:#0d0600;border:1px solid #5a3810;border-radius:4px;padding:7px;font-size:8px;color:#c8a870;max-height:140px;overflow-y:auto;white-space:pre-wrap;"></pre>
@@ -158,6 +166,16 @@
       applyCSS(P);
     });
   }
+
+  // ── Blend mode toggle ─────────────────────────────────────────────────────────
+  const blendBtn = el.querySelector("#ss-t-blend");
+  blendBtn.addEventListener("click", () => {
+    P.blendMode = P.blendMode ? 0 : 1;
+    blendBtn.textContent = P.blendMode ? "MULTIPLY" : "NORMAL";
+    blendBtn.style.color = P.blendMode ? "#f5d060" : "#c8a05a";
+    blendBtn.style.borderColor = P.blendMode ? "#c9a22a" : "#7a5428";
+    applyCSS(P);
+  });
 
   // ── Export ─────────────────────────────────────────────────────────────────────
   el.querySelector("#ss-t-export").addEventListener("click", () => {
