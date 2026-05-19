@@ -4,9 +4,11 @@
 // Three-state flow:
 //   "mode"    — select SAVE / LOAD / DELETE
 //   "file"    — select slot (arrow keys, click, or hover)
-//   "confirm" — YES / NO overlay panel floats over dimmed slots
+//   "confirm" — YES / NO overlay floats over dimmed slots; morphs to
+//                execution status (spinner → result) on confirm
 //
-// Navigation: arrow keys + Enter; mouse hover moves feather cursor too.
+// Navigation: ←/→ for siblings, ↑/↓ to reach back button; Enter confirms.
+// Mouse hover also moves the feather cursor.
 //
 // Open via: FUCompanion.api.saveSystem.open()
 // ============================================================================
@@ -53,7 +55,7 @@
     }
     .ss-layer { position: relative; z-index: 1; }
 
-    /* === parchment panel (JRPG dialog frame) === */
+    /* === parchment panel === */
     .ss-panel {
       position: relative; z-index: 1;
       background: linear-gradient(168deg, #f8f0d4 0%, #f0e3b8 45%, #e8d8a4 100%);
@@ -82,15 +84,11 @@
 
     /* === header === */
     .ss-title {
-      font-size: 20px; letter-spacing: 9px;
-      color: #3a1e06;
+      font-size: 20px; letter-spacing: 9px; color: #3a1e06;
       text-shadow: 0 1px 0 rgba(255,220,130,0.55), 0 2px 10px rgba(160,90,10,0.18);
       margin-bottom: 4px;
     }
-    .ss-byline {
-      font-size: 8px; letter-spacing: 4px; color: #9b7040;
-      margin-bottom: 5px;
-    }
+    .ss-byline { font-size: 8px; letter-spacing: 4px; color: #9b7040; margin-bottom: 5px; }
     .ss-mode-label {
       font-size: 9px; letter-spacing: 3px; color: #7a5428;
       margin-bottom: 24px; text-transform: uppercase;
@@ -99,11 +97,8 @@
     }
 
     /* === mode selection screen === */
-    .ss-mode-prompt {
-      font-size: 9px; letter-spacing: 4px; color: #9b7040;
-      margin-bottom: 20px; text-transform: uppercase;
-    }
-    .ss-mode-cards { display: flex; gap: 16px; margin-bottom: 28px; }
+    .ss-mode-prompt { font-size: 9px; letter-spacing: 4px; color: #9b7040; margin-bottom: 20px; text-transform: uppercase; }
+    .ss-mode-cards  { display: flex; gap: 16px; margin-bottom: 28px; }
     .ss-mode-card {
       width: 152px; padding: 22px 14px 18px;
       border: 1px solid #c4a260;
@@ -116,43 +111,20 @@
     }
     .ss-mode-card:hover, .ss-mode-card.is-focus {
       border-color: #c9a22a;
-      box-shadow:
-        0 0 0 1px #c9a22a,
-        0 0 18px rgba(201,162,42,0.35),
-        inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #c9a22a, 0 0 18px rgba(201,162,42,0.35), inset 0 1px 0 rgba(255,245,200,0.75);
     }
     .ss-mode-card.is-del.is-focus, .ss-mode-card.is-del:hover {
       border-color: #8b3820;
-      box-shadow:
-        0 0 0 1px #8b3820,
-        0 0 18px rgba(180,52,28,0.28),
-        inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #8b3820, 0 0 18px rgba(180,52,28,0.28), inset 0 1px 0 rgba(255,245,200,0.75);
     }
     .ss-mode-card-icon  { font-size: 26px; pointer-events: none; }
-    .ss-mode-card-label {
-      font-family: inherit; font-size: 11px; letter-spacing: 3px;
-      color: #3a1e06; text-transform: uppercase; pointer-events: none;
-    }
-    .ss-mode-card-desc  {
-      font-family: inherit; font-size: 7px; letter-spacing: 1px;
-      color: #9b7040; text-align: center; pointer-events: none;
-    }
+    .ss-mode-card-label { font-family: inherit; font-size: 11px; letter-spacing: 3px; color: #3a1e06; text-transform: uppercase; pointer-events: none; }
+    .ss-mode-card-desc  { font-family: inherit; font-size: 7px; letter-spacing: 1px; color: #9b7040; text-align: center; pointer-events: none; }
 
-    /* === file screen — slot cards + confirm overlay wrapper === */
-    .ss-file-body {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+    /* === file screen body + slots === */
+    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
     .ss-slots { display: flex; gap: 14px; transition: opacity .20s, filter .20s; }
-    .ss-slots.is-dimmed {
-      opacity: 0.35;
-      filter: blur(1.5px);
-      pointer-events: none;
-    }
+    .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
       width: 178px; min-height: 138px;
       border: 1px solid #c4a260;
@@ -167,41 +139,21 @@
     }
     .ss-slot.is-sel {
       border-color: #c9a22a;
-      box-shadow:
-        0 0 0 1px #c9a22a,
-        0 0 18px rgba(201,162,42,0.38),
-        inset 0 0 22px rgba(201,162,42,0.09),
-        inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #c9a22a, 0 0 18px rgba(201,162,42,0.38), inset 0 0 22px rgba(201,162,42,0.09), inset 0 1px 0 rgba(255,245,200,0.75);
     }
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
-    .ss-slot-bg {
-      position: absolute; inset: 0;
-      background-size: cover; background-position: center;
-      opacity: 0.13; filter: blur(3px) sepia(0.25); pointer-events: none;
-    }
-    .ss-slot-body {
-      position: relative; z-index: 1;
-      padding: 11px 12px; height: 100%;
-      display: flex; flex-direction: column;
-    }
+    .ss-slot-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.13; filter: blur(3px) sepia(0.25); pointer-events: none; }
+    .ss-slot-body { position: relative; z-index: 1; padding: 11px 12px; height: 100%; display: flex; flex-direction: column; }
     .ss-slot-num   { font-size: 8px; letter-spacing: 3px; color: #b8945a; margin-bottom: 7px; }
     .ss-slot-icon  { font-size: 20px; margin-bottom: 6px; }
-    .ss-slot-name  {
-      font-size: 11px; color: #3a1e06; letter-spacing: 1px;
-      margin-bottom: 5px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .ss-slot-name  { font-size: 11px; color: #3a1e06; letter-spacing: 1px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ss-slot-date  { font-size: 8px; color: #8b6838; letter-spacing: 1px; margin-bottom: 3px; }
     .ss-slot-party { font-size: 8px; color: #7a5828; letter-spacing: 1px; }
-    .ss-slot-empty {
-      font-size: 9px; letter-spacing: 2px; color: #c8aa70;
-      flex: 1; display: flex; align-items: center; justify-content: center;
-    }
+    .ss-slot-empty { font-size: 9px; letter-spacing: 2px; color: #c8aa70; flex: 1; display: flex; align-items: center; justify-content: center; }
 
     /* === confirm overlay (floats over dimmed slots) === */
     .ss-conf-overlay {
-      position: absolute;
-      inset: -8px;
+      position: absolute; inset: -8px;
       display: flex; align-items: center; justify-content: center;
       z-index: 5;
       background: rgba(232, 218, 172, 0.65);
@@ -211,53 +163,39 @@
       position: relative;
       background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
       border: 2px solid #c9a44a;
-      box-shadow:
-        0 0 0 2px #7a4e20,
-        0 0 0 4px #b8865a,
-        0 0 24px rgba(0,0,0,0.40),
-        inset 0 1px 0 rgba(255,245,200,0.70);
+      box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 24px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
       border-radius: 2px;
       padding: 22px 36px 20px;
       display: flex; flex-direction: column; align-items: center; gap: 13px;
       min-width: 280px;
     }
     .ss-conf-inner::before {
-      content: '';
-      position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 23px,
-        rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px
-      );
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
+      background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
     }
     .ss-conf-inner > * { position: relative; z-index: 1; }
-    .ss-conf-slot {
-      background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
-      border: 1px solid #c4a260;
-      padding: 10px 28px; text-align: center; width: 100%;
-      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12);
-    }
+    .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; padding: 10px 28px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
     .ss-conf-slot-label { font-size: 11px; color: #3a1e06; letter-spacing: 2px; margin-bottom: 4px; }
     .ss-conf-slot-date  { font-size: 8px;  color: #8b6838; letter-spacing: 1px; }
-    .ss-conf-text {
-      font-size: 10px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase;
-    }
+    .ss-conf-text { font-size: 10px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase; }
     .ss-conf-text.is-del { color: #8b2210; }
+    /* execution status shown inside the overlay */
+    .ss-conf-exec { font-size: 10px; letter-spacing: 2px; color: #7a5428; text-align: center; padding: 4px 0; }
+    .ss-conf-exec.is-err { color: #8b2210; }
+    .ss-conf-exec.is-ok  { color: #3a6228; }
     .ss-conf-choices { display: flex; gap: 12px; }
     .ss-choice-btn {
-      padding: 9px 34px;
-      font-family: inherit; font-size: 10px;
+      padding: 9px 34px; font-family: inherit; font-size: 10px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
-      color: #f4e8c0;
-      cursor: pointer; transition: all .12s;
+      color: #f4e8c0; cursor: pointer; transition: all .12s;
       box-shadow: 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
     }
     .ss-choice-btn:hover, .ss-choice-btn.is-focus {
       border-color: #c9a22a; color: #fff8e0;
       background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
-      box-shadow: 0 0 16px rgba(201,162,42,0.28), 0 2px 5px rgba(40,18,4,0.38),
-                  inset 0 1px 0 rgba(255,225,140,0.22);
+      box-shadow: 0 0 16px rgba(201,162,42,0.28), 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
     }
     .ss-choice-btn.is-no:hover, .ss-choice-btn.is-no.is-focus {
       border-color: #8b3820; color: #ffd0c0;
@@ -265,58 +203,47 @@
       box-shadow: 0 0 16px rgba(180,52,28,0.28), 0 2px 5px rgba(40,18,4,0.38);
     }
 
-    /* === status line === */
+    /* === status line (file screen only, hidden during confirm) === */
     .ss-status { font-size: 9px; letter-spacing: 2px; color: #7a5428; min-height: 16px; }
     .ss-status.is-err { color: #8b2210; }
     .ss-status.is-ok  { color: #3a6228; }
 
-    /* === close hint (backdrop, top-right) === */
-    .ss-esc {
-      position: fixed; top: 18px; right: 24px; z-index: 10;
-      font-size: 9px; letter-spacing: 3px; color: #5c3810;
-      cursor: pointer; transition: color .12s;
-    }
+    /* === close hint === */
+    .ss-esc { position: fixed; top: 18px; right: 24px; z-index: 10; font-size: 9px; letter-spacing: 3px; color: #5c3810; cursor: pointer; transition: color .12s; }
     .ss-esc:hover { color: #aa3010; }
 
     /* === back / close button === */
     .ss-back-btn {
-      padding: 7px 26px;
-      font-family: inherit; font-size: 9px;
+      padding: 7px 26px; font-family: inherit; font-size: 9px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #6a4828 0%, #4e3014 100%);
-      color: #c8a05a;
-      cursor: pointer; transition: all .12s;
+      color: #c8a05a; cursor: pointer; transition: all .12s;
       box-shadow: 0 2px 4px rgba(40,18,4,0.30), inset 0 1px 0 rgba(255,225,140,0.10);
     }
-    .ss-back-btn:hover {
-      border-color: #8b3820; color: #ffd0c0;
-      background: linear-gradient(180deg, #7a3020 0%, #5c1c10 100%);
-      box-shadow: 0 0 10px rgba(180,52,28,0.24), 0 2px 4px rgba(40,18,4,0.30);
+    .ss-back-btn:hover, .ss-back-btn.is-focus {
+      border-color: #c9a22a; color: #fff8e0;
+      background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
+      box-shadow: 0 0 14px rgba(201,162,42,0.24), 0 2px 4px rgba(40,18,4,0.30);
     }
 
     /* === footer === */
     .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-top: 4px; }
-
-    /* === key hints === */
-    .ss-hints { font-size: 8px; letter-spacing: 2px; color: #b8945a; }
+    .ss-hints  { font-size: 8px; letter-spacing: 2px; color: #b8945a; }
 
     /* === feather cursor === */
     #ss-feather-cursor {
       position: fixed; z-index: 2147483647;
       width: 46px; height: 46px;
       pointer-events: none;
-      /* bottom of image anchors to target bottom-right; quill tilt */
       transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
       transition:
         left    0.20s cubic-bezier(0.22, 1, 0.36, 1),
         top     0.20s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.12s ease;
       opacity: 0;
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
-      background: transparent !important;
+      border: none !important; outline: none !important;
+      box-shadow: none !important; background: transparent !important;
     }
     #ss-feather-cursor.is-visible {
       opacity: 1;
@@ -342,6 +269,7 @@
       this._cursorEl     = null;
       this._cursorReady  = false;
       this._screen       = "mode";   // "mode" | "file" | "confirm"
+      this._focusArea    = "main";   // "main" | "back"  (for ↑/↓ navigation)
       this._mode         = "save";   // "save" | "load" | "delete"
       this._sel          = null;     // selected slot id (1..SLOT_COUNT)
       this._confirmFocus = "yes";    // "yes" | "no"
@@ -358,6 +286,7 @@
       this._injectCSS();
 
       this._screen      = "mode";
+      this._focusArea   = "main";
       this._sel         = null;
       this._status      = "";
       this._statusCls   = "";
@@ -386,6 +315,7 @@
       this._cursorEl    = null;
       this._cursorReady = false;
       this._screen      = "mode";
+      this._focusArea   = "main";
       this._sel         = null;
       document.removeEventListener("keydown", this._keyFn, { capture: true });
     }
@@ -404,9 +334,11 @@
       if (!this._el) return;
       this._el.innerHTML = this._screen === "mode"
         ? this._htmlModeScreen()
-        : this._htmlFileScreen();   // "file" and "confirm" share the same base
+        : this._htmlFileScreen();
       this._bind();
-      this._updateCursor();
+      // rAF ensures the new DOM is laid out before getBoundingClientRect is called,
+      // which is necessary for the CSS left/top transition to fire correctly.
+      requestAnimationFrame(() => this._updateCursor());
     }
 
     // ── Screen 1: Mode selection ───────────────────────────────────────────────
@@ -419,7 +351,7 @@
       };
       const cards = MODES.map(m => {
         const { icon, label, desc, cls } = META[m];
-        const focus = this._mode === m ? "is-focus" : "";
+        const focus = (this._mode === m && this._focusArea === "main") ? "is-focus" : "";
         return `
           <button class="ss-mode-card ${cls} ${focus}" data-act="mode" data-mode="${m}">
             <div class="ss-mode-card-icon">${icon}</div>
@@ -428,6 +360,7 @@
           </button>`;
       }).join("");
 
+      const backFocus = this._focusArea === "back" ? "is-focus" : "";
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
         <div class="ss-panel ss-layer">
@@ -436,19 +369,22 @@
           <div class="ss-mode-prompt">— SELECT MODE —</div>
           <div class="ss-mode-cards">${cards}</div>
           <div class="ss-footer">
-            <button class="ss-back-btn" data-act="back">◄ CLOSE</button>
-            <div class="ss-hints">◄ ► navigate &nbsp;|&nbsp; ENTER select &nbsp;|&nbsp; ESC close</div>
+            <button class="ss-back-btn ${backFocus}" data-act="back">◄ CLOSE</button>
+            <div class="ss-hints">◄ ► navigate &nbsp;|&nbsp; ↓ back &nbsp;|&nbsp; ENTER select &nbsp;|&nbsp; ESC close</div>
           </div>
         </div>`;
     }
 
-    // ── Screen 2/3: File selection (+ confirm overlay when _screen==="confirm") ─
+    // ── Screen 2/3: File selection + inline confirm overlay ────────────────────
 
     _htmlFileScreen() {
+      const isConfirm = this._screen === "confirm";
+
       const slots = Array.from({ length: SS.SLOT_COUNT }, (_, i) => {
         const id    = i + 1;
         const d     = SS.Storage.getSlot(id);
-        const sel   = this._sel === id ? "is-sel" : "";
+        const sel   = (this._sel === id && !isConfirm) ? "is-sel" : "";
+        const selC  = (this._sel === id &&  isConfirm) ? "is-sel" : "";
         const valid = this._mode === "save" || d !== null;
         const inv   = !valid ? "is-invalid" : "";
         const bg    = d?.thumbnail
@@ -468,7 +404,8 @@
             <div class="ss-slot-num">SLOT ${id}</div>
             <div class="ss-slot-empty">— NO DATA —</div>
           </div>`;
-        return `<div class="ss-slot ss-layer ${sel} ${inv}" data-slot="${id}" data-valid="${valid}">${body}</div>`;
+        // keep is-sel visible on the chosen slot under the overlay so user can see which was picked
+        return `<div class="ss-slot ss-layer ${sel} ${selC} ${inv}" data-slot="${id}" data-valid="${valid}">${body}</div>`;
       }).join("");
 
       const modeHdr = {
@@ -477,16 +414,18 @@
         delete: "MEMORY CARD  ▷  ERASE MODE",
       }[this._mode];
 
-      const isConfirm  = this._screen === "confirm";
-      const dimClass   = isConfirm ? "is-dimmed" : "";
-      const confOverlay = isConfirm ? this._htmlConfirmOverlay() : "";
+      const dimClass     = isConfirm ? "is-dimmed" : "";
+      const confOverlay  = isConfirm ? this._htmlConfirmOverlay() : "";
+      const backFocus    = this._focusArea === "back" ? "is-focus" : "";
 
-      const statusHtml = this._busy
-        ? `<span class="ss-breathe">▶ ${this._status}</span>`
-        : this._status;
-      const hintsText  = isConfirm
+      // Status shown on file screen only when NOT in confirm/busy state
+      const fileStatus   = !isConfirm
+        ? `<div class="ss-status ${this._statusCls}">${this._status}</div>`
+        : `<div class="ss-status"></div>`;
+
+      const hintsText = isConfirm
         ? `◄ ► navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`
-        : `◄ ► select slot &nbsp;|&nbsp; ENTER / click confirm &nbsp;|&nbsp; ESC back`;
+        : `◄ ► select slot &nbsp;|&nbsp; ↓ back &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`;
 
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
@@ -498,25 +437,40 @@
             <div class="ss-slots ${dimClass}">${slots}</div>
             ${confOverlay}
           </div>
-          <div class="ss-status ${this._statusCls}">${statusHtml}</div>
+          ${fileStatus}
           <div class="ss-footer">
-            <button class="ss-back-btn" data-act="back">◄ BACK</button>
+            <button class="ss-back-btn ${backFocus}" data-act="back">◄ BACK</button>
             <div class="ss-hints">${hintsText}</div>
           </div>
         </div>`;
     }
 
-    // ── Confirm overlay (injected inside .ss-file-body) ────────────────────────
+    // ── Confirm overlay content — morphs based on execution state ──────────────
 
     _htmlConfirmOverlay() {
-      const d = this._sel ? SS.Storage.getSlot(this._sel) : null;
+      // During and after execution: show status inside the overlay
+      if (this._busy || this._status) {
+        const execHtml = this._busy
+          ? `<span class="ss-breathe">▶ ${this._status}</span>`
+          : this._status;
+        const errBack = (!this._busy && this._statusCls === "is-err") ? `
+          <button class="ss-choice-btn is-no is-focus" data-act="choice" data-choice="no">◄ BACK</button>` : "";
+        return `
+          <div class="ss-conf-overlay">
+            <div class="ss-conf-inner">
+              <div class="ss-conf-exec ${this._statusCls}">${execHtml}</div>
+              ${errBack}
+            </div>
+          </div>`;
+      }
 
+      // Normal confirmation UI
+      const d = this._sel ? SS.Storage.getSlot(this._sel) : null;
       const actionText = {
         save:   d ? "Overwrite this save file?" : "Write to this slot?",
         load:   "Load this save file?",
         delete: "Permanently delete this file?",
       }[this._mode];
-
       const slotPreview = d ? `
         <div class="ss-conf-slot">
           <div class="ss-conf-slot-label">SLOT ${this._sel} &nbsp;—&nbsp; ${d.label ?? "Unnamed"}</div>
@@ -548,7 +502,7 @@
     _bind() {
       if (!this._el) return;
 
-      // ── Mode screen: click + hover ──
+      // Mode cards — click + hover
       this._el.querySelectorAll("[data-act='mode']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -557,20 +511,22 @@
           this._status    = "";
           this._statusCls = "";
           sfx("select");
-          this._screen = "file";
+          this._screen    = "file";
+          this._focusArea = "main";
           this._render();
         });
         el.addEventListener("mouseenter", () => {
           if (this._busy) return;
-          this._mode = el.dataset.mode;
-          this._el.querySelectorAll("[data-act='mode']").forEach(c => {
-            c.classList.toggle("is-focus", c === el);
-          });
+          this._mode      = el.dataset.mode;
+          this._focusArea = "main";
+          this._el.querySelectorAll("[data-act='mode']").forEach(c =>
+            c.classList.toggle("is-focus", c === el));
+          this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
           this._updateCursor();
         });
       });
 
-      // ── Slot cards: click + hover ──
+      // Slot cards — click + hover
       this._el.querySelectorAll("[data-slot]").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy || this._screen === "confirm") return;
@@ -580,6 +536,7 @@
           this._confirmFocus = this._mode === "delete" ? "no" : "yes";
           this._status       = "";
           this._statusCls    = "";
+          this._focusArea    = "main";
           sfx("select");
           this._screen = "confirm";
           this._render();
@@ -588,15 +545,16 @@
           if (this._busy || this._screen === "confirm") return;
           if (el.dataset.valid !== "true") return;
           const id = parseInt(el.dataset.slot);
-          this._sel = id;
-          this._el.querySelectorAll("[data-slot]").forEach(s => {
-            s.classList.toggle("is-sel", parseInt(s.dataset.slot) === id);
-          });
+          this._sel       = id;
+          this._focusArea = "main";
+          this._el.querySelectorAll("[data-slot]").forEach(s =>
+            s.classList.toggle("is-sel", parseInt(s.dataset.slot) === id));
+          this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
           this._updateCursor();
         });
       });
 
-      // ── Confirm overlay: click + hover ──
+      // Confirm choices — click + hover
       this._el.querySelectorAll("[data-act='choice']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -604,42 +562,42 @@
             this._execute();
           } else {
             sfx("cancel");
-            this._screen = "file";
+            this._screen    = "file";
+            this._status    = "";
+            this._statusCls = "";
             this._render();
           }
         });
         el.addEventListener("mouseenter", () => {
           if (this._busy) return;
           this._confirmFocus = el.dataset.choice;
-          this._el.querySelectorAll("[data-act='choice']").forEach(c => {
-            c.classList.toggle("is-focus", c === el);
-          });
+          this._el.querySelectorAll("[data-act='choice']").forEach(c =>
+            c.classList.toggle("is-focus", c === el));
           this._updateCursor();
         });
       });
 
-      // ── Back — context-sensitive ──
+      // Back button — click + hover
       const backBtn = this._el.querySelector("[data-act='back']");
       if (backBtn) {
         backBtn.addEventListener("click", () => {
           if (this._busy) return;
-          sfx("cancel");
-          if (this._screen === "confirm") {
-            this._screen = "file";
-            this._render();
-          } else if (this._screen === "file") {
-            this._screen    = "mode";
-            this._sel       = null;
-            this._status    = "";
-            this._statusCls = "";
-            this._render();
-          } else {
-            this.close();
-          }
+          this._doBack();
+        });
+        backBtn.addEventListener("mouseenter", () => {
+          if (this._busy) return;
+          this._focusArea = "back";
+          backBtn.classList.add("is-focus");
+          // remove focus from main elements
+          this._el.querySelectorAll("[data-act='mode'], [data-slot], [data-act='choice']").forEach(c =>
+            c.classList.remove("is-focus"));
+          this._el.querySelectorAll("[data-slot]").forEach(c =>
+            c.classList.remove("is-sel"));
+          this._updateCursor();
         });
       }
 
-      // ── ESC hint — always closes entire overlay ──
+      // ESC hint — always closes overlay
       this._el.querySelectorAll("[data-act='close']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -649,16 +607,46 @@
       });
     }
 
+    // ── Back action (shared between button click and keyboard) ─────────────────
+
+    _doBack() {
+      sfx("cancel");
+      this._focusArea = "main";
+      if (this._screen === "confirm") {
+        this._screen    = "file";
+        this._status    = "";
+        this._statusCls = "";
+        this._render();
+      } else if (this._screen === "file") {
+        this._screen    = "mode";
+        this._sel       = null;
+        this._status    = "";
+        this._statusCls = "";
+        this._render();
+      } else {
+        this.close();
+      }
+    }
+
     // ── Feather cursor ─────────────────────────────────────────────────────────
 
     _updateCursor() {
       if (!this._cursorEl || !this._el) return;
 
       let targetEl = null;
-      if (this._screen === "mode") {
+
+      if (this._focusArea === "back") {
+        targetEl = this._el.querySelector("[data-act='back']");
+      } else if (this._screen === "mode") {
         targetEl = this._el.querySelector(`[data-act='mode'][data-mode='${this._mode}']`);
       } else if (this._screen === "confirm") {
-        targetEl = this._el.querySelector(`[data-act='choice'][data-choice='${this._confirmFocus}']`);
+        if (this._busy) {
+          // hide cursor while executing
+        } else if (this._status && this._statusCls === "is-err") {
+          targetEl = this._el.querySelector(`[data-act='choice'][data-choice='no']`);
+        } else if (!this._status) {
+          targetEl = this._el.querySelector(`[data-act='choice'][data-choice='${this._confirmFocus}']`);
+        }
       } else if (this._sel !== null) {
         targetEl = this._el.querySelector(`[data-slot='${this._sel}']`);
       }
@@ -702,15 +690,26 @@
         if (res.ok) {
           this._status    = `DATA WRITTEN — SLOT ${this._sel}`;
           this._statusCls = "is-ok";
-          this._screen    = "file";
           sfx("select");
+          this._render();
+          setTimeout(() => {
+            if (!this._el) return;
+            this._status    = "";
+            this._statusCls = "";
+            this._screen    = "file";
+            this._render();
+          }, 1300);
         } else {
-          this._status    = `ERROR: ${res.error}`;
-          this._statusCls = "is-err";
+          this._status       = `ERROR: ${res.error}`;
+          this._statusCls    = "is-err";
+          this._confirmFocus = "no";
           sfx("cancel");
+          this._render();
         }
+        return;
+      }
 
-      } else if (this._mode === "load") {
+      if (this._mode === "load") {
         this._status = "READING DATA…";
         this._render();
 
@@ -719,16 +718,20 @@
         if (res.ok) {
           this._status    = `DATA LOADED — ${res.label}`;
           this._statusCls = "is-ok";
-          this._screen    = "file";
           sfx("select");
+          this._render();
           setTimeout(() => this.close(), 1400);
         } else {
-          this._status    = `ERROR: ${res.error}`;
-          this._statusCls = "is-err";
+          this._status       = `ERROR: ${res.error}`;
+          this._statusCls    = "is-err";
+          this._confirmFocus = "no";
           sfx("cancel");
+          this._render();
         }
+        return;
+      }
 
-      } else if (this._mode === "delete") {
+      if (this._mode === "delete") {
         this._status = "ERASING DATA…";
         this._render();
 
@@ -737,11 +740,15 @@
         this._sel       = null;
         this._status    = "DATA ERASED.";
         this._statusCls = "";
-        this._screen    = "file";
         sfx("cancel");
+        this._render();
+        setTimeout(() => {
+          if (!this._el) return;
+          this._status = "";
+          this._screen = "file";
+          this._render();
+        }, 1300);
       }
-
-      this._render();
     }
 
     // ── Keyboard ──────────────────────────────────────────────────────────────
@@ -751,26 +758,57 @@
       e.stopImmediatePropagation();
       if (this._busy) return;
 
+      // ESC — always one step back
       if (e.key === "Escape") {
         e.preventDefault();
-        sfx("cancel");
-        if (this._screen === "confirm") {
-          this._screen = "file";
-          this._render();
-        } else if (this._screen === "file") {
-          this._screen    = "mode";
-          this._sel       = null;
+        if (this._screen === "confirm" && this._status) {
+          // dismiss result/error state first
           this._status    = "";
           this._statusCls = "";
-          this._render();
-        } else {
-          this.close();
+          if (this._statusCls === "is-err") {
+            this._render();
+            return;
+          }
+        }
+        this._doBack();
+        return;
+      }
+
+      // ↑/↓ for vertical focus (mode and file screens only, not during confirm overlay)
+      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && this._screen !== "confirm") {
+        e.preventDefault();
+        if (e.key === "ArrowDown" && this._focusArea === "main") {
+          this._focusArea = "back";
+          sfx("select");
+          // update visuals directly — no full re-render needed
+          this._el.querySelectorAll("[data-act='mode'], [data-slot]").forEach(c => c.classList.remove("is-focus"));
+          this._el.querySelectorAll("[data-slot]").forEach(c => c.classList.remove("is-sel"));
+          this._el.querySelector("[data-act='back']")?.classList.add("is-focus");
+          this._updateCursor();
+        } else if (e.key === "ArrowUp" && this._focusArea === "back") {
+          this._focusArea = "main";
+          sfx("select");
+          this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
+          // restore focus on current item
+          if (this._screen === "mode") {
+            this._el.querySelector(`[data-act='mode'][data-mode='${this._mode}']`)?.classList.add("is-focus");
+          } else if (this._sel !== null) {
+            this._el.querySelector(`[data-slot='${this._sel}']`)?.classList.add("is-sel");
+          }
+          this._updateCursor();
         }
         return;
       }
 
+      // Enter on back button
+      if (e.key === "Enter" && this._focusArea === "back") {
+        e.preventDefault();
+        this._doBack();
+        return;
+      }
+
       // ── Mode screen ──
-      if (this._screen === "mode") {
+      if (this._screen === "mode" && this._focusArea === "main") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
           const idx  = MODES.indexOf(this._mode);
@@ -789,7 +827,7 @@
       }
 
       // ── File screen ──
-      if (this._screen === "file") {
+      if (this._screen === "file" && this._focusArea === "main") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
           const dir  = e.key === "ArrowRight" ? 1 : -1;
@@ -817,7 +855,7 @@
       }
 
       // ── Confirm overlay ──
-      if (this._screen === "confirm") {
+      if (this._screen === "confirm" && !this._status) {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
           this._confirmFocus = this._confirmFocus === "yes" ? "no" : "yes";
@@ -830,7 +868,9 @@
             this._execute();
           } else {
             sfx("cancel");
-            this._screen = "file";
+            this._screen    = "file";
+            this._status    = "";
+            this._statusCls = "";
             this._render();
           }
         }
