@@ -407,16 +407,6 @@
         return await api(args);
       }
 
-      case "runExchangeScenario": {
-        // Exercises the Reaction Exchange state machine deterministically.
-        // GM-only (single-client, no socket round-trips); see
-        // reaction-exchange-test-helpers.js for scenario shape.
-        const api = globalThis.FUCompanion?.api?.reactionExchangeTest?.runScenario;
-        if (!api) throw new Error("FUCompanion.api.reactionExchangeTest.runScenario not loaded");
-        const scenario = args?.scenario ?? args ?? {};
-        return api(scenario);
-      }
-
       case "updateDocument": {
         const { uuid, changes, options } = args;
         if (!uuid) throw new Error("updateDocument: uuid required");

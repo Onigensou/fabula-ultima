@@ -576,26 +576,8 @@ return (async () => {
         commonPayload
       });
 
-      // ----------------------------------------------------------------
-      // Reaction Exchange migration (step 4D).
-      // ----------------------------------------------------------------
-      // Old flow: emit N sequential `oni:reactionPhase` events via
-      // `emitReactionPhaseLocalOnGM`, each awaiting its own reaction
-      // window. Replaced with a SINGLE `openReactionExchange` call that
-      // owns one shared queue per action card. The new matcher fans
-      // candidates per-user, opens the pinned UI, and the resolver fires
-      // each queued reaction in order.
-      //
-      // Boundary is the actionCardId — multi-damage-card-per-action-card
-      // (AoE) join the same Exchange via idempotent open.
-      //
-      // Fallback: if the new matcher isn't installed (e.g., cold-boot
-      // race), this block bails and the post_damage handler still runs.
-      // ----------------------------------------------------------------
-
-      // Resource / change classification (kept verbatim from old flow;
-      // shared by the trigger collector below and the resource-resolution
-      // payload kind).
+      // Resource / change classification — shared by the trigger collector
+      // below and the resource-resolution payload kind.
       const normalizedChangeKey = isMissCard ? "" : String(changeKey ?? "").trim();
       const normalizedValueType = isMissCard ? "" : String(valueType ?? "").trim().toLowerCase();
 
@@ -640,12 +622,15 @@ return (async () => {
         result: isMissCard ? "miss" : "hit"
       };
 
-      // Collect every trigger this damage card should fire.
-      const exchangeTriggers = [];
+      // Collect every trigger this damage card should fire. Each entry is
+      // emitted as a separate reaction phase; `emitPhaseSequential` in the
+      // reaction substrate serializes them and merges per-reactor into one
+      // combined window.
+      const damageTriggers = [];
       if (isMissCard) {
-        exchangeTriggers.push({
+        damageTriggers.push({
           key: "creature_miss_action",
-          payload: {
+          extra: {
             missSourceTokenUuid: commonPayload.sourceTokenUuid ?? null,
             missSourceActorUuid: commonPayload.sourceActorUuid ?? null,
             missTargetTokenUuid: commonPayload.targetTokenUuid ?? null,
@@ -653,14 +638,10 @@ return (async () => {
           }
         });
       } else {
-        if (targetTokenUuid) {
-          exchangeTriggers.push({ key: "creature_hit_by_action", payload: {} });
-        }
-        if (emitDealsDamage) {
-          exchangeTriggers.push({ key: "creature_deals_damage", payload: {} });
-        }
+        if (targetTokenUuid) damageTriggers.push({ key: "creature_hit_by_action" });
+        if (emitDealsDamage) damageTriggers.push({ key: "creature_deals_damage" });
         if (primaryTrigger && targetTokenUuid) {
-          exchangeTriggers.push({ key: primaryTrigger, payload: {} });
+          damageTriggers.push({ key: primaryTrigger });
           const AFFINITY_TO_TRIGGER = {
             vu: "creature_takes_vulnerable_damage",
             wp: "creature_takes_weak_damage",
@@ -669,54 +650,28 @@ return (async () => {
             im: "creature_immune_damage"
           };
           const affinityTrigger = AFFINITY_TO_TRIGGER[String(commonPayload.effectivenessLabel ?? "").toLowerCase()];
-          if (affinityTrigger) exchangeTriggers.push({ key: affinityTrigger, payload: {} });
-          if (commonPayload.shieldBreak)  exchangeTriggers.push({ key: "creature_shield_break", payload: {} });
+          if (affinityTrigger) damageTriggers.push({ key: affinityTrigger });
+          if (commonPayload.shieldBreak) damageTriggers.push({ key: "creature_shield_break" });
         }
       }
 
-      dbg("reaction-exchange:plan", {
+      dbg("reaction-branch:plan", {
         TRACE_ID,
         isMissCard,
         primaryTrigger,
         emitDealsDamage,
-        triggerCount: exchangeTriggers.length,
-        triggerKeys: exchangeTriggers.map(t => t.key),
+        triggerCount: damageTriggers.length,
+        triggerKeys: damageTriggers.map(t => t.key),
         baseReactionPayload
       });
 
-      const matcherApi = globalThis.FUCompanion?.api?.reactionExchangeMatcher
-        ?? window["oni.ReactionExchangeMatcher"]
-        ?? null;
-
-      const actionCardId =
-        payload?.actionCardId ??
-        payload?.meta?.actionCardId ??
-        actionContext?.meta?.actionCardId ??
-        actionContext?.actionCardId ??
-        null;
-
-      if (matcherApi?.openReactionExchange && exchangeTriggers.length > 0) {
-        try {
-          const exResult = await matcherApi.openReactionExchange({
-            kind: "action_card",
-            boundaryKey: actionCardId ? `card:${actionCardId}` : `damage:${TRACE_ID}`,
-            triggers: exchangeTriggers,
-            payload: baseReactionPayload,
-            awaitClose: true
-          });
-          dbg("reaction-exchange:complete", {
-            TRACE_ID,
-            opened: exResult.opened,
-            reason: exResult.reason,
-            exchangeId: exResult.exchangeId
-          });
-        } catch (e) {
-          console.warn(`${RUN_TAG} openReactionExchange threw — reactions skipped for this card`, e, { TRACE_ID });
-        }
-      } else if (!matcherApi?.openReactionExchange) {
-        console.warn(`${RUN_TAG} ReactionExchangeMatcher not installed — reactions skipped for this card`, { TRACE_ID });
-      } else {
-        dbg("reaction-exchange:skip:no-triggers", { TRACE_ID });
+      for (const entry of damageTriggers) {
+        const triggerPayload = {
+          ...baseReactionPayload,
+          ...(entry.extra ?? {}),
+          trigger: entry.key
+        };
+        await emitReactionPhaseLocalOnGM(triggerPayload, `${TRACE_ID}-${entry.key}`);
       }
 
       // ----------------------------------------------------------------

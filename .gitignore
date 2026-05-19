@@ -52,8 +52,6 @@
 /tools/*
 !/tools/safe-edit/
 !/tools/safe-edit/**
-!/tools/exchange-tests/
-!/tools/exchange-tests/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.
