@@ -1,12 +1,12 @@
 // ============================================================================
 // Save System — JRPG Parchment Memory Card UI
 //
-// Three-screen flow:
-//   Screen 1 (mode)    — select SAVE / LOAD / DELETE
-//   Screen 2 (file)    — select slot (arrow keys or click)
-//   Screen 3 (confirm) — YES / NO confirmation
+// Three-state flow:
+//   "mode"    — select SAVE / LOAD / DELETE
+//   "file"    — select slot (arrow keys, click, or hover)
+//   "confirm" — YES / NO overlay panel floats over dimmed slots
 //
-// Navigation: arrow keys move feather cursor; Enter confirms; ESC goes back.
+// Navigation: arrow keys + Enter; mouse hover moves feather cursor too.
 //
 // Open via: FUCompanion.api.saveSystem.open()
 // ============================================================================
@@ -138,8 +138,21 @@
       color: #9b7040; text-align: center; pointer-events: none;
     }
 
-    /* === slot cards (file screen) === */
-    .ss-slots { display: flex; gap: 14px; margin-bottom: 20px; }
+    /* === file screen — slot cards + confirm overlay wrapper === */
+    .ss-file-body {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .ss-slots { display: flex; gap: 14px; transition: opacity .20s, filter .20s; }
+    .ss-slots.is-dimmed {
+      opacity: 0.35;
+      filter: blur(1.5px);
+      pointer-events: none;
+    }
     .ss-slot {
       width: 178px; min-height: 138px;
       border: 1px solid #c4a260;
@@ -185,17 +198,43 @@
       flex: 1; display: flex; align-items: center; justify-content: center;
     }
 
-    /* === confirmation screen === */
-    .ss-conf-wrap {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 16px; margin-bottom: 18px;
+    /* === confirm overlay (floats over dimmed slots) === */
+    .ss-conf-overlay {
+      position: absolute;
+      inset: -8px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 5;
+      background: rgba(232, 218, 172, 0.65);
+      border-radius: 2px;
     }
+    .ss-conf-inner {
+      position: relative;
+      background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
+      border: 2px solid #c9a44a;
+      box-shadow:
+        0 0 0 2px #7a4e20,
+        0 0 0 4px #b8865a,
+        0 0 24px rgba(0,0,0,0.40),
+        inset 0 1px 0 rgba(255,245,200,0.70);
+      border-radius: 2px;
+      padding: 22px 36px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 13px;
+      min-width: 280px;
+    }
+    .ss-conf-inner::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 23px,
+        rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px
+      );
+    }
+    .ss-conf-inner > * { position: relative; z-index: 1; }
     .ss-conf-slot {
       background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
       border: 1px solid #c4a260;
-      padding: 11px 32px;
-      text-align: center; min-width: 260px;
-      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.15);
+      padding: 10px 28px; text-align: center; width: 100%;
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12);
     }
     .ss-conf-slot-label { font-size: 11px; color: #3a1e06; letter-spacing: 2px; margin-bottom: 4px; }
     .ss-conf-slot-date  { font-size: 8px;  color: #8b6838; letter-spacing: 1px; }
@@ -205,7 +244,7 @@
     .ss-conf-text.is-del { color: #8b2210; }
     .ss-conf-choices { display: flex; gap: 12px; }
     .ss-choice-btn {
-      padding: 9px 36px;
+      padding: 9px 34px;
       font-family: inherit; font-size: 10px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
@@ -267,21 +306,17 @@
       position: fixed; z-index: 2147483647;
       width: 46px; height: 46px;
       pointer-events: none;
-      /* tip of feather anchors to target bottom-right; slight quill tilt */
+      /* bottom of image anchors to target bottom-right; quill tilt */
       transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
-      /* position glide via left/top; float via transform — no conflict */
       transition:
         left    0.20s cubic-bezier(0.22, 1, 0.36, 1),
         top     0.20s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.12s ease;
       opacity: 0;
-      /* remove any box/border the browser or Foundry might apply to <img> */
       border: none !important;
       outline: none !important;
       box-shadow: none !important;
       background: transparent !important;
-      /* multiply blends away the white background baked into the icon PNG */
-      mix-blend-mode: multiply;
     }
     #ss-feather-cursor.is-visible {
       opacity: 1;
@@ -303,17 +338,17 @@
 
   class SaveSystemUI {
     constructor() {
-      this._el            = null;
-      this._cursorEl      = null;
-      this._cursorReady   = false;
-      this._screen        = "mode";    // "mode" | "file" | "confirm"
-      this._mode          = "save";    // "save" | "load" | "delete"
-      this._sel           = null;      // selected slot id (1..SLOT_COUNT)
-      this._confirmFocus  = "yes";     // "yes" | "no"
-      this._status        = "";
-      this._statusCls     = "";
-      this._busy          = false;
-      this._keyFn         = this._onKey.bind(this);
+      this._el           = null;
+      this._cursorEl     = null;
+      this._cursorReady  = false;
+      this._screen       = "mode";   // "mode" | "file" | "confirm"
+      this._mode         = "save";   // "save" | "load" | "delete"
+      this._sel          = null;     // selected slot id (1..SLOT_COUNT)
+      this._confirmFocus = "yes";    // "yes" | "no"
+      this._status       = "";
+      this._statusCls    = "";
+      this._busy         = false;
+      this._keyFn        = this._onKey.bind(this);
     }
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
@@ -367,9 +402,9 @@
 
     _render() {
       if (!this._el) return;
-      if      (this._screen === "mode")    this._el.innerHTML = this._htmlModeScreen();
-      else if (this._screen === "file")    this._el.innerHTML = this._htmlFileScreen();
-      else                                 this._el.innerHTML = this._htmlConfirmScreen();
+      this._el.innerHTML = this._screen === "mode"
+        ? this._htmlModeScreen()
+        : this._htmlFileScreen();   // "file" and "confirm" share the same base
       this._bind();
       this._updateCursor();
     }
@@ -407,7 +442,7 @@
         </div>`;
     }
 
-    // ── Screen 2: File / slot selection ───────────────────────────────────────
+    // ── Screen 2/3: File selection (+ confirm overlay when _screen==="confirm") ─
 
     _htmlFileScreen() {
       const slots = Array.from({ length: SS.SLOT_COUNT }, (_, i) => {
@@ -442,9 +477,16 @@
         delete: "MEMORY CARD  ▷  ERASE MODE",
       }[this._mode];
 
+      const isConfirm  = this._screen === "confirm";
+      const dimClass   = isConfirm ? "is-dimmed" : "";
+      const confOverlay = isConfirm ? this._htmlConfirmOverlay() : "";
+
       const statusHtml = this._busy
         ? `<span class="ss-breathe">▶ ${this._status}</span>`
         : this._status;
+      const hintsText  = isConfirm
+        ? `◄ ► navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`
+        : `◄ ► select slot &nbsp;|&nbsp; ENTER / click confirm &nbsp;|&nbsp; ESC back`;
 
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
@@ -452,25 +494,22 @@
           <div class="ss-title">✦  MEMORY CARD  ✦</div>
           <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
           <div class="ss-mode-label">${modeHdr}</div>
-          <div class="ss-slots">${slots}</div>
+          <div class="ss-file-body">
+            <div class="ss-slots ${dimClass}">${slots}</div>
+            ${confOverlay}
+          </div>
           <div class="ss-status ${this._statusCls}">${statusHtml}</div>
           <div class="ss-footer">
             <button class="ss-back-btn" data-act="back">◄ BACK</button>
-            <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ENTER / click confirm &nbsp;|&nbsp; ESC back</div>
+            <div class="ss-hints">${hintsText}</div>
           </div>
         </div>`;
     }
 
-    // ── Screen 3: Confirmation ─────────────────────────────────────────────────
+    // ── Confirm overlay (injected inside .ss-file-body) ────────────────────────
 
-    _htmlConfirmScreen() {
+    _htmlConfirmOverlay() {
       const d = this._sel ? SS.Storage.getSlot(this._sel) : null;
-
-      const modeHdr = {
-        save:   "MEMORY CARD  ▷  WRITE MODE",
-        load:   "MEMORY CARD  ▷  READ MODE",
-        delete: "MEMORY CARD  ▷  ERASE MODE",
-      }[this._mode];
 
       const actionText = {
         save:   d ? "Overwrite this save file?" : "Write to this slot?",
@@ -491,27 +530,15 @@
       const nFocus    = this._confirmFocus === "no"  ? "is-focus" : "";
       const isDelMode = this._mode === "delete" ? "is-del" : "";
 
-      const statusHtml = this._busy
-        ? `<span class="ss-breathe">▶ ${this._status}</span>`
-        : this._status;
-
       return `
-        <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
-        <div class="ss-panel ss-layer">
-          <div class="ss-title">✦  MEMORY CARD  ✦</div>
-          <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
-          <div class="ss-mode-label">${modeHdr}</div>
-          <div class="ss-conf-wrap">
+        <div class="ss-conf-overlay">
+          <div class="ss-conf-inner">
             ${slotPreview}
             <div class="ss-conf-text ${isDelMode}">${actionText}</div>
             <div class="ss-conf-choices">
-              <button class="ss-choice-btn ${yFocus}"        data-act="choice" data-choice="yes">YES</button>
-              <button class="ss-choice-btn is-no ${nFocus}"  data-act="choice" data-choice="no" >NO</button>
+              <button class="ss-choice-btn ${yFocus}"       data-act="choice" data-choice="yes">YES</button>
+              <button class="ss-choice-btn is-no ${nFocus}" data-act="choice" data-choice="no" >NO</button>
             </div>
-          </div>
-          <div class="ss-status ${this._statusCls}">${statusHtml}</div>
-          <div class="ss-footer">
-            <div class="ss-hints">◄ ► navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back</div>
           </div>
         </div>`;
     }
@@ -521,7 +548,7 @@
     _bind() {
       if (!this._el) return;
 
-      // Mode cards → advance to file screen
+      // ── Mode screen: click + hover ──
       this._el.querySelectorAll("[data-act='mode']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -533,12 +560,20 @@
           this._screen = "file";
           this._render();
         });
+        el.addEventListener("mouseenter", () => {
+          if (this._busy) return;
+          this._mode = el.dataset.mode;
+          this._el.querySelectorAll("[data-act='mode']").forEach(c => {
+            c.classList.toggle("is-focus", c === el);
+          });
+          this._updateCursor();
+        });
       });
 
-      // Slot cards → advance directly to confirm if valid
+      // ── Slot cards: click + hover ──
       this._el.querySelectorAll("[data-slot]").forEach(el => {
         el.addEventListener("click", () => {
-          if (this._busy) return;
+          if (this._busy || this._screen === "confirm") return;
           if (el.dataset.valid !== "true") return;
           const id = parseInt(el.dataset.slot);
           this._sel          = id;
@@ -549,9 +584,19 @@
           this._screen = "confirm";
           this._render();
         });
+        el.addEventListener("mouseenter", () => {
+          if (this._busy || this._screen === "confirm") return;
+          if (el.dataset.valid !== "true") return;
+          const id = parseInt(el.dataset.slot);
+          this._sel = id;
+          this._el.querySelectorAll("[data-slot]").forEach(s => {
+            s.classList.toggle("is-sel", parseInt(s.dataset.slot) === id);
+          });
+          this._updateCursor();
+        });
       });
 
-      // YES / NO choice buttons on confirm screen
+      // ── Confirm overlay: click + hover ──
       this._el.querySelectorAll("[data-act='choice']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -563,15 +608,26 @@
             this._render();
           }
         });
+        el.addEventListener("mouseenter", () => {
+          if (this._busy) return;
+          this._confirmFocus = el.dataset.choice;
+          this._el.querySelectorAll("[data-act='choice']").forEach(c => {
+            c.classList.toggle("is-focus", c === el);
+          });
+          this._updateCursor();
+        });
       });
 
-      // Back — context-sensitive
+      // ── Back — context-sensitive ──
       const backBtn = this._el.querySelector("[data-act='back']");
       if (backBtn) {
         backBtn.addEventListener("click", () => {
           if (this._busy) return;
           sfx("cancel");
-          if (this._screen === "file") {
+          if (this._screen === "confirm") {
+            this._screen = "file";
+            this._render();
+          } else if (this._screen === "file") {
             this._screen    = "mode";
             this._sel       = null;
             this._status    = "";
@@ -583,7 +639,7 @@
         });
       }
 
-      // ESC hint — always closes entire overlay
+      // ── ESC hint — always closes entire overlay ──
       this._el.querySelectorAll("[data-act='close']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -601,10 +657,10 @@
       let targetEl = null;
       if (this._screen === "mode") {
         targetEl = this._el.querySelector(`[data-act='mode'][data-mode='${this._mode}']`);
-      } else if (this._screen === "file" && this._sel !== null) {
-        targetEl = this._el.querySelector(`[data-slot='${this._sel}']`);
       } else if (this._screen === "confirm") {
         targetEl = this._el.querySelector(`[data-act='choice'][data-choice='${this._confirmFocus}']`);
+      } else if (this._sel !== null) {
+        targetEl = this._el.querySelector(`[data-slot='${this._sel}']`);
       }
 
       if (!targetEl) {
@@ -615,7 +671,6 @@
       const rect = targetEl.getBoundingClientRect();
 
       if (!this._cursorReady) {
-        // First placement: snap without animating from 0,0
         this._cursorEl.classList.add("no-anim");
         this._cursorEl.style.left = `${rect.right}px`;
         this._cursorEl.style.top  = `${rect.bottom}px`;
@@ -696,7 +751,6 @@
       e.stopImmediatePropagation();
       if (this._busy) return;
 
-      // ESC — always goes one step back
       if (e.key === "Escape") {
         e.preventDefault();
         sfx("cancel");
@@ -715,7 +769,7 @@
         return;
       }
 
-      // ── Mode screen ──────────────────────────────────────────────────────────
+      // ── Mode screen ──
       if (this._screen === "mode") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
@@ -734,7 +788,7 @@
         return;
       }
 
-      // ── File screen ──────────────────────────────────────────────────────────
+      // ── File screen ──
       if (this._screen === "file") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
@@ -762,7 +816,7 @@
         return;
       }
 
-      // ── Confirm screen ───────────────────────────────────────────────────────
+      // ── Confirm overlay ──
       if (this._screen === "confirm") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
