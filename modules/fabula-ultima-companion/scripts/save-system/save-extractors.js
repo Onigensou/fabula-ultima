@@ -34,27 +34,53 @@
     return game.actors.get(rawId) ?? null;
   }
 
-  // Returns only the IDs from `ids` that are backed by a real DB record on this
-  // actor.  actor._source contains the raw data the server loaded from the DB;
-  // anything absent there is a synthetic/runtime item injected by the system.
-  // Sending a delete for a synthetic ID triggers a Foundry socket error
-  // notification that .catch() cannot suppress because it fires before the
-  // promise rejects.
-  function dbBackedIds(actor, type, ids) {
-    const srcKey = type === "Item" ? "items" : "effects";
-    const dbSet  = new Set((actor._source?.[srcKey] ?? []).map(d => d._id));
-    return ids.filter(id => dbSet.has(id));
+  // V12 _deleteDocuments has no strict:false guard — any missing ID throws and
+  // Foundry fires a UI notification at the socket layer before our catch runs.
+  // Some actors have orphaned item references: the actor document has the ID
+  // but the item sub-level record was never written (data corruption from a
+  // partially-failed createEmbeddedDocuments in a prior session).
+  //
+  // Strategy: temporarily silence ui.notifications.error for "does not exist"
+  // messages, fall back to individual deletes so we clear as many as possible,
+  // then ALWAYS run creates so orphaned IDs get healed (keepId:true creates
+  // them as real item records, fixing the corruption for subsequent loads).
+  async function safeDeleteEmbeds(actor, type, ids) {
+    if (!ids.length) return;
+    // Mute notifications for the duration of this delete so orphaned-ref errors
+    // don't appear in the UI.  The finally block always restores the original.
+    const orig = ui?.notifications?.error?.bind(ui.notifications);
+    if (ui?.notifications) {
+      ui.notifications.error = (msg, ...rest) => {
+        if (typeof msg === "string" && msg.includes("does not exist")) return;
+        orig?.(msg, ...rest);
+      };
+    }
+    try {
+      await actor.deleteEmbeddedDocuments(type, ids);
+    } catch {
+      // Batch failed (at least one ID was orphaned); retry individually so
+      // the real items still get deleted even when some IDs are missing.
+      await Promise.allSettled(
+        ids.map(id => actor.deleteEmbeddedDocuments(type, [id]).catch(() => {}))
+      );
+    } finally {
+      if (ui?.notifications) ui.notifications.error = orig;
+    }
   }
 
   // Delete-all + recreate-all for items and effects so mergeObject semantics
   // in updateEmbeddedDocuments can never leave stale flag values behind.
   async function applyActorEmbeds(actor, { items = [], effects = [] }) {
-    const itemIds = dbBackedIds(actor, "Item", [...actor.items.values()].map(i => i.id));
-    if (itemIds.length)   await actor.deleteEmbeddedDocuments("Item", itemIds);
-    if (items.length)     await actor.createEmbeddedDocuments("Item", items, { keepId: true });
-    const fxIds = dbBackedIds(actor, "ActiveEffect", [...actor.effects.values()].map(e => e.id));
-    if (fxIds.length)     await actor.deleteEmbeddedDocuments("ActiveEffect", fxIds);
-    if (effects.length)   await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
+    const srcSet   = new Set((actor._source?.items ?? []).map(d => d._id));
+    const toDelete = [...actor.items.values()].map(i => i.id).filter(id => srcSet.has(id));
+    await safeDeleteEmbeds(actor, "Item", toDelete);
+    // Run creates even when delete had errors — orphaned IDs get healed here
+    // because keepId:true creates the missing item sub-level record.
+    if (items.length)    await actor.createEmbeddedDocuments("Item", items, { keepId: true });
+    const fxSet    = new Set((actor._source?.effects ?? []).map(d => d._id));
+    const fxDelete = [...actor.effects.values()].map(e => e.id).filter(id => fxSet.has(id));
+    await safeDeleteEmbeds(actor, "ActiveEffect", fxDelete);
+    if (effects.length)  await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
