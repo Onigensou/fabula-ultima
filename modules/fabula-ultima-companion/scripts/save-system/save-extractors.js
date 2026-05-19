@@ -10,8 +10,8 @@
 //   6.  sceneBackgrounds    – background image per scene (story progression)
 //   7.  dungeonTileData     – DungeonPathing flags (tileStates + visitedTiles)
 //                             filtered to Dungeon/Exploration/Camp scenes only
-//   8.  sceneTileVisibility – tile.hidden per Dungeon/Exploration/Camp scene;
-//                             tiles added after save are deleted on load
+//   8.  sceneTileVisibility – full Tile document per Dungeon/Exploration/Camp scene;
+//                             extra tiles deleted, missing tiles recreated on load
 //   9.  sceneDrawingData    – full Drawing document state for Dungeon scenes;
 //                             drawings added after save are deleted, missing recreated
 //   10. campState           – CampSystem world settings
@@ -230,22 +230,23 @@
   });
 
   // ── 8. Scene Tile Visibility ───────────────────────────────────────────────
-  // Saves tile.hidden for Dungeon/Exploration/Camp scenes only.
-  // On load: tiles added after save are deleted; hidden state is restored.
+  // Full Tile document state for Dungeon/Exploration/Camp scenes.
+  // On load: tiles added after save are deleted; missing tiles are recreated;
+  // existing tiles are updated to their saved state.
   SS.registerExtractor({
     key:   "sceneTileVisibility",
-    label: "Scene Tile Visibility",
+    label: "Scene Tile Data",
 
     async extract() {
       const result = {};
       for (const scene of game.scenes.contents) {
         if (!TILE_SAVE_MODES.has(getSceneMode(scene))) continue;
         if (!scene.tiles?.size) continue;
-        const states = {};
+        const tiles = {};
         for (const tile of scene.tiles.values()) {
-          states[tile.id] = tile.hidden ?? false;
+          tiles[tile.id] = foundry.utils.deepClone(tile.toObject());
         }
-        result[scene.id] = states;
+        result[scene.id] = tiles;
       }
       return result;
     },
@@ -253,23 +254,23 @@
     async apply(ctx, data) {
       if (!data) return;
       await Promise.all(
-        Object.entries(data).map(async ([sceneId, tileStates]) => {
+        Object.entries(data).map(async ([sceneId, tileDataMap]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
-          const savedIds = new Set(Object.keys(tileStates));
-          // Delete tiles that were added after this save was made
+          const savedIds = new Set(Object.keys(tileDataMap));
+          // Delete tiles added after this save was made
           const toDelete = [...scene.tiles.values()]
             .filter(t => !savedIds.has(t.id))
             .map(t => t.id);
           if (toDelete.length) await scene.deleteEmbeddedDocuments("Tile", toDelete);
-          // Restore hidden state for tiles that existed at save time
-          const updates = Object.entries(tileStates)
-            .filter(([id, hidden]) => {
-              const tile = scene.tiles.get(id);
-              return tile && tile.hidden !== hidden;
-            })
-            .map(([id, hidden]) => ({ _id: id, hidden }));
-          if (updates.length) await scene.updateEmbeddedDocuments("Tile", updates);
+          // Recreate tiles that existed at save time but are now missing
+          const toCreate = Object.values(tileDataMap)
+            .filter(d => !scene.tiles.has(d._id));
+          if (toCreate.length) await scene.createEmbeddedDocuments("Tile", toCreate, { keepId: true });
+          // Update tiles that still exist to their saved state
+          const toUpdate = Object.values(tileDataMap)
+            .filter(d => scene.tiles.has(d._id));
+          if (toUpdate.length) await scene.updateEmbeddedDocuments("Tile", toUpdate);
         })
       );
     },
