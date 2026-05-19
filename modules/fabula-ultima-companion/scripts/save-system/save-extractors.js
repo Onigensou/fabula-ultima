@@ -3,9 +3,9 @@
 //
 // Each extractor is registered in apply order:
 //   1.  databasePointer     – which party database is active
-//   2.  partyActorData      – full props of the party/database actor
-//   3.  partyData           – individual member + bench character props
-//   4.  npcData             – linked NPCs/bosses matching NPC template
+//   2.  partyActorData      – full state (system, flags, items, effects) of the party/database actor
+//   3.  partyData           – full state for each party member + bench character
+//   4.  npcData             – full state for linked NPCs/bosses matching NPC template
 //   5.  activeScene         – which scene is currently active
 //   6.  sceneBackgrounds    – background image per scene (story progression)
 //   7.  dungeonTileData     – DungeonPathing flags (tileStates + visitedTiles)
@@ -32,6 +32,17 @@
     if (!uuid || typeof uuid !== "string") return null;
     const rawId = uuid.startsWith("Actor.") ? uuid.slice(6) : uuid;
     return game.actors.get(rawId) ?? null;
+  }
+
+  // Delete-all + recreate-all for items and effects so mergeObject semantics
+  // in updateEmbeddedDocuments can never leave stale flag values behind.
+  async function applyActorEmbeds(actor, { items = [], effects = [] }) {
+    const itemIds = [...actor.items.values()].map(i => i.id);
+    if (itemIds.length)   await actor.deleteEmbeddedDocuments("Item", itemIds);
+    if (items.length)     await actor.createEmbeddedDocuments("Item", items, { keepId: true });
+    const effectIds = [...actor.effects.values()].map(e => e.id);
+    if (effectIds.length) await actor.deleteEmbeddedDocuments("ActiveEffect", effectIds);
+    if (effects.length)   await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
@@ -63,7 +74,7 @@
     },
   });
 
-  // ── 2. Party Actor (Database) Props ───────────────────────────────────────
+  // ── 2. Party Actor (Database) — full state ────────────────────────────────
   SS.registerExtractor({
     key:   "partyActorData",
     label: "Party Actor",
@@ -71,8 +82,11 @@
     async extract({ partyActor }) {
       if (!partyActor) return null;
       return {
-        uuid:  partyActor.uuid,
-        props: foundry.utils.deepClone(partyActor.system?.props ?? {}),
+        uuid:    partyActor.uuid,
+        system:  foundry.utils.deepClone(partyActor.system  ?? {}),
+        flags:   foundry.utils.deepClone(partyActor.flags   ?? {}),
+        items:   partyActor.items.map(i => foundry.utils.deepClone(i.toObject())),
+        effects: partyActor.effects.map(e => foundry.utils.deepClone(e.toObject())),
       };
     },
 
@@ -80,11 +94,12 @@
       if (!data?.uuid) return;
       const pa = actorFromUuid(data.uuid);
       if (!pa) { console.warn(TAG, "partyActorData apply: not found", data.uuid); return; }
-      await pa.update({ "system.props": data.props });
+      await pa.update({ system: data.system, flags: data.flags });
+      await applyActorEmbeds(pa, data);
     },
   });
 
-  // ── 3. Party Members & Bench Characters ───────────────────────────────────
+  // ── 3. Party Members & Bench Characters — full state ─────────────────────
   SS.registerExtractor({
     key:   "partyData",
     label: "Party Members",
@@ -95,8 +110,11 @@
         const actor = actorFromUuid(uuid);
         if (!actor) continue;
         result[uuid] = {
-          name:  actor.name,
-          props: foundry.utils.deepClone(actor.system?.props ?? {}),
+          name:    actor.name,
+          system:  foundry.utils.deepClone(actor.system  ?? {}),
+          flags:   foundry.utils.deepClone(actor.flags   ?? {}),
+          items:   actor.items.map(i => foundry.utils.deepClone(i.toObject())),
+          effects: actor.effects.map(e => foundry.utils.deepClone(e.toObject())),
         };
       }
       return result;
@@ -104,15 +122,16 @@
 
     async apply(ctx, data) {
       if (!data) return;
-      for (const [uuid, { props }] of Object.entries(data)) {
+      for (const [uuid, actorData] of Object.entries(data)) {
         const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "partyData apply: not found", uuid); continue; }
-        await actor.update({ "system.props": props });
+        await actor.update({ system: actorData.system, flags: actorData.flags });
+        await applyActorEmbeds(actor, actorData);
       }
     },
   });
 
-  // ── 4. Linked NPCs & Bosses ────────────────────────────────────────────────
+  // ── 4. Linked NPCs & Bosses — full state ─────────────────────────────────
   // Detection: system.template === npcTemplateId AND prototypeToken.actorLink === true
   // Unlinked actors (generic random-encounter monsters) are excluded — they
   // spawn fresh each encounter and their data does not persist.
@@ -130,8 +149,11 @@
         if (!actor.prototypeToken?.actorLink) continue;
         if (memberSet.has(actor.uuid)) continue; // already captured in partyData
         result[actor.uuid] = {
-          name:  actor.name,
-          props: foundry.utils.deepClone(actor.system?.props ?? {}),
+          name:    actor.name,
+          system:  foundry.utils.deepClone(actor.system  ?? {}),
+          flags:   foundry.utils.deepClone(actor.flags   ?? {}),
+          items:   actor.items.map(i => foundry.utils.deepClone(i.toObject())),
+          effects: actor.effects.map(e => foundry.utils.deepClone(e.toObject())),
         };
       }
       return result;
@@ -139,10 +161,11 @@
 
     async apply(ctx, data) {
       if (!data) return;
-      for (const [uuid, { props }] of Object.entries(data)) {
+      for (const [uuid, actorData] of Object.entries(data)) {
         const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "npcData apply: not found", uuid); continue; }
-        await actor.update({ "system.props": props });
+        await actor.update({ system: actorData.system, flags: actorData.flags });
+        await applyActorEmbeds(actor, actorData);
       }
     },
   });
