@@ -190,7 +190,6 @@
       flex-shrink: 0;
       border: none !important; outline: none !important;
       box-shadow: none !important; background: transparent !important;
-      filter: drop-shadow(0 4px 10px rgba(20,8,0,0.45));
     }
 
     .ss-slot-info   { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }

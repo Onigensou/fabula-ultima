@@ -39,9 +39,11 @@
     portraitMaxW:     160,
     portraitsMaxW:    387,
     portraitGap:      4,
+    portraitMarginR:  0,
     confInnerMinW:    457,
     titleSize:        28,
     slotNameSize:     16,
+    slotSubSize:      9,
     slotNumSize:      16,
     blendMode:        0,    // 0=normal, 1=multiply
   };
@@ -59,10 +61,13 @@
       .ss-slot-body      { padding: ${p.slotBodyPad}px 22px !important; gap: ${p.slotBodyGap}px !important; }
       .ss-slot-portrait  { height: ${p.portraitH}px !important; max-width: ${p.portraitMaxW}px !important;
                            mix-blend-mode: ${p.blendMode ? "multiply" : "normal"} !important; }
-      .ss-slot-portraits { max-width: ${p.portraitsMaxW}px !important; gap: ${p.portraitGap}px !important; }
+      .ss-slot-portraits { max-width: ${p.portraitsMaxW}px !important; gap: ${p.portraitGap}px !important;
+                           margin-right: ${p.portraitMarginR}px !important; }
+      .ss-slot-info      { margin-left: 0 !important; }
       .ss-conf-inner     { min-width: ${p.confInnerMinW}px !important; }
       .ss-title          { font-size: ${p.titleSize}px !important; }
       .ss-slot-name      { font-size: ${p.slotNameSize}px !important; }
+      .ss-slot-party, .ss-slot-loc, .ss-slot-date { font-size: ${p.slotSubSize}px !important; }
       .ss-slot-num       { font-size: ${p.slotNumSize}px !important; }
     `;
   }
@@ -84,12 +89,14 @@
     ["Max-width px",     "portraitMaxW",   30,   200 ],
     ["Container px",     "portraitsMaxW",  100,  700 ],
     ["Gap px",           "portraitGap",    0,    40  ],
+    ["Margin-right px",  "portraitMarginR", 0,   120 ],
     ["— Confirm —",      null,             0,    0   ],
     ["Inner min-w px",   "confInnerMinW",  200,  700 ],
     ["— Text —",         null,             0,    0   ],
     ["Title px",         "titleSize",      12,   42  ],
-    ["Slot name px",     "slotNameSize",   8,    22  ],
-    ["Slot num px",      "slotNumSize",    7,    16  ],
+    ["Slot name px",     "slotNameSize",   8,    28  ],
+    ["Slot sub px",      "slotSubSize",    7,    20  ],
+    ["Slot num px",      "slotNumSize",    7,    24  ],
   ];
 
   // ── Build slider HTML ─────────────────────────────────────────────────────────
