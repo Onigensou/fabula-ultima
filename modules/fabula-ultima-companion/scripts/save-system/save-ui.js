@@ -1,11 +1,12 @@
 // ============================================================================
 // Save System — JRPG Parchment Memory Card UI
 //
-// Two-screen flow:
-//   Screen 1 (mode)  — select SAVE / LOAD / DELETE
-//   Screen 2 (file)  — select slot, then confirm
+// Three-screen flow:
+//   Screen 1 (mode)    — select SAVE / LOAD / DELETE
+//   Screen 2 (file)    — select slot (arrow keys or click)
+//   Screen 3 (confirm) — YES / NO confirmation
 //
-// Navigation: arrow keys move the feather cursor; Enter confirms; ESC goes back.
+// Navigation: arrow keys move feather cursor; Enter confirms; ESC goes back.
 //
 // Open via: FUCompanion.api.saveSystem.open()
 // ============================================================================
@@ -69,7 +70,6 @@
       display: flex; flex-direction: column; align-items: center;
       min-width: 580px;
     }
-    /* ruled parchment lines */
     .ss-panel::before {
       content: '';
       position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
@@ -160,6 +160,7 @@
         inset 0 0 22px rgba(201,162,42,0.09),
         inset 0 1px 0 rgba(255,245,200,0.75);
     }
+    .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-bg {
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
@@ -184,10 +185,27 @@
       flex: 1; display: flex; align-items: center; justify-content: center;
     }
 
-    /* === confirm button === */
-    .ss-confirm-wrap { margin-bottom: 13px; }
-    .ss-confirm {
-      padding: 9px 36px; min-width: 206px;
+    /* === confirmation screen === */
+    .ss-conf-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; margin-bottom: 18px;
+    }
+    .ss-conf-slot {
+      background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
+      border: 1px solid #c4a260;
+      padding: 11px 32px;
+      text-align: center; min-width: 260px;
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.15);
+    }
+    .ss-conf-slot-label { font-size: 11px; color: #3a1e06; letter-spacing: 2px; margin-bottom: 4px; }
+    .ss-conf-slot-date  { font-size: 8px;  color: #8b6838; letter-spacing: 1px; }
+    .ss-conf-text {
+      font-size: 10px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase;
+    }
+    .ss-conf-text.is-del { color: #8b2210; }
+    .ss-conf-choices { display: flex; gap: 12px; }
+    .ss-choice-btn {
+      padding: 9px 36px;
       font-family: inherit; font-size: 10px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
@@ -196,14 +214,13 @@
       cursor: pointer; transition: all .12s;
       box-shadow: 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
     }
-    .ss-confirm:hover:not(:disabled) {
+    .ss-choice-btn:hover, .ss-choice-btn.is-focus {
       border-color: #c9a22a; color: #fff8e0;
       background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
       box-shadow: 0 0 16px rgba(201,162,42,0.28), 0 2px 5px rgba(40,18,4,0.38),
                   inset 0 1px 0 rgba(255,225,140,0.22);
     }
-    .ss-confirm:disabled { opacity: 0.30; cursor: not-allowed; }
-    .ss-confirm.is-del:hover:not(:disabled) {
+    .ss-choice-btn.is-no:hover, .ss-choice-btn.is-no.is-focus {
       border-color: #8b3820; color: #ffd0c0;
       background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
       box-shadow: 0 0 16px rgba(180,52,28,0.28), 0 2px 5px rgba(40,18,4,0.38);
@@ -248,49 +265,63 @@
     /* === feather cursor === */
     #ss-feather-cursor {
       position: fixed; z-index: 2147483647;
-      width: 32px; height: 32px;
+      width: 46px; height: 46px;
       pointer-events: none;
-      /* bottom of image anchors to target bottom-right; slight tilt */
-      transform: translate(-40%, -90%) rotate(20deg);
+      /* tip of feather anchors to target bottom-right; slight quill tilt */
+      transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
+      /* position glide via left/top; float via transform — no conflict */
       transition:
         left    0.20s cubic-bezier(0.22, 1, 0.36, 1),
         top     0.20s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.12s ease;
       opacity: 0;
-      image-rendering: auto;
+      /* remove any box/border the browser or Foundry might apply to <img> */
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      /* multiply blends away the white background baked into the icon PNG */
+      mix-blend-mode: multiply;
     }
-    #ss-feather-cursor.is-visible  { opacity: 1; }
-    #ss-feather-cursor.no-anim     { transition: none !important; }
+    #ss-feather-cursor.is-visible {
+      opacity: 1;
+      animation: ss-cursor-float 2.2s ease-in-out infinite;
+    }
+    #ss-feather-cursor.no-anim { transition: none !important; }
 
     /* === animations === */
+    @keyframes ss-cursor-float {
+      0%,  100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px);  }
+      50%        { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }
+    }
     @keyframes ss-blink   { 0%,100%{opacity:1} 50%{opacity:0} }
     @keyframes ss-breathe { 0%,100%{opacity:.60} 50%{opacity:1} }
     .ss-breathe { animation: ss-breathe .65s ease-in-out infinite; }
   `;
 
-  // ── UI class ─────────────────────────────────────────────────────────────────
+  // ── UI class ──────────────────────────────────────────────────────────────────
 
   class SaveSystemUI {
     constructor() {
-      this._el          = null;
-      this._cursorEl    = null;
-      this._cursorReady = false;   // after first position, transitions are live
-      this._screen      = "mode"; // "mode" | "file"
-      this._mode        = "save"; // "save" | "load" | "delete"
-      this._sel         = null;   // selected slot id (1..SLOT_COUNT), file screen only
-      this._status      = "";
-      this._statusCls   = "";     // "" | "is-err" | "is-ok"
-      this._busy        = false;
-      this._keyFn       = this._onKey.bind(this);
+      this._el            = null;
+      this._cursorEl      = null;
+      this._cursorReady   = false;
+      this._screen        = "mode";    // "mode" | "file" | "confirm"
+      this._mode          = "save";    // "save" | "load" | "delete"
+      this._sel           = null;      // selected slot id (1..SLOT_COUNT)
+      this._confirmFocus  = "yes";     // "yes" | "no"
+      this._status        = "";
+      this._statusCls     = "";
+      this._busy          = false;
+      this._keyFn         = this._onKey.bind(this);
     }
 
-    // ── Lifecycle ────────────────────────────────────────────────────────────
+    // ── Lifecycle ──────────────────────────────────────────────────────────────
 
     open() {
       if (this._el) { this._el.focus(); return; }
       this._injectCSS();
 
-      // Reset to mode-select screen on every open
       this._screen      = "mode";
       this._sel         = null;
       this._status      = "";
@@ -302,7 +333,6 @@
       this._el.setAttribute("tabindex", "-1");
       document.body.appendChild(this._el);
 
-      // Feather cursor lives in <body>, separate from overlay innerHTML
       this._cursorEl     = document.createElement("img");
       this._cursorEl.id  = "ss-feather-cursor";
       this._cursorEl.src = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
@@ -333,23 +363,24 @@
       document.head.appendChild(s);
     }
 
-    // ── Rendering ────────────────────────────────────────────────────────────
+    // ── Rendering ─────────────────────────────────────────────────────────────
 
     _render() {
       if (!this._el) return;
-      this._el.innerHTML = this._screen === "mode"
-        ? this._htmlModeScreen()
-        : this._htmlFileScreen();
+      if      (this._screen === "mode")    this._el.innerHTML = this._htmlModeScreen();
+      else if (this._screen === "file")    this._el.innerHTML = this._htmlFileScreen();
+      else                                 this._el.innerHTML = this._htmlConfirmScreen();
       this._bind();
       this._updateCursor();
     }
 
-    // Screen 1 — mode selection
+    // ── Screen 1: Mode selection ───────────────────────────────────────────────
+
     _htmlModeScreen() {
       const META = {
-        save:   { icon: "💾", label: "SAVE",   desc: "Write current game data",  cls: ""      },
-        load:   { icon: "📖", label: "LOAD",   desc: "Read saved game data",     cls: ""      },
-        delete: { icon: "🗑️", label: "DELETE", desc: "Erase a saved file",       cls: "is-del" },
+        save:   { icon: "💾", label: "SAVE",   desc: "Write current game data", cls: ""       },
+        load:   { icon: "📖", label: "LOAD",   desc: "Read saved game data",    cls: ""       },
+        delete: { icon: "🗑️", label: "DELETE", desc: "Erase a saved file",      cls: "is-del" },
       };
       const cards = MODES.map(m => {
         const { icon, label, desc, cls } = META[m];
@@ -376,13 +407,16 @@
         </div>`;
     }
 
-    // Screen 2 — file / slot selection
+    // ── Screen 2: File / slot selection ───────────────────────────────────────
+
     _htmlFileScreen() {
       const slots = Array.from({ length: SS.SLOT_COUNT }, (_, i) => {
-        const id  = i + 1;
-        const d   = SS.Storage.getSlot(id);
-        const sel = this._sel === id ? "is-sel" : "";
-        const bg  = d?.thumbnail
+        const id    = i + 1;
+        const d     = SS.Storage.getSlot(id);
+        const sel   = this._sel === id ? "is-sel" : "";
+        const valid = this._mode === "save" || d !== null;
+        const inv   = !valid ? "is-invalid" : "";
+        const bg    = d?.thumbnail
           ? `<div class="ss-slot-bg" style="background-image:url('${d.thumbnail}')"></div>` : "";
         const gameName = d?.data?.partyActorData?.props?.game_name ?? "—";
 
@@ -399,7 +433,7 @@
             <div class="ss-slot-num">SLOT ${id}</div>
             <div class="ss-slot-empty">— NO DATA —</div>
           </div>`;
-        return `<div class="ss-slot ss-layer ${sel}" data-slot="${id}">${body}</div>`;
+        return `<div class="ss-slot ss-layer ${sel} ${inv}" data-slot="${id}" data-valid="${valid}">${body}</div>`;
       }).join("");
 
       const modeHdr = {
@@ -408,11 +442,6 @@
         delete: "MEMORY CARD  ▷  ERASE MODE",
       }[this._mode];
 
-      const selData    = this._sel ? SS.Storage.getSlot(this._sel) : null;
-      const canConfirm = !this._busy && this._sel !== null
-        && (this._mode === "save" || selData !== null);
-      const confirmLbl = { save: "WRITE DATA", load: "READ DATA", delete: "ERASE DATA" }[this._mode];
-      const isDelMode  = this._mode === "delete" ? "is-del" : "";
       const statusHtml = this._busy
         ? `<span class="ss-breathe">▶ ${this._status}</span>`
         : this._status;
@@ -424,18 +453,70 @@
           <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
           <div class="ss-mode-label">${modeHdr}</div>
           <div class="ss-slots">${slots}</div>
-          <div class="ss-confirm-wrap">
-            <button class="ss-confirm ${isDelMode}" data-act="confirm" ${canConfirm?"":"disabled"}>${confirmLbl}</button>
-          </div>
           <div class="ss-status ${this._statusCls}">${statusHtml}</div>
           <div class="ss-footer">
             <button class="ss-back-btn" data-act="back">◄ BACK</button>
-            <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back</div>
+            <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ENTER / click confirm &nbsp;|&nbsp; ESC back</div>
           </div>
         </div>`;
     }
 
-    // ── Event binding ────────────────────────────────────────────────────────
+    // ── Screen 3: Confirmation ─────────────────────────────────────────────────
+
+    _htmlConfirmScreen() {
+      const d = this._sel ? SS.Storage.getSlot(this._sel) : null;
+
+      const modeHdr = {
+        save:   "MEMORY CARD  ▷  WRITE MODE",
+        load:   "MEMORY CARD  ▷  READ MODE",
+        delete: "MEMORY CARD  ▷  ERASE MODE",
+      }[this._mode];
+
+      const actionText = {
+        save:   d ? "Overwrite this save file?" : "Write to this slot?",
+        load:   "Load this save file?",
+        delete: "Permanently delete this file?",
+      }[this._mode];
+
+      const slotPreview = d ? `
+        <div class="ss-conf-slot">
+          <div class="ss-conf-slot-label">SLOT ${this._sel} &nbsp;—&nbsp; ${d.label ?? "Unnamed"}</div>
+          <div class="ss-conf-slot-date">${fmtDate(d.savedAt)}</div>
+        </div>` : `
+        <div class="ss-conf-slot">
+          <div class="ss-conf-slot-label">SLOT ${this._sel} &nbsp;—&nbsp; EMPTY</div>
+        </div>`;
+
+      const yFocus    = this._confirmFocus === "yes" ? "is-focus" : "";
+      const nFocus    = this._confirmFocus === "no"  ? "is-focus" : "";
+      const isDelMode = this._mode === "delete" ? "is-del" : "";
+
+      const statusHtml = this._busy
+        ? `<span class="ss-breathe">▶ ${this._status}</span>`
+        : this._status;
+
+      return `
+        <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
+        <div class="ss-panel ss-layer">
+          <div class="ss-title">✦  MEMORY CARD  ✦</div>
+          <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
+          <div class="ss-mode-label">${modeHdr}</div>
+          <div class="ss-conf-wrap">
+            ${slotPreview}
+            <div class="ss-conf-text ${isDelMode}">${actionText}</div>
+            <div class="ss-conf-choices">
+              <button class="ss-choice-btn ${yFocus}"        data-act="choice" data-choice="yes">YES</button>
+              <button class="ss-choice-btn is-no ${nFocus}"  data-act="choice" data-choice="no" >NO</button>
+            </div>
+          </div>
+          <div class="ss-status ${this._statusCls}">${statusHtml}</div>
+          <div class="ss-footer">
+            <div class="ss-hints">◄ ► navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back</div>
+          </div>
+        </div>`;
+    }
+
+    // ── Event binding ──────────────────────────────────────────────────────────
 
     _bind() {
       if (!this._el) return;
@@ -454,27 +535,37 @@
         });
       });
 
-      // Slot cards
+      // Slot cards → advance directly to confirm if valid
       this._el.querySelectorAll("[data-slot]").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
-          const id  = parseInt(el.dataset.slot);
-          this._sel = this._sel === id ? null : id;
+          if (el.dataset.valid !== "true") return;
+          const id = parseInt(el.dataset.slot);
+          this._sel          = id;
+          this._confirmFocus = this._mode === "delete" ? "no" : "yes";
+          this._status       = "";
+          this._statusCls    = "";
           sfx("select");
+          this._screen = "confirm";
           this._render();
         });
       });
 
-      // Confirm
-      const confirmBtn = this._el.querySelector("[data-act='confirm']");
-      if (confirmBtn) {
-        confirmBtn.addEventListener("click", () => {
-          if (this._busy || confirmBtn.disabled) return;
-          this._execute();
+      // YES / NO choice buttons on confirm screen
+      this._el.querySelectorAll("[data-act='choice']").forEach(el => {
+        el.addEventListener("click", () => {
+          if (this._busy) return;
+          if (el.dataset.choice === "yes") {
+            this._execute();
+          } else {
+            sfx("cancel");
+            this._screen = "file";
+            this._render();
+          }
         });
-      }
+      });
 
-      // Back — context-sensitive: file screen → mode screen; mode screen → close
+      // Back — context-sensitive
       const backBtn = this._el.querySelector("[data-act='back']");
       if (backBtn) {
         backBtn.addEventListener("click", () => {
@@ -492,7 +583,7 @@
         });
       }
 
-      // ESC hint — always closes the whole overlay
+      // ESC hint — always closes entire overlay
       this._el.querySelectorAll("[data-act='close']").forEach(el => {
         el.addEventListener("click", () => {
           if (this._busy) return;
@@ -502,17 +593,18 @@
       });
     }
 
-    // ── Feather cursor ───────────────────────────────────────────────────────
+    // ── Feather cursor ─────────────────────────────────────────────────────────
 
     _updateCursor() {
       if (!this._cursorEl || !this._el) return;
 
-      // Resolve the element the cursor should point at
       let targetEl = null;
       if (this._screen === "mode") {
         targetEl = this._el.querySelector(`[data-act='mode'][data-mode='${this._mode}']`);
-      } else if (this._sel !== null) {
+      } else if (this._screen === "file" && this._sel !== null) {
         targetEl = this._el.querySelector(`[data-slot='${this._sel}']`);
+      } else if (this._screen === "confirm") {
+        targetEl = this._el.querySelector(`[data-act='choice'][data-choice='${this._confirmFocus}']`);
       }
 
       if (!targetEl) {
@@ -523,7 +615,7 @@
       const rect = targetEl.getBoundingClientRect();
 
       if (!this._cursorReady) {
-        // First placement — snap into position without animating from 0,0
+        // First placement: snap without animating from 0,0
         this._cursorEl.classList.add("no-anim");
         this._cursorEl.style.left = `${rect.right}px`;
         this._cursorEl.style.top  = `${rect.bottom}px`;
@@ -533,14 +625,13 @@
         });
         this._cursorReady = true;
       } else {
-        // Smooth transition handled by CSS
         this._cursorEl.style.left = `${rect.right}px`;
         this._cursorEl.style.top  = `${rect.bottom}px`;
         this._cursorEl.classList.add("is-visible");
       }
     }
 
-    // ── Action execution ─────────────────────────────────────────────────────
+    // ── Action execution ───────────────────────────────────────────────────────
 
     async _execute() {
       if (!this._sel) return;
@@ -556,6 +647,7 @@
         if (res.ok) {
           this._status    = `DATA WRITTEN — SLOT ${this._sel}`;
           this._statusCls = "is-ok";
+          this._screen    = "file";
           sfx("select");
         } else {
           this._status    = `ERROR: ${res.error}`;
@@ -572,6 +664,7 @@
         if (res.ok) {
           this._status    = `DATA LOADED — ${res.label}`;
           this._statusCls = "is-ok";
+          this._screen    = "file";
           sfx("select");
           setTimeout(() => this.close(), 1400);
         } else {
@@ -589,24 +682,28 @@
         this._sel       = null;
         this._status    = "DATA ERASED.";
         this._statusCls = "";
+        this._screen    = "file";
         sfx("cancel");
       }
 
       this._render();
     }
 
-    // ── Keyboard ─────────────────────────────────────────────────────────────
+    // ── Keyboard ──────────────────────────────────────────────────────────────
 
     _onKey(e) {
       if (!this._el) return;
-      // Suppress ALL Foundry hotkeys while overlay is open
       e.stopImmediatePropagation();
       if (this._busy) return;
 
+      // ESC — always goes one step back
       if (e.key === "Escape") {
         e.preventDefault();
         sfx("cancel");
-        if (this._screen === "file") {
+        if (this._screen === "confirm") {
+          this._screen = "file";
+          this._render();
+        } else if (this._screen === "file") {
           this._screen    = "mode";
           this._sel       = null;
           this._status    = "";
@@ -618,6 +715,7 @@
         return;
       }
 
+      // ── Mode screen ──────────────────────────────────────────────────────────
       if (this._screen === "mode") {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
@@ -636,21 +734,52 @@
         return;
       }
 
-      // File screen
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        const dir  = e.key === "ArrowRight" ? 1 : -1;
-        // Start at 1 if nothing selected yet
-        const next = Math.max(1, Math.min(SS.SLOT_COUNT, (this._sel ?? 0) + dir));
-        if (next !== this._sel) {
-          this._sel = next;
+      // ── File screen ──────────────────────────────────────────────────────────
+      if (this._screen === "file") {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const dir  = e.key === "ArrowRight" ? 1 : -1;
+          const next = Math.max(1, Math.min(SS.SLOT_COUNT, (this._sel ?? 0) + dir));
+          if (next !== this._sel) {
+            this._sel = next;
+            sfx("select");
+            this._render();
+          }
+        }
+        if (e.key === "Enter" && this._sel !== null) {
+          e.preventDefault();
+          const d     = SS.Storage.getSlot(this._sel);
+          const valid = this._mode === "save" || d !== null;
+          if (valid) {
+            this._confirmFocus = this._mode === "delete" ? "no" : "yes";
+            this._status       = "";
+            this._statusCls    = "";
+            this._screen       = "confirm";
+            sfx("select");
+            this._render();
+          }
+        }
+        return;
+      }
+
+      // ── Confirm screen ───────────────────────────────────────────────────────
+      if (this._screen === "confirm") {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          this._confirmFocus = this._confirmFocus === "yes" ? "no" : "yes";
           sfx("select");
           this._render();
         }
-      }
-      if (e.key === "Enter") {
-        const btn = this._el?.querySelector("[data-act='confirm']:not(:disabled)");
-        if (btn) { e.preventDefault(); this._execute(); }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (this._confirmFocus === "yes") {
+            this._execute();
+          } else {
+            sfx("cancel");
+            this._screen = "file";
+            this._render();
+          }
+        }
       }
     }
   }
