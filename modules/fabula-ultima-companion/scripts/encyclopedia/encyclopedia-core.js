@@ -488,10 +488,10 @@
   }
 
   function renderLockedPlaceholder(label, threshold) {
-    return `<div class="oni-enc-box" style="text-align:center;padding:18px 12px;background:rgba(0,0,0,.04);border-style:dashed;">
-  <div style="font-size:26px;line-height:1;opacity:.35;margin-bottom:6px;">🔒</div>
-  <div style="font-weight:900;font-size:14px;margin-bottom:4px;">${ESC(label)}</div>
-  <div style="font-size:12px;opacity:.75;">Requires a Study Check of <strong>${threshold}+</strong> to reveal.</div>
+    return `<div style="margin:10px 0;text-align:center;padding:20px 16px;background:rgba(0,0,0,.78);border-radius:10px;border:1px solid rgba(0,0,0,.5);box-sizing:border-box;">
+  <div style="font-size:28px;line-height:1;margin-bottom:8px;">🔒</div>
+  <div style="font-weight:900;font-size:14px;margin-bottom:5px;color:#fff;">${ESC(label)}</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.65);">Requires a Study Check of <strong style="color:rgba(255,255,255,.9);">${threshold}+</strong> to reveal.</div>
 </div>`;
   }
 
@@ -578,6 +578,8 @@
     return renderSection("Condition Affinities", body, "details");
   }
 
+  const ACTION_DESC = `style="margin-top:4px;font-size:12px;opacity:.62;line-height:1.5;"`;
+
   function renderAttackEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
@@ -589,8 +591,8 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${formula ? ` &middot; <span style="opacity:.75;">${formula}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+    <div style="font-size:13px;"><strong>${name}</strong>${formula ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${formula}</span>` : ""}</div>
+    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
 
@@ -604,8 +606,8 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` &middot; <span style="opacity:.75;">${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+    <div style="font-size:13px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
+    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
 
@@ -617,8 +619,8 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong></div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+    <div style="font-size:13px;"><strong>${name}</strong></div>
+    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
 
@@ -632,8 +634,8 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` &middot; <span style="opacity:.75;">${meta}</span>` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+    <div style="font-size:13px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
+    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
 
