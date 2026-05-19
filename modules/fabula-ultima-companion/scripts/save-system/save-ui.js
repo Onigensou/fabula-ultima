@@ -2,12 +2,12 @@
 // Save System — JRPG Parchment Memory Card UI
 //
 // Three-state flow:
-//   "mode"    — select SAVE / LOAD / DELETE
-//   "file"    — select slot (arrow keys, click, or hover)
+//   "mode"    — select SAVE / LOAD / DELETE (vertical menu)
+//   "file"    — select slot (vertical list)
 //   "confirm" — YES / NO overlay floats over dimmed slots; morphs to
 //                execution status (spinner → result) on confirm
 //
-// Navigation: ←/→ for siblings, ↑/↓ to reach back button; Enter confirms.
+// Navigation: ↑/↓ for all vertical navigation; ←/→ only for confirm YES/NO.
 // Mouse hover also moves the feather cursor.
 //
 // Open via: FUCompanion.api.saveSystem.open()
@@ -67,14 +67,15 @@
         0 0 70px rgba(0,0,0,0.88),
         inset 0 1px 0 rgba(255,245,200,0.70),
         inset 0 -1px 0 rgba(120,70,20,0.18);
-      border-radius: 2px;
-      padding: 34px 46px 28px;
+      border-radius: 4px;
+      padding: 36px 48px 30px;
       display: flex; flex-direction: column; align-items: center;
-      min-width: 580px;
+      min-width: 560px;
+      max-height: 88vh; overflow-y: auto;
     }
     .ss-panel::before {
       content: '';
-      position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
+      position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 4px;
       background: repeating-linear-gradient(
         0deg, transparent, transparent 23px,
         rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px
@@ -91,21 +92,27 @@
     .ss-byline { font-size: 8px; letter-spacing: 4px; color: #9b7040; margin-bottom: 5px; }
     .ss-mode-label {
       font-size: 9px; letter-spacing: 3px; color: #7a5428;
-      margin-bottom: 24px; text-transform: uppercase;
+      margin-bottom: 20px; text-transform: uppercase;
       border-bottom: 1px solid rgba(140,90,30,0.22);
       padding-bottom: 10px; width: 100%; text-align: center;
     }
 
     /* === mode selection screen === */
-    .ss-mode-prompt { font-size: 9px; letter-spacing: 4px; color: #9b7040; margin-bottom: 20px; text-transform: uppercase; }
-    .ss-mode-cards  { display: flex; gap: 16px; margin-bottom: 28px; }
+    .ss-mode-prompt {
+      font-size: 9px; letter-spacing: 4px; color: #9b7040;
+      margin-bottom: 16px; text-transform: uppercase;
+      border-bottom: 1px solid rgba(140,90,30,0.22);
+      padding-bottom: 10px; width: 100%; text-align: center;
+    }
+    .ss-mode-cards { display: flex; flex-direction: column; width: 100%; gap: 10px; margin-bottom: 20px; }
     .ss-mode-card {
-      width: 152px; padding: 22px 14px 18px;
+      width: 100%; padding: 16px 22px;
       border: 1px solid #c4a260;
       background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
       cursor: pointer; position: relative;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      display: flex; flex-direction: row; align-items: center; gap: 18px;
       font-family: inherit;
+      border-radius: 10px;
       box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 5px rgba(80,40,8,0.18);
       transition: border-color .12s, box-shadow .12s;
     }
@@ -117,19 +124,21 @@
       border-color: #8b3820;
       box-shadow: 0 0 0 1px #8b3820, 0 0 18px rgba(180,52,28,0.28), inset 0 1px 0 rgba(255,245,200,0.75);
     }
-    .ss-mode-card-icon  { font-size: 26px; pointer-events: none; }
-    .ss-mode-card-label { font-family: inherit; font-size: 11px; letter-spacing: 3px; color: #3a1e06; text-transform: uppercase; pointer-events: none; }
-    .ss-mode-card-desc  { font-family: inherit; font-size: 7px; letter-spacing: 1px; color: #9b7040; text-align: center; pointer-events: none; }
+    .ss-mode-card-icon  { font-size: 28px; pointer-events: none; flex-shrink: 0; }
+    .ss-mode-card-text  { display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+    .ss-mode-card-label { font-family: inherit; font-size: 13px; letter-spacing: 3px; color: #3a1e06; text-transform: uppercase; }
+    .ss-mode-card-desc  { font-family: inherit; font-size: 8px; letter-spacing: 1px; color: #9b7040; }
 
     /* === file screen body + slots === */
-    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-    .ss-slots { display: flex; gap: 14px; transition: opacity .20s, filter .20s; }
+    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; }
+    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 10px; transition: opacity .20s, filter .20s; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
-      width: 178px; min-height: 138px;
+      width: 100%;
       border: 1px solid #c4a260;
       background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
-      padding: 0; cursor: pointer; position: relative; overflow: hidden;
+      cursor: pointer; position: relative; overflow: hidden;
+      border-radius: 10px;
       transition: border-color .13s, box-shadow .13s;
       box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 5px rgba(80,40,8,0.18);
     }
@@ -143,13 +152,18 @@
     }
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.13; filter: blur(3px) sepia(0.25); pointer-events: none; }
-    .ss-slot-body { position: relative; z-index: 1; padding: 11px 12px; height: 100%; display: flex; flex-direction: column; }
-    .ss-slot-num   { font-size: 8px; letter-spacing: 3px; color: #b8945a; margin-bottom: 7px; }
-    .ss-slot-icon  { font-size: 20px; margin-bottom: 6px; }
-    .ss-slot-name  { font-size: 11px; color: #3a1e06; letter-spacing: 1px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-date  { font-size: 8px; color: #8b6838; letter-spacing: 1px; margin-bottom: 3px; }
+    .ss-slot-body {
+      position: relative; z-index: 1;
+      padding: 14px 18px;
+      display: flex; flex-direction: row; align-items: center; gap: 14px;
+    }
+    .ss-slot-num   { width: 52px; flex-shrink: 0; font-size: 8px; letter-spacing: 3px; color: #b8945a; }
+    .ss-slot-icon  { font-size: 20px; flex-shrink: 0; }
+    .ss-slot-info  { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .ss-slot-name  { font-size: 11px; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ss-slot-party { font-size: 8px; color: #7a5828; letter-spacing: 1px; }
-    .ss-slot-empty { font-size: 9px; letter-spacing: 2px; color: #c8aa70; flex: 1; display: flex; align-items: center; justify-content: center; }
+    .ss-slot-date  { font-size: 8px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
+    .ss-slot-empty { flex: 1; font-size: 9px; letter-spacing: 2px; color: #c8aa70; }
 
     /* === confirm overlay (floats over dimmed slots) === */
     .ss-conf-overlay {
@@ -157,24 +171,24 @@
       display: flex; align-items: center; justify-content: center;
       z-index: 5;
       background: rgba(232, 218, 172, 0.65);
-      border-radius: 2px;
+      border-radius: 10px;
     }
     .ss-conf-inner {
       position: relative;
       background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
       border: 2px solid #c9a44a;
       box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 24px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
-      border-radius: 2px;
+      border-radius: 10px;
       padding: 22px 36px 20px;
       display: flex; flex-direction: column; align-items: center; gap: 13px;
-      min-width: 280px;
+      min-width: 300px;
     }
     .ss-conf-inner::before {
-      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 2px;
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 10px;
       background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
     }
     .ss-conf-inner > * { position: relative; z-index: 1; }
-    .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; padding: 10px 28px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
+    .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; border-radius: 8px; padding: 10px 28px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
     .ss-conf-slot-label { font-size: 11px; color: #3a1e06; letter-spacing: 2px; margin-bottom: 4px; }
     .ss-conf-slot-date  { font-size: 8px;  color: #8b6838; letter-spacing: 1px; }
     .ss-conf-text { font-size: 10px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase; }
@@ -190,6 +204,7 @@
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
       color: #f4e8c0; cursor: pointer; transition: all .12s;
+      border-radius: 8px;
       box-shadow: 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
     }
     .ss-choice-btn:hover, .ss-choice-btn.is-focus {
@@ -214,11 +229,13 @@
 
     /* === back / close button === */
     .ss-back-btn {
-      padding: 7px 26px; font-family: inherit; font-size: 9px;
+      width: 100%; padding: 12px; text-align: center;
+      font-family: inherit; font-size: 10px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #6a4828 0%, #4e3014 100%);
       color: #c8a05a; cursor: pointer; transition: all .12s;
+      border-radius: 8px;
       box-shadow: 0 2px 4px rgba(40,18,4,0.30), inset 0 1px 0 rgba(255,225,140,0.10);
     }
     .ss-back-btn:hover, .ss-back-btn.is-focus {
@@ -228,7 +245,7 @@
     }
 
     /* === footer === */
-    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 7px; margin-top: 4px; }
+    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 8px; width: 100%; }
     .ss-hints  { font-size: 8px; letter-spacing: 2px; color: #b8945a; }
 
     /* === feather cursor === */
@@ -269,7 +286,7 @@
       this._cursorEl     = null;
       this._cursorReady  = false;
       this._screen       = "mode";   // "mode" | "file" | "confirm"
-      this._focusArea    = "main";   // "main" | "back"  (for ↑/↓ navigation)
+      this._focusArea    = "main";   // "main" | "back"
       this._mode         = "save";   // "save" | "load" | "delete"
       this._sel          = null;     // selected slot id (1..SLOT_COUNT)
       this._confirmFocus = "yes";    // "yes" | "no"
@@ -341,7 +358,7 @@
       requestAnimationFrame(() => this._updateCursor());
     }
 
-    // ── Screen 1: Mode selection ───────────────────────────────────────────────
+    // ── Screen 1: Mode selection (vertical menu) ───────────────────────────────
 
     _htmlModeScreen() {
       const META = {
@@ -355,8 +372,10 @@
         return `
           <button class="ss-mode-card ${cls} ${focus}" data-act="mode" data-mode="${m}">
             <div class="ss-mode-card-icon">${icon}</div>
-            <div class="ss-mode-card-label">${label}</div>
-            <div class="ss-mode-card-desc">${desc}</div>
+            <div class="ss-mode-card-text">
+              <div class="ss-mode-card-label">${label}</div>
+              <div class="ss-mode-card-desc">${desc}</div>
+            </div>
           </button>`;
       }).join("");
 
@@ -370,12 +389,12 @@
           <div class="ss-mode-cards">${cards}</div>
           <div class="ss-footer">
             <button class="ss-back-btn ${backFocus}" data-act="back">◄ CLOSE</button>
-            <div class="ss-hints">◄ ► navigate &nbsp;|&nbsp; ↓ back &nbsp;|&nbsp; ENTER select &nbsp;|&nbsp; ESC close</div>
+            <div class="ss-hints">↑ ↓ navigate &nbsp;|&nbsp; ENTER select &nbsp;|&nbsp; ESC close</div>
           </div>
         </div>`;
     }
 
-    // ── Screen 2/3: File selection + inline confirm overlay ────────────────────
+    // ── Screen 2/3: File selection (vertical list) + inline confirm overlay ────
 
     _htmlFileScreen() {
       const isConfirm = this._screen === "confirm";
@@ -396,15 +415,17 @@
           <div class="ss-slot-body">
             <div class="ss-slot-num">SLOT ${id}</div>
             <div class="ss-slot-icon">💾</div>
-            <div class="ss-slot-name">${d.label ?? "Unnamed"}</div>
+            <div class="ss-slot-info">
+              <div class="ss-slot-name">${d.label ?? "Unnamed"}</div>
+              <div class="ss-slot-party">${gameName}</div>
+            </div>
             <div class="ss-slot-date">${fmtDate(d.savedAt)}</div>
-            <div class="ss-slot-party">${gameName}</div>
           </div>` : `
           <div class="ss-slot-body">
             <div class="ss-slot-num">SLOT ${id}</div>
             <div class="ss-slot-empty">— NO DATA —</div>
           </div>`;
-        // keep is-sel visible on the chosen slot under the overlay so user can see which was picked
+
         return `<div class="ss-slot ss-layer ${sel} ${selC} ${inv}" data-slot="${id}" data-valid="${valid}">${body}</div>`;
       }).join("");
 
@@ -414,18 +435,17 @@
         delete: "MEMORY CARD  ▷  ERASE MODE",
       }[this._mode];
 
-      const dimClass     = isConfirm ? "is-dimmed" : "";
-      const confOverlay  = isConfirm ? this._htmlConfirmOverlay() : "";
-      const backFocus    = this._focusArea === "back" ? "is-focus" : "";
+      const dimClass    = isConfirm ? "is-dimmed" : "";
+      const confOverlay = isConfirm ? this._htmlConfirmOverlay() : "";
+      const backFocus   = this._focusArea === "back" ? "is-focus" : "";
 
-      // Status shown on file screen only when NOT in confirm/busy state
-      const fileStatus   = !isConfirm
+      const fileStatus = !isConfirm
         ? `<div class="ss-status ${this._statusCls}">${this._status}</div>`
         : `<div class="ss-status"></div>`;
 
       const hintsText = isConfirm
-        ? `◄ ► navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`
-        : `◄ ► select slot &nbsp;|&nbsp; ↓ back &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`;
+        ? `← → navigate &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`
+        : `↑ ↓ select slot &nbsp;|&nbsp; ENTER confirm &nbsp;|&nbsp; ESC back`;
 
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
@@ -507,7 +527,7 @@
         el.addEventListener("click", () => {
           if (this._busy) return;
           this._mode      = el.dataset.mode;
-          this._sel       = null;
+          this._sel       = 1;
           this._status    = "";
           this._statusCls = "";
           sfx("select");
@@ -588,7 +608,6 @@
           if (this._busy) return;
           this._focusArea = "back";
           backBtn.classList.add("is-focus");
-          // remove focus from main elements
           this._el.querySelectorAll("[data-act='mode'], [data-slot], [data-act='choice']").forEach(c =>
             c.classList.remove("is-focus"));
           this._el.querySelectorAll("[data-slot]").forEach(c =>
@@ -762,7 +781,6 @@
       if (e.key === "Escape") {
         e.preventDefault();
         if (this._screen === "confirm" && this._status) {
-          // dismiss result/error state first
           this._status    = "";
           this._statusCls = "";
           if (this._statusCls === "is-err") {
@@ -774,26 +792,48 @@
         return;
       }
 
-      // ↑/↓ for vertical focus (mode and file screens only, not during confirm overlay)
+      // ↑/↓ — vertical navigation through all items including back button
       if ((e.key === "ArrowDown" || e.key === "ArrowUp") && this._screen !== "confirm") {
         e.preventDefault();
-        if (e.key === "ArrowDown" && this._focusArea === "main") {
-          this._focusArea = "back";
+        const dir = e.key === "ArrowDown" ? 1 : -1;
+
+        if (this._screen === "mode") {
+          const modeNav = [...MODES, "back"];
+          const cur     = this._focusArea === "back" ? "back" : this._mode;
+          const idx     = modeNav.indexOf(cur);
+          const newIdx  = (idx + dir + modeNav.length) % modeNav.length;
+          const newItem = modeNav[newIdx];
           sfx("select");
-          // update visuals directly — no full re-render needed
-          this._el.querySelectorAll("[data-act='mode'], [data-slot]").forEach(c => c.classList.remove("is-focus"));
-          this._el.querySelectorAll("[data-slot]").forEach(c => c.classList.remove("is-sel"));
-          this._el.querySelector("[data-act='back']")?.classList.add("is-focus");
+          if (newItem === "back") {
+            this._focusArea = "back";
+            this._el.querySelectorAll("[data-act='mode']").forEach(c => c.classList.remove("is-focus"));
+            this._el.querySelector("[data-act='back']")?.classList.add("is-focus");
+          } else {
+            this._focusArea = "main";
+            this._mode      = newItem;
+            this._el.querySelectorAll("[data-act='mode']").forEach(c =>
+              c.classList.toggle("is-focus", c.dataset.mode === newItem));
+            this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
+          }
           this._updateCursor();
-        } else if (e.key === "ArrowUp" && this._focusArea === "back") {
-          this._focusArea = "main";
+
+        } else if (this._screen === "file") {
+          const fileNav = Array.from({ length: SS.SLOT_COUNT }, (_, i) => i + 1).concat(["back"]);
+          const cur     = this._focusArea === "back" ? "back" : (this._sel ?? 1);
+          const idx     = Math.max(0, fileNav.indexOf(cur));
+          const newIdx  = (idx + dir + fileNav.length) % fileNav.length;
+          const newItem = fileNav[newIdx];
           sfx("select");
-          this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
-          // restore focus on current item
-          if (this._screen === "mode") {
-            this._el.querySelector(`[data-act='mode'][data-mode='${this._mode}']`)?.classList.add("is-focus");
-          } else if (this._sel !== null) {
-            this._el.querySelector(`[data-slot='${this._sel}']`)?.classList.add("is-sel");
+          if (newItem === "back") {
+            this._focusArea = "back";
+            this._el.querySelectorAll("[data-slot]").forEach(c => c.classList.remove("is-sel"));
+            this._el.querySelector("[data-act='back']")?.classList.add("is-focus");
+          } else {
+            this._focusArea = "main";
+            this._sel       = newItem;
+            this._el.querySelectorAll("[data-slot]").forEach(c =>
+              c.classList.toggle("is-sel", parseInt(c.dataset.slot) === newItem));
+            this._el.querySelector("[data-act='back']")?.classList.remove("is-focus");
           }
           this._updateCursor();
         }
@@ -807,18 +847,11 @@
         return;
       }
 
-      // ── Mode screen ──
+      // ── Mode screen — Enter to select mode ──
       if (this._screen === "mode" && this._focusArea === "main") {
-        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          const idx  = MODES.indexOf(this._mode);
-          const dir  = e.key === "ArrowRight" ? 1 : -1;
-          this._mode = MODES[(idx + dir + MODES.length) % MODES.length];
-          sfx("select");
-          this._render();
-        }
         if (e.key === "Enter") {
           e.preventDefault();
+          this._sel    = 1;
           this._screen = "file";
           sfx("select");
           this._render();
@@ -826,18 +859,8 @@
         return;
       }
 
-      // ── File screen ──
+      // ── File screen — Enter to open confirm ──
       if (this._screen === "file" && this._focusArea === "main") {
-        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          const dir  = e.key === "ArrowRight" ? 1 : -1;
-          const next = Math.max(1, Math.min(SS.SLOT_COUNT, (this._sel ?? 0) + dir));
-          if (next !== this._sel) {
-            this._sel = next;
-            sfx("select");
-            this._render();
-          }
-        }
         if (e.key === "Enter" && this._sel !== null) {
           e.preventDefault();
           const d     = SS.Storage.getSlot(this._sel);
@@ -854,7 +877,7 @@
         return;
       }
 
-      // ── Confirm overlay ──
+      // ── Confirm overlay — ←/→ for YES/NO, Enter to confirm ──
       if (this._screen === "confirm" && !this._status) {
         if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
           e.preventDefault();
