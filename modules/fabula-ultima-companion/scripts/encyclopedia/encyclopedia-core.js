@@ -112,9 +112,9 @@
 .oni-enc-header { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
 .oni-enc-portrait { width:92px; height:92px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; flex:0 0 auto; }
 .oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
-.oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-style:italic; }
-.oni-enc-desc-inline { flex:0 0 auto; max-width:340px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border:1px solid rgba(0,0,0,.12); border-radius:8px; padding:8px 10px; background:rgba(255,255,255,.28); }
+.oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; }
+.oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; font-style:italic; }
+.oni-enc-desc-inline { flex:0 1 auto; width:340px; min-width:160px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border:1px solid rgba(0,0,0,.12); border-radius:8px; padding:8px 10px; background:rgba(255,255,255,.28); }
 .oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
 .oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid rgba(0,0,0,.14); border-radius:8px; overflow:hidden; margin-top:6px; }
 .oni-enc-stat-cell { padding:8px 6px; text-align:center; border-right:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.22); }
