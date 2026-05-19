@@ -165,8 +165,24 @@
     }
     .ss-esc:hover { color: #ff4060; }
 
+    /* === back button === */
+    .ss-back-btn {
+      padding: 7px 28px;
+      font-family: inherit; font-size: 10px;
+      letter-spacing: 3px; text-transform: uppercase;
+      border: 1px solid #0c1e3a; background: #030a18; color: #2c5080;
+      cursor: pointer; transition: all .12s;
+    }
+    .ss-back-btn:hover {
+      border-color: #aa0030; color: #ff4060;
+      box-shadow: 0 0 12px rgba(255,40,70,0.22);
+    }
+
+    /* === footer === */
+    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 4px; }
+
     /* === key hints === */
-    .ss-hints { font-size: 9px; letter-spacing: 2px; color: #122030; margin-top: 12px; }
+    .ss-hints { font-size: 9px; letter-spacing: 2px; color: #122030; }
 
     /* === animations === */
     @keyframes ss-blink   { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -194,7 +210,7 @@
       this._el.id = "save-system-overlay";
       this._el.setAttribute("tabindex", "-1");
       document.body.appendChild(this._el);
-      document.addEventListener("keydown", this._keyFn);
+      document.addEventListener("keydown", this._keyFn, { capture: true });
       this._render();
       this._el.focus();
     }
@@ -203,7 +219,7 @@
       if (!this._el) return;
       this._el.remove();
       this._el = null;
-      document.removeEventListener("keydown", this._keyFn);
+      document.removeEventListener("keydown", this._keyFn, { capture: true });
     }
 
     _injectCSS() {
@@ -286,7 +302,10 @@
         </div>
 
         <div class="ss-status ss-layer ${this._statusCls}">${statusHtml}</div>
-        <div class="ss-hints ss-layer">◄ ► select slot &nbsp;|&nbsp; ESC close</div>
+        <div class="ss-footer ss-layer">
+          <button class="ss-back-btn" data-act="close">◄ BACK</button>
+          <div class="ss-hints">◄ ► select slot &nbsp;|&nbsp; ESC / BACK to close</div>
+        </div>
       `;
     }
 
@@ -325,14 +344,13 @@
         });
       }
 
-      const closeEl = this._el.querySelector("[data-act='close']");
-      if (closeEl) {
-        closeEl.addEventListener("click", () => {
+      this._el.querySelectorAll("[data-act='close']").forEach(el => {
+        el.addEventListener("click", () => {
           if (this._busy) return;
           sfx("cancel");
           this.close();
         });
-      }
+      });
     }
 
     // ── Action execution ─────────────────────────────────────────────────────
@@ -394,6 +412,8 @@
 
     _onKey(e) {
       if (!this._el) return;
+      // Suppress all Foundry hotkeys while the overlay is open
+      e.stopImmediatePropagation();
       if (this._busy) return;
 
       if (e.key === "Escape") {
