@@ -578,7 +578,20 @@
     return renderSection("Condition Affinities", body, "details");
   }
 
-  const ACTION_DESC = `style="margin-top:4px;font-size:12px;line-height:1.5;"`;
+  const ACTION_NAME_COL = `style="flex:0 0 auto;min-width:100px;max-width:38%;"`;
+  const ACTION_DESC_COL = `style="flex:1;min-width:0;font-size:12px;line-height:1.5;border-left:1px solid rgba(0,0,0,.1);padding-left:12px;"`;
+
+  function renderActionItem(img, nameHtml, descHtml) {
+    const cols = descHtml
+      ? `<div style="flex:1;min-width:0;display:flex;align-items:flex-start;gap:0;">
+    <div ${ACTION_NAME_COL}>${nameHtml}</div>
+    <div ${ACTION_DESC_COL}>${descHtml}</div>
+  </div>`
+      : `<div style="flex:1;min-width:0;">${nameHtml}</div>`;
+    return `<li class="oni-enc-ability-item">
+  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+  ${cols}</li>`;
+  }
 
   function renderAttackEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
@@ -588,12 +601,8 @@
     const atr2 = entry?.attribute_die2 ?? entry?.attrib_2 ?? null;
     const formula = atr1 && atr2 ? ESC(`${atr1} + ${atr2}`) : null;
     const desc = sanitizeRichHtml(entry?.attack_description ?? entry?.detail ?? "");
-    return `<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
-  <div style="flex:1;min-width:0;">
-    <div style="font-size:15px;"><strong>${name}</strong>${formula ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${formula}</span>` : ""}</div>
-    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
-  </div></li>`;
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${formula ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${formula}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
   }
 
   function renderAbilityEntry(actor, entry, fmt = "new") {
@@ -603,12 +612,8 @@
     const cost = entry?.active_cost ?? null;
     const meta = cost && cost !== "-" ? ESC(cost) : null;
     const desc = sanitizeRichHtml(entry?.active_description ?? entry?.details ?? entry?.detail ?? "");
-    return `<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
-  <div style="flex:1;min-width:0;">
-    <div style="font-size:15px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
-    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
-  </div></li>`;
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${meta ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${meta}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
   }
 
   function renderPassiveEntry(actor, entry, fmt = "new") {
@@ -616,12 +621,8 @@
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
     const desc = sanitizeRichHtml(entry?.passive_description ?? entry?.details ?? entry?.detail ?? "");
-    return `<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
-  <div style="flex:1;min-width:0;">
-    <div style="font-size:15px;"><strong>${name}</strong></div>
-    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
-  </div></li>`;
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>`;
+    return renderActionItem(img, nameHtml, desc || null);
   }
 
   function renderSpellEntry(actor, entry, fmt = "new") {
@@ -631,12 +632,8 @@
     const cost = entry?.cost ?? null;
     const meta = cost && cost !== "-" ? ESC(cost) : null;
     const desc = sanitizeRichHtml(entry?.spell_description ?? entry?.details ?? entry?.detail ?? "");
-    return `<li class="oni-enc-ability-item">
-  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
-  <div style="flex:1;min-width:0;">
-    <div style="font-size:15px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
-    ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
-  </div></li>`;
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${meta ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${meta}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
   }
 
   function renderActionHeader() {
