@@ -84,7 +84,7 @@
       padding: 42px 56px 34px;
       display: flex; flex-direction: column; align-items: center;
       width: clamp(600px, 82vw, 1000px);
-      max-height: 90vh; overflow-y: auto;
+      max-height: 90vh; overflow: visible;
     }
     .ss-panel::before {
       content: '';
@@ -143,8 +143,14 @@
     .ss-mode-card-label { font-family: inherit; font-size: 18px; font-weight: bold; letter-spacing: 5px; color: #3a1e06; text-transform: uppercase; }
 
     /* === file screen body + slots === */
-    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; }
-    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 12px; transition: opacity .20s, filter .20s; }
+    /* Scroll lives here, not on .ss-panel, so absolutely-positioned portraits aren't clipped */
+    .ss-file-body {
+      position: relative; width: 100%;
+      display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;
+      overflow-y: auto; overflow-x: visible;
+      max-height: calc(90vh - 260px);
+    }
+    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 12px; transition: opacity .20s, filter .20s; padding: 8px 2px; overflow: visible; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
       width: 100%;
@@ -166,26 +172,37 @@
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 16px 22px;
+      padding: 18px 22px;
+      padding-right: 280px; /* reserve right side for floating portraits */
       display: flex; flex-direction: row; align-items: center; gap: 16px;
+      min-height: 80px;
     }
     .ss-slot-num { width: 58px; flex-shrink: 0; font-size: 9px; letter-spacing: 3px; color: #b8945a; }
 
-    /* Token portraits — no border/box, transparent, normalized to same height */
-    .ss-slot-portraits { display: flex; flex-direction: row; gap: 6px; flex-shrink: 0; align-items: flex-end; }
-    .ss-slot-portrait  {
-      height: 58px; width: 58px;
+    /* Token portraits — floating, absolutely positioned right side, extend above slot */
+    .ss-slot-portraits {
+      position: absolute;
+      right: 16px;
+      bottom: 0;
+      display: flex; flex-direction: row; gap: 6px; align-items: flex-end;
+      pointer-events: none; z-index: 4;
+    }
+    .ss-slot-portrait {
+      height: 120px; width: auto; max-width: 90px;
       object-fit: contain; object-position: center bottom;
-      flex-shrink: 0;
       image-rendering: pixelated;
-      filter: drop-shadow(0 2px 3px rgba(60,30,0,0.25));
+      flex-shrink: 0;
+      border: none !important; outline: none !important;
+      box-shadow: none !important; background: transparent !important;
+      filter: drop-shadow(0 4px 10px rgba(20,8,0,0.45));
     }
 
-    .ss-slot-info      { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-    .ss-slot-name      { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-loc       { font-size: 9px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-date      { font-size: 9px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
-    .ss-slot-empty     { flex: 1; font-size: 10px; letter-spacing: 2px; color: #c8aa70; }
+    .ss-slot-info   { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .ss-slot-name   { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-party  { font-size: 9px; color: #9b7040; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
+    .ss-slot-loc    { font-size: 9px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-date   { font-size: 9px; color: #8b6838; letter-spacing: 1px; }
+    .ss-slot-empty  { flex: 1; font-size: 10px; letter-spacing: 2px; color: #c8aa70; }
 
     /* === confirm overlay (floats over dimmed slots) === */
     .ss-conf-overlay {
@@ -436,6 +453,11 @@
           const locName   = liveScene?.navName || d.data?.activeScene?.sceneName || "—";
           const gameName  = d.data?.partyActorData?.system?.props?.game_name ?? "—";
 
+          // Party/database actor name via live UUID lookup
+          const paUuid   = d.data?.partyActorData?.uuid;
+          const paRawId  = paUuid?.startsWith("Actor.") ? paUuid.slice(6) : paUuid;
+          const partyActorName = paRawId ? (game.actors?.get(paRawId)?.name ?? "") : "";
+
           // Token images of active party members at save time (member_id_N only, not bench)
           const partyProps = d.data?.partyActorData?.system?.props ?? {};
           const portraits  = [];
@@ -450,15 +472,17 @@
             .map(p => p.img ? `<img class="ss-slot-portrait" src="${p.img}" title="${p.name}">` : "")
             .join("");
 
+          // Portraits float outside .ss-slot-body; info + date are stacked in the info column
           body = `
+            <div class="ss-slot-portraits">${portraitHtml}</div>
             <div class="ss-slot-body">
               <div class="ss-slot-num">SLOT ${id}</div>
-              <div class="ss-slot-portraits">${portraitHtml}</div>
               <div class="ss-slot-info">
                 <div class="ss-slot-name">${gameName}</div>
+                ${partyActorName ? `<div class="ss-slot-party">${partyActorName}</div>` : ""}
                 <div class="ss-slot-loc">${locName}</div>
+                <div class="ss-slot-date">${fmtDate(d.savedAt)}</div>
               </div>
-              <div class="ss-slot-date">${fmtDate(d.savedAt)}</div>
             </div>`;
         } else {
           body = `
