@@ -150,7 +150,7 @@
       overflow-y: auto; overflow-x: visible;
       max-height: calc(90vh - 300px);
     }
-    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 28px; transition: opacity .20s, filter .20s; padding: 8px 0; overflow: visible; }
+    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 30px; transition: opacity .20s, filter .20s; padding: 8px 0; overflow: visible; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
       width: 100%;
@@ -172,8 +172,8 @@
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 40px 22px;
-      display: flex; flex-direction: row; align-items: center; gap: 40px;
+      padding: 22px 22px;
+      display: flex; flex-direction: row; align-items: center; gap: 19px;
     }
     .ss-slot-num { width: 58px; flex-shrink: 0; font-size: 16px; letter-spacing: 3px; color: #b8945a; }
 
@@ -361,6 +361,13 @@
 
     /* Confirm inner: spring pop-in */
     .ss-conf-inner { animation: ss-conf-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+    /* Suppress entrance animations during confirm re-renders */
+    .ss-panel.no-entry-anim { animation: none !important; }
+    .ss-slots.no-anim .ss-slot,
+    .ss-slots.no-anim .ss-slot:nth-child(n) {
+      animation: none !important; animation-delay: 0ms !important;
+    }
   `;
 
   // ── UI class ──────────────────────────────────────────────────────────────────
@@ -558,6 +565,7 @@
       }[this._mode];
 
       const dimClass    = isConfirm ? "is-dimmed" : "";
+      const noAnim      = isConfirm ? "no-anim"   : "";
       const confOverlay = isConfirm ? this._htmlConfirmOverlay() : "";
       const backFocus   = this._focusArea === "back" ? "is-focus" : "";
 
@@ -571,12 +579,12 @@
 
       return `
         <span class="ss-esc ss-layer" data-act="close">[ ESC ]</span>
-        <div class="ss-panel ss-layer">
+        <div class="ss-panel ss-layer${isConfirm ? " no-entry-anim" : ""}">
           <div class="ss-title">✦  MEMORY CARD  ✦</div>
           <div class="ss-byline">FABULA ULTIMA COMPANION SAVE SYSTEM</div>
           <div class="ss-mode-label">${modeHdr}</div>
           <div class="ss-file-body">
-            <div class="ss-slots ${dimClass}">${slots}</div>
+            <div class="ss-slots ${dimClass} ${noAnim}">${slots}</div>
             ${confOverlay}
           </div>
           ${fileStatus}
