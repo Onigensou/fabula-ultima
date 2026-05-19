@@ -99,7 +99,7 @@
   const SPELL_ICON    = "icons/svg/fire.svg";
 
   // ───────────────────── Page style injection ─────────────────────
-  const PAGE_STYLE_ID = "oni-enc-card-styles-2";
+  const PAGE_STYLE_ID = "oni-enc-card-styles-3";
 
   function ensurePageStyles() {
     if (typeof document === "undefined") return;
@@ -2005,16 +2005,27 @@
       });
     }
 
-    // ── Global button in window header ────────────────────────────
-    const header = rootEl.querySelector(".window-header");
-    if (header && !header.querySelector(".oni-enc-gm-global-btn")) {
-      const btn = document.createElement("button");
-      btn.className = "oni-enc-gm-global-btn";
-      btn.type = "button";
-      btn.innerHTML = '<i class="fa-solid fa-gear"></i> GM';
-      btn.title = "Encyclopedia global GM controls";
-      btn.addEventListener("click", () => openGmGlobalDialog(sheetApp));
-      header.appendChild(btn);
+    // ── Global button above "Add Page" in the sidebar footer ─────
+    // Foundry V12 places the Add Page button in a flex row at the bottom of
+    // the sidebar. We find that row via its parent and insert a full-width
+    // GM button block directly above it.
+    const addPageBtn =
+      rootEl.querySelector("[data-action='createPage']")
+      ?? Array.from(rootEl.querySelectorAll("button")).find(b => /add page/i.test(b.textContent));
+    if (addPageBtn && !rootEl.querySelector(".oni-enc-gm-global-btn")) {
+      const navRow = addPageBtn.closest("footer, nav, .pages-navigation") ?? addPageBtn.parentElement;
+      const insertTarget = navRow ?? addPageBtn;
+      const parent = insertTarget.parentElement;
+      if (parent) {
+        const btn = document.createElement("button");
+        btn.className = "oni-enc-gm-global-btn";
+        btn.type = "button";
+        btn.innerHTML = '<i class="fa-solid fa-gear"></i> GM Controls';
+        btn.title = "Encyclopedia global GM controls";
+        btn.style.cssText = "width:calc(100% - 8px);display:block;margin:0 4px 4px;box-sizing:border-box;text-align:center;";
+        btn.addEventListener("click", () => openGmGlobalDialog(sheetApp));
+        parent.insertBefore(btn, insertTarget);
+      }
     }
   }
 
