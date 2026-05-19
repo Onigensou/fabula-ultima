@@ -138,6 +138,13 @@
 .oni-enc-atr-icon { width:26px; height:26px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 3px; cursor:default; }
 .oni-enc-muted { opacity:.65; font-style:italic; }
 .oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
+.oni-enc-gm-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; background:rgba(120,60,0,.07); border:1px dashed rgba(0,0,0,.18); border-radius:8px; padding:5px 10px; margin:0 0 10px; font-size:12px; }
+.oni-enc-gm-bar-info { display:flex; align-items:center; gap:8px; flex-wrap:wrap; opacity:.75; }
+.oni-enc-gm-bar-actions { display:flex; gap:5px; flex-shrink:0; }
+.oni-enc-gm-btn { font-size:11px; padding:2px 8px; background:rgba(80,40,0,.09); border:1px solid rgba(0,0,0,.2); border-radius:5px; cursor:pointer; white-space:nowrap; line-height:1.6; }
+.oni-enc-gm-btn:hover { background:rgba(80,40,0,.2); }
+.oni-enc-gm-global-btn { font-size:11px; padding:2px 8px; background:rgba(80,40,0,.09); border:1px solid rgba(0,0,0,.2); border-radius:5px; cursor:pointer; white-space:nowrap; }
+.oni-enc-gm-global-btn:hover { background:rgba(80,40,0,.2); }
     `.trim();
     document.head.appendChild(style);
   }
@@ -1371,6 +1378,7 @@
       recordWitnessedAction,
       clearWitnessedActions,
       clearAllWitnessedActions,
+      resetStudyTier,
       _internals: {
         findEntry, createEntry, getCachedUuid, setCachedUuid,
         findStudySkill, createStudySkill, getCachedStudySkillUuid, setCachedStudySkillUuid,
@@ -1760,6 +1768,256 @@
     }
   }
 
+  // ───────────────────── GM Controls UI ─────────────────────
+
+  /**
+   * Reset the study tier for a single monster to 0 (unstudied), preserving
+   * witnessed actions. GM-only.
+   */
+  async function resetStudyTier(actorUuid) {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} resetStudyTier refused: GM only.`);
+      return null;
+    }
+    if (!actorUuid) return null;
+
+    const page = getPageForActor(actorUuid);
+    if (!page) return { ok: false, reason: "no_page" };
+
+    const currentWitnessed = getWitnessedActions(page);
+    const newContent = await renderPage(actorUuid, {
+      bestResult:   0,
+      bestResultBy: null,
+      lastUpdated:  Number(getFlag(page, "lastUpdated")) || 0,
+      witnessedActions: currentWitnessed
+    });
+
+    await page.update({
+      "text.content": newContent,
+      flags: {
+        [FLAG_NAMESPACE]: {
+          [FLAG_KEY]: { bestResult: 0, bestResultBy: null }
+        }
+      }
+    });
+
+    console.info(`${TAG} resetStudyTier: reset for ${actorUuid}.`);
+    return { ok: true, actorUuid };
+  }
+
+  /** Build the GM bar HTML string for a single encyclopedia page. */
+  function buildGmPageBar(page) {
+    const bestResult = Number(getFlag(page, "bestResult")) || 0;
+    const witnessed  = getWitnessedActions(page).size;
+    const tierLabel  = bestResult >= TIER_DETAILS  ? `Tier 3 (${bestResult})`
+                     : bestResult >= TIER_STATS    ? `Tier 2 (${bestResult})`
+                     : bestResult >= TIER_IDENTITY ? `Tier 1 (${bestResult})`
+                     : `Unstudied (${bestResult})`;
+    return `<div class="oni-enc-gm-bar">
+  <span class="oni-enc-gm-bar-info">
+    <i class="fa-solid fa-shield-halved"></i>
+    Study: <strong>${tierLabel}</strong>
+    <span style="opacity:.4;">|</span>
+    Actions seen: <strong>${witnessed}</strong>
+  </span>
+  <span class="oni-enc-gm-bar-actions">
+    <button class="oni-enc-gm-btn" type="button"><i class="fa-solid fa-gear"></i> Manage</button>
+  </span>
+</div>`;
+  }
+
+  /** Open a per-monster GM management dialog. */
+  function openGmPageDialog(page, sheetApp) {
+    if (!game.user?.isGM) return;
+    const actorUuid  = getFlag(page, "actorUuid") ?? "";
+    const pageName   = page.name ?? "Unknown";
+    const bestResult = Number(getFlag(page, "bestResult")) || 0;
+    const witnessed  = getWitnessedActions(page).size;
+    const tierLabel  = bestResult >= TIER_DETAILS  ? `Tier 3 (score: ${bestResult})`
+                     : bestResult >= TIER_STATS    ? `Tier 2 (score: ${bestResult})`
+                     : bestResult >= TIER_IDENTITY ? `Tier 1 (score: ${bestResult})`
+                     : `Unstudied (score: ${bestResult})`;
+
+    new Dialog({
+      title: `Manage: ${pageName}`,
+      content: `
+        <div style="padding:6px 0 4px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px;margin-bottom:14px;">
+            <div>Study tier: <strong>${tierLabel}</strong></div>
+            <div>Actions revealed: <strong>${witnessed}</strong></div>
+          </div>
+          <p style="margin:0;font-size:12px;opacity:.65;font-style:italic;">All operations require confirmation and cannot be undone.</p>
+        </div>`,
+      buttons: {
+        clearWitness: {
+          label: '<i class="fa-solid fa-eye-slash"></i> Clear Action Reveals',
+          callback: async () => {
+            const confirmed = await Dialog.confirm({
+              title: "Clear Action Reveals",
+              content: `<p>Reset all witnessed actions for <strong>${ESC(pageName)}</strong>? All actions will revert to <em>???</em>.</p>`,
+              yes: () => true, no: () => false, defaultYes: false
+            });
+            if (!confirmed) return;
+            await clearWitnessedActions(actorUuid);
+            sheetApp?.render(false);
+            ui.notifications.info(`Cleared action reveals for ${pageName}.`);
+          }
+        },
+        clearStudy: {
+          label: '<i class="fa-solid fa-star-half-stroke"></i> Reset Study Tier',
+          callback: async () => {
+            const confirmed = await Dialog.confirm({
+              title: "Reset Study Tier",
+              content: `<p>Reset study score for <strong>${ESC(pageName)}</strong> to 0? The page will revert to unstudied state (actions are preserved).</p>`,
+              yes: () => true, no: () => false, defaultYes: false
+            });
+            if (!confirmed) return;
+            await resetStudyTier(actorUuid);
+            sheetApp?.render(false);
+            ui.notifications.info(`Reset study tier for ${pageName}.`);
+          }
+        },
+        fullReset: {
+          label: '<i class="fa-solid fa-rotate-left"></i> Full Reset',
+          callback: async () => {
+            const confirmed = await Dialog.confirm({
+              title: "Full Reset",
+              content: `<p>Reset <em>all</em> data for <strong>${ESC(pageName)}</strong>? This clears both study progress and all witnessed actions.</p>`,
+              yes: () => true, no: () => false, defaultYes: false
+            });
+            if (!confirmed) return;
+            await clearWitnessedActions(actorUuid);
+            await resetStudyTier(actorUuid);
+            sheetApp?.render(false);
+            ui.notifications.info(`Full reset complete for ${pageName}.`);
+          }
+        },
+        cancel: { label: "Cancel" }
+      },
+      default: "cancel"
+    }, { width: 400 }).render(true);
+  }
+
+  /** Open the global GM management dialog (all monsters). */
+  function openGmGlobalDialog(sheetApp) {
+    if (!game.user?.isGM) return;
+    const pages = (sheetApp?.object?.pages?.contents ?? [])
+      .filter(p => getFlag(p, "actorUuid"));
+    const totalMonsters  = pages.length;
+    const totalWitnessed = pages.reduce((sum, p) => sum + getWitnessedActions(p).size, 0);
+    const studiedCount   = pages.filter(p => (Number(getFlag(p, "bestResult")) || 0) >= TIER_IDENTITY).length;
+
+    new Dialog({
+      title: "Encyclopedia — Global Controls",
+      content: `
+        <div style="padding:6px 0 4px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:13px;margin-bottom:14px;text-align:center;">
+            <div style="border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:6px;">
+              <div style="font-size:20px;font-weight:900;">${totalMonsters}</div>
+              <div style="opacity:.65;font-size:11px;">monsters tracked</div>
+            </div>
+            <div style="border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:6px;">
+              <div style="font-size:20px;font-weight:900;">${studiedCount}</div>
+              <div style="opacity:.65;font-size:11px;">studied (Tier 1+)</div>
+            </div>
+            <div style="border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:6px;">
+              <div style="font-size:20px;font-weight:900;">${totalWitnessed}</div>
+              <div style="opacity:.65;font-size:11px;">actions revealed</div>
+            </div>
+          </div>
+          <p style="margin:0;font-size:12px;opacity:.65;font-style:italic;">These operations affect all monsters and cannot be undone.</p>
+        </div>`,
+      buttons: {
+        clearWitness: {
+          label: '<i class="fa-solid fa-eye-slash"></i> Clear All Action Reveals',
+          callback: async () => {
+            const confirmed = await Dialog.confirm({
+              title: "Clear All Action Reveals",
+              content: `<p>Reset witnessed actions for <strong>all ${totalMonsters} monsters</strong>? All actions will revert to <em>???</em>. Study tiers are preserved.</p>`,
+              yes: () => true, no: () => false, defaultYes: false
+            });
+            if (!confirmed) return;
+            const result = await clearAllWitnessedActions({ studyToo: false });
+            sheetApp?.render(false);
+            ui.notifications.info(`Cleared action reveals for ${result?.count ?? 0} monsters.`);
+          }
+        },
+        fullResetAll: {
+          label: '<i class="fa-solid fa-rotate-left"></i> Full Reset All Monsters',
+          callback: async () => {
+            const confirmed = await Dialog.confirm({
+              title: "Full Reset — All Monsters",
+              content: `<p>Reset <em>all</em> study data for <strong>all ${totalMonsters} monsters</strong>? This clears both study tiers and all witnessed actions. Use when starting with a new group.</p>`,
+              yes: () => true, no: () => false, defaultYes: false
+            });
+            if (!confirmed) return;
+            const result = await clearAllWitnessedActions({ studyToo: true });
+            sheetApp?.render(false);
+            ui.notifications.info(`Full reset complete for ${result?.count ?? 0} monsters.`);
+          }
+        },
+        cancel: { label: "Cancel" }
+      },
+      default: "cancel"
+    }, { width: 440 }).render(true);
+  }
+
+  /**
+   * Inject GM controls into the encyclopedia journal sheet.
+   * Called from renderJournalSheet — runs on every render, so injection is
+   * idempotent (checks for existing bar before inserting).
+   */
+  function injectGmControls(sheetApp, html) {
+    if (!game.user?.isGM) return;
+
+    // Only inject into the Monster Encyclopedia journal sheet.
+    const entry = sheetApp?.object;
+    if (!entry || entry.documentName !== "JournalEntry") return;
+    const cachedUuid = getCachedUuid();
+    if (!cachedUuid || entry.uuid !== cachedUuid) return;
+
+    const rootEl = (html instanceof jQuery ? html[0] : html);
+    if (!rootEl?.querySelector) return;
+
+    // ── Per-page GM bars ──────────────────────────────────────────
+    const pages = entry.pages?.contents ?? [];
+    for (const page of pages) {
+      const actorUuid = getFlag(page, "actorUuid");
+      if (!actorUuid) continue;
+
+      const pageScope =
+        rootEl.querySelector(`article[data-page-id="${page.id}"]`)
+        ?? rootEl.querySelector(`.journal-entry-page[data-page-id="${page.id}"]`);
+      if (!pageScope) continue;
+
+      // Idempotent guard
+      if (pageScope.querySelector(".oni-enc-gm-bar")) continue;
+
+      const barEl = document.createElement("div");
+      barEl.innerHTML = buildGmPageBar(page).trim();
+      const bar = barEl.firstElementChild;
+      if (!bar) continue;
+
+      pageScope.insertBefore(bar, pageScope.firstChild);
+
+      bar.querySelector(".oni-enc-gm-btn")?.addEventListener("click", () => {
+        openGmPageDialog(page, sheetApp);
+      });
+    }
+
+    // ── Global button in window header ────────────────────────────
+    const header = rootEl.querySelector(".window-header");
+    if (header && !header.querySelector(".oni-enc-gm-global-btn")) {
+      const btn = document.createElement("button");
+      btn.className = "oni-enc-gm-global-btn";
+      btn.type = "button";
+      btn.innerHTML = '<i class="fa-solid fa-database"></i> GM Controls';
+      btn.title = "Encyclopedia global GM controls";
+      btn.addEventListener("click", () => openGmGlobalDialog(sheetApp));
+      header.appendChild(btn);
+    }
+  }
+
   function registerHookListener() {
     // Idempotent: if we re-bootstrap via evalGM during a session, the previous
     // listener has already been removed by our `if (existing API) return` guard
@@ -1767,13 +2025,14 @@
     // runs, so we never double-register from a single session anyway.
     Hooks.on("oni:action:resolved", handleActionResolved);
     Hooks.on("combatStart", handleCombatStart);
-    // Inject page CSS and flush pending unlocks whenever the encyclopedia sheet
-    // renders. ensurePageStyles() is a no-op after first call, so this is safe
-    // to fire on every render across all clients (players need the CSS too —
-    // they never call renderPage() locally since pages are written by GM).
-    Hooks.on("renderJournalSheet", () => {
+    // Inject page CSS, flush pending unlock animations, and inject GM controls
+    // whenever the encyclopedia sheet renders. ensurePageStyles() is a no-op
+    // after first call. injectGmControls only targets the encyclopedia entry
+    // and only runs for GM users, so it's safe to call on every render.
+    Hooks.on("renderJournalSheet", (sheetApp, html) => {
       ensurePageStyles();
       flushPendingUnlocks();
+      injectGmControls(sheetApp, html);
     });
     console.info(`${TAG} oni:action:resolved + combatStart + renderJournalSheet listeners registered.`);
   }
