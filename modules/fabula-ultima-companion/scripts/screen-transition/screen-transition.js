@@ -1,81 +1,93 @@
-// Screen Transition System — PS1/PS2-era fade to black between scene changes
-// Pure client-side DOM/CSS, no sockets, no PIXI. Each client runs independently.
+// Screen Transition System — PS1/PS2-era fade between scene changes
+// Pure client-side DOM/CSS. No sockets. Each client runs independently.
 (() => {
-  const OVERLAY_ID   = "fu-screen-transition";
-  const FADE_IN_MS   = 350;   // ease-in to black (covers the snap)
-  const HOLD_MS      = 150;   // brief dark hold (the "loading" beat)
-  const FADE_OUT_MS  = 650;   // ease-out reveal of new scene
+  const OVERLAY_ID  = "fu-screen-transition";
+  const HOLD_MS     = 180;   // dark hold after canvasReady before revealing
+  const FADE_OUT_MS = 700;   // ease-out reveal duration
 
-  // IDLE | FADING_IN | HOLDING | FADING_OUT
-  let state = "IDLE";
+  // IDLE | COVERED | FADING_OUT
+  let state   = "IDLE";
+  let overlay = null;
 
-  // ── Overlay ──────────────────────────────────────────────────────────────────
+  // ── Overlay — created eagerly on ready so first transition has no cold cost ──
 
-  function getOrCreateOverlay() {
-    let el = document.getElementById(OVERLAY_ID);
-    if (el) return el;
-
-    el = document.createElement("div");
+  function buildOverlay() {
+    const el = document.createElement("div");
     el.id = OVERLAY_ID;
     Object.assign(el.style, {
-      position:       "fixed",
-      inset:          "0",
-      zIndex:         "99999",
-      background:     "#000",
-      opacity:        "0",
-      pointerEvents:  "none",
-      transition:     `opacity ${FADE_IN_MS}ms ease-in`
+      position:      "fixed",
+      inset:         "0",
+      zIndex:        "99999",
+      background:    "#000",
+      opacity:       "0",
+      pointerEvents: "none",
+      willChange:    "opacity",   // promote to compositor layer; transitions are GPU-only
     });
     document.body.appendChild(el);
     return el;
   }
 
-  // ── Transitions ───────────────────────────────────────────────────────────────
+  // Reading a layout property forces the browser to flush pending style changes
+  // synchronously. Without this, opacity:1 is batched and may not paint before
+  // Foundry's own DOM work in the same task queue.
+  function forceReflow() { void overlay.offsetHeight; }
 
-  function fadeIn() {
-    if (state !== "IDLE") return;
-    state = "FADING_IN";
+  // ── cover: instant-to-black ──────────────────────────────────────────────────
+  // We do NOT use a CSS transition here. Any non-zero fade-in duration means the
+  // overlay is semi-transparent when Foundry snaps the scene behind it. Going
+  // black instantly (then revealing slowly) gives the same PS1/PS2 feel while
+  // guaranteeing the snap is always hidden.
+  // Accepts from any state so rapid double-switches are handled correctly.
 
-    const el = getOrCreateOverlay();
-    el.style.transition   = `opacity ${FADE_IN_MS}ms ease-in`;
-    el.style.pointerEvents = "all";
-    el.style.opacity       = "1";
+  function cover() {
+    overlay.style.transition    = "none";
+    overlay.style.opacity       = "1";
+    overlay.style.pointerEvents = "all";
+    forceReflow();   // commit to the GPU before this task continues
+    state = "COVERED";
   }
 
-  function fadeOut() {
-    // Only reveal if we actually went dark — skip on first load (state is IDLE)
-    if (state !== "FADING_IN" && state !== "HOLDING") return;
+  // ── reveal: rAF-gated ease-out ───────────────────────────────────────────────
+  // canvasReady fires when Foundry's canvas data is ready, but PIXI may not have
+  // painted its first frame yet. Two requestAnimationFrame calls step past that
+  // rendering boundary so we never reveal a blank scene.
+
+  function reveal() {
+    if (state !== "COVERED") return;
     state = "FADING_OUT";
 
-    const el = getOrCreateOverlay();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          overlay.style.transition = `opacity ${FADE_OUT_MS}ms ease-out`;
+          overlay.style.opacity    = "0";
 
-    // Wait for HOLD_MS after canvasReady before starting the reveal.
-    // This lets Foundry render at least one frame so the new scene isn't
-    // blank behind the overlay when it starts fading out.
-    setTimeout(() => {
-      el.style.transition   = `opacity ${FADE_OUT_MS}ms ease-out`;
-      el.style.opacity       = "0";
+          // Primary cleanup via transitionend.
+          // Fallback timer guards against transitionend not firing (e.g. if
+          // opacity was already 0, or the element was briefly detached).
+          const cleanup = () => {
+            overlay.style.pointerEvents = "none";
+            state = "IDLE";
+          };
 
-      el.addEventListener("transitionend", () => {
-        el.style.pointerEvents = "none";
-        state = "IDLE";
-      }, { once: true });
-    }, HOLD_MS);
+          const fallback = setTimeout(cleanup, FADE_OUT_MS + 100);
+
+          overlay.addEventListener("transitionend", () => {
+            clearTimeout(fallback);
+            cleanup();
+          }, { once: true });
+
+        }, HOLD_MS);
+      });
+    });
   }
 
-  // ── Foundry hooks ─────────────────────────────────────────────────────────────
+  // ── Boot ─────────────────────────────────────────────────────────────────────
 
   Hooks.once("ready", () => {
-    // canvasTearDown fires when the current scene canvas is being destroyed.
-    // This is the exact moment to go dark — Foundry is about to snap the view.
-    Hooks.on("canvasTearDown", () => {
-      fadeIn();
-    });
+    overlay = buildOverlay();
 
-    // canvasReady fires when the new scene canvas is fully initialised.
-    // We wait HOLD_MS then reveal, giving Foundry time to render.
-    Hooks.on("canvasReady", () => {
-      fadeOut();
-    });
+    Hooks.on("canvasTearDown", cover);
+    Hooks.on("canvasReady",    reveal);
   });
 })();
