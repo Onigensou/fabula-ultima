@@ -34,27 +34,27 @@
     return game.actors.get(rawId) ?? null;
   }
 
-  // Delete-all + recreate-all for items and effects so mergeObject semantics
-  // in updateEmbeddedDocuments can never leave stale flag values behind.
-  // Some NPC actors carry synthetic/template items that have no DB record;
-  // a batch delete throws for those, so fall back to individual deletes and
-  // silently skip any ID the server reports as missing.
-  async function deleteEmbeds(actor, type, ids) {
-    if (!ids.length) return;
-    try {
-      await actor.deleteEmbeddedDocuments(type, ids);
-    } catch {
-      await Promise.all(ids.map(id =>
-        actor.deleteEmbeddedDocuments(type, [id]).catch(() => {})
-      ));
-    }
+  // Returns only the IDs from `ids` that are backed by a real DB record on this
+  // actor.  actor._source contains the raw data the server loaded from the DB;
+  // anything absent there is a synthetic/runtime item injected by the system.
+  // Sending a delete for a synthetic ID triggers a Foundry socket error
+  // notification that .catch() cannot suppress because it fires before the
+  // promise rejects.
+  function dbBackedIds(actor, type, ids) {
+    const srcKey = type === "Item" ? "items" : "effects";
+    const dbSet  = new Set((actor._source?.[srcKey] ?? []).map(d => d._id));
+    return ids.filter(id => dbSet.has(id));
   }
 
+  // Delete-all + recreate-all for items and effects so mergeObject semantics
+  // in updateEmbeddedDocuments can never leave stale flag values behind.
   async function applyActorEmbeds(actor, { items = [], effects = [] }) {
-    await deleteEmbeds(actor, "Item",         [...actor.items.values()].map(i => i.id));
-    if (items.length)   await actor.createEmbeddedDocuments("Item",         items,   { keepId: true });
-    await deleteEmbeds(actor, "ActiveEffect", [...actor.effects.values()].map(e => e.id));
-    if (effects.length) await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
+    const itemIds = dbBackedIds(actor, "Item", [...actor.items.values()].map(i => i.id));
+    if (itemIds.length)   await actor.deleteEmbeddedDocuments("Item", itemIds);
+    if (items.length)     await actor.createEmbeddedDocuments("Item", items, { keepId: true });
+    const fxIds = dbBackedIds(actor, "ActiveEffect", [...actor.effects.values()].map(e => e.id));
+    if (fxIds.length)     await actor.deleteEmbeddedDocuments("ActiveEffect", fxIds);
+    if (effects.length)   await actor.createEmbeddedDocuments("ActiveEffect", effects, { keepId: true });
   }
 
   // Scene mode is stored by the DungeonPathing / Fabula configuration system.
@@ -97,8 +97,8 @@
         uuid:    partyActor.uuid,
         system:  foundry.utils.deepClone(partyActor.system  ?? {}),
         flags:   foundry.utils.deepClone(partyActor.flags   ?? {}),
-        items:   partyActor.items.map(i => foundry.utils.deepClone(i.toObject())),
-        effects: partyActor.effects.map(e => foundry.utils.deepClone(e.toObject())),
+        items:   (partyActor._source?.items   ?? []).map(d => foundry.utils.deepClone(d)),
+        effects: (partyActor._source?.effects ?? []).map(d => foundry.utils.deepClone(d)),
       };
     },
 
@@ -125,8 +125,8 @@
           name:    actor.name,
           system:  foundry.utils.deepClone(actor.system  ?? {}),
           flags:   foundry.utils.deepClone(actor.flags   ?? {}),
-          items:   actor.items.map(i => foundry.utils.deepClone(i.toObject())),
-          effects: actor.effects.map(e => foundry.utils.deepClone(e.toObject())),
+          items:   (actor._source?.items   ?? []).map(d => foundry.utils.deepClone(d)),
+          effects: (actor._source?.effects ?? []).map(d => foundry.utils.deepClone(d)),
         };
       }
       return result;
@@ -164,8 +164,8 @@
           name:    actor.name,
           system:  foundry.utils.deepClone(actor.system  ?? {}),
           flags:   foundry.utils.deepClone(actor.flags   ?? {}),
-          items:   actor.items.map(i => foundry.utils.deepClone(i.toObject())),
-          effects: actor.effects.map(e => foundry.utils.deepClone(e.toObject())),
+          items:   (actor._source?.items   ?? []).map(d => foundry.utils.deepClone(d)),
+          effects: (actor._source?.effects ?? []).map(d => foundry.utils.deepClone(d)),
         };
       }
       return result;
