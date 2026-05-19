@@ -96,6 +96,51 @@
   const ABILITY_ICON  = "icons/svg/aura.svg";
   const STEAL_ICON    = "icons/svg/item-bag.svg";
   const PORTRAIT_FALLBACK = "icons/svg/mystery-man.svg";
+  const SPELL_ICON    = "icons/svg/fire.svg";
+
+  // ───────────────────── Page style injection ─────────────────────
+  const PAGE_STYLE_ID = "oni-enc-card-styles";
+
+  function ensurePageStyles() {
+    if (typeof document === "undefined") return;
+    if (document.getElementById(PAGE_STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = PAGE_STYLE_ID;
+    style.textContent = `
+.oni-enc-root { font-family: Signika, sans-serif; font-size: 14px; color: #2b241a; }
+.oni-enc-card { background: linear-gradient(160deg, #f5f3f0 0%, #ece9e5 100%); border: 2px solid #c2bab0; border-radius: 14px; padding: 16px; box-shadow: 0 3px 14px rgba(0,0,0,.14); box-sizing: border-box; }
+.oni-enc-header { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+.oni-enc-portrait { width:92px; height:92px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; flex:0 0 auto; }
+.oni-enc-title { font-size:24px; font-weight:900; line-height:1.15; }
+.oni-enc-sub { margin-top:4px; opacity:.8; font-size:13px; }
+.oni-enc-traits-sub { margin-top:4px; font-size:12px; opacity:.7; font-style:italic; }
+.oni-enc-desc-inline { flex:0 1 auto; width:340px; min-width:160px; max-height:100px; overflow-y:auto; font-size:12px; line-height:1.5; border:1px solid rgba(0,0,0,.12); border-radius:8px; padding:8px 10px; background:rgba(255,255,255,.28); }
+.oni-enc-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:6px; }
+.oni-enc-stat-row { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid rgba(0,0,0,.14); border-radius:8px; overflow:hidden; margin-top:6px; }
+.oni-enc-stat-cell { padding:8px 6px; text-align:center; border-right:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.22); }
+.oni-enc-stat-cell:last-child { border-right:none; }
+.oni-enc-box { margin:10px 0; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.26); border-radius:10px; padding:10px 12px; box-sizing:border-box; }
+.oni-enc-box-title { font-weight:900; font-size:14px; opacity:.75; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid rgba(0,0,0,.12); padding-bottom:6px; margin-bottom:8px; }
+.oni-enc-badge-wrap { display:flex; flex-wrap:wrap; gap:6px; }
+.oni-enc-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); background:rgba(255,255,255,.42); font-weight:700; font-size:13px; white-space:nowrap; }
+.oni-enc-2col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 16px; }
+.oni-enc-2col-row { display:flex; align-items:center; gap:6px; min-width:0; cursor:default; }
+.oni-enc-2col-label { font-weight:700; min-width:0; flex:0 0 auto; }
+.oni-enc-2col-pct { flex:1; }
+.oni-enc-eff-pos { color:#1f7a3a; font-weight:700; }
+.oni-enc-eff-neg { color:#b02a2a; font-weight:700; }
+.oni-enc-ability-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+.oni-enc-ability-item { display:flex; align-items:flex-start; gap:7px; padding:5px 8px; border:1px solid rgba(0,0,0,.1); border-radius:7px; background:rgba(255,255,255,.36); }
+.oni-enc-ability-item p { margin: 3px 0; }
+.oni-enc-ability-item ul { padding-left: 18px; margin: 3px 0; }
+.oni-enc-ability-item li { margin: 2px 0; }
+.oni-enc-ability-icon { width:30px; height:30px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
+.oni-enc-atr-icon { width:26px; height:26px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 3px; cursor:default; }
+.oni-enc-muted { opacity:.65; font-style:italic; }
+.oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
+    `.trim();
+    document.head.appendChild(style);
+  }
 
   globalThis.FUCompanion = globalThis.FUCompanion ?? {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api ?? {};
@@ -315,19 +360,14 @@
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
-  /**
-   * Card-style wrapper around a titled section. Used by every Identity / Stats
-   * / Details subsection so the page reads as a stack of distinct cards rather
-   * than a flat run of h3 + content. The optional `tier` parameter stamps the
-   * section's reveal tier as a data attribute so the unlock animation can
-   * target only the newly-revealed cards.
-   */
   function renderSection(title, innerHtml, tier = null) {
     const tierAttr = tier ? ` data-enc-tier="${ESC(tier)}"` : "";
     return `
-<section${tierAttr} style="margin:10px 0;padding:12px 14px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);border-radius:8px;">
-  <h3 style="margin:0 0 8px;border:0;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.1);font-size:15px;">${ESC(title)}</h3>
-  <div>${innerHtml}</div>
+<section${tierAttr}>
+  <div class="oni-enc-box">
+    <div class="oni-enc-box-title">${ESC(title)}</div>
+    <div>${innerHtml}</div>
+  </div>
 </section>`;
   }
 
@@ -416,50 +456,53 @@
   }
 
   // ───────────────────── Render — primitives ─────────────────────
-  function renderHeader(actor, p, showMeta) {
-    // Portrait and name are visible to players the moment the token is on the
-    // battlemap, so we always show them here regardless of Study tier. The
-    // meta line (Rank / Level / Species / Attribute / Sub-Type) is the actual
-    // Identity-tier reveal and stays hidden until best ≥ 7.
-    let metaHtml;
+  function renderHeader(actor, p, showMeta, descHtml = null, traitsText = null) {
+    let metaHtml, traitsHtml;
     if (showMeta) {
-      const parts = [p.npc_rank, p.level ? `Lv ${p.level}` : null, p.species, p.attribute]
-        .filter(Boolean).map(ESC).join(" · ");
-      const subtype = p.subtype_list ? ` · <em>${ESC(p.subtype_list)}</em>` : "";
-      metaHtml = `${parts || "—"}${subtype}`;
+      const lvPart  = p.level ? `Lv ${ESC(p.level)} · ` : "";
+      const type    = ESC(p.species      || "—");
+      const subtype = ESC(p.subtype_list || "—");
+      const attr    = ESC(p.attribute    || "—");
+      metaHtml  = `${lvPart}Type: ${type} · Sub-Type: ${subtype} · Attribute: ${attr}`;
+      traitsHtml = traitsText ? `<div class="oni-enc-traits-sub">${ESC(traitsText)}</div>` : "";
     } else {
-      metaHtml = `<span style="opacity:.6;font-style:italic;">Rank · Level · Species · Attribute unknown</span>`;
+      metaHtml  = `<span class="oni-enc-muted">Level · Species · Attribute unknown</span>`;
+      traitsHtml = "";
     }
+    const descBlock = descHtml
+      ? `\n  <div class="oni-enc-desc-inline">${descHtml}</div>`
+      : "";
     return `
-<div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:10px;">
-  <img src="${ESC(actor.img || PORTRAIT_FALLBACK)}" alt="" style="width:104px;height:104px;object-fit:contain;border:0;border-radius:8px;background:rgba(0,0,0,.05);">
+<div class="oni-enc-header">
+  <img class="oni-enc-portrait" src="${ESC(actor.img || PORTRAIT_FALLBACK)}" alt="">
   <div style="flex:1;min-width:0;">
-    <h2 style="margin:0 0 4px;border:0;">${ESC(actor.name ?? "Unknown")}</h2>
-    <div style="font-size:13px;">${metaHtml}</div>
-  </div>
+    <div class="oni-enc-sub">${metaHtml}</div>
+    ${traitsHtml}
+  </div>${descBlock}
 </div>`;
   }
 
   function renderTierSection(tierLabel, threshold, showTier, innerHtml) {
     if (showTier) return innerHtml;
-    return `
-<section style="margin:8px 0;padding:14px 16px;background:rgba(0,0,0,.05);border:1px dashed rgba(0,0,0,.2);border-radius:8px;text-align:center;">
-  <div style="font-size:13px;opacity:.8;">🔒 <strong>${ESC(tierLabel)}</strong> &mdash; requires a Study Check of <strong>${threshold}</strong> or higher.</div>
-</section>`;
+    return renderLockedPlaceholder(tierLabel, threshold);
+  }
+
+  function renderLockedPlaceholder(label, threshold) {
+    return `<div style="margin:10px 0;text-align:center;padding:20px 16px;background:rgba(0,0,0,.78);border-radius:10px;border:1px solid rgba(0,0,0,.5);box-sizing:border-box;">
+  <div style="font-size:28px;line-height:1;margin-bottom:8px;">🔒</div>
+  <div style="font-weight:900;font-size:14px;margin-bottom:5px;color:#fff;">${ESC(label)}</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.65);">Requires a Study Check of <strong style="color:rgba(255,255,255,.9);">${threshold}+</strong> to reveal.</div>
+</div>`;
   }
 
   function renderCoreStatsBlock(p) {
-    const cell = (label, val) => `<td style="padding:6px 8px;border:1px solid rgba(0,0,0,.15);width:25%;"><strong>${ESC(label)}</strong> ${ESC(val ?? "—")}</td>`;
-    const table = `
-<table style="width:100%;border-collapse:collapse;">
-  <tr>
-    ${cell("Max HP", p.max_hp)}
-    ${cell("Max MP", p.max_mp)}
-    ${cell("DEF", p.defense)}
-    ${cell("MDEF", p.magic_defense)}
-  </tr>
-</table>`;
-    return renderSection("Vital Statistics", table, "identity");
+    return renderSection("Vital Statistics", `
+<div class="oni-enc-stat-grid">
+  <div><b>Max HP:</b> ${ESC(p.max_hp ?? "—")}</div>
+  <div><b>DEF:</b> ${ESC(p.defense ?? "—")}</div>
+  <div><b>Max MP:</b> ${ESC(p.max_mp ?? "—")}</div>
+  <div><b>MDEF:</b> ${ESC(p.magic_defense ?? "—")}</div>
+</div>`, "identity");
   }
 
   function renderDescription(p) {
@@ -473,112 +516,166 @@
   }
 
   function renderAttributesBlock(p) {
-    const cell = (label, v) => `<td style="padding:6px 8px;border:1px solid rgba(0,0,0,.15);width:25%;text-align:center;"><strong>${ESC(label)}</strong><br><span style="font-size:18px;font-weight:700;">${v != null ? `d${ESC(v)}` : "—"}</span></td>`;
-    const table = `
-<table style="width:100%;border-collapse:collapse;">
-  <tr>
-    ${cell("MIG", p.mig_base)}
-    ${cell("DEX", p.dex_base)}
-    ${cell("INS", p.ins_base)}
-    ${cell("WLP", p.wlp_base)}
-  </tr>
-</table>`;
-    return renderSection("Attributes", table, "stats");
+    const stat = (label, v) => `
+<div class="oni-enc-stat-cell">
+  <img class="oni-enc-atr-icon" src="${ATR_ICONS[label]}" title="${label}" alt="${label}">
+  <div style="font-size:16px;font-weight:900;">${v != null ? ESC(String(v)) : "—"}</div>
+</div>`;
+    return renderSection("Attributes", `<div class="oni-enc-stat-row">${stat("MIG", p.mig_base)}${stat("DEX", p.dex_base)}${stat("INS", p.ins_base)}${stat("WLP", p.wlp_base)}</div>`, "stats");
   }
 
+  const AFF_SYM = { RS: "🛡", VU: "💥", AB: "♻", IM: "🚫" };
+  const WEP_ICONS = { arcane:"fa-book", bow:"fa-bow-arrow", brawling:"fa-hand-fist", dagger:"fa-dagger", firearm:"fa-gun", flail:"fa-mace", heavy:"fa-hammer-war", spear:"fa-location-arrow", sword:"fa-sword", thrown:"fa-bomb" };
+  const ATR_ICONS = {
+    MIG: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/asan.png",
+    DEX: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+    INS: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+    WLP: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/stat.png",
+  };
+
   function renderAffinities(p) {
-    const rows = [];
+    const badges = [];
     for (let i = 1; i <= 9; i++) {
       const code = p[`affinity_${i}`];
-      const known = ["RS", "VU", "AB", "IM"].includes(code);
-      const right = known ? ESC(AFFINITY_SYM[code] ?? code) : NEUTRAL_LABEL;
-      rows.push(`<li style="${known ? "" : "opacity:.55;"}padding:2px 0;"><strong>${ESC(AFFINITY_NAME[i])}</strong> · ${right}</li>`);
+      if (!["RS","VU","AB","IM"].includes(code)) continue;
+      badges.push(`<span class="oni-enc-badge">${AFF_SYM[code]} ${ESC(AFFINITY_NAME[i])}</span>`);
     }
-    return renderSection("Type Affinities", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`, "details");
+    const body = badges.length
+      ? `<div class="oni-enc-badge-wrap">${badges.join("")}</div>`
+      : `<p style="margin:0;" class="oni-enc-muted">No special affinities.</p>`;
+    return renderSection("Type Affinities", body, "details");
   }
 
   function renderWeaponEff(p) {
     const rows = [];
     for (const wt of WEAPON_TYPES) {
-      const v = p[`${wt}_ef`];
-      const n = Number(v);
-      const known = Number.isFinite(n) && n !== 100;
+      const raw = Number(p[`${wt}_ef`]);
+      const val = Number.isFinite(raw) ? raw : 100;
       const label = wt[0].toUpperCase() + wt.slice(1);
-      const right = known
-        ? `<span style="${n > 100 ? "color:#1f7a3a;" : "color:#b02a2a;"}font-weight:700;">${ESC(n)}%</span>`
-        : NEUTRAL_LABEL;
-      rows.push(`<li style="${known ? "" : "opacity:.55;"}padding:2px 0;"><strong>${ESC(label)}</strong> · ${right}</li>`);
+      const isNeutral = val === 100;
+      const cls = !isNeutral ? (val > 100 ? "oni-enc-eff-pos" : "oni-enc-eff-neg") : "";
+      const rowStyle = isNeutral ? ` style="opacity:.42;"` : "";
+      rows.push(`
+<div class="oni-enc-2col-row"${rowStyle} title="${ESC(label)}">
+  <span class="oni-enc-2col-label"><i class="fa-solid ${WEP_ICONS[wt]}"></i></span>
+  <span class="oni-enc-2col-pct${cls ? ` ${cls}` : ""}">${ESC(val)}%</span>
+</div>`);
     }
-    return renderSection("Weapon Efficiency", `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`, "details");
+    return renderSection("Weapon Efficiency", `<div class="oni-enc-2col">${rows.join("")}</div>`, "details");
   }
 
-  function renderConditionAffinities(p) {
-    const rows = [];
+  function renderConditionBadges(p) {
+    const badges = [];
     for (const c of CONDITIONS) {
       const code = p[`condition_${c}`];
-      if (!["RS", "VU", "AB", "IM"].includes(code)) continue;
+      if (!["RS","VU","AB","IM"].includes(code)) continue;
       const label = c[0].toUpperCase() + c.slice(1);
-      rows.push(`<li style="padding:2px 0;">${ESC(AFFINITY_SYM[code] ?? code)} · <strong>${ESC(label)}</strong></li>`);
+      badges.push(`<span class="oni-enc-badge">${AFF_SYM[code]} ${ESC(label)}</span>`);
     }
-    const body = rows.length
-      ? `<ul style="margin:0;padding-left:18px;columns:2;">${rows.join("")}</ul>`
-      : `<p style="margin:0;"><em>Neutral to every condition.</em></p>`;
+    const body = badges.length
+      ? `<div class="oni-enc-badge-wrap">${badges.join("")}</div>`
+      : `<p style="margin:0;" class="oni-enc-muted">No condition affinities.</p>`;
     return renderSection("Condition Affinities", body, "details");
   }
 
-  function renderAttackEntry(actor, entry) {
-    const name = ESC(entry?.name ?? "Unknown");
-    const item = resolveEmbeddedItem(actor, entry);
-    const img = item?.img || ATTACK_ICON;
-    const atr1 = entry?.attribute_die1 ? ESC(entry.attribute_die1) : null;
-    const atr2 = entry?.attribute_die2 ? ESC(entry.attribute_die2) : null;
-    const formula = atr1 && atr2 ? `${atr1} + ${atr2}` : null;
-    const target  = entry?.active_target ? ESC(entry.active_target) : null;
-    const meta = [formula, target].filter(Boolean).map(m => `<span style="opacity:.75;">${m}</span>`).join(" · ");
-    const desc = sanitizeRichHtml(entry?.attack_description ?? "");
-    return `
-<li style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
-  <img src="${ESC(img)}" alt="" style="width:28px;height:28px;object-fit:contain;border:0;flex:0 0 auto;margin-top:2px;">
-  <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` &middot; ${meta}` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
-  </div>
-</li>`;
+  const ACTION_NAME_COL = `style="flex:0 0 auto;min-width:100px;max-width:38%;"`;
+  const ACTION_DESC_COL = `style="flex:1;min-width:0;font-size:12px;line-height:1.5;border-left:1px solid rgba(0,0,0,.1);padding-left:12px;"`;
+
+  function renderActionItem(img, nameHtml, descHtml) {
+    const cols = descHtml
+      ? `<div style="flex:1;min-width:0;display:flex;align-items:flex-start;gap:0;">
+    <div ${ACTION_NAME_COL}>${nameHtml}</div>
+    <div ${ACTION_DESC_COL}>${descHtml}</div>
+  </div>`
+      : `<div style="flex:1;min-width:0;">${nameHtml}</div>`;
+    return `<li class="oni-enc-ability-item">
+  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
+  ${cols}</li>`;
   }
 
-  function renderAbilityEntry(actor, entry) {
-    const name = ESC(entry?.name ?? "Unknown");
-    const item = resolveEmbeddedItem(actor, entry);
+  function renderAttackEntry(actor, entry, fmt = "new") {
+    const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
+    const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
+    const img = item?.img || ATTACK_ICON;
+    const atr1 = entry?.attribute_die1 ?? entry?.attrib_1 ?? null;
+    const atr2 = entry?.attribute_die2 ?? entry?.attrib_2 ?? null;
+    const formula = atr1 && atr2 ? ESC(`${atr1} + ${atr2}`) : null;
+    const desc = sanitizeRichHtml(entry?.attack_description ?? entry?.detail ?? "");
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${formula ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${formula}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
+  }
+
+  function renderAbilityEntry(actor, entry, fmt = "new") {
+    const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.special_name ?? entry?.name ?? "Unknown"));
+    const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
-    const cost     = entry?.active_cost ? ESC(entry.active_cost) : null;
-    const duration = entry?.active_duration ? ESC(entry.active_duration) : null;
-    const target   = entry?.active_target ? ESC(entry.active_target) : null;
-    const meta = [cost, duration, target].filter(Boolean).filter(s => s !== "-").map(m => `<span style="opacity:.75;">${m}</span>`).join(" · ");
-    const desc = sanitizeRichHtml(entry?.active_description ?? "");
-    return `
-<li style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
-  <img src="${ESC(img)}" alt="" style="width:28px;height:28px;object-fit:contain;border:0;flex:0 0 auto;margin-top:2px;">
-  <div style="flex:1;min-width:0;">
-    <div><strong>${name}</strong>${meta ? ` &middot; ${meta}` : ""}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
-  </div>
-</li>`;
+    const cost = entry?.active_cost ?? null;
+    const meta = cost && cost !== "-" ? ESC(cost) : null;
+    const desc = sanitizeRichHtml(entry?.active_description ?? entry?.details ?? entry?.detail ?? "");
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${meta ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${meta}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
+  }
+
+  function renderPassiveEntry(actor, entry, fmt = "new") {
+    const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.other_name ?? entry?.name ?? "Unknown"));
+    const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
+    const img = item?.img || ABILITY_ICON;
+    const desc = sanitizeRichHtml(entry?.passive_description ?? entry?.details ?? entry?.detail ?? "");
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>`;
+    return renderActionItem(img, nameHtml, desc || null);
+  }
+
+  function renderSpellEntry(actor, entry, fmt = "new") {
+    const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.spell_name ?? entry?.name ?? "Unknown"));
+    const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
+    const img = item?.img || SPELL_ICON;
+    const cost = entry?.cost ?? null;
+    const meta = cost && cost !== "-" ? ESC(cost) : null;
+    const desc = sanitizeRichHtml(entry?.spell_description ?? entry?.details ?? entry?.detail ?? "");
+    const nameHtml = `<div style="font-size:15px;"><strong>${name}</strong></div>${meta ? `<div style="font-size:11px;opacity:.6;margin-top:2px;">${meta}</div>` : ""}`;
+    return renderActionItem(img, nameHtml, desc || null);
+  }
+
+  function renderActionHeader() {
+    return `<div style="margin:20px 0 -2px;">
+  <div style="font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;border-bottom:2px solid rgba(0,0,0,.18);padding-bottom:8px;opacity:.75;">Actions</div>
+</div>`;
   }
 
   function renderAttacks(actor, p) {
-    const list = objectToList(p.attack_list).map(e => renderAttackEntry(actor, e));
-    const body = list.length
-      ? `<ul style="margin:0;padding:0;list-style:none;">${list.join("")}</ul>`
-      : `<p style="margin:0;"><em>None.</em></p>`;
-    return renderSection("Basic Attacks", body, "details");
+    const newList = objectToList(p.attack_list).filter(e => !e?.$deleted);
+    if (newList.length)
+      return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${newList.map(e => renderAttackEntry(actor, e, "new")).join("")}</ul>`, "details");
+    const oldList = objectToList(p.basic_attacks).filter(e => !e?.$deleted);
+    if (!oldList.length) return null;
+    return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   function renderActiveSkills(actor, p) {
-    const list = objectToList(p.skill_active_list).map(e => renderAbilityEntry(actor, e));
-    const body = list.length
-      ? `<ul style="margin:0;padding:0;list-style:none;">${list.join("")}</ul>`
-      : `<p style="margin:0;"><em>None.</em></p>`;
-    return renderSection("Special Abilities", body, "details");
+    const newList = objectToList(p.skill_active_list).filter(e => !e?.$deleted);
+    if (newList.length)
+      return renderSection("Skills", `<ul class="oni-enc-ability-list">${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`, "details");
+    const oldList = objectToList(p.special_list).filter(e => !e?.$deleted);
+    if (!oldList.length) return null;
+    return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`, "details");
+  }
+
+  function renderPassiveSkills(actor, p) {
+    const newList = objectToList(p.skill_passive_list).filter(e => !e?.$deleted);
+    if (newList.length)
+      return renderSection("Passive", `<ul class="oni-enc-ability-list">${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`, "details");
+    const oldList = objectToList(p.other_list).filter(e => !e?.$deleted);
+    if (!oldList.length) return null;
+    return renderSection("Passive", `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`, "details");
+  }
+
+  function renderSpells(actor, p) {
+    const newList = objectToList(p.normal_spell_list).filter(e => !e?.$deleted);
+    if (newList.length)
+      return renderSection("Spells", `<ul class="oni-enc-ability-list">${newList.map(e => renderSpellEntry(actor, e, "new")).join("")}</ul>`, "details");
+    const oldList = objectToList(p.spell_list).filter(e => !e?.$deleted);
+    if (!oldList.length) return null;
+    return renderSection("Spells", `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`, "details");
   }
 
   async function renderStealables(actor, p) {
@@ -598,43 +695,39 @@
       const desc = sanitizeRichHtml(e?.loot_description ?? e?.description ?? "");
 
       return `
-<li style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
-  <img src="${ESC(img)}" alt="" style="width:24px;height:24px;object-fit:contain;border:0;flex:0 0 auto;margin-top:2px;">
+<li class="oni-enc-ability-item">
+  <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
     <div>${labelHtml}</div>
-    ${desc ? `<div style="margin-top:2px;opacity:.9;">${desc}</div>` : ""}
+    ${desc ? `<div style="margin-top:3px;font-size:12px;opacity:.82;">${desc}</div>` : ""}
   </div>
 </li>`;
     }));
 
     const body = rows.length
-      ? `<ul style="margin:0;padding:0;list-style:none;">${rows.join("")}</ul>`
-      : `<p style="margin:0;"><em>Nothing of value.</em></p>`;
+      ? `<ul class="oni-enc-ability-list">${rows.join("")}</ul>`
+      : `<p style="margin:0;" class="oni-enc-muted">Nothing of value.</p>`;
     return renderSection("Stealable Items", body, "identity");
   }
 
   function renderUnstudied() {
     return `
-<div style="margin:10px 0;padding:18px 20px;background:rgba(0,0,0,.05);border:1px dashed rgba(0,0,0,.25);border-radius:10px;text-align:center;">
+<div class="oni-enc-box" style="text-align:center;padding:18px 20px;">
   <div style="font-size:32px;line-height:1;margin-bottom:8px;opacity:.7;">🔒</div>
-  <div style="font-weight:700;margin-bottom:6px;">Unstudied Monster</div>
+  <div style="font-weight:900;margin-bottom:6px;">Unstudied Monster</div>
   <p style="margin:6px 0;opacity:.85;font-size:13px;">Your party hasn't successfully studied this creature yet. Use the <strong>Study</strong> action during combat to begin filling in this entry.</p>
   <ul style="display:inline-block;text-align:left;margin:8px auto;font-size:12px;opacity:.85;">
     <li>Study result <strong>${TIER_IDENTITY}+</strong> &mdash; Identity (Rank, Species, HP/MP, DEF/MDEF, Traits, Stealables)</li>
     <li>Study result <strong>${TIER_STATS}+</strong> &mdash; Attributes (MIG / DEX / INS / WLP)</li>
-    <li>Study result <strong>${TIER_DETAILS}+</strong> &mdash; Detailed profile (Affinities, Weapon Efficiency, Conditions, Attacks, Abilities)</li>
+    <li>Study result <strong>${TIER_DETAILS}+</strong> &mdash; Full profile (Affinities, Attacks, Abilities, Spells, Passives)</li>
   </ul>
 </div>`;
   }
 
   function renderFooter(bestResult, bestResultBy, tierLabel, lastUpdated) {
-    const by = bestResultBy ? ` &middot; best by <em>${ESC(bestResultBy)}</em>` : "";
-    const updated = lastUpdated ? ` &middot; updated ${new Date(lastUpdated).toLocaleString()}` : "";
-    return `
-<hr style="margin-top:14px;">
-<p style="opacity:.65;font-size:11px;margin:6px 0 0;">
-  Best Study Check: <strong>${ESC(bestResult || "—")}</strong> &middot; Tier: <strong>${ESC(tierLabel)}</strong>${by}${updated}
-</p>`;
+    const by = bestResultBy ? ` · best by <em>${ESC(bestResultBy)}</em>` : "";
+    const updated = lastUpdated ? ` · updated ${new Date(lastUpdated).toLocaleString()}` : "";
+    return `<div class="oni-enc-footer">Best Study Check: <strong>${ESC(bestResult || "—")}</strong> · Tier: <strong>${ESC(tierLabel)}</strong>${by}${updated}</div>`;
   }
 
   // ───────────────────── renderPage ─────────────────────
@@ -646,6 +739,8 @@
    * and produce content one update behind.
    */
   async function renderPage(actorUuid, overrides = {}) {
+    ensurePageStyles();
+
     const page = getPageForActor(actorUuid);
     const best        = overrides.bestResult   ?? (page ? (Number(getFlag(page, "bestResult")) || 0) : 0);
     const bestBy      = overrides.bestResultBy ?? (page ? (getFlag(page, "bestResultBy") ?? null) : null);
@@ -663,43 +758,63 @@
     let actor = null;
     try { actor = await fromUuid(actorUuid); } catch { /* tolerate */ }
     if (!actor) {
-      return `<p><em>Actor data not available for ${ESC(actorUuid)}.</em></p>` +
-             renderFooter(best, bestBy, tierLabel, lastUpdated);
+      return `<div class="oni-enc-root"><p><em>Actor data not available for ${ESC(actorUuid)}.</em></p>` +
+             renderFooter(best, bestBy, tierLabel, lastUpdated) + `</div>`;
     }
 
     const p = actor.system?.props ?? {};
 
-    // Special-case unstudied: portrait + name are public (token is on the
-    // battlemap), but the meta line + every section beyond it stays gated
-    // behind the Unstudied placard.
+    // Description rendered inline in the header; traits as plain text below sub-line
+    const descHtml     = showIdentity ? (sanitizeRichHtml(p.study_text ?? "") || null) : null;
+    const traitsText   = showIdentity
+      ? (String(p.traits ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null)
+      : null;
+
+    // Unstudied — full guide message, no tier placeholders needed
     if (!showIdentity) {
-      return [renderHeader(actor, p, false), renderUnstudied(), renderFooter(best, bestBy, tierLabel, lastUpdated)].join("\n");
+      return `<div class="oni-enc-root"><div class="oni-enc-card">${
+        [renderHeader(actor, p, false), renderUnstudied(), renderFooter(best, bestBy, tierLabel, lastUpdated)].join("\n")
+      }</div></div>`;
     }
 
-    const identityBlock = [
+    // Fixed section layout. Locked tiers show an inline placeholder at their
+    // natural position rather than being pushed to the bottom.
+    const bodyParts = [
+      renderHeader(actor, p, true, descHtml, traitsText),
+
+      // ── Identity: core stats ────────────────────────────────────────
       renderCoreStatsBlock(p),
-      renderDescription(p),
-      renderTraits(p),
-      await renderStealables(actor, p)
+
+      // ── Stats tier ─────────────────────────────────────────────────
+      showStats
+        ? renderAttributesBlock(p)
+        : renderLockedPlaceholder("Statistics", TIER_STATS),
+
+      // ── Details tier: affinity block ───────────────────────────────
+      ...(showDetails ? [
+        renderAffinities(p),
+        renderWeaponEff(p),
+        renderConditionBadges(p),
+      ] : [renderLockedPlaceholder("Detailed Profile", TIER_DETAILS)]),
+
+      // ── Identity: stealables (always visible once identity unlocked) ─
+      await renderStealables(actor, p),
+
+      // ── Details tier: action block (auto-hide empty sections) ─────
+      ...(showDetails ? (() => {
+        const sections = [
+          renderAttacks(actor, p),
+          renderActiveSkills(actor, p),
+          renderSpells(actor, p),
+          renderPassiveSkills(actor, p),
+        ].filter(Boolean);
+        return sections.length ? [renderActionHeader(), ...sections] : [];
+      })() : []),
+
+      renderFooter(best, bestBy, tierLabel, lastUpdated),
     ].join("\n");
 
-    const statsBlock = renderAttributesBlock(p);
-
-    const detailsBlock = [
-      renderAffinities(p),
-      renderWeaponEff(p),
-      renderConditionAffinities(p),
-      renderAttacks(actor, p),
-      renderActiveSkills(actor, p)
-    ].join("\n");
-
-    return [
-      renderHeader(actor, p, true),
-      identityBlock,
-      renderTierSection(`Statistics (Stats tier)`, TIER_STATS, showStats, statsBlock),
-      renderTierSection(`Detailed Profile (Details tier)`, TIER_DETAILS, showDetails, detailsBlock),
-      renderFooter(best, bestBy, tierLabel, lastUpdated)
-    ].join("\n");
+    return `<div class="oni-enc-root"><div class="oni-enc-card">${bodyParts}</div></div>`;
   }
 
   // ───────────────────── upsertPage / recordResult ─────────────────────
@@ -1056,6 +1171,33 @@
   }
 
   /**
+   * Play the study VFX + SFX on the canvas token, then wait for it to finish.
+   * Silently no-ops if Sequencer isn't loaded or the token isn't on canvas.
+   */
+  async function playStudyVfxAndWait(targetTokenUuid) {
+    const VFX_MS = 4000;
+    const tokenId = String(targetTokenUuid ?? "").split(".Token.").pop();
+    const canvasTok = tokenId ? canvas?.tokens?.get?.(tokenId) : null;
+    if (!canvasTok || typeof Sequence === "undefined") return;
+    try {
+      new Sequence()
+        .effect()
+          .file("modules/JB2A_DnD5e/Library/Generic/Marker/SciFi/MarkerScifiComplete001_001_GreenYellow_600x600.webm")
+          .atLocation(canvasTok)
+          .duration(VFX_MS)
+          .opacity(0.7)
+          .scale(0.5)
+        .play();
+      new Sequence()
+        .sound("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg")
+        .play();
+      await new Promise(r => setTimeout(r, VFX_MS + 200));
+    } catch (e) {
+      console.warn(TAG, "study VFX failed:", e);
+    }
+  }
+
+  /**
    * `oni:action:resolved` listener. Filters Study fires by skillUuid, walks
    * the targets to the world-actor prototype, then either records the result
    * directly (GM client) or routes through GMExecutor (player client).
@@ -1123,6 +1265,7 @@
       // GM path: write locally. Player path: ship the call through GMExecutor.
       if (game.user?.isGM) {
         await recordResult(event);
+        await playStudyVfxAndWait(targetTokens[0]);
         await openEncyclopediaForActor(targetActorUuid);
         return;
       }
@@ -1140,6 +1283,7 @@
       // GM has written the page; give the doc broadcast a moment to land on
       // this client before we try to focus the page in the sheet.
       await new Promise(r => setTimeout(r, 200));
+      await playStudyVfxAndWait(targetTokens[0]);
       await openEncyclopediaForActor(targetActorUuid);
     } catch (e) {
       console.error(`${TAG} handleActionResolved failed:`, e);
