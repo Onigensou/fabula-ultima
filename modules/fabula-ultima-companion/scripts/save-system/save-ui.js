@@ -81,9 +81,9 @@
         inset 0 1px 0 rgba(255,245,200,0.70),
         inset 0 -1px 0 rgba(120,70,20,0.18);
       border-radius: 4px;
-      padding: 59px 63px;
+      padding: 64px 29px;
       display: flex; flex-direction: column; align-items: center;
-      width: clamp(720px, 92vw, 1570px);
+      width: clamp(400px, 100vw, 1800px);
       max-height: 90vh; overflow: visible;
     }
     .ss-panel::before {
@@ -98,7 +98,7 @@
 
     /* === header === */
     .ss-title {
-      font-size: 28px; letter-spacing: 10px; color: #3a1e06;
+      font-size: 29px; letter-spacing: 10px; color: #3a1e06;
       text-shadow: 0 1px 0 rgba(255,220,130,0.55), 0 2px 10px rgba(160,90,10,0.18);
       margin-bottom: 6px;
     }
@@ -148,9 +148,9 @@
       position: relative; width: 100%;
       display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;
       overflow-y: auto; overflow-x: visible;
-      max-height: calc(90vh - 290px);
+      max-height: calc(90vh - 300px);
     }
-    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 28px; transition: opacity .20s, filter .20s; padding: 8px 2px; overflow: visible; }
+    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 28px; transition: opacity .20s, filter .20s; padding: 8px 0; overflow: visible; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
       width: 100%;
@@ -172,19 +172,20 @@
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 28px 22px;
+      padding: 40px 22px;
       display: flex; flex-direction: row; align-items: center; gap: 40px;
     }
     .ss-slot-num { width: 58px; flex-shrink: 0; font-size: 16px; letter-spacing: 3px; color: #b8945a; }
 
     /* Token portraits — inline flex, left side between slot-num and info */
     .ss-slot-portraits {
-      display: flex; flex-direction: row; gap: 4px; align-items: flex-end;
+      display: flex; flex-direction: row; gap: 26px; align-items: flex-end;
       flex-shrink: 0; pointer-events: none;
-      max-width: 387px; overflow: hidden;
+      max-width: 679px; overflow: hidden;
+      margin-right: 93px;
     }
     .ss-slot-portrait {
-      height: 125px; width: auto; max-width: 160px;
+      height: 148px; width: auto; max-width: 167px;
       object-fit: contain; object-position: center bottom;
       image-rendering: pixelated;
       flex-shrink: 0;
@@ -193,10 +194,10 @@
     }
 
     .ss-slot-info   { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-    .ss-slot-name   { font-size: 16px; font-weight: bold; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-party  { font-size: 9px; color: #9b7040; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
-    .ss-slot-loc    { font-size: 9px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-date   { font-size: 9px; color: #8b6838; letter-spacing: 1px; }
+    .ss-slot-name   { font-size: 19px; font-weight: bold; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-party  { font-size: 15px; color: #9b7040; letter-spacing: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
+    .ss-slot-loc    { font-size: 15px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-date   { font-size: 15px; color: #8b6838; letter-spacing: 1px; }
     .ss-slot-empty  { flex: 1; font-size: 10px; letter-spacing: 2px; color: #c8aa70; }
 
     /* === confirm overlay — fixed so it escapes scroll containers entirely === */
