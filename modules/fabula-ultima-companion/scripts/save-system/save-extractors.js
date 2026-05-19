@@ -257,20 +257,14 @@
         Object.entries(data).map(async ([sceneId, tileDataMap]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
-          const savedIds = new Set(Object.keys(tileDataMap));
-          // Delete tiles added after this save was made
-          const toDelete = [...scene.tiles.values()]
-            .filter(t => !savedIds.has(t.id))
-            .map(t => t.id);
-          if (toDelete.length) await scene.deleteEmbeddedDocuments("Tile", toDelete);
-          // Recreate tiles that existed at save time but are now missing
-          const toCreate = Object.values(tileDataMap)
-            .filter(d => !scene.tiles.has(d._id));
-          if (toCreate.length) await scene.createEmbeddedDocuments("Tile", toCreate, { keepId: true });
-          // Update tiles that still exist to their saved state
-          const toUpdate = Object.values(tileDataMap)
-            .filter(d => scene.tiles.has(d._id));
-          if (toUpdate.length) await scene.updateEmbeddedDocuments("Tile", toUpdate);
+          // Delete all current tiles then recreate from saved state.
+          // updateEmbeddedDocuments uses mergeObject and will not clear keys
+          // that were absent (default false) at save time, so delete+recreate
+          // is the only way to guarantee full flag fidelity.
+          const currentIds = [...scene.tiles.values()].map(t => t.id);
+          if (currentIds.length) await scene.deleteEmbeddedDocuments("Tile", currentIds);
+          const savedTiles = Object.values(tileDataMap);
+          if (savedTiles.length) await scene.createEmbeddedDocuments("Tile", savedTiles, { keepId: true });
         })
       );
     },
@@ -305,20 +299,12 @@
         Object.entries(data).map(async ([sceneId, drawings]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
-          const savedIds = new Set(Object.keys(drawings));
-          // Delete drawings added after this save was made
-          const toDelete = [...scene.drawings.values()]
-            .filter(d => !savedIds.has(d.id))
-            .map(d => d.id);
-          if (toDelete.length) await scene.deleteEmbeddedDocuments("Drawing", toDelete);
-          // Recreate drawings that existed at save time but are now missing
-          const toCreate = Object.values(drawings)
-            .filter(d => !scene.drawings.has(d._id));
-          if (toCreate.length) await scene.createEmbeddedDocuments("Drawing", toCreate, { keepId: true });
-          // Update drawings that still exist to their saved state
-          const toUpdate = Object.values(drawings)
-            .filter(d => scene.drawings.has(d._id));
-          if (toUpdate.length) await scene.updateEmbeddedDocuments("Drawing", toUpdate);
+          // Same delete+recreate pattern as sceneTileVisibility — mergeObject
+          // semantics on updateEmbeddedDocuments cannot clear absent-default flags.
+          const currentIds = [...scene.drawings.values()].map(d => d.id);
+          if (currentIds.length) await scene.deleteEmbeddedDocuments("Drawing", currentIds);
+          const savedDrawings = Object.values(drawings);
+          if (savedDrawings.length) await scene.createEmbeddedDocuments("Drawing", savedDrawings, { keepId: true });
         })
       );
     },
