@@ -19,15 +19,19 @@
   }
 
   function findCurrentGameActor() {
+    // CSB auto-fills props.uuid on every actor, so self-referential props check
+    // matches 700+ actors. The movementControlState flag is set exclusively on
+    // the "Current Game" actor by the movement control system.
     return game.actors.find(a =>
-      a.system?.props?.uuid && a.system.props.uuid === a.uuid
+      a.flags?.[SS.MODULE_ID]?.movementControlState?.currentGameActorId === a.id
     ) ?? null;
   }
 
-  async function findPartyActor(currentGame) {
+  function findPartyActor(currentGame) {
     const gameId = currentGame?.system?.props?.game_id;
     if (!gameId) return null;
-    return await fromUuid(resolveActorUuid(gameId)).catch(() => null);
+    const rawId = gameId.startsWith("Actor.") ? gameId.slice(6) : gameId;
+    return game.actors.get(rawId) ?? null;
   }
 
   function gatherMemberUuids(partyProps) {
@@ -42,8 +46,10 @@
   }
 
   async function buildContext() {
-    const currentGame = findCurrentGameActor();
-    const partyActor  = currentGame ? await findPartyActor(currentGame) : null;
+    // Route through SS.Core so the exported (hot-patchable) reference is used.
+    // This also makes fresh reloads with correct cache work out of the box.
+    const currentGame = SS.Core ? SS.Core.findCurrentGameActor() : findCurrentGameActor();
+    const partyActor  = currentGame ? findPartyActor(currentGame) : null;
     const memberUuids = partyActor ? gatherMemberUuids(partyActor.system?.props ?? {}) : [];
     return { currentGame, partyActor, memberUuids };
   }

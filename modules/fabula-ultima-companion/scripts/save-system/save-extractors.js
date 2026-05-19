@@ -22,6 +22,14 @@
   const MOD = SS.MODULE_ID;
   const TAG = "[SaveSystem][Extractors]";
 
+  // fromUuid inside module IIFEs can fail silently; use game.actors.get() directly
+  // for world actors which are always already in memory.
+  function actorFromUuid(uuid) {
+    if (!uuid || typeof uuid !== "string") return null;
+    const rawId = uuid.startsWith("Actor.") ? uuid.slice(6) : uuid;
+    return game.actors.get(rawId) ?? null;
+  }
+
   // ── 1. Database Pointer ────────────────────────────────────────────────────
   SS.registerExtractor({
     key:   "databasePointer",
@@ -60,7 +68,7 @@
 
     async apply(ctx, data) {
       if (!data?.uuid) return;
-      const pa = await fromUuid(data.uuid).catch(() => null);
+      const pa = actorFromUuid(data.uuid);
       if (!pa) { console.warn(TAG, "partyActorData apply: not found", data.uuid); return; }
       await pa.update({ "system.props": data.props });
     },
@@ -74,7 +82,7 @@
     async extract({ memberUuids }) {
       const result = {};
       for (const uuid of memberUuids) {
-        const actor = await fromUuid(uuid).catch(() => null);
+        const actor = actorFromUuid(uuid);
         if (!actor) continue;
         result[uuid] = {
           name:  actor.name,
@@ -87,7 +95,7 @@
     async apply(ctx, data) {
       if (!data) return;
       for (const [uuid, { props }] of Object.entries(data)) {
-        const actor = await fromUuid(uuid).catch(() => null);
+        const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "partyData apply: not found", uuid); continue; }
         await actor.update({ "system.props": props });
       }
@@ -122,7 +130,7 @@
     async apply(ctx, data) {
       if (!data) return;
       for (const [uuid, { props }] of Object.entries(data)) {
-        const actor = await fromUuid(uuid).catch(() => null);
+        const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "npcData apply: not found", uuid); continue; }
         await actor.update({ "system.props": props });
       }
