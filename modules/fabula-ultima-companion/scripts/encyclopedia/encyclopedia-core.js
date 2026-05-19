@@ -99,7 +99,7 @@
   const SPELL_ICON    = "icons/svg/fire.svg";
 
   // ───────────────────── Page style injection ─────────────────────
-  const PAGE_STYLE_ID = "oni-enc-card-styles";
+  const PAGE_STYLE_ID = "oni-enc-card-styles-2";
 
   function ensurePageStyles() {
     if (typeof document === "undefined") return;
@@ -143,8 +143,8 @@
 .oni-enc-gm-bar-actions { display:flex; gap:5px; flex-shrink:0; }
 .oni-enc-gm-btn { font-size:11px; padding:2px 8px; background:rgba(80,40,0,.09); border:1px solid rgba(0,0,0,.2); border-radius:5px; cursor:pointer; white-space:nowrap; line-height:1.6; }
 .oni-enc-gm-btn:hover { background:rgba(80,40,0,.2); }
-.oni-enc-gm-global-btn { font-size:11px; padding:2px 8px; background:rgba(80,40,0,.09); border:1px solid rgba(0,0,0,.2); border-radius:5px; cursor:pointer; white-space:nowrap; }
-.oni-enc-gm-global-btn:hover { background:rgba(80,40,0,.2); }
+.oni-enc-gm-global-btn { font-size:11px; padding:2px 9px; background:#7c4a1e; color:#f5ede0 !important; border:1px solid #4e2d0c; border-radius:5px; cursor:pointer; white-space:nowrap; font-weight:700; letter-spacing:.03em; box-shadow:0 1px 3px rgba(0,0,0,.4); }
+.oni-enc-gm-global-btn:hover { background:#9a5e27; }
     `.trim();
     document.head.appendChild(style);
   }
@@ -2011,7 +2011,7 @@
       const btn = document.createElement("button");
       btn.className = "oni-enc-gm-global-btn";
       btn.type = "button";
-      btn.innerHTML = '<i class="fa-solid fa-database"></i> GM Controls';
+      btn.innerHTML = '<i class="fa-solid fa-gear"></i> GM';
       btn.title = "Encyclopedia global GM controls";
       btn.addEventListener("click", () => openGmGlobalDialog(sheetApp));
       header.appendChild(btn);
