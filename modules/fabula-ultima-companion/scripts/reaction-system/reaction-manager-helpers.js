@@ -41,6 +41,9 @@ Hooks.once("ready", () => {
     if (uiApi && typeof uiApi.clearAll === "function") {
       try {
         uiApi.clearAll();
+        if (typeof uiApi.clearAllAllyIndicators === "function") {
+          uiApi.clearAllAllyIndicators();
+        }
         usedOfficialClear = true;
       } catch (err) {
         console.error("[ReactionManagerHelpers] Error calling ReactionButtonUI.clearAll().", err);
@@ -303,6 +306,42 @@ Hooks.once("ready", () => {
     };
   }
 
+  // Party-visibility broadcast: read-only mirror of an in-flight reaction
+  // window. Sent to all clients so non-owning party members can see what
+  // reactions are in play for their teammates. Carries the same bucket +
+  // actionCardId + reactorTokenId that the owner button uses to compute
+  // its sub-window key, so ally indicators can subscribe to the same
+  // tick/close events and auto-clear when the owner picks or times out.
+  function buildVisibilityBroadcastFromWindow(windowState, ownerUserIds) {
+    const reactionGroups = Array.from(windowState?.reactionGroupsByItemUuid?.values?.() ?? []);
+    const items = reactionGroups
+      .map(group => ({
+        itemUuid: group?.item?.uuid ?? null,
+        name: group?.item?.name ?? null,
+        img: group?.item?.img ?? null,
+        triggers: uniqueStrings(group?.triggers ?? [])
+      }))
+      .filter(it => !!it.itemUuid);
+
+    const latestPhasePayload = windowState?.latestPhasePayload ?? {};
+    const actionCardId =
+      latestPhasePayload?.actionCardId ??
+      latestPhasePayload?.meta?.actionCardId ??
+      null;
+
+    return {
+      tokenId: windowState?.tokenId ?? null,
+      actorUuid: windowState?.actorUuid ?? null,
+      phaseBucket: windowState?.phaseBucket ?? null,
+      actionCardId,
+      ownerUserIds: Array.isArray(ownerUserIds) ? [...ownerUserIds] : [],
+      latestTriggerKey: windowState?.latestTriggerKey ?? null,
+      triggerKeys: uniqueStrings(windowState?.triggerKeys ?? []),
+      items,
+      latestPhasePayload: foundry.utils.deepClone(latestPhasePayload)
+    };
+  }
+
   // ===========================================================================
   // 4) Passive event-stamp + source-event helpers (used to dedupe passive runs)
   // ===========================================================================
@@ -352,6 +391,7 @@ Hooks.once("ready", () => {
     buildTriggerEntriesForWindow,
     buildCtxFromWindow,
     buildSocketOfferFromWindow,
+    buildVisibilityBroadcastFromWindow,
     pickPassiveEventStamp,
     buildPassiveSourceEvent
   };

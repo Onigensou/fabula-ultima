@@ -43,7 +43,13 @@ Hooks.once("ready", () => {
 
     const ReactionUI = {
       root: null,
-      buttons: {}
+      buttons: {},
+      // Ally indicators — read-only mirrors of OTHER party members'
+      // in-flight reaction windows. Keyed by tokenId. Distinct map from
+      // `buttons` so an owner blade and an ally indicator could in
+      // principle coexist (though in practice the receiver-side ownership
+      // gate ensures only one of the two ever renders per client per token).
+      allyIndicators: {}
     };
 
     function byIdOnCanvas(tokenId) {
@@ -225,6 +231,49 @@ Hooks.once("ready", () => {
         }
         #oni-reaction-root .oni-reaction-cancel:active {
           transform: translateY(0) scale(.96);
+        }
+
+        /* ============================================================
+           Ally indicator — read-only mirror of an in-flight reaction
+           window belonging to another party member. Visually quieter
+           than the owner blade: no countdown, no cancel pip, dimmed.
+           ============================================================ */
+        #oni-reaction-root .oni-reaction-blade.is-ally {
+          font-size: 10px;
+          padding: 4px 9px;
+          letter-spacing: .2px;
+          font-weight: 700;
+          color: rgba(58, 50, 40, .72);
+          background: linear-gradient(180deg,
+            rgba(246, 241, 230, .68),
+            rgba(220, 210, 188, .68)
+          );
+          border: 1px dashed rgba(122, 106, 85, .65);
+          border-radius: 9px;
+          box-shadow:
+            0 1px 0 rgba(41, 33, 24, .25),
+            0 0 0 1px rgba(255, 255, 255, .35) inset;
+          text-shadow: 0 1px 0 rgba(255, 255, 255, .55);
+          cursor: default;
+          filter: saturate(0.55);
+        }
+
+        #oni-reaction-root .oni-reaction-blade.is-ally:hover {
+          filter: saturate(0.7) brightness(1.04);
+          transform: none;
+          box-shadow:
+            0 2px 0 rgba(41, 33, 24, .35),
+            0 0 0 1px rgba(255, 255, 255, .45) inset;
+        }
+
+        #oni-reaction-root .oni-reaction-blade.is-ally .ally-label {
+          padding-top: 1px;
+        }
+
+        #oni-reaction-root .oni-reaction-blade.is-ally .ally-owner {
+          opacity: .75;
+          font-weight: 800;
+          margin-right: 4px;
         }
       `;
 
@@ -790,10 +839,225 @@ const rec = {
       }
     });
 
+    // -----------------------------------------------------------------
+    // Ally indicator — read-only floating label rendered on a teammate's
+    // token while their reaction window is in flight. Doesn't open the
+    // picker, doesn't carry a countdown, doesn't expose a cancel pip.
+    // Cleanup is driven by the same `oni:reactionWindow:tick` close events
+    // the owner blade uses, correlated by sub-window key.
+    // -----------------------------------------------------------------
+    function escapeAllyText(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function computeSubKeyFromBroadcast(payload) {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      const buildSubKey = rs?._internals?.buildSubKey;
+      const computeBucket = rs?._internals?.computeBucket;
+      if (!buildSubKey || !computeBucket) return null;
+      const phasePayload = payload?.latestPhasePayload ?? null;
+      const tokenId = payload?.tokenId ?? null;
+      if (!phasePayload || !tokenId) return null;
+      try {
+        const bucket = computeBucket(phasePayload);
+        const actionCardId =
+          phasePayload?.actionCardId ??
+          phasePayload?.meta?.actionCardId ??
+          payload?.actionCardId ??
+          null;
+        return buildSubKey({ bucket, actionCardId, reactorTokenId: tokenId });
+      } catch { return null; }
+    }
+
+    function buildAllyLabel(payload) {
+      const items = Array.isArray(payload?.items) ? payload.items : [];
+      const names = items.map(it => it?.name).filter(Boolean);
+
+      const ownerNames = (payload?.ownerUserIds ?? [])
+        .filter(uid => uid && !game.users?.get(uid)?.isGM)
+        .map(uid => game.users?.get(uid)?.name)
+        .filter(Boolean);
+
+      const ownerStr = ownerNames.length ? ownerNames[0] : null;
+
+      const displayNames = names.length === 0
+        ? "Reaction"
+        : (names.length === 1
+            ? names[0]
+            : `${names[0]} +${names.length - 1}`);
+
+      return { ownerStr, displayNames, fullList: names.join(", ") };
+    }
+
+    function applyAllyContentToBlade(blade, payload) {
+      if (!blade) return;
+      const { ownerStr, displayNames, fullList } = buildAllyLabel(payload);
+      const ownerPart = ownerStr
+        ? `<span class="ally-owner">${escapeAllyText(ownerStr)}</span>`
+        : "";
+      blade.innerHTML = `${ownerPart}<span class="ally-label">${escapeAllyText(displayNames)}</span>`;
+      const titleParts = [];
+      if (ownerStr) titleParts.push(`${ownerStr} can react with:`);
+      if (fullList) titleParts.push(fullList);
+      blade.title = titleParts.join(" ");
+    }
+
+    function updateAllyIndicatorPosition(rec) {
+      if (!rec) return;
+      const token = byIdOnCanvas(rec.tokenId);
+      if (!token || !ReactionUI.root) return;
+      const world = tokenAnchorWorld(token);
+      const client = worldToClient(world.x, world.y);
+      const el = rec.wrap;
+      if (!el) return;
+      el.style.left = `${client.x}px`;
+      el.style.top = `${client.y}px`;
+    }
+
+    function attachAllyTrackingHooks(rec) {
+      if (!rec) return;
+      if (!Array.isArray(rec.hooks)) rec.hooks = [];
+
+      const tokenId = rec.tokenId;
+      const updateTokenHandler = (doc) => {
+        if (doc.id !== tokenId) return;
+        updateAllyIndicatorPosition(rec);
+      };
+      const canvasPanHandler = () => updateAllyIndicatorPosition(rec);
+
+      Hooks.on("updateToken", updateTokenHandler);
+      Hooks.on("canvasPan", canvasPanHandler);
+
+      rec.hooks.push(
+        { event: "updateToken", handler: updateTokenHandler },
+        { event: "canvasPan", handler: canvasPanHandler }
+      );
+    }
+
+    function detachAllyTrackingHooks(rec) {
+      if (!rec) return;
+      for (const h of rec.hooks ?? []) {
+        try { Hooks.off(h.event, h.handler); } catch (_) {}
+      }
+      rec.hooks = [];
+    }
+
+    function spawnAllyIndicator(token, payload) {
+      if (!token || !payload) return;
+      ensureReactionStyles();
+      const root = ensureRoot();
+      const tokenId = token.id;
+
+      const existing = ReactionUI.allyIndicators[tokenId];
+      if (existing) {
+        existing.payload = payload;
+        existing.subKey = computeSubKeyFromBroadcast(payload) ?? existing.subKey;
+        applyAllyContentToBlade(existing.blade, payload);
+        updateAllyIndicatorPosition(existing);
+        return;
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "oni-reaction-item";
+
+      const blade = document.createElement("div");
+      blade.className = "oni-reaction-blade is-ally";
+
+      wrap.appendChild(blade);
+      root.appendChild(wrap);
+
+      const rec = {
+        wrap,
+        blade,
+        tokenId,
+        payload,
+        subKey: computeSubKeyFromBroadcast(payload),
+        hooks: [],
+        leaving: false,
+        removeTimer: null,
+        finishRemove: null,
+        removeSeq: 0
+      };
+
+      applyAllyContentToBlade(blade, payload);
+      updateAllyIndicatorPosition(rec);
+      attachAllyTrackingHooks(rec);
+
+      requestAnimationFrame(() => {
+        if (!wrap.isConnected) return;
+        wrap.classList.add("is-visible");
+      });
+
+      ReactionUI.allyIndicators[tokenId] = rec;
+    }
+
+    function removeAllyIndicator(tokenId) {
+      const rec = ReactionUI.allyIndicators[tokenId];
+      if (!rec || rec.leaving) return;
+      rec.leaving = true;
+      rec.removeSeq = (rec.removeSeq ?? 0) + 1;
+      const seq = rec.removeSeq;
+
+      detachAllyTrackingHooks(rec);
+      const el = rec.wrap;
+      if (!el) {
+        if (ReactionUI.allyIndicators[tokenId] === rec) {
+          delete ReactionUI.allyIndicators[tokenId];
+        }
+        return;
+      }
+
+      el.classList.remove("is-visible");
+      el.classList.add("is-leaving");
+
+      let done = false;
+      const finish = () => {
+        if (done || !rec.leaving || rec.removeSeq !== seq) return;
+        done = true;
+        try { el.removeEventListener("transitionend", finish); } catch (_) {}
+        try { el.remove(); } catch (_) {}
+        rec.finishRemove = null;
+        rec.removeTimer = null;
+        if (ReactionUI.allyIndicators[tokenId] === rec) {
+          delete ReactionUI.allyIndicators[tokenId];
+        }
+      };
+
+      rec.finishRemove = finish;
+      el.addEventListener("transitionend", finish);
+      rec.removeTimer = setTimeout(finish, 250);
+    }
+
+    function clearAllAllyIndicators() {
+      for (const tokenId of Object.keys(ReactionUI.allyIndicators)) {
+        removeAllyIndicator(tokenId);
+      }
+    }
+
+    // When the owner sub-window resolves (timeout, pick, skip), the
+    // substrate broadcasts a close-tick. Match by subKey and clear the
+    // corresponding ally indicator on every non-owning client.
+    Hooks.on("oni:reactionWindow:tick", ({ subKey, closed } = {}) => {
+      if (!closed || !subKey) return;
+      const recsSnapshot = Object.values(ReactionUI.allyIndicators).slice();
+      for (const rec of recsSnapshot) {
+        if (rec.subKey === subKey) {
+          try { removeAllyIndicator(rec.tokenId); } catch (_) {}
+        }
+      }
+    });
+
     window[KEY] = {
       spawnButton,
       removeButton,
-      clearAll
+      clearAll,
+      spawnAllyIndicator,
+      removeAllyIndicator,
+      clearAllAllyIndicators
     };
 
     console.debug("[ReactionButtonUI] Installed. Provides oni.ReactionButtonUI API.");
