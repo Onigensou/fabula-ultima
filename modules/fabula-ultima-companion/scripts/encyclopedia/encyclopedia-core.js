@@ -315,6 +315,11 @@
     return foundry.utils.getProperty(page, `flags.${FLAG_NAMESPACE}.${FLAG_KEY}.${key}`);
   }
 
+  function getWitnessedActions(page) {
+    const val = getFlag(page, "witnessedActions");
+    return Array.isArray(val) ? new Set(val.filter(Boolean).map(String)) : new Set();
+  }
+
   function getPageForActor(actorUuid) {
     if (!actorUuid) return null;
     const cached = getCachedUuid();
@@ -593,7 +598,18 @@
   ${cols}</li>`;
   }
 
-  function renderAttackEntry(actor, entry, fmt = "new") {
+  function renderWitnessedActionPlaceholder() {
+    return `<li class="oni-enc-ability-item" style="opacity:.55;">
+  <img class="oni-enc-ability-icon" src="${ESC(PORTRAIT_FALLBACK)}" alt="">
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:15px;font-style:italic;"><strong style="opacity:.45;">???</strong></div>
+    <div style="font-size:11px;opacity:.45;margin-top:2px;">Witness this action in combat to reveal its details</div>
+  </div>
+</li>`;
+  }
+
+  function renderAttackEntry(actor, entry, fmt = "new", witnessed = true) {
+    if (!witnessed) return renderWitnessedActionPlaceholder();
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ATTACK_ICON;
@@ -605,7 +621,8 @@
     return renderActionItem(img, nameHtml, desc || null);
   }
 
-  function renderAbilityEntry(actor, entry, fmt = "new") {
+  function renderAbilityEntry(actor, entry, fmt = "new", witnessed = true) {
+    if (!witnessed) return renderWitnessedActionPlaceholder();
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.special_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
@@ -616,7 +633,8 @@
     return renderActionItem(img, nameHtml, desc || null);
   }
 
-  function renderPassiveEntry(actor, entry, fmt = "new") {
+  function renderPassiveEntry(actor, entry, fmt = "new", witnessed = true) {
+    if (!witnessed) return renderWitnessedActionPlaceholder();
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.other_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || ABILITY_ICON;
@@ -625,7 +643,8 @@
     return renderActionItem(img, nameHtml, desc || null);
   }
 
-  function renderSpellEntry(actor, entry, fmt = "new") {
+  function renderSpellEntry(actor, entry, fmt = "new", witnessed = true) {
+    if (!witnessed) return renderWitnessedActionPlaceholder();
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.spell_name ?? entry?.name ?? "Unknown"));
     const item = fmt === "new" ? resolveEmbeddedItem(actor, entry) : null;
     const img = item?.img || SPELL_ICON;
@@ -642,40 +661,79 @@
 </div>`;
   }
 
-  function renderAttacks(actor, p) {
+  // Extract the stable item ID from a list entry's uuid field.
+  // Returns null for old-format entries that have no uuid.
+  function entryItemId(entry) {
+    const uuid = String(entry?.uuid ?? "").trim();
+    if (!uuid) return null;
+    const id = uuid.split(".").pop();
+    return id || null;
+  }
+
+  function renderAttacks(actor, p, witnessedSet = null) {
+    const ws = witnessedSet ?? new Set();
     const newList = objectToList(p.attack_list).filter(e => !e?.$deleted);
-    if (newList.length)
-      return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${newList.map(e => renderAttackEntry(actor, e, "new")).join("")}</ul>`, "details");
+    if (newList.length) {
+      const items = newList.map(e => {
+        const id = entryItemId(e);
+        // Old-format entries (no uuid) are treated as always-witnessed.
+        const witnessed = id ? ws.has(id) : true;
+        return renderAttackEntry(actor, e, "new", witnessed);
+      });
+      return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${items.join("")}</ul>`, "details");
+    }
     const oldList = objectToList(p.basic_attacks).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old")).join("")}</ul>`, "details");
+    // Old-format attacks have no uuid — always show them as witnessed.
+    return renderSection("Basic Attacks", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAttackEntry(actor, e, "old", true)).join("")}</ul>`, "details");
   }
 
-  function renderActiveSkills(actor, p) {
+  function renderActiveSkills(actor, p, witnessedSet = null) {
+    const ws = witnessedSet ?? new Set();
     const newList = objectToList(p.skill_active_list).filter(e => !e?.$deleted);
-    if (newList.length)
-      return renderSection("Skills", `<ul class="oni-enc-ability-list">${newList.map(e => renderAbilityEntry(actor, e, "new")).join("")}</ul>`, "details");
+    if (newList.length) {
+      const items = newList.map(e => {
+        const id = entryItemId(e);
+        const witnessed = id ? ws.has(id) : true;
+        return renderAbilityEntry(actor, e, "new", witnessed);
+      });
+      return renderSection("Skills", `<ul class="oni-enc-ability-list">${items.join("")}</ul>`, "details");
+    }
     const oldList = objectToList(p.special_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderSection("Skills", `<ul class="oni-enc-ability-list">${oldList.map(e => renderAbilityEntry(actor, e, "old", true)).join("")}</ul>`, "details");
   }
 
-  function renderPassiveSkills(actor, p) {
+  function renderPassiveSkills(actor, p, witnessedSet = null) {
+    const ws = witnessedSet ?? new Set();
     const newList = objectToList(p.skill_passive_list).filter(e => !e?.$deleted);
-    if (newList.length)
-      return renderSection("Passive", `<ul class="oni-enc-ability-list">${newList.map(e => renderPassiveEntry(actor, e, "new")).join("")}</ul>`, "details");
+    if (newList.length) {
+      const items = newList.map(e => {
+        const id = entryItemId(e);
+        const witnessed = id ? ws.has(id) : true;
+        return renderPassiveEntry(actor, e, "new", witnessed);
+      });
+      return renderSection("Passive", `<ul class="oni-enc-ability-list">${items.join("")}</ul>`, "details");
+    }
     const oldList = objectToList(p.other_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Passive", `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderSection("Passive", `<ul class="oni-enc-ability-list">${oldList.map(e => renderPassiveEntry(actor, e, "old", true)).join("")}</ul>`, "details");
   }
 
-  function renderSpells(actor, p) {
+  function renderSpells(actor, p, witnessedSet = null) {
+    const ws = witnessedSet ?? new Set();
     const newList = objectToList(p.normal_spell_list).filter(e => !e?.$deleted);
-    if (newList.length)
-      return renderSection("Spells", `<ul class="oni-enc-ability-list">${newList.map(e => renderSpellEntry(actor, e, "new")).join("")}</ul>`, "details");
+    if (newList.length) {
+      const items = newList.map(e => {
+        const id = entryItemId(e);
+        const witnessed = id ? ws.has(id) : true;
+        return renderSpellEntry(actor, e, "new", witnessed);
+      });
+      return renderSection("Spells", `<ul class="oni-enc-ability-list">${items.join("")}</ul>`, "details");
+    }
     const oldList = objectToList(p.spell_list).filter(e => !e?.$deleted);
     if (!oldList.length) return null;
-    return renderSection("Spells", `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old")).join("")}</ul>`, "details");
+    return renderSection("Spells", `<ul class="oni-enc-ability-list">${oldList.map(e => renderSpellEntry(actor, e, "old", true)).join("")}</ul>`, "details");
   }
 
   async function renderStealables(actor, p) {
@@ -719,7 +777,8 @@
   <ul style="display:inline-block;text-align:left;margin:8px auto;font-size:12px;opacity:.85;">
     <li>Study result <strong>${TIER_IDENTITY}+</strong> &mdash; Identity (Rank, Species, HP/MP, DEF/MDEF, Traits, Stealables)</li>
     <li>Study result <strong>${TIER_STATS}+</strong> &mdash; Attributes (MIG / DEX / INS / WLP)</li>
-    <li>Study result <strong>${TIER_DETAILS}+</strong> &mdash; Full profile (Affinities, Attacks, Abilities, Spells, Passives)</li>
+    <li>Study result <strong>${TIER_DETAILS}+</strong> &mdash; Resistances (Affinities, Weapon Efficiency, Condition Affinities)</li>
+    <li style="margin-top:4px;"><em>Actions &amp; abilities are revealed individually when witnessed in combat.</em></li>
   </ul>
 </div>`;
   }
@@ -742,9 +801,15 @@
     ensurePageStyles();
 
     const page = getPageForActor(actorUuid);
-    const best        = overrides.bestResult   ?? (page ? (Number(getFlag(page, "bestResult")) || 0) : 0);
-    const bestBy      = overrides.bestResultBy ?? (page ? (getFlag(page, "bestResultBy") ?? null) : null);
-    const lastUpdated = overrides.lastUpdated  ?? (page ? (Number(getFlag(page, "lastUpdated")) || 0) : 0);
+    const best        = overrides.bestResult    ?? (page ? (Number(getFlag(page, "bestResult")) || 0) : 0);
+    const bestBy      = overrides.bestResultBy  ?? (page ? (getFlag(page, "bestResultBy") ?? null) : null);
+    const lastUpdated = overrides.lastUpdated   ?? (page ? (Number(getFlag(page, "lastUpdated")) || 0) : 0);
+
+    // witnessedActions can be passed as a Set in overrides (render-before-save path in
+    // recordWitnessedAction) or read from the page flags (all other callers).
+    const witnessedSet = (overrides.witnessedActions instanceof Set)
+      ? overrides.witnessedActions
+      : (page ? getWitnessedActions(page) : new Set());
 
     const showIdentity = best >= TIER_IDENTITY;
     const showStats    = best >= TIER_STATS;
@@ -764,18 +829,34 @@
 
     const p = actor.system?.props ?? {};
 
+    // Action block is always rendered regardless of study tier; witness state
+    // controls per-entry visibility. Compute it once and reuse below.
+    const actionSections = [
+      renderAttacks(actor, p, witnessedSet),
+      renderActiveSkills(actor, p, witnessedSet),
+      renderSpells(actor, p, witnessedSet),
+      renderPassiveSkills(actor, p, witnessedSet),
+    ].filter(Boolean);
+    const actionBlock = actionSections.length
+      ? [renderActionHeader(), ...actionSections]
+      : [];
+
+    // Unstudied — show guide message and any already-witnessed actions.
+    if (!showIdentity) {
+      const bodyParts = [
+        renderHeader(actor, p, false),
+        renderUnstudied(),
+        ...actionBlock,
+        renderFooter(best, bestBy, tierLabel, lastUpdated),
+      ].join("\n");
+      return `<div class="oni-enc-root"><div class="oni-enc-card">${bodyParts}</div></div>`;
+    }
+
     // Description rendered inline in the header; traits as plain text below sub-line
-    const descHtml     = showIdentity ? (sanitizeRichHtml(p.study_text ?? "") || null) : null;
-    const traitsText   = showIdentity
+    const descHtml   = showIdentity ? (sanitizeRichHtml(p.study_text ?? "") || null) : null;
+    const traitsText = showIdentity
       ? (String(p.traits ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || null)
       : null;
-
-    // Unstudied — full guide message, no tier placeholders needed
-    if (!showIdentity) {
-      return `<div class="oni-enc-root"><div class="oni-enc-card">${
-        [renderHeader(actor, p, false), renderUnstudied(), renderFooter(best, bestBy, tierLabel, lastUpdated)].join("\n")
-      }</div></div>`;
-    }
 
     // Fixed section layout. Locked tiers show an inline placeholder at their
     // natural position rather than being pushed to the bottom.
@@ -790,7 +871,7 @@
         ? renderAttributesBlock(p)
         : renderLockedPlaceholder("Statistics", TIER_STATS),
 
-      // ── Details tier: affinity block ───────────────────────────────
+      // ── Details tier: affinity / resistance block ───────────────────
       ...(showDetails ? [
         renderAffinities(p),
         renderWeaponEff(p),
@@ -800,16 +881,8 @@
       // ── Identity: stealables (always visible once identity unlocked) ─
       await renderStealables(actor, p),
 
-      // ── Details tier: action block (auto-hide empty sections) ─────
-      ...(showDetails ? (() => {
-        const sections = [
-          renderAttacks(actor, p),
-          renderActiveSkills(actor, p),
-          renderSpells(actor, p),
-          renderPassiveSkills(actor, p),
-        ].filter(Boolean);
-        return sections.length ? [renderActionHeader(), ...sections] : [];
-      })() : []),
+      // ── Action block (witness-gated per-action, independent of study tier) ──
+      ...actionBlock,
 
       renderFooter(best, bestBy, tierLabel, lastUpdated),
     ].join("\n");
@@ -817,7 +890,7 @@
     return `<div class="oni-enc-root"><div class="oni-enc-card">${bodyParts}</div></div>`;
   }
 
-  // ───────────────────── upsertPage / recordResult ─────────────────────
+  // ───────────────────── upsertPage / recordResult / witness writes ─────────────────────
   async function upsertPage(actorUuid) {
     if (!game.user?.isGM) { console.warn(`${TAG} upsertPage refused: GM only (phase 2).`); return null; }
     if (!actorUuid) { console.warn(`${TAG} upsertPage: actorUuid required.`); return null; }
@@ -920,6 +993,189 @@
     catch (e) { console.warn(TAG, "oni:encyclopedia:updated hook listener threw.", e); }
 
     return { previousBest, newBest, changed };
+  }
+
+  /**
+   * Record that the party witnessed a hostile NPC use a specific action.
+   * Called automatically by handleActionResolved; also exposed on the public API
+   * so the GM can call it manually (e.g. from the console) if needed.
+   *
+   * Returns { wasNew: true } on first witness, { wasNew: false } if already known,
+   * or null on error / permission failure.
+   */
+  async function recordWitnessedAction({
+    actorUuid,
+    itemId,
+    actionName = "???",
+    actionImg  = "",
+    actionDesc = "",
+    monsterName = "Monster"
+  } = {}) {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} recordWitnessedAction refused: GM only.`);
+      return null;
+    }
+    if (!actorUuid || !itemId) {
+      console.warn(`${TAG} recordWitnessedAction: actorUuid and itemId required.`);
+      return null;
+    }
+
+    const page = await upsertPage(actorUuid);
+    if (!page) return null;
+
+    const existing = getWitnessedActions(page);
+    if (existing.has(itemId)) return { wasNew: false };
+
+    existing.add(itemId);
+
+    // Re-render now (with the new witnessed set) so the page update carries
+    // the correct content. Reading flags here would see the pre-update state.
+    const newContent = await renderPage(actorUuid, {
+      bestResult:       Number(getFlag(page, "bestResult"))   || 0,
+      bestResultBy:     getFlag(page, "bestResultBy")        ?? null,
+      lastUpdated:      Number(getFlag(page, "lastUpdated")) || 0,
+      witnessedActions: existing
+    });
+
+    await page.update({
+      "text.content": newContent,
+      flags: {
+        [FLAG_NAMESPACE]: {
+          [FLAG_KEY]: { witnessedActions: Array.from(existing) }
+        }
+      }
+    });
+
+    // Post a styled chat message so all players see the reveal in the log.
+    try {
+      const imgTag = actionImg
+        ? `<img src="${ESC(actionImg)}" style="width:22px;height:22px;object-fit:contain;border:none !important;vertical-align:middle;margin-right:6px;" alt="">`
+        : "";
+      const descHtml = actionDesc
+        ? `<div style="margin-top:6px;font-size:12px;line-height:1.5;opacity:.85;">${actionDesc}</div>`
+        : "";
+      const content = `
+<div style="font-family:Signika,sans-serif;border:1px solid #c2bab0;border-radius:8px;padding:10px 12px;background:linear-gradient(160deg,#f5f3f0,#ece9e5);">
+  <div style="font-size:10px;font-weight:700;opacity:.55;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">⚠ Action Revealed</div>
+  <div style="font-size:12px;opacity:.7;margin-bottom:2px;">${ESC(monsterName)}</div>
+  <div style="font-weight:900;font-size:15px;">${imgTag}${ESC(actionName)}</div>
+  ${descHtml}
+</div>`.trim();
+      await ChatMessage.create({
+        content,
+        whisper: [],
+        speaker: { alias: "Monster Encyclopedia" }
+      });
+    } catch (e) {
+      console.warn(`${TAG} recordWitnessedAction: chat reveal failed:`, e);
+    }
+
+    console.info(`${TAG} Witnessed action recorded: ${monsterName} → ${actionName} (${itemId})`);
+    return { wasNew: true, actorUuid, itemId, actionName };
+  }
+
+  /**
+   * Clear all witnessed-action data for a single monster.
+   * The page is re-rendered so all actions revert to ???.
+   * Useful for resetting a specific monster between groups or campaigns.
+   */
+  async function clearWitnessedActions(actorUuid) {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} clearWitnessedActions refused: GM only.`);
+      return null;
+    }
+    if (!actorUuid) {
+      console.warn(`${TAG} clearWitnessedActions: actorUuid required.`);
+      return null;
+    }
+
+    const page = getPageForActor(actorUuid);
+    if (!page) {
+      console.warn(`${TAG} clearWitnessedActions: no encyclopedia page for ${actorUuid}.`);
+      return { ok: false, reason: "no_page" };
+    }
+
+    const newContent = await renderPage(actorUuid, {
+      bestResult:       Number(getFlag(page, "bestResult"))   || 0,
+      bestResultBy:     getFlag(page, "bestResultBy")        ?? null,
+      lastUpdated:      Number(getFlag(page, "lastUpdated")) || 0,
+      witnessedActions: new Set()
+    });
+
+    await page.update({
+      "text.content": newContent,
+      flags: {
+        [FLAG_NAMESPACE]: {
+          [FLAG_KEY]: { witnessedActions: [] }
+        }
+      }
+    });
+
+    console.info(`${TAG} clearWitnessedActions: cleared for ${actorUuid}.`);
+    return { ok: true, actorUuid };
+  }
+
+  /**
+   * Clear witnessed-action data for every monster in the encyclopedia.
+   * Pass { studyToo: true } to also reset bestResult to 0 (full wipe for a new group).
+   *
+   * Examples (from the Foundry console):
+   *   // Wipe only action reveals:
+   *   FUCompanion.api.encyclopedia.clearAllWitnessedActions()
+   *   // Full reset — actions AND study progress:
+   *   FUCompanion.api.encyclopedia.clearAllWitnessedActions({ studyToo: true })
+   */
+  async function clearAllWitnessedActions({ studyToo = false } = {}) {
+    if (!game.user?.isGM) {
+      console.warn(`${TAG} clearAllWitnessedActions refused: GM only.`);
+      return null;
+    }
+
+    const entry = await getEntry();
+    if (!entry) {
+      console.warn(`${TAG} clearAllWitnessedActions: encyclopedia entry not found.`);
+      return { ok: false, reason: "no_entry" };
+    }
+
+    const pages = entry.pages?.contents ?? Array.from(entry.pages?.values?.() ?? []);
+    let count = 0;
+
+    for (const page of pages) {
+      try {
+        const actorUuid = getFlag(page, "actorUuid");
+        if (!actorUuid) continue;
+
+        const clearedBest    = studyToo ? 0  : (Number(getFlag(page, "bestResult")) || 0);
+        const clearedBestBy  = studyToo ? null : (getFlag(page, "bestResultBy") ?? null);
+        const clearedUpdated = Number(getFlag(page, "lastUpdated")) || 0;
+
+        const newContent = await renderPage(actorUuid, {
+          bestResult:       clearedBest,
+          bestResultBy:     clearedBestBy,
+          lastUpdated:      clearedUpdated,
+          witnessedActions: new Set()
+        });
+
+        const flagPatch = { witnessedActions: [] };
+        if (studyToo) {
+          flagPatch.bestResult    = 0;
+          flagPatch.bestResultBy  = null;
+          flagPatch.isPlaceholder = true;
+        }
+
+        await page.update({
+          "text.content": newContent,
+          flags: { [FLAG_NAMESPACE]: { [FLAG_KEY]: flagPatch } }
+        });
+        count++;
+      } catch (e) {
+        console.warn(`${TAG} clearAllWitnessedActions: failed for page ${page.id}:`, e);
+      }
+    }
+
+    const label = studyToo ? "study progress + witnessed actions" : "witnessed actions";
+    console.info(`${TAG} clearAllWitnessedActions: cleared ${label} for ${count} page(s).`);
+    return { ok: true, count, studyToo };
   }
 
   // ───────────────────── Unlock animation ─────────────────────
@@ -1102,6 +1358,30 @@
       // Re-sort pages by (rank, name). Called automatically after writes;
       // exposed for manual triggering / debugging.
       sortPages,
+      // Action witness API — record / inspect / clear per-action reveal state.
+      //
+      // recordWitnessedAction({ actorUuid, itemId, actionName?, actionImg?,
+      //                         actionDesc?, monsterName? })
+      //   → { wasNew: bool } | null
+      //   Called automatically by handleActionResolved; exposed for manual use.
+      //
+      // clearWitnessedActions(actorUuid)
+      //   → { ok: true } | { ok: false, reason }
+      //   Clear one monster's witness data (all actions revert to ???).
+      //
+      // clearAllWitnessedActions({ studyToo?: bool })
+      //   → { ok: true, count, studyToo }
+      //   Clear every page's witness data.
+      //   Pass { studyToo: true } to also reset bestResult to 0 (full wipe).
+      //
+      // Examples from the Foundry console (GM only):
+      //   enc = FUCompanion.api.encyclopedia
+      //   enc.clearAllWitnessedActions()              // wipe action reveals only
+      //   enc.clearAllWitnessedActions({studyToo:true}) // full reset for new group
+      //   enc.clearWitnessedActions("Actor.XXXX")    // single monster
+      recordWitnessedAction,
+      clearWitnessedActions,
+      clearAllWitnessedActions,
       _internals: {
         findEntry, createEntry, getCachedUuid, setCachedUuid,
         findStudySkill, createStudySkill, getCachedStudySkillUuid, setCachedStudySkillUuid,
@@ -1109,6 +1389,7 @@
         ENTRY_NAME, SETTING_KEY, STUDY_SETTING_KEY,
         TIER_IDENTITY, TIER_STATS, TIER_DETAILS,
         handleCombatStart,
+        getWitnessedActions,
         // Unlock animation infra — exposed for diagnostics / manual testing.
         queueUnlock, flushPendingUnlocks, crossedTiersFor, pendingUnlocks,
         SOCKET_CHANNEL, ANIM_CLASS
@@ -1221,70 +1502,138 @@
       // if missing). Cached after the first call, so this is cheap on the
       // hot path.
       const studyUuid = await getStudySkillUuid();
-      if (!studyUuid || skillUuid !== studyUuid) return;
-      if (payload.executionMode === "autoPassive") return; // never auto-write from passives
+      const isStudyAction = !!studyUuid && skillUuid === studyUuid;
 
-      const accuracy = payload.accuracy ?? null;
-      if (!accuracy) return; // Study without a roll shouldn't reach the encyclopedia
+      // ── Path A: Study skill ───────────────────────────────────────────────
+      if (isStudyAction) {
+        if (payload.executionMode === "autoPassive") return; // never auto-write from passives
 
-      const targetTokens = Array.isArray(payload.originalTargetUUIDs) && payload.originalTargetUUIDs.length
-        ? payload.originalTargetUUIDs
-        : (Array.isArray(payload.targets) ? payload.targets : []);
-      if (!targetTokens.length) return;
+        const accuracy = payload.accuracy ?? null;
+        if (!accuracy) return; // Study without a roll shouldn't reach the encyclopedia
 
-      const targetActorUuid = await resolveActorPrototypeUuid(targetTokens[0]);
-      if (!targetActorUuid) {
-        console.warn(`${TAG} could not resolve target actor prototype UUID for ${targetTokens[0]}.`);
-        return;
-      }
+        const targetTokens = Array.isArray(payload.originalTargetUUIDs) && payload.originalTargetUUIDs.length
+          ? payload.originalTargetUUIDs
+          : (Array.isArray(payload.targets) ? payload.targets : []);
+        if (!targetTokens.length) return;
 
-      // Studier name for the "best by" credit line. The attacker is stored as
-      // a token UUID in meta.attackerUuid; resolve to the actor document for
-      // the display name. Falls back to core.attackerName if resolution fails.
-      let studierName = payload.core?.attackerName ?? null;
-      try {
-        const attackerUuid = payload.meta?.attackerUuid ?? payload.attackerActorUuid ?? null;
-        if (attackerUuid) {
-          const attackerDoc = await fromUuid(attackerUuid);
-          if (attackerDoc) {
-            studierName = attackerDoc.documentName === "Token"
-              ? (attackerDoc.actor?.name ?? attackerDoc.name ?? studierName)
-              : (attackerDoc.name ?? studierName);
-          }
+        const targetActorUuid = await resolveActorPrototypeUuid(targetTokens[0]);
+        if (!targetActorUuid) {
+          console.warn(`${TAG} could not resolve target actor prototype UUID for ${targetTokens[0]}.`);
+          return;
         }
-      } catch { /* tolerate, keep core.attackerName */ }
 
-      const event = {
-        actorUuid: targetActorUuid,
-        total: Number(accuracy.total ?? 0) || 0,
-        isCrit: !!accuracy.isCrit,
-        isFumble: !!accuracy.isFumble,
-        studierActorId: studierName
-      };
+        // Studier name for the "best by" credit line.
+        let studierName = payload.core?.attackerName ?? null;
+        try {
+          const attackerUuid = payload.meta?.attackerUuid ?? payload.attackerActorUuid ?? null;
+          if (attackerUuid) {
+            const attackerDoc = await fromUuid(attackerUuid);
+            if (attackerDoc) {
+              studierName = attackerDoc.documentName === "Token"
+                ? (attackerDoc.actor?.name ?? attackerDoc.name ?? studierName)
+                : (attackerDoc.name ?? studierName);
+            }
+          }
+        } catch { /* tolerate, keep core.attackerName */ }
 
-      // GM path: write locally. Player path: ship the call through GMExecutor.
-      if (game.user?.isGM) {
-        await recordResult(event);
+        const event = {
+          actorUuid: targetActorUuid,
+          total: Number(accuracy.total ?? 0) || 0,
+          isCrit: !!accuracy.isCrit,
+          isFumble: !!accuracy.isFumble,
+          studierActorId: studierName
+        };
+
+        if (game.user?.isGM) {
+          await recordResult(event);
+          await playStudyVfxAndWait(targetTokens[0]);
+          await openEncyclopediaForActor(targetActorUuid);
+          return;
+        }
+
+        const gmExec = globalThis.FUCompanion?.api?.GMExecutor;
+        if (!gmExec?.executeSnippet) {
+          console.warn(`${TAG} GMExecutor unavailable; encyclopedia update skipped.`);
+          return;
+        }
+        await gmExec.executeSnippet({
+          mode: "encyclopedia.recordResult",
+          scriptText: `return await globalThis.FUCompanion?.api?.encyclopedia?.recordResult?.(args.event);`,
+          args: { event }
+        });
+        // GM has written the page; give the doc broadcast a moment to land on
+        // this client before we try to focus the page in the sheet.
+        await new Promise(r => setTimeout(r, 200));
         await playStudyVfxAndWait(targetTokens[0]);
         await openEncyclopediaForActor(targetActorUuid);
         return;
       }
 
+      // ── Path B: NPC action witness ────────────────────────────────────────
+      // Record when a hostile NPC uses any action for the first time so it
+      // gets individually revealed in the encyclopedia.
+
+      const attackerUuid = payload.meta?.attackerUuid ?? payload.meta?.attackerActorUuid
+        ?? payload.attackerActorUuid ?? null;
+      if (!attackerUuid) return;
+
+      // Only hostile (disposition -1) actors trigger witness reveals.
+      let attackerDisposition = 0;
+      try {
+        const doc = await fromUuid(attackerUuid);
+        const tok = (doc?.documentName === "Token" || doc?.documentName === "TokenDocument")
+          ? doc
+          : (doc?.token ?? doc?.token?.document ?? null);
+        attackerDisposition = Number(tok?.disposition ?? tok?.document?.disposition ?? 0);
+      } catch { /* tolerate */ }
+
+      if (attackerDisposition !== -1) return;
+
+      // Resolve prototype UUID so the witness key is stable across token instances.
+      const protoUuid = await resolveActorPrototypeUuid(attackerUuid);
+      if (!protoUuid) return;
+
+      // Item ID is the last segment of the skillUuid (same across linked /
+      // unlinked tokens because embedded item _ids are copied from the prototype).
+      const itemId = skillUuid.split(".").pop();
+      if (!itemId) return;
+
+      // Resolve item details for the chat reveal message.
+      let monsterActor = null;
+      let actionItem   = null;
+      try {
+        monsterActor = await fromUuid(protoUuid);
+        actionItem   = monsterActor?.items?.get(itemId);
+      } catch { /* tolerate */ }
+
+      const actionName  = actionItem?.name ?? payload.core?.skillName ?? "???";
+      const actionImg   = actionItem?.img  ?? "";
+      const actionDesc  = sanitizeRichHtml(
+        actionItem?.system?.props?.attack_description
+        ?? actionItem?.system?.props?.active_description
+        ?? actionItem?.system?.props?.spell_description
+        ?? actionItem?.system?.props?.passive_description
+        ?? ""
+      );
+      const monsterName = monsterActor?.name ?? payload.meta?.attackerName ?? "Monster";
+
+      const witnessEvent = { actorUuid: protoUuid, itemId, actionName, actionImg, actionDesc, monsterName };
+
+      if (game.user?.isGM) {
+        await recordWitnessedAction(witnessEvent);
+        return;
+      }
+
       const gmExec = globalThis.FUCompanion?.api?.GMExecutor;
       if (!gmExec?.executeSnippet) {
-        console.warn(`${TAG} GMExecutor unavailable; encyclopedia update skipped.`);
+        console.warn(`${TAG} GMExecutor unavailable; witness record skipped.`);
         return;
       }
       await gmExec.executeSnippet({
-        mode: "encyclopedia.recordResult",
-        scriptText: `return await globalThis.FUCompanion?.api?.encyclopedia?.recordResult?.(args.event);`,
-        args: { event }
+        mode: "encyclopedia.recordWitnessedAction",
+        scriptText: `return await globalThis.FUCompanion?.api?.encyclopedia?.recordWitnessedAction?.(args.event);`,
+        args: { event: witnessEvent }
       });
-      // GM has written the page; give the doc broadcast a moment to land on
-      // this client before we try to focus the page in the sheet.
-      await new Promise(r => setTimeout(r, 200));
-      await playStudyVfxAndWait(targetTokens[0]);
-      await openEncyclopediaForActor(targetActorUuid);
     } catch (e) {
       console.error(`${TAG} handleActionResolved failed:`, e);
     }
