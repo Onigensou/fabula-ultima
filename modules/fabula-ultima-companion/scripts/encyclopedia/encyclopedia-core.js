@@ -1045,30 +1045,6 @@
       }
     });
 
-    // Post a styled chat message so all players see the reveal in the log.
-    try {
-      const imgTag = actionImg
-        ? `<img src="${ESC(actionImg)}" style="width:22px;height:22px;object-fit:contain;border:none !important;vertical-align:middle;margin-right:6px;" alt="">`
-        : "";
-      const descHtml = actionDesc
-        ? `<div style="margin-top:6px;font-size:12px;line-height:1.5;opacity:.85;">${actionDesc}</div>`
-        : "";
-      const content = `
-<div style="font-family:Signika,sans-serif;border:1px solid #c2bab0;border-radius:8px;padding:10px 12px;background:linear-gradient(160deg,#f5f3f0,#ece9e5);">
-  <div style="font-size:10px;font-weight:700;opacity:.55;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">⚠ Action Revealed</div>
-  <div style="font-size:12px;opacity:.7;margin-bottom:2px;">${ESC(monsterName)}</div>
-  <div style="font-weight:900;font-size:15px;">${imgTag}${ESC(actionName)}</div>
-  ${descHtml}
-</div>`.trim();
-      await ChatMessage.create({
-        content,
-        whisper: [],
-        speaker: { alias: "Monster Encyclopedia" }
-      });
-    } catch (e) {
-      console.warn(`${TAG} recordWitnessedAction: chat reveal failed:`, e);
-    }
-
     console.info(`${TAG} Witnessed action recorded: ${monsterName} → ${actionName} (${itemId})`);
     return { wasNew: true, actorUuid, itemId, actionName };
   }
