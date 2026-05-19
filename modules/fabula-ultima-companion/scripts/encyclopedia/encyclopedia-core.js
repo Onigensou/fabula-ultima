@@ -603,7 +603,6 @@
   <img class="oni-enc-ability-icon" src="${ESC(PORTRAIT_FALLBACK)}" alt="">
   <div style="flex:1;min-width:0;">
     <div style="font-size:15px;font-style:italic;"><strong style="opacity:.45;">???</strong></div>
-    <div style="font-size:11px;opacity:.45;margin-top:2px;">Witness this action in combat to reveal its details</div>
   </div>
 </li>`;
   }
@@ -1329,9 +1328,23 @@
   function registerSocketListener() {
     try {
       game.socket?.on?.(SOCKET_CHANNEL, (payload) => {
-        if (payload?.type !== "encyclopedia:unlock") return;
-        // Receivers don't re-broadcast — that would loop.
-        queueUnlock(payload.actorUuid, payload.tiers, { broadcast: false });
+        if (payload?.type === "encyclopedia:unlock") {
+          // Receivers don't re-broadcast — that would loop.
+          queueUnlock(payload.actorUuid, payload.tiers, { broadcast: false });
+          return;
+        }
+        if (payload?.type === "encyclopedia:open") {
+          // GM emits this after writing a Study result so all other clients
+          // (the confirming player's browser) also open / focus the page.
+          // Brief delay so Foundry's document broadcast lands before we try
+          // to resolve the page — matters most when this is a first-study
+          // and the page was just created on GM a moment ago.
+          setTimeout(
+            () => openEncyclopediaForActor(payload.actorUuid).catch(() => {}),
+            400
+          );
+          return;
+        }
       });
     } catch (e) {
       console.warn(`${TAG} socket listener registration failed:`, e);
@@ -1479,12 +1492,13 @@
   }
 
   /**
-   * `oni:action:resolved` listener. Filters Study fires by skillUuid, walks
-   * the targets to the world-actor prototype, then either records the result
-   * directly (GM client) or routes through GMExecutor (player client).
+   * `oni:action:resolved` listener. Handles Study (Path A) and NPC action
+   * witnessing (Path B).
    *
-   * Fires on the CLICKER's client only — Foundry hooks are local. GM routing
-   * is the only path that lets a player Confirm update the encyclopedia.
+   * NOTE: `execute()` in action-execution-core is GM-only, so this hook
+   * always fires on the GM client regardless of who clicked Confirm.
+   * Player clients are notified via the `encyclopedia:open` socket message
+   * emitted at the end of Path A.
    */
   async function handleActionResolved(eventData) {
     try {
@@ -1544,28 +1558,17 @@
           studierActorId: studierName
         };
 
-        if (game.user?.isGM) {
-          await recordResult(event);
-          await playStudyVfxAndWait(targetTokens[0]);
-          await openEncyclopediaForActor(targetActorUuid);
-          return;
-        }
-
-        const gmExec = globalThis.FUCompanion?.api?.GMExecutor;
-        if (!gmExec?.executeSnippet) {
-          console.warn(`${TAG} GMExecutor unavailable; encyclopedia update skipped.`);
-          return;
-        }
-        await gmExec.executeSnippet({
-          mode: "encyclopedia.recordResult",
-          scriptText: `return await globalThis.FUCompanion?.api?.encyclopedia?.recordResult?.(args.event);`,
-          args: { event }
-        });
-        // GM has written the page; give the doc broadcast a moment to land on
-        // this client before we try to focus the page in the sheet.
-        await new Promise(r => setTimeout(r, 200));
+        // This hook always fires on GM (execute() is GM-only). Write locally,
+        // then broadcast so player clients also focus the encyclopedia.
+        await recordResult(event);
         await playStudyVfxAndWait(targetTokens[0]);
         await openEncyclopediaForActor(targetActorUuid);
+        try {
+          game.socket?.emit?.(SOCKET_CHANNEL, {
+            type: "encyclopedia:open",
+            actorUuid: targetActorUuid
+          });
+        } catch (e) { console.warn(`${TAG} encyclopedia:open emit failed:`, e); }
         return;
       }
 
@@ -1619,21 +1622,9 @@
 
       const witnessEvent = { actorUuid: protoUuid, itemId, actionName, actionImg, actionDesc, monsterName };
 
-      if (game.user?.isGM) {
-        await recordWitnessedAction(witnessEvent);
-        return;
-      }
-
-      const gmExec = globalThis.FUCompanion?.api?.GMExecutor;
-      if (!gmExec?.executeSnippet) {
-        console.warn(`${TAG} GMExecutor unavailable; witness record skipped.`);
-        return;
-      }
-      await gmExec.executeSnippet({
-        mode: "encyclopedia.recordWitnessedAction",
-        scriptText: `return await globalThis.FUCompanion?.api?.encyclopedia?.recordWitnessedAction?.(args.event);`,
-        args: { event: witnessEvent }
-      });
+      // Always GM here (execute() is GM-only). Chat reveal message posted by
+      // recordWitnessedAction reaches all clients automatically.
+      await recordWitnessedAction(witnessEvent);
     } catch (e) {
       console.error(`${TAG} handleActionResolved failed:`, e);
     }
@@ -1800,11 +1791,14 @@
     // runs, so we never double-register from a single session anyway.
     Hooks.on("oni:action:resolved", handleActionResolved);
     Hooks.on("combatStart", handleCombatStart);
-    // Flush pending unlocks whenever the encyclopedia sheet (re-)renders.
-    // Covers the auto-open-after-Confirm path: the sheet may not be on screen
-    // when recordResult fires, so we keep the unlock pending and replay it
-    // here once the sheet is mounted.
-    Hooks.on("renderJournalSheet", () => flushPendingUnlocks());
+    // Inject page CSS and flush pending unlocks whenever the encyclopedia sheet
+    // renders. ensurePageStyles() is a no-op after first call, so this is safe
+    // to fire on every render across all clients (players need the CSS too —
+    // they never call renderPage() locally since pages are written by GM).
+    Hooks.on("renderJournalSheet", () => {
+      ensurePageStyles();
+      flushPendingUnlocks();
+    });
     console.info(`${TAG} oni:action:resolved + combatStart + renderJournalSheet listeners registered.`);
   }
 
@@ -1812,6 +1806,7 @@
     registerSetting();
     mountApi();
     ensureAnimStyles();
+    ensurePageStyles(); // inject CSS for all clients at boot, not just GM-side
     registerSocketListener();
     registerHookListener();
     ensureArtifactsAtReady();
@@ -1819,6 +1814,7 @@
     Hooks.once("init", () => { registerSetting(); mountApi(); });
     Hooks.once("ready", () => {
       ensureAnimStyles();
+      ensurePageStyles(); // inject CSS for all clients at boot, not just GM-side
       registerSocketListener();
       registerHookListener();
       ensureArtifactsAtReady();
