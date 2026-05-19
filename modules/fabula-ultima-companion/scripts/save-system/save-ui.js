@@ -172,23 +172,19 @@
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 18px 22px;
-      padding-right: 280px; /* reserve right side for floating portraits */
+      padding: 14px 22px;
       display: flex; flex-direction: row; align-items: center; gap: 16px;
-      min-height: 80px;
     }
     .ss-slot-num { width: 58px; flex-shrink: 0; font-size: 9px; letter-spacing: 3px; color: #b8945a; }
 
-    /* Token portraits — floating, absolutely positioned right side, extend above slot */
+    /* Token portraits — inline flex, left side between slot-num and info */
     .ss-slot-portraits {
-      position: absolute;
-      right: 16px;
-      bottom: 0;
-      display: flex; flex-direction: row; gap: 6px; align-items: flex-end;
-      pointer-events: none; z-index: 4;
+      display: flex; flex-direction: row; gap: 4px; align-items: flex-end;
+      flex-shrink: 0; pointer-events: none;
+      max-width: 320px; overflow: hidden;
     }
     .ss-slot-portrait {
-      height: 120px; width: auto; max-width: 90px;
+      height: 100px; width: auto; max-width: 68px;
       object-fit: contain; object-position: center bottom;
       image-rendering: pixelated;
       flex-shrink: 0;
@@ -236,6 +232,24 @@
     .ss-conf-exec { font-size: 11px; letter-spacing: 2px; color: #7a5428; text-align: center; padding: 4px 0; }
     .ss-conf-exec.is-err { color: #8b2210; }
     .ss-conf-exec.is-ok  { color: #3a6228; }
+
+    /* PS1/PS2 retro progress bar */
+    .ss-prog-track {
+      width: 100%; height: 20px;
+      background: #120801; border: 1px solid #7a5428; border-radius: 2px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.60), 0 0 0 1px rgba(200,160,60,0.10);
+    }
+    .ss-prog-fill {
+      height: 100%; width: 0%;
+      background: repeating-linear-gradient(
+        90deg,
+        #e8a820 0px, #e8a820 12px,
+        #c4861a 12px, #c4861a 14px
+      );
+      box-shadow: 0 0 14px rgba(232,168,32,0.70), inset 0 1px 0 rgba(255,220,100,0.45);
+    }
+    .ss-prog-label { font-size: 10px; letter-spacing: 3px; color: #c8a05a; text-align: center; margin-top: 10px; }
     .ss-conf-choices { display: flex; gap: 16px; }
     .ss-choice-btn {
       padding: 11px 40px; font-family: inherit; font-size: 11px;
@@ -332,6 +346,8 @@
       this._status       = "";
       this._statusCls    = "";
       this._busy         = false;
+      this._progress     = 0;
+      this._progressRaf  = 0;
       this._keyFn        = this._onKey.bind(this);
     }
 
@@ -365,6 +381,8 @@
 
     close() {
       if (!this._el) return;
+      cancelAnimationFrame(this._progressRaf);
+      this._progress = 0;
       this._el.remove();
       this._el = null;
       this._cursorEl?.remove();
@@ -472,11 +490,11 @@
             .map(p => p.img ? `<img class="ss-slot-portrait" src="${p.img}" title="${p.name}">` : "")
             .join("");
 
-          // Portraits float outside .ss-slot-body; info + date are stacked in the info column
+          // Portraits inline inside .ss-slot-body: num | portraits | info
           body = `
-            <div class="ss-slot-portraits">${portraitHtml}</div>
             <div class="ss-slot-body">
               <div class="ss-slot-num">SLOT ${id}</div>
+              ${portraitHtml ? `<div class="ss-slot-portraits">${portraitHtml}</div>` : ""}
               <div class="ss-slot-info">
                 <div class="ss-slot-name">${gameName}</div>
                 ${partyActorName ? `<div class="ss-slot-party">${partyActorName}</div>` : ""}
@@ -534,18 +552,24 @@
     // ── Confirm overlay content — morphs based on execution state ──────────────
 
     _htmlConfirmOverlay() {
-      // During and after execution: show status inside the overlay
+      // During and after execution: show progress bar (busy) or result text (done)
       if (this._busy || this._status) {
-        const execHtml = this._busy
-          ? `<span class="ss-breathe">▶ ${this._status}</span>`
-          : this._status;
-        const errBack = (!this._busy && this._statusCls === "is-err") ? `
-          <button class="ss-choice-btn is-no is-focus" data-act="choice" data-choice="no">◄ BACK</button>` : "";
+        let innerContent;
+        if (this._busy) {
+          innerContent = `
+              <div class="ss-prog-track"><div class="ss-prog-fill"></div></div>
+              <div class="ss-prog-label ss-breathe">${this._status}</div>`;
+        } else {
+          const errBack = this._statusCls === "is-err" ? `
+              <button class="ss-choice-btn is-no is-focus" data-act="choice" data-choice="no">◄ BACK</button>` : "";
+          innerContent = `
+              <div class="ss-conf-exec ${this._statusCls}">${this._status}</div>
+              ${errBack}`;
+        }
         return `
           <div class="ss-conf-overlay">
             <div class="ss-conf-inner">
-              <div class="ss-conf-exec ${this._statusCls}">${execHtml}</div>
-              ${errBack}
+              ${innerContent}
             </div>
           </div>`;
       }
@@ -759,6 +783,45 @@
       }
     }
 
+    // ── PS1/PS2 progress bar ───────────────────────────────────────────────────
+
+    _startProgress() {
+      this._progress = 0;
+      cancelAnimationFrame(this._progressRaf);
+      const start    = performance.now();
+      const duration = 2800;   // fills to ~88% over 2.8s
+      const target   = 0.88;
+      const tick = (now) => {
+        if (!this._el || !this._busy) return;
+        const t = Math.min((now - start) / duration, 1);
+        this._progress = (1 - Math.pow(1 - t, 3)) * target;  // ease-out cubic
+        const fill = this._el.querySelector(".ss-prog-fill");
+        if (fill) fill.style.width = `${this._progress * 100}%`;
+        if (t < 1) this._progressRaf = requestAnimationFrame(tick);
+      };
+      this._progressRaf = requestAnimationFrame(tick);
+    }
+
+    async _finishProgress() {
+      cancelAnimationFrame(this._progressRaf);
+      const startPct  = this._progress;
+      const remaining = 1 - startPct;
+      const duration  = 350;   // quick fill to 100%
+      const start     = performance.now();
+      await new Promise(resolve => {
+        const tick = (now) => {
+          const t = Math.min((now - start) / duration, 1);
+          const pct = startPct + remaining * t;
+          const fill = this._el?.querySelector(".ss-prog-fill");
+          if (fill) fill.style.width = `${pct * 100}%`;
+          if (t < 1) requestAnimationFrame(tick);
+          else resolve();
+        };
+        requestAnimationFrame(tick);
+      });
+      await new Promise(r => setTimeout(r, 300));
+    }
+
     // ── Action execution ───────────────────────────────────────────────────────
 
     async _execute() {
@@ -769,8 +832,10 @@
       if (this._mode === "save") {
         this._status = "WRITING DATA…";
         this._render();
+        this._startProgress();
 
         const res = await SS.Core.save(this._sel);
+        await this._finishProgress();
         this._busy = false;
         if (res.ok) {
           this._status    = `DATA WRITTEN — SLOT ${this._sel}`;
@@ -797,8 +862,10 @@
       if (this._mode === "load") {
         this._status = "READING DATA…";
         this._render();
+        this._startProgress();
 
         const res = await SS.Core.load(this._sel);
+        await this._finishProgress();
         this._busy = false;
         if (res.ok) {
           this._status    = `DATA LOADED — ${res.label}`;
@@ -819,8 +886,10 @@
       if (this._mode === "delete") {
         this._status = "ERASING DATA…";
         this._render();
+        this._startProgress();
 
         await SS.Storage.deleteSlot(this._sel);
+        await this._finishProgress();
         this._busy      = false;
         this._sel       = null;
         this._status    = "DATA ERASED.";
