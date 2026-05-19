@@ -36,26 +36,39 @@
     } catch { return "—"; }
   }
 
+  // ── Token image resolution (mirrors ActiveEffectManager pattern) ─────────────
+  function actorTokenImg(actor) {
+    if (!actor) return "";
+    // Try live scene token first, then prototypeToken, then portrait
+    const sceneToken = Array.from(canvas?.tokens?.placeables ?? [])
+      .find(t => t?.actor?.uuid === actor.uuid || t?.document?.actorId === actor.id);
+    return (
+      sceneToken?.document?.texture?.src ??
+      sceneToken?.texture?.src ??
+      actor.prototypeToken?.texture?.src ??
+      actor.token?.texture?.src ??
+      actor.img ??
+      ""
+    );
+  }
+
   // ── Stylesheet ──────────────────────────────────────────────────────────────
   const CSS = `
-    /* === overlay === */
+    /* === overlay — 75% opacity + backdrop blur so game shows through === */
     #save-system-overlay {
       position: fixed; inset: 0; z-index: 2147483647;
-      background: radial-gradient(ellipse at 50% 40%, #2a1608 0%, #130a02 100%);
+      background: rgba(18, 8, 1, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       font-family: 'Lucida Console', 'Courier New', monospace;
       color: #3d2208;
       user-select: none;
     }
-    #save-system-overlay::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background: radial-gradient(ellipse at 50% 50%, rgba(200,140,40,0.07) 0%, transparent 68%);
-    }
     .ss-layer { position: relative; z-index: 1; }
 
-    /* === parchment panel === */
+    /* === parchment panel — fills most of the viewport === */
     .ss-panel {
       position: relative; z-index: 1;
       background: linear-gradient(168deg, #f8f0d4 0%, #f0e3b8 45%, #e8d8a4 100%);
@@ -64,14 +77,14 @@
         0 0 0 3px #7a4e20,
         0 0 0 6px #b8865a,
         0 0 0 8px #5c3210,
-        0 0 70px rgba(0,0,0,0.88),
+        0 0 80px rgba(0,0,0,0.70),
         inset 0 1px 0 rgba(255,245,200,0.70),
         inset 0 -1px 0 rgba(120,70,20,0.18);
       border-radius: 4px;
-      padding: 36px 48px 30px;
+      padding: 42px 56px 34px;
       display: flex; flex-direction: column; align-items: center;
-      min-width: 560px;
-      max-height: 88vh; overflow-y: auto;
+      width: clamp(600px, 82vw, 1000px);
+      max-height: 90vh; overflow-y: auto;
     }
     .ss-panel::before {
       content: '';
@@ -85,86 +98,94 @@
 
     /* === header === */
     .ss-title {
-      font-size: 20px; letter-spacing: 9px; color: #3a1e06;
+      font-size: 24px; letter-spacing: 10px; color: #3a1e06;
       text-shadow: 0 1px 0 rgba(255,220,130,0.55), 0 2px 10px rgba(160,90,10,0.18);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .ss-byline { font-size: 8px; letter-spacing: 4px; color: #9b7040; margin-bottom: 5px; }
+    .ss-byline { font-size: 9px; letter-spacing: 5px; color: #9b7040; margin-bottom: 6px; }
     .ss-mode-label {
-      font-size: 9px; letter-spacing: 3px; color: #7a5428;
-      margin-bottom: 20px; text-transform: uppercase;
+      font-size: 10px; letter-spacing: 4px; color: #7a5428;
+      margin-bottom: 24px; text-transform: uppercase;
       border-bottom: 1px solid rgba(140,90,30,0.22);
-      padding-bottom: 10px; width: 100%; text-align: center;
+      padding-bottom: 12px; width: 100%; text-align: center;
     }
 
     /* === mode selection screen === */
     .ss-mode-prompt {
-      font-size: 9px; letter-spacing: 4px; color: #9b7040;
-      margin-bottom: 16px; text-transform: uppercase;
+      font-size: 10px; letter-spacing: 4px; color: #9b7040;
+      margin-bottom: 20px; text-transform: uppercase;
       border-bottom: 1px solid rgba(140,90,30,0.22);
-      padding-bottom: 10px; width: 100%; text-align: center;
+      padding-bottom: 12px; width: 100%; text-align: center;
     }
-    .ss-mode-cards { display: flex; flex-direction: column; width: 100%; gap: 10px; margin-bottom: 20px; }
+    .ss-mode-cards { display: flex; flex-direction: column; width: 100%; gap: 12px; margin-bottom: 24px; }
     .ss-mode-card {
-      width: 100%; padding: 16px 22px;
+      width: 100%; padding: 20px 28px;
       border: 1px solid #c4a260;
       background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
       cursor: pointer; position: relative;
-      display: flex; flex-direction: row; align-items: center; gap: 18px;
+      display: flex; flex-direction: row; align-items: center; gap: 22px;
       font-family: inherit;
       border-radius: 10px;
-      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 5px rgba(80,40,8,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 6px rgba(80,40,8,0.18);
       transition: border-color .12s, box-shadow .12s;
     }
     .ss-mode-card:hover, .ss-mode-card.is-focus {
       border-color: #c9a22a;
-      box-shadow: 0 0 0 1px #c9a22a, 0 0 18px rgba(201,162,42,0.35), inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #c9a22a, 0 0 22px rgba(201,162,42,0.35), inset 0 1px 0 rgba(255,245,200,0.75);
     }
     .ss-mode-card.is-del.is-focus, .ss-mode-card.is-del:hover {
       border-color: #8b3820;
-      box-shadow: 0 0 0 1px #8b3820, 0 0 18px rgba(180,52,28,0.28), inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #8b3820, 0 0 22px rgba(180,52,28,0.28), inset 0 1px 0 rgba(255,245,200,0.75);
     }
-    .ss-mode-card-icon  { font-size: 26px; pointer-events: none; flex-shrink: 0; width: 32px; text-align: center; color: #5a3210; }
+    .ss-mode-card-icon  { font-size: 28px; pointer-events: none; flex-shrink: 0; width: 36px; text-align: center; color: #5a3210; }
     .ss-mode-card.is-del .ss-mode-card-icon { color: #7a2e18; }
     .ss-mode-card-text  { display: flex; flex-direction: column; pointer-events: none; }
-    .ss-mode-card-label { font-family: inherit; font-size: 16px; font-weight: bold; letter-spacing: 4px; color: #3a1e06; text-transform: uppercase; }
+    .ss-mode-card-label { font-family: inherit; font-size: 18px; font-weight: bold; letter-spacing: 5px; color: #3a1e06; text-transform: uppercase; }
 
     /* === file screen body + slots === */
-    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; }
-    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 10px; transition: opacity .20s, filter .20s; }
+    .ss-file-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; }
+    .ss-slots { display: flex; flex-direction: column; width: 100%; gap: 12px; transition: opacity .20s, filter .20s; }
     .ss-slots.is-dimmed { opacity: 0.30; filter: blur(2px); pointer-events: none; }
     .ss-slot {
       width: 100%;
       border: 1px solid #c4a260;
       background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%);
-      cursor: pointer; position: relative; overflow: hidden;
+      cursor: pointer; position: relative; overflow: visible;
       border-radius: 10px;
       transition: border-color .13s, box-shadow .13s;
-      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 5px rgba(80,40,8,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 6px rgba(80,40,8,0.18);
     }
     .ss-slot:hover {
       border-color: #9b6a28;
-      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 3px 10px rgba(80,40,8,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 4px 12px rgba(80,40,8,0.28);
     }
     .ss-slot.is-sel {
       border-color: #c9a22a;
-      box-shadow: 0 0 0 1px #c9a22a, 0 0 18px rgba(201,162,42,0.38), inset 0 0 22px rgba(201,162,42,0.09), inset 0 1px 0 rgba(255,245,200,0.75);
+      box-shadow: 0 0 0 1px #c9a22a, 0 0 22px rgba(201,162,42,0.38), inset 0 0 24px rgba(201,162,42,0.09), inset 0 1px 0 rgba(255,245,200,0.75);
     }
     .ss-slot.is-invalid { opacity: 0.45; cursor: not-allowed; }
-    .ss-slot-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.13; filter: blur(3px) sepia(0.25); pointer-events: none; }
     .ss-slot-body {
       position: relative; z-index: 1;
-      padding: 14px 18px;
-      display: flex; flex-direction: row; align-items: center; gap: 14px;
+      padding: 16px 22px;
+      display: flex; flex-direction: row; align-items: center; gap: 16px;
     }
-    .ss-slot-num       { width: 52px; flex-shrink: 0; font-size: 8px; letter-spacing: 3px; color: #b8945a; }
-    .ss-slot-portraits { display: flex; flex-direction: row; gap: 5px; flex-shrink: 0; align-items: center; }
-    .ss-slot-portrait  { width: 36px; height: 36px; border-radius: 5px; object-fit: cover; object-position: top; border: 1px solid rgba(180,140,70,0.55); background: #f0e8d0; }
-    .ss-slot-info      { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .ss-slot-name      { font-size: 11px; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-loc       { font-size: 8px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ss-slot-date      { font-size: 8px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
-    .ss-slot-empty     { flex: 1; font-size: 9px; letter-spacing: 2px; color: #c8aa70; }
+    .ss-slot-num { width: 58px; flex-shrink: 0; font-size: 9px; letter-spacing: 3px; color: #b8945a; }
+
+    /* Token portraits — no border/box, transparent, normalized to same height */
+    .ss-slot-portraits { display: flex; flex-direction: row; gap: 6px; flex-shrink: 0; align-items: flex-end; }
+    .ss-slot-portrait  {
+      height: 58px; width: 58px;
+      object-fit: contain; object-position: center bottom;
+      flex-shrink: 0;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 2px 3px rgba(60,30,0,0.25));
+    }
+
+    .ss-slot-info      { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .ss-slot-name      { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-loc       { font-size: 9px; color: #7a5828; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-slot-date      { font-size: 9px; color: #8b6838; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
+    .ss-slot-empty     { flex: 1; font-size: 10px; letter-spacing: 2px; color: #c8aa70; }
 
     /* === confirm overlay (floats over dimmed slots) === */
     .ss-conf-overlay {
@@ -178,81 +199,81 @@
       position: relative;
       background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%);
       border: 2px solid #c9a44a;
-      box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 24px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
+      box-shadow: 0 0 0 2px #7a4e20, 0 0 0 4px #b8865a, 0 0 28px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,245,200,0.70);
       border-radius: 10px;
-      padding: 22px 36px 20px;
-      display: flex; flex-direction: column; align-items: center; gap: 13px;
-      min-width: 300px;
+      padding: 26px 42px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 15px;
+      min-width: 340px;
     }
     .ss-conf-inner::before {
       content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0; border-radius: 10px;
       background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px);
     }
     .ss-conf-inner > * { position: relative; z-index: 1; }
-    .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; border-radius: 8px; padding: 10px 28px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
-    .ss-conf-slot-label { font-size: 11px; color: #3a1e06; letter-spacing: 2px; margin-bottom: 4px; }
-    .ss-conf-slot-date  { font-size: 8px;  color: #8b6838; letter-spacing: 1px; }
-    .ss-conf-text { font-size: 10px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase; }
+    .ss-conf-slot { background: linear-gradient(155deg, #fdf6e0 0%, #f5ead0 100%); border: 1px solid #c4a260; border-radius: 8px; padding: 12px 32px; text-align: center; width: 100%; box-shadow: inset 0 1px 0 rgba(255,245,200,0.75), 0 2px 4px rgba(80,40,8,0.12); }
+    .ss-conf-slot-label { font-size: 13px; font-weight: bold; color: #3a1e06; letter-spacing: 2px; margin-bottom: 5px; }
+    .ss-conf-slot-date  { font-size: 9px;  color: #8b6838; letter-spacing: 1px; }
+    .ss-conf-text { font-size: 11px; letter-spacing: 3px; color: #5a3a18; text-transform: uppercase; }
     .ss-conf-text.is-del { color: #8b2210; }
     /* execution status shown inside the overlay */
-    .ss-conf-exec { font-size: 10px; letter-spacing: 2px; color: #7a5428; text-align: center; padding: 4px 0; }
+    .ss-conf-exec { font-size: 11px; letter-spacing: 2px; color: #7a5428; text-align: center; padding: 4px 0; }
     .ss-conf-exec.is-err { color: #8b2210; }
     .ss-conf-exec.is-ok  { color: #3a6228; }
-    .ss-conf-choices { display: flex; gap: 12px; }
+    .ss-conf-choices { display: flex; gap: 16px; }
     .ss-choice-btn {
-      padding: 9px 34px; font-family: inherit; font-size: 10px;
+      padding: 11px 40px; font-family: inherit; font-size: 11px;
       letter-spacing: 3px; text-transform: uppercase;
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%);
       color: #f4e8c0; cursor: pointer; transition: all .12s;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
+      box-shadow: 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.14);
     }
     .ss-choice-btn:hover, .ss-choice-btn.is-focus {
       border-color: #c9a22a; color: #fff8e0;
       background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
-      box-shadow: 0 0 16px rgba(201,162,42,0.28), 0 2px 5px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
+      box-shadow: 0 0 18px rgba(201,162,42,0.28), 0 2px 6px rgba(40,18,4,0.38), inset 0 1px 0 rgba(255,225,140,0.22);
     }
     .ss-choice-btn.is-no:hover, .ss-choice-btn.is-no.is-focus {
       border-color: #8b3820; color: #ffd0c0;
       background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
-      box-shadow: 0 0 16px rgba(180,52,28,0.28), 0 2px 5px rgba(40,18,4,0.38);
+      box-shadow: 0 0 18px rgba(180,52,28,0.28), 0 2px 6px rgba(40,18,4,0.38);
     }
 
     /* === status line (file screen only, hidden during confirm) === */
-    .ss-status { font-size: 9px; letter-spacing: 2px; color: #7a5428; min-height: 16px; }
+    .ss-status { font-size: 10px; letter-spacing: 2px; color: #7a5428; min-height: 18px; }
     .ss-status.is-err { color: #8b2210; }
     .ss-status.is-ok  { color: #3a6228; }
 
     /* === close hint === */
-    .ss-esc { position: fixed; top: 18px; right: 24px; z-index: 10; font-size: 9px; letter-spacing: 3px; color: #5c3810; cursor: pointer; transition: color .12s; }
+    .ss-esc { position: fixed; top: 20px; right: 28px; z-index: 10; font-size: 10px; letter-spacing: 3px; color: #a8845a; cursor: pointer; transition: color .12s; }
     .ss-esc:hover { color: #aa3010; }
 
     /* === back / close button === */
     .ss-back-btn {
-      width: 100%; padding: 12px; text-align: center;
-      font-family: inherit; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
+      width: 100%; padding: 14px; text-align: center;
+      font-family: inherit; font-size: 11px;
+      letter-spacing: 4px; text-transform: uppercase;
       border: 1px solid #9b7040;
       background: linear-gradient(180deg, #6a4828 0%, #4e3014 100%);
       color: #c8a05a; cursor: pointer; transition: all .12s;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(40,18,4,0.30), inset 0 1px 0 rgba(255,225,140,0.10);
+      box-shadow: 0 2px 5px rgba(40,18,4,0.30), inset 0 1px 0 rgba(255,225,140,0.10);
     }
     .ss-back-btn:hover, .ss-back-btn.is-focus {
       border-color: #c9a22a; color: #fff8e0;
       background: linear-gradient(180deg, #9b6840 0%, #7a4a22 100%);
-      box-shadow: 0 0 14px rgba(201,162,42,0.24), 0 2px 4px rgba(40,18,4,0.30);
+      box-shadow: 0 0 16px rgba(201,162,42,0.24), 0 2px 5px rgba(40,18,4,0.30);
     }
 
     /* === footer === */
-    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 8px; width: 100%; }
-    .ss-hints  { font-size: 8px; letter-spacing: 2px; color: #b8945a; }
+    .ss-footer { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px; width: 100%; }
+    .ss-hints  { font-size: 9px; letter-spacing: 2px; color: #b8945a; }
 
     /* === feather cursor === */
     #ss-feather-cursor {
       position: fixed; z-index: 2147483647;
-      width: 46px; height: 46px;
+      width: 52px; height: 52px;
       pointer-events: none;
       transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
       transition:
@@ -415,7 +436,7 @@
           const locName   = liveScene?.navName || d.data?.activeScene?.sceneName || "—";
           const gameName  = d.data?.partyActorData?.system?.props?.game_name ?? "—";
 
-          // Portrait images of active party members at save time (member_id_N only, not bench)
+          // Token images of active party members at save time (member_id_N only, not bench)
           const partyProps = d.data?.partyActorData?.system?.props ?? {};
           const portraits  = [];
           for (let j = 1; j <= 10; j++) {
@@ -423,10 +444,10 @@
             if (!mid) break;
             const rawId = mid.startsWith("Actor.") ? mid.slice(6) : mid;
             const actor = game.actors?.get(rawId);
-            if (actor?.img) portraits.push({ img: actor.img, name: actor.name });
+            if (actor) portraits.push({ img: actorTokenImg(actor), name: actor.name });
           }
           const portraitHtml = portraits
-            .map(p => `<img class="ss-slot-portrait" src="${p.img}" title="${p.name}">`)
+            .map(p => p.img ? `<img class="ss-slot-portrait" src="${p.img}" title="${p.name}">` : "")
             .join("");
 
           body = `
