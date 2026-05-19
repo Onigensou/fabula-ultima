@@ -34,7 +34,7 @@
   const CSS = `
     /* === overlay === */
     #save-system-overlay {
-      position: fixed; inset: 0; z-index: 99990;
+      position: fixed; inset: 0; z-index: 2147483647;
       background: #020b1e;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
