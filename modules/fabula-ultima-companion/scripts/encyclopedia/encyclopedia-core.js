@@ -134,7 +134,7 @@
 .oni-enc-ability-item p { margin: 3px 0; }
 .oni-enc-ability-item ul { padding-left: 18px; margin: 3px 0; }
 .oni-enc-ability-item li { margin: 2px 0; }
-.oni-enc-ability-icon { width:24px; height:24px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
+.oni-enc-ability-icon { width:30px; height:30px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; flex:0 0 auto; margin-top:2px; }
 .oni-enc-atr-icon { width:26px; height:26px; object-fit:contain; border:none !important; outline:none !important; box-shadow:none !important; background:transparent !important; display:block; margin:0 auto 3px; cursor:default; }
 .oni-enc-muted { opacity:.65; font-style:italic; }
 .oni-enc-footer { margin-top:10px; padding-top:8px; border-top:1px solid rgba(0,0,0,.12); opacity:.65; font-size:11px; }
@@ -578,7 +578,7 @@
     return renderSection("Condition Affinities", body, "details");
   }
 
-  const ACTION_DESC = `style="margin-top:4px;font-size:12px;opacity:.62;line-height:1.5;"`;
+  const ACTION_DESC = `style="margin-top:4px;font-size:12px;line-height:1.5;"`;
 
   function renderAttackEntry(actor, entry, fmt = "new") {
     const name = ESC(fmt === "new" ? (entry?.name ?? "Unknown") : (entry?.basic_name ?? entry?.name ?? "Unknown"));
@@ -591,7 +591,7 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div style="font-size:13px;"><strong>${name}</strong>${formula ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${formula}</span>` : ""}</div>
+    <div style="font-size:15px;"><strong>${name}</strong>${formula ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${formula}</span>` : ""}</div>
     ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
@@ -606,7 +606,7 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div style="font-size:13px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
+    <div style="font-size:15px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
     ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
@@ -619,7 +619,7 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div style="font-size:13px;"><strong>${name}</strong></div>
+    <div style="font-size:15px;"><strong>${name}</strong></div>
     ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
@@ -634,7 +634,7 @@
     return `<li class="oni-enc-ability-item">
   <img class="oni-enc-ability-icon" src="${ESC(img)}" alt="">
   <div style="flex:1;min-width:0;">
-    <div style="font-size:13px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
+    <div style="font-size:15px;"><strong>${name}</strong>${meta ? ` <span style="opacity:.6;font-weight:400;font-size:11px;">${meta}</span>` : ""}</div>
     ${desc ? `<div ${ACTION_DESC}>${desc}</div>` : ""}
   </div></li>`;
   }
