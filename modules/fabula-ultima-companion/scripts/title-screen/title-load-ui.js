@@ -88,10 +88,12 @@
 
   class TitleLoadUI {
     constructor() {
-      this._waitEl   = null;
-      this._sel      = null;
-      this._count    = 0;
-      this._required = TS.REQUIRED_PLAYERS;
+      this._waitEl      = null;
+      this._sel         = null;
+      this._count       = 0;
+      this._required    = TS.REQUIRED_PLAYERS;
+      this._progressRaf = 0;
+      this._progress    = 0;
     }
 
     // ── Open: wire into SS.UI ────────────────────────────────────────────────────
@@ -216,13 +218,31 @@
       this._refreshWait();
     }
 
-    onProceed(_payload) {
+    onLoading(_payload) {
+      if (!this._waitEl) return;
+      // Swap waiting panel body to show the PS1-style progress bar
+      const inner = this._waitEl.querySelector(".ts-wait-inner");
+      if (!inner) return;
+      inner.innerHTML = `
+        <div class="ts-wait-title">✦  LOADING  ✦</div>
+        <div class="ts-wait-slot" style="font-size:10px;letter-spacing:2px;color:#7a5428;">READING SAVE DATA…</div>
+        <div style="width:100%;">
+          <div class="ss-prog-track"><div class="ss-prog-fill" id="ts-prog-fill"></div></div>
+          <div class="ss-prog-label ss-breathe">PLEASE WAIT…</div>
+        </div>`;
+      this._startProgress();
+    }
+
+    async onProceed(_payload) {
+      await this._finishProgress();
       sfx("ok");
       this._closeWait();
     }
 
     onConflict(_payload) {
       sfx("fail");
+      cancelAnimationFrame(this._progressRaf);
+      this._progress = 0;
       this._sel = null;
       this._showWait("PLAYERS CHOSE DIFFERENT FILES!<br>PLEASE CHOOSE AGAIN.");
       setTimeout(() => {
@@ -230,6 +250,44 @@
         this._closeWait();
         this.open(); // re-open the slot picker
       }, 2500);
+    }
+
+    // ── Progress bar (mirrors save-ui pattern) ───────────────────────────────────
+
+    _startProgress() {
+      this._progress = 0;
+      cancelAnimationFrame(this._progressRaf);
+      const start    = performance.now();
+      const duration = 3200;
+      const target   = 0.88;
+      const tick = (now) => {
+        if (!this._waitEl) return;
+        const t    = Math.min((now - start) / duration, 1);
+        this._progress = t * target;
+        const fill = document.getElementById("ts-prog-fill");
+        if (fill) fill.style.transform = `scaleX(${this._progress})`;
+        if (t < 1) this._progressRaf = requestAnimationFrame(tick);
+      };
+      this._progressRaf = requestAnimationFrame(tick);
+    }
+
+    _finishProgress() {
+      cancelAnimationFrame(this._progressRaf);
+      const startPct  = this._progress;
+      const remaining = 1 - startPct;
+      const duration  = 350;
+      const start     = performance.now();
+      return new Promise(resolve => {
+        const tick = (now) => {
+          const t    = Math.min((now - start) / duration, 1);
+          const pct  = startPct + remaining * t;
+          const fill = document.getElementById("ts-prog-fill");
+          if (fill) fill.style.transform = `scaleX(${pct})`;
+          if (t < 1) requestAnimationFrame(tick);
+          else setTimeout(resolve, 300);
+        };
+        requestAnimationFrame(tick);
+      });
     }
   }
 

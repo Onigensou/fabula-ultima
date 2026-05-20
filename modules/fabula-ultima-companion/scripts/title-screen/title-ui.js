@@ -46,14 +46,15 @@
       pointer-events: auto;
       display: flex; flex-direction: column; align-items: center; gap: 0;
       cursor: pointer;
+      margin-top: 30vh;
       animation: ts-fade-in 0.40s ease-out both;
     }
     .ts-pressany-prompt {
-      font-size: 14px; letter-spacing: 6px; color: #e8dfc0;
+      font-size: 20px; letter-spacing: 8px; color: #e8dfc0;
       text-transform: uppercase;
       text-shadow:
-        0 0 20px rgba(220,180,80,0.70),
-        0 1px 4px rgba(0,0,0,0.90);
+        0 0 28px rgba(220,180,80,0.80),
+        0 1px 6px rgba(0,0,0,0.95);
       animation: ts-pulse 1.8s ease-in-out infinite;
     }
 
