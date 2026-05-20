@@ -773,6 +773,13 @@
         _playSound(SFX.FAIL, 0.7);
         _flashFail();
       }
+
+      // Broadcast hit/miss so spectators see the flash too
+      if (scored) {
+        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: true });
+      } else if (!scored && trapped) {
+        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: false });
+      }
     };
 
     document.addEventListener("keydown", _spaceHandler, { capture: true });
@@ -967,6 +974,12 @@
         `;
         document.body.appendChild(ovl);
         document.getElementById("oni-dd-begin").addEventListener("click", () => {
+          // Notify spectators to start watching the countdown + game
+          if (game.user?.isGM) {
+            CAMP.Socket.broadcast(CAMP.MSG.DAYDREAM_BEGIN, { actorId });
+          } else {
+            CAMP.Socket.emit(CAMP.MSG.DAYDREAM_BEGIN, { actorId });
+          }
           _showCountdownPanel(actorId, actor, tokenImg, displayName);
         }, { once: true });
       } else {
@@ -1027,6 +1040,34 @@
           }
         }, { once: true });
       }
+    },
+
+    // --------------------------------------------------------------------
+    // spectateBegin — transitions a spectator's waiting panel into the
+    // countdown → game when the owner clicks "Click to Begin".
+    // No-ops on the owner's own client (_isOwner guard) and when the
+    // overlay isn't showing.
+    // --------------------------------------------------------------------
+    spectateBegin(actorId) {
+      if (_isOwner) return;
+      const ovl = document.getElementById(OVL_ID);
+      if (!ovl) return;
+      const actor       = game.actors?.get(actorId);
+      const tokenImg    = actor ? _getTokenImg(actor) : "icons/svg/mystery-man.svg";
+      const displayName = actor?.name ?? "?";
+      _showCountdownPanel(actorId, actor, tokenImg, displayName);
+    },
+
+    // --------------------------------------------------------------------
+    // onHit — mirrors the owner's success burst / fail flash on spectators.
+    // No-ops if _isOwner (they already see it locally) or the game isn't
+    // currently showing.
+    // --------------------------------------------------------------------
+    onHit(success) {
+      if (_isOwner) return;
+      if (!document.getElementById(OVL_ID)) return;
+      if (success) _flashSuccess();
+      else _flashFail();
     },
 
     // --------------------------------------------------------------------

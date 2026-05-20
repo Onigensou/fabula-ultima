@@ -471,12 +471,16 @@
       _spawnScorePop("+1", false);
       _spawnAllyParticles();
 
+      // Broadcast drop result + current state to spectators
+      _emitGameState(true);
+
       if (_order.every(o => o.filled)) {
         // Wait briefly then advance to next order — no full grid re-render needed
         setTimeout(() => {
           _nextOrder();    // advance pre-computed queue
           _guardGrid();    // ensure needed foods exist; patches DOM inline
           _updateBubble(); // rebuild bubble for new order length
+          _emitGameState(null); // push new order to spectators
         }, 500);
       }
 
@@ -493,6 +497,9 @@
         fz.addEventListener("animationend", () => fz.classList.remove("feed-wrong"), { once: true });
       }
       _spawnScorePop("-1", true);
+
+      // Broadcast wrong drop to spectators
+      _emitGameState(false);
     }
 
     // Score HUD update via cached ref — no getElementById
@@ -536,6 +543,52 @@
     txt.style.top   = `${_feedZoneRect.top}px`;
     document.body.appendChild(txt);
     setTimeout(() => txt.remove(), 580);
+  }
+
+  // ===========================================================================
+  // _emitGameState — broadcast full grid + order state to all other clients.
+  // isCorrect: true = correct drop, false = wrong drop, null = state-only (no anim).
+  // Called by the owner on game start and after every drop.
+  // ===========================================================================
+
+  function _emitGameState(isCorrect) {
+    CAMP.Socket.emit(CAMP.MSG.DOUBLE_PORTION_GAME_STATE, {
+      actorId:   _actorId,
+      grid:      [..._grid],
+      order:     _order.map(o => ({ food: o.food, filled: o.filled })),
+      score:     _score,
+      wrong:     _wrong,
+      isCorrect,
+    });
+  }
+
+  // ===========================================================================
+  // Spectator game-in-progress view (called after countdown on non-owner clients)
+  // Shows a live countdown timer + actor/target tokens while the owner plays.
+  // ===========================================================================
+
+  function _startSpectatorGame() {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl) return;
+
+    // Render the full game arena layout — same HTML as the owner sees.
+    // Grid cells start empty and are populated by the first onGameState() call.
+    ovl.innerHTML = _buildArena(_actorId, _targetId);
+
+    // Cache all element refs + static rects so onGameState can update them.
+    _cacheEls();
+    _initParticlePool();
+    _cacheRects();
+
+    _gameStartMs  = Date.now();
+    _lastLabelSec = -1;
+    _startGameLoop();
+
+    _endTimer = setTimeout(() => {
+      if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+      if (_els.timerBar)   _els.timerBar.style.width  = "0%";
+      if (_els.timerLabel) _els.timerLabel.textContent = "0s";
+    }, GAME_MS);
   }
 
   // ===========================================================================
@@ -958,6 +1011,71 @@
       res(targetActorId);
     },
 
+    // ── onGameState — live grid sync received by spectators on each owner drop ─
+    // Renders the owner's exact grid, updates order bubble + HUD, and plays
+    // the correct/wrong reaction animations and sounds on spectator clients.
+    onGameState({ actorId, grid, order, score, wrong, isCorrect } = {}) {
+      if (_isOwner) return;           // owner already sees it locally
+      if (!_els.gridWrap) return;     // spectator arena not yet rendered
+
+      // ── Grid cells (read-only; no drag attributes) ─────────────────────────
+      const rows = [];
+      for (let r = 0; r < GRID_ROWS; r++) {
+        const cells = [];
+        for (let c = 0; c < GRID_COLS; c++) {
+          cells.push(`<div class="oni-dp-cell" style="cursor:default;pointer-events:none;">${grid[_cellKey(c, r)]}</div>`);
+        }
+        rows.push(`<div class="oni-dp-grid-row">${cells.join("")}</div>`);
+      }
+      _els.gridWrap.innerHTML = rows.join("");
+
+      // ── Order bubble ────────────────────────────────────────────────────────
+      if (_els.bubble) {
+        _els.bubble.innerHTML = (order ?? []).map(o =>
+          `<span class="oni-dp-bubble-item${o.filled ? " filled" : ""}">${o.food}</span>`
+        ).join("");
+      }
+
+      // ── Score / wrong HUD ───────────────────────────────────────────────────
+      if (_els.score) _els.score.textContent = `Score: ${score} | ✗: ${wrong}`;
+
+      // ── Correct drop — ally animation + particles + sounds ─────────────────
+      if (isCorrect === true) {
+        const at = _els.allyToken;
+        if (at) {
+          at.animate(
+            [{ transform: "scale(1)" },
+             { transform: "scale(1.18) translateY(-6px)", offset: 0.3 },
+             { transform: "scale(1)" }],
+            { duration: 350, easing: "ease" }
+          ).finished.then(() =>
+            at.animate(
+              [{ transform: "scale(1)" },
+               { transform: "scale(1.15) rotate(-5deg)", offset: 0.2 },
+               { transform: "scale(1.15) rotate(5deg)",  offset: 0.6 },
+               { transform: "scale(1)" }],
+              { duration: 400, easing: "ease" }
+            )
+          ).catch(() => {});
+        }
+        _spawnAllyParticles();
+        _spawnScorePop("+1", false);
+        _playSound(SFX.EATING,  0.55);
+        _playSound(SFX.SUCCESS, 0.45);
+      }
+
+      // ── Wrong drop — feed zone shake + sounds ──────────────────────────────
+      if (isCorrect === false) {
+        const fz = _els.feedZone;
+        if (fz) {
+          fz.classList.add("feed-wrong");
+          fz.addEventListener("animationend", () => fz.classList.remove("feed-wrong"), { once: true });
+        }
+        _spawnScorePop("-1", true);
+        _playSound(SFX.FAIL, 0.6);
+      }
+    },
+
     // ── Stage 2 — Arena (all clients; owner plays, others watch) ─────────────
     showArena(actorId, targetActorId) {
       document.getElementById(OVL_ID)?.remove();
@@ -1028,6 +1146,9 @@
           _gameStartMs  = Date.now();
           _startGameLoop();
 
+          // Push initial grid state to spectators
+          _emitGameState(null);
+
           _endTimer = setTimeout(() => {
             // Lock all interaction immediately
             _gameOver = true;
@@ -1054,7 +1175,8 @@
         });
 
       } else {
-        // Spectator view
+        // Spectator: countdown synchronized with owner's (both showArena() calls fire at the
+        // same time via DOUBLE_PORTION_MINIGAME), then live timer so spectators see game progress.
         const ownerUid  = actor ? _getOwnerUserId(actor) : null;
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? pName) : pName;
         ovl.innerHTML = `
@@ -1071,10 +1193,11 @@
                 <span style="font-size:.72rem;color:#5a3010;">${aName}</span>
               </div>
             </div>
-            <div class="oni-dp-waiting">${ownerName} is preparing a meal for ${aName}…</div>
+            <div class="oni-dp-countdown-num" id="oni-dp-count">3</div>
           </div>
         `;
         document.body.appendChild(ovl);
+        _runCountdown(3, () => _startSpectatorGame());
       }
     },
 
