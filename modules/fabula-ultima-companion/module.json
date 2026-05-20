@@ -267,7 +267,12 @@
     "scripts/save-system/save-core.js",
     "scripts/save-system/save-extractors.js",
     "scripts/save-system/save-ui.js",
-    "scripts/save-system/save-bootstrap.js"
+    "scripts/save-system/save-bootstrap.js",
+    "scripts/title-screen/title-constants.js",
+    "scripts/title-screen/title-socket.js",
+    "scripts/title-screen/title-load-ui.js",
+    "scripts/title-screen/title-ui.js",
+    "scripts/title-screen/title-bootstrap.js"
   ],
   "esmodules": [
     "scripts/shop-system/shopOpen-bootstrap.js",
