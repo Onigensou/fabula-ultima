@@ -66,13 +66,16 @@
     .ts-wait-title   { font-size: 22px; letter-spacing: 8px; color: #3a1e06; }
     .ts-wait-slot    { font-size: 11px; letter-spacing: 3px; color: #7a5428; text-align: center; }
     .ts-wait-counter { font-size: 38px; letter-spacing: 6px; color: #3a1e06; }
-    .ts-wait-dots    { display: flex; gap: 10px; }
+    .ts-wait-dots    { display: flex; gap: 14px; align-items: flex-end; }
+    .ts-dot-group    { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .ts-dot-label    { font-size: 8px; letter-spacing: 2px; color: #9b7040; text-transform: uppercase; }
     .ts-wait-dot {
       width: 14px; height: 14px; border-radius: 50%;
       border: 1px solid #c4a260;
       background: linear-gradient(155deg, #fdf6e0 0%, #e8d8a4 100%);
       transition: background .25s, border-color .25s, box-shadow .25s;
     }
+    .ts-wait-dot-gm  { border-radius: 2px; width: 16px; height: 16px; }
     .ts-wait-dot.ready {
       background: linear-gradient(155deg, #c9a22a 0%, #a07818 100%);
       border-color: #8a6010; box-shadow: 0 0 8px rgba(201,162,42,0.50);
@@ -98,6 +101,7 @@
       this._sel            = null;
       this._count          = 0;
       this._required       = TS.REQUIRED_PLAYERS;
+      this._votes          = {};   // { userId: slotId } — mirrors GM's vote table
       this._progressRaf    = 0;
       this._progress       = 0;
       // True while the success message is showing — prevents canvas hooks from
@@ -116,6 +120,7 @@
       this._sel            = null;
       this._count          = 0;
       this._required       = TS.REQUIRED_PLAYERS;
+      this._votes          = {};
       this._showingSuccess = false;
 
       SS.UI.openInMode("load");
@@ -163,8 +168,11 @@
       delete SS.UI._doBack;
       SS.UI.close();
 
-      // Show the wait panel FIRST so _waitEl exists for any immediate callbacks
+      // Show the wait panel FIRST so _waitEl exists for any immediate callbacks.
+      // Pre-seed _votes with the local user's choice so _renderDots() shows the
+      // correct GM/player dot immediately before the first onVotesUpdate fires.
       this._count = 1;
+      if (game.user?.id) this._votes = { [game.user.id]: slotId };
       this._showWait();
 
       // Then vote — for GM this fires _onVote synchronously, which may call
@@ -182,9 +190,7 @@
       const d   = this._sel ? SS?.Storage?.getSlot?.(this._sel) : null;
       const lbl = d?.label ?? `Slot ${this._sel ?? "?"}`;
 
-      const dots = Array.from({ length: this._required }, (_, i) =>
-        `<div class="ts-wait-dot${i < this._count ? " ready" : ""}"></div>`
-      ).join("");
+      const dots = this._renderDots();
 
       const body = conflictMsg
         ? `<div class="ts-conflict-msg ss-breathe">${conflictMsg}</div>`
@@ -219,17 +225,38 @@
       this._waitEl = null;
     }
 
+    _renderDots() {
+      const gmVoted = Object.keys(this._votes).some(uid => game.users.get(uid)?.isGM);
+      const playerVoteCount = Object.keys(this._votes).filter(uid => !game.users.get(uid)?.isGM).length;
+      const playerSlots = this._required - 1;
+
+      const gmDot = `<div class="ts-dot-group">
+        <div class="ts-wait-dot ts-wait-dot-gm${gmVoted ? " ready" : ""}"></div>
+        <div class="ts-dot-label">GM</div>
+      </div>`;
+
+      const playerDots = Array.from({ length: playerSlots }, (_, i) =>
+        `<div class="ts-dot-group">
+          <div class="ts-wait-dot${i < playerVoteCount ? " ready" : ""}"></div>
+          <div class="ts-dot-label">P${i + 1}</div>
+        </div>`
+      ).join("");
+
+      return `<div class="ts-wait-dots">${gmDot}${playerDots}</div>`;
+    }
+
     _refreshWait() {
       if (!this._waitEl) return;
       this._waitEl.querySelector(".ts-wait-counter").textContent = `${this._count} / ${this._required}`;
-      this._waitEl.querySelectorAll(".ts-wait-dot").forEach((d, i) =>
-        d.classList.toggle("ready", i < this._count));
+      const dotsEl = this._waitEl.querySelector(".ts-wait-dots");
+      if (dotsEl) dotsEl.outerHTML = this._renderDots();
     }
 
     // ── Socket event handlers ────────────────────────────────────────────────────
 
-    onVotesUpdate({ count, required } = {}) {
+    onVotesUpdate({ votes, count, required } = {}) {
       if (!this._waitEl) return;
+      this._votes    = votes    ?? this._votes;
       this._count    = count    ?? this._count;
       this._required = required ?? this._required;
       this._refreshWait();

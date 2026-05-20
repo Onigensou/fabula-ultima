@@ -41,7 +41,7 @@
     _votes[userId] = slotId;
     _broadcastVotesUpdate();
     // Also update the GM's own local UI (broadcast doesn't echo back to sender)
-    TS.LoadUI?.onVotesUpdate?.({ count: Object.keys(_votes).length, required: TS.REQUIRED_PLAYERS });
+    TS.LoadUI?.onVotesUpdate?.({ votes: { ..._votes }, count: Object.keys(_votes).length, required: TS.REQUIRED_PLAYERS });
     await _evaluate();
   }
 
@@ -49,7 +49,7 @@
     if (!userId) return;
     delete _votes[userId];
     _broadcastVotesUpdate();
-    TS.LoadUI?.onVotesUpdate?.({ count: Object.keys(_votes).length, required: TS.REQUIRED_PLAYERS });
+    TS.LoadUI?.onVotesUpdate?.({ votes: { ..._votes }, count: Object.keys(_votes).length, required: TS.REQUIRED_PLAYERS });
   }
 
   async function _evaluate() {
