@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.421",
+  "version": "1.0.422",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -19,6 +19,7 @@
     "scripts/_module-boot.js",
     "scripts/data-migration-runner.js",
     "scripts/shared-utils.js",
+    "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",
     "scripts/db-resolver.js",
     "scripts/auto-crisis-detection.js",
