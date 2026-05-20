@@ -406,7 +406,7 @@
     async extract() {
       const api   = globalThis.FUCompanion?.api?.encyclopedia;
       const entry = api?.getEntry?.();
-      if (!entry) return null;
+      if (!entry?.pages) return null;
       const pages = [];
       for (const page of entry.pages.values()) {
         const encFlag = page.flags?.[MOD]?.encyclopedia;
