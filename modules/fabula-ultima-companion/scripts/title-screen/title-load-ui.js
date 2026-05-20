@@ -37,7 +37,7 @@
   // ── Waiting / loading panel CSS (reuses ss-prog-* from save-system-css) ──────
   const WAIT_CSS = `
     #ts-wait-overlay {
-      position: fixed; inset: 0; z-index: 60;
+      position: fixed; inset: 0; z-index: 1000;
       background: rgba(18, 8, 1, 0.75);
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center;
@@ -124,6 +124,8 @@
       this._showingSuccess = false;
 
       SS.UI.openInMode("load");
+      // Lift the file selector above Foundry app windows (menu stays at z-index 60)
+      if (SS.UI._el) SS.UI._el.style.zIndex = "1000";
       SS.UI._slotClickHook = (slotId) => this._onSlotSelect(slotId);
       SS.UI._doBack = () => {
         sfx("cancel");
