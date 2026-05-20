@@ -382,6 +382,7 @@
       _bubbleItemEls = Array.from(_els.bubble.querySelectorAll(".oni-dp-bubble-item"));
     } else {
       for (let i = 0; i < _order.length; i++) {
+        _bubbleItemEls[i].textContent = _order[i].food;
         _bubbleItemEls[i].classList.toggle("filled", _order[i].filled);
       }
     }
