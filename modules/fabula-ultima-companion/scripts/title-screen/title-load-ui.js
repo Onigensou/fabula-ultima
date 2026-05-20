@@ -151,15 +151,6 @@
     _onSlotSelect(slotId) {
       this._sel = slotId;
 
-      // GM solo: no players connected — bypass ready-check, load directly.
-      const activePlayers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
-      if (activePlayers.length === 0 && game.user?.isGM) {
-        console.log(TAG, "GM-only session — loading directly.");
-        globalThis.SaveSystem?.Core?.load?.(slotId);
-        this.close();
-        return;
-      }
-
       sfx("confirm");
 
       // Detach hooks and close the slot picker
