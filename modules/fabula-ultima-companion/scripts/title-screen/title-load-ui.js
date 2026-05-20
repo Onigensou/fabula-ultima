@@ -37,7 +37,7 @@
   // ── Waiting / loading panel CSS (reuses ss-prog-* from save-system-css) ──────
   const WAIT_CSS = `
     #ts-wait-overlay {
-      position: fixed; inset: 0; z-index: 2147483647;
+      position: fixed; inset: 0; z-index: 60;
       background: rgba(18, 8, 1, 0.75);
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center;

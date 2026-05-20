@@ -32,7 +32,7 @@
        pointer-events: none so scene canvas remains interactive underneath;
        child elements opt back in with pointer-events: auto. */
     #ts-overlay {
-      position: fixed; inset: 0; z-index: 2147483646;
+      position: fixed; inset: 0; z-index: 60;
       background: transparent;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
