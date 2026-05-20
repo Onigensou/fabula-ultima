@@ -65,6 +65,7 @@
   let _rafId        = null;
   let _endTimer     = null;
   let _resultShown  = false;
+  let _gameOver     = false;  // set true when timer fires; blocks further drops
 
   // Grid state: flat array [col*GRID_ROWS + row], each cell = food emoji or null
   let _grid = [];
@@ -83,6 +84,7 @@
     _wrong       = 0;
     _gameStartMs = null;
     _resultShown = false;
+    _gameOver    = false;
     _grid        = [];
     _order       = [];
     _dragging    = null;
@@ -203,36 +205,34 @@
         background:rgba(0,0,0,.82);
         animation:oni-dp-fadein 0.35s ease forwards;
         font-family:"Signika","Noto Sans","Inter",system-ui,sans-serif;
-        overflow:hidden;
       }
       #${OVL_ID}.oni-dp-out { animation:oni-dp-fadeout 0.3s ease forwards; }
       @keyframes oni-dp-fadein  { from{opacity:0}to{opacity:1} }
       @keyframes oni-dp-fadeout { from{opacity:1}to{opacity:0} }
+      @keyframes oni-dp-slideup { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+      @keyframes oni-dp-pop     { from{transform:scale(1.55)}to{transform:scale(1)} }
 
-      /* ── Shared panel ── */
+      /* ── Shared picker / countdown panel ── */
       .oni-dp-panel {
         background:var(--camp-parchment-1,#f6ebd3);
         border:2.5px solid var(--camp-wood-2,#8d5f38);
-        border-radius:14px;
-        padding:24px 28px;
+        border-radius:14px;padding:24px 28px;
         box-shadow:0 0 0 6px rgba(90,60,34,.4),0 20px 48px rgba(0,0,0,.7);
         display:flex;flex-direction:column;align-items:center;gap:14px;
         animation:oni-dp-slideup 0.3s ease forwards;
       }
-      @keyframes oni-dp-slideup { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
-      @keyframes oni-dp-pop     { from{transform:scale(1.55)}to{transform:scale(1)} }
       .oni-dp-title {
         font-size:1.4rem;font-weight:800;color:#6b3a1f;
         letter-spacing:.05em;text-transform:uppercase;
         display:flex;align-items:center;gap:8px;
       }
       .oni-dp-title img { width:28px;height:28px;border-radius:4px;border:none; }
-      .oni-dp-sub  { font-size:.95rem;color:#8a5c2c;font-style:italic; }
+      .oni-dp-sub     { font-size:.95rem;color:#8a5c2c;font-style:italic; }
       .oni-dp-waiting { font-size:1rem;color:#c8a84b;font-style:italic; }
 
       /* ── Ally picker ── */
-      .oni-dp-ally-grid   { display:flex;flex-wrap:wrap;gap:12px;justify-content:center; }
-      .oni-dp-ally-card   {
+      .oni-dp-ally-grid { display:flex;flex-wrap:wrap;gap:12px;justify-content:center; }
+      .oni-dp-ally-card {
         display:flex;flex-direction:column;align-items:center;gap:6px;
         background:var(--camp-parchment-2,#efdfc3);
         border:2px solid var(--camp-wood-2,#8d5f38);
@@ -246,202 +246,136 @@
       /* ── Countdown ── */
       .oni-dp-countdown-num {
         font-size:5rem;font-weight:900;color:#c8a84b;line-height:1;
-        text-shadow:0 0 30px rgba(200,168,75,.7);
-        animation:oni-dp-pop 0.25s ease;
+        text-shadow:0 0 30px rgba(200,168,75,.7);animation:oni-dp-pop 0.25s ease;
       }
       .oni-dp-go-text {
         font-size:3.5rem;font-weight:900;color:#3a8a35;
-        text-shadow:0 0 28px rgba(58,138,53,.8);
-        animation:oni-dp-pop 0.3s ease;
+        text-shadow:0 0 28px rgba(58,138,53,.8);animation:oni-dp-pop 0.3s ease;
       }
 
-      /* ── Game layout (full overlay) ── */
-      .oni-dp-game {
-        position:relative;width:100%;height:100%;
+      /* ── Compact game panel ── */
+      .oni-dp-game-panel {
+        background:var(--camp-parchment-1,#f6ebd3);
+        border:2.5px solid var(--camp-wood-2,#8d5f38);
+        border-radius:14px;padding:14px 18px;
+        box-shadow:0 0 0 6px rgba(90,60,34,.4),0 20px 48px rgba(0,0,0,.7);
+        display:flex;flex-direction:column;gap:10px;
+        width:490px;position:relative;
+        animation:oni-dp-slideup 0.3s ease forwards;
       }
 
-      /* Timer bar — top */
+      /* HUD row — timer + score on one line */
+      .oni-dp-hud-row { display:flex;align-items:center;gap:8px; }
       .oni-dp-timer-wrap {
-        position:absolute;top:16px;left:50%;transform:translateX(-50%);
-        width:520px;height:10px;
-        background:rgba(255,255,255,.15);border-radius:5px;overflow:hidden;
-        box-shadow:0 0 0 1px rgba(200,168,75,.4);
+        flex:1;height:8px;background:rgba(0,0,0,.15);border-radius:4px;overflow:hidden;
+        box-shadow:0 0 0 1px rgba(141,95,56,.3);
       }
-      .oni-dp-timer-bar {
-        height:100%;width:100%;background:#c8a84b;border-radius:5px;
-        transition:width .05s linear;
-      }
-      .oni-dp-timer-label {
-        position:absolute;top:30px;left:50%;transform:translateX(-50%);
-        font-size:.8rem;font-weight:700;color:#e8dfc0;
-        text-shadow:0 1px 4px rgba(0,0,0,.8);white-space:nowrap;
+      .oni-dp-timer-bar { height:100%;width:100%;background:#c8a84b;border-radius:4px;transition:width .05s linear; }
+      .oni-dp-timer-label { font-size:.78rem;font-weight:700;color:#6b3a1f;white-space:nowrap;min-width:26px;text-align:right; }
+      .oni-dp-hud-score  {
+        font-size:.78rem;font-weight:700;color:#6b3a1f;white-space:nowrap;
+        border-left:1.5px solid rgba(141,95,56,.35);padding-left:8px;
       }
 
-      /* HUD score */
-      .oni-dp-hud-score {
-        position:absolute;top:50px;left:50%;transform:translateX(-50%);
-        font-size:.88rem;font-weight:700;color:#f4d488;
-        text-shadow:0 0 8px rgba(244,212,136,.5);white-space:nowrap;
+      /* Order row — ally face + "wants:" + food items, directly above grid */
+      .oni-dp-order-row {
+        display:flex;align-items:center;gap:8px;
+        background:rgba(141,95,56,.09);border:1.5px solid rgba(141,95,56,.3);
+        border-radius:8px;padding:6px 10px;
       }
+      .oni-dp-order-ally-img { width:36px;height:36px;object-fit:contain;border:none;border-radius:0;flex-shrink:0; }
+      .oni-dp-order-label    { font-size:.78rem;color:#6b3a1f;font-weight:700;white-space:nowrap;flex-shrink:0; }
+      .oni-dp-order-foods    { display:flex;gap:4px;flex-wrap:wrap;align-items:center; }
+      .oni-dp-bubble-item    { font-size:1.4rem;transition:opacity .2s,transform .2s; }
+      .oni-dp-bubble-item.filled { opacity:.3;transform:scale(.8); }
 
-      /* Food grid — centered */
-      .oni-dp-grid-wrap {
-        position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);
-        display:flex;flex-direction:column;gap:6px;align-items:center;
-      }
-      .oni-dp-grid-row {
-        display:flex;gap:6px;
-      }
+      /* Food grid */
+      .oni-dp-grid-wrap { display:flex;flex-direction:column;gap:5px;align-items:center; }
+      .oni-dp-grid-row  { display:flex;gap:5px; }
       .oni-dp-cell {
-        width:56px;height:56px;
-        background:rgba(246,235,211,.12);
-        border:2px solid rgba(141,95,56,.5);
-        border-radius:10px;
-        display:flex;align-items:center;justify-content:center;
-        font-size:1.8rem;
-        cursor:grab;user-select:none;
+        width:52px;height:52px;
+        background:rgba(141,95,56,.08);border:2px solid rgba(141,95,56,.38);
+        border-radius:8px;display:flex;align-items:center;justify-content:center;
+        font-size:1.65rem;cursor:grab;user-select:none;
         transition:transform .12s,box-shadow .12s,opacity .15s;
-        will-change:transform;
       }
-      .oni-dp-cell:hover { transform:scale(1.12);box-shadow:0 0 14px rgba(200,168,75,.6); }
-      .oni-dp-cell:active { cursor:grabbing; }
+      .oni-dp-cell:hover        { transform:scale(1.12);box-shadow:0 0 12px rgba(141,95,56,.45); }
+      .oni-dp-cell:active       { cursor:grabbing; }
       .oni-dp-cell.dragging-src { opacity:.35; }
-      .oni-dp-cell.fall-in {
-        animation:oni-dp-fall-in .22s ease-out;
-      }
-      @keyframes oni-dp-fall-in {
-        from { transform:translateY(-48px);opacity:0; }
-        to   { transform:translateY(0);opacity:1; }
-      }
+      .oni-dp-cell.game-over    { cursor:default;pointer-events:none;opacity:.65; }
+      .oni-dp-cell.fall-in      { animation:oni-dp-fall-in .22s ease-out; }
+      @keyframes oni-dp-fall-in { from{transform:translateY(-44px);opacity:0}to{transform:translateY(0);opacity:1} }
 
-      /* Player token — bottom-left */
-      .oni-dp-player-area {
-        position:absolute;bottom:24px;left:32px;
-        display:flex;flex-direction:column;align-items:center;gap:4px;
+      /* Bottom row — player | feed zone | ally */
+      .oni-dp-bottom-row { display:flex;align-items:flex-end;justify-content:space-between;padding:0 4px; }
+      .oni-dp-player-area,.oni-dp-ally-area { display:flex;flex-direction:column;align-items:center;gap:3px; }
+      .oni-dp-actor-img {
+        width:72px;height:72px;object-fit:contain;border:none;border-radius:0;
+        background:transparent;filter:drop-shadow(0 0 8px rgba(141,95,56,.35));
       }
-      .oni-dp-player-area img {
-        width:96px;height:96px;border:none;border-radius:0;
-        background:transparent;object-fit:contain;
-        filter:drop-shadow(0 0 12px rgba(200,168,75,.45));
-      }
-      .oni-dp-player-name {
-        font-size:.78rem;font-weight:700;color:#f6ebd3;
-        text-shadow:0 1px 4px rgba(0,0,0,.9);
-      }
-
-      /* Feed zone — bottom-center */
-      .oni-dp-feed-zone {
-        position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
-        width:110px;height:90px;
-        border:3px dashed rgba(200,168,75,.65);
-        border-radius:14px;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        gap:4px;
-        background:rgba(200,168,75,.08);
-        transition:background .15s,border-color .15s;
-      }
-      .oni-dp-feed-zone.drag-over {
-        background:rgba(200,168,75,.22);
-        border-color:rgba(200,168,75,1);
-      }
-      .oni-dp-feed-zone.feed-correct {
-        background:rgba(80,200,80,.22);
-        border-color:rgba(80,200,80,.9);
-        animation:oni-dp-feed-pulse .3s ease;
-      }
-      .oni-dp-feed-zone.feed-wrong {
-        background:rgba(220,60,60,.22);
-        border-color:rgba(220,60,60,.9);
-        animation:oni-dp-feed-shake .3s ease;
-      }
-      @keyframes oni-dp-feed-pulse { 0%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.08)}100%{transform:translateX(-50%) scale(1)} }
-      @keyframes oni-dp-feed-shake { 0%,100%{transform:translateX(calc(-50%))}25%{transform:translateX(calc(-50% - 5px))}75%{transform:translateX(calc(-50% + 5px))} }
-      .oni-dp-feed-icon { font-size:1.8rem; }
-      .oni-dp-feed-label { font-size:.7rem;font-weight:700;color:#c8a84b; }
-
-      /* Ally area — bottom-right */
-      .oni-dp-ally-area {
-        position:absolute;bottom:24px;right:32px;
-        display:flex;flex-direction:column;align-items:center;gap:4px;
-      }
-      /* Speech bubble */
-      .oni-dp-bubble {
-        position:relative;
-        background:#fff;border:2px solid #bbb;border-radius:12px;
-        padding:6px 10px;
-        display:flex;gap:4px;align-items:center;justify-content:center;
-        min-width:60px;min-height:36px;
-        box-shadow:2px 2px 0 #ccc;
-        margin-bottom:4px;
-      }
-      .oni-dp-bubble::after {
-        content:"";position:absolute;bottom:-12px;right:22px;
-        border:6px solid transparent;border-top-color:#bbb;
-      }
-      .oni-dp-bubble::before {
-        content:"";position:absolute;bottom:-9px;right:23px;
-        border:5px solid transparent;border-top-color:#fff;z-index:1;
-      }
-      .oni-dp-bubble-item {
-        font-size:1.5rem;position:relative;
-        transition:opacity .2s,transform .2s;
-      }
-      .oni-dp-bubble-item.filled {
-        opacity:.3;text-decoration:line-through;transform:scale(.8);
-      }
-      .oni-dp-ally-token {
-        width:96px;height:96px;border:none;border-radius:0;
-        background:transparent;object-fit:contain;
-        filter:drop-shadow(0 0 12px rgba(200,168,75,.45));
-        transition:transform .15s;
-      }
-      .oni-dp-ally-token.eating {
-        animation:oni-dp-eat .35s ease;
-      }
-      .oni-dp-ally-token.happy {
-        animation:oni-dp-happy .4s ease;
-      }
+      .oni-dp-actor-label { font-size:.72rem;font-weight:700;color:#5a3010; }
+      .oni-dp-ally-token.eating { animation:oni-dp-eat .35s ease; }
+      .oni-dp-ally-token.happy  { animation:oni-dp-happy .4s ease; }
       @keyframes oni-dp-eat   { 0%{transform:scale(1)}30%{transform:scale(1.18) translateY(-6px)}100%{transform:scale(1)} }
       @keyframes oni-dp-happy { 0%{transform:scale(1)}20%{transform:scale(1.15) rotate(-5deg)}60%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1)} }
-      .oni-dp-ally-name {
-        font-size:.78rem;font-weight:700;color:#f6ebd3;
-        text-shadow:0 1px 4px rgba(0,0,0,.9);
+
+      /* Feed zone */
+      .oni-dp-feed-zone {
+        width:88px;height:72px;
+        border:2.5px dashed rgba(141,95,56,.55);border-radius:12px;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        gap:3px;background:rgba(141,95,56,.05);
+        transition:background .15s,border-color .15s;
+      }
+      .oni-dp-feed-zone.drag-over { background:rgba(200,168,75,.2);border-color:#c8a84b; }
+      .oni-dp-feed-zone.feed-wrong {
+        background:rgba(220,60,60,.15);border-color:rgba(220,60,60,.7);
+        animation:oni-dp-feed-shake .3s ease;
+      }
+      @keyframes oni-dp-feed-shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)} }
+      .oni-dp-feed-icon  { font-size:1.6rem; }
+      .oni-dp-feed-label { font-size:.68rem;font-weight:700;color:#8a5c2c; }
+
+      /* Finished overlay — dims the panel and blocks all interaction */
+      .oni-dp-finished-overlay {
+        position:absolute;inset:0;border-radius:11px;
+        background:rgba(0,0,0,.52);
+        display:flex;align-items:center;justify-content:center;
+        z-index:20;
+        animation:oni-dp-fadein .25s ease forwards;
+      }
+      .oni-dp-finished-txt {
+        font-size:3rem;font-weight:900;color:#f4d488;
+        text-shadow:0 0 32px rgba(244,212,136,.9);letter-spacing:.08em;
+        animation:oni-dp-slideup .4s ease forwards;
       }
 
-      /* Particles */
+      /* Particles / pops */
       .oni-dp-particle {
-        position:absolute;width:7px;height:7px;border-radius:50%;
-        pointer-events:none;z-index:30;
+        position:fixed;width:7px;height:7px;border-radius:50%;
+        pointer-events:none;z-index:10001;
         animation:oni-dp-particle-fly .42s ease-out forwards;
       }
       @keyframes oni-dp-particle-fly {
-        0%  { transform:translate(0,0) scale(1); opacity:1; }
-        100%{ transform:translate(var(--px),var(--py)) scale(0); opacity:0; }
+        0%  { transform:translate(0,0) scale(1);opacity:1; }
+        100%{ transform:translate(var(--px),var(--py)) scale(0);opacity:0; }
       }
       .oni-dp-score-pop {
         position:fixed;font-size:1.1rem;font-weight:900;
         color:#f4d488;text-shadow:0 0 8px rgba(244,212,136,.9);
-        pointer-events:none;z-index:30;white-space:nowrap;
+        pointer-events:none;z-index:10001;white-space:nowrap;
         animation:oni-dp-float-up .55s ease-out forwards;
       }
       .oni-dp-wrong-pop {
         position:fixed;font-size:1.1rem;font-weight:900;
         color:#ff6464;text-shadow:0 0 8px rgba(255,80,80,.8);
-        pointer-events:none;z-index:30;white-space:nowrap;
+        pointer-events:none;z-index:10001;white-space:nowrap;
         animation:oni-dp-float-up .5s ease-out forwards;
       }
       @keyframes oni-dp-float-up {
         0%  { transform:translate(-50%,0);opacity:1; }
         60% { transform:translate(-50%,-26px);opacity:1; }
         100%{ transform:translate(-50%,-40px);opacity:0; }
-      }
-
-      /* Spectator "Waiting" overlay on game screen */
-      .oni-dp-spec-banner {
-        position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-        font-size:1.1rem;color:#c8a84b;font-style:italic;
-        text-shadow:0 2px 8px rgba(0,0,0,.9);
-        pointer-events:none;
       }
 
       /* ── Result stage ── */
@@ -451,17 +385,13 @@
         border-radius:14px;padding:28px 36px;
         box-shadow:0 0 0 6px rgba(90,60,34,.4),0 20px 48px rgba(0,0,0,.7);
         display:flex;flex-direction:column;align-items:center;gap:12px;
-        animation:oni-dp-slideup .4s ease forwards;
-        min-width:340px;
+        animation:oni-dp-slideup .4s ease forwards;min-width:340px;
       }
       .oni-dp-finished {
         font-size:2.6rem;font-weight:900;color:#f4d488;
         text-shadow:0 0 24px rgba(244,212,136,.8);letter-spacing:.06em;
       }
-      .oni-dp-grade-txt {
-        font-size:1.5rem;font-weight:800;
-        text-shadow:0 0 16px rgba(255,255,255,.3);
-      }
+      .oni-dp-grade-txt { font-size:1.5rem;font-weight:800;text-shadow:0 0 16px rgba(255,255,255,.3); }
       .oni-dp-effect-txt { font-size:.88rem;color:#5a3010;font-style:italic;text-align:center; }
       .oni-dp-proceed-btn {
         margin-top:6px;padding:8px 28px;
@@ -470,7 +400,7 @@
         font-weight:800;font-size:.9rem;cursor:pointer;
         box-shadow:0 4px 12px rgba(0,0,0,.4);transition:filter .15s;
       }
-      .oni-dp-proceed-btn:hover { filter:brightness(1.15); }
+      .oni-dp-proceed-btn:hover    { filter:brightness(1.15); }
       .oni-dp-proceed-btn:disabled { opacity:.5;cursor:not-allowed; }
     `;
     document.head.appendChild(s);
@@ -553,7 +483,7 @@
   }
 
   function _handleDrop(food, col, row) {
-    if (!_isOwner) return;
+    if (!_isOwner || _gameOver) return;
 
     // Find the first unfulfilled order item
     const orderItem = _order.find(o => !o.filled);
@@ -606,7 +536,7 @@
 
       // Update score HUD
       const hudEl = document.getElementById("oni-dp-hud-score");
-      if (hudEl) hudEl.textContent = `Score: ${_score} | Wrong: ${_wrong}`;
+      if (hudEl) hudEl.textContent = `Score: ${_score} | ✗: ${_wrong}`;
 
     } else {
       // ── Wrong ─────────────────────────────────────────────────────────────
@@ -625,7 +555,7 @@
       _spawnScorePop("-1", true);
 
       const hudEl = document.getElementById("oni-dp-hud-score");
-      if (hudEl) hudEl.textContent = `Score: ${_score} | Wrong: ${_wrong}`;
+      if (hudEl) hudEl.textContent = `Score: ${_score} | ✗: ${_wrong}`;
     }
   }
 
@@ -737,48 +667,53 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Build the game arena HTML
+  // Build the compact game panel HTML
+  // Order row sits directly above the grid so the player can glance between them.
   // ---------------------------------------------------------------------------
   function _buildArena(actorId, targetActorId) {
-    const actor   = game.actors?.get(actorId);
-    const target  = game.actors?.get(targetActorId);
-    const pImg    = actor  ? _getTokenImg(actor)  : "icons/svg/mystery-man.svg";
-    const aImg    = target ? _getTokenImg(target) : "icons/svg/mystery-man.svg";
-    const pName   = actor?.name  ?? "?";
-    const aName   = target?.name ?? "?";
+    const actor  = game.actors?.get(actorId);
+    const target = game.actors?.get(targetActorId);
+    const pImg   = actor  ? _getTokenImg(actor)  : "icons/svg/mystery-man.svg";
+    const aImg   = target ? _getTokenImg(target) : "icons/svg/mystery-man.svg";
+    const pName  = actor?.name  ?? "?";
+    const aName  = target?.name ?? "?";
 
     return `
-      <div class="oni-dp-game" id="oni-dp-game">
+      <div class="oni-dp-game-panel" id="oni-dp-game">
 
-        <!-- Timer -->
-        <div class="oni-dp-timer-wrap">
-          <div class="oni-dp-timer-bar" id="oni-dp-timer-bar"></div>
+        <!-- HUD: timer bar + countdown + score on one compact line -->
+        <div class="oni-dp-hud-row">
+          <div class="oni-dp-timer-wrap">
+            <div class="oni-dp-timer-bar" id="oni-dp-timer-bar"></div>
+          </div>
+          <div class="oni-dp-timer-label" id="oni-dp-timer-label">15s</div>
+          <div class="oni-dp-hud-score"   id="oni-dp-hud-score">Score: 0 | ✗: 0</div>
         </div>
-        <div class="oni-dp-timer-label" id="oni-dp-timer-label">15s</div>
 
-        <!-- Score HUD -->
-        <div class="oni-dp-hud-score" id="oni-dp-hud-score">Score: 0 | Wrong: 0</div>
+        <!-- Order row: ally face + what they want — directly above grid -->
+        <div class="oni-dp-order-row">
+          <img src="${aImg}" class="oni-dp-order-ally-img" alt="${aName}">
+          <span class="oni-dp-order-label">${aName} wants:</span>
+          <div class="oni-dp-order-foods" id="oni-dp-order-bubble"></div>
+        </div>
 
         <!-- Food grid -->
         <div class="oni-dp-grid-wrap" id="oni-dp-grid-wrap"></div>
 
-        <!-- Player (bottom-left) -->
-        <div class="oni-dp-player-area">
-          <img src="${pImg}" alt="${pName}">
-          <div class="oni-dp-player-name">${pName}</div>
-        </div>
-
-        <!-- Feed zone (bottom-center) -->
-        <div class="oni-dp-feed-zone" id="oni-dp-feed-zone">
-          <div class="oni-dp-feed-icon">🍽️</div>
-          <div class="oni-dp-feed-label">Drop here</div>
-        </div>
-
-        <!-- Ally (bottom-right) -->
-        <div class="oni-dp-ally-area">
-          <div class="oni-dp-bubble" id="oni-dp-order-bubble"></div>
-          <img src="${aImg}" alt="${aName}" class="oni-dp-ally-token" id="oni-dp-ally-token">
-          <div class="oni-dp-ally-name">${aName}</div>
+        <!-- Bottom row: player | feed zone | ally -->
+        <div class="oni-dp-bottom-row">
+          <div class="oni-dp-player-area">
+            <img src="${pImg}" class="oni-dp-actor-img" alt="${pName}">
+            <span class="oni-dp-actor-label">${pName}</span>
+          </div>
+          <div class="oni-dp-feed-zone" id="oni-dp-feed-zone">
+            <span class="oni-dp-feed-icon">🍽️</span>
+            <span class="oni-dp-feed-label">Drop here</span>
+          </div>
+          <div class="oni-dp-ally-area">
+            <img src="${aImg}" class="oni-dp-actor-img oni-dp-ally-token" id="oni-dp-ally-token" alt="${aName}">
+            <span class="oni-dp-actor-label">${aName}</span>
+          </div>
         </div>
 
       </div>
@@ -915,26 +850,26 @@
           _gameStartMs = Date.now();
           _startGameLoop(true);
           _endTimer = setTimeout(() => {
-            // Show "Finished!" text, pause game, then submit
+            // Lock all game interaction immediately
+            _gameOver = true;
             if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+
+            // Snap timer to 0
             const bar = document.getElementById("oni-dp-timer-bar");
             if (bar) bar.style.width = "0%";
             const lbl = document.getElementById("oni-dp-timer-label");
             if (lbl) lbl.textContent = "0s";
 
-            // "Finished!" banner over game area
-            const game = document.getElementById("oni-dp-game");
-            if (game) {
+            // Mark all cells non-interactive via CSS class
+            document.querySelectorAll(`#${OVL_ID} .oni-dp-cell`).forEach(c => c.classList.add("game-over"));
+
+            // Overlay "Finished!" on top of the panel — blocks all pointer events below it
+            const gamePanel = document.getElementById("oni-dp-game");
+            if (gamePanel) {
               const fin = document.createElement("div");
-              fin.style.cssText = `
-                position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-                font-size:3rem;font-weight:900;color:#f4d488;
-                text-shadow:0 0 32px rgba(244,212,136,.9);
-                letter-spacing:.08em;pointer-events:none;z-index:50;
-                animation:oni-dp-slideup .4s ease forwards;
-              `;
-              fin.textContent = "Finished!";
-              game.appendChild(fin);
+              fin.className = "oni-dp-finished-overlay";
+              fin.innerHTML = `<div class="oni-dp-finished-txt">Finished!</div>`;
+              gamePanel.appendChild(fin);
             }
 
             setTimeout(() => _endGame(actorId), 800);
@@ -942,17 +877,27 @@
         });
 
       } else {
-        // Spectator view — static panel
+        // Spectator view — simple waiting panel
         const ownerUid  = actor ? _getOwnerUserId(actor) : null;
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? pName) : pName;
         ovl.innerHTML = `
-          <div style="position:relative;width:100%;height:100%;">
-            ${_buildArena(actorId, targetActorId)}
-            <div class="oni-dp-spec-banner">${ownerName} is preparing a meal…</div>
+          <div class="oni-dp-panel">
+            <div class="oni-dp-title"><img src="${DP_ICON}" alt=""> Double Portion</div>
+            <div style="display:flex;gap:20px;align-items:center;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <img src="${pImg}" style="width:56px;height:56px;object-fit:contain;border:none;">
+                <span style="font-size:.72rem;color:#5a3010;">${pName}</span>
+              </div>
+              <span style="font-size:1.3rem;color:#c8a84b;">→ 🍽️ →</span>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <img src="${aImg}" style="width:56px;height:56px;object-fit:contain;border:none;">
+                <span style="font-size:.72rem;color:#5a3010;">${aName}</span>
+              </div>
+            </div>
+            <div class="oni-dp-waiting">${ownerName} is preparing a meal for ${aName}…</div>
           </div>
         `;
         document.body.appendChild(ovl);
-        // Spectators don't interact; no game loop needed.
       }
     },
 
