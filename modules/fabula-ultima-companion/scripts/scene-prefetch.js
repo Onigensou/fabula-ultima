@@ -61,14 +61,24 @@
 
   // Primary mitigation: warm the cache for all navigation-bar scenes on world
   // load, well before any scene transition happens.
+  // Active scene is fetched first (highest priority) so the GM can activate
+  // immediately without racing the rest of the nav-scene batch.
   Hooks.once("ready", async () => {
     try {
-      const navScenes = game.scenes.filter(s => s.navigation);
+      const activeScene = game.scenes.active;
+      const navScenes = game.scenes.filter(s => s.navigation && s !== activeScene);
+
+      // Active scene first — done before iterating the rest.
+      if (activeScene) {
+        await prefetchUrls(collectVideoSrcs(activeScene), `active scene "${activeScene.name}"`);
+      }
+
+      // Remaining nav scenes in parallel.
       const allSrcs = new Set();
       for (const scene of navScenes) {
         for (const src of collectVideoSrcs(scene)) allSrcs.add(src);
       }
-      await prefetchUrls(allSrcs, `${navScenes.length} navigation scene(s)`);
+      await prefetchUrls(allSrcs, `${navScenes.length} other navigation scene(s)`);
     } catch (e) {
       console.warn(`${TAG} ready-hook pre-fetch failed (non-fatal)`, e);
     }
