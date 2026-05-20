@@ -546,12 +546,14 @@
                 <option value="exploration">Exploration (Camera Follow Token)</option>
                 <option value="dungeon">Dungeon (Tile-Based Movement)</option>
                 <option value="camp">Camp (Camp Activity System)</option>
+                <option value="title">Title (Video Game Title Screen)</option>
               </select>
             </div>
             <p class="notes">
               <b>None</b> — standard Foundry V12 token movement.<br>
               <b>Exploration</b> — camera locks and follows the party token; right-click to walk.<br>
-              <b>Dungeon</b> — tile-based movement: click highlighted tiles to move the party token along the laid-out path.
+              <b>Dungeon</b> — tile-based movement: click highlighted tiles to move the party token along the laid-out path.<br>
+              <b>Title</b> — full-screen title screen shown to all players at session start; provides Press Any Key → New Game / Load Game / Options / Quit.
             </p>
           </div>
 
