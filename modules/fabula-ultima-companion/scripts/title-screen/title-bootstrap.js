@@ -27,13 +27,13 @@
       TS.UI.open();
     } else {
       TS.UI.close();
-      TS.LoadUI.close();
+      if (!TS.LoadUI._showingSuccess) TS.LoadUI.close();
     }
   });
 
   Hooks.on("canvasTearDown", () => {
     TS.UI.close();
-    TS.LoadUI.close();
+    if (!TS.LoadUI._showingSuccess) TS.LoadUI.close();
     TS.Socket.resetVotes();
   });
 
@@ -43,7 +43,7 @@
       TS.UI.open();
     } else {
       TS.UI.close();
-      TS.LoadUI.close();
+      if (!TS.LoadUI._showingSuccess) TS.LoadUI.close();
     }
   });
 
