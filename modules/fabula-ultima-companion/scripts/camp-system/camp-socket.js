@@ -83,6 +83,10 @@
           CAMP.DaydreamUI?.spectateBegin(payload?.actorId);
           return;
         }
+        if (type === CAMP.MSG.DAYDREAM_HIT) {
+          CAMP.DaydreamUI?.onHit(payload?.success);
+          return;
+        }
         if (type === CAMP.MSG.DAYDREAM_RESULT && payload?.reduction != null) {
           // Full result from GM — reveal phase
           CAMP.DaydreamUI?.applyResult(payload.actorId, payload.score, payload.reduction);
@@ -123,6 +127,10 @@
         }
         if (type === CAMP.MSG.DOUBLE_PORTION_MINIGAME) {
           CAMP.DoublePortionUI?.showArena(payload?.actorId, payload?.targetActorId);
+          return;
+        }
+        if (type === CAMP.MSG.DOUBLE_PORTION_GAME_STATE) {
+          CAMP.DoublePortionUI?.onGameState(payload);
           return;
         }
         if (type === CAMP.MSG.DOUBLE_PORTION_RESULT && payload?.grade != null) {

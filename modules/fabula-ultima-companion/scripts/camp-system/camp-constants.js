@@ -69,6 +69,7 @@
     // Daydream minigame (Counting Sheep)
     DAYDREAM_START:           "CAMP_DAYDREAM_START",
     DAYDREAM_BEGIN:           "CAMP_DAYDREAM_BEGIN",           // owner → all clients (begin trigger; starts spectator countdown)
+    DAYDREAM_HIT:             "CAMP_DAYDREAM_HIT",             // owner → all clients (SPACE result: success/fail flash on spectators)
     DAYDREAM_RESULT:          "CAMP_DAYDREAM_RESULT",          // owner → GM (score) / GM → all (score+reduction)
     DAYDREAM_PROCEED:         "CAMP_DAYDREAM_PROCEED",         // owner → GM
     DAYDREAM_DONE:            "CAMP_DAYDREAM_DONE",
@@ -83,6 +84,7 @@
     DOUBLE_PORTION_DONE:             "CAMP_DOUBLE_PORTION_DONE",             // GM → all
     DOUBLE_PORTION_CHOICE_REQUEST:   "CAMP_DOUBLE_PORTION_CHOICE_REQUEST",   // GM → target's owner (in-combat)
     DOUBLE_PORTION_CHOICE_RESPONSE:  "CAMP_DOUBLE_PORTION_CHOICE_RESPONSE",  // target's owner → GM
+    DOUBLE_PORTION_GAME_STATE:       "CAMP_DOUBLE_PORTION_GAME_STATE",       // owner → all clients (grid+order sync on start + each drop)
   });
 
   // ---------------------------------------------------------------------------

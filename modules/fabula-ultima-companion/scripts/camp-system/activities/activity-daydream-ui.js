@@ -773,6 +773,13 @@
         _playSound(SFX.FAIL, 0.7);
         _flashFail();
       }
+
+      // Broadcast hit/miss so spectators see the flash too
+      if (scored) {
+        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: true });
+      } else if (!scored && trapped) {
+        CAMP.Socket.emit(CAMP.MSG.DAYDREAM_HIT, { actorId: _actorId, success: false });
+      }
     };
 
     document.addEventListener("keydown", _spaceHandler, { capture: true });
@@ -1049,6 +1056,18 @@
       const tokenImg    = actor ? _getTokenImg(actor) : "icons/svg/mystery-man.svg";
       const displayName = actor?.name ?? "?";
       _showCountdownPanel(actorId, actor, tokenImg, displayName);
+    },
+
+    // --------------------------------------------------------------------
+    // onHit — mirrors the owner's success burst / fail flash on spectators.
+    // No-ops if _isOwner (they already see it locally) or the game isn't
+    // currently showing.
+    // --------------------------------------------------------------------
+    onHit(success) {
+      if (_isOwner) return;
+      if (!document.getElementById(OVL_ID)) return;
+      if (success) _flashSuccess();
+      else _flashFail();
     },
 
     // --------------------------------------------------------------------
