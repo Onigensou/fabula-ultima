@@ -539,6 +539,55 @@
   }
 
   // ===========================================================================
+  // Spectator game-in-progress view (called after countdown on non-owner clients)
+  // Shows a live countdown timer + actor/target tokens while the owner plays.
+  // ===========================================================================
+
+  function _startSpectatorGame(pImg, pName, aImg, aName, ownerName) {
+    const ovl = document.getElementById(OVL_ID);
+    if (!ovl) return;
+
+    ovl.innerHTML = `
+      <div class="oni-dp-game" id="oni-dp-game">
+        <div class="oni-dp-hud-row">
+          <div class="oni-dp-timer-wrap">
+            <div class="oni-dp-timer-bar" id="oni-dp-timer-bar"></div>
+          </div>
+          <div class="oni-dp-timer-label" id="oni-dp-timer-label">15s</div>
+        </div>
+        <div class="oni-dp-panel" style="gap:16px;">
+          <div class="oni-dp-title"><img src="${DP_ICON}" alt=""> Double Portion</div>
+          <div style="display:flex;gap:20px;align-items:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <img src="${pImg}" style="width:64px;height:64px;object-fit:contain;border:none;">
+              <span style="font-size:.78rem;color:#5a3010;">${pName}</span>
+            </div>
+            <span style="font-size:1.3rem;color:#c8a84b;">→ 🍽️ →</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <img src="${aImg}" style="width:64px;height:64px;object-fit:contain;border:none;">
+              <span style="font-size:.72rem;color:#5a3010;">${aName}</span>
+            </div>
+          </div>
+          <div class="oni-dp-waiting">${ownerName} is preparing a meal…</div>
+        </div>
+      </div>
+    `;
+
+    _els.timerBar   = document.getElementById("oni-dp-timer-bar");
+    _els.timerLabel = document.getElementById("oni-dp-timer-label");
+    _els.game       = document.getElementById("oni-dp-game");
+    _gameStartMs    = Date.now();
+    _lastLabelSec   = -1;
+    _startGameLoop();
+
+    _endTimer = setTimeout(() => {
+      if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+      if (_els.timerBar)   _els.timerBar.style.width   = "0%";
+      if (_els.timerLabel) _els.timerLabel.textContent  = "0s";
+    }, GAME_MS);
+  }
+
+  // ===========================================================================
   // rAF timer — closure-captured refs, label throttled to 1 Hz
   // ===========================================================================
 
@@ -1054,7 +1103,8 @@
         });
 
       } else {
-        // Spectator view
+        // Spectator: countdown synchronized with owner's (both showArena() calls fire at the
+        // same time via DOUBLE_PORTION_MINIGAME), then live timer so spectators see game progress.
         const ownerUid  = actor ? _getOwnerUserId(actor) : null;
         const ownerName = ownerUid ? (game.users?.get(ownerUid)?.name ?? pName) : pName;
         ovl.innerHTML = `
@@ -1071,10 +1121,11 @@
                 <span style="font-size:.72rem;color:#5a3010;">${aName}</span>
               </div>
             </div>
-            <div class="oni-dp-waiting">${ownerName} is preparing a meal for ${aName}…</div>
+            <div class="oni-dp-countdown-num" id="oni-dp-count">3</div>
           </div>
         `;
         document.body.appendChild(ovl);
+        _runCountdown(3, () => _startSpectatorGame(pImg, pName, aImg, aName, ownerName));
       }
     },
 

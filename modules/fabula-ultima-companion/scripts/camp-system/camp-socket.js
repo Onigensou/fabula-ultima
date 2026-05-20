@@ -79,6 +79,10 @@
           CAMP.DaydreamUI?.show(payload?.actorId, payload?.actorName);
           return;
         }
+        if (type === CAMP.MSG.DAYDREAM_BEGIN) {
+          CAMP.DaydreamUI?.spectateBegin(payload?.actorId);
+          return;
+        }
         if (type === CAMP.MSG.DAYDREAM_RESULT && payload?.reduction != null) {
           // Full result from GM — reveal phase
           CAMP.DaydreamUI?.applyResult(payload.actorId, payload.score, payload.reduction);

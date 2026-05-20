@@ -68,6 +68,7 @@
     COMBAT_LESSON_DONE:    "CAMP_COMBAT_LESSON_DONE",
     // Daydream minigame (Counting Sheep)
     DAYDREAM_START:           "CAMP_DAYDREAM_START",
+    DAYDREAM_BEGIN:           "CAMP_DAYDREAM_BEGIN",           // owner → all clients (begin trigger; starts spectator countdown)
     DAYDREAM_RESULT:          "CAMP_DAYDREAM_RESULT",          // owner → GM (score) / GM → all (score+reduction)
     DAYDREAM_PROCEED:         "CAMP_DAYDREAM_PROCEED",         // owner → GM
     DAYDREAM_DONE:            "CAMP_DAYDREAM_DONE",
