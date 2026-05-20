@@ -6,7 +6,8 @@
 //
 //   "pressany" → (any key / click) → "menu"
 //   "menu"     → Load Game         → TitleScreen.LoadUI.open()
-//   "menu"     → New Game / Options / Quit → placeholder stubs
+//   "menu"     → New Game / Options → placeholder stubs
+//   "menu"     → Quit              → TitleScreen.QuitUI.open()
 //   "menu"     → ESC               → "pressany"
 //
 // Open via: TitleScreen.UI.open()  (called by title-bootstrap.js)
@@ -100,7 +101,7 @@
     { id: "new-game",  label: "New Game",  stub: true  },
     { id: "load-game", label: "Load Game", stub: false },
     { id: "options",   label: "Options",   stub: true  },
-    { id: "quit",      label: "Quit",      stub: true  },
+    { id: "quit",      label: "Quit",      stub: false },
   ];
 
   // ── UI class ─────────────────────────────────────────────────────────────────
@@ -203,6 +204,8 @@
       if (!this._el) return;
       if (["Shift", "Control", "Alt", "Meta", "CapsLock"].includes(e.key)) return;
 
+      if (TS.QuitUI?._el) return;
+
       if (this._screen === "pressany") {
         if (TS.LoadUI?._el) return;
         e.stopImmediatePropagation();
@@ -254,7 +257,7 @@
         case "load-game": TS.LoadUI.open();                               break;
         case "new-game":  console.log(TAG, "New Game — placeholder.");   break;
         case "options":   console.log(TAG, "Options — placeholder.");    break;
-        case "quit":      console.log(TAG, "Quit — placeholder.");       break;
+        case "quit":      TS.QuitUI.open();                                break;
       }
     }
   }

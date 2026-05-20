@@ -271,6 +271,7 @@
     "scripts/title-screen/title-constants.js",
     "scripts/title-screen/title-socket.js",
     "scripts/title-screen/title-load-ui.js",
+    "scripts/title-screen/title-quit-ui.js",
     "scripts/title-screen/title-ui.js",
     "scripts/title-screen/title-bootstrap.js"
   ],
