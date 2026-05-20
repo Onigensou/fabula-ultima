@@ -238,6 +238,7 @@
     "scripts/camp-system/activities/activity-daydream.js",
     "scripts/camp-system/activities/activity-daydream-ui.js",
     "scripts/camp-system/activities/activity-double-portion.js",
+    "scripts/camp-system/activities/activity-double-portion-ui.js",
     "scripts/camp-system/activities/activity-exploration.js",
     "scripts/camp-system/activities/activity-exploration-ui.js",
     "scripts/camp-system/activities/activity-fishing.js",

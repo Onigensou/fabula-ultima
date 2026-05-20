@@ -73,6 +73,15 @@
     DAYDREAM_DONE:            "CAMP_DAYDREAM_DONE",
     DAYDREAM_CHOICE_REQUEST:  "CAMP_DAYDREAM_CHOICE_REQUEST",  // GM → owner (in-combat "you may" dialog)
     DAYDREAM_CHOICE_RESPONSE: "CAMP_DAYDREAM_CHOICE_RESPONSE", // owner → GM
+    // Double Portion minigame
+    DOUBLE_PORTION_START:            "CAMP_DOUBLE_PORTION_START",            // GM → all
+    DOUBLE_PORTION_TARGET:           "CAMP_DOUBLE_PORTION_TARGET",           // owner → GM (ally chosen)
+    DOUBLE_PORTION_MINIGAME:         "CAMP_DOUBLE_PORTION_MINIGAME",         // GM → all (arena phase)
+    DOUBLE_PORTION_RESULT:           "CAMP_DOUBLE_PORTION_RESULT",           // owner → GM (score) / GM → all (grade)
+    DOUBLE_PORTION_PROCEED:          "CAMP_DOUBLE_PORTION_PROCEED",          // owner → GM
+    DOUBLE_PORTION_DONE:             "CAMP_DOUBLE_PORTION_DONE",             // GM → all
+    DOUBLE_PORTION_CHOICE_REQUEST:   "CAMP_DOUBLE_PORTION_CHOICE_REQUEST",   // GM → target's owner (in-combat)
+    DOUBLE_PORTION_CHOICE_RESPONSE:  "CAMP_DOUBLE_PORTION_CHOICE_RESPONSE",  // target's owner → GM
   });
 
   // ---------------------------------------------------------------------------

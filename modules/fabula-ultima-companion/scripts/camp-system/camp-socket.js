@@ -112,6 +112,27 @@
           return;
         }
 
+        // ── Double Portion minigame (GM → all, owner → GM) ───────────────
+        if (type === CAMP.MSG.DOUBLE_PORTION_START) {
+          CAMP.DoublePortionUI?.show(payload?.actorId, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.DOUBLE_PORTION_MINIGAME) {
+          CAMP.DoublePortionUI?.showArena(payload?.actorId, payload?.targetActorId);
+          return;
+        }
+        if (type === CAMP.MSG.DOUBLE_PORTION_RESULT && payload?.grade != null) {
+          // Full result from GM — reveal phase
+          CAMP.DoublePortionUI?.applyResult(
+            payload.actorId, payload.targetActorId, payload.grade, payload.multiplier
+          );
+          return;
+        }
+        if (type === CAMP.MSG.DOUBLE_PORTION_DONE) {
+          CAMP.DoublePortionUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -162,6 +183,21 @@
 
           case CAMP.MSG.COMBAT_LESSON_PROCEED:
             CAMP.CombatLessonUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.DOUBLE_PORTION_TARGET:
+            CAMP.DoublePortionUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.DOUBLE_PORTION_RESULT:   // owner → GM: score submitted
+            CAMP.DoublePortionUI?.resolveScore(payload?.actorId, {
+              score: payload?.score ?? 0,
+              wrong: payload?.wrong ?? 0,
+            });
+            break;
+
+          case CAMP.MSG.DOUBLE_PORTION_PROCEED:
+            CAMP.DoublePortionUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
