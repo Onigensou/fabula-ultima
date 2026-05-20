@@ -85,6 +85,15 @@
     DOUBLE_PORTION_CHOICE_REQUEST:   "CAMP_DOUBLE_PORTION_CHOICE_REQUEST",   // GM → target's owner (in-combat)
     DOUBLE_PORTION_CHOICE_RESPONSE:  "CAMP_DOUBLE_PORTION_CHOICE_RESPONSE",  // target's owner → GM
     DOUBLE_PORTION_GAME_STATE:       "CAMP_DOUBLE_PORTION_GAME_STATE",       // owner → all clients (grid+order sync on start + each drop)
+    // Massage minigame (Hot-and-Cold grid)
+    MASSAGE_START:    "CAMP_MASSAGE_START",    // GM → all (show ally-picker)
+    MASSAGE_TARGET:   "CAMP_MASSAGE_TARGET",   // owner → GM (ally chosen)
+    MASSAGE_MINIGAME: "CAMP_MASSAGE_MINIGAME", // GM → all (show arena)
+    MASSAGE_BEGIN:    "CAMP_MASSAGE_BEGIN",    // owner → all (Click to Begin; starts spectator countdown)
+    MASSAGE_HIT:      "CAMP_MASSAGE_HIT",      // owner → all (per-click: cell + proximity + score + newSpot)
+    MASSAGE_RESULT:   "CAMP_MASSAGE_RESULT",   // owner → GM (score) / GM → all (score + reduction)
+    MASSAGE_PROCEED:  "CAMP_MASSAGE_PROCEED",  // owner → GM
+    MASSAGE_DONE:     "CAMP_MASSAGE_DONE",     // GM → all
   });
 
   // ---------------------------------------------------------------------------
