@@ -393,9 +393,43 @@
       this._progress     = 0;
       this._progressRaf  = 0;
       this._keyFn        = this._onKey.bind(this);
+      // Optional hook: if set, slot click/Enter calls this(slotId) instead of opening confirm.
+      // Used by the title screen load UI to redirect clicks into the ready-check vote flow.
+      this._slotClickHook = null;
     }
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
+
+    // Opens directly in file/slot screen for the given mode, skipping mode selection.
+    // Used by the title screen so players see the exact same UI but in load-only mode.
+    openInMode(mode) {
+      if (this._el) return;
+      this._injectCSS();
+      sfx("fileOpen");
+
+      this._screen      = "file";
+      this._mode        = mode;
+      this._focusArea   = "main";
+      this._sel         = null;
+      this._status      = "";
+      this._statusCls   = "";
+      this._busy        = false;
+      this._cursorReady = false;
+
+      this._el = document.createElement("div");
+      this._el.id = "save-system-overlay";
+      this._el.setAttribute("tabindex", "-1");
+      document.body.appendChild(this._el);
+
+      this._cursorEl     = document.createElement("img");
+      this._cursorEl.id  = "ss-feather-cursor";
+      this._cursorEl.src = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+      document.body.appendChild(this._cursorEl);
+
+      document.addEventListener("keydown", this._keyFn, { capture: true });
+      this._render();
+      this._el.focus();
+    }
 
     open() {
       if (this._el) { this._el.focus(); return; }
@@ -695,7 +729,8 @@
           if (this._busy || this._screen === "confirm") return;
           if (el.dataset.valid !== "true") return;
           const id = parseInt(el.dataset.slot);
-          this._sel          = id;
+          this._sel = id;
+          if (this._slotClickHook) { this._slotClickHook(id); return; }
           this._confirmFocus = this._mode === "delete" ? "no" : "yes";
           this._status       = "";
           this._statusCls    = "";
@@ -1053,13 +1088,14 @@
         return;
       }
 
-      // ── File screen — Enter to open confirm ──
+      // ── File screen — Enter to open confirm (or fire slotClickHook) ──
       if (this._screen === "file" && this._focusArea === "main") {
         if (e.key === "Enter" && this._sel !== null) {
           e.preventDefault();
           const d     = SS.Storage.getSlot(this._sel);
           const valid = this._mode === "save" || d !== null;
           if (valid) {
+            if (this._slotClickHook) { this._slotClickHook(this._sel); return; }
             this._confirmFocus = this._mode === "delete" ? "no" : "yes";
             this._status       = "";
             this._statusCls    = "";
