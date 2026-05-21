@@ -203,7 +203,6 @@
         position:absolute; bottom:26px;
         width:64px; height:64px; object-fit:contain;
         transform:translateX(-50%);
-        transition:left .2s ease;
         image-rendering:auto;
         pointer-events:none;
       }
@@ -224,7 +223,6 @@
         border:1px solid rgba(200,168,75,.55);
         border-radius:8px;
         transform:translateX(-50%);
-        transition:left .2s ease;
       }
       .oni-tr-sweet.oni-tr-perfect-flash {
         background:rgba(200,168,75,.7);
@@ -526,6 +524,7 @@
         _speed = Math.min(BASE_SPEED + _combo * SPEED_PER_COMBO, SPEED_CAP);
         _showFloat("Perfect!", "oni-tr-perfect", _pointerPx);
         _flashZone("oni-tr-perfect-flash");
+        _spawnParticles(_pointerPx, true);
         _playSound(SFX.PERFECT, 0.45);
         _advanceRound(actorId, "perfect");
       } else if (diff <= SWEET_HALF) {
@@ -535,6 +534,7 @@
         _speed = Math.min(BASE_SPEED + _combo * SPEED_PER_COMBO, SPEED_CAP);
         _showFloat("Hit!", "oni-tr-hit", _pointerPx);
         _flashZone("oni-tr-hit-flash");
+        _spawnParticles(_pointerPx, false);
         _playSound(SFX.HIT, 0.7);
         _advanceRound(actorId, "hit");
       } else {
@@ -581,10 +581,25 @@
     CAMP.Socket.emit(CAMP.MSG.TRAINING_HIT, { actorId, ...data });
   }
 
+  function _setComboDisplay(el, combo) {
+    if (!el) return;
+    el.textContent = `×${combo}`;
+    // Font grows with combo: 1em at ×0, up to ~3.2em at ×20+
+    const fs = Math.min(1.0 + combo * 0.115, 3.2);
+    el.style.fontSize = `${fs.toFixed(3)}em`;
+    // Brief scale-pop via Web Animations API (compositor thread — no reflow)
+    if (combo > 0) {
+      el.animate(
+        [{ transform: "scale(1.55)" }, { transform: "scale(1)" }],
+        { duration: 160, easing: "ease-out" }
+      );
+    }
+  }
+
   function _updateHUD() {
     const rawPct = Math.round(Math.min(_score / MAX_PTS, 1) * 100);
     if (_els.scoreVal) _els.scoreVal.textContent = `${rawPct}%`;
-    if (_els.comboVal) _els.comboVal.textContent = `×${_combo}`;
+    _setComboDisplay(_els.comboVal, _combo);
   }
 
   // ---------------------------------------------------------------------------
@@ -605,6 +620,96 @@
     if (!_els.sweetZone) return;
     _els.sweetZone.classList.add(cls);
     setTimeout(() => _els.sweetZone?.classList.remove(cls), 400);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Particle burst
+  // ---------------------------------------------------------------------------
+  function _spawnParticles(xPx, isPerfect) {
+    if (!_els.floatLayer) return;
+
+    const count    = isPerfect ? 18 : 9;
+    const originY  = 88;   // px from top of float-layer — sits on the gauge track
+
+    for (let i = 0; i < count; i++) {
+      const angle  = (Math.PI * 2 * i / count) + (Math.random() * 0.5 - 0.25);
+      const dist   = isPerfect ? 40 + Math.random() * 50 : 18 + Math.random() * 28;
+      const dx     = Math.cos(angle) * dist;
+      const dy     = Math.sin(angle) * dist;
+      const dur    = 480 + Math.random() * 280;
+
+      // Alternate between circle dots and thin spike shapes for visual variety
+      const isSpike = isPerfect && i % 3 === 0;
+      const size    = isPerfect
+        ? (isSpike ? 3 : 5 + Math.random() * 5)
+        : (3 + Math.random() * 3);
+
+      const gold   = Math.random() < 0.5;
+      const color  = isPerfect
+        ? (gold ? "#e8d870" : "#c8a84b")
+        : (Math.random() < 0.55 ? "#6fd468" : "#a8e890");
+
+      const p = document.createElement("div");
+      p.style.cssText = [
+        "position:absolute",
+        `left:${xPx}px`,
+        `top:${originY}px`,
+        `width:${isSpike ? 2 : size.toFixed(1)}px`,
+        `height:${size.toFixed(1)}px`,
+        `border-radius:${isSpike ? "1px" : "50%"}`,
+        `background:${color}`,
+        "pointer-events:none",
+        "transform:translate(-50%,-50%)",
+        isPerfect ? `box-shadow:0 0 ${(size * 1.4).toFixed(1)}px ${color}` : "",
+      ].join(";");
+
+      _els.floatLayer.appendChild(p);
+
+      const rotation = isSpike ? `rotate(${(angle * 180 / Math.PI + 90).toFixed(1)}deg)` : "";
+
+      p.animate(
+        [
+          { transform: `translate(-50%,-50%) ${rotation} scale(1)`, opacity: 1 },
+          { transform: `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) ${rotation} scale(0)`, opacity: 0 },
+        ],
+        { duration: dur, easing: "cubic-bezier(.15,.8,.35,1)", fill: "forwards" }
+      ).finished.then(() => p.remove());
+    }
+
+    // For perfect: add a second ring of slower-drifting sparkles
+    if (isPerfect) {
+      for (let i = 0; i < 8; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist  = 55 + Math.random() * 40;
+        const dx    = Math.cos(angle) * dist;
+        const dy    = Math.sin(angle) * dist;
+        const size  = 2 + Math.random() * 3;
+
+        const p = document.createElement("div");
+        p.style.cssText = [
+          "position:absolute",
+          `left:${xPx}px`,
+          `top:${originY}px`,
+          `width:${size.toFixed(1)}px`,
+          `height:${size.toFixed(1)}px`,
+          "border-radius:50%",
+          "background:#fffac0",
+          "pointer-events:none",
+          "transform:translate(-50%,-50%)",
+          `box-shadow:0 0 ${(size + 2).toFixed(1)}px #e8d870`,
+        ].join(";");
+
+        _els.floatLayer.appendChild(p);
+
+        p.animate(
+          [
+            { transform: `translate(-50%,-50%) scale(1.4)`, opacity: 0.9 },
+            { transform: `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${dy.toFixed(1)}px)) scale(0)`, opacity: 0 },
+          ],
+          { duration: 700 + Math.random() * 300, easing: "ease-out", fill: "forwards" }
+        ).finished.then(() => p.remove());
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -738,12 +843,22 @@
 
       // HUD
       if (score != null && _els.scoreVal) _els.scoreVal.textContent = `${Math.round(Math.min(score / MAX_PTS, 1) * 100)}%`;
-      if (combo != null && _els.comboVal) _els.comboVal.textContent = `×${combo}`;
+      if (combo != null) _setComboDisplay(_els.comboVal, combo);
 
-      // Feedback
-      if (perfect) { _showFloat("Perfect!", "oni-tr-perfect", pointerPx ?? _pointerPx); _flashZone("oni-tr-perfect-flash"); }
-      else if (hit) { _showFloat("Hit!", "oni-tr-hit", pointerPx ?? _pointerPx); _flashZone("oni-tr-hit-flash"); }
-      else if (miss) { _showFloat("Miss", "oni-tr-miss", sweetSpotPx ?? _sweetSpotPx); _flashZone("oni-tr-miss-flash"); }
+      // Feedback + particles
+      const hitX = pointerPx ?? _pointerPx;
+      if (perfect) {
+        _showFloat("Perfect!", "oni-tr-perfect", hitX);
+        _flashZone("oni-tr-perfect-flash");
+        _spawnParticles(hitX, true);
+      } else if (hit) {
+        _showFloat("Hit!", "oni-tr-hit", hitX);
+        _flashZone("oni-tr-hit-flash");
+        _spawnParticles(hitX, false);
+      } else if (miss) {
+        _showFloat("Miss", "oni-tr-miss", sweetSpotPx ?? _sweetSpotPx);
+        _flashZone("oni-tr-miss-flash");
+      }
     },
 
     applyResult(actorId, scorePercent, charges) {
