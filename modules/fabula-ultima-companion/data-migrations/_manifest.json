@@ -115,6 +115,10 @@
     {
       "key": "2026-05-21-actor-template-formula-repair",
       "path": "data-migrations/2026-05-21-actor-template-formula-repair.js"
+    },
+    {
+      "key": "2026-05-21-pds-actor-copy-relink",
+      "path": "data-migrations/2026-05-21-pds-actor-copy-relink.js"
     }
   ]
 }
