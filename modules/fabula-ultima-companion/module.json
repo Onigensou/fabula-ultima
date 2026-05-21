@@ -246,6 +246,7 @@
     "scripts/camp-system/activities/activity-magic-lesson.js",
     "scripts/camp-system/activities/activity-martial-practice.js",
     "scripts/camp-system/activities/activity-massage.js",
+    "scripts/camp-system/activities/activity-massage-ui.js",
     "scripts/camp-system/activities/activity-meditate.js",
     "scripts/camp-system/activities/activity-mending.js",
     "scripts/camp-system/activities/activity-midnight-oil.js",

@@ -145,6 +145,32 @@
           return;
         }
 
+        // ── Massage minigame (GM → all, owner → GM) ──────────────────────
+        if (type === CAMP.MSG.MASSAGE_START) {
+          CAMP.MassageUI?.show(payload?.actorId, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.MASSAGE_MINIGAME) {
+          CAMP.MassageUI?.showArena(payload?.actorId, payload?.targetActorId);
+          return;
+        }
+        if (type === CAMP.MSG.MASSAGE_BEGIN) {
+          CAMP.MassageUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.MASSAGE_HIT) {
+          CAMP.MassageUI?.onHit(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MASSAGE_RESULT && payload?.reduction != null) {
+          CAMP.MassageUI?.applyResult(payload.actorId, payload.score, payload.reduction);
+          return;
+        }
+        if (type === CAMP.MSG.MASSAGE_DONE) {
+          CAMP.MassageUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -210,6 +236,18 @@
 
           case CAMP.MSG.DOUBLE_PORTION_PROCEED:
             CAMP.DoublePortionUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.MASSAGE_TARGET:
+            CAMP.MassageUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.MASSAGE_RESULT:   // owner → GM: score submitted
+            CAMP.MassageUI?.resolveScore(payload?.actorId, payload?.score ?? 0);
+            break;
+
+          case CAMP.MSG.MASSAGE_PROCEED:
+            CAMP.MassageUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
