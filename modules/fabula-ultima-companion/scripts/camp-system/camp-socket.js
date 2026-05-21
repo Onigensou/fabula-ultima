@@ -171,6 +171,32 @@
           return;
         }
 
+        // ── Training minigame (Timing Gauge) ─────────────────────────────
+        if (type === CAMP.MSG.TRAINING_START) {
+          CAMP.TrainingUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.TRAINING_BEGIN) {
+          CAMP.TrainingUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.TRAINING_HIT) {
+          CAMP.TrainingUI?.onHit(payload);
+          return;
+        }
+        if (type === CAMP.MSG.TRAINING_RESULT && payload?.charges != null) {
+          CAMP.TrainingUI?.applyResult(payload.actorId, payload.score, payload.charges);
+          return;
+        }
+        if (type === CAMP.MSG.TRAINING_DONE) {
+          CAMP.TrainingUI?.hide();
+          return;
+        }
+        if (type === CAMP.MSG.TRAINING_CHOICE_REQUEST) {
+          CAMP.TrainingUI?.onChoiceRequest(payload);
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -248,6 +274,18 @@
 
           case CAMP.MSG.MASSAGE_PROCEED:
             CAMP.MassageUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.TRAINING_RESULT:   // owner → GM: score submitted
+            CAMP.TrainingUI?.resolveScore(payload?.actorId, payload?.score ?? 0);
+            break;
+
+          case CAMP.MSG.TRAINING_PROCEED:
+            CAMP.TrainingUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.TRAINING_CHOICE_RESPONSE:
+            CAMP.TrainingUI?.resolveChoice(payload?.requestId, payload?.prevent ?? false);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
