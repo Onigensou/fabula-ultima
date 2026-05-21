@@ -95,6 +95,18 @@
     {
       "key": "2026-05-21-trigger-add-conflict-end",
       "path": "data-migrations/2026-05-21-trigger-add-conflict-end.js"
+    },
+    {
+      "key": "2026-05-21-prophetic-defender-author-v5",
+      "path": "data-migrations/2026-05-21-prophetic-defender-author-v5.js"
+    },
+    {
+      "key": "2026-05-21-prophetic-defender-author-v6",
+      "path": "data-migrations/2026-05-21-prophetic-defender-author-v6.js"
+    },
+    {
+      "key": "2026-05-21-pds-ref-repair",
+      "path": "data-migrations/2026-05-21-pds-ref-repair.js"
     }
   ]
 }
