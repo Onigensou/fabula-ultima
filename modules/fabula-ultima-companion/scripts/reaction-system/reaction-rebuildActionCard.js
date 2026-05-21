@@ -408,7 +408,20 @@ return {
       payload.meta.rebuildRequestedAt = Date.now();
       payload.meta.rebuildPreviousMessageId = chatMsg.id;
 
-      const beforeIds = new Set((game.messages?.contents ?? []).map(m => String(m.id)));
+      // Edit-in-place rebuild. Previous behaviour created a fresh
+      // ChatMessage and deleted the old one, which churned chat ids,
+      // dropped custom flag keys (snapshots etc.), and raced any
+      // in-flight updates on the original message. CreateActionCard's
+      // UPDATE-EXISTING branch refreshes content + canonical flag while
+      // preserving custom flag keys (see CreateActionCard.js — the merge
+      // step right before posted.update on the UPDATE branch).
+      payload.meta.actionCardMessageId = String(chatMsg.id);
+      payload.actionCardMessageId = String(chatMsg.id);
+      payload.meta.__actionCardUpdateExisting = true;
+      payload.meta.__actionCardRenderMode = "updateExisting";
+      payload.meta.__targetMessageId = String(chatMsg.id);
+      payload.meta.__preserveActionCardId = true;
+      payload.meta.__preserveActionCardVersion = false; // bump version
 
       const createMacro = game.macros?.getName?.(CREATE_ACTION_CARD_MACRO_NAME) ?? null;
       if (!createMacro) {
@@ -424,65 +437,29 @@ return {
         __PAYLOAD: payload
       });
 
-      let created = null;
-      for (let i = 0; i < 15; i++) {
-        created = await findNewestMessageForActionId(stableActionId, chatMsg.id, beforeIds);
-        if (created?.msg) break;
-        await sleep(80);
-      }
-
-      if (!created?.msg) {
-        return {
-          ok: false,
-          reason: "new_message_not_found",
-          error: "Rebuild create step finished, but new action card message could not be located"
-        };
-      }
-
-      if (opts?.deleteOld !== false) {
-        try {
-          await chatMsg.delete();
-        } catch (deleteErr) {
-          warn("New card created, but deleting old card failed.", deleteErr);
-          return {
-            ok: true,
-            oldMessageId: chatMsg.id,
-            newMessageId: created.msg.id,
-            actionId: stableActionId,
-            actionCardId: firstNonBlank(
-              created?.wrapper?.actionCardId,
-              created?.payload?.meta?.actionCardId,
-              created?.payload?.actionCardId
-            ) || null,
-            actionCardVersion: Number(
-              created?.wrapper?.actionCardVersion ??
-              created?.payload?.meta?.actionCardVersion ??
-              created?.payload?.actionCardVersion ??
-              NaN
-            ),
-            deletedOld: false,
-            warning: "old_delete_failed"
-          };
-        }
-      }
+      // chatMsg id is unchanged; the existing message was updated in
+      // place. Re-read the flag to surface the refreshed identity.
+      const refreshedWrapper = await getWrapperFromMessage(chatMsg);
+      const refreshedPayload = refreshedWrapper?.payload ?? payload;
 
       return {
         ok: true,
         oldMessageId: chatMsg.id,
-        newMessageId: created.msg.id,
+        newMessageId: chatMsg.id, // edit-in-place: id unchanged
         actionId: stableActionId,
         actionCardId: firstNonBlank(
-          created?.wrapper?.actionCardId,
-          created?.payload?.meta?.actionCardId,
-          created?.payload?.actionCardId
+          refreshedWrapper?.actionCardId,
+          refreshedPayload?.meta?.actionCardId,
+          refreshedPayload?.actionCardId
         ) || null,
         actionCardVersion: Number(
-          created?.wrapper?.actionCardVersion ??
-          created?.payload?.meta?.actionCardVersion ??
-          created?.payload?.actionCardVersion ??
+          refreshedWrapper?.actionCardVersion ??
+          refreshedPayload?.meta?.actionCardVersion ??
+          refreshedPayload?.actionCardVersion ??
           NaN
         ),
-        deletedOld: opts?.deleteOld !== false
+        deletedOld: false,
+        inPlace: true
       };
     }
 

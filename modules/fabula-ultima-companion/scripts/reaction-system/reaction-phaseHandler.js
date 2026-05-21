@@ -276,8 +276,15 @@ Hooks.once("ready", () => {
     }
   }
 
-  // Small helper: build & emit a reactionPhase payload
-  function emitReactionPhase(trigger, extra = {}) {
+  // Small helper: build & emit a reactionPhase payload.
+  //
+  // Returns a Promise that resolves when this lifecycle reaction has FULLY
+  // settled — every spawned sub-window closed (user pick / cancel /
+  // timeout) and any chained effects ran to completion. Routes through
+  // `emitPhaseSequential` so concurrent lifecycle triggers serialize —
+  // turn_start can't open while end_of_round is mid-prompt, for instance.
+  // Callers that genuinely want fire-and-forget can simply not await.
+  async function emitReactionPhase(trigger, extra = {}) {
     // IMPORTANT (Module Mode):
     // - Only the GM should broadcast reaction phases.
     //   (Non-GM clients ignore phases and wait for GM offers via socket.)
@@ -290,29 +297,19 @@ Hooks.once("ready", () => {
       ...extra,
     };
 
-    // Route through the awaitable substrate (Phase R Slice 1.5) so a
-    // per-reactor sub-window is created for each manual match. Without
-    // this, lifecycle reactions (conflict_start / round_start /
-    // round_end / turn_start / turn_end) have no sub-window — the dialog
-    // fires pickerPicked, GM calls resolveSub(subKey), but
-    // _subWindows.get(subKey) returns undefined and the close-tick is
-    // never broadcast, leaving the floating reaction button stuck on
-    // screen. openWindow stamps the payload with __emitId (which the
-    // manager keys reactorsFound on) and itself emits `oni:reactionPhase`,
-    // so all existing listeners still see the phase. Fire-and-forget:
-    // lifecycle phases are not awaited by any flow; the returned promise
-    // resolves when subs settle and is discarded.
     const rs = globalThis.FUCompanion?.api?.reactionSystem;
+    if (rs?.emitPhaseSequential) {
+      try { return await rs.emitPhaseSequential(payload, { reason: "lifecycle" }); }
+      catch (e) { console.warn("[PhaseHandler] emitPhaseSequential threw for lifecycle phase:", trigger, e); return; }
+    }
     if (rs?.openWindow) {
-      try { rs.openWindow(payload, { reason: "lifecycle" }); }
-      catch (e) { console.warn("[PhaseHandler] openWindow threw for lifecycle phase:", trigger, e); }
-      return;
+      // Legacy fallback if the sequential helper isn't installed yet —
+      // still better than ONI.emit because at least sub-windows track.
+      try { return await rs.openWindow(payload, { reason: "lifecycle" }); }
+      catch (e) { console.warn("[PhaseHandler] openWindow threw for lifecycle phase:", trigger, e); return; }
     }
 
-    // Fallback path — substrate not loaded yet. Buttons spawned from this
-    // emit will not get a substrate-driven close (no sub-window exists),
-    // but the manager still sees the phase so passive auto-fire and the
-    // legacy hook listeners keep working.
+    // Last-resort fallback — substrate not loaded yet.
     if (!globalThis.ONI?.emit) return;
     ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
   }
@@ -438,6 +435,33 @@ Hooks.once("ready", () => {
       });
     } catch (err) {
       console.warn("[PhaseHandler] Error in combatStart broadcaster:", err);
+    }
+  });
+
+  // No F5 recovery for start_of_conflict. The trigger represents a single
+  // moment in time — when combat starts — and fires exactly once via the
+  // `combatStart` hook above. F5 mid-combat does NOT re-emit it. If the
+  // original emit failed (passive reactions didn't apply, manual menus
+  // didn't render), that's a real bug to investigate at the source — not
+  // something to paper over with a reload-time retry that re-grants
+  // refresh-on-conflict-start charges every refresh.
+
+  // End of conflict — fires when the combat tracker is about to be deleted.
+  // Use `preDeleteCombat` (not `deleteCombat`) so combatants are still
+  // queryable when the reaction matcher scans for eligible reactors
+  // (Hina's Prophetic Defender Style clears all PP at this moment).
+  Hooks.on("preDeleteCombat", (combat, options, userId) => {
+    try {
+      emitReactionPhase("end_of_conflict", {
+        kind: "lifecycle",
+        phase: "end_of_conflict",
+        combatId: combat.id,
+        sceneId: combat.scene?.id ?? combat.sceneId ?? null,
+        round: combat.round,
+        turn: combat.turn,
+      });
+    } catch (err) {
+      console.warn("[PhaseHandler] Error in preDeleteCombat broadcaster:", err);
     }
   });
 

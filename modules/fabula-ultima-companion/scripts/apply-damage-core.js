@@ -575,6 +575,14 @@
     }
 
     // ── STAT UPDATE ───────────────────────────────────────────────────
+    // We pass `fuReactionTriggersHandled: true` in the update options on
+    // HP-mutating paths so the eager reaction emitters
+    // (auto-crisis-detection, creature-defeated-emitter) know that the
+    // damage card path will fire crisis-enter / crisis-exit / defeated
+    // reactions itself, in the same batch as `creature_takes_damage`.
+    // Without this dedupe flag those emitters race the damage card and
+    // produce out-of-order or duplicate reaction windows.
+    const _reactionDedupeOpts = { fuReactionTriggersHandled: true };
     switch (currentChangeKey) {
       case "hpReduction": {
         let shield = startShield, remaining = finalValue;
@@ -588,13 +596,13 @@
         await targetActor.update({
           "system.props.shield_value": postShield,
           "system.props.current_hp":   postHP,
-        });
+        }, _reactionDedupeOpts);
         break;
       }
       case "hpRecovery": {
         const amt = Math.abs(finalValue || resolvedBase);
         postHP = Math.min(startHP + amt, _num(props.max_hp));
-        await targetActor.update({ "system.props.current_hp": postHP });
+        await targetActor.update({ "system.props.current_hp": postHP }, _reactionDedupeOpts);
         break;
       }
       case "mpReduction": {

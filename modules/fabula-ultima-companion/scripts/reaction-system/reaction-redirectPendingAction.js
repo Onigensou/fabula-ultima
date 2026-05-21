@@ -46,7 +46,7 @@
  * }
  */
 
-Hooks.once("ready", () => {
+function _installReactionRedirectPendingAction() {
   (() => {
     const KEY = "oni.ReactionRedirectPendingAction";
     if (window[KEY]) {
@@ -1343,14 +1343,29 @@ actionPayload.meta.rebuildReason = String(opts?.kind ?? "reaction_target_redirec
 actionPayload.meta.rebuildRequestedAt = Date.now();
 actionPayload.meta.rebuildPreviousMessageId = chatMsg.id;
 
-// Important: do not carry the old message id forward as current message id.
-actionPayload.meta.actionCardMessageId = null;
-delete actionPayload.actionCardMessageId;
-
 // --------------------------------------------------
-// Rebuild immediately from the mutated payload (atomic path)
+// Rebuild IN PLACE on the existing chat message (edit-in-place)
 // --------------------------------------------------
-const beforeIds = new Set((game.messages?.contents ?? []).map(m => String(m.id)));
+// Previous behavior: clear the message id, post a new card, delete old.
+// That churned the chat message id on every redirect, which
+//   (a) lost any custom flags attached to the original (snapshots),
+//   (b) broke downstream code holding stale chatMsg references, and
+//   (c) surfaced bare "ChatMessage X does not exist" notifications from
+//       Foundry's socket layer whenever anything tried to update the
+//       just-deleted message.
+//
+// New behavior: keep the same chat message id, signal CreateActionCard
+// to UPDATE the existing message in place. The card's content + the
+// canonical actionCard flag are refreshed; custom flag keys (snapshots,
+// reactionsFiredOnThisCard) are merged forward by the UPDATE-EXISTING
+// branch in CreateActionCard.
+actionPayload.meta.actionCardMessageId = String(chatMsg.id);
+actionPayload.actionCardMessageId = String(chatMsg.id);
+actionPayload.meta.__actionCardUpdateExisting = true;
+actionPayload.meta.__actionCardRenderMode = "updateExisting";
+actionPayload.meta.__targetMessageId = String(chatMsg.id);
+actionPayload.meta.__preserveActionCardId = true;
+actionPayload.meta.__preserveActionCardVersion = false; // bump version to mark mutation
 
 const createMacro = game.macros?.getName?.(CREATE_ACTION_CARD_MACRO_NAME) ?? null;
 if (!createMacro) {
@@ -1362,35 +1377,25 @@ await createMacro.execute({
   __PAYLOAD: actionPayload
 });
 
-let created = null;
-for (let i = 0; i < 20; i++) {
-  created = await findNewestMessageForActionId(stableActionId, chatMsg.id, beforeIds);
-  if (created?.msg) break;
-  await sleep(80);
-}
-
-if (!created?.msg) {
-  throw new Error("Redirect rebuild finished, but new action card message could not be located");
-}
-
-// Remove the old card only after the new one exists
-await chatMsg.delete();
-
-const createdIdentity = readWrapperIdentity(created?.wrapper ?? {}, created?.payload ?? {});
+// chatMsg id unchanged. Re-read its flag to extract the refreshed identity.
+const refreshedFlag = (typeof chatMsg.getFlag === "function")
+  ? (chatMsg.getFlag(MODULE_NS, "actionCard") ?? {})
+  : (chatMsg?.flags?.[MODULE_NS]?.actionCard ?? {});
 
 return {
   ok: true,
-  messageId: created.msg.id,
+  messageId: chatMsg.id,
   oldMessageId: chatMsg.id,
-  newMessageId: created.msg.id,
+  newMessageId: chatMsg.id,
   previousTargetUuid,
   replacementTargetUuid: replacementUuid,
   replacementActorUuid: reactorActorUuid || null,
   targetIndex,
-  actionId: createdIdentity.actionId ?? stableActionId ?? null,
-  actionCardId: createdIdentity.actionCardId ?? null,
-  actionCardVersion: Number(createdIdentity.actionCardVersion ?? NaN),
-  deletedOld: true
+  actionId: refreshedFlag?.actionId ?? stableActionId ?? null,
+  actionCardId: refreshedFlag?.actionCardId ?? oldActionCardId ?? null,
+  actionCardVersion: Number(refreshedFlag?.actionCardVersion ?? NaN),
+  deletedOld: false,
+  inPlace: true
 };
   `.trim();
 }
@@ -1557,11 +1562,17 @@ return {
       findPendingActionCandidates,
       openRedirectDialog,
       redirectFromPayload,
-      applyRedirectSelection
+      applyRedirectSelection,
+      extractSourceActionRef
     };
 
     log("Installed.", {
       key: KEY
     });
   })();
-});
+}
+
+(() => {
+  if (globalThis?.game?.ready) _installReactionRedirectPendingAction();
+  else Hooks.once("ready", _installReactionRedirectPendingAction);
+})();

@@ -87,10 +87,21 @@ Hooks.once("ready", () => {
         continue;
       }
 
-      if (c === "+" || c === "-" || c === "*" || c === "/") {
+      if (c === "+" || c === "-" || c === "*" || c === "/" || c === "%") {
         out.push({ type: "OP", value: c, pos: i });
         i++; continue;
       }
+      // Two-char operators: ==, !=, <=, >=, &&, ||
+      if (c === "=" && src[i+1] === "=") { out.push({ type: "OP", value: "==", pos: i }); i += 2; continue; }
+      if (c === "!" && src[i+1] === "=") { out.push({ type: "OP", value: "!=", pos: i }); i += 2; continue; }
+      if (c === "<" && src[i+1] === "=") { out.push({ type: "OP", value: "<=", pos: i }); i += 2; continue; }
+      if (c === ">" && src[i+1] === "=") { out.push({ type: "OP", value: ">=", pos: i }); i += 2; continue; }
+      if (c === "&" && src[i+1] === "&") { out.push({ type: "OP", value: "&&", pos: i }); i += 2; continue; }
+      if (c === "|" && src[i+1] === "|") { out.push({ type: "OP", value: "||", pos: i }); i += 2; continue; }
+      // Single-char comparison + logical-not
+      if (c === "<") { out.push({ type: "OP", value: "<", pos: i }); i++; continue; }
+      if (c === ">") { out.push({ type: "OP", value: ">", pos: i }); i++; continue; }
+      if (c === "!") { out.push({ type: "OP", value: "!", pos: i }); i++; continue; }
       if (c === "(") { out.push({ type: "LPAREN", pos: i }); i++; continue; }
       if (c === ")") { out.push({ type: "RPAREN", pos: i }); i++; continue; }
       if (c === ",") { out.push({ type: "COMMA",  pos: i }); i++; continue; }
@@ -109,7 +120,56 @@ Hooks.once("ready", () => {
     const consume = () => tokens[pos++] ?? null;
     const atEnd  = () => pos >= tokens.length;
 
-    function expression() { return addSub(); }
+    // Boolean results are represented as 1 / 0 throughout — keeps the grammar
+    // and identifier resolution numeric end-to-end. Truthy = nonzero.
+    const b = (v) => v ? 1 : 0;
+    const truthy = (v) => v !== 0;
+
+    function expression() { return logicalOr(); }
+
+    function logicalOr() {
+      let left = logicalAnd();
+      while (!atEnd() && peek().type === "OP" && peek().value === "||") {
+        consume();
+        const right = logicalAnd();
+        left = b(truthy(left) || truthy(right));
+      }
+      return left;
+    }
+
+    function logicalAnd() {
+      let left = equality();
+      while (!atEnd() && peek().type === "OP" && peek().value === "&&") {
+        consume();
+        const right = equality();
+        left = b(truthy(left) && truthy(right));
+      }
+      return left;
+    }
+
+    function equality() {
+      let left = comparison();
+      while (!atEnd() && peek().type === "OP" && (peek().value === "==" || peek().value === "!=")) {
+        const op = consume().value;
+        const right = comparison();
+        left = op === "==" ? b(left === right) : b(left !== right);
+      }
+      return left;
+    }
+
+    function comparison() {
+      let left = addSub();
+      while (!atEnd() && peek().type === "OP" &&
+             (peek().value === "<" || peek().value === ">" || peek().value === "<=" || peek().value === ">=")) {
+        const op = consume().value;
+        const right = addSub();
+        if      (op === "<")  left = b(left <  right);
+        else if (op === ">")  left = b(left >  right);
+        else if (op === "<=") left = b(left <= right);
+        else                  left = b(left >= right);
+      }
+      return left;
+    }
 
     function addSub() {
       let left = mulDiv();
@@ -123,20 +183,24 @@ Hooks.once("ready", () => {
 
     function mulDiv() {
       let left = unary();
-      while (!atEnd() && peek().type === "OP" && (peek().value === "*" || peek().value === "/")) {
+      while (!atEnd() && peek().type === "OP" &&
+             (peek().value === "*" || peek().value === "/" || peek().value === "%")) {
         const op = consume().value;
         const right = unary();
-        if (op === "*") left = left * right;
-        else            left = right === 0 ? 0 : left / right;
+        if      (op === "*") left = left * right;
+        else if (op === "/") left = right === 0 ? 0 : left / right;
+        else                 left = right === 0 ? 0 : left - Math.floor(left / right) * right; // %
       }
       return left;
     }
 
     function unary() {
-      if (!atEnd() && peek().type === "OP" && (peek().value === "-" || peek().value === "+")) {
+      if (!atEnd() && peek().type === "OP" && (peek().value === "-" || peek().value === "+" || peek().value === "!")) {
         const op = consume().value;
         const v = unary();
-        return op === "-" ? -v : v;
+        if (op === "-") return -v;
+        if (op === "+") return v;
+        return b(!truthy(v)); // !
       }
       return primary();
     }
@@ -219,33 +283,30 @@ Hooks.once("ready", () => {
 
   function _norm(v) { return String(v ?? "").trim().toLowerCase(); }
 
-  function _bondedSlotMatchingSubject(reactorProps, subjectToken) {
+  // Returns the bond entry whose `name` matches the subject token's actor
+  // or token name (case-insensitive). Aggregates props slots + AE-borne bonds
+  // via BondUpdater.readBondsAll.
+  function _bondMatchingSubject(reactorActor, subjectToken) {
     if (!subjectToken) return null;
     const an = _norm(subjectToken?.actor?.name);
     const tn = _norm(subjectToken?.document?.name ?? subjectToken?.name);
-    for (const slot of BOND_SLOTS) {
-      const bn = _norm(reactorProps[`bond_${slot}`]);
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
+    for (const b of bonds) {
+      const bn = _norm(b?.name);
       if (!bn) continue;
-      if (bn === an || (tn && bn === tn)) return slot;
+      if (bn === an || (tn && bn === tn)) return b;
     }
     return null;
   }
 
-  function _bondStrength(reactorProps, slot) {
-    if (!slot) return 0;
-    let n = 0;
-    for (const i of [1, 2, 3]) {
-      if (_norm(reactorProps[`emotion_${slot}_${i}`])) n++;
-    }
-    return n;
+  function _bondStrength(bond) {
+    if (!bond) return 0;
+    return (_norm(bond.e1) ? 1 : 0) + (_norm(bond.e2) ? 1 : 0) + (_norm(bond.e3) ? 1 : 0);
   }
 
-  function _countBondsAny(reactorProps) {
-    let n = 0;
-    for (const slot of BOND_SLOTS) {
-      if (_norm(reactorProps[`bond_${slot}`])) n++;
-    }
-    return n;
+  function _countBondsAny(reactorActor) {
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
+    return bonds.length;
   }
 
   function _countStatusesOnActor(reactorActor) {
@@ -261,13 +322,13 @@ Hooks.once("ready", () => {
     return n;
   }
 
-  function _countBondsWithEmotion(reactorProps, emotion) {
+  function _countBondsWithEmotion(reactorActor, emotion) {
     const pair = EMOTION_PAIR[_norm(emotion)];
     if (!pair) return 0;
+    const bonds = globalThis.BondUpdater?.readBondsAll?.(reactorActor) ?? [];
     let n = 0;
-    for (const slot of BOND_SLOTS) {
-      if (!_norm(reactorProps[`bond_${slot}`])) continue;
-      if (_norm(reactorProps[`emotion_${slot}_${pair}`]) === _norm(emotion)) n++;
+    for (const b of bonds) {
+      if (_norm(b?.[`e${pair}`]) === _norm(emotion)) n++;
     }
     return n;
   }
@@ -306,6 +367,7 @@ Hooks.once("ready", () => {
     const firingSkill  = ctx.firingSkill ?? null;
     const subjectToken = ctx.subjectToken ?? null;
     const payload      = ctx.payload ?? null;
+    const combat       = ctx.combat ?? game.combat ?? null;
 
     switch (name) {
       // Skill level
@@ -316,6 +378,12 @@ Hooks.once("ready", () => {
                 ?? 0;
         return Math.max(0, Number(lv) || 0);
       }
+      // Combat / payload introspection — used by condition_formula gates.
+      case "ROUND": return Number(combat?.round ?? 0) || 0;
+      case "ACTION_TARGET_COUNT": {
+        const t = payload?.targets;
+        return Array.isArray(t) ? t.length : 0;
+      }
       // Reactor resources
       case "MAX_HP": return Number(reactorProps.max_hp ?? 0) || 0;
       case "CUR_HP": return Number(reactorProps.current_hp ?? 0) || 0;
@@ -325,10 +393,10 @@ Hooks.once("ready", () => {
       case "CUR_IP": return Number(reactorProps.current_ip ?? 0) || 0;
       // Bonds
       case "BOND_STRENGTH": {
-        const slot = _bondedSlotMatchingSubject(reactorProps, subjectToken);
-        return _bondStrength(reactorProps, slot);
+        const bond = _bondMatchingSubject(reactorActor, subjectToken);
+        return _bondStrength(bond);
       }
-      case "BOND_COUNT": return _countBondsAny(reactorProps);
+      case "BOND_COUNT": return _countBondsAny(reactorActor);
       // Status effects suffered by the reactor (debuff-classified, non-disabled,
       // non-suppressed). Delegates classification to the AEM registry's
       // inferCategory() so a single source of truth governs what counts as a
@@ -351,7 +419,7 @@ Hooks.once("ready", () => {
 
     // BOND_COUNT_<EMOTION>
     const emoMatch = name.match(/^BOND_COUNT_(ADMIRATION|INFERIORITY|LOYALTY|MISTRUST|AFFECTION|HATRED)$/);
-    if (emoMatch) return _countBondsWithEmotion(reactorProps, emoMatch[1].toLowerCase());
+    if (emoMatch) return _countBondsWithEmotion(reactorActor, emoMatch[1].toLowerCase());
 
     console.warn(TAG, `Unknown identifier: ${name}`);
     return 0;
@@ -395,6 +463,8 @@ Hooks.once("ready", () => {
       { name: "HP_DEALT",      description: "Same but 0 unless the event's valueType is hp." },
       { name: "MP_DEALT",      description: "Same but 0 unless the event's valueType is mp." },
       { name: "SHIELD_DEALT",  description: "Same but 0 unless the event's valueType is shield." },
+      { name: "ROUND",         description: "Current combat round number (1-indexed). 0 outside combat." },
+      { name: "ACTION_TARGET_COUNT", description: "Number of tokens targeted by the triggering action (payload.targets.length). 0 when the payload carries no target list." },
     ];
   }
 

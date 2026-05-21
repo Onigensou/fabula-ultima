@@ -24,6 +24,27 @@
   }
 
   /* -------------------------------------------------------
+   * 1b. Free-action grant (peek)
+   *
+   * When the actor is acting under an `open_action_menu`
+   * grant (e.g. Zarg's High Speed — Attack/Hinder, +SL on
+   * the Hinder check), pull the bonus and lock-target out
+   * so we can apply them at roll-time and consume the grant
+   * once the dialog commits. Cancel preserves the grant.
+   * ----------------------------------------------------- */
+  let grantedCheckBonus = 0;
+  let lockedTargetTokenUuid = null;
+  let hadGrant = false;
+  try {
+    const info = globalThis.FUCompanion?.api?.freeActions?.peek?.(actor.id);
+    if (info) {
+      hadGrant = true;
+      grantedCheckBonus = Number(info.checkBonus) || 0;
+      lockedTargetTokenUuid = info.lockedTargetTokenUuid || null;
+    }
+  } catch (e) { console.warn("[ONI][Hinder] free-action peek failed:", e); }
+
+  /* -------------------------------------------------------
    * 2.  Attribute dice sizes
    * ----------------------------------------------------- */
   const attributes = {
@@ -36,8 +57,16 @@
   /* -------------------------------------------------------
    * 3.  Targets & UI options
    * ----------------------------------------------------- */
-  const enemyTokens = canvas.tokens.placeables.filter(t => t.document.disposition === -1);
+  let enemyTokens = canvas.tokens.placeables.filter(t => t.document.disposition === -1);
   if (!enemyTokens.length) return ui.notifications.warn("No enemy tokens on the scene.");
+
+  // Grant lock → narrow dropdown to just that one enemy. Fall through to
+  // the full list if the lock can't be honored (token isn't an enemy on
+  // this scene) rather than locking the user out entirely.
+  if (lockedTargetTokenUuid) {
+    const locked = enemyTokens.find(t => t.document?.uuid === lockedTargetTokenUuid);
+    if (locked) enemyTokens = [locked];
+  }
 
   const enemyOptions      = enemyTokens.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
   const attributeOptions  = Object.entries(attributes)
@@ -141,7 +170,7 @@
             AudioHelper.play({ src: SND_DICE, volume: 0.5, autoplay: true });
             roll1  = await (new Roll(`1d${attributes[attr1Key]}`)).evaluate();
             roll2  = await (new Roll(`1d${attributes[attr2Key]}`)).evaluate();
-            total  = roll1.total + roll2.total + mod;
+            total  = roll1.total + roll2.total + mod + grantedCheckBonus;
 
             isSuccess = total >= 10;
             isCrit    = roll1.total === roll2.total && roll1.total >= 6;
@@ -151,8 +180,9 @@
           /* -------------------------------------------------
            * 7.  Build result text
            * ------------------------------------------------- */
+          const bonusLine = (!autoSuccess && grantedCheckBonus) ? ` + Bonus [${grantedCheckBonus}]` : "";
           let msg = `<strong>${actor.name} attempts to Hinder ${tokenTarget.name}!</strong><br>`;
-          msg    += `Rolls: d${attributes[attr1Key]} [${roll1.total}] + d${attributes[attr2Key]} [${roll2.total}] + Modifier [${mod}] = <strong>${total}</strong><br>`;
+          msg    += `Rolls: d${attributes[attr1Key]} [${roll1.total}] + d${attributes[attr2Key]} [${roll2.total}] + Modifier [${mod}]${bonusLine} = <strong>${total}</strong><br>`;
 
           if (isCrit)   msg += `<strong style="color:green;">Critical Success! Gains an Opportunity!</strong><br>`;
           if (isFumble) msg += `<strong style="color:red;">FUMBLE!</strong><br>`;
@@ -171,11 +201,22 @@
               .play();
 
             const appliedCond = advCond !== "none" ? advCond : basicCond;
-            await game.cub.addCondition(appliedCond, tokenTarget, { combat: game.combat });
-            await wait(500);
-
-            const eff = tokenTarget.actor.effects.find(e => e.label === appliedCond);
-            if (eff) await eff.update({ "duration.rounds": 3 });
+            const aem = globalThis.FUCompanion?.api?.activeEffectManager;
+            if (aem?.applyEffects) {
+              await aem.applyEffects({
+                actorUuids: [tokenTarget.actor.uuid],
+                effects: [appliedCond],
+                duplicateMode: "skip",
+                duration: { rounds: 3, turns: 0 }
+              });
+            } else {
+              await tokenTarget.actor.createEmbeddedDocuments("ActiveEffect", [{
+                name: appliedCond,
+                img: "icons/svg/aura.svg",
+                statuses: [String(appliedCond).toLowerCase()],
+                duration: { rounds: 3 }
+              }]);
+            }
 
             msg += `<strong>${tokenTarget.name} became ${appliedCond}!</strong>`;
           } else {
@@ -191,6 +232,21 @@
           }
 
           ChatMessage.create({ content: msg, speaker: ChatMessage.getSpeaker({ actor }) });
+
+          // Free-action grant consumed once the roll committed. Cancel
+          // path doesn't reach here, so the grant remains available for
+          // a later try. Auto-success counts as commitment too. Also
+          // close the TurnUI free-action menu — ADF-driven actions
+          // (Study, Attack, Spell, …) get this for free via post-action
+          // cleanup, but Hinder is out-of-pipeline and has to call
+          // TurnUI.removeButtons directly. See the comment above its
+          // export in turn-ui-manager.js.
+          if (hadGrant) {
+            try { globalThis.FUCompanion?.api?.freeActions?.consume?.(actor.id); }
+            catch (e) { console.warn("[ONI][Hinder] free-action consume failed:", e); }
+            try { globalThis.TurnUI?.removeButtons?.({ clearToken: false, animate: true }); }
+            catch (e) { console.warn("[ONI][Hinder] TurnUI.removeButtons failed:", e); }
+          }
         }
       },
       cancel: {

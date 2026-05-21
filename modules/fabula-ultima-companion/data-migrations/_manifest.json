@@ -59,6 +59,66 @@
     {
       "key": "2026-05-18-absorb-mp-declarative",
       "path": "data-migrations/2026-05-18-absorb-mp-declarative.js"
+    },
+    {
+      "key": "2026-05-18-heart-of-darkness-author",
+      "path": "data-migrations/2026-05-18-heart-of-darkness-author.js"
+    },
+    {
+      "key": "2026-05-20-painful-lesson-rekey",
+      "path": "data-migrations/2026-05-20-painful-lesson-rekey.js"
+    },
+    {
+      "key": "2026-05-20-effect-targeting-columns",
+      "path": "data-migrations/2026-05-20-effect-targeting-columns.js"
+    },
+    {
+      "key": "2026-05-20-skills-to-unified-targeting",
+      "path": "data-migrations/2026-05-20-skills-to-unified-targeting.js"
+    },
+    {
+      "key": "2026-05-20-targeting-exclude-self",
+      "path": "data-migrations/2026-05-20-targeting-exclude-self.js"
+    },
+    {
+      "key": "2026-05-21-high-speed-author",
+      "path": "data-migrations/2026-05-21-high-speed-author.js"
+    },
+    {
+      "key": "2026-05-21-consume-resource",
+      "path": "data-migrations/2026-05-21-consume-resource.js"
+    },
+    {
+      "key": "2026-05-21-reaction-gate-columns",
+      "path": "data-migrations/2026-05-21-reaction-gate-columns.js"
+    },
+    {
+      "key": "2026-05-21-trigger-add-conflict-end",
+      "path": "data-migrations/2026-05-21-trigger-add-conflict-end.js"
+    },
+    {
+      "key": "2026-05-21-prophetic-defender-author-v5",
+      "path": "data-migrations/2026-05-21-prophetic-defender-author-v5.js"
+    },
+    {
+      "key": "2026-05-21-prophetic-defender-author-v6",
+      "path": "data-migrations/2026-05-21-prophetic-defender-author-v6.js"
+    },
+    {
+      "key": "2026-05-21-pds-ref-repair",
+      "path": "data-migrations/2026-05-21-pds-ref-repair.js"
+    },
+    {
+      "key": "2026-05-21-actor-template-bonus-hp-mp",
+      "path": "data-migrations/2026-05-21-actor-template-bonus-hp-mp.js"
+    },
+    {
+      "key": "2026-05-21-actor-template-formula-repair",
+      "path": "data-migrations/2026-05-21-actor-template-formula-repair.js"
+    },
+    {
+      "key": "2026-05-21-pds-actor-copy-relink",
+      "path": "data-migrations/2026-05-21-pds-actor-copy-relink.js"
     }
   ]
 }

@@ -30,7 +30,7 @@
 //   it's clicked. This file just does the pretty floating UI.
 // ============================================================================
 
-Hooks.once("ready", () => {
+function _installReactionButtonUI() {
   (() => {
     const KEY = "oni.ReactionButtonUI";
 
@@ -43,8 +43,22 @@ Hooks.once("ready", () => {
 
     const ReactionUI = {
       root: null,
-      buttons: {}
+      // Reaction menus — one TurnUI named menu per reactor token. Map
+      // keyed by tokenId so multiple reactors' menus coexist on the
+      // same client (AoE on the GM, party-double-owner case, etc.).
+      menusByToken: new Map(),       // Map<tokenId, { context }>
+      // Ally indicators — read-only vertical info-lists rendered on
+      // teammate tokens. Keyed by tokenId, distinct from menusByToken
+      // since a single client never owns AND mirrors the same token.
+      allyIndicators: {}
     };
+    // Legacy alias: external callers may still read ReactionUI.buttons;
+    // expose a stub map so reads don't crash. We don't populate it.
+    ReactionUI.buttons = {};
+
+    function menuIdForToken(tokenId) {
+      return `reaction:${tokenId}`;
+    }
 
     function byIdOnCanvas(tokenId) {
       if (!tokenId) return null;
@@ -226,6 +240,163 @@ Hooks.once("ready", () => {
         #oni-reaction-root .oni-reaction-cancel:active {
           transform: translateY(0) scale(.96);
         }
+
+        /* ============================================================
+           Pill row — one pill per eligible reaction skill. Click a pill
+           to fire that skill directly (skips the picker dialog). Hover
+           reveals description + trigger context in the title tooltip.
+           ============================================================ */
+        #oni-reaction-root .oni-reaction-pills {
+          display: inline-flex;
+          align-items: stretch;
+          gap: 4px;
+          flex-wrap: nowrap;
+        }
+
+        #oni-reaction-root .oni-reaction-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 10px 5px 6px;
+          color: var(--bd-ink, #3a3228);
+          font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: .25px;
+          white-space: nowrap;
+          user-select: none;
+          cursor: pointer;
+          background: linear-gradient(180deg,
+            var(--bd-parchment-top, #f6f1e6),
+            var(--bd-parchment-bot, #ebe3d0)
+          );
+          border: 2px solid var(--bd-stroke, #7a6a55);
+          border-radius: 12px;
+          box-shadow:
+            0 3px 0 var(--bd-shadow, rgba(41,33,24,.55)),
+            0 0 0 1px var(--bd-highlight, rgba(255,255,255,.7)) inset;
+          text-shadow: 0 1px 0 rgba(255,255,255,0.75);
+          transition: transform 120ms ease-out, filter 120ms ease-out, box-shadow 120ms ease-out;
+        }
+
+        #oni-reaction-root .oni-reaction-pill:hover {
+          filter: brightness(1.05);
+          transform: translateY(-1px);
+          box-shadow:
+            0 4px 0 rgba(41,33,24,.65),
+            0 0 0 1px rgba(255,255,255,.8) inset;
+        }
+
+        #oni-reaction-root .oni-reaction-pill:active {
+          transform: translateY(0) scale(.97);
+        }
+
+        #oni-reaction-root .oni-reaction-pill .pill-icon {
+          width: 20px;
+          height: 20px;
+          border-radius: 5px;
+          border: 1px solid rgba(122,106,85,.7);
+          background: rgba(255,255,255,.4);
+          object-fit: cover;
+          flex: 0 0 auto;
+        }
+
+        #oni-reaction-root .oni-reaction-pill .pill-name {
+          padding-top: 1px;
+        }
+
+        /* Standalone countdown pip — placed between pill row and cancel
+           pip so all interactive elements line up in one strip. */
+        #oni-reaction-root .oni-reaction-countdown-pip {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          min-width: 22px;
+          padding: 0 7px;
+          border-radius: 10px;
+          border: 2px solid rgba(122,106,85,.9);
+          background: linear-gradient(180deg,
+            rgba(213,182,122,0.75),
+            rgba(183,147,90,0.75)
+          );
+          box-shadow:
+            0 3px 0 rgba(41,33,24,.45),
+            0 0 0 1px rgba(255,255,255,.55) inset;
+          font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+          font-size: 11px;
+          font-weight: 800;
+          color: #2b2218;
+          text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+          user-select: none;
+          pointer-events: none;
+        }
+
+        /* Countdown pip — temporarily disabled. The class still toggles
+           and the tick handler still updates the pip text; we just hide
+           the element. Re-enable by changing display:none to
+           display:inline-flex on the rule below. */
+        #oni-reaction-root .oni-reaction-item.has-countdown .oni-reaction-countdown-pip {
+          display: none;
+        }
+
+        #oni-reaction-root .oni-reaction-item.urgent .oni-reaction-countdown-pip {
+          background: linear-gradient(180deg, #e9a36c, #c87038);
+          border-color: #7a4022;
+          color: #fff;
+          text-shadow: 0 1px 0 rgba(0,0,0,.4);
+        }
+
+        /* ============================================================
+           Ally list — read-only vertical list of "[icon] [name]" rows
+           on a teammate's token. Smaller and quieter than the owner
+           Action Menu; just an information cue so the party knows
+           what reactions their ally has in play.
+           ============================================================ */
+        #oni-reaction-root .oni-reaction-ally-list {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 2px;
+          padding: 4px 7px;
+          background: linear-gradient(180deg,
+            rgba(246, 241, 230, .55),
+            rgba(220, 210, 188, .55)
+          );
+          border: 1px dashed rgba(122, 106, 85, .55);
+          border-radius: 7px;
+          box-shadow: 0 1px 0 rgba(41, 33, 24, .2);
+          pointer-events: none;
+          filter: saturate(0.6);
+        }
+
+        #oni-reaction-root .oni-reaction-ally-row {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+          font-size: 9.5px;
+          font-weight: 700;
+          letter-spacing: .15px;
+          color: rgba(58, 50, 40, .8);
+          text-shadow: 0 1px 0 rgba(255, 255, 255, .45);
+          white-space: nowrap;
+        }
+
+        #oni-reaction-root .oni-reaction-ally-row .icon {
+          width: 13px;
+          height: 13px;
+          border-radius: 3px;
+          border: 1px solid rgba(122, 106, 85, .55);
+          object-fit: cover;
+          flex: 0 0 auto;
+          opacity: .85;
+        }
+
+        #oni-reaction-root .oni-reaction-ally-row .owner {
+          opacity: .65;
+          font-weight: 800;
+          margin-right: 2px;
+        }
       `;
 
       document.head.appendChild(css);
@@ -289,30 +460,66 @@ Hooks.once("ready", () => {
       el.style.top = `${client.y}px`;
     }
 
-    function getTriggerCount(context) {
-      if (!context || typeof context !== "object") return 1;
-
-      const direct = Array.isArray(context.triggerKeys)
-        ? context.triggerKeys.filter(Boolean)
-        : [];
-
-      if (direct.length) return new Set(direct).size;
-
-      const byTrigger =
-        context.phasePayloadByTrigger &&
-        typeof context.phasePayloadByTrigger === "object"
-          ? Object.keys(context.phasePayloadByTrigger).filter(Boolean)
-          : [];
-
-      if (byTrigger.length) return new Set(byTrigger).size;
-
-      return context.triggerKey ? 1 : 1;
+    function escapePillText(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    function getBladeTitle(context) {
-      const count = getTriggerCount(context);
-      if (count > 1) return `Reaction (${count} triggers)`;
-      return "Reaction";
+    function getReactionGroupsForContext(context) {
+      try {
+        const api = window["oni.ReactionChooseSkill"];
+        if (typeof api?.getReactionGroupsForCtx === "function") {
+          return api.getReactionGroupsForCtx(context) ?? [];
+        }
+      } catch (e) {
+        console.warn("[ReactionButtonUI] getReactionGroupsForCtx failed:", e);
+      }
+      return [];
+    }
+
+    function buildPillTooltip(group) {
+      // Format: one "trigger | target" line per matched row (deduped),
+      // blank line, description. Skill name is the pill text already.
+      const lines = Array.isArray(group.triggerLines) ? group.triggerLines : [];
+      const head = lines
+        .map(l => l?.target ? `${l.trigger} | ${l.target}` : l?.trigger)
+        .filter(Boolean)
+        .join("\n");
+      const parts = [];
+      if (head) parts.push(head);
+      if (group.description) parts.push(group.description);
+      return parts.join("\n\n");
+    }
+
+    function renderPillsIntoContainer(container, groups, opts = {}) {
+      if (!container) return;
+      const isAlly = !!opts.isAlly;
+
+      // Replace contents wholesale. Each render call is cheap (handful
+      // of pills) and avoids fiddly diffing.
+      container.replaceChildren();
+
+      for (const group of groups) {
+        const pill = document.createElement("div");
+        pill.className = isAlly ? "oni-reaction-pill is-ally" : "oni-reaction-pill";
+        pill.dataset.itemUuid = group.itemUuid ?? "";
+        pill.title = buildPillTooltip(group);
+        pill.innerHTML = `
+          <img class="pill-icon" src="${escapePillText(group.img)}" alt="">
+          <span class="pill-name">${escapePillText(group.name)}</span>
+        `;
+        if (!isAlly && typeof opts.onPillClick === "function") {
+          pill.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            try { opts.onPillClick(group); }
+            catch (e) { console.warn("[ReactionButtonUI] pill click handler threw:", e); }
+          });
+        }
+        container.appendChild(pill);
+      }
     }
 
     function applyContextToRecord(rec, context, onClick) {
@@ -321,18 +528,45 @@ Hooks.once("ready", () => {
       rec.context = context;
       rec.onClick = typeof onClick === "function" ? onClick : null;
 
-      const blade = rec.blade;
-      if (!blade) return;
+      const container = rec.pillsContainer;
+      if (!container) return;
 
-      const count = getTriggerCount(context);
-      const countEl = blade.querySelector(".count");
+      const groups = getReactionGroupsForContext(context);
+      rec.groups = groups;
 
-      blade.classList.toggle("has-multiple", count > 1);
-      blade.title = getBladeTitle(context);
-      blade.setAttribute("aria-label", blade.title);
+      renderPillsIntoContainer(container, groups, {
+        isAlly: false,
+        onPillClick: (group) => handleOwnerPillClick(rec, group)
+      });
+    }
 
-      if (countEl) {
-        countEl.textContent = String(count);
+    function handleOwnerPillClick(rec, group) {
+      // Fire pickerOpened first so the substrate pauses this reactor's
+      // timer while the downstream pipeline runs. Mirrors what the legacy
+      // blade did on click before opening the picker dialog.
+      try {
+        const subKey = computeSubKeyForRec(rec);
+        if (subKey) Hooks.callAll("oni:reactionWindow:pickerOpened", { subKey });
+      } catch (e) {
+        console.warn("[ReactionButtonUI] pickerOpened hook failed (non-fatal).", e);
+      }
+
+      // Close the menu immediately. executeChosenReaction respawns it on
+      // cancel OR after resolve if more reactions remain.
+      if (rec?.tokenId) {
+        try { removeButton(rec.tokenId); } catch (_) {}
+      }
+
+      const api = window["oni.ReactionChooseSkill"];
+      if (typeof api?.fireReactionByItemUuid !== "function") {
+        ui.notifications?.error?.("[Reaction] ReactionChooseSkill.fireReactionByItemUuid missing.");
+        console.error("[ReactionButtonUI] fireReactionByItemUuid not available.");
+        return;
+      }
+      try {
+        api.fireReactionByItemUuid(rec.context, group.itemUuid);
+      } catch (e) {
+        console.error("[ReactionButtonUI] fireReactionByItemUuid threw:", e);
       }
     }
 
@@ -529,211 +763,175 @@ function updateExistingButton(rec, context, onClick) {
   }
 }
 
-    function spawnButton(token, context, onClick) {
-      if (!token) return;
+    // -----------------------------------------------------------------
+    // Reaction menu — owner-side. Builds an Action-Menu-style command
+    // list (icon + name per item, "Skip" at the end) and asks TurnUI to
+    // render it. TurnUI's state is a singleton, so on a single client
+    // only one reaction menu is visible at a time. Additional reactors'
+    // sub-windows queue here and surface as their predecessors resolve.
+    // -----------------------------------------------------------------
+    function computeSubKeyForContext(context) {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      const buildSubKey = rs?._internals?.buildSubKey;
+      const computeBucket = rs?._internals?.computeBucket;
+      if (!buildSubKey || !computeBucket) return null;
+      const payload = context?.latestPhasePayload ?? context?.phasePayload ?? null;
+      const tokenId = context?.token?.id ?? context?.combatant?.tokenId ?? null;
+      if (!payload || !tokenId) return null;
+      try {
+        const bucket = computeBucket(payload);
+        const actionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
+        return buildSubKey({ bucket, actionCardId, reactorTokenId: tokenId });
+      } catch { return null; }
+    }
 
-      ensureReactionStyles();
-
-      const root = ensureRoot();
-      const tokenId = token.id;
-
-      const existing = ReactionUI.buttons[tokenId];
-
-      if (existing) {
-        updateExistingButton(existing, context, onClick);
-        return;
+    function handleMenuItemPick(context, group) {
+      // Pause this sub-window's authoritative timer while the downstream
+      // pipeline runs (mirrors the legacy blade click semantic). With the
+      // substrate timeout disabled this is currently a no-op, but the hook
+      // dispatch stays correct for when it's re-enabled.
+      try {
+        const subKey = computeSubKeyForContext(context);
+        if (subKey) Hooks.callAll("oni:reactionWindow:pickerOpened", { subKey });
+      } catch (e) {
+        console.warn("[ReactionButtonUI] pickerOpened hook failed:", e);
       }
 
-      const wrap = document.createElement("div");
-      wrap.className = "oni-reaction-item";
+      // Close the menu immediately so it's not visually competing with the
+      // targeting picker / animations that follow. executeChosenReaction
+      // re-spawns it on cancel OR after resolve if more reactions remain.
+      const reactorTokenId = context?.token?.id ?? context?.combatant?.tokenId ?? null;
+      if (reactorTokenId) {
+        try { removeButton(reactorTokenId); } catch (_) {}
+      }
 
-      const blade = document.createElement("div");
-      blade.className = "oni-reaction-blade";
+      const api = window["oni.ReactionChooseSkill"];
+      if (typeof api?.fireReactionByItemUuid !== "function") {
+        ui.notifications?.error?.("[Reaction] ReactionChooseSkill.fireReactionByItemUuid missing.");
+        console.error("[ReactionButtonUI] fireReactionByItemUuid not available.");
+        return;
+      }
+      try {
+        api.fireReactionByItemUuid(context, group.itemUuid);
+      } catch (e) {
+        console.error("[ReactionButtonUI] fireReactionByItemUuid threw:", e);
+      }
+    }
 
-      blade.innerHTML = `
-        <span class="label">Reaction</span>
-        <span class="count" aria-hidden="true">1</span>
-        <span class="countdown" aria-hidden="true"></span>
-      `;
+    function handleMenuSkip(context, token) {
+      try {
+        const subKey = computeSubKeyForContext(context);
+        if (subKey) {
+          Hooks.callAll("oni:reactionWindow:pickerClosed", { subKey, picked: false });
+        } else {
+          removeButton(token?.id);
+        }
+      } catch (e) {
+        console.warn("[ReactionButtonUI] skip handler threw:", e);
+        removeButton(token?.id);
+      }
+    }
 
-      // Cancel pip — quick-dismiss this reactor's window without opening
-      // the picker dialog. Wired AFTER `rec` is built so the click handler
-      // can compute this rec's subKey.
-      const cancel = document.createElement("div");
-      cancel.className = "oni-reaction-cancel";
-      cancel.setAttribute("role", "button");
-      cancel.setAttribute("title", "Cancel reaction");
-      cancel.setAttribute("aria-label", "Cancel reaction");
-      cancel.textContent = "✕";
+    function spawnReactionMenuViaTurnUI(token, context) {
+      const TurnUI = globalThis.TurnUI;
+      if (!TurnUI?.spawnButtonsForToken) {
+        console.error("[ReactionButtonUI] TurnUI.spawnButtonsForToken unavailable — cannot render reaction menu.");
+        return false;
+      }
 
-      wrap.appendChild(blade);
-      wrap.appendChild(cancel);
-      root.appendChild(wrap);
+      const groups = getReactionGroupsForContext(context);
+      if (!groups.length) {
+        console.warn("[ReactionButtonUI] No reaction items for this context; skipping menu spawn.", { tokenId: token?.id });
+        return false;
+      }
 
-const rec = {
-  wrap,
-  blade,
-  tokenId,
-  hooks: [],
-  context,
-  onClick: typeof onClick === "function" ? onClick : null,
-  leaving: false,
-  removeTimer: null,
-  finishRemove: null,
-  removeSeq: 0,
-  respawnTimer: null
-};
-
-      // Cancel pip — fires pickerClosed (picked: false) for this reactor's
-      // sub-window, which the substrate resolves as "pass" and broadcasts
-      // a close tick → the tick listener below removes this rec's button.
-      // Other reactors' buttons (different subKeys) are untouched.
-      cancel.addEventListener("click", (ev) => {
-        ev.stopPropagation();
+      // Auto-skip: every reaction is unavailable in this chain (already
+      // used, or charge AE missing). The menu would just be a forced
+      // "Skip" press. Resolve the sub-window silently so the cascade
+      // proceeds without making the player click through a dead prompt.
+      // Covers both the initial open and the post-resolution re-prompt
+      // case: after Counterattack fires, the next trigger emit for the
+      // same reactor sees Counterattack marked-used and (assuming it was
+      // the only available reaction) auto-skips immediately.
+      if (groups.every(g => g.disabled)) {
         try {
-          const subKey = computeSubKeyForRec(rec);
+          const subKey = computeSubKeyForContext(context);
           if (subKey) {
             Hooks.callAll("oni:reactionWindow:pickerClosed", { subKey, picked: false });
+            console.debug("[ReactionButtonUI] Auto-skip: every reaction unavailable in current chain.", {
+              tokenId: token?.id,
+              subKey,
+              reasons: groups.map(g => g.disabledReason).filter(Boolean)
+            });
           } else {
-            // Substrate missing or payload not yet attached — fall back to
-            // a local remove so the user still gets immediate feedback.
-            try { removeButton(rec.tokenId); } catch (_) {}
+            console.debug("[ReactionButtonUI] Auto-skip but no subKey computable; menu suppressed without sub resolution.", {
+              tokenId: token?.id
+            });
           }
         } catch (e) {
-          console.warn("[ReactionButtonUI] Cancel pip handler threw:", e);
-          try { removeButton(rec.tokenId); } catch (_) {}
+          console.warn("[ReactionButtonUI] auto-skip pickerClosed dispatch threw:", e);
         }
+        return false;
+      }
+
+      const items = groups.map(group => ({
+        label: group.name,
+        icon: group.img,
+        tooltip: buildPillTooltip(group),
+        // Once-per-X reactions whose charge AE has been consumed surface
+        // as `disabled + disabledReason: "Used"` from getReactionGroupsForCtx.
+        // Forward that to the menu so the renderer can disable the blade
+        // and overlay the reason text.
+        enabled: !group.disabled,
+        usedReason: group.disabledReason ?? null,
+        onPick: () => handleMenuItemPick(context, group)
+      }));
+
+      items.push({
+        label: "Skip",
+        isSkip: true,
+        tooltip: "Don't react. Skips this reactor's window without firing a reaction.",
+        onPick: () => handleMenuSkip(context, token)
       });
 
-      blade.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-
-        // Phase R Slice 1.5: each button corresponds to ONE reactor's
-        // sub-window (keyed by bucket + actionCardId + this rec's
-        // tokenId). Firing pickerOpened with that sub-key pauses ONLY
-        // this reactor's authoritative timer on the GM — other reactors'
-        // timers keep ticking down independently. The local hook is
-        // socket-forwarded to GM by reaction-window.js when the click
-        // happens on a player client.
-        try {
-          const rs = globalThis.FUCompanion?.api?.reactionSystem;
-          const payload = rec?.context?.latestPhasePayload ?? rec?.context?.phasePayload ?? null;
-          if (rs?._internals?.buildSubKey && payload) {
-            const bucket = rs._internals.computeBucket(payload);
-            const actionCardId = payload?.actionCardId ?? payload?.meta?.actionCardId ?? null;
-            const subKey = rs._internals.buildSubKey({
-              bucket, actionCardId, reactorTokenId: rec.tokenId
-            });
-            if (subKey) Hooks.callAll("oni:reactionWindow:pickerOpened", { subKey });
-          }
-        } catch (rsErr) {
-          console.warn("[ReactionButtonUI] reactionWindow:pickerOpened hook failed (non-fatal).", rsErr);
-        }
-
-        if (typeof rec.onClick === "function") {
-          try {
-            rec.onClick(rec.context);
-          } catch (err) {
-            console.error("[ReactionButtonUI] Error in onClick handler:", err);
-          }
-        }
+      TurnUI.spawnButtonsForToken(token, {
+        menuId: menuIdForToken(token.id),
+        menuClass: "is-reaction-menu",
+        pages: [{ name: "Reactions", items }],
+        hidePager: true,
+        hideBudgetLabel: true
       });
+      return true;
+    }
 
-      applyContextToRecord(rec, context, onClick);
-      updateButtonPosition(rec);
-      attachTrackingHooks(rec);
+    function spawnButton(token, context, _legacyOnClick) {
+      if (!token) return;
+      ensureReactionStyles();
+      const tokenId = token.id;
 
-      requestAnimationFrame(() => {
-        if (!wrap.isConnected) return;
-        wrap.classList.add("is-visible");
-        // Force the cancel pip square: measure the blade's rendered
-        // height (post-layout) and lock the cancel to that as both
-        // width AND height. CSS `aspect-ratio: 1` is unreliable on
-        // stretched flex children because the cross-axis size isn't
-        // known until layout completes.
-        try {
-          const h = blade.getBoundingClientRect().height;
-          if (h > 0) {
-            cancel.style.width = `${h}px`;
-            cancel.style.minWidth = `${h}px`;
-            cancel.style.height = `${h}px`;
-          }
-        } catch (_) {}
-        // Paint the initial countdown badge with the substrate's CURRENT
-        // secondsLeft. The substrate's first emitTick (5) fires before
-        // this button exists in the tracker, so without this catch-up
-        // the badge starts at the next tick (4) and the width jumps.
-        try {
-          const subKey = computeSubKeyForRec(rec);
-          const rsApi = globalThis.FUCompanion?.api?.reactionSystem;
-          const secondsLeft = subKey && rsApi?.getSecondsLeftFor
-            ? rsApi.getSecondsLeftFor(subKey)
-            : null;
-          if (secondsLeft != null) applyCountdownToBlade(blade, secondsLeft);
-        } catch (_) {}
-      });
-
-      ReactionUI.buttons[tokenId] = rec;
+      // Per-token TurnUI named menu — replaces in place if already
+      // present (TurnUI's spawnButtonsForToken does that for us when
+      // the same menuId is reused).
+      const ok = spawnReactionMenuViaTurnUI(token, context);
+      if (ok) ReactionUI.menusByToken.set(tokenId, { context });
     }
 
     function removeButton(tokenId) {
-      const rec = ReactionUI.buttons[tokenId];
-      if (!rec) return;
-      if (rec.leaving) return;
-
-      rec.leaving = true;
-      rec.removeSeq = (rec.removeSeq ?? 0) + 1;
-
-      const seq = rec.removeSeq;
-
-      detachTrackingHooks(rec);
-
-      const el = rec.wrap;
-
-      if (!el) {
-        if (ReactionUI.buttons[tokenId] === rec) {
-          delete ReactionUI.buttons[tokenId];
-        }
-
-        return;
-      }
-
-      el.classList.remove("is-visible");
-      el.classList.add("is-leaving");
-
-      let done = false;
-
-      const finish = () => {
-        // If this record was revived by updateExistingButton(), do not delete it.
-        if (done || !rec.leaving || rec.removeSeq !== seq) return;
-
-        done = true;
-
-        try {
-          el.removeEventListener("transitionend", finish);
-        } catch (_e) {}
-
-        try {
-          el.remove();
-        } catch (_e) {}
-
-        rec.finishRemove = null;
-        rec.removeTimer = null;
-
-        if (ReactionUI.buttons[tokenId] === rec) {
-          delete ReactionUI.buttons[tokenId];
-        }
-      };
-
-      rec.finishRemove = finish;
-      el.addEventListener("transitionend", finish);
-      rec.removeTimer = setTimeout(finish, 250);
+      if (!tokenId) return;
+      if (!ReactionUI.menusByToken.has(tokenId)) return;
+      try {
+        globalThis.TurnUI?.removeButtons?.({ menuId: menuIdForToken(tokenId) });
+      } catch (_) {}
+      ReactionUI.menusByToken.delete(tokenId);
     }
 
     function clearAll() {
-      for (const tokenId of Object.keys(ReactionUI.buttons)) {
-        removeButton(tokenId);
+      for (const tokenId of Array.from(ReactionUI.menusByToken.keys())) {
+        try {
+          globalThis.TurnUI?.removeButtons?.({ menuId: menuIdForToken(tokenId) });
+        } catch (_) {}
       }
+      ReactionUI.menusByToken.clear();
     }
 
     // ---------------------------------------------------------------------
@@ -754,48 +952,261 @@ const rec = {
       } catch { return null; }
     }
 
-    function applyCountdownToBlade(blade, secondsLeft) {
-      if (!blade) return;
-      const badge = blade.querySelector(".countdown");
-      if (!badge) return;
-
-      if (secondsLeft == null) {
-        blade.classList.remove("has-countdown", "urgent");
-        badge.textContent = "";
-        return;
+    // Owner-side tick handler: when the substrate broadcasts a close-tick
+    // for any reactor token whose menu we own, tear that specific menu
+    // down. Other reactors' menus stay visible.
+    Hooks.on("oni:reactionWindow:tick", ({ subKey, closed } = {}) => {
+      if (!closed || !subKey) return;
+      for (const [tokenId, rec] of Array.from(ReactionUI.menusByToken.entries())) {
+        const currentSubKey = computeSubKeyForContext(rec.context);
+        if (currentSubKey === subKey) {
+          try { removeButton(tokenId); } catch (_) {}
+        }
       }
-      badge.textContent = String(secondsLeft);
-      blade.classList.add("has-countdown");
-      if (secondsLeft <= 2) blade.classList.add("urgent");
-      else blade.classList.remove("urgent");
+    });
+
+    // -----------------------------------------------------------------
+    // Ally indicator — read-only pill row mirroring a teammate's
+    // in-flight reaction window. Doesn't open the picker, doesn't carry
+    // a countdown, doesn't expose a cancel pip. Cleanup is driven by
+    // the same `oni:reactionWindow:tick` close events the owner row
+    // uses, correlated by sub-window key.
+    // -----------------------------------------------------------------
+    function computeSubKeyFromBroadcast(payload) {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      const buildSubKey = rs?._internals?.buildSubKey;
+      const computeBucket = rs?._internals?.computeBucket;
+      if (!buildSubKey || !computeBucket) return null;
+      const phasePayload = payload?.latestPhasePayload ?? null;
+      const tokenId = payload?.tokenId ?? null;
+      if (!phasePayload || !tokenId) return null;
+      try {
+        const bucket = computeBucket(phasePayload);
+        const actionCardId =
+          phasePayload?.actionCardId ??
+          phasePayload?.meta?.actionCardId ??
+          payload?.actionCardId ??
+          null;
+        return buildSubKey({ bucket, actionCardId, reactorTokenId: tokenId });
+      } catch { return null; }
     }
 
-    Hooks.on("oni:reactionWindow:tick", ({ subKey, secondsLeft, paused, closed } = {}) => {
-      if (!subKey) return;
-      // Snapshot first — we may remove buttons inside the loop, so don't
-      // iterate the live values() view.
-      const recsSnapshot = Object.values(ReactionUI.buttons).slice();
-      for (const rec of recsSnapshot) {
-        if (computeSubKeyForRec(rec) !== subKey) continue;
-        if (closed) {
-          // Sub-window has resolved (timeout / pass / pick) — clear the
-          // badge and remove THIS reactor's button. Other reactors'
-          // buttons (different subKey) are unaffected.
-          applyCountdownToBlade(rec?.blade, null);
-          try { removeButton(rec.tokenId); } catch (_) {}
-          continue;
+    function buildAllyEntriesFromBroadcast(payload) {
+      const items = Array.isArray(payload?.items) ? payload.items : [];
+      const ownerNames = (payload?.ownerUserIds ?? [])
+        .filter(uid => uid && !game.users?.get(uid)?.isGM)
+        .map(uid => game.users?.get(uid)?.name)
+        .filter(Boolean);
+      const ownerStr = ownerNames.length ? ownerNames[0] : null;
+
+      const entries = items
+        .filter(it => !!it?.itemUuid)
+        .map(it => ({
+          itemUuid: it.itemUuid,
+          name: it.name ?? "(Unnamed)",
+          img: it.img || "icons/svg/explosion.svg",
+          description: typeof it.description === "string" ? it.description : "",
+          triggers: Array.isArray(it.triggers) ? [...it.triggers] : []
+        }));
+      return { ownerStr, entries };
+    }
+
+    function renderAllyList(rec, payload) {
+      const container = rec?.listContainer;
+      if (!container) return;
+      const { ownerStr, entries } = buildAllyEntriesFromBroadcast(payload);
+      rec.entries = entries;
+      container.replaceChildren();
+
+      // Show the owner name once at the top so it's clear whose
+      // reactions these are.
+      if (ownerStr) {
+        const header = document.createElement("div");
+        header.className = "oni-reaction-ally-row";
+        header.innerHTML = `<span class="owner">${escapePillText(ownerStr)}</span>`;
+        container.appendChild(header);
+      }
+
+      for (const entry of entries) {
+        const row = document.createElement("div");
+        row.className = "oni-reaction-ally-row";
+        // Ally side: one tooltip line per trigger (no target column yet —
+        // the visibility broadcast doesn't carry the consumer's target_ref
+        // resolution). Description below. Skill name is in the row text.
+        const triggerLabels = entry.triggers
+          .map(k => String(k).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+        const tipParts = [];
+        if (triggerLabels.length) tipParts.push(triggerLabels.join("\n"));
+        if (entry.description) tipParts.push(entry.description);
+        row.title = tipParts.join("\n\n");
+        row.innerHTML = `
+          <img class="icon" src="${escapePillText(entry.img)}" alt="" draggable="false">
+          <span class="name">${escapePillText(entry.name)}</span>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function updateAllyIndicatorPosition(rec) {
+      if (!rec) return;
+      const token = byIdOnCanvas(rec.tokenId);
+      if (!token || !ReactionUI.root) return;
+      const world = tokenAnchorWorld(token);
+      const client = worldToClient(world.x, world.y);
+      const el = rec.wrap;
+      if (!el) return;
+      el.style.left = `${client.x}px`;
+      el.style.top = `${client.y}px`;
+    }
+
+    function attachAllyTrackingHooks(rec) {
+      if (!rec) return;
+      if (!Array.isArray(rec.hooks)) rec.hooks = [];
+
+      const tokenId = rec.tokenId;
+      const updateTokenHandler = (doc) => {
+        if (doc.id !== tokenId) return;
+        updateAllyIndicatorPosition(rec);
+      };
+      const canvasPanHandler = () => updateAllyIndicatorPosition(rec);
+
+      Hooks.on("updateToken", updateTokenHandler);
+      Hooks.on("canvasPan", canvasPanHandler);
+
+      rec.hooks.push(
+        { event: "updateToken", handler: updateTokenHandler },
+        { event: "canvasPan", handler: canvasPanHandler }
+      );
+    }
+
+    function detachAllyTrackingHooks(rec) {
+      if (!rec) return;
+      for (const h of rec.hooks ?? []) {
+        try { Hooks.off(h.event, h.handler); } catch (_) {}
+      }
+      rec.hooks = [];
+    }
+
+    function spawnAllyIndicator(token, payload) {
+      if (!token || !payload) return;
+      ensureReactionStyles();
+      const root = ensureRoot();
+      const tokenId = token.id;
+
+      const existing = ReactionUI.allyIndicators[tokenId];
+      if (existing) {
+        existing.payload = payload;
+        existing.subKey = computeSubKeyFromBroadcast(payload) ?? existing.subKey;
+        renderAllyList(existing, payload);
+        updateAllyIndicatorPosition(existing);
+        return;
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "oni-reaction-item";
+
+      const listContainer = document.createElement("div");
+      listContainer.className = "oni-reaction-ally-list";
+
+      wrap.appendChild(listContainer);
+      root.appendChild(wrap);
+
+      const rec = {
+        wrap,
+        listContainer,
+        tokenId,
+        payload,
+        subKey: computeSubKeyFromBroadcast(payload),
+        hooks: [],
+        entries: [],
+        leaving: false,
+        removeTimer: null,
+        finishRemove: null,
+        removeSeq: 0
+      };
+
+      renderAllyList(rec, payload);
+      updateAllyIndicatorPosition(rec);
+      attachAllyTrackingHooks(rec);
+
+      requestAnimationFrame(() => {
+        if (!wrap.isConnected) return;
+        wrap.classList.add("is-visible");
+      });
+
+      ReactionUI.allyIndicators[tokenId] = rec;
+    }
+
+    function removeAllyIndicator(tokenId) {
+      const rec = ReactionUI.allyIndicators[tokenId];
+      if (!rec || rec.leaving) return;
+      rec.leaving = true;
+      rec.removeSeq = (rec.removeSeq ?? 0) + 1;
+      const seq = rec.removeSeq;
+
+      detachAllyTrackingHooks(rec);
+      const el = rec.wrap;
+      if (!el) {
+        if (ReactionUI.allyIndicators[tokenId] === rec) {
+          delete ReactionUI.allyIndicators[tokenId];
         }
-        const value = paused ? null : secondsLeft;
-        applyCountdownToBlade(rec?.blade, value);
+        return;
+      }
+
+      el.classList.remove("is-visible");
+      el.classList.add("is-leaving");
+
+      let done = false;
+      const finish = () => {
+        if (done || !rec.leaving || rec.removeSeq !== seq) return;
+        done = true;
+        try { el.removeEventListener("transitionend", finish); } catch (_) {}
+        try { el.remove(); } catch (_) {}
+        rec.finishRemove = null;
+        rec.removeTimer = null;
+        if (ReactionUI.allyIndicators[tokenId] === rec) {
+          delete ReactionUI.allyIndicators[tokenId];
+        }
+      };
+
+      rec.finishRemove = finish;
+      el.addEventListener("transitionend", finish);
+      rec.removeTimer = setTimeout(finish, 250);
+    }
+
+    function clearAllAllyIndicators() {
+      for (const tokenId of Object.keys(ReactionUI.allyIndicators)) {
+        removeAllyIndicator(tokenId);
+      }
+    }
+
+    // When the owner sub-window resolves (timeout, pick, skip), the
+    // substrate broadcasts a close-tick. Match by subKey and clear the
+    // corresponding ally indicator on every non-owning client.
+    Hooks.on("oni:reactionWindow:tick", ({ subKey, closed } = {}) => {
+      if (!closed || !subKey) return;
+      const recsSnapshot = Object.values(ReactionUI.allyIndicators).slice();
+      for (const rec of recsSnapshot) {
+        if (rec.subKey === subKey) {
+          try { removeAllyIndicator(rec.tokenId); } catch (_) {}
+        }
       }
     });
 
     window[KEY] = {
       spawnButton,
       removeButton,
-      clearAll
+      clearAll,
+      spawnAllyIndicator,
+      removeAllyIndicator,
+      clearAllAllyIndicators
     };
 
     console.debug("[ReactionButtonUI] Installed. Provides oni.ReactionButtonUI API.");
   })();
-});
+}
+
+(() => {
+  if (globalThis?.game?.ready) _installReactionButtonUI();
+  else Hooks.once("ready", _installReactionButtonUI);
+})();

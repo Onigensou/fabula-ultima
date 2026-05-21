@@ -704,6 +704,18 @@ cacLog("ACTION CARD RENDER MODE", {
 // reaction-window.js clears the `reactionsPending` flag (and the
 // card UI lock in reaction-cardLock.js) when every sub-window settles.
 __fireReactionsLater = () => {
+  // Backfill actionCardMessageId now that ChatMessage.create has run
+  // and PAYLOAD.meta.actionCardMessageId is populated. baseReactionPayload
+  // was constructed at line ~607 BEFORE the chat message existed, so its
+  // actionCardMessageId field was null up to this point. Reactors need
+  // it set so chooseSkill can locate the source card to append the
+  // reactor's pre-action snapshot for cascade-undo.
+  const __resolvedMsgId =
+    PAYLOAD?.meta?.actionCardMessageId ??
+    PAYLOAD?.actionCardMessageId ??
+    null;
+  if (__resolvedMsgId) baseReactionPayload.actionCardMessageId = String(__resolvedMsgId);
+
   const reactionPromises = [];
 
   // 1) Trigger: "When a creature performs an action"
@@ -1390,6 +1402,26 @@ const invokeBondBtnHTML = buildInvokeButtonHTML({
               font-size:16px; line-height:1;
             ">✏️</button>`;
 
+  // Undo button — GM-only, sits next to the Edit pencil. Reverts the
+  // action card's consumption side-effects when the GM ran something by
+  // mistake (wrong skill, mistargeted, etc.). For pending cards (not yet
+  // confirmed) it's a clean delete; for resolved cards it restores the
+  // caster's pre-confirm state from the snapshot captured at confirm
+  // time, then cascade-deletes downstream damage cards. Handler lives
+  // in scripts/action-system/action-card-undo.js.
+  const undoBtnHTML = `
+    <button type="button" data-fu-undo data-gm-only
+            title="Undo Action Card"
+            style="
+              display:inline-flex; align-items:center; justify-content:center;
+              width:28px; height:28px; padding:0; margin:0;
+              border-radius:6px; border:1px solid rgba(192,86,86,.9);
+              background:rgba(247,224,224,.85);
+              box-shadow: 0 1px 0 rgba(0,0,0,.18);
+              cursor:pointer; user-select:none;
+              font-size:16px; line-height:1;
+            ">↶</button>`;
+
   const cardHTML = `
     <div class="fu-card"
          data-fu-action-id="${esc(actionCardIdentity.actionId)}"
@@ -1406,11 +1438,16 @@ const invokeBondBtnHTML = buildInvokeButtonHTML({
   padding-bottom:.15rem;
   margin:.25rem 0 .1rem;
 ">
-  <span style="display:inline-flex; align-items:center; gap:.35rem;">
-    ${editBtnHTML}
-    ${titleIconHTML}
-    <span>${displayTitle}</span>
-  </span>
+  <div style="display:flex; flex-direction:column; gap:.25rem; align-items:flex-start;">
+    <div class="fu-card-controls" style="display:inline-flex; align-items:center; gap:.35rem;">
+      ${editBtnHTML}
+      ${undoBtnHTML}
+    </div>
+    <span style="display:inline-flex; align-items:center; gap:.35rem;">
+      ${titleIconHTML}
+      <span>${displayTitle}</span>
+    </span>
+  </div>
 </h1>
 <div style="text-align:center; font-size:12px; color:#6b3e1e; margin:.18rem 0 .25rem;">${subtitleHTML ? subtitleHTML : ""}</div>
 ${attackerBox}
@@ -1458,6 +1495,32 @@ ${attackerBox}
 
     const flagData = buildActionCardFlagData(PAYLOAD, posted.id);
 
+    // PRESERVE custom flag fields across rebuild. buildActionCardFlagData
+    // constructs the flag from scratch (canonical keys: actionCardId,
+    // actionCardVersion, payload, etc.) and a wholesale flag replacement
+    // would wipe any custom keys other code stamps onto this namespace
+    // — most notably `reactionsFiredOnThisCard` (the per-reactor undo
+    // snapshots written by reaction-chooseSkill) and `refundSnapshot`
+    // (the per-card undo snapshot written by applyDamage-button at
+    // confirm time). Read the existing flag, copy any non-canonical
+    // keys onto the rebuilt flagData, then write the merged result.
+    const existingFlag = (typeof posted.getFlag === "function")
+      ? (posted.getFlag(MODULE_NS, "actionCard") ?? {})
+      : (posted?.flags?.[MODULE_NS]?.actionCard ?? {});
+    if (existingFlag && typeof existingFlag === "object") {
+      const CANONICAL_KEYS = new Set([
+        "actionId", "actionCardId", "actionCardVersion", "actionCardMessageId",
+        "replacedActionCardIds", "actionCardState",
+        "lastRenderedAtMs", "lastRenderedAtIso",
+        "payload"
+      ]);
+      for (const k of Object.keys(existingFlag)) {
+        if (CANONICAL_KEYS.has(k)) continue;
+        if (flagData[k] !== undefined) continue; // never overwrite a fresh canonical write
+        flagData[k] = existingFlag[k];
+      }
+    }
+
     await posted.update({
       content: cardHTML,
       [`flags.${MODULE_NS}.actionCard`]: flagData
@@ -1467,7 +1530,8 @@ ${attackerBox}
       messageId: posted.id,
       actionId: actionCardIdentity.actionId,
       actionCardId: actionCardIdentity.actionCardId,
-      actionCardVersion: actionCardIdentity.actionCardVersion
+      actionCardVersion: actionCardIdentity.actionCardVersion,
+      preservedCustomKeys: Object.keys(existingFlag ?? {}).filter(k => flagData[k] !== undefined && !["actionId","actionCardId","actionCardVersion","actionCardMessageId","replacedActionCardIds","actionCardState","lastRenderedAtMs","lastRenderedAtIso","payload"].includes(k))
     });
   } else {
     const speaker = ChatMessage.getSpeaker();

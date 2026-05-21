@@ -559,29 +559,37 @@
       return;
     }
 
-    dbg("Rebuild: nextPayload", nextPayload);
+    // Switch to edit-in-place. Previous behaviour created a new message
+    // and deleted the old one — but that churned the chat message id,
+    // dropped custom flag keys (snapshots, refundSnapshot,
+    // reactionsFiredOnThisCard), and broke any downstream code holding
+    // the old message reference. CreateActionCard's UPDATE-EXISTING
+    // branch refreshes content + canonical flag and merges custom
+    // flag keys forward.
+    if (oldMsg?.id) {
+      nextPayload.meta = nextPayload.meta || {};
+      nextPayload.meta.actionCardMessageId = String(oldMsg.id);
+      nextPayload.actionCardMessageId = String(oldMsg.id);
+      nextPayload.meta.__actionCardUpdateExisting = true;
+      nextPayload.meta.__actionCardRenderMode = "updateExisting";
+      nextPayload.meta.__targetMessageId = String(oldMsg.id);
+      nextPayload.meta.__preserveActionCardId = true;
+      nextPayload.meta.__preserveActionCardVersion = false; // bump version
+    }
+
+    dbg("Rebuild (edit-in-place): nextPayload", nextPayload);
 
     // IMPORTANT: Your CreateActionCard macro reads globals (__AUTO/__PAYLOAD)
     // (Oni convention: payload is injected as global __PAYLOAD, not via arguments)
-    let createdOk = false;
     try {
       globalThis.__AUTO = true;
       globalThis.__PAYLOAD = nextPayload;
       await macro.execute();
-      createdOk = true;
     } finally {
       try { delete globalThis.__AUTO; } catch {}
       try { delete globalThis.__PAYLOAD; } catch {}
     }
-
-    // Delete old message (keep chat clean) — only if we successfully created the new one
-    if (createdOk) {
-      try {
-        await oldMsg.delete();
-      } catch (e) {
-        console.warn(TAG, "Could not delete old Action Card:", e);
-      }
-    }
+    // No delete — edit-in-place keeps the same message id.
   }
 
   // ---------------------------

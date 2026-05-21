@@ -43,6 +43,7 @@ Hooks.once("ready", () => {
     mergeMatchIntoWindow,
     buildCtxFromWindow,
     buildSocketOfferFromWindow,
+    buildVisibilityBroadcastFromWindow,
     buildPassiveSourceEvent
   } = helpers;
 
@@ -329,6 +330,20 @@ Hooks.once("ready", () => {
           console.warn("[ReactionManager] (GM) game.socket is not available when emitting OniReactionOffer.");
         }
       }
+
+      // 5C) Party-visibility broadcast — read-only mirror to all clients so
+      // non-owning party members see what reactions are in play. Only sent
+      // for friendly reactors (at least one non-GM owner); hostile reactors
+      // stay GM-private. Each receiver gates on its own ownership and skips
+      // if it's already an owner (it has its own interactive button).
+      const reactorIsFriendly = ownerUserIds.some(uid => uid !== gmId);
+      if (reactorIsFriendly && game.socket) {
+        const visibilityPayload = buildVisibilityBroadcastFromWindow(windowState, ownerUserIds);
+        game.socket.emit(CHANNEL, {
+          type: "OniReactionVisibilityBroadcast",
+          payload: visibilityPayload
+        });
+      }
     }
     } catch (handlerErr) {
       // Last-resort handler — keeps the contract even if anything above
@@ -468,6 +483,8 @@ Hooks.once("ready", () => {
 
       if (!targetUserId || targetUserId !== game.user.id) return;
 
+      const reactionChainId = payload?.reactionChainId ?? null;
+
       const uiApi = window["oni.ReactionButtonUI"];
       if (!uiApi || typeof uiApi.spawnButton !== "function") {
         ui.notifications?.error?.("[Reaction] ReactionButtonUI script not installed (socket offer).");
@@ -566,7 +583,8 @@ Hooks.once("ready", () => {
           reactions: reactions.filter(r => Array.isArray(r?.triggers) && r.triggers.includes(k))
         })),
         phaseBucket: phaseBucket ?? null,
-        ownerUserIds: [targetUserId]
+        ownerUserIds: [targetUserId],
+        reactionChainId
       };
 
       _localReactionWindows.set(makeWindowKey(phaseBucket, tokenId), foundry.utils.deepClone({
@@ -586,6 +604,27 @@ Hooks.once("ready", () => {
         dialogApi.openReactionDialog(clickedCtx);
       });
     }
+
+    // ---- Party-visibility broadcast: read-only ally indicator -----------
+    if (data.type === "OniReactionVisibilityBroadcast") {
+      const p = data.payload || {};
+      const me = game.user?.id;
+      if (!me || !p?.tokenId) return;
+
+      // Skip if I'm an owner — I already get the interactive button via
+      // OniReactionOffer (player) or local spawnButton (GM).
+      if (Array.isArray(p.ownerUserIds) && p.ownerUserIds.includes(me)) return;
+
+      const uiApi = window["oni.ReactionButtonUI"];
+      if (!uiApi || typeof uiApi.spawnAllyIndicator !== "function") return;
+
+      const triggerCore = window["oni.ReactionTriggerCore"];
+      const token = triggerCore?.byIdOnCanvas?.(p.tokenId) ?? canvas?.tokens?.get(p.tokenId) ?? null;
+      if (!token) return;
+
+      uiApi.spawnAllyIndicator(token, p);
+      return;
+    }
   }
 
   if (game.socket) {
@@ -599,6 +638,14 @@ Hooks.once("ready", () => {
   // Hard cleanup when combat ends
   // ---------------------------------------------------------------------------
 
+  function clearChainTracker(reason) {
+    try {
+      globalThis.FUCompanion?.api?.reactionChainTracker?.clearAll?.();
+    } catch (e) {
+      console.warn("[ReactionManager] reactionChainTracker.clearAll threw on", reason, e);
+    }
+  }
+
   Hooks.on("combatEnd", (combat) => {
     console.log("[ReactionManager] combatEnd detected – nuking all Reaction buttons.", {
       combatId: combat?.id,
@@ -606,6 +653,7 @@ Hooks.once("ready", () => {
     });
     clearAllReactionWindows();
     hardNukeReactionButtons("combatEnd");
+    clearChainTracker("combatEnd");
     _currentPhaseBucket = null;
   });
 
@@ -616,6 +664,7 @@ Hooks.once("ready", () => {
     });
     clearAllReactionWindows();
     hardNukeReactionButtons("deleteCombat");
+    clearChainTracker("deleteCombat");
     _currentPhaseBucket = null;
   });
 

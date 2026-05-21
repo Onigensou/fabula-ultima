@@ -41,6 +41,9 @@ Hooks.once("ready", () => {
     if (uiApi && typeof uiApi.clearAll === "function") {
       try {
         uiApi.clearAll();
+        if (typeof uiApi.clearAllAllyIndicators === "function") {
+          uiApi.clearAllAllyIndicators();
+        }
         usedOfficialClear = true;
       } catch (err) {
         console.error("[ReactionManagerHelpers] Error calling ReactionButtonUI.clearAll().", err);
@@ -178,8 +181,28 @@ Hooks.once("ready", () => {
       triggerKeys: [],
       phasePayloadByTrigger: {},
       triggerHistory: [],
-      reactionGroupsByItemUuid: new Map()
+      reactionGroupsByItemUuid: new Map(),
+      // Reaction chain id carried from the originating action card's emit
+      // payload. Stays sticky across merges within the same window; only
+      // overwritten if a later emit carries a different non-null id.
+      reactionChainId: null
     };
+  }
+
+  function extractReactionChainId(payload) {
+    if (!payload || typeof payload !== "object") return null;
+    const candidates = [
+      payload?.reactionChainId,
+      payload?.meta?.reactionChainId,
+      payload?.actionContext?.reactionChainId,
+      payload?.actionContext?.meta?.reactionChainId
+    ];
+    for (const c of candidates) {
+      if (c == null) continue;
+      const s = String(c).trim();
+      if (s) return s;
+    }
+    return null;
   }
 
   function mergeReactionGroupIntoWindow(windowState, group) {
@@ -231,6 +254,9 @@ Hooks.once("ready", () => {
 
     windowState.triggerHistory.push({ triggerKey, at: Date.now() });
 
+    const incomingChainId = extractReactionChainId(phasePayload);
+    if (incomingChainId) windowState.reactionChainId = incomingChainId;
+
     for (const group of ctx?.reactions ?? []) {
       mergeReactionGroupIntoWindow(windowState, group);
     }
@@ -273,7 +299,8 @@ Hooks.once("ready", () => {
       phasePayloadByTrigger: foundry.utils.deepClone(windowState?.phasePayloadByTrigger ?? {}),
       triggerEntries: buildTriggerEntriesForWindow(windowState),
       phaseBucket: windowState?.phaseBucket ?? null,
-      ownerUserIds: uniqueStrings(windowState?.ownerUserIds ?? [])
+      ownerUserIds: uniqueStrings(windowState?.ownerUserIds ?? []),
+      reactionChainId: windowState?.reactionChainId ?? null
     };
   }
 
@@ -299,7 +326,51 @@ Hooks.once("ready", () => {
       phasePayload: foundry.utils.deepClone(windowState?.latestPhasePayload ?? {}),
       latestPhasePayload: foundry.utils.deepClone(windowState?.latestPhasePayload ?? {}),
       phasePayloadByTrigger: foundry.utils.deepClone(windowState?.phasePayloadByTrigger ?? {}),
-      triggerHistory: Array.isArray(windowState?.triggerHistory) ? [...windowState.triggerHistory] : []
+      triggerHistory: Array.isArray(windowState?.triggerHistory) ? [...windowState.triggerHistory] : [],
+      reactionChainId: windowState?.reactionChainId ?? null
+    };
+  }
+
+  // Party-visibility broadcast: read-only mirror of an in-flight reaction
+  // window. Sent to all clients so non-owning party members can see what
+  // reactions are in play for their teammates. Carries the same bucket +
+  // actionCardId + reactorTokenId that the owner button uses to compute
+  // its sub-window key, so ally indicators can subscribe to the same
+  // tick/close events and auto-clear when the owner picks or times out.
+  function buildVisibilityBroadcastFromWindow(windowState, ownerUserIds) {
+    const reactionGroups = Array.from(windowState?.reactionGroupsByItemUuid?.values?.() ?? []);
+    const items = reactionGroups
+      .map(group => {
+        const item = group?.item;
+        const descRaw = item?.system?.props?.description ?? item?.system?.description ?? item?.system?.system?.description ?? "";
+        const description = String(descRaw).replace(/<[^>]*>/g, "").trim();
+        return {
+          itemUuid: item?.uuid ?? null,
+          name: item?.name ?? null,
+          img: item?.img ?? null,
+          description,
+          triggers: uniqueStrings(group?.triggers ?? [])
+        };
+      })
+      .filter(it => !!it.itemUuid);
+
+    const latestPhasePayload = windowState?.latestPhasePayload ?? {};
+    const actionCardId =
+      latestPhasePayload?.actionCardId ??
+      latestPhasePayload?.meta?.actionCardId ??
+      null;
+
+    return {
+      tokenId: windowState?.tokenId ?? null,
+      actorUuid: windowState?.actorUuid ?? null,
+      phaseBucket: windowState?.phaseBucket ?? null,
+      actionCardId,
+      ownerUserIds: Array.isArray(ownerUserIds) ? [...ownerUserIds] : [],
+      latestTriggerKey: windowState?.latestTriggerKey ?? null,
+      triggerKeys: uniqueStrings(windowState?.triggerKeys ?? []),
+      items,
+      latestPhasePayload: foundry.utils.deepClone(latestPhasePayload),
+      reactionChainId: windowState?.reactionChainId ?? null
     };
   }
 
@@ -352,6 +423,8 @@ Hooks.once("ready", () => {
     buildTriggerEntriesForWindow,
     buildCtxFromWindow,
     buildSocketOfferFromWindow,
+    buildVisibilityBroadcastFromWindow,
+    extractReactionChainId,
     pickPassiveEventStamp,
     buildPassiveSourceEvent
   };

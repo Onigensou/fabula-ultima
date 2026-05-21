@@ -57,22 +57,32 @@
   //   - creature_enter_crisis
   //   - creature_exit_crisis
   //
+  // Routes through `reactionSystem.emitPhaseSequential` so creature_enter_crisis
+  // serializes after any in-flight reaction prompt (e.g. Painful Lesson on the
+  // same damage card). Async — callers may await to delay further work until
+  // the reaction fully resolves, or fire-and-forget for the existing behavior.
+  //
   // IMPORTANT (GM-authoritative):
   // - Only the GM client should emit reaction triggers for crisis enter/exit.
-  function emitReactionPhase(payload) {
+  async function emitReactionPhase(payload) {
+    const rs = globalThis.FUCompanion?.api?.reactionSystem;
+    if (rs?.emitPhaseSequential) {
+      try { return await rs.emitPhaseSequential(payload, { reason: "crisis" }); }
+      catch (e) { warn("emitPhaseSequential threw:", e?.message ?? e, payload); return; }
+    }
+    if (rs?.openWindow) {
+      try { return await rs.openWindow(payload, { reason: "crisis" }); }
+      catch (e) { warn("openWindow threw:", e?.message ?? e, payload); return; }
+    }
+    // Last-resort fallback
     try {
       if (globalThis?.ONI?.emit) {
         globalThis.ONI.emit("oni:reactionPhase", payload, { local: true, world: false });
         return;
       }
     } catch (_e) {}
-
-    // Fallback (in case ONI.emit isn't available yet)
-    try {
-      Hooks.callAll?.("oni:reactionPhase", payload);
-    } catch (_e) {
-      warn("Could not emit oni:reactionPhase (no ONI.emit or Hooks.callAll).", payload);
-    }
+    try { Hooks.callAll?.("oni:reactionPhase", payload); }
+    catch (_e) { warn("Could not emit oni:reactionPhase (no substrate, no ONI.emit, no Hooks).", payload); }
   }
 
   function buildCrisisReactionPayload(actor, tokenUuids, extra) {
@@ -324,9 +334,11 @@
         // Always sync Crisis AE (authoritative on primary GM only)
         await evaluateActorCrisis(actor);
 
-        // Only emit reaction if a transition trigger was supplied
+        // Only emit reaction if a transition trigger was supplied.
+        // Await so the next damage-card / socket step won't start until this
+        // crisis reaction has fully resolved (sub-window closed, chain ran).
         if (trigger && reactionPayload) {
-          emitReactionPhase(reactionPayload);
+          await emitReactionPhase(reactionPayload);
           log(`(Primary GM) Socket processed crisis trigger: ${trigger} for ${actor.name}`, {
             thresholdAfter
           });
@@ -446,10 +458,24 @@
 
         if (!gmShouldProcessOnce(key)) return;
 
+        // Dedupe with the damage-card emit path. When the HP update was
+        // driven by apply-damage-core (which sets fuReactionTriggersHandled
+        // in the update options), Create Damage Card has predicted the
+        // crisis transition and added it to its own emit batch. We still
+        // run evaluateActorCrisis to apply/remove the crisis AE, but skip
+        // emitReactionPhase here to avoid the racey second emit.
+        const _damageCardOwnsEmit = !!options?.fuReactionTriggersHandled;
+
         evaluateActorCrisis(actor)
-          .then(() => {
+          .then(async () => {
+            if (_damageCardOwnsEmit) {
+              log(`(Primary GM) Crisis Reaction emit suppressed — damage card owns this batch.`, {
+                actor: actor.name, trigger
+              });
+              return;
+            }
             if (trigger && reactionPayload) {
-              emitReactionPhase(reactionPayload);
+              await emitReactionPhase(reactionPayload);
               log(`(Primary GM) Emitted Crisis Reaction trigger: ${trigger} for ${actor.name}`);
             }
           })
