@@ -438,6 +438,33 @@ Hooks.once("ready", () => {
     }
   });
 
+  // No F5 recovery for start_of_conflict. The trigger represents a single
+  // moment in time — when combat starts — and fires exactly once via the
+  // `combatStart` hook above. F5 mid-combat does NOT re-emit it. If the
+  // original emit failed (passive reactions didn't apply, manual menus
+  // didn't render), that's a real bug to investigate at the source — not
+  // something to paper over with a reload-time retry that re-grants
+  // refresh-on-conflict-start charges every refresh.
+
+  // End of conflict — fires when the combat tracker is about to be deleted.
+  // Use `preDeleteCombat` (not `deleteCombat`) so combatants are still
+  // queryable when the reaction matcher scans for eligible reactors
+  // (Hina's Prophetic Defender Style clears all PP at this moment).
+  Hooks.on("preDeleteCombat", (combat, options, userId) => {
+    try {
+      emitReactionPhase("end_of_conflict", {
+        kind: "lifecycle",
+        phase: "end_of_conflict",
+        combatId: combat.id,
+        sceneId: combat.scene?.id ?? combat.sceneId ?? null,
+        round: combat.round,
+        turn: combat.turn,
+      });
+    } catch (err) {
+      console.warn("[PhaseHandler] Error in preDeleteCombat broadcaster:", err);
+    }
+  });
+
   // Start of each round
   Hooks.on("combatRound", (combat, ...args) => {
     try {

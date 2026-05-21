@@ -87,10 +87,21 @@ Hooks.once("ready", () => {
         continue;
       }
 
-      if (c === "+" || c === "-" || c === "*" || c === "/") {
+      if (c === "+" || c === "-" || c === "*" || c === "/" || c === "%") {
         out.push({ type: "OP", value: c, pos: i });
         i++; continue;
       }
+      // Two-char operators: ==, !=, <=, >=, &&, ||
+      if (c === "=" && src[i+1] === "=") { out.push({ type: "OP", value: "==", pos: i }); i += 2; continue; }
+      if (c === "!" && src[i+1] === "=") { out.push({ type: "OP", value: "!=", pos: i }); i += 2; continue; }
+      if (c === "<" && src[i+1] === "=") { out.push({ type: "OP", value: "<=", pos: i }); i += 2; continue; }
+      if (c === ">" && src[i+1] === "=") { out.push({ type: "OP", value: ">=", pos: i }); i += 2; continue; }
+      if (c === "&" && src[i+1] === "&") { out.push({ type: "OP", value: "&&", pos: i }); i += 2; continue; }
+      if (c === "|" && src[i+1] === "|") { out.push({ type: "OP", value: "||", pos: i }); i += 2; continue; }
+      // Single-char comparison + logical-not
+      if (c === "<") { out.push({ type: "OP", value: "<", pos: i }); i++; continue; }
+      if (c === ">") { out.push({ type: "OP", value: ">", pos: i }); i++; continue; }
+      if (c === "!") { out.push({ type: "OP", value: "!", pos: i }); i++; continue; }
       if (c === "(") { out.push({ type: "LPAREN", pos: i }); i++; continue; }
       if (c === ")") { out.push({ type: "RPAREN", pos: i }); i++; continue; }
       if (c === ",") { out.push({ type: "COMMA",  pos: i }); i++; continue; }
@@ -109,7 +120,56 @@ Hooks.once("ready", () => {
     const consume = () => tokens[pos++] ?? null;
     const atEnd  = () => pos >= tokens.length;
 
-    function expression() { return addSub(); }
+    // Boolean results are represented as 1 / 0 throughout — keeps the grammar
+    // and identifier resolution numeric end-to-end. Truthy = nonzero.
+    const b = (v) => v ? 1 : 0;
+    const truthy = (v) => v !== 0;
+
+    function expression() { return logicalOr(); }
+
+    function logicalOr() {
+      let left = logicalAnd();
+      while (!atEnd() && peek().type === "OP" && peek().value === "||") {
+        consume();
+        const right = logicalAnd();
+        left = b(truthy(left) || truthy(right));
+      }
+      return left;
+    }
+
+    function logicalAnd() {
+      let left = equality();
+      while (!atEnd() && peek().type === "OP" && peek().value === "&&") {
+        consume();
+        const right = equality();
+        left = b(truthy(left) && truthy(right));
+      }
+      return left;
+    }
+
+    function equality() {
+      let left = comparison();
+      while (!atEnd() && peek().type === "OP" && (peek().value === "==" || peek().value === "!=")) {
+        const op = consume().value;
+        const right = comparison();
+        left = op === "==" ? b(left === right) : b(left !== right);
+      }
+      return left;
+    }
+
+    function comparison() {
+      let left = addSub();
+      while (!atEnd() && peek().type === "OP" &&
+             (peek().value === "<" || peek().value === ">" || peek().value === "<=" || peek().value === ">=")) {
+        const op = consume().value;
+        const right = addSub();
+        if      (op === "<")  left = b(left <  right);
+        else if (op === ">")  left = b(left >  right);
+        else if (op === "<=") left = b(left <= right);
+        else                  left = b(left >= right);
+      }
+      return left;
+    }
 
     function addSub() {
       let left = mulDiv();
@@ -123,20 +183,24 @@ Hooks.once("ready", () => {
 
     function mulDiv() {
       let left = unary();
-      while (!atEnd() && peek().type === "OP" && (peek().value === "*" || peek().value === "/")) {
+      while (!atEnd() && peek().type === "OP" &&
+             (peek().value === "*" || peek().value === "/" || peek().value === "%")) {
         const op = consume().value;
         const right = unary();
-        if (op === "*") left = left * right;
-        else            left = right === 0 ? 0 : left / right;
+        if      (op === "*") left = left * right;
+        else if (op === "/") left = right === 0 ? 0 : left / right;
+        else                 left = right === 0 ? 0 : left - Math.floor(left / right) * right; // %
       }
       return left;
     }
 
     function unary() {
-      if (!atEnd() && peek().type === "OP" && (peek().value === "-" || peek().value === "+")) {
+      if (!atEnd() && peek().type === "OP" && (peek().value === "-" || peek().value === "+" || peek().value === "!")) {
         const op = consume().value;
         const v = unary();
-        return op === "-" ? -v : v;
+        if (op === "-") return -v;
+        if (op === "+") return v;
+        return b(!truthy(v)); // !
       }
       return primary();
     }
@@ -303,6 +367,7 @@ Hooks.once("ready", () => {
     const firingSkill  = ctx.firingSkill ?? null;
     const subjectToken = ctx.subjectToken ?? null;
     const payload      = ctx.payload ?? null;
+    const combat       = ctx.combat ?? game.combat ?? null;
 
     switch (name) {
       // Skill level
@@ -312,6 +377,12 @@ Hooks.once("ready", () => {
                 ?? firingSkill?.system?.level
                 ?? 0;
         return Math.max(0, Number(lv) || 0);
+      }
+      // Combat / payload introspection — used by condition_formula gates.
+      case "ROUND": return Number(combat?.round ?? 0) || 0;
+      case "ACTION_TARGET_COUNT": {
+        const t = payload?.targets;
+        return Array.isArray(t) ? t.length : 0;
       }
       // Reactor resources
       case "MAX_HP": return Number(reactorProps.max_hp ?? 0) || 0;
@@ -392,6 +463,8 @@ Hooks.once("ready", () => {
       { name: "HP_DEALT",      description: "Same but 0 unless the event's valueType is hp." },
       { name: "MP_DEALT",      description: "Same but 0 unless the event's valueType is mp." },
       { name: "SHIELD_DEALT",  description: "Same but 0 unless the event's valueType is shield." },
+      { name: "ROUND",         description: "Current combat round number (1-indexed). 0 outside combat." },
+      { name: "ACTION_TARGET_COUNT", description: "Number of tokens targeted by the triggering action (payload.targets.length). 0 when the payload carries no target list." },
     ];
   }
 

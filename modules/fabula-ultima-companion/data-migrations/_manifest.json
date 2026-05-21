@@ -87,6 +87,14 @@
     {
       "key": "2026-05-21-consume-resource",
       "path": "data-migrations/2026-05-21-consume-resource.js"
+    },
+    {
+      "key": "2026-05-21-reaction-gate-columns",
+      "path": "data-migrations/2026-05-21-reaction-gate-columns.js"
+    },
+    {
+      "key": "2026-05-21-trigger-add-conflict-end",
+      "path": "data-migrations/2026-05-21-trigger-add-conflict-end.js"
     }
   ]
 }

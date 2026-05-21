@@ -113,6 +113,14 @@ Hooks.once("ready", () => {
       aliases: ["start_of_conflict"] // raw form emitted by reaction-phaseHandler
     },
     {
+      key: "conflict_end",
+      label: "At the end of conflict",
+      bucket: "conflict_end",
+      subjectFrom: null,
+      filters: [],
+      aliases: ["end_of_conflict"] // raw form emitted on preDeleteCombat
+    },
+    {
       key: "round_start",
       label: "At the start of the Round",
       bucket: "round_start",

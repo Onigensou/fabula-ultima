@@ -145,7 +145,11 @@ Hooks.once("ready", () => {
         id: `synth-${effect.id}`,
         uuid: synthUuid,
         name: flag.name ?? effect.name ?? "Reaction",
-        img: flag.img ?? effect.icon ?? effect.img ?? "icons/svg/aura.svg",
+        // Foundry v12 renamed `icon` → `img` on ActiveEffect. Read img
+        // first; only fall back to the deprecated `icon` getter when
+        // img isn't populated. (Reading `icon` directly triggers a v14
+        // removal warning on every reaction collection pass.)
+        img: flag.img ?? effect.img ?? effect.icon ?? "icons/svg/aura.svg",
         type: "equippableItem",
 
         // Mark for debugging / safe-checks; downstream code that needs
@@ -897,6 +901,56 @@ Hooks.once("ready", () => {
     }
 
     // -------------------------------------------------------------------------
+    // Generic gate filters — apply to every trigger uniformly.
+    // -------------------------------------------------------------------------
+
+    // Evaluate row.condition_formula via the ReactionFormula evaluator.
+    // Truthy result = row passes. Blank formula = no gating (always passes).
+    // A formula that throws / returns NaN is treated as 0 (fail-closed,
+    // matching the evaluator's own fail-soft policy).
+    function reactionConditionFormulaMatchesRow(rowFormulaRaw, reactionToken, firingSkill, triggerKey, phasePayload, combat) {
+      const formula = String(rowFormulaRaw ?? "").trim();
+      if (!formula) return true;
+
+      const evaluator = window["oni.ReactionFormula"];
+      if (typeof evaluator?.evaluate !== "function") {
+        console.warn("[ReactionTriggerCore] reactionConditionFormulaMatchesRow: oni.ReactionFormula not loaded; failing closed.", { formula });
+        return false;
+      }
+
+      const subjectTokens = getSubjectTokensForTrigger(triggerKey, phasePayload, combat) ?? [];
+      const subjectToken = subjectTokens[0] ?? null;
+
+      const result = evaluator.evaluate(formula, {
+        reactorActor: reactionToken?.actor ?? null,
+        reactorToken: reactionToken,
+        firingSkill,
+        subjectToken,
+        payload: phasePayload,
+        combat
+      });
+
+      return result !== 0;
+    }
+
+    // Check row.requires_skill (master uniqueId string). When non-blank, only
+    // pass if the reactor's actor owns an item whose system.uniqueId matches.
+    function reactionRequiresSkillMatchesRow(rowRequiresSkillRaw, reactionToken) {
+      const required = String(rowRequiresSkillRaw ?? "").trim();
+      if (!required) return true;
+
+      const actor = reactionToken?.actor;
+      const items = actor?.items?.contents ?? actor?.items ?? [];
+      for (const item of items) {
+        const uniq = item?.system?.uniqueId
+                  ?? item?.system?.props?.uniqueId
+                  ?? null;
+        if (uniq && String(uniq) === required) return true;
+      }
+      return false;
+    }
+
+    // -------------------------------------------------------------------------
     // collectReactionsForTrigger – main detector entry point
     // -------------------------------------------------------------------------
     function collectReactionsForTrigger(triggerKey, phasePayload) {
@@ -1016,6 +1070,21 @@ Hooks.once("ready", () => {
               combat
             )) continue;
 
+            // Universal condition_formula gate. Blank = always passes.
+            if (!reactionConditionFormulaMatchesRow(
+              row.condition_formula,
+              token,
+              item,
+              normalizedTriggerKey,
+              phasePayload,
+              combat
+            )) continue;
+
+            // Universal requires_skill gate. Blank = always passes. Otherwise
+            // the reactor's actor must own an item with system.uniqueId
+            // equal to the configured value.
+            if (!reactionRequiresSkillMatchesRow(row.requires_skill, token)) continue;
+
             matchingRows.push(row);
           }
 
@@ -1067,6 +1136,8 @@ Hooks.once("ready", () => {
       collectReactionsForTrigger,
       extractRows,
       extractReactionTriggers,
+      reactionConditionFormulaMatchesRow,
+      reactionRequiresSkillMatchesRow,
       reactionSourceMatchesRow,
       reactionDamageSourceMatchesRow,
       reactionDamageTypeMatchesRow,
