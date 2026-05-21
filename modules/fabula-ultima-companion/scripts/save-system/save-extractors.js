@@ -474,20 +474,50 @@
         Object.entries(data).map(async ([sceneId, tokenDataMap]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
-          const currentIds = [...scene.tokens.values()].map(t => t.id);
-          if (currentIds.length) await scene.deleteEmbeddedDocuments("Token", currentIds);
-          const savedTokens = Object.values(tokenDataMap);
-          if (!savedTokens.length) return;
-          try {
-            await scene.createEmbeddedDocuments("Token", savedTokens, { keepId: true });
-          } catch {
-            // Batch create failed (e.g. a token's actorId no longer exists);
-            // retry individually so as many tokens as possible are restored.
-            await Promise.allSettled(
-              savedTokens.map(td =>
-                scene.createEmbeddedDocuments("Token", [td], { keepId: true }).catch(() => {})
-              )
-            );
+
+          // Build a snapshot of current tokens keyed by id.
+          const currentById = new Map(
+            [...scene.tokens.values()].map(t => [t.id, t.toObject()])
+          );
+
+          const toDelete = [];
+          const toCreate = [];
+          const toUpdate = [];
+
+          // Tokens on canvas not in the save → remove.
+          for (const id of currentById.keys()) {
+            if (!(id in tokenDataMap)) toDelete.push(id);
+          }
+          // Tokens in save: create if missing, update in-place if changed, skip if equal.
+          // In-place update (instead of delete+recreate) avoids the canvas blink where
+          // all tokens vanish for a frame before reappearing.
+          // Position (x, y, elevation) and visibility (hidden) are part of the saved
+          // toObject() snapshot and are restored through this same path.
+          for (const [id, saved] of Object.entries(tokenDataMap)) {
+            if (!currentById.has(id)) {
+              toCreate.push(saved);
+            } else if (!foundry.utils.objectsEqual(currentById.get(id), saved)) {
+              toUpdate.push(saved); // _id is included in toObject() output
+            }
+            // identical — no-op
+          }
+
+          if (toDelete.length)
+            await scene.deleteEmbeddedDocuments("Token", toDelete);
+          if (toUpdate.length)
+            await scene.updateEmbeddedDocuments("Token", toUpdate);
+          if (toCreate.length) {
+            try {
+              await scene.createEmbeddedDocuments("Token", toCreate, { keepId: true });
+            } catch {
+              // Batch create failed (e.g. a token's actorId no longer exists);
+              // retry individually so as many tokens as possible are restored.
+              await Promise.allSettled(
+                toCreate.map(td =>
+                  scene.createEmbeddedDocuments("Token", [td], { keepId: true }).catch(() => {})
+                )
+              );
+            }
           }
         })
       );
