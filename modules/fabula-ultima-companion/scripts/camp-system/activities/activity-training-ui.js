@@ -205,6 +205,7 @@
         transform:translateX(-50%);
         image-rendering:auto;
         pointer-events:none;
+        border:none; outline:none; box-shadow:none; background:transparent;
       }
 
       /* Track */
