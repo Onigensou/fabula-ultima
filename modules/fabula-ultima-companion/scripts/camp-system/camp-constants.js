@@ -110,6 +110,13 @@
     SLEEP_SOUNDLY_RESULT:  "CAMP_SLEEP_SOUNDLY_RESULT",  // owner → GM (score) / GM → all (score + charges)
     SLEEP_SOUNDLY_PROCEED: "CAMP_SLEEP_SOUNDLY_PROCEED", // owner → GM
     SLEEP_SOUNDLY_DONE:    "CAMP_SLEEP_SOUNDLY_DONE",    // GM → all
+    // Magic Lesson minigame
+    MAGIC_LESSON_START:    "CAMP_MAGIC_LESSON_START",    // GM → all (show ally picker)
+    MAGIC_LESSON_TARGET:   "CAMP_MAGIC_LESSON_TARGET",   // owner → GM (ally chosen)
+    MAGIC_LESSON_SPELL:    "CAMP_MAGIC_LESSON_SPELL",    // owner → GM (spell chosen)
+    MAGIC_LESSON_RESULT:   "CAMP_MAGIC_LESSON_RESULT",   // GM → all (3 payload shapes: spell-pick / rolling / reveal)
+    MAGIC_LESSON_PROCEED:  "CAMP_MAGIC_LESSON_PROCEED",  // owner → GM
+    MAGIC_LESSON_DONE:     "CAMP_MAGIC_LESSON_DONE",     // GM → all
   });
 
   // ---------------------------------------------------------------------------
