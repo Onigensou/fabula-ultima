@@ -108,16 +108,21 @@
     }
   }
 
+  const _SFX_GAIN = { PERFECT: 0.75, CLOSE: 0.75, NEAR: 0.42, MISS: 0.38 };
+
   function _playWebAudio(key) {
+    const vol = _SFX_GAIN[key] ?? 0.75;
     if (!_audioCtx || !_sfxBuffers[key]) {
-      // Fallback
-      try { AudioHelper.play({ src: SFX[key], volume: 0.75, autoplay: true, loop: false }, false); } catch {}
+      try { AudioHelper.play({ src: SFX[key], volume: vol, autoplay: true, loop: false }, false); } catch {}
       return;
     }
     if (_audioCtx.state === "suspended") _audioCtx.resume();
-    const src = _audioCtx.createBufferSource();
+    const src  = _audioCtx.createBufferSource();
+    const gain = _audioCtx.createGain();
+    gain.gain.value = vol;
     src.buffer = _sfxBuffers[key];
-    src.connect(_audioCtx.destination);
+    src.connect(gain);
+    gain.connect(_audioCtx.destination);
     src.start(0);
   }
 
@@ -316,9 +321,9 @@
         width:88px;height:88px;border-radius:10px;cursor:pointer;
         background:rgba(255,255,255,.08);
         border:2px solid rgba(255,255,255,.2);
-        transition:background .12s,border-color .12s,transform .08s;
+        transition:background .12s,border-color .12s,box-shadow .12s,transform .08s;
         display:flex;align-items:center;justify-content:center;
-        font-size:1.4rem;position:relative;overflow:hidden;
+        font-size:2.8rem;position:relative;
       }
       .oni-ms-cell:hover {
         background:rgba(255,255,255,.18);
@@ -328,24 +333,26 @@
       .oni-ms-cell.disabled {
         pointer-events:none;
       }
-      .oni-ms-cell[data-proximity="perfect"] { background:rgba(192,57,43,0.82); border-color:#e74c3c; }
-      .oni-ms-cell[data-proximity="close"]   { background:rgba(230,126,34,0.82); border-color:#e67e22; }
-      .oni-ms-cell[data-proximity="near"]    { background:rgba(39,174,96,0.82); border-color:#27ae60; }
-      .oni-ms-cell[data-proximity="miss"]    { background:rgba(41,128,185,0.82); border-color:#2980b9; }
+      /* Proximity: emoji fills the cell; subtle glow border replaces solid bg */
+      .oni-ms-cell[data-proximity="perfect"] { border-color:#e74c3c; box-shadow:0 0 14px rgba(192,57,43,.7); background:rgba(192,57,43,.18); }
+      .oni-ms-cell[data-proximity="close"]   { border-color:#e67e22; box-shadow:0 0 14px rgba(230,126,34,.7); background:rgba(230,126,34,.18); }
+      .oni-ms-cell[data-proximity="near"]    { border-color:#27ae60; box-shadow:0 0 14px rgba(39,174,96,.7);  background:rgba(39,174,96,.18);  }
+      .oni-ms-cell[data-proximity="miss"]    { border-color:#2980b9; box-shadow:0 0 14px rgba(41,128,185,.7); background:rgba(41,128,185,.18); }
 
-      /* ── Score pop-up on cell ───────────────────────────────────── */
+      /* ── Score pop-up — floats above play area, not clipped by cell ── */
       .oni-ms-cell-pop {
-        position:absolute;font-size:1.2rem;font-weight:900;
-        color:#fff;text-shadow:0 0 6px rgba(0,0,0,.9);
+        position:absolute;font-size:1.25rem;font-weight:900;
+        color:#fff;text-shadow:0 0 8px rgba(0,0,0,.95),0 0 20px rgba(244,212,136,.8);
         pointer-events:none;white-space:nowrap;
-        animation:oni-ms-float 0.55s ease-out forwards;
-        left:50%;top:30%;
+        transform:translateX(-50%);
+        animation:oni-ms-float 0.6s ease-out forwards;
+        z-index:10;
       }
 
       /* ── Bottom sprite row ──────────────────────────────────────── */
       .oni-ms-sprites {
         display:flex;align-items:flex-end;justify-content:center;
-        gap:24px;width:100%;
+        gap:24px;width:100%;margin-top:18px;
       }
       .oni-ms-sprite {
         display:flex;flex-direction:column;align-items:center;gap:4px;
@@ -569,12 +576,16 @@
     const cell = grid.querySelector(`[data-cell="${cellIdx}"]`);
     if (!cell) return;
     cell.setAttribute("data-proximity", prox);
+    cell.textContent = PROXIMITY_CFG[prox]?.emoji ?? "";
   }
 
   function _clearAllCells() {
     const grid = document.getElementById("oni-ms-grid");
     if (!grid) return;
-    grid.querySelectorAll(".oni-ms-cell").forEach(c => c.removeAttribute("data-proximity"));
+    grid.querySelectorAll(".oni-ms-cell").forEach(c => {
+      c.removeAttribute("data-proximity");
+      c.textContent = "";
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -591,19 +602,28 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Floating score pop over the clicked cell
+  // Floating score pop — spawned on the play area so it escapes the cell bounds
   // ---------------------------------------------------------------------------
   function _spawnCellPop(cellIdx, pts) {
     if (pts === 0) return;
-    const grid = document.getElementById("oni-ms-grid");
-    if (!grid) return;
+    const playArea = document.querySelector(".oni-ms-play-area");
+    const grid     = document.getElementById("oni-ms-grid");
+    if (!playArea || !grid) return;
     const cell = grid.querySelector(`[data-cell="${cellIdx}"]`);
     if (!cell) return;
+
+    const cellRect = cell.getBoundingClientRect();
+    const areaRect = playArea.getBoundingClientRect();
+    const cx = cellRect.left - areaRect.left + cellRect.width  / 2;
+    const cy = cellRect.top  - areaRect.top;
+
     const pop = document.createElement("div");
     pop.className   = "oni-ms-cell-pop";
     pop.textContent = `+${pts}`;
-    cell.appendChild(pop);
-    setTimeout(() => pop.remove(), 580);
+    pop.style.left  = `${cx}px`;
+    pop.style.top   = `${cy}px`;
+    playArea.appendChild(pop);
+    setTimeout(() => pop.remove(), 640);
   }
 
   // ---------------------------------------------------------------------------
