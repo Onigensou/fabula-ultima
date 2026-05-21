@@ -111,6 +111,10 @@
     {
       "key": "2026-05-21-actor-template-bonus-hp-mp",
       "path": "data-migrations/2026-05-21-actor-template-bonus-hp-mp.js"
+    },
+    {
+      "key": "2026-05-21-actor-template-formula-repair",
+      "path": "data-migrations/2026-05-21-actor-template-formula-repair.js"
     }
   ]
 }

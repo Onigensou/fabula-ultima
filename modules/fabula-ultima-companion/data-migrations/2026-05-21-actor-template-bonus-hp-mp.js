@@ -84,19 +84,30 @@ function findNodeMutable(root, want, seen = new WeakSet()) {
 }
 
 // Idempotent formula patch: appends `+ref('<propKey>')` to a Label formula
-// of shape `${...}$` when the ref isn't already present. Handles both the
-// CSB-canonical `${EXPR}$` and the rarer bare-expression case.
+// of shape `${EXPR}$` when the ref isn't already present.
+//
+// Guarded against destructive edits on placeholder templates:
+//   - skip if the formula already contains the ref
+//   - skip if the inner expression is empty (`${}$`) or trivially empty
+//     parens (`${()}$`) — those are placeholder formulas on NPC / villain
+//     templates where max_hp isn't computed; appending `+ref(...)` would
+//     produce `${+ref(...)}$` or `${()+ref(...)}$`, both of which evaluate
+//     to bonus_hp alone (typically 0) and silently break the template
+//   - skip if the formula doesn't look like CSB's `${EXPR}$` shape — we
+//     refuse to guess at non-canonical shapes
+//
+// Returns the patched formula, or null to indicate "leave it alone."
 function patchFormulaAddRef(formula, propKey) {
   const text = String(formula ?? "");
   const needle = `ref('${propKey}')`;
-  if (text.includes(needle)) return null; // already has it; no-op
-  // CSB Label formulas are `${ EXPR }$` (terminating `$`). Insert before the
-  // trailing `}$` so the new ref joins the same expression.
+  if (text.includes(needle)) return null;
+
   const m = text.match(/^(\$\{)(.*)(\}\$)\s*$/s);
-  if (!m) {
-    // Non-canonical shape — wrap the whole existing expression.
-    return `\${(${text})+${needle}}$`;
-  }
+  if (!m) return null; // non-canonical shape — refuse to guess
+
+  const inner = String(m[2]).trim();
+  if (inner === "" || inner === "()") return null; // placeholder; don't pollute
+
   return `${m[1]}${m[2]}+${needle}${m[3]}`;
 }
 
