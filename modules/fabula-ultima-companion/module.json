@@ -255,6 +255,7 @@
     "scripts/camp-system/activities/activity-sing.js",
     "scripts/camp-system/activities/activity-sleep-soundly.js",
     "scripts/camp-system/activities/activity-training.js",
+    "scripts/camp-system/activities/activity-training-ui.js",
     "scripts/camp-system/camp-ui-button.js",
     "scripts/camp-system/camp-ui-activity-select.js",
     "scripts/camp-system/camp-ui-activity-resolve.js",

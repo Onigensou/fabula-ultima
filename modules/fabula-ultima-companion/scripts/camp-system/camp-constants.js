@@ -94,6 +94,15 @@
     MASSAGE_RESULT:   "CAMP_MASSAGE_RESULT",   // owner → GM (score) / GM → all (score + reduction)
     MASSAGE_PROCEED:  "CAMP_MASSAGE_PROCEED",  // owner → GM
     MASSAGE_DONE:     "CAMP_MASSAGE_DONE",     // GM → all
+    // Training minigame (Timing Gauge)
+    TRAINING_START:            "CAMP_TRAINING_START",            // GM → all clients
+    TRAINING_BEGIN:            "CAMP_TRAINING_BEGIN",            // owner → all (Click to Begin; starts spectator countdown)
+    TRAINING_HIT:              "CAMP_TRAINING_HIT",              // owner → all (SPACE result: { hit, perfect, miss, pointerPx, sweetSpotPx, combo, score })
+    TRAINING_RESULT:           "CAMP_TRAINING_RESULT",           // owner → GM (score) / GM → all (score + charges)
+    TRAINING_PROCEED:          "CAMP_TRAINING_PROCEED",          // owner → GM
+    TRAINING_DONE:             "CAMP_TRAINING_DONE",             // GM → all
+    TRAINING_CHOICE_REQUEST:   "CAMP_TRAINING_CHOICE_REQUEST",   // GM → owner client (in-combat "prevent?" dialog)
+    TRAINING_CHOICE_RESPONSE:  "CAMP_TRAINING_CHOICE_RESPONSE",  // owner → GM (yes/no)
   });
 
   // ---------------------------------------------------------------------------
