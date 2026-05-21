@@ -169,6 +169,10 @@
         });
         CAMP.MagicLessonUI?.applyResult(actor.id, targetActorId, spellName, spellImg, teacherTotal, targetTotal, usages);
 
+        // Register the proceed resolver NOW — before async AE work — so a fast
+        // click (e.g. on "Perfect resonance!") cannot race ahead of _waitForProceed.
+        const _proceedGate = _waitForProceed(actor);
+
         // 10 — Apply AE to target (remove stale one for the same spell first)
         const existing = targetActor.effects.find(
           e => e.flags?.[MODULE_ID]?.magicLessonSpell === true &&
@@ -201,8 +205,8 @@
         // 11 — Chat announcement
         await _postChatResult(actor, targetActor, spellName, spellImg, teacherTotal, targetTotal, usages);
 
-        // 12 — Wait for owner to click "Click to Proceed"
-        await _waitForProceed(actor);
+        // 12 — Wait for owner to click "Click to Proceed" (resolver was registered at step 9)
+        await _proceedGate;
 
         // 13 — Hide overlay on all clients
         CAMP.Socket.broadcast(CAMP.MSG.MAGIC_LESSON_DONE, { actorId: actor.id });
