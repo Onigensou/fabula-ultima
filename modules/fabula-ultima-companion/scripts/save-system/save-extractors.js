@@ -305,8 +305,13 @@
       for (const [sceneId, { tileStates, visitedTiles }] of Object.entries(data)) {
         const scene = game.scenes.get(sceneId);
         if (!scene) continue;
-        await scene.setFlag(MOD, `${DP_KEY}.tileStates`, tileStates);
-        // unsetFlag first to clear old visited map (mergeObject semantics won't delete keys)
+        // unsetFlag first for both maps — setFlag uses update() with mergeObject
+        // internally, which never removes keys present in current data but absent
+        // from the save (e.g. a tile added after the save would leave a ghost entry).
+        await scene.unsetFlag(MOD, `${DP_KEY}.tileStates`).catch(() => {});
+        if (Object.keys(tileStates).length > 0) {
+          await scene.setFlag(MOD, `${DP_KEY}.tileStates`, tileStates);
+        }
         await scene.unsetFlag(MOD, `${DP_KEY}.visitedTiles`).catch(() => {});
         if (Object.keys(visitedTiles).length > 0) {
           await scene.setFlag(MOD, `${DP_KEY}.visitedTiles`, visitedTiles);
@@ -480,9 +485,18 @@
     async apply(ctx, data) {
       if (!data || !game.user?.isGM) return;
       await Promise.all(
-        Object.entries(data).map(([id, ownership]) => {
+        Object.entries(data).map(async ([id, ownership]) => {
           const entry = game.journal.get(id);
           if (!entry) return null;
+          // Build explicit "-=" deletions for userIds present in the current
+          // ownership but absent from the save. Without this, mergeObject would
+          // leave stale users (e.g. a journal revealed after the save was taken)
+          // with their post-save ownership level intact after loading.
+          const stale = {};
+          for (const userId of Object.keys(entry.ownership ?? {})) {
+            if (!(userId in ownership)) stale[`ownership.-=${userId}`] = true;
+          }
+          if (Object.keys(stale).length) await entry.update(stale);
           if (JSON.stringify(entry.ownership) === JSON.stringify(ownership)) return null;
           return entry.update({ ownership });
         }).filter(Boolean)
