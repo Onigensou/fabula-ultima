@@ -68,6 +68,28 @@
     }
   }
 
+  // CSB stores list data as plain objects with numeric string keys (e.g. class_list,
+  // memories_list). Foundry's actor.update() uses mergeObject internally, which never
+  // removes keys that exist in the current document but are absent from the update data.
+  // For list-type props this means deleted/added-after-save entries survive a load.
+  // We resolve this by building explicit Foundry "-=" deletion keys before the full
+  // system update so those stale rows are removed.
+  async function wipeStaleCsbListEntries(actor, savedProps) {
+    const currentProps = actor.system?.props ?? {};
+    const deletions    = {};
+    for (const [propKey, currentVal] of Object.entries(currentProps)) {
+      if (typeof currentVal !== "object" || currentVal === null || Array.isArray(currentVal)) continue;
+      const savedVal = savedProps?.[propKey];
+      if (typeof savedVal !== "object" || savedVal === null) continue;
+      for (const rowKey of Object.keys(currentVal)) {
+        if (!(rowKey in savedVal)) {
+          deletions[`system.props.${propKey}.-=${rowKey}`] = true;
+        }
+      }
+    }
+    if (Object.keys(deletions).length) await actor.update(deletions);
+  }
+
   // Delete-all + recreate-all for items and effects so mergeObject semantics
   // in updateEmbeddedDocuments can never leave stale flag values behind.
   async function applyActorEmbeds(actor, { items = [], effects = [] }) {
@@ -132,6 +154,7 @@
       if (!data?.uuid) return;
       const pa = actorFromUuid(data.uuid);
       if (!pa) { console.warn(TAG, "partyActorData apply: not found", data.uuid); return; }
+      await wipeStaleCsbListEntries(pa, data.system?.props);
       await pa.update({ system: data.system, flags: data.flags });
       await applyActorEmbeds(pa, data);
     },
@@ -163,6 +186,7 @@
       for (const [uuid, actorData] of Object.entries(data)) {
         const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "partyData apply: not found", uuid); continue; }
+        await wipeStaleCsbListEntries(actor, actorData.system?.props);
         await actor.update({ system: actorData.system, flags: actorData.flags });
         await applyActorEmbeds(actor, actorData);
       }
@@ -202,6 +226,7 @@
       for (const [uuid, actorData] of Object.entries(data)) {
         const actor = actorFromUuid(uuid);
         if (!actor) { console.warn(TAG, "npcData apply: not found", uuid); continue; }
+        await wipeStaleCsbListEntries(actor, actorData.system?.props);
         await actor.update({ system: actorData.system, flags: actorData.flags });
         await applyActorEmbeds(actor, actorData);
       }
