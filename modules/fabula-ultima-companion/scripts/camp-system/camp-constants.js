@@ -103,6 +103,13 @@
     TRAINING_DONE:             "CAMP_TRAINING_DONE",             // GM → all
     TRAINING_CHOICE_REQUEST:   "CAMP_TRAINING_CHOICE_REQUEST",   // GM → owner client (in-combat "prevent?" dialog)
     TRAINING_CHOICE_RESPONSE:  "CAMP_TRAINING_CHOICE_RESPONSE",  // owner → GM (yes/no)
+    // Sleep Soundly minigame (Radial Dream Protector)
+    SLEEP_SOUNDLY_START:   "CAMP_SLEEP_SOUNDLY_START",   // GM → all clients
+    SLEEP_SOUNDLY_BEGIN:   "CAMP_SLEEP_SOUNDLY_BEGIN",   // owner → all (Click to Begin; broadcasts RNG seed)
+    SLEEP_SOUNDLY_HIT:     "CAMP_SLEEP_SOUNDLY_HIT",     // owner → all (object clicked: { actorId, objId, hitType })
+    SLEEP_SOUNDLY_RESULT:  "CAMP_SLEEP_SOUNDLY_RESULT",  // owner → GM (score) / GM → all (score + charges)
+    SLEEP_SOUNDLY_PROCEED: "CAMP_SLEEP_SOUNDLY_PROCEED", // owner → GM
+    SLEEP_SOUNDLY_DONE:    "CAMP_SLEEP_SOUNDLY_DONE",    // GM → all
   });
 
   // ---------------------------------------------------------------------------

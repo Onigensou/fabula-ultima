@@ -197,6 +197,28 @@
           return;
         }
 
+        // ── Sleep Soundly minigame (Radial Dream Protector) ──────────────
+        if (type === CAMP.MSG.SLEEP_SOUNDLY_START) {
+          CAMP.SleepSoundlyUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.SLEEP_SOUNDLY_BEGIN) {
+          CAMP.SleepSoundlyUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.SLEEP_SOUNDLY_HIT) {
+          CAMP.SleepSoundlyUI?.onHit(payload);
+          return;
+        }
+        if (type === CAMP.MSG.SLEEP_SOUNDLY_RESULT && payload?.charges != null) {
+          CAMP.SleepSoundlyUI?.applyResult(payload.actorId, payload.score, payload.charges);
+          return;
+        }
+        if (type === CAMP.MSG.SLEEP_SOUNDLY_DONE) {
+          CAMP.SleepSoundlyUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -286,6 +308,14 @@
 
           case CAMP.MSG.TRAINING_CHOICE_RESPONSE:
             CAMP.TrainingUI?.resolveChoice(payload?.requestId, payload?.prevent ?? false);
+            break;
+
+          case CAMP.MSG.SLEEP_SOUNDLY_RESULT:   // owner → GM: score submitted
+            CAMP.SleepSoundlyUI?.resolveScore(payload?.actorId, payload?.score ?? 0);
+            break;
+
+          case CAMP.MSG.SLEEP_SOUNDLY_PROCEED:
+            CAMP.SleepSoundlyUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
