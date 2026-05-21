@@ -45,6 +45,93 @@ async function resolveAttackerActor(attackerUuid) {
   );
 }
 
+// ============================================================================
+// Refund snapshot — taken before executor runs at Confirm
+// ============================================================================
+//
+// Stored on the chat message flag under `actionCard.refundSnapshot`. The
+// Undo handler ([data-fu-undo] in action-card-undo.js) reads this back and
+// restores the captured state.
+//
+// We snapshot generously rather than instrument every consumption site:
+//   - actor.system.props      (MP/HP/IP/FP and any other resource a skill
+//                              might charge against — forward-compatible)
+//   - actor.effects (full)    (so any AE the pipeline removes — charge AE
+//                              like Protect's refill, or a temporary
+//                              buff — can be recreated verbatim)
+//   - combatant.flags + id    (turn-budget restoration via Fabula Initiative)
+//   - freeActions/bonusActions state (best-effort — APIs return undefined if
+//                              not loaded, undo skips them in that case)
+async function captureRefundSnapshot(chatMsg, flagged) {
+  try {
+    // PREFER pre-action snapshot if the caller (e.g. reaction-chooseSkill)
+    // already captured one BEFORE consume_charge ran. For reactions, the
+    // charge AE is consumed by applyEffectsForGroup before the card is
+    // even created, so a snapshot taken at confirm time would already
+    // be missing the AE. The pre-snapshot is the only correct one for
+    // the charge-restore case.
+    const preSnap =
+      flagged?.meta?.preActionSnapshot ??
+      flagged?.preActionSnapshot ??
+      null;
+    if (preSnap) {
+      const flag = foundry.utils.deepClone(chatMsg.getFlag(MODULE_NS, "actionCard") ?? {});
+      flag.refundSnapshot = preSnap;
+      if (flag.payload) {
+        flag.payload.meta = flag.payload.meta || {};
+        flag.payload.meta.refundSnapshotTakenAtMs = preSnap.takenAtMs;
+        flag.payload.meta.refundSnapshotSource = "pre_action";
+      }
+      await setChatFlagNoRender(chatMsg, MODULE_NS, "actionCard", flag);
+      console.log("[fu-chatbtn] refund snapshot (pre-action) promoted to flag", {
+        msgId: chatMsg.id,
+        actorName: preSnap.actor?.name,
+        effectCount: preSnap.actor?.effects?.length ?? 0
+      });
+      return preSnap;
+    }
+
+    // No pre-snapshot — capture fresh now. Centralized through the
+    // ActionCardUndo API so the shape stays in sync with the undo
+    // restore logic.
+    const undoApi = globalThis.FUCompanion?.api?.actionCardUndo
+      ?? window["oni.ActionCardUndo"];
+    if (!undoApi?.buildActorSnapshot) {
+      console.warn("[fu-chatbtn] captureRefundSnapshot: ActionCardUndo API not loaded; undo for this card will be unavailable.");
+      return null;
+    }
+
+    const attackerUuid = flagged?.meta?.attackerUuid ?? null;
+    const actor = attackerUuid ? await resolveAttackerActor(attackerUuid) : null;
+    if (!actor) {
+      console.warn("[fu-chatbtn] captureRefundSnapshot: could not resolve attacker actor", { attackerUuid });
+      return null;
+    }
+
+    const snapshot = undoApi.buildActorSnapshot(actor);
+    if (!snapshot) return null;
+
+    const flag = foundry.utils.deepClone(chatMsg.getFlag(MODULE_NS, "actionCard") ?? {});
+    flag.refundSnapshot = snapshot;
+    if (flag.payload) {
+      flag.payload.meta = flag.payload.meta || {};
+      flag.payload.meta.refundSnapshotTakenAtMs = snapshot.takenAtMs;
+      flag.payload.meta.refundSnapshotSource = "confirm_time";
+    }
+    await setChatFlagNoRender(chatMsg, MODULE_NS, "actionCard", flag);
+
+    console.log("[fu-chatbtn] refund snapshot captured at confirm", {
+      msgId: chatMsg.id,
+      actorName: actor.name,
+      effectCount: snapshot.actor?.effects?.length ?? 0
+    });
+    return snapshot;
+  } catch (e) {
+    console.warn("[fu-chatbtn] captureRefundSnapshot failed (non-fatal — undo will be unavailable for this card):", e);
+    return null;
+  }
+}
+
 function lockButton(btn, text = "Confirming…") {
   if (!btn) return;
   btn.disabled = true;
@@ -260,14 +347,40 @@ function buildSafeExecutionArgsFromFlaggedPayload(flagged, incomingArgs = {}, ch
 async function setChatFlagNoRender(chatMsg, scope, key, value) {
   if (!chatMsg) return null;
 
-  return await chatMsg.update(
-    {
-      [`flags.${scope}.${key}`]: value
-    },
-    {
-      render: false
+  // Existence check — Foundry's socket layer surfaces a bare
+  // `ChatMessage "<id>" does not exist!` notification in the UI when an
+  // update fires on a deleted document. Our .catch() blocks suppress
+  // the JS rejection but can't suppress the notification because
+  // Foundry shows it from the socket handler before our handler runs.
+  // Pre-checking the collection avoids issuing the doomed update at
+  // all. Races (deletion mid-flight) still surface, but the common
+  // case — chatMsg cached and the doc deleted earlier — is silenced.
+  if (chatMsg.id && !game.messages?.get?.(chatMsg.id)) {
+    console.debug("[fu-chatbtn] setChatFlagNoRender skipped — message no longer exists.", {
+      msgId: chatMsg.id, scope, key
+    });
+    return null;
+  }
+
+  try {
+    return await chatMsg.update(
+      {
+        [`flags.${scope}.${key}`]: value
+      },
+      {
+        render: false
+      }
+    );
+  } catch (e) {
+    const errStr = String(e?.message ?? e);
+    if (/does not exist/i.test(errStr)) {
+      console.debug("[fu-chatbtn] setChatFlagNoRender: message deleted mid-update (race).", {
+        msgId: chatMsg.id, scope, key
+      });
+      return null;
     }
-  );
+    throw e;
+  }
 }
 
 async function setActionCardState(chatMsg, state, extra = {}) {
@@ -385,6 +498,12 @@ async function runConfirm(chatMsg, args = {}, confirmingUserId = null) {
       actionCardConfirmingByUserId: confirmingUserId ?? game.userId,
       actionCardConfirmingRunId: runId
     });
+
+    // Capture refund snapshot BEFORE the executor mutates actor state.
+    // Stored on the chat message flag for later use by the Undo button.
+    // Best-effort: if this throws or returns null, we still proceed with
+    // the confirm; undo will simply be unavailable for this specific card.
+    await captureRefundSnapshot(chatMsg, flagged);
 
     const executionArgs = buildSafeExecutionArgsFromFlaggedPayload(flagged, args, chatMsg.id);
 

@@ -458,8 +458,22 @@
 
         if (!gmShouldProcessOnce(key)) return;
 
+        // Dedupe with the damage-card emit path. When the HP update was
+        // driven by apply-damage-core (which sets fuReactionTriggersHandled
+        // in the update options), Create Damage Card has predicted the
+        // crisis transition and added it to its own emit batch. We still
+        // run evaluateActorCrisis to apply/remove the crisis AE, but skip
+        // emitReactionPhase here to avoid the racey second emit.
+        const _damageCardOwnsEmit = !!options?.fuReactionTriggersHandled;
+
         evaluateActorCrisis(actor)
           .then(async () => {
+            if (_damageCardOwnsEmit) {
+              log(`(Primary GM) Crisis Reaction emit suppressed — damage card owns this batch.`, {
+                actor: actor.name, trigger
+              });
+              return;
+            }
             if (trigger && reactionPayload) {
               await emitReactionPhase(reactionPayload);
               log(`(Primary GM) Emitted Crisis Reaction trigger: ${trigger} for ${actor.name}`);

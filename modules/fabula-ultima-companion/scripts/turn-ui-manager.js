@@ -67,10 +67,17 @@
   TurnUI.state = {
     currentTokenId: null,      // which token these buttons were spawned for
     buttons: null,             // command UI record (root, cleanup, items, etc.)
+                               // — singleton for the turn-action menu only.
     indicator: null,           // indicator record { el, ticker, hookId }
     sfx: null,                 // { open: Howl|Audio, move: Howl|Audio }
     hidePromise: null,         // Promise that resolves when buttons finish hiding
     hideResolve: null,         // resolver for hidePromise
+
+    // Additional named menus (e.g. one per reactor in an AoE reaction
+    // exchange). Keyed by `opts.menuId`. The turn-action menu still uses
+    // the singleton `.buttons` slot above; everything else lives here so
+    // multiple can coexist on the same client.
+    menus: new Map(),          // Map<menuId, record>
   };
 
   // === Utilities ===========================================================
@@ -101,14 +108,14 @@
     css.id = STYLE_ID;
     css.textContent = `
       /* Root for the Octopath-like list */
-     #oni-octopath{
+     .oni-octopath{
   position:fixed; left:0; top:0;
   /* Use the var if present; otherwise fall back to 0 (below HUD=1) */
   z-index:var(--z-index-canvas, 0);
   pointer-events:none;
 }
-      #oni-octopath .pivot{ position:absolute; width:0; height:0; pointer-events:none }
-      #oni-octopath .item{ position:absolute; transform-origin:left center; pointer-events:auto }
+      .oni-octopath .pivot{ position:absolute; width:0; height:0; pointer-events:none }
+      .oni-octopath .item{ position:absolute; transform-origin:left center; pointer-events:auto }
       :root {
         --bd-parchment-top:#f6f1e6; --bd-parchment-bot:#ebe3d0;
         --bd-ink:#3a3228; --bd-ink-soft:#4b4338;
@@ -116,7 +123,7 @@
         --bd-stroke:#7a6a55; --bd-shadow:rgba(41,33,24,.55);
         --bd-highlight:rgba(255,255,255,.7);
       }
-      #oni-octopath .blade{
+      .oni-octopath .blade{
         position:relative; display:inline-flex; align-items:center; gap:9px;
         padding:10px 16px 10px 22px;
         color:var(--bd-ink);
@@ -132,42 +139,90 @@
         transition: margin-left .12s ease-out, filter .12s ease, box-shadow .12s ease;
         will-change: margin-left, filter, box-shadow;
       }
-      #oni-octopath .blade:hover{
+      .oni-octopath .blade:hover{
         margin-left:-6px; filter:brightness(1.04);
         box-shadow:0 6px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
       }
       /* free-action filter: button label not in the enabledLabels set */
-      #oni-octopath .blade.fu-free-action-disabled{
+      .oni-octopath .blade.fu-free-action-disabled{
         cursor:not-allowed;
         filter:grayscale(0.6) brightness(0.85);
         opacity:0.55;
       }
-      #oni-octopath .blade.fu-free-action-disabled:hover{
+      .oni-octopath .blade.fu-free-action-disabled:hover{
         margin-left:0; filter:grayscale(0.6) brightness(0.85);
         box-shadow:0 4px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
       }
-      #oni-octopath .blade::before{
+      .oni-octopath .blade .icon{
+        width:16px; height:16px;
+        border-radius:4px;
+        border:1px solid rgba(122,106,85,.6);
+        background:rgba(255,255,255,.35);
+        object-fit:cover;
+        flex:0 0 auto;
+      }
+      /* Reaction menu modifier — applied via opts.menuClass when spawning.
+         Reaction skill names tend to be longer than the turn-action label
+         set ("Attack","Guard","Skill",...), so the blade needs more right
+         padding to breathe. */
+      .oni-octopath.is-reaction-menu .blade{
+        padding-right:28px;
+      }
+
+      /* "Used" stamp — applied to blades whose spec.usedReason was set
+         (e.g. once-per-conflict reactions whose charge AE has already
+         been consumed). The base blade keeps its disabled grey-out via
+         .fu-free-action-disabled; this rule layers a red rubber-stamp
+         overlay across the blade so the player can tell at a glance
+         that the option exists but has been spent. */
+      .oni-octopath .blade.is-used{
+        position:relative;
+        overflow:visible;
+      }
+      .oni-octopath .blade.is-used::after{
+        content: attr(data-used-reason);
+        position:absolute;
+        top:50%; left:50%;
+        transform: translate(-50%, -50%) rotate(-8deg);
+        font-family:"Cinzel","Georgia",serif;
+        font-weight:900;
+        font-size:13px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color: rgba(200,16,16,1);
+        text-shadow:
+          0 1px 0 rgba(255,255,255,.7),
+          0 0 1px rgba(120,0,0,.9);
+        padding: 2px 10px;
+        border: 2px solid rgba(200,16,16,.95);
+        border-radius: 4px;
+        background: rgba(255,238,228,.55);
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 1;
+      }
+      .oni-octopath .blade::before{
         content:""; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
         width:12px; height:76%;
         background:linear-gradient(180deg,var(--bd-gold-1),var(--bd-gold-2));
         border:2px solid var(--bd-stroke); border-right:none; border-radius:10px 0 0 10px;
         box-shadow:0 0 0 1px var(--bd-highlight) inset;
       }
-      #oni-octopath .pager{
+      .oni-octopath .pager{
         position:absolute; display:flex; align-items:center; justify-content:space-between;
         gap:8px; pointer-events:auto;
         font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
         color:var(--bd-ink-soft); font-weight:800; letter-spacing:.32px; text-transform:uppercase;
         z-index:2;
       }
-      #oni-octopath .pager .title{
+      .oni-octopath .pager .title{
         padding:6px 10px; border-radius:10px;
         background:linear-gradient(180deg,var(--bd-parchment-top),var(--bd-parchment-bot));
         border:2px solid var(--bd-stroke);
         box-shadow:0 3px 0 var(--bd-shadow), 0 0 0 1px var(--bd-highlight) inset;
         font-size:12.5px;
       }
-      #oni-octopath .pager .arrow{
+      .oni-octopath .pager .arrow{
         width:24px; height:24px; border-radius:7px; display:grid; place-items:center;
         background:linear-gradient(180deg,var(--bd-gold-1),var(--bd-gold-2));
         border:2px solid var(--bd-stroke); cursor:pointer; user-select:none;
@@ -175,14 +230,14 @@
         color:#221b14; font-weight:900; font-size:13px;
         transition:transform .1s ease, filter .1s ease;
       }
-      #oni-octopath .pager .arrow:hover{ transform:translateY(-1px); filter:brightness(1.05) }
-      #oni-octopath .pager .arrow:active{ transform:translateY(0) scale(.98) }
+      .oni-octopath .pager .arrow:hover{ transform:translateY(-1px); filter:brightness(1.05) }
+      .oni-octopath .pager .arrow:active{ transform:translateY(0) scale(.98) }
 
       /* Budget label (Phase 2a): same parchment+gold language as .pager .title,
          smaller and with a coloured pip on the left to signal action kind.
          Width is matched to the pager's full span via JS so the box aligns
          with the left arrow on the left and the right arrow on the right. */
-      #oni-octopath .budget-label{
+      .oni-octopath .budget-label{
         position:absolute; display:flex; align-items:center; gap:8px;
         padding:5px 12px 5px 12px;
         border-radius:10px;
@@ -201,25 +256,25 @@
         opacity:0;
         transition:opacity 200ms ease-out, filter 150ms ease, color 150ms ease;
       }
-      #oni-octopath .budget-label::before{
+      .oni-octopath .budget-label::before{
         content:""; width:8px; height:8px; border-radius:50%;
         background:linear-gradient(180deg,var(--bd-gold-1),var(--bd-gold-2));
         border:1.5px solid var(--bd-stroke);
         box-shadow:0 0 0 1px var(--bd-highlight) inset;
         flex-shrink:0;
       }
-      #oni-octopath .budget-label .uses{
+      .oni-octopath .budget-label .uses{
         margin-left:auto; padding-left:8px;
         opacity:.75; font-weight:700; letter-spacing:.2px; text-transform:none;
       }
-      #oni-octopath .budget-label.is-grant::before{
+      .oni-octopath .budget-label.is-grant::before{
         background:linear-gradient(180deg,#cba7e8,#9c6cc7);
       }
-      #oni-octopath .budget-label.is-empty{
+      .oni-octopath .budget-label.is-empty{
         filter:saturate(.45) brightness(.94);
         color:#8a7466;
       }
-      #oni-octopath .budget-label.is-empty::before{
+      .oni-octopath .budget-label.is-empty::before{
         background:linear-gradient(180deg,#b1a89a,#8a7d68);
       }
     `;
@@ -310,7 +365,11 @@
     if (!s) return;
     try {
       if (s.fallback) {
-        AudioHelper.play({ src: s.open, volume: SFX_VOL, autoplay: true, loop: false }, true);
+        // Foundry v12 namespaced AudioHelper under foundry.audio.
+        // Prefer the namespaced version when available; fall back to
+        // the global only when running on older cores.
+        const A = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+        A?.play({ src: s.open, volume: SFX_VOL, autoplay: true, loop: false }, true);
       } else s.open.play();
     } catch {}
   }
@@ -430,14 +489,38 @@
   }
 
   function spawnButtonsForToken(token, opts = {}) {
-    removeButtons();
+    // Multi-instance: when `opts.menuId` is set (and ≠ "turn-action"),
+    // this is an additional named menu (e.g. a reactor's reaction menu).
+    // It is stored in `state.menus` so it coexists with the turn-action
+    // singleton and with other named menus. The legacy turn-action menu
+    // (no menuId or menuId === "turn-action") keeps using `state.buttons`.
+    const menuId = String(opts.menuId ?? "turn-action");
+    const isNamedMenu = menuId !== "turn-action";
+
+    if (isNamedMenu) {
+      // Replace any prior instance of this same menuId (refresh-in-place).
+      removeButtons({ menuId });
+    } else {
+      removeButtons();
+    }
     ensureBaseStyles();
     playSfxOpen();
 
-    const PAGES = [
-      { name: "Actions", cmds: ["Attack","Guard","Skill","Spell","Item"] },
-      { name: "System",  cmds: ["Equipment","Study","Hinder","Objective","Switch"] }
+    // Data-driven items support. When `opts.pages` is provided, use those
+    // pages verbatim; each item may be a string (legacy turn-action shape
+    // for back-compat) or an object `{ label, icon?, tooltip?, onPick?,
+    // enabled?, isSkip? }`. When `opts.pages` is absent, fall back to the
+    // hardcoded turn-action pages.
+    const LEGACY_PAGES = [
+      { name: "Actions", items: ["Attack","Guard","Skill","Spell","Item"] },
+      { name: "System",  items: ["Equipment","Study","Hinder","Objective","Switch"] }
     ];
+    const PAGES = (Array.isArray(opts.pages) && opts.pages.length ? opts.pages : LEGACY_PAGES)
+      .map(p => ({
+        name: p?.name ?? "",
+        items: (Array.isArray(p?.items) ? p.items : Array.isArray(p?.cmds) ? p.cmds : [])
+          .map(it => typeof it === "string" ? { label: it } : (it ?? { label: "" }))
+      }));
     let pageIndex = 0;
 
     // Free-action filter: when an `enabledLabels` set is provided,
@@ -461,7 +544,21 @@
       : null;
 
     const root  = document.createElement("div");
-    root.id     = "oni-octopath";
+    // CSS is class-scoped (`.oni-octopath ...`) so multiple menus can
+    // coexist on the same page. Each menu still gets a unique id for
+    // ergonomic debugging (`oni-octopath` for the turn-action singleton,
+    // `oni-octopath--<menuId>` for named menus).
+    root.className = "oni-octopath";
+    // Caller-supplied modifier classes — used by reaction menus to pull
+    // in extra padding via `.oni-octopath.is-reaction-menu .blade`, and
+    // available to any future menu variant that wants its own styling.
+    const extraClasses = Array.isArray(opts.menuClass)
+      ? opts.menuClass.filter(Boolean).map(String)
+      : (typeof opts.menuClass === "string" && opts.menuClass.trim() ? [opts.menuClass.trim()] : []);
+    for (const cls of extraClasses) root.classList.add(cls);
+    root.id        = isNamedMenu
+      ? "oni-octopath--" + menuId.replace(/[^A-Za-z0-9_-]/g, "_")
+      : "oni-octopath";
     const pivot = document.createElement("div");
     pivot.className = "pivot";
     root.appendChild(pivot);
@@ -486,6 +583,12 @@
     budgetUses.className = "uses";
     budgetLabel.append(budgetMain, budgetUses);
     root.appendChild(budgetLabel);
+
+    // Pager / budget label visibility — data-driven menus can opt out.
+    // Pager auto-hides when there's nothing to flip between.
+    const hidePager = !!opts.hidePager || PAGES.length <= 1;
+    if (hidePager) pager.style.display = "none";
+    if (opts.hideBudgetLabel) budgetLabel.style.display = "none";
 
     document.body.appendChild(root);
 
@@ -522,24 +625,46 @@
       // remove old DOM rows
       for (const it of items.splice(0)) it.wrap.remove();
 
-      const COMMANDS = PAGES[pageIndex].cmds;
-      for (let i = 0; i < COMMANDS.length; i++) {
-        const label = COMMANDS[i];
+      const ITEMS = PAGES[pageIndex].items;
+      for (let i = 0; i < ITEMS.length; i++) {
+        const spec = ITEMS[i];
+        const label = String(spec.label ?? "");
         const wrap = document.createElement("div"); wrap.className = "item";
         const btn = document.createElement("div"); btn.className = "blade";
-        btn.innerHTML = `<span class="label">${label}</span>`;
+        if (spec.isSkip) btn.classList.add("is-skip");
+        const iconHTML = spec.icon
+          ? `<img class="icon" src="${spec.icon}" alt="" draggable="false">`
+          : "";
+        btn.innerHTML = `${iconHTML}<span class="label">${label}</span>`;
         btn.style.pointerEvents = "none";
+        if (spec.tooltip) btn.title = String(spec.tooltip);
 
-        const enabled = isLabelEnabled(label);
+        // Two distinct disable paths:
+        //   - `spec.enabled === false` — item-level disable (e.g. a
+        //     reaction whose cost check fizzled). Click is dead.
+        //   - `isLabelEnabled(label) === false` — free-action filter
+        //     (Acceleration whose enabledLabels gate only "Attack" + "Spell").
+        const enabled = (spec.enabled !== false) && isLabelEnabled(label);
         if (!enabled) {
           btn.classList.add("fu-free-action-disabled");
-          btn.title = freeMode
-            ? "Free action available only for: " + Array.from(enabledLabels).join(", ")
-            : "Disabled";
+          // Caller-supplied disable reason — e.g. reactions whose charge
+          // AE has been consumed pass `usedReason: "Used"` so we render
+          // a stamp-style overlay rather than the generic grey-out.
+          if (spec.usedReason) {
+            btn.classList.add("is-used");
+            btn.setAttribute("data-used-reason", String(spec.usedReason));
+          }
+          if (!spec.tooltip) {
+            btn.title = spec.usedReason
+              ? String(spec.usedReason)
+              : (freeMode && enabledLabels
+                  ? "Free action available only for: " + Array.from(enabledLabels).join(", ")
+                  : "Disabled");
+          }
         }
 
         wrap.appendChild(btn); root.appendChild(wrap);
-        items.push({ wrap, btn, tStart: 0, slotX: 0, slotY: 0, bound: false, label, enabled });
+        items.push({ wrap, btn, tStart: 0, slotX: 0, slotY: 0, bound: false, label, enabled, spec });
       }
       title.textContent = PAGES[pageIndex].name;
       startClock = performance.now();
@@ -704,14 +829,26 @@
             // Disabled (filter-blocked) buttons stay click-dead.
             it.btn.style.pointerEvents = "none";
           } else {
-            // === WIRED: call your macro by button label ====================
-            // Pass the spawning `token` so the macro inherits a consistent
-            // selection — see runByButtonLabel for rationale.
+            // Click priority:
+            //   1) `spec.onPick(spec, token)` — per-item callback (used by
+            //      data-driven menus, e.g. reactions wiring each item to
+            //      a specific reaction skill UUID).
+            //   2) `opts.onPick(spec, token)` — caller-level fallback.
+            //   3) Legacy: macro lookup by button label (turn-action).
             it.btn.addEventListener("click", async (ev) => {
               ev.stopPropagation();
-              await runByButtonLabel(it.label, token);
+              try {
+                if (typeof it.spec?.onPick === "function") {
+                  await it.spec.onPick(it.spec, token);
+                } else if (typeof opts.onPick === "function") {
+                  await opts.onPick(it.spec, token);
+                } else {
+                  await runByButtonLabel(it.label, token);
+                }
+              } catch (err) {
+                console.error("[Turn UI Manager] menu item click handler threw:", err);
+              }
             });
-            // ===============================================================
             it.btn.style.pointerEvents = "auto";
           }
           it.bound = true;
@@ -753,8 +890,8 @@
       try { root.remove(); } catch {}
     }
 
-    // Store everything we need for later animated hide
-    TurnUI.state.buttons = {
+    // Store everything we need for later animated hide.
+    const rec = {
       root,
       cleanup,
       items,
@@ -763,13 +900,32 @@
       h1,
       h2,
       keyListener,
+      menuId,
+      isNamedMenu,
       isHiding: false,
       hideRaf: null
     };
+    if (isNamedMenu) {
+      TurnUI.state.menus.set(menuId, rec);
+    } else {
+      TurnUI.state.buttons = rec;
+    }
   }
 
         function removeButtons(options = {}) {
-    const { clearToken = false, animate = false } = options;
+    const { clearToken = false, animate = false, menuId = null } = options;
+
+    // Named-menu removal: lookup by menuId in the multi-instance map.
+    // No animation pipeline, no turn-ui lifecycle side-effects — just
+    // run the menu's own cleanup and forget it.
+    if (menuId && menuId !== "turn-action") {
+      const namedRec = TurnUI.state.menus.get(menuId);
+      if (!namedRec) return;
+      try { namedRec.cleanup(); } catch {}
+      TurnUI.state.menus.delete(menuId);
+      return;
+    }
+
     const b = TurnUI.state.buttons;
     if (!b) {
       if (clearToken) TurnUI.state.currentTokenId = null;
@@ -960,6 +1116,12 @@
     function clearAllUI() {
     TurnUI.state.currentTokenId = null;
     removeButtons();
+    // Tear down any named menus too (reaction menus, etc.) — these
+    // outlive the turn-action menu on their own schedule but must not
+    // survive combat end / scene change.
+    for (const namedId of Array.from(TurnUI.state.menus.keys())) {
+      try { removeButtons({ menuId: namedId }); } catch (_) {}
+    }
     removeIndicator();
   }
 

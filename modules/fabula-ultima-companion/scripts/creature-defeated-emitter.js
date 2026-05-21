@@ -87,7 +87,7 @@
     oldHpByActorId.set(actor.id, { oldHp, newHpRaw });
   }
 
-  function onUpdateActor(actor) {
+  function onUpdateActor(actor, _changed, options) {
     const entry = oldHpByActorId.get(actor.id);
     if (!entry) return;
     oldHpByActorId.delete(actor.id);
@@ -95,6 +95,16 @@
     const newHp = readHp(actor);
     if (newHp !== 0) return;
     if (entry.oldHp !== null && entry.oldHp <= 0) return;
+
+    // Dedupe with the damage-card emit path: when apply-damage-core
+    // applied the lethal hit, Create Damage Card has predicted the
+    // defeat transition and added `creature_defeated` to its own emit
+    // batch. Skip our emit so the player doesn't get two reaction
+    // windows out of order.
+    if (options?.fuReactionTriggersHandled) {
+      log("creature_defeated emit suppressed — damage card owns this batch.", { actor: actor?.name });
+      return;
+    }
 
     // Resolve token(s) — emit once per active token. Most actors have one;
     // unlinked NPCs can have many.

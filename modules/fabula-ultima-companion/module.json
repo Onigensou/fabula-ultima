@@ -82,6 +82,7 @@
     "scripts/itemRefresh.js",
     "scripts/fu-card-hydrate.js",
     "scripts/action-system/action-card-editor.js",
+    "scripts/action-system/action-card-undo.js",
     "scripts/create-damage-card.js",
     "scripts/damage-card/damage-card-batch-manager.js",
     "scripts/battle-log/battle-log-batch-manager.js",
