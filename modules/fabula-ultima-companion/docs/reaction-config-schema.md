@@ -128,10 +128,12 @@ Damage Card emits per-target, so the hook fires per-target).
 | `reaction_effect_ref` | string (an `effect_label` from `effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
+| `condition_formula` | formula string | no | Universal gate. When non-blank, the trigger matcher evaluates this via `window["oni.ReactionFormula"].evaluate` and only fires the row when the result is truthy. The grammar supports arithmetic (`+ - * /`), modulo (`%`), comparison (`== != < > <= >=`), and logical operators (`&& || !`). Identifier list under [Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload) — `ROUND` and `ACTION_TARGET_COUNT` are common gates. Blank disables. Example: `"ROUND % 2 == 0"` (only even rounds); `"ACTION_TARGET_COUNT >= 2"` (only multi-target dangers). |
+| `requires_skill` | string (skill master `uniqueId`) | no | Prerequisite-skill gate. When non-blank, the reactor's actor must own an item whose `system.uniqueId` equals this value (i.e. has learned the named skill master). Use the master's `uniqueId`, not the actor-copy id. Blank disables. Example: Hina's Prophetic Defender Style gates its even-round PP gain on `BmgIHS4DdDAT1rUc` (Divination's master uniqueId) so the gain only fires when she actually knows Divination. |
 
 ### Canonical trigger keys
 
-29 triggers, grouped by phase bucket. The bucket determines when the
+30 triggers, grouped by phase bucket. The bucket determines when the
 reaction window opens/closes. Reactions in the same bucket coexist in a
 single merged window (e.g. damage + crisis + defeat all stay available
 in `resolution_phase`).
@@ -139,6 +141,7 @@ in `resolution_phase`).
 | Bucket | Trigger keys |
 |--------|--------------|
 | `conflict_start` | `conflict_start` |
+| `conflict_end` | `conflict_end` |
 | `round_start` | `round_start` |
 | `round_end` | `round_end` |
 | `turn_start` | `turn_start` |
@@ -260,11 +263,129 @@ Common to every row:
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `effect_label` | string | Unique identifier; trigger rows reference this in their `reaction_effect_ref` column. Must be non-blank for the row to be findable. |
-| `effect_kind` | `"grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain"` | Default: `"grant"`. Dispatches to the matching handler in `reaction-grant.js`. |
+| `effect_label` | string | Unique identifier; trigger rows reference this in their `reaction_effect_ref` column. Other effect rows reference it via `target_ref` / `destination_ref` / `chain_steps`. Must be non-blank for the row to be findable. |
+| `effect_kind` | `"targeting" \| "grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain"` | Default: `"grant"`. Dispatches to the matching handler. |
 
 Per-kind fields below. Fields irrelevant to the chosen kind are hidden
 in the UI but harmless in JSON.
+
+**Targeting is a separate effect_kind.** Every effect that needs to act
+on specific tokens (grant, apply_ae, consume_charge, open_action_menu,
+redirect_target) reads its target list via `target_ref` — a string
+pointing to an `effect_label` of a `targeting` row in the same
+`effect_table`. There are no legacy per-kind targeting fields
+(`grant_target`, `target_lock`) — those have been removed. See
+[`effect_kind: "targeting"`](#effect_kind-targeting--produce-a-named-token-list).
+
+---
+
+### `effect_kind: "targeting"` — produce a named token list
+
+The single source of truth for *who* downstream effects act on. A
+targeting row resolves to a list of `TokenDocument` UUIDs, named by its
+`effect_label`, that other rows reference via `target_ref` /
+`destination_ref`.
+
+Built on top of [`JRPGTargeting.requestTargeting`](#integration-with-jrpg-targeting),
+so the picker UX, socket routing, canvas highlight, and passive
+auto-skip plumbing all apply uniformly.
+
+```jsonc
+{
+  "effect_label":   "pick_attacker",
+  "effect_kind":    "targeting",
+  "candidate_source": "trigger_actor",
+  "category":         "",                  // disposition filter; blank = any
+  "mode":             "exact",
+  "count":            1,
+  "auto_confirm_when_obvious": true,
+  "skip_when_passive":         true,
+  "iteration_mode":            "together",
+  "exclude_self":              false
+}
+```
+
+| Field | Type | Default | Notes |
+|---|---|---|---|
+| `candidate_source` | enum | `"combat"` | Pre-filters the pool to a subset of combat. See table below. |
+| `category` | `"" \| "creature" \| "ally" \| "enemy"` | `""` (any) | Disposition filter applied after `candidate_source`. `ally` matches friendly (incl. reactor) + neutral. `enemy` matches hostile + neutral. `creature` matches all. Blank skips. |
+| `exclude_self` | bool | `false` | When `true`, the reactor's own token is removed from the candidate pool *after* category filtering. Useful for Protect-style skills where the reactor steps in for an ally — picking yourself would be a no-op redirect. |
+| `mode` | `"exact" \| "up_to" \| "all"` | `"exact"` | How many tokens to take. `exact` = pick `count`. `up_to` = pick 0..`count`. `all` = take every eligible candidate, no picker. |
+| `count` | integer | `1` | Required for `exact`/`up_to`; ignored for `all`. |
+| `auto_confirm_when_obvious` | bool | `true` | If the filtered pool has exactly one eligible token, skip the picker — the resolved target is used without a prompt. |
+| `skip_when_passive` | bool | `true` | When the effect chain runs in a passive context (`ctx.isPassive`), apply to the entire eligible pool with no picker. Mirrors the existing [passive-targeting-auto-skip](../scripts/reaction-system/reaction-buttonUI.js) policy. |
+| `iteration_mode` | `"together" \| "per_token"` | `"together"` | How consumers receive the resolved list. `together` (default, matches RAW for multi-target Fabula Ultima spells/attacks) passes the full list to each consumer in one invocation. `per_token` re-invokes each consumer once per token. |
+
+#### `candidate_source` values
+
+| Value | Resolves to | Where it reads from |
+|---|---|---|
+| `combat` | Every combatant in the current encounter. | `game.combat.combatants[].token` |
+| `trigger_subject` | The creature the trigger is *about* (target of damage, performer of action, defeated creature). | Trigger registry's `subjectFrom(triggerKey)` against `phasePayload`. |
+| `trigger_actor` | The acting creature on the source side (attacker, applier, healer). | Trigger registry's `damageSourceFrom(triggerKey)` against `phasePayload`. |
+| `action_targets` | The originating action card's full target list. | `phasePayload.targets[]` / `targetUuid`. |
+| `self` | Reactor only. | `ctx.actor` / `ctx.token`. |
+
+#### Resolution flow
+
+A targeting row evaluates **lazily** — only when first demanded by a
+consumer's `target_ref` — and the result is **memoized** per chain
+execution (so multiple consumers referencing the same row see the same
+tokens).
+
+1. **Build candidate pool** from `candidate_source` (consulting trigger payload + combat state).
+2. **Apply `category` filter** to the pool (disposition relative to reactor).
+3. **Apply `exclude_self` filter** to the pool (drops the reactor's own token if set).
+4. If pool is empty → effect chain aborts with `ok: false, reason: "no_candidates"`.
+5. If `skip_when_passive` AND `ctx.isPassive` → apply to entire pool, no picker.
+6. If `auto_confirm_when_obvious` AND pool has 1 element → use that token, no picker.
+7. If `mode: "all"` → use entire pool, no picker.
+8. Otherwise → call `JRPGTargeting.requestTargeting` with the pool as `allowedTargetTokenUuids` and `parsedTargeting` built from `{mode, category, count}`.
+9. Resolved token list is stored under the row's `effect_label` in the chain's `resolvedTargets` map.
+
+#### Integration with JRPG Targeting
+
+The targeting kind is a thin wrapper over [`JRPGTargeting.requestTargeting`](../scripts/jrpg-targeting-system/). Mapping:
+
+| Targeting field | JRPG `parsedTargeting` |
+|---|---|
+| `mode: "exact"` | `mode: EXACT` + `count` |
+| `mode: "up_to"` | `mode: UP_TO` + `count` (`minTargets: 0`) |
+| `mode: "all"` | `mode: ALL` (`autoSelectAll: true`) |
+| `category: "ally"` / `"enemy"` / `"creature"` | `category: ally/enemy/creature` |
+| `category: ""` | `category: creature` (any disposition) |
+
+The filtered candidate pool is passed as `allowedTargetTokenUuids`, so JRPG's existing legality matrix, canvas highlight, and player-side socket routing all work unchanged.
+
+#### Consuming a targeting row — `target_ref`
+
+Every non-targeting effect_kind that operates on tokens carries a
+`target_ref` field:
+
+| Field | Type | Notes |
+|---|---|---|
+| `target_ref` | string | The `effect_label` of a `targeting` row in this same `effect_table`. Required for effect kinds that act on tokens (`grant`, `apply_ae`, `consume_charge`, `open_action_menu`, `redirect_target`). The dispatcher auto-resolves the referenced targeting row lazily and memoizes the result for the rest of the chain. |
+
+For `effect_kind: "redirect_target"` there's an additional
+`destination_ref` (same shape, points to a targeting row that names
+*where* the redirected action lands).
+
+#### Translating from the old per-kind fields
+
+For migration / spec-author reference, here's how the removed legacy
+fields map to targeting rows:
+
+| Old form | Replacement targeting row |
+|---|---|
+| `grant_target: "self"` | `{ candidate_source: "self" }` |
+| `grant_target: "ally"` | `{ candidate_source: "combat", category: "ally", mode: "all" }` |
+| `grant_target: "enemy"` | `{ candidate_source: "combat", category: "enemy", mode: "all" }` |
+| `grant_target: "all"` | `{ candidate_source: "combat", category: "creature", mode: "all" }` |
+| `target_lock: "damage_source"` | `{ candidate_source: "trigger_actor", mode: "exact", count: 1 }` |
+| `target_lock: "subject"` | `{ candidate_source: "trigger_subject", mode: "exact", count: 1 }` |
+| `redirect_target` implicit "to reactor" | a `targeting` row with `{ candidate_source: "self" }` plus `destination_ref` pointing to it |
+
+---
 
 ### `effect_kind: "grant"` — grant or drain a resource
 
@@ -272,18 +393,21 @@ in the UI but harmless in JSON.
 |-------|------|-------|
 | `grant_resource` | `"hp" \| "mp" \| "ip" \| "zero_power" \| "zenit" \| "enmity"` | Required. Blank = effect disabled. |
 | `grant_amount` | number OR formula string | Positive grants; negative drains. Blank or 0 = effect disabled. **Formulas are supported** — see "Formula identifiers" below. |
-| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. `"ally"` includes the reactor. |
+| `target_ref` | string (`effect_label`) | Required. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row in this `effect_table`. Recipient(s) of the grant. |
 
 Resource caps: `hp/mp/ip` clamp to actor's `max_*`; `zero_power` clamps
 to [0, 6]; `zenit/enmity` are uncapped. Floor is always 0.
 
 #### Formula identifiers (resolved against the reactor + trigger payload)
 
-`grant_amount` accepts a literal number (`"10"`) OR a safe arithmetic
-expression with whitelisted identifiers and functions. Evaluated by
-`window["oni.ReactionFormula"]`. No `eval` / `new Function`.
+`grant_amount` (and `condition_formula` on trigger rows) accepts a literal
+number (`"10"`) OR a safe expression with whitelisted identifiers and
+functions. Evaluated by `window["oni.ReactionFormula"]`. No `eval` / `new
+Function`.
 
-Operators: `+` `-` `*` `/`, unary minus, parentheses.
+Operators: `+` `-` `*` `/` `%`, comparison `== != < > <= >=`, logical
+`&& || !`, unary `-` / `+` / `!`, parentheses. Booleans are represented
+as `1` / `0`; truthy = nonzero.
 Functions: `floor`, `ceil`, `round`, `abs`, `min`, `max`.
 
 Identifiers (all return 0 if unresolvable):
@@ -300,6 +424,8 @@ Identifiers (all return 0 if unresolvable):
 | `STATUS_COUNT` | Count of debuff-classified active effects on the reactor (non-disabled, non-suppressed). Uses the AEM registry's `inferCategory()` classifier — same source of truth as the reaction `debuff_count` filter. |
 | `DAMAGE_DEALT` | The triggering damage-card event's `finalValue` (post-affinity), regardless of resource type. Set by Create Damage Card emits — works for `creature_takes_damage`, `creature_deals_damage`, `creature_lose_mp`, etc. |
 | `HP_DEALT` / `MP_DEALT` / `SHIELD_DEALT` | Same value but returns 0 unless the event's `valueType` matches. |
+| `ROUND` | Current combat round number (1-indexed). 0 outside combat. Used by `condition_formula` gates like `"ROUND % 2 == 0"` (even rounds only). |
+| `ACTION_TARGET_COUNT` | `payload.targets.length` — how many tokens the triggering action targets. 0 when the payload carries no target list (lifecycle triggers). Used by gates like `"ACTION_TARGET_COUNT >= 2"` for multi-target-only reactions. |
 
 Per-target semantics: damage triggers fire once per affected target, so a
 grant that uses `DAMAGE_DEALT` also fires once per target — cumulatively
@@ -321,7 +447,7 @@ grant_amount: "floor(CUR_HP / 4)"  // self-sacrifice scaling
 | Field | Type | Notes |
 |-------|------|-------|
 | `ae_template_ref` | string | An effect identifier — registry id, an `Item.x.ActiveEffect.y` UUID, or a name registered in the AEM. Forwarded to `FUCompanion.api.activeEffectManager.applyEffects` as-is. |
-| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. |
+| `target_ref` | string (`effect_label`) | Required. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. Recipient(s) of the AE. |
 | `ae_duplicate_mode` | `"skip" \| "replace" \| "stack" \| "remove" \| "ask"` | Default `"replace"`. How to handle when the target already has the AE. |
 
 The AE itself must exist somewhere the AEM can resolve (on a skill item
@@ -333,7 +459,7 @@ single source of truth in the AE document.
 | Field | Type | Notes |
 |-------|------|-------|
 | `charge_key` | string | The `chargeKey` to find on the target actor. |
-| `grant_target` | `"self" \| "ally" \| "enemy" \| "all"` | Default `"self"`. Typically `"self"` (the reactor's own charge). |
+| `target_ref` | string (`effect_label`) | Required. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. Actor(s) whose charge is consumed (typically a row with `candidate_source: "self"`). |
 | `on_empty` | `"abort" \| "skip"` | Default `"abort"`. With `abort`, an empty charge cancels the chain *and* signals callers to skip the skill body. |
 | `count` | number | Charges to consume per target. Default 1. |
 
@@ -341,19 +467,48 @@ Returns `abort: true` when nothing could be consumed and `on_empty:
 "abort"`. The manual-reaction dispatcher and autoPassive runner both
 respect this — the skill body never runs.
 
+### `effect_kind: "consume_resource"` — gate-and-deduct a resource
+
+Generalizes `consume_charge` to actor resources (HP / MP / IP / Zenit /
+etc.). Validates that each target's current resource is `>= amount`
+before deducting; on insufficient resource and `on_empty: "abort"`,
+returns abort and the chain stops.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `grant_resource` | `"hp" \| "mp" \| "ip" \| "zero_power" \| "zenit" \| "enmity"` | Required. Which resource to spend. |
+| `grant_amount` | number OR formula string | Amount to deduct per target. Same formula grammar as `grant`. |
+| `target_ref` | string (`effect_label`) | Required. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. Actor(s) paying the cost (typically a row with `candidate_source: "self"`). |
+| `on_empty` | `"abort" \| "skip"` | Default `"abort"`. What to do when at least one target's current resource < amount. `abort` cancels the chain *and* signals the skill body to skip. |
+
+Use this as the "spend N MP" gate at the END of a chain so it only
+fires when prior steps (e.g. `redirect_target` for Protect, or
+`open_action_menu` for High Speed) actually committed. Placing it
+first means a cancellation in a later step still costs the resource.
+
 ### `effect_kind: "redirect_target"` — rewrite the pending action card's target
 
 Action-mutation verb. Wraps `oni.ReactionRedirectPendingAction` so
 authors don't write JS for "intercept the incoming attack and aim it at
 me instead" (Protect, Cover, Bodyguard).
 
+This kind reads **two** targeting references:
+
+- `target_ref` — *which* target slot of the originating action card gets moved (the "source slot"). For classic Protect, this references a row with `candidate_source: "action_targets", mode: "exact", count: 1`.
+- `destination_ref` — *where* it lands. For Protect, references a row with `candidate_source: "self"`. For Cover, references a row picking an ally.
+
 | Field | Type | Notes |
 |-------|------|-------|
-| `target_select` | `"first"` | Which target slot to redirect. Today only `"first"` is implemented. |
+| `target_ref` | string (`effect_label`) | Required. References the [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row that resolves the source slot to redirect. |
+| `destination_ref` | string (`effect_label`) | Required. References the targeting row that resolves the destination. |
 | `rebuild_card` | boolean | Default `true`. Re-render the redirected card so viewers see the new target. |
 
-Always returns `abort: true` on success — a successful redirect means
-the reactor's own skill body must NOT continue (no Protect card created).
+Returns `{ ok: true, skipBody: true }` on success (NOT `abort: true`).
+`skipBody` suppresses the reactor's skill body (no Protect card posts
+on top of the redirected card) while letting the rest of the effect
+chain continue — so a downstream `consume_charge` / `consume_resource`
+step runs only when the redirect actually went through. Place such
+cost-deducting steps AFTER the redirect in the chain.
 
 ### `effect_kind: "open_action_menu"` — spawn the action menu with a filter
 
@@ -369,7 +524,7 @@ the next action bypasses the budget gate.
 | `max_mp_cost` | number | Optional cap on the MP cost of a Spell selectable through this free action. Used by playtest Acceleration. Blank/0 = no cap. |
 | `check_bonus_formula` | string (formula) | Resolved at apply time against the reactor + firing skill. Result stored in the free-action grant and applied to the next action's check. Painful Lesson uses `"SL"`. |
 | `damage_bonus_formula` | string (formula) | Same shape but applied to the next action's damage. |
-| `target_lock` | `"" \| "damage_source" \| "subject"` | Resolves a single TokenDocument UUID at apply time and stashes it on the free-action grant. Consumers (e.g. Study macro) restrict their target picker to that token. `damage_source` resolves via the trigger's `damageSourceFrom` shape; `subject` via `subjectFrom`. Painful Lesson uses `"damage_source"` to enforce "on that creature". |
+| `target_ref` | string (`effect_label`) | Optional. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. When set, the resolved token is stashed on the free-action grant; consumers (Study macro, etc.) restrict their target picker to that token. Painful Lesson uses a row with `candidate_source: "trigger_actor"` to enforce "on that creature". |
 
 The formula bonuses are stamped into the free-action grant state at trigger
 time. Macros that don't flow through ADC (e.g. the Study macro) read the
@@ -408,25 +563,40 @@ or other danger" qualifies.
 "effect_table": {
   "0": {
     "effect_label": "do_protect",
-    "effect_kind": "chain",
-    "chain_steps": "consume_one, redirect"
+    "effect_kind":  "chain",
+    "chain_steps":  "consume_one, redirect"
   },
   "1": {
     "effect_label": "consume_one",
-    "effect_kind": "consume_charge",
-    "charge_key": "protect",
-    "grant_target": "self",
-    "on_empty": "abort",
-    "count": 1
+    "effect_kind":  "consume_charge",
+    "charge_key":   "protect",
+    "on_empty":     "abort",
+    "count":        1,
+    "target_ref":   "self_target"
   },
   "2": {
-    "effect_label": "redirect",
-    "effect_kind": "redirect_target",
-    "target_select": "first",
-    "rebuild_card": true
+    "effect_label":    "redirect",
+    "effect_kind":     "redirect_target",
+    "rebuild_card":    true,
+    "target_ref":      "incoming_target",
+    "destination_ref": "self_target"
+  },
+  "3": {
+    "effect_label":     "self_target",
+    "effect_kind":      "targeting",
+    "candidate_source": "self"
+  },
+  "4": {
+    "effect_label":     "incoming_target",
+    "effect_kind":      "targeting",
+    "candidate_source": "action_targets",
+    "mode":             "exact",
+    "count":            1
   }
 }
 ```
+
+The two targeting rows resolve lazily (only when first referenced by a `target_ref` / `destination_ref`) and are memoized — so `self_target` is resolved once and shared between the `consume_one` and `redirect` steps.
 
 Flow: when an ally is targeted, the reactor can choose Protect from the
 reaction picker. The chosen-skill dispatcher calls
@@ -459,10 +629,17 @@ for free. If you do, gain a bonus equal to SL to your Check."
   "0": {
     "effect_label":        "pl_free_study",
     "effect_kind":         "open_action_menu",
-    "allowed_types":       "Study",         // only Study button enabled
-    "free_mode":           true,            // bypass action budget
-    "check_bonus_formula": "SL",            // +Painful Lesson SL to Study
-    "target_lock":         "damage_source"  // Study must target the attacker
+    "allowed_types":       "Study",                  // only Study button enabled
+    "free_mode":           true,                     // bypass action budget
+    "check_bonus_formula": "SL",                     // +Painful Lesson SL to Study
+    "target_ref":          "attacker"                // Study locked onto the attacker
+  },
+  "1": {
+    "effect_label":     "attacker",
+    "effect_kind":      "targeting",
+    "candidate_source": "trigger_actor",             // the creature that dealt the damage
+    "mode":             "exact",
+    "count":            1
   }
 }
 ```

@@ -9,22 +9,26 @@
  *                            string that identifies which effect to fire when
  *                            the row matches. Blank ref = no declarative effect.
  *
- *   reaction_effect_table  — effect rows. Each row has:
- *                              effect_label   (string identifier — what trigger rows reference)
- *                              effect_kind    ("grant" today; extensible later)
- *                              grant_resource / grant_amount / grant_target  (when kind=grant)
+ *   effect_table           — effect rows. Each row has:
+ *                              effect_label   (string identifier — what other rows reference)
+ *                              effect_kind    ("targeting" | "grant" | "apply_ae" |
+ *                                              "consume_charge" | "open_action_menu" |
+ *                                              "redirect_target" | "chain")
+ *                              per-kind fields (see docs/reaction-config-schema.md)
+ *                              target_ref     — for effects that act on tokens;
+ *                                               points at a `targeting` row
+ *
+ * Targeting is its own effect_kind that resolves to a named token list other
+ * rows consume via `target_ref`. The dispatcher hands off to the unified
+ * resolver at FUCompanion.api.effectTargeting.resolveTargetRef(...). No
+ * per-kind targeting fields (grant_target / target_lock) — those were
+ * removed in the Phase F refactor.
  *
  * When a row matches and fires (passive auto-fire OR manual reaction-skill
  * selection), applyEffectByLabel(...) looks up the effect on the same item
  * by label, dispatches by kind, and applies the effect. The chosen reaction
  * skill still runs through the action pipeline as before; the effect is
  * independent and does not require ACE/PassiveLogic on the skill.
- *
- * Group semantics (mirrors reaction_debuff_count_target):
- *   self  → reactor's actor
- *   ally  → same-disposition combat tokens, INCLUDING the reactor
- *   enemy → opposite-disposition combat tokens
- *   all   → every combat token
  *
  * Resource definitions: see RESOURCE_MAP. Adds a clamp to [0, max] (or to 0
  * for resources without a configured max). zero_power has a hard cap of 6.
@@ -34,7 +38,13 @@
  *
  * Exposed on:  window["oni.ReactionGrant"]
  */
-Hooks.once("ready", () => {
+(() => {
+  function bootReactionGrant() { _installReactionGrant(); }
+  if (globalThis?.game?.ready) bootReactionGrant();
+  else Hooks.once("ready", bootReactionGrant);
+})();
+
+function _installReactionGrant() {
   const KEY = "oni.ReactionGrant";
   if (window[KEY]) {
     console.debug("[ReactionGrant] Already installed.");
@@ -105,15 +115,8 @@ Hooks.once("ready", () => {
   }
 
   // ---------------------------------------------------------------------------
-  // Disposition / ownership / number reading
+  // Ownership / number reading
   // ---------------------------------------------------------------------------
-  function normalizeDisposition(disposition) {
-    if (disposition === -2) return 0;   // Secret → treat as Neutral
-    if (disposition === 1)  return 1;
-    if (disposition === -1) return -1;
-    return 0;
-  }
-
   function actorIsOwnedByMe(actor) {
     try {
       return !!actor?.isOwner;
@@ -142,61 +145,11 @@ Hooks.once("ready", () => {
     return null; // uncapped
   }
 
-  // ---------------------------------------------------------------------------
-  // Target resolution
-  // ---------------------------------------------------------------------------
-  // Returns [{ actor, token }] pairs. Token is best-effort — used by the
-  // resource handler to position floating-number scrolling text on the canvas.
-  // Null token = silent update (still works, just no visual feedback).
-  function resolveTargetActors(targetMode, reactionToken, combat) {
-    const mode = (targetMode || "self").toLowerCase();
-    const reactActor = reactionToken?.actor ?? null;
-
-    if (mode === "self") {
-      return reactActor ? [{ actor: reactActor, token: reactionToken ?? null }] : [];
-    }
-
-    if (!combat) return [];
-
-    const reactDisp = normalizeDisposition(reactionToken?.document?.disposition ?? 0);
-    const combatants = combat.combatants?.contents ?? combat.combatants ?? [];
-    const seen = new Set();
-    const out = [];
-
-    for (const cmbt of combatants) {
-      const actor = cmbt?.actor;
-      if (!actor || !actor.uuid) continue;
-      if (seen.has(actor.uuid)) continue;
-
-      const tokenId = cmbt.tokenId ?? cmbt.token?.id;
-      const token = (tokenId && canvas?.tokens?.get(tokenId)) || null;
-      const tokenDoc = cmbt.token ?? token?.document ?? null;
-      const subDisp = normalizeDisposition(tokenDoc?.disposition ?? 0);
-
-      let included = false;
-      switch (mode) {
-        case "ally":
-          included = (reactDisp === 1 && subDisp === 1) ||
-                     (reactDisp === -1 && subDisp === -1);
-          break;
-        case "enemy":
-          included = (reactDisp === 1 && subDisp === -1) ||
-                     (reactDisp === -1 && subDisp === 1);
-          break;
-        case "all":
-          included = true;
-          break;
-        default:
-          included = false;
-      }
-
-      if (included) {
-        seen.add(actor.uuid);
-        out.push({ actor, token });
-      }
-    }
-    return out;
-  }
+  // Target resolution moved to scripts/reaction-system/effect-targeting-resolver.js
+  // (the unified `effect_kind: "targeting"` system). The old per-kind
+  // `grant_target` / `target_lock` paths and the `resolveTargetActors`
+  // helper that backed them were removed; handlers now read `target_ref`
+  // and call `FUCompanion.api.effectTargeting.resolveTargetRef` instead.
 
   // ---------------------------------------------------------------------------
   // Per-actor resource update
@@ -330,15 +283,35 @@ Hooks.once("ready", () => {
       return { ok: true, skipped: true, reason: "zero_or_invalid_amount", applied: [], amountExpr: amountStr };
     }
 
-    const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
-    const targetPairs = resolveTargetActors(targetMode, reactionToken, combat);
+    // Recipient list comes from a `targeting` row referenced by `target_ref`.
+    // The resolver handles disposition filter, candidate source, mode (exact /
+    // up_to / all), and auto-confirm / passive-skip semantics. See
+    // docs/reaction-config-schema.md.
+    const targetRef = String(effectRow.target_ref ?? "").trim();
+    if (!targetRef) {
+      console.warn(TAG, "applyGrantEffect: target_ref missing on row", effectRow?.effect_label);
+      return { ok: false, reason: "missing_target_ref", applied: [] };
+    }
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    if (typeof targetingApi?.resolveTargetRef !== "function") {
+      return { ok: false, reason: "targeting_api_unavailable", applied: [] };
+    }
+    const item = ctx?.item;
+    if (!item) {
+      return { ok: false, reason: "no_item_in_context", applied: [] };
+    }
+    const resolved = await targetingApi.resolveTargetRef(item, targetRef, ctx?.effectTargetingCtx);
+    if (!resolved?.ok) {
+      if (resolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+      }
+      return { ok: false, reason: resolved?.reason ?? "targeting_failed", applied: [], targetRef };
+    }
+    const targetPairs = (resolved.tokens ?? [])
+      .map(td => ({ actor: td?.actor, token: td }))
+      .filter(p => p.actor);
     if (!targetPairs.length) {
-      console.warn(TAG, "applyGrantEffect: no target actors resolved", {
-        targetMode,
-        reactorName: reactionToken?.actor?.name,
-        hasCombat: !!combat
-      });
-      return { ok: false, reason: "no_targets", applied: [] };
+      return { ok: false, reason: "no_target_actors", applied: [], targetRef };
     }
 
     const reactorActor = reactionToken?.actor ?? null;
@@ -353,7 +326,7 @@ Hooks.once("ready", () => {
       });
       applied.push({ actorUuid: actor.uuid, actorName: actor.name, ...res });
     }
-    return { ok: true, applied, kind: "grant", resourceKey, amount, targetMode };
+    return { ok: true, applied, kind: "grant", resourceKey, amount, targetRef };
   }
 
   // ---------------------------------------------------------------------------
@@ -363,7 +336,10 @@ Hooks.once("ready", () => {
   //   ae_template_ref    string  — registry id / Item.x.ActiveEffect.y uuid /
   //                                effect name registered in the AEM registry,
   //                                forwarded to applyEffects as-is.
-  //   grant_target       "self"|"ally"|"enemy"|"all"  (default "self")
+  //   target_ref         string  — effect_label of a `targeting` row in this
+  //                                same effect_table. Recipients of the AE.
+  //                                Resolved via FUCompanion.api.effectTargeting.
+  //                                See docs/reaction-config-schema.md.
   //   ae_duplicate_mode  "skip"|"replace"|"stack"|"remove"|"ask" (default "replace")
   //
   // Authors create the AE itself on a skill item / via the AEM registry and
@@ -501,11 +477,43 @@ Hooks.once("ready", () => {
       }
     }
 
-    // -------- default branch (no prompt) --------
-    const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
-    const targetActors = resolveTargetActors(targetMode, reactionToken, combat);
+    // -------- default branch (no prompt) — read target_ref via resolver --------
+    const targetRef = String(effectRow.target_ref ?? "").trim();
+    if (!targetRef) {
+      console.warn(TAG, "applyApplyAeEffect: target_ref missing on row", effectRow?.effect_label);
+      return { ok: false, reason: "missing_target_ref", applied: [] };
+    }
+
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    if (typeof targetingApi?.resolveTargetRef !== "function") {
+      return { ok: false, reason: "targeting_api_unavailable", applied: [] };
+    }
+
+    const item = ctx?.item;
+    if (!item) {
+      return { ok: false, reason: "no_item_in_context", applied: [] };
+    }
+
+    const resolved = await targetingApi.resolveTargetRef(item, targetRef, ctx?.effectTargetingCtx);
+    if (!resolved?.ok) {
+      // User-cancelled picker is a distinct outcome — propagate the
+      // signal up so the dispatcher can reopen the reaction menu instead
+      // of treating this as a hard abort. Same shape used by every
+      // handler so applyEffectsForGroup can detect it generically.
+      if (resolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+      }
+      return { ok: false, reason: resolved?.reason ?? "targeting_failed", applied: [], targetRef };
+    }
+
+    // Walk targeting row's iteration_mode (together / per_token) to decide
+    // whether to invoke applyEffects once with all actors or once per actor.
+    const targetActors = (resolved.tokens ?? [])
+      .map(td => td?.actor)
+      .filter(Boolean)
+      .map(a => ({ actor: a }));
     if (!targetActors.length) {
-      return { ok: false, reason: "no_targets", applied: [] };
+      return { ok: false, reason: "no_target_actors", applied: [], targetRef };
     }
 
     const applied = [];
@@ -531,7 +539,7 @@ Hooks.once("ready", () => {
         });
       }
     }
-    return { ok: true, applied, kind: "apply_ae", targetMode, duplicateMode: dup, templateRef: ref };
+    return { ok: true, applied, kind: "apply_ae", targetRef, duplicateMode: dup, templateRef: ref };
   }
 
   // ---------------------------------------------------------------------------
@@ -539,7 +547,10 @@ Hooks.once("ready", () => {
   // ---------------------------------------------------------------------------
   // Row fields:
   //   charge_key      string                 — chargeKey to find/consume
-  //   grant_target    "self"|"ally"|...      — typically "self" (default "self")
+  //   target_ref      string (effect_label)  — references a `targeting` row that
+  //                                            resolves the actors whose charges
+  //                                            are consumed (typically a row
+  //                                            with candidate_source: "self").
   //   on_empty        "abort"|"skip"         — what to do if no charges available
   //                                            (default "abort": stop the chain
   //                                             AND signal callers to skip the
@@ -550,7 +561,7 @@ Hooks.once("ready", () => {
   // Returns { ok, abort, applied, ... }. `abort: true` means the caller
   // (manual reaction dispatcher / autoPassive runner) should NOT proceed to
   // run the skill's action pipeline.
-  async function applyConsumeChargeEffect(effectRow, reactionToken, combat) {
+  async function applyConsumeChargeEffect(effectRow, reactionToken, combat, ctx) {
     const chargesApi = globalThis?.FUCompanion?.api?.charges;
     if (typeof chargesApi?.findOnActor !== "function" || typeof chargesApi?.consume !== "function") {
       return { ok: false, reason: "charges_api_unavailable", applied: [] };
@@ -564,10 +575,31 @@ Hooks.once("ready", () => {
     const onEmpty = ((effectRow.on_empty ?? "abort").toString().trim().toLowerCase()) || "abort";
     const count = Math.max(1, Number(effectRow.count) || 1);
 
-    const targetMode = (effectRow.grant_target ?? "self").toString().trim().toLowerCase() || "self";
-    const targetActors = resolveTargetActors(targetMode, reactionToken, combat);
+    const targetRef = String(effectRow.target_ref ?? "").trim();
+    if (!targetRef) {
+      console.warn(TAG, "applyConsumeChargeEffect: target_ref missing on row", effectRow?.effect_label);
+      return { ok: false, reason: "missing_target_ref", applied: [] };
+    }
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    if (typeof targetingApi?.resolveTargetRef !== "function") {
+      return { ok: false, reason: "targeting_api_unavailable", applied: [] };
+    }
+    const item = ctx?.item;
+    if (!item) {
+      return { ok: false, reason: "no_item_in_context", applied: [] };
+    }
+    const resolved = await targetingApi.resolveTargetRef(item, targetRef, ctx?.effectTargetingCtx);
+    if (!resolved?.ok) {
+      if (resolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+      }
+      return { ok: false, reason: resolved?.reason ?? "targeting_failed", applied: [], targetRef };
+    }
+    const targetActors = (resolved.tokens ?? [])
+      .map(td => ({ actor: td?.actor }))
+      .filter(p => p.actor);
     if (!targetActors.length) {
-      return { ok: false, reason: "no_targets", applied: [] };
+      return { ok: false, reason: "no_target_actors", applied: [], targetRef };
     }
 
     const applied = [];
@@ -596,11 +628,121 @@ Hooks.once("ready", () => {
     }
 
     // Abort if we couldn't consume anything for at least one target and the
-    // row says "abort". With grant_target="self" (the common case) this
+    // row says "abort". With a "self"-targeting row (the common case) this
     // collapses to "no charge → abort", which is what gates expect.
     const abort = (onEmpty === "abort") && anyEmpty && !anyConsumed;
 
-    return { ok: !abort, abort, applied, kind: "consume_charge", chargeKey, targetMode, onEmpty, count };
+    return { ok: !abort, abort, applied, kind: "consume_charge", chargeKey, targetRef, onEmpty, count };
+  }
+
+  // ---------------------------------------------------------------------------
+  // consume_resource effect_kind — gate-and-deduct an actor resource
+  // ---------------------------------------------------------------------------
+  // Generalizes consume_charge to HP/MP/IP/etc. Validates that each target's
+  // current resource >= amount; deducts on success. With on_empty="abort",
+  // insufficient resource cancels the chain AND signals callers to skip the
+  // skill body. Use at the END of a chain so a cancel in a prior step (e.g.
+  // a targeting picker on redirect_target) doesn't cost the resource.
+  //
+  // Row fields:
+  //   grant_resource   string   — resource key (mp / hp / ip / ...)
+  //   grant_amount     number|formula — amount to deduct per target
+  //   target_ref       string (effect_label) — who pays the cost
+  //   on_empty         "abort"|"skip" — what to do on insufficient resource
+  async function applyConsumeResourceEffect(effectRow, reactionToken, combat, ctx) {
+    const resourceKey = String(effectRow.grant_resource ?? "").trim().toLowerCase();
+    if (!resourceKey) {
+      return { ok: true, skipped: true, reason: "no_resource", applied: [] };
+    }
+    if (!RESOURCE_MAP[resourceKey]) {
+      return { ok: false, reason: "unknown_resource", resourceKey, applied: [] };
+    }
+
+    const amountStr = (effectRow.grant_amount == null) ? "" : String(effectRow.grant_amount).trim();
+    if (amountStr === "") {
+      return { ok: true, skipped: true, reason: "no_amount", applied: [] };
+    }
+    let amount;
+    const formula = window["oni.ReactionFormula"];
+    if (formula?.evaluate) {
+      const formulaContext = {
+        reactorActor: reactionToken?.actor ?? null,
+        reactorToken: reactionToken ?? null,
+        firingSkill: ctx?.item ?? null,
+        subjectToken: ctx?.subjectToken ?? null,
+        payload: ctx?.payload ?? null
+      };
+      amount = formula.evaluate(amountStr, formulaContext);
+    } else {
+      amount = Number(amountStr);
+    }
+    amount = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!amount) {
+      return { ok: true, skipped: true, reason: "zero_amount", applied: [], amountExpr: amountStr };
+    }
+
+    const onEmpty = String(effectRow.on_empty ?? "abort").trim().toLowerCase() || "abort";
+
+    const targetRef = String(effectRow.target_ref ?? "").trim();
+    if (!targetRef) {
+      return { ok: false, reason: "missing_target_ref", applied: [] };
+    }
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    if (typeof targetingApi?.resolveTargetRef !== "function") {
+      return { ok: false, reason: "targeting_api_unavailable", applied: [] };
+    }
+    const item = ctx?.item;
+    if (!item) {
+      return { ok: false, reason: "no_item_in_context", applied: [] };
+    }
+    const resolved = await targetingApi.resolveTargetRef(item, targetRef, ctx?.effectTargetingCtx);
+    if (!resolved?.ok) {
+      if (resolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+      }
+      return { ok: false, reason: resolved?.reason ?? "targeting_failed", applied: [], targetRef };
+    }
+    const targetActors = (resolved.tokens ?? [])
+      .map(td => ({ actor: td?.actor, token: td }))
+      .filter(p => p.actor);
+    if (!targetActors.length) {
+      return { ok: false, reason: "no_target_actors", applied: [], targetRef };
+    }
+
+    // Validate sufficient resource on all targets FIRST. If any target is
+    // short, abort (or skip per onEmpty) — atomic semantics, no partial spend.
+    const def = RESOURCE_MAP[resourceKey];
+    const insufficient = [];
+    for (const { actor } of targetActors) {
+      const curr = readNumberAt(actor, def.current) ?? 0;
+      if (curr < amount) insufficient.push({ actor, curr });
+    }
+    if (insufficient.length) {
+      const reason = `insufficient_${resourceKey}`;
+      const applied = insufficient.map(({ actor, curr }) => ({
+        actorUuid: actor.uuid, actorName: actor.name, ok: false, reason, have: curr, need: amount
+      }));
+      if (onEmpty === "abort") {
+        return { ok: false, abort: true, applied, kind: "consume_resource", resourceKey, amount, reason };
+      }
+      return { ok: true, skipped: true, applied, kind: "consume_resource", resourceKey, amount, reason };
+    }
+
+    // Sufficient on all targets — deduct via the existing applyOneActor
+    // path (negative amount → drain).
+    const reactorActor = reactionToken?.actor ?? null;
+    const firingItem = ctx?.item ?? null;
+    const applied = [];
+    for (const { actor, token } of targetActors) {
+      const res = await applyOneActor(actor, resourceKey, -amount, {
+        targetToken: token,
+        attackerName: firingItem?.name ?? "Cost",
+        attackerUuid: reactorActor?.uuid ?? "",
+        sourceType: "Reaction"
+      });
+      applied.push({ actorUuid: actor.uuid, actorName: actor.name, ...res });
+    }
+    return { ok: true, applied, kind: "consume_resource", resourceKey, amount, targetRef };
   }
 
   // ---------------------------------------------------------------------------
@@ -611,11 +753,22 @@ Hooks.once("ready", () => {
   // and aim it at me instead" (Protect, Cover, Bodyguard).
   //
   // Row fields:
-  //   target_select   "first" (only mode today; reserved for future "all" / uuid)
-  //   rebuild_card    boolean — whether to re-render the redirected card (default true)
+  //   target_ref        string (effect_label) — references a `targeting` row
+  //                      resolving WHICH target slot(s) of the originating
+  //                      action card to move. Classic Protect: a row with
+  //                      candidate_source: "action_targets", mode: "exact",
+  //                      count: 1.
+  //   destination_ref   string (effect_label) — references a targeting row
+  //                      resolving WHERE the action lands. Classic Protect:
+  //                      a row with candidate_source: "self".
+  //   rebuild_card      boolean — whether to re-render the redirected card
+  //                      (default true).
   //
-  // Always returns abort:true on success because a successful redirect means
-  // the reactor's own skill body must NOT continue (no Protect card created).
+  // Returns { ok: true, skipBody: true } on success — suppresses the
+  // reactor's skill body (no card posts on top of the redirected card)
+  // but lets the rest of the chain continue. Cost-deducting steps
+  // (consume_charge / consume_resource) should be placed AFTER the
+  // redirect so a cancellation in this step doesn't cost the resource.
   async function applyRedirectTargetEffect(effectRow, reactionToken, combat, ctx) {
     const redirectApi = window["oni.ReactionRedirectPendingAction"];
     if (typeof redirectApi?.redirectFromPayload !== "function") {
@@ -627,29 +780,149 @@ Hooks.once("ready", () => {
       return { ok: false, abort: true, reason: "no_payload", applied: [] };
     }
 
-    const reactorUuid =
-      reactionToken?.actor?.uuid ??
-      reactionToken?.document?.actor?.uuid ??
-      payload?.meta?.attackerUuid ??
-      payload?.attackerUuid ??
-      payload?.attackerActorUuid ??
-      null;
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    if (typeof targetingApi?.resolveTargetRef !== "function") {
+      return { ok: false, abort: true, reason: "targeting_api_unavailable", applied: [] };
+    }
+    const item = ctx?.item;
+    if (!item) {
+      return { ok: false, abort: true, reason: "no_item_in_context", applied: [] };
+    }
+
+    // Source slot — which target(s) of the incoming action card to redirect.
+    const targetRef = String(effectRow.target_ref ?? "").trim();
+    if (!targetRef) {
+      return { ok: false, abort: true, reason: "missing_target_ref", applied: [] };
+    }
+    const slotResolved = await targetingApi.resolveTargetRef(item, targetRef, ctx?.effectTargetingCtx);
+    if (!slotResolved?.ok || !slotResolved.tokens?.length) {
+      if (slotResolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+      }
+      return { ok: false, abort: true, reason: slotResolved?.reason ?? "source_slot_unresolved", applied: [], targetRef };
+    }
+    const protectedTargetUUIDs = slotResolved.tokens.map(td => td?.uuid).filter(Boolean);
+
+    // Destination — where the action lands.
+    const destinationRef = String(effectRow.destination_ref ?? "").trim();
+    if (!destinationRef) {
+      return { ok: false, abort: true, reason: "missing_destination_ref", applied: [] };
+    }
+    const destResolved = await targetingApi.resolveTargetRef(item, destinationRef, ctx?.effectTargetingCtx);
+    if (!destResolved?.ok || !destResolved.tokens?.length) {
+      if (destResolved?.cancelled) {
+        return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], destinationRef };
+      }
+      return { ok: false, abort: true, reason: destResolved?.reason ?? "destination_unresolved", applied: [], destinationRef };
+    }
+    // redirectFromPayload's current model lands on a single token. Take the
+    // first; multi-destination redirect is a future enhancement.
+    const destTokenDoc = destResolved.tokens[0];
+    const reactorUuid = destTokenDoc?.actor?.uuid ?? destTokenDoc?.uuid ?? null;
+    const reactorTokenUuid = destTokenDoc?.uuid ?? null;
+    const reactorActorUuid = destTokenDoc?.actor?.uuid ?? null;
+    const reactorName = destTokenDoc?.name ?? destTokenDoc?.actor?.name ?? null;
 
     const rebuildCard = effectRow.rebuild_card !== false; // default true
 
+    // We already know everything `openRedirectDialog` would prompt for:
+    //   - the source action card (sourceRef from the trigger payload — the
+    //     reaction was emitted FOR this card)
+    //   - which target slot(s) to protect (the chosen token(s) from target_ref,
+    //     resolved via the unified targeting system; the user already saw
+    //     the picker there for multi-target attacks)
+    //   - where to land (destination_ref, typically `self` for Protect)
+    //
+    // Multi-source loop: when target_ref resolves to N tokens (e.g. Hina's
+    // Prophetic Defender Style targets ALL action_targets), we iterate over
+    // the candidate's matchingIndexes and apply the redirect once per index.
+    // The redirect script edits in-place (same messageId across iterations)
+    // so successive iterations see the prior modifications without
+    // re-discovery. Single-target Protect goes through the same loop with
+    // one iteration — no behavior change.
     let result;
+    let iterationResults = [];
     try {
-      result = await redirectApi.redirectFromPayload(payload, {
-        kind: "redirect_target",
-        rebuildCard,
-        reactorUuid
+      const sourceRef = redirectApi.extractSourceActionRef
+        ? redirectApi.extractSourceActionRef(payload)
+        : {
+            sourceActionId:              payload?.meta?.sourceActionId             ?? payload?.sourceActionId             ?? null,
+            sourceActionCardId:          payload?.meta?.sourceActionCardId         ?? payload?.sourceActionCardId         ?? null,
+            sourceActionCardVersion:     payload?.meta?.sourceActionCardVersion    ?? payload?.sourceActionCardVersion    ?? null,
+            sourceActionCardMessageId:   payload?.meta?.sourceActionCardMessageId  ?? payload?.sourceActionCardMessageId  ?? null
+          };
+
+      const candidates = await redirectApi.findPendingActionCandidates({
+        sourceRef,
+        protectedTargetUUIDs
       });
+      const candidate = candidates?.[0] ?? null;
+
+      if (!candidate) {
+        // Source action card no longer matches (was deleted, applied, or
+        // moved). Fall back to the legacy dialog as a last resort so the
+        // player can pick from anything that's still pending. Falls back
+        // to single-target only (the dialog flow doesn't support multi).
+        console.warn(TAG, "applyRedirectTargetEffect: no candidate matched sourceRef; falling back to openRedirectDialog");
+        result = await redirectApi.redirectFromPayload(payload, {
+          kind: "redirect_target",
+          rebuildCard,
+          reactorUuid,
+          protectedTargetUUIDs
+        });
+        iterationResults = result ? [result] : [];
+      } else {
+        // Loop over every matching index — one redirect per source slot.
+        // Multiplicity is preserved: a 3-target attack with all 3 in the
+        // protected set becomes 3 instances of "danger hits reactor",
+        // matching RAW's "affects you once for each creature it was
+        // threatening" semantic.
+        const indexes = Array.isArray(candidate.matchingIndexes) && candidate.matchingIndexes.length
+          ? candidate.matchingIndexes
+          : [0];
+
+        for (const targetIndex of indexes) {
+          const originalTargetName =
+            candidate.targetNames?.[targetIndex] ??
+            `Target #${Number(targetIndex) + 1}`;
+
+          const selection = {
+            messageId: candidate.messageId,
+            targetIndex,
+            originalTargetName,
+            reactorName,
+            reactorTokenUuid,
+            reactorActorUuid
+          };
+          const iterResult = await redirectApi.applyRedirectSelection(selection, {
+            payload,
+            rebuildCard,
+            kind: "redirect_target"
+          });
+          iterationResults.push(iterResult);
+
+          if (iterResult?.cancelled) {
+            // First-cancel-stops; remaining indices are not redirected.
+            // (Currently applyRedirectSelection doesn't have a cancel path,
+            // but defending against it future-proofs the loop.)
+            result = iterResult;
+            break;
+          }
+          if (!iterResult?.ok) {
+            // Bail on first hard failure so partial state is visible to
+            // the chain (which will abort the consume step too).
+            result = iterResult;
+            break;
+          }
+          result = iterResult; // keep updating; last successful is "result"
+        }
+      }
     } catch (e) {
       return {
         ok: false, abort: true,
         reason: "redirect_threw",
         error: String(e?.message ?? e),
-        applied: []
+        applied: iterationResults.map(r => ({ ok: !!r?.ok, info: r }))
       };
     }
 
@@ -657,14 +930,14 @@ Hooks.once("ready", () => {
       return {
         ok: true, abort: true, kind: "redirect_target",
         reason: "player_cancelled",
-        applied: [{ ok: true, info: result }]
+        applied: iterationResults.map(r => ({ ok: !!r?.ok, info: r }))
       };
     }
     if (!result?.ok) {
       return {
         ok: false, abort: true, kind: "redirect_target",
         reason: result?.reason ?? "redirect_failed",
-        applied: [{ ok: false, error: result?.reason ?? null, info: result }]
+        applied: iterationResults.map(r => ({ ok: !!r?.ok, error: r?.reason ?? null, info: r }))
       };
     }
 
@@ -681,12 +954,19 @@ Hooks.once("ready", () => {
       actionCardVersion:     result?.actionCardVersion ?? null,
       targetIndex:           result?.targetIndex ?? null,
       replacementTargetUuid: result?.replacementTargetUuid ?? null,
-      replacementActorUuid:  result?.replacementActorUuid ?? null
+      replacementActorUuid:  result?.replacementActorUuid ?? null,
+      iterationCount:        iterationResults.length
     };
 
+    // Success: return skipBody (not abort) so the rest of the chain
+    // continues — typically a `consume_charge` / `consume_resource` step
+    // that should ONLY fire when the redirect actually went through.
+    // The skipBody flag still tells executeChosenReaction to suppress
+    // ADF.execute (no Protect skill body should post on top of the
+    // redirected card).
     return {
-      ok: true, abort: true, kind: "redirect_target",
-      applied: [{ ok: true, info: result }]
+      ok: true, skipBody: true, kind: "redirect_target",
+      applied: iterationResults.map(r => ({ ok: !!r?.ok, info: r }))
     };
   }
 
@@ -745,51 +1025,34 @@ Hooks.once("ready", () => {
         : outerPayload;
     const triggerKey = phasePayload?.trigger ?? outerPayload?.reaction_trigger_key ?? null;
 
-    // target_lock (optional). When set, resolves a single TokenDocument
-    // UUID at apply time and stashes it on the free-action grant; consumers
-    // (Study macro, Counterattack-style flows) restrict their target picker
-    // to that token. Mirrors the "on that creature" clause in skills like
-    // Painful Lesson.
+    // target_ref (optional). When set, references a `targeting` row that
+    // resolves to a single TokenDocument; we stash that token's UUID on the
+    // free-action grant so consumers (Study macro, Counterattack-style flows)
+    // restrict their target picker to that token. Mirrors the "on that
+    // creature" clause in skills like Painful Lesson.
     //
-    //   "damage_source"  → the trigger's acting creature (attacker / applier)
-    //   "subject"        → the trigger's subject (for completeness; rarely
-    //                       useful for action menus today)
-    //   ""               → no lock (default)
+    // Blank target_ref = no lock (free-action grant accepts any target).
     let lockedTargetTokenUuid = null;
     {
-      const lockMode = String(effectRow.target_lock ?? "").trim().toLowerCase();
-      const registry = window["oni.ReactionTriggers"];
-
-      if (lockMode === "damage_source" && phasePayload && registry?.damageSourceShapeFor) {
-        const shape = registry.damageSourceShapeFor(triggerKey);
-        if (shape) {
-          for (const f of shape.tokenFields ?? []) {
-            const v = phasePayload[f];
-            if (typeof v === "string" && v.length) { lockedTargetTokenUuid = v; break; }
-          }
-          if (!lockedTargetTokenUuid) {
-            // Fall back to actor-uuid → token via combat lookup.
-            for (const f of shape.actorFields ?? []) {
-              const actorUuid = phasePayload[f];
-              if (typeof actorUuid === "string" && actorUuid.length) {
-                const t = (game.combat?.combatants?.contents ?? game.combat?.combatants ?? [])
-                  .map(c => canvas?.tokens?.get?.(c.tokenId ?? c.token?.id))
-                  .find(tok => tok?.actor?.uuid === actorUuid);
-                if (t?.document?.uuid) { lockedTargetTokenUuid = t.document.uuid; break; }
-              }
-            }
-          }
-        }
-        if (!lockedTargetTokenUuid) {
-          console.warn(TAG, "applyOpenActionMenuEffect: target_lock=damage_source but no source resolvable from payload", { triggerKey });
-        }
-      } else if (lockMode === "subject" && phasePayload && registry?.subjectShapeFor) {
-        const shape = registry.subjectShapeFor(triggerKey);
-        if (shape) {
-          for (const f of shape.tokenFields ?? []) {
-            const v = phasePayload[f];
-            if (typeof v === "string" && v.length) { lockedTargetTokenUuid = v; break; }
-          }
+      const targetRef = String(effectRow.target_ref ?? "").trim();
+      const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+      if (targetRef && typeof targetingApi?.resolveTargetRef === "function" && ctx?.item) {
+        const resolved = await targetingApi.resolveTargetRef(ctx.item, targetRef, ctx?.effectTargetingCtx);
+        if (resolved?.ok && resolved.tokens?.length) {
+          // First token only — open_action_menu locks to a single creature.
+          // If a multi-target lock semantic ever appears, surface it here.
+          const td = resolved.tokens[0];
+          if (td?.uuid) lockedTargetTokenUuid = td.uuid;
+        } else if (resolved?.cancelled) {
+          // User backed out of the targeting picker — bail without
+          // opening the action menu so the dispatcher can re-spawn the
+          // reaction menu for them to pick again.
+          return { ok: false, cancelled: true, abort: true, reason: "cancelled", applied: [], targetRef };
+        } else {
+          console.warn(TAG, "applyOpenActionMenuEffect: target_ref present but resolver returned no token", {
+            targetRef,
+            reason: resolved?.reason
+          });
         }
       }
     }
@@ -988,24 +1251,41 @@ Hooks.once("ready", () => {
     }
 
     const stepResults = [];
+    let chainSkipBody = false;
     for (const stepLabel of steps) {
-      const res = await applyEffectByLabel(item, stepLabel, reactionToken, combat, ctx?.payload, { isPassive: !!ctx?.isPassive });
+      const res = await applyEffectByLabel(item, stepLabel, reactionToken, combat, ctx?.payload, {
+        isPassive: !!ctx?.isPassive,
+        effectTargetingCtx: ctx?.effectTargetingCtx ?? null
+      });
       stepResults.push({ stepLabel, result: res });
+      // Propagate skipBody from any step — chain rolls it up so the
+      // dispatcher knows to skip ADF.execute when the chain contains a
+      // self-contained effect (e.g. redirect_target or open_action_menu).
+      if (res?.skipBody) chainSkipBody = true;
+      if (res?.cancelled) {
+        return {
+          ok: false, cancelled: true, abort: true, kind: "chain",
+          chainSteps: steps, applied: stepResults, failedAt: stepLabel,
+          skipBody: chainSkipBody
+        };
+      }
       if (res?.abort) {
         return {
           ok: res.ok !== false, abort: true, kind: "chain",
-          chainSteps: steps, applied: stepResults
+          chainSteps: steps, applied: stepResults,
+          skipBody: chainSkipBody
         };
       }
       if (res?.ok === false) {
         return {
           ok: false, abort: true, kind: "chain",
           chainSteps: steps, applied: stepResults,
-          reason: "step_failed", failedAt: stepLabel
+          reason: "step_failed", failedAt: stepLabel,
+          skipBody: chainSkipBody
         };
       }
     }
-    return { ok: true, kind: "chain", chainSteps: steps, applied: stepResults };
+    return { ok: true, kind: "chain", chainSteps: steps, applied: stepResults, skipBody: chainSkipBody };
   }
 
   // ---------------------------------------------------------------------------
@@ -1035,13 +1315,32 @@ Hooks.once("ready", () => {
     }
 
     const kind = (effectRow.effect_kind ?? "").toString().trim().toLowerCase() || "grant";
-    // ctx threads cross-handler context: item (for chain step lookups),
-    // payload (trigger phase data), and isPassive (true when this came from
-    // the auto-passive runner, false when the player accepted a manual
-    // reaction prompt). Handlers can use isPassive to skip user-facing UI
-    // when the result is unambiguous — e.g. apply_ae's target_prompt auto-
-    // resolves to the only candidate without opening the picker.
-    const ctx = { item, payload, isPassive: !!opts.isPassive };
+    // ctx threads cross-handler context:
+    //   item                 — for chain step lookups
+    //   payload              — trigger phase data
+    //   isPassive            — true when this came from the auto-passive
+    //                          runner; handlers can use it to skip user UI
+    //                          when the result is unambiguous.
+    //   effectTargetingCtx   — chain ctx for the unified targeting resolver
+    //                          (Map of resolved target_ref → tokens, shared
+    //                          across all handlers in this chain so the same
+    //                          target_ref isn't prompted twice). Lazy-created
+    //                          here when an opts.effectTargetingCtx isn't
+    //                          already in flight from a parent invocation.
+    const targetingApi = globalThis?.FUCompanion?.api?.effectTargeting;
+    const effectTargetingCtx =
+      opts.effectTargetingCtx
+      ?? (typeof targetingApi?.makeChainCtx === "function"
+        ? targetingApi.makeChainCtx({
+            reactorActor: reactionToken?.actor,
+            reactorToken: reactionToken?.document ?? reactionToken,
+            phasePayload: payload ?? {},
+            triggerKey: payload?.trigger ?? payload?.reaction_trigger_key ?? null,
+            isPassive: !!opts.isPassive,
+            combat
+          })
+        : null);
+    const ctx = { item, payload, isPassive: !!opts.isPassive, effectTargetingCtx };
     let result;
     switch (kind) {
       case "grant":
@@ -1051,7 +1350,10 @@ Hooks.once("ready", () => {
         result = await applyApplyAeEffect(effectRow, reactionToken, combat, ctx);
         break;
       case "consume_charge":
-        result = await applyConsumeChargeEffect(effectRow, reactionToken, combat);
+        result = await applyConsumeChargeEffect(effectRow, reactionToken, combat, ctx);
+        break;
+      case "consume_resource":
+        result = await applyConsumeResourceEffect(effectRow, reactionToken, combat, ctx);
         break;
       case "redirect_target":
         result = await applyRedirectTargetEffect(effectRow, reactionToken, combat, ctx);
@@ -1103,6 +1405,19 @@ Hooks.once("ready", () => {
         const res = await applyEffectByLabel(item, ref, reactionToken, combat, payload);
         results.push(res);
         if (res?.skipBody) skipBody = true;
+        if (res?.cancelled) {
+          // User cancelled a targeting picker mid-dispatch. Surface the
+          // signal distinctly from a hard abort so the caller can
+          // re-spawn the reaction menu instead of treating it as a
+          // resource-gate failure.
+          return {
+            results,
+            aborted: true,
+            cancelled: true,
+            skipBody: false,
+            abortInfo: { itemName: item?.name ?? null, effectLabel: ref, result: res }
+          };
+        }
         if (res?.abort) {
           return {
             results,
@@ -1135,4 +1450,4 @@ Hooks.once("ready", () => {
   } catch (_e) { /* non-fatal */ }
 
   console.debug(TAG, "Installed. Resources:", Object.keys(RESOURCE_MAP).join(", "));
-});
+}

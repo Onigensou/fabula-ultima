@@ -63,6 +63,22 @@
     {
       "key": "2026-05-18-heart-of-darkness-author",
       "path": "data-migrations/2026-05-18-heart-of-darkness-author.js"
+    },
+    {
+      "key": "2026-05-20-painful-lesson-rekey",
+      "path": "data-migrations/2026-05-20-painful-lesson-rekey.js"
+    },
+    {
+      "key": "2026-05-20-effect-targeting-columns",
+      "path": "data-migrations/2026-05-20-effect-targeting-columns.js"
+    },
+    {
+      "key": "2026-05-20-skills-to-unified-targeting",
+      "path": "data-migrations/2026-05-20-skills-to-unified-targeting.js"
+    },
+    {
+      "key": "2026-05-20-targeting-exclude-self",
+      "path": "data-migrations/2026-05-20-targeting-exclude-self.js"
     }
   ]
 }
