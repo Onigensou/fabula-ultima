@@ -8,15 +8,19 @@
 //   4.  npcData             – full state for linked NPCs/bosses matching NPC template
 //   5.  activeScene         – which scene is currently active
 //   6.  sceneBackgrounds    – background image per scene (story progression)
-//   7.  dungeonTileData     – DungeonPathing flags (tileStates + visitedTiles)
+//   7.  sceneAudio          – playlist + playlistSound per scene (story progression)
+//   8.  dungeonTileData     – DungeonPathing flags (tileStates + visitedTiles)
 //                             filtered to Dungeon/Exploration/Camp scenes only
-//   8.  sceneTileVisibility – full Tile document per Dungeon/Exploration/Camp scene;
+//   9.  sceneTileVisibility – full Tile document per Dungeon/Exploration/Camp scene;
 //                             extra tiles deleted, missing tiles recreated on load
-//   9.  sceneDrawingData    – full Drawing document state for Dungeon scenes;
+//   10. sceneDrawingData    – full Drawing document state for Dungeon scenes;
 //                             drawings added after save are deleted, missing recreated
-//   10. campState           – CampSystem world settings
-//   11. encyclopediaData    – Monster Encyclopedia journal page flags + content
-//   12. journalOwnership    – ownership map of every journal entry
+//   11. sceneTokenData      – full Token document per Dungeon/Exploration/Camp scene;
+//                             extra tokens deleted, missing tokens recreated on load;
+//                             token visibility (hidden) is part of the snapshot
+//   12. campState           – CampSystem world settings
+//   13. encyclopediaData    – Monster Encyclopedia journal page flags + content
+//   14. journalOwnership    – ownership map of every journal entry
 //
 // To add a new domain in future: call SS.registerExtractor({ key, label, extract, apply })
 // anywhere that runs before the first save.
@@ -278,7 +282,45 @@
     },
   });
 
-  // ── 7. Dungeon Tile States (DungeonPathing flags) ─────────────────────────
+  // ── 7. Scene Audio (BGM) ──────────────────────────────────────────────────
+  // Saves the playlist and playlistSound for every scene. Stored for ALL scenes
+  // (not just dungeon modes) so that loading can restore null (no BGM) correctly —
+  // only saving scenes that have audio would leave no way to clear a playlist that
+  // was added after the save was taken.
+  SS.registerExtractor({
+    key:   "sceneAudio",
+    label: "Scene Audio",
+
+    async extract() {
+      const result = {};
+      for (const scene of game.scenes.contents) {
+        const obj = scene.toObject();
+        result[scene.id] = {
+          playlist:      obj.playlist      ?? null,
+          playlistSound: obj.playlistSound ?? null,
+        };
+      }
+      return result;
+    },
+
+    async apply(ctx, data) {
+      if (!data) return;
+      await Promise.all(
+        Object.entries(data).map(([id, { playlist, playlistSound }]) => {
+          const scene = game.scenes.get(id);
+          if (!scene) return null;
+          const obj     = scene.toObject();
+          const updates = {};
+          if ((obj.playlist      ?? null) !== playlist)      updates.playlist      = playlist;
+          if ((obj.playlistSound ?? null) !== playlistSound) updates.playlistSound = playlistSound;
+          if (!Object.keys(updates).length) return null;
+          return scene.update(updates);
+        }).filter(Boolean)
+      );
+    },
+  });
+
+  // ── 8. Dungeon Tile States (DungeonPathing flags) ─────────────────────────
   // Saves tileStates (currentType/initialType) and visitedTiles per dungeon scene.
   SS.registerExtractor({
     key:   "dungeonTileData",
@@ -320,7 +362,7 @@
     },
   });
 
-  // ── 8. Scene Tile Visibility ───────────────────────────────────────────────
+  // ── 9. Scene Tile Visibility ───────────────────────────────────────────────
   // Full Tile document state for Dungeon/Exploration/Camp scenes.
   // On load: tiles added after save are deleted; missing tiles are recreated;
   // existing tiles are updated to their saved state.
@@ -361,7 +403,7 @@
     },
   });
 
-  // ── 9. Scene Drawing Data ──────────────────────────────────────────────────
+  // ── 10. Scene Drawing Data ─────────────────────────────────────────────────
   // Full Drawing document state for Dungeon-mode scenes only (drawings wire
   // tiles together as graph edges in the DungeonPathing system).
   // On load: drawings added after save are deleted; missing drawings are
@@ -401,7 +443,58 @@
     },
   });
 
-  // ── 10. Camp State ─────────────────────────────────────────────────────────
+  // ── 11. Scene Token Data ──────────────────────────────────────────────────
+  // Full Token document state for Dungeon/Exploration/Camp scenes.
+  // On load: tokens added after the save are deleted; missing tokens are
+  // recreated; existing tokens are updated to their saved state.  Token
+  // visibility (hidden flag) is included in the full toObject() snapshot.
+  // Linked actor tokens correctly reflect restored actor data since partyData
+  // and npcData run earlier in the apply chain.
+  SS.registerExtractor({
+    key:   "sceneTokenData",
+    label: "Scene Token Data",
+
+    async extract() {
+      const result = {};
+      for (const scene of game.scenes.contents) {
+        if (!TILE_SAVE_MODES.has(getSceneMode(scene))) continue;
+        if (!scene.tokens?.size) continue;
+        const tokens = {};
+        for (const token of scene.tokens.values()) {
+          tokens[token.id] = foundry.utils.deepClone(token.toObject());
+        }
+        result[scene.id] = tokens;
+      }
+      return result;
+    },
+
+    async apply(ctx, data) {
+      if (!data) return;
+      await Promise.all(
+        Object.entries(data).map(async ([sceneId, tokenDataMap]) => {
+          const scene = game.scenes.get(sceneId);
+          if (!scene) return;
+          const currentIds = [...scene.tokens.values()].map(t => t.id);
+          if (currentIds.length) await scene.deleteEmbeddedDocuments("Token", currentIds);
+          const savedTokens = Object.values(tokenDataMap);
+          if (!savedTokens.length) return;
+          try {
+            await scene.createEmbeddedDocuments("Token", savedTokens, { keepId: true });
+          } catch {
+            // Batch create failed (e.g. a token's actorId no longer exists);
+            // retry individually so as many tokens as possible are restored.
+            await Promise.allSettled(
+              savedTokens.map(td =>
+                scene.createEmbeddedDocuments("Token", [td], { keepId: true }).catch(() => {})
+              )
+            );
+          }
+        })
+      );
+    },
+  });
+
+  // ── 12. Camp State ────────────────────────────────────────────────────────
   // Captures all CampSystem world settings (phase, selections, bonds, etc.)
   SS.registerExtractor({
     key:   "campState",
@@ -427,7 +520,7 @@
     },
   });
 
-  // ── 11. Monster Encyclopedia ───────────────────────────────────────────────
+  // ── 13. Monster Encyclopedia ──────────────────────────────────────────────
   // Saves the study result flags and rendered content for every encyclopedia page.
   SS.registerExtractor({
     key:   "encyclopediaData",
@@ -468,7 +561,7 @@
     },
   });
 
-  // ── 12. Journal Ownership ──────────────────────────────────────────────────
+  // ── 14. Journal Ownership ─────────────────────────────────────────────────
   // Journals revealed in session A should remain hidden when loading session B.
   SS.registerExtractor({
     key:   "journalOwnership",
