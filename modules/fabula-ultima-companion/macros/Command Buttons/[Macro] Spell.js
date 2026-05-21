@@ -238,16 +238,51 @@ const SOUND_COOLDOWN_MS = 80;
     return grants;
   };
 
+  const pluckMagicLessonGrantedEntries = (act) => {
+    const MODULE = "fabula-ultima-companion";
+    return Array.from(act?.effects ?? []).filter(e =>
+      e.flags?.[MODULE]?.magicLessonSpell === true &&
+      (e.flags[MODULE].usagesLeft ?? 0) > 0
+    ).map(e => {
+      const f = e.flags[MODULE];
+      const usages = f.usagesLeft ?? 1;
+      const itemId = (f.spellUuid ?? "").split(".").pop();
+      const teacherActor = game.actors.get(f.magicLessonTeacherId ?? "");
+      const resolvedItem = teacherActor?.items?.get(itemId) ?? null;
+      const isOffensive = resolvedItem
+        ? !!resolvedItem.system?.props?.isOffensiveSpell
+        : !!(f.spellIsOffensive ?? false);
+      return {
+        name: f.spellName ?? "",
+        id: itemId,
+        uuid: f.spellUuid ?? "",
+        grantedBy: `Magic Lesson • ${usages}×`,
+        grantedByType: "magic_lesson",
+        grantedByImg: f.spellImg ?? "",
+        _mlEffectId: e.id,
+        _syntheticItem: {
+          name: f.spellName ?? "",
+          img: f.spellImg || "icons/svg/explosion.svg",
+          uuid: f.spellUuid ?? "",
+          documentName: "Item",
+          system: { props: { skill_type: "spell", isOffensiveSpell: isOffensive } },
+        },
+      };
+    }).filter(e => e.name && e.uuid);
+  };
+
   const actorSpellCandidates = [
     ...pluck(actorProps.offensive_spell_list),
     ...pluck(actorProps.normal_spell_list),
   ];
 
   const equipmentGrantedCandidates = pluckEquippedItemGrantedEntries(actor);
+  const magicLessonCandidates = pluckMagicLessonGrantedEntries(actor);
 
   let candidates = [
     ...actorSpellCandidates,
     ...equipmentGrantedCandidates,
+    ...magicLessonCandidates,
   ];
 
   const seen = new Set();
@@ -262,6 +297,7 @@ const SOUND_COOLDOWN_MS = 80;
   console.debug("[Spell Picker] Candidate totals:", {
     actorListCount: actorSpellCandidates.length,
     equipmentGrantCount: equipmentGrantedCandidates.length,
+    magicLessonCount: magicLessonCandidates.length,
     mergedCount: candidates.length
   });
 
@@ -275,7 +311,7 @@ const SOUND_COOLDOWN_MS = 80;
 
   // Resolve items + affordability
   const resolved = (await Promise.all(candidates.map(async c => {
-    const item = await resolveItemByUuidOrActor(c.uuid, actor);
+    const item = await resolveItemByUuidOrActor(c.uuid, actor) ?? c._syntheticItem ?? null;
     if (!item) return null;
     const kind = detectSpellKind(item);
     if (!kind) return null;
@@ -321,6 +357,7 @@ for (const k of Object.keys(groups)) {
       weapon: "⚔️",
       accessory: "🔮",
       armor: "🥋",
+      magic_lesson: "✨",
     };
 
     const grantEmoji = grantEmojiMap[String(s.grantedByType ?? "").toLowerCase()] ?? "";
@@ -603,6 +640,17 @@ for (const k of Object.keys(groups)) {
   });
 
   if (!chosenUuid) return; // cancelled
+
+  // consume magic lesson charge if applicable
+  const _mlEntry = resolved.find(s => (s.item?.uuid ?? s.uuid) === chosenUuid && s.grantedByType === "magic_lesson");
+  if (_mlEntry?._mlEffectId) {
+    const _mlEff = actor.effects.get(_mlEntry._mlEffectId);
+    if (_mlEff) {
+      const _mlLeft = ((_mlEff.flags?.["fabula-ultima-companion"]?.usagesLeft) ?? 1) - 1;
+      if (_mlLeft <= 0) await _mlEff.delete();
+      else await _mlEff.setFlag("fabula-ultima-companion", "usagesLeft", _mlLeft);
+    }
+  }
 
   // ---------- handoff ----------
   const attacker_uuid = actor?.uuid || pickedToken?.document?.uuid || null;

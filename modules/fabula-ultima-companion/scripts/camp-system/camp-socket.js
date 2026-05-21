@@ -120,6 +120,35 @@
           return;
         }
 
+        // ── Magic Lesson minigame (GM → all, owner → GM) ─────────────────
+        if (type === CAMP.MSG.MAGIC_LESSON_START) {
+          CAMP.MagicLessonUI?.show(payload?.actorId, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.MAGIC_LESSON_RESULT) {
+          if (payload?.usages != null) {
+            // Full result — reveal phase
+            CAMP.MagicLessonUI?.applyResult(
+              payload.actorId, payload.targetActorId,
+              payload.spellName, payload.spellImg,
+              payload.teacherTotal, payload.targetTotal, payload.usages
+            );
+          } else if (payload?.spellName != null) {
+            // Spell chosen — rolling phase
+            CAMP.MagicLessonUI?.showRolling(
+              payload.actorId, payload.targetActorId, payload.spellName, payload.spellImg
+            );
+          } else {
+            // Target chosen — spell-pick phase
+            CAMP.MagicLessonUI?.showSpellPick(payload?.actorId, payload?.targetActorId, payload?.spells);
+          }
+          return;
+        }
+        if (type === CAMP.MSG.MAGIC_LESSON_DONE) {
+          CAMP.MagicLessonUI?.hide();
+          return;
+        }
+
         // ── Double Portion minigame (GM → all, owner → GM) ───────────────
         if (type === CAMP.MSG.DOUBLE_PORTION_START) {
           CAMP.DoublePortionUI?.show(payload?.actorId, payload?.allies);
@@ -269,6 +298,20 @@
 
           case CAMP.MSG.COMBAT_LESSON_PROCEED:
             CAMP.CombatLessonUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.MAGIC_LESSON_TARGET:
+            CAMP.MagicLessonUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.MAGIC_LESSON_SPELL:
+            CAMP.MagicLessonUI?.resolveSpell(
+              payload?.actorId, payload?.spellUuid, payload?.spellName, payload?.spellImg
+            );
+            break;
+
+          case CAMP.MSG.MAGIC_LESSON_PROCEED:
+            CAMP.MagicLessonUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.DOUBLE_PORTION_TARGET:
