@@ -483,6 +483,8 @@ Hooks.once("ready", () => {
 
       if (!targetUserId || targetUserId !== game.user.id) return;
 
+      const reactionChainId = payload?.reactionChainId ?? null;
+
       const uiApi = window["oni.ReactionButtonUI"];
       if (!uiApi || typeof uiApi.spawnButton !== "function") {
         ui.notifications?.error?.("[Reaction] ReactionButtonUI script not installed (socket offer).");
@@ -581,7 +583,8 @@ Hooks.once("ready", () => {
           reactions: reactions.filter(r => Array.isArray(r?.triggers) && r.triggers.includes(k))
         })),
         phaseBucket: phaseBucket ?? null,
-        ownerUserIds: [targetUserId]
+        ownerUserIds: [targetUserId],
+        reactionChainId
       };
 
       _localReactionWindows.set(makeWindowKey(phaseBucket, tokenId), foundry.utils.deepClone({
@@ -635,6 +638,14 @@ Hooks.once("ready", () => {
   // Hard cleanup when combat ends
   // ---------------------------------------------------------------------------
 
+  function clearChainTracker(reason) {
+    try {
+      globalThis.FUCompanion?.api?.reactionChainTracker?.clearAll?.();
+    } catch (e) {
+      console.warn("[ReactionManager] reactionChainTracker.clearAll threw on", reason, e);
+    }
+  }
+
   Hooks.on("combatEnd", (combat) => {
     console.log("[ReactionManager] combatEnd detected – nuking all Reaction buttons.", {
       combatId: combat?.id,
@@ -642,6 +653,7 @@ Hooks.once("ready", () => {
     });
     clearAllReactionWindows();
     hardNukeReactionButtons("combatEnd");
+    clearChainTracker("combatEnd");
     _currentPhaseBucket = null;
   });
 
@@ -652,6 +664,7 @@ Hooks.once("ready", () => {
     });
     clearAllReactionWindows();
     hardNukeReactionButtons("deleteCombat");
+    clearChainTracker("deleteCombat");
     _currentPhaseBucket = null;
   });
 

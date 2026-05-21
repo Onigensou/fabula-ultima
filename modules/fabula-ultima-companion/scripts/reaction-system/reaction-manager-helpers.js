@@ -181,8 +181,28 @@ Hooks.once("ready", () => {
       triggerKeys: [],
       phasePayloadByTrigger: {},
       triggerHistory: [],
-      reactionGroupsByItemUuid: new Map()
+      reactionGroupsByItemUuid: new Map(),
+      // Reaction chain id carried from the originating action card's emit
+      // payload. Stays sticky across merges within the same window; only
+      // overwritten if a later emit carries a different non-null id.
+      reactionChainId: null
     };
+  }
+
+  function extractReactionChainId(payload) {
+    if (!payload || typeof payload !== "object") return null;
+    const candidates = [
+      payload?.reactionChainId,
+      payload?.meta?.reactionChainId,
+      payload?.actionContext?.reactionChainId,
+      payload?.actionContext?.meta?.reactionChainId
+    ];
+    for (const c of candidates) {
+      if (c == null) continue;
+      const s = String(c).trim();
+      if (s) return s;
+    }
+    return null;
   }
 
   function mergeReactionGroupIntoWindow(windowState, group) {
@@ -234,6 +254,9 @@ Hooks.once("ready", () => {
 
     windowState.triggerHistory.push({ triggerKey, at: Date.now() });
 
+    const incomingChainId = extractReactionChainId(phasePayload);
+    if (incomingChainId) windowState.reactionChainId = incomingChainId;
+
     for (const group of ctx?.reactions ?? []) {
       mergeReactionGroupIntoWindow(windowState, group);
     }
@@ -276,7 +299,8 @@ Hooks.once("ready", () => {
       phasePayloadByTrigger: foundry.utils.deepClone(windowState?.phasePayloadByTrigger ?? {}),
       triggerEntries: buildTriggerEntriesForWindow(windowState),
       phaseBucket: windowState?.phaseBucket ?? null,
-      ownerUserIds: uniqueStrings(windowState?.ownerUserIds ?? [])
+      ownerUserIds: uniqueStrings(windowState?.ownerUserIds ?? []),
+      reactionChainId: windowState?.reactionChainId ?? null
     };
   }
 
@@ -302,7 +326,8 @@ Hooks.once("ready", () => {
       phasePayload: foundry.utils.deepClone(windowState?.latestPhasePayload ?? {}),
       latestPhasePayload: foundry.utils.deepClone(windowState?.latestPhasePayload ?? {}),
       phasePayloadByTrigger: foundry.utils.deepClone(windowState?.phasePayloadByTrigger ?? {}),
-      triggerHistory: Array.isArray(windowState?.triggerHistory) ? [...windowState.triggerHistory] : []
+      triggerHistory: Array.isArray(windowState?.triggerHistory) ? [...windowState.triggerHistory] : [],
+      reactionChainId: windowState?.reactionChainId ?? null
     };
   }
 
@@ -315,12 +340,18 @@ Hooks.once("ready", () => {
   function buildVisibilityBroadcastFromWindow(windowState, ownerUserIds) {
     const reactionGroups = Array.from(windowState?.reactionGroupsByItemUuid?.values?.() ?? []);
     const items = reactionGroups
-      .map(group => ({
-        itemUuid: group?.item?.uuid ?? null,
-        name: group?.item?.name ?? null,
-        img: group?.item?.img ?? null,
-        triggers: uniqueStrings(group?.triggers ?? [])
-      }))
+      .map(group => {
+        const item = group?.item;
+        const descRaw = item?.system?.props?.description ?? item?.system?.description ?? item?.system?.system?.description ?? "";
+        const description = String(descRaw).replace(/<[^>]*>/g, "").trim();
+        return {
+          itemUuid: item?.uuid ?? null,
+          name: item?.name ?? null,
+          img: item?.img ?? null,
+          description,
+          triggers: uniqueStrings(group?.triggers ?? [])
+        };
+      })
       .filter(it => !!it.itemUuid);
 
     const latestPhasePayload = windowState?.latestPhasePayload ?? {};
@@ -338,7 +369,8 @@ Hooks.once("ready", () => {
       latestTriggerKey: windowState?.latestTriggerKey ?? null,
       triggerKeys: uniqueStrings(windowState?.triggerKeys ?? []),
       items,
-      latestPhasePayload: foundry.utils.deepClone(latestPhasePayload)
+      latestPhasePayload: foundry.utils.deepClone(latestPhasePayload),
+      reactionChainId: windowState?.reactionChainId ?? null
     };
   }
 
@@ -392,6 +424,7 @@ Hooks.once("ready", () => {
     buildCtxFromWindow,
     buildSocketOfferFromWindow,
     buildVisibilityBroadcastFromWindow,
+    extractReactionChainId,
     pickPassiveEventStamp,
     buildPassiveSourceEvent
   };

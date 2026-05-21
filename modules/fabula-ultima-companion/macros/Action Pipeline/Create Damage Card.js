@@ -34,22 +34,43 @@ return (async () => {
     );
   };
 
+  // Reaction chain id — every emit this card makes carries this id so
+  // the reaction tracker can record "Hina already fired Counterattack in
+  // this chain" and prevent re-picks across the cascade. Inherited from
+  // upstream payload when this card is itself a reaction's downstream
+  // attack/heal; minted fresh when this is the chain root.
+  const resolveReactionChainIdFromPayload = (p = {}) => {
+    return nonBlankString(
+      p?.reactionChainId,
+      p?.meta?.reactionChainId,
+      p?.actionContext?.reactionChainId,
+      p?.actionContext?.meta?.reactionChainId,
+      p?.rootActionContext?.reactionChainId,
+      p?.rootActionContext?.meta?.reactionChainId
+    );
+  };
+
   const buildReactionActionContext = (ctx, inherited = {}) => {
     if (!ctx || typeof ctx !== "object") {
-      return inherited?.damageBatchId
-        ? {
-            meta: {
-              damageBatchId: inherited.damageBatchId,
-              rootDamageBatchId: inherited.damageBatchId
-            }
-          }
-        : null;
+      if (!inherited?.damageBatchId && !inherited?.reactionChainId) return null;
+      return {
+        meta: {
+          damageBatchId: inherited?.damageBatchId || null,
+          rootDamageBatchId: inherited?.damageBatchId || null,
+          reactionChainId: inherited?.reactionChainId || null
+        }
+      };
     }
 
     const inheritedDamageBatchId = nonBlankString(
       inherited?.damageBatchId,
       ctx?.damageBatchId,
       ctx?.meta?.damageBatchId
+    );
+    const inheritedReactionChainId = nonBlankString(
+      inherited?.reactionChainId,
+      ctx?.reactionChainId,
+      ctx?.meta?.reactionChainId
     );
 
     return {
@@ -69,6 +90,10 @@ return (async () => {
         // Batch inheritance for passive/reaction chains.
         damageBatchId: inheritedDamageBatchId || null,
         rootDamageBatchId: inheritedDamageBatchId || null,
+
+        // Reaction chain inheritance — every card in the cascade shares
+        // the same id so the chain tracker can gate per-skill-per-actor.
+        reactionChainId: inheritedReactionChainId || null,
 
         // Useful identity carry-through for future grouping/debug.
         actionId: ctx?.meta?.actionId ?? ctx?.actionId ?? null,
@@ -285,6 +310,30 @@ return (async () => {
     }
   }
 
+  // Reaction chain identity. Inherited from the upstream payload when this
+  // card is downstream of a reaction; minted fresh otherwise. Stamped onto
+  // the in-memory payload so reaction-trigger emits below pick it up
+  // automatically through commonPayload.
+  const _chainTrackerApi = globalThis?.FUCompanion?.api?.reactionChainTracker ?? null;
+  const _inheritedReactionChainId = resolveReactionChainIdFromPayload(payload);
+  const REACTION_CHAIN_ID = _inheritedReactionChainId
+    || (_chainTrackerApi?.mintChainId?.() ?? null);
+
+  if (REACTION_CHAIN_ID) {
+    payload.meta = payload.meta || {};
+    payload.reactionChainId = REACTION_CHAIN_ID;
+    payload.meta.reactionChainId = REACTION_CHAIN_ID;
+
+    if (payload.actionContext && typeof payload.actionContext === "object") {
+      payload.actionContext.meta = payload.actionContext.meta || {};
+      payload.actionContext.reactionChainId = REACTION_CHAIN_ID;
+      payload.actionContext.meta.reactionChainId = REACTION_CHAIN_ID;
+    }
+
+    // Keep the chain alive while this card is in flight.
+    try { _chainTrackerApi?.touch?.(REACTION_CHAIN_ID); } catch (_) {}
+  }
+
   dbg("start", {
     TRACE_ID,
     isGM: !!game.user?.isGM,
@@ -354,7 +403,8 @@ return (async () => {
       } = payload;
 
       const reactionActionContext = buildReactionActionContext(actionContext, {
-        damageBatchId: DAMAGE_BATCH_ID || null
+        damageBatchId: DAMAGE_BATCH_ID || null,
+        reactionChainId: REACTION_CHAIN_ID || null
       });
 
       const resolvedSkillTypeRaw = nonBlankString(
@@ -502,9 +552,16 @@ return (async () => {
         // so their Damage Cards can be captured into the same grouped ChatMessage.
         damageBatchId: DAMAGE_BATCH_ID || null,
         rootDamageBatchId: DAMAGE_BATCH_ID || null,
+
+        // Reaction chain identity — every trigger payload below inherits
+        // this via the spread, so the manager can stash it in windowState
+        // and the picker can check "already used in this chain" gating.
+        reactionChainId: REACTION_CHAIN_ID || null,
+
         meta: {
           damageBatchId: DAMAGE_BATCH_ID || null,
           rootDamageBatchId: DAMAGE_BATCH_ID || null,
+          reactionChainId: REACTION_CHAIN_ID || null,
           sourceDamageCardTraceId: TRACE_ID,
 
           actionId: actionContext?.meta?.actionId ?? actionContext?.actionId ?? null,
@@ -652,6 +709,36 @@ return (async () => {
           const affinityTrigger = AFFINITY_TO_TRIGGER[String(commonPayload.effectivenessLabel ?? "").toLowerCase()];
           if (affinityTrigger) damageTriggers.push({ key: affinityTrigger });
           if (commonPayload.shieldBreak) damageTriggers.push({ key: "creature_shield_break" });
+        }
+
+        // State-transition triggers — predicted from the HP delta we
+        // just applied. Emitting them inline with creature_takes_damage
+        // (instead of leaving them to the eager updateActor listeners
+        // in auto-crisis-detection / creature-defeated-emitter)
+        // guarantees they reach the manager in the same synchronous
+        // batch and merge into the reactor's reaction window. Those
+        // eager emitters dedupe on the `fuReactionTriggersHandled`
+        // option that apply-damage-core stamps on the actor update.
+        if (targetTokenUuid && resourceType === "hp" && gmChanges?.hp) {
+          const maxHp = Number(targetActor?.system?.props?.max_hp) || 0;
+          const crisisThreshold = maxHp > 0 ? Math.ceil(maxHp / 2) : 0;
+          const hpBefore = Number(gmChanges.hp.from ?? 0);
+          const hpAfter  = Number(gmChanges.hp.to ?? 0);
+          const wasInCrisis = crisisThreshold > 0 && hpBefore <= crisisThreshold && hpBefore > 0;
+          const isInCrisis  = crisisThreshold > 0 && hpAfter  <= crisisThreshold && hpAfter  > 0;
+
+          if (changeKind === "loss") {
+            if (!wasInCrisis && isInCrisis) {
+              damageTriggers.push({ key: "creature_enter_crisis" });
+            }
+            if (hpBefore > 0 && hpAfter === 0) {
+              damageTriggers.push({ key: "creature_defeated" });
+            }
+          } else if (changeKind === "gain") {
+            if (wasInCrisis && !isInCrisis) {
+              damageTriggers.push({ key: "creature_exit_crisis" });
+            }
+          }
         }
       }
 

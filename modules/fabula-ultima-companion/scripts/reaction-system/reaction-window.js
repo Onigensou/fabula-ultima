@@ -109,7 +109,7 @@
 
   /** Lifecycle-trigger buckets — these don't get actionCardId in the key. */
   const LIFECYCLE_BUCKETS = new Set([
-    "conflict_start", "round_start", "round_end", "turn_start", "turn_end"
+    "conflict_start", "conflict_end", "round_start", "round_end", "turn_start", "turn_end"
   ]);
 
   // ---------------------------------------------------------------------------
@@ -189,19 +189,36 @@
     if (!actionCardId) return;
     const msg = findMessageForActionCard(actionCardId);
     if (!msg) {
-      warn("clearReactionsPendingFlag: message not found.", { actionCardId });
+      // Normal when the card was just deleted (e.g. by Undo) — there's
+      // nothing left to clear. Drop to debug; loud warn was producing
+      // false-positive noise after every undo.
+      log("clearReactionsPendingFlag: message not found (card likely deleted).", { actionCardId });
       return;
     }
     const flag = msg.getFlag?.(MODULE_ID, "actionCard");
     if (!flag?.reactionsPending) return; // already clear
+    // Re-confirm the message still exists in the collection right before
+    // update. A delete between findMessageForActionCard and now would
+    // throw with the ugly "ChatMessage X does not exist" error.
+    if (!game.messages?.get?.(msg.id)) {
+      log("clearReactionsPendingFlag: message disappeared mid-clear.", { actionCardId, messageId: msg.id });
+      return;
+    }
     try {
       await msg.update({
         [`flags.${MODULE_ID}.actionCard.reactionsPending`]: false
       });
       log("Cleared reactionsPending flag.", { actionCardId, messageId: msg.id });
     } catch (e) {
+      const errStr = String(e?.message ?? e);
+      // Same "does not exist" race: message was deleted between our
+      // existence check and update. Quiet, not noisy.
+      if (/does not exist/i.test(errStr)) {
+        log("clearReactionsPendingFlag: race — message deleted during update.", { actionCardId, messageId: msg.id });
+        return;
+      }
       warn("clearReactionsPendingFlag update failed", {
-        actionCardId, messageId: msg.id, error: String(e?.message ?? e)
+        actionCardId, messageId: msg.id, error: errStr
       });
     }
   }
@@ -292,6 +309,11 @@
     const sub = _subWindows.get(subKey);
     if (!sub) return;
     clearSubTimers(sub);
+
+    // Reaction timeout temporarily disabled during the action-menu UX
+    // iteration. Sub-windows resolve only via explicit pick/cancel,
+    // never via timeout. Re-enable by removing this early return.
+    return;
 
     sub.timeoutDeadline = Date.now() + timeoutMs;
 
@@ -439,6 +461,35 @@
       // Non-GM: no serialization; just emit through openWindow's passthrough.
       return openWindow(payload, opts);
     }
+
+    // Timing-window supersede: when a new phase emits, any pending
+    // *lifecycle* subs from an earlier phase whose timing window has
+    // passed should auto-close. A player who didn't pick during the
+    // start_of_conflict window can't keep blocking the rest of the
+    // game once turn_start (or an action emit) arrives. We run this
+    // BEFORE awaiting `prior` so even a stuck prior chain unblocks —
+    // closing a sub resolves its promise, which resolves the prior
+    // emit's Promise.all, which unblocks the chain.
+    //
+    // Same-bucket subs are closed too. If conflict_start emits twice
+    // (e.g. a duplicate from a phase-handler edge case), the second
+    // emit takes over the window cleanly.
+    if (opts?.skipSupersede !== true) {
+      const incomingBucket = computeBucket(payload);
+      if (incomingBucket) {
+        const superseded = [...LIFECYCLE_BUCKETS].filter(b => b !== incomingBucket);
+        // If the incoming emit is itself a lifecycle phase, also wipe
+        // any stale subs of the SAME bucket (left over from a prior
+        // emit of the same phase). Non-lifecycle emits (damage,
+        // checks, etc.) only close lifecycle subs.
+        if (LIFECYCLE_BUCKETS.has(incomingBucket)) superseded.push(incomingBucket);
+        if (superseded.length) {
+          try { await closeWindowsByBucket(superseded, "lifecycle_superseded"); }
+          catch (e) { warn("supersede close threw:", e?.message ?? e); }
+        }
+      }
+    }
+
     const prior = _phaseChain;
     let release;
     _phaseChain = new Promise((r) => { release = r; });
@@ -634,6 +685,34 @@
       closed.push(key);
     }
     if (closed.length) log("Closed all subs.", { reason, closed });
+    return closed;
+  }
+
+  /**
+   * Force-resolve every pending sub whose bucket matches `bucket` (or any
+   * of the buckets in the array). Used to enforce "timing window over"
+   * semantics: when a later lifecycle phase emits (e.g. turn_start), any
+   * leftover conflict_start subs that nobody acted on are stale by RAW
+   * and should not keep blocking downstream emits.
+   *
+   * `excludeBuckets`: optional set of buckets to KEEP open. Lets the
+   * caller close everything except the bucket they're emitting next.
+   */
+  async function closeWindowsByBucket(bucketOrList, reason = "supersedes", opts = {}) {
+    const targets = new Set(
+      Array.isArray(bucketOrList) ? bucketOrList.map(String) : [String(bucketOrList)]
+    );
+    const excludeBuckets = opts.excludeBuckets instanceof Set
+      ? opts.excludeBuckets
+      : new Set(opts.excludeBuckets ?? []);
+    const closed = [];
+    for (const [key, sub] of Array.from(_subWindows.entries())) {
+      if (!targets.has(sub.bucket)) continue;
+      if (excludeBuckets.has(sub.bucket)) continue;
+      await resolveSub(key, { outcome: "forced", reason });
+      closed.push(key);
+    }
+    if (closed.length) log("Closed subs by bucket.", { buckets: [...targets], reason, closed });
     return closed;
   }
 
@@ -860,6 +939,7 @@
     waitForIdle,
     closeWindowsForActionCard,
     closeWindowsForToken,
+    closeWindowsByBucket,
     closeAll,
     listPendingWindows,
     getSecondsLeftFor,
@@ -873,6 +953,144 @@
       decrementCardPending
     }
   };
+
+  // ---------------------------------------------------------------------------
+  // F5 recovery — re-emit reactions for cards whose `reactionsPending` flag
+  // survived a mid-window reload.
+  //
+  // The substrate's `_subWindows` map is in-memory; F5 wipes it but leaves
+  // the action card's `reactionsPending` flag set. Without recovery the card
+  // UI is locked indefinitely (the 60s safety timer in CreateActionCard also
+  // dies on F5) AND reactors don't see their pill again.
+  //
+  // Approach: on world ready, scan messages flagged `reactionsPending=true`,
+  // read each card's stored PAYLOAD (saveActionCardFlagToMessage persists it
+  // under `actionCard.payload`), reconstruct the same baseReactionPayload
+  // CreateActionCard builds, and re-emit the standard four card-creation
+  // triggers via emitPhaseSequential. Reactors get the pill back. Resources
+  // already spent (e.g. consume_charge) just abort on the second pick.
+  //
+  // Older cards (> RECOVERY_MAX_AGE_MS) get their lock cleared without
+  // re-emit — they're almost certainly stale state, not a real F5 mid-phase.
+  // ---------------------------------------------------------------------------
+  Hooks.once("ready", async () => {
+    if (!game.user?.isGM) return;
+
+    const RECOVERY_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
+    const now = Date.now();
+    const messages = game.messages?.contents ?? [];
+    const pending = [];
+    for (const m of messages) {
+      const flag = m?.getFlag?.(MODULE_ID, "actionCard");
+      if (!flag?.reactionsPending) continue;
+      pending.push({ msg: m, flag, ageMs: now - (m.timestamp ?? 0) });
+    }
+    if (!pending.length) return;
+
+    log(`F5 recovery: found ${pending.length} action card(s) flagged reactionsPending.`);
+
+    for (const { msg, flag, ageMs } of pending) {
+      try {
+        const storedPayload = flag?.payload ?? null;
+
+        // Stale (>10 min) or no payload → just clear the lock. No re-emit.
+        if (ageMs > RECOVERY_MAX_AGE_MS || !storedPayload) {
+          await msg.update({ [`flags.${MODULE_ID}.actionCard.reactionsPending`]: false });
+          log("F5 recovery: cleared stale lock (no re-emit).", {
+            messageId: msg.id, ageMs, hasPayload: !!storedPayload
+          });
+          continue;
+        }
+
+        const meta = storedPayload.meta ?? {};
+        const accuracy = storedPayload.accuracy ?? meta.accuracy ?? null;
+        const targets = Array.isArray(storedPayload.originalTargetUUIDs)
+          ? storedPayload.originalTargetUUIDs
+          : (Array.isArray(storedPayload.targets) ? storedPayload.targets : []);
+
+        const baseReactionPayload = {
+          kind: "action_declaration",
+          trigger: null,
+          timestamp: Date.now(),
+          attackerUuid: meta.attackerUuid ?? storedPayload.attacker_uuid ?? null,
+          attackerName: meta.attackerName ?? storedPayload.attackerName ?? null,
+          sourceUuid: meta.attackerUuid ?? storedPayload.attacker_uuid ?? null,
+          actorUuid: storedPayload.attackerActorUuid ?? meta.attackerActorUuid ?? null,
+          sourceType: meta.sourceType ?? null,
+          listType: storedPayload.listType ?? null,
+          elementType: storedPayload.elementType ?? null,
+          skillName: storedPayload.skillName ?? null,
+          skillTypeRaw: storedPayload.skillTypeRaw ?? null,
+          actionIntent: meta.actionIntent ?? null,
+          isCheck: !!accuracy,
+          hasAccuracy: !!accuracy,
+          targets,
+          attackRange: storedPayload.attackRange ?? null,
+          actionId: flag.actionId ?? storedPayload.actionId ?? null,
+          actionCardId: flag.actionCardId ?? storedPayload.actionCardId ?? null,
+          actionCardVersion: flag.actionCardVersion ?? storedPayload.actionCardVersion ?? null,
+          actionCardMessageId: msg.id,
+          __f5Recovery: true
+        };
+
+        const actionCardId = baseReactionPayload.actionCardId;
+        if (!actionCardId) {
+          await msg.update({ [`flags.${MODULE_ID}.actionCard.reactionsPending`]: false });
+          warn("F5 recovery: card missing actionCardId; cleared lock without re-emit.", { messageId: msg.id });
+          continue;
+        }
+
+        log("F5 recovery: re-emitting triggers.", {
+          messageId: msg.id, actionCardId,
+          targets: targets.length, hasAccuracy: !!accuracy
+        });
+
+        // Guard the per-card pending counter so a no-reactor emit doesn't
+        // immediately clear the lock before later emits register.
+        try { beginCardEmit(actionCardId); } catch (_) {}
+        try {
+          const emits = [];
+          emits.push(emitPhaseSequential(
+            { ...baseReactionPayload, trigger: "creature_performs_action" },
+            { reason: "f5_recovery" }
+          ));
+          if (accuracy) {
+            emits.push(emitPhaseSequential(
+              { ...baseReactionPayload, trigger: "creature_performs_check" },
+              { reason: "f5_recovery" }
+            ));
+          }
+          for (const t of targets) {
+            emits.push(emitPhaseSequential(
+              { ...baseReactionPayload, trigger: "creature_is_targeted", targetUuid: t },
+              { reason: "f5_recovery" }
+            ));
+          }
+          const isCrit = !!accuracy?.isCrit;
+          const isFumble = !!accuracy?.isFumble;
+          if (isCrit && !isFumble) {
+            emits.push(emitPhaseSequential(
+              { ...baseReactionPayload, trigger: "creature_critical_hit",
+                isCrit: true, isFumble: false, accuracyTotal: accuracy?.total ?? null },
+              { reason: "f5_recovery" }
+            ));
+          }
+          if (isFumble) {
+            emits.push(emitPhaseSequential(
+              { ...baseReactionPayload, trigger: "creature_fumbles_check",
+                isCrit: false, isFumble: true, accuracyTotal: accuracy?.total ?? null },
+              { reason: "f5_recovery" }
+            ));
+          }
+          Promise.all(emits).catch(e => warn("F5 recovery: emit chain rejected (non-fatal):", e?.message ?? e));
+        } finally {
+          try { endCardEmit(actionCardId); } catch (_) {}
+        }
+      } catch (e) {
+        warn("F5 recovery failed for message:", { messageId: msg?.id, error: String(e?.message ?? e) });
+      }
+    }
+  });
 
   log("Installed (v1.5 — per-reactor sub-windows + socket sync).");
 })();
