@@ -8,7 +8,7 @@
 //   the target as a "may cast" Active Effect (campRestCharges: 1).
 //
 // Usages formula (|teacher − target| → usages):
-//   0–2  → 3 | 3–5  → 2 | 6+  → 1
+//   exact 0  → 3 (perfect resonance) | 1–3  → 2 | 4+  → 1
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
@@ -18,12 +18,12 @@
   const LESSON_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png";
 
   // ---------------------------------------------------------------------------
-  // Usages formula
+  // Usages formula: exact match → 3, close (diff 1–3) → 2, far → 1
   // ---------------------------------------------------------------------------
   function _calcUsages(teacherTotal, targetTotal) {
     const d = Math.abs(teacherTotal - targetTotal);
-    if (d <= 2) return 3;
-    if (d <= 5) return 2;
+    if (d === 0) return 3;
+    if (d <= 3) return 2;
     return 1;
   }
 
@@ -45,7 +45,7 @@
       try {
         const item = await fromUuid(e.uuid);
         if (!item) continue;
-        spells.push({ name: item.name, img: item.img || "icons/svg/explosion.svg", uuid: item.uuid });
+        spells.push({ name: item.name, img: item.img || "icons/svg/explosion.svg", uuid: item.uuid, isOffensive: !!item.system?.props?.isOffensiveSpell });
       } catch { /* skip unresolvable */ }
     }
     return spells;
@@ -113,6 +113,8 @@
 
         // 5 — Wait for owner to pick a spell
         const { spellUuid, spellName, spellImg } = await _waitForSpell(actor);
+        const _spellItem = spellUuid ? await fromUuid(spellUuid).catch(() => null) : null;
+        const spellIsOffensive = !!_spellItem?.system?.props?.isOffensiveSpell;
 
         // 6 — Broadcast rolling phase
         CAMP.Socket.broadcast(CAMP.MSG.MAGIC_LESSON_RESULT, {
@@ -189,6 +191,7 @@
               spellUuid,
               spellName,
               spellImg,
+              spellIsOffensive,
               usagesLeft:               usages,
               magicLessonTeacherId:     actor.id,
             },
