@@ -79,6 +79,14 @@
     {
       "key": "2026-05-20-targeting-exclude-self",
       "path": "data-migrations/2026-05-20-targeting-exclude-self.js"
+    },
+    {
+      "key": "2026-05-21-high-speed-author",
+      "path": "data-migrations/2026-05-21-high-speed-author.js"
+    },
+    {
+      "key": "2026-05-21-consume-resource",
+      "path": "data-migrations/2026-05-21-consume-resource.js"
     }
   ]
 }
