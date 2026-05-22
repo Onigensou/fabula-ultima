@@ -119,6 +119,18 @@
     {
       "key": "2026-05-21-pds-actor-copy-relink",
       "path": "data-migrations/2026-05-21-pds-actor-copy-relink.js"
+    },
+    {
+      "key": "2026-05-23-pds-rename-and-prune-clear",
+      "path": "data-migrations/2026-05-23-pds-rename-and-prune-clear.js"
+    },
+    {
+      "key": "2026-05-23-skill-effects-panel-title-wrap",
+      "path": "data-migrations/2026-05-23-skill-effects-panel-title-wrap.js"
+    },
+    {
+      "key": "2026-05-23-skill-effects-panel-css-class",
+      "path": "data-migrations/2026-05-23-skill-effects-panel-css-class.js"
     }
   ]
 }
