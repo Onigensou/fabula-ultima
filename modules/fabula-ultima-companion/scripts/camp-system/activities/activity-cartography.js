@@ -4,15 +4,14 @@
 //
 // Minigame: Snake
 //   Owner pilots a snake on a 15×15 grid for 15 seconds, collecting treasure
-//   and avoiding hazards and their own trail.
+//   (+10 pts each) and avoiding hazards and their own trail (−5 pts each hit).
 //
-// Scoring → campRestCharges (each charge = one Travel Roll reroll):
-//   0 hits  → Perfect → 3 charges
-//   1 hit   → Good    → 2 charges
-//   2+ hits → Standard→ 1 charge
+// Grade → campRestCharges (each charge = one Travel Roll reroll):
+//   Perfect: 0 errors AND ≥ 50 pts → 3 charges
+//   Good:   ≤1 error  AND ≥ 30 pts → 2 charges
+//   Standard: anything else         → 1 charge
 //
-// Each charge is a separate AE so the TravelRoll API (which deletes one AE
-// per use) can consume them individually without API changes.
+// Thresholds are published to CAMP.CARTOGRAPHY so the UI file shares them.
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
@@ -21,9 +20,18 @@
 
   const MAP_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/dig.png";
 
-  function _calcCharges(hits) {
-    if (hits === 0) return 3;
-    if (hits === 1) return 2;
+  // Shared with activity-cartography-ui.js via CAMP.CARTOGRAPHY
+  CAMP.CARTOGRAPHY = Object.freeze({
+    PERFECT_PTS:    50,   // minimum score for Perfect
+    PERFECT_ERRORS:  0,   // maximum errors for Perfect
+    GOOD_PTS:       30,   // minimum score for Good
+    GOOD_ERRORS:     1,   // maximum errors for Good
+  });
+
+  function _calcCharges(score, hits) {
+    const { PERFECT_PTS, PERFECT_ERRORS, GOOD_PTS, GOOD_ERRORS } = CAMP.CARTOGRAPHY;
+    if (hits <= PERFECT_ERRORS && score >= PERFECT_PTS) return 3;
+    if (hits <= GOOD_ERRORS    && score >= GOOD_PTS)    return 2;
     return 1;
   }
 
@@ -53,7 +61,7 @@
         const { score, hits } = await _waitForScore(actor);
         console.debug(TAG, `Score: ${score}, Hits: ${hits}`);
 
-        const charges = _calcCharges(hits);
+        const charges = _calcCharges(score, hits);
         console.debug(TAG, `Charges granted: ${charges}`);
 
         // 3 — Clear any existing Cartography AEs (player chose this activity again)
@@ -145,10 +153,11 @@
   // Chat announcement
   // ---------------------------------------------------------------------------
   async function _postChatResult(actor, score, hits, charges) {
+    const { PERFECT_PTS, GOOD_PTS } = CAMP.CARTOGRAPHY;
     const gradeLabel =
-      charges === 3 ? "Perfect charting — no errors!" :
-      charges === 2 ? "Good work." :
-                      "Standard mapping.";
+      charges === 3 ? `Perfect! (${score} pts, 0 errors)` :
+      charges === 2 ? `Good (${score} pts, ${hits} error${hits !== 1 ? "s" : ""})` :
+                      `Standard (${score} pts, ${hits} error${hits !== 1 ? "s" : ""})`;
     const gradeColor =
       charges === 3 ? "#c8a84b" :
       charges === 2 ? "#4caf50" :

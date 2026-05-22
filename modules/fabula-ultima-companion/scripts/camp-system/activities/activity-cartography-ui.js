@@ -50,6 +50,21 @@
     try { AudioHelper.play({ src, volume: vol, autoplay: true, loop: false }, false); } catch {}
   }
 
+  // Mirrors activity-cartography.js — reads from CAMP.CARTOGRAPHY set by the logic file
+  function _calcChargesLocal(score, hits) {
+    const { PERFECT_PTS = 50, PERFECT_ERRORS = 0, GOOD_PTS = 30, GOOD_ERRORS = 1 } =
+      CAMP.CARTOGRAPHY ?? {};
+    if (hits <= PERFECT_ERRORS && score >= PERFECT_PTS) return 3;
+    if (hits <= GOOD_ERRORS    && score >= GOOD_PTS)    return 2;
+    return 1;
+  }
+
+  function _gradeInfo(charges) {
+    if (charges === 3) return { label: "Perfect", color: "#c8a84b" };
+    if (charges === 2) return { label: "Good",    color: "#4caf50" };
+    return                     { label: "Standard",color: "#8a8a8a" };
+  }
+
   // ── Module-level state ─────────────────────────────────────────────────────
   let _actorId        = null;
   let _isOwner        = false;
@@ -356,7 +371,7 @@
     if (!_isOwner) return;
 
     // Show result immediately — no waiting for GM round-trip
-    const localCharges = _hits === 0 ? 3 : _hits === 1 ? 2 : 1;
+    const localCharges = _calcChargesLocal(_score, _hits);
     CAMP.CartographyUI.applyResult(_actorId, _score, _hits, localCharges);
 
     // Send score to GM so execute() can create the AE and broadcast official result
@@ -460,9 +475,15 @@
     const scoreEl = document.getElementById("oni-carto-score");
     const hitsEl  = document.getElementById("oni-carto-hits");
     const timerEl = document.getElementById("oni-carto-timer");
+    const gradeEl = document.getElementById("oni-carto-grade-hud");
     if (scoreEl) scoreEl.textContent = score ?? 0;
     if (hitsEl)  hitsEl.textContent  = hits  ?? 0;
     if (timerEl) timerEl.textContent = ((timeLeft ?? 0) / 1000).toFixed(1) + "s";
+    if (gradeEl) {
+      const info = _gradeInfo(_calcChargesLocal(score ?? 0, hits ?? 0));
+      gradeEl.textContent = info.label;
+      gradeEl.style.color = info.color;
+    }
   }
 
   function _emitTick() {
@@ -489,22 +510,46 @@
     if (!result) return;
     result.style.display = "flex";
 
-    const gradeLabel =
-      charges === 3 ? "Perfect!" :
-      charges === 2 ? "Good!" :
-                      "Standard";
-    const gradeColor =
-      charges === 3 ? "#c8a84b" :
-      charges === 2 ? "#4caf50" :
-                      "#8a8a8a";
+    const { PERFECT_PTS = 50, PERFECT_ERRORS = 0, GOOD_PTS = 30, GOOD_ERRORS = 1 } =
+      CAMP.CARTOGRAPHY ?? {};
+
+    const { label: gradeLabel, color: gradeColor } = _gradeInfo(charges);
     const chargeLabel = charges === 1 ? "1 Charge" : `${charges} Charges`;
     const isOwner = _checkIsOwner(actorId);
 
+    // Build threshold check rows — show what the player hit or missed
+    function check(ok, text) {
+      return `<div class="oni-carto-res-check ${ok ? "ok" : "fail"}">
+        <i class="fas fa-${ok ? "check" : "times"}"></i> ${text}
+      </div>`;
+    }
+
+    let thresholdRows = "";
+    if (charges === 3) {
+      // Perfect — both conditions met, just confirm
+      thresholdRows =
+        check(true, `Score: ${score} pts &nbsp;(≥${PERFECT_PTS} required)`) +
+        check(true, `Errors: ${hits} &nbsp;(max ${PERFECT_ERRORS})`);
+    } else if (charges === 2) {
+      // Good — show met conditions, and what fell short of Perfect
+      const ptOk  = score >= GOOD_PTS;
+      const errOk = hits  <= GOOD_ERRORS;
+      thresholdRows =
+        check(ptOk,  `Score: ${score} pts &nbsp;(≥${GOOD_PTS} for Good, ≥${PERFECT_PTS} for Perfect)`) +
+        check(errOk, `Errors: ${hits} &nbsp;(≤${GOOD_ERRORS} for Good, ${PERFECT_ERRORS} for Perfect)`);
+    } else {
+      // Standard — show what fell short of Good
+      const ptOk  = score >= GOOD_PTS;
+      const errOk = hits  <= GOOD_ERRORS;
+      thresholdRows =
+        check(ptOk,  `Score: ${score} pts &nbsp;(need ≥${GOOD_PTS} for Good)`) +
+        check(errOk, `Errors: ${hits} &nbsp;(need ≤${GOOD_ERRORS} for Good)`);
+    }
+
     result.innerHTML = `
       <div class="oni-carto-res-grade" style="color:${gradeColor};">${gradeLabel}</div>
-      <div class="oni-carto-res-row">Score: <strong>${score}</strong></div>
-      <div class="oni-carto-res-row">Errors: <strong>${hits}</strong></div>
-      <div class="oni-carto-res-row">
+      <div class="oni-carto-res-thresholds">${thresholdRows}</div>
+      <div class="oni-carto-res-row" style="margin-top:6px;">
         Cartography &rarr; <strong style="color:#c8a84b;">${chargeLabel}</strong>
       </div>
       <div class="oni-carto-res-desc">
@@ -566,9 +611,15 @@
     const s = document.getElementById("oni-carto-score");
     const h = document.getElementById("oni-carto-hits");
     const t = document.getElementById("oni-carto-timer");
+    const g = document.getElementById("oni-carto-grade-hud");
     if (s) s.textContent = _score;
     if (h) h.textContent = _hits;
     if (t) t.textContent = (_timeLeft / 1000).toFixed(1) + "s";
+    if (g) {
+      const info = _gradeInfo(_calcChargesLocal(_score, _hits));
+      g.textContent = info.label;
+      g.style.color = info.color;
+    }
   }
 
   function _stopLoop() {
@@ -612,6 +663,7 @@
 
         <div id="oni-carto-hud" class="oni-carto-hud" style="display:none;">
           <span>Score: <strong id="oni-carto-score">0</strong></span>
+          <span id="oni-carto-grade-hud" class="oni-carto-grade-chip" style="color:#8a8a8a;">Standard</span>
           <span>Errors: <strong id="oni-carto-hits">0</strong></span>
           <span id="oni-carto-timer">15.0s</span>
         </div>
@@ -622,6 +674,23 @@
             ${_isOwner ? "Collect <strong>treasure</strong>, avoid <strong>hazards</strong> and your own trail!" : "Waiting for the explorer…"}
           </div>
           ${_isOwner ? `
+            <div class="oni-carto-grade-table">
+              <div class="oni-carto-grade-row">
+                <span style="color:#c8a84b;"><i class="fas fa-star"></i> Perfect</span>
+                <span>0 errors &amp; 50+ pts</span>
+                <span style="color:#c8a84b;">3 rerolls</span>
+              </div>
+              <div class="oni-carto-grade-row">
+                <span style="color:#4caf50;"><i class="fas fa-check-circle"></i> Good</span>
+                <span>≤1 error &amp; 30+ pts</span>
+                <span style="color:#4caf50;">2 rerolls</span>
+              </div>
+              <div class="oni-carto-grade-row">
+                <span style="color:#8a8a8a;"><i class="fas fa-scroll"></i> Standard</span>
+                <span>anything else</span>
+                <span style="color:#8a8a8a;">1 reroll</span>
+              </div>
+            </div>
             <div class="oni-carto-controls-hint">
               <i class="fas fa-keyboard"></i>&ensp;
               <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Arrow Keys
@@ -685,14 +754,31 @@
         letter-spacing: 0.12em; text-transform: uppercase; color: #c8a84b;
       }
       .oni-carto-hud {
-        display: flex; gap: 24px; font-size: 0.92rem;
+        display: flex; gap: 20px; font-size: 0.92rem;
         padding: 4px 14px; background: rgba(0,0,0,0.35);
         border: 1px solid rgba(200,168,75,0.15); border-radius: 6px;
-        min-width: 300px; justify-content: space-between;
+        min-width: 340px; justify-content: space-between; align-items: center;
+      }
+      .oni-carto-grade-chip {
+        font-weight: 700; font-size: 0.85rem;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        transition: color 0.2s;
       }
       .oni-carto-pre-game {
-        display: flex; flex-direction: column; align-items: center; gap: 14px;
-        padding: 20px 0; min-height: 100px; justify-content: center;
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        padding: 14px 0; min-height: 100px; justify-content: center;
+      }
+      .oni-carto-grade-table {
+        display: grid; grid-template-columns: auto auto auto;
+        gap: 4px 16px; font-size: 0.8rem;
+        background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 6px; padding: 8px 14px;
+      }
+      .oni-carto-grade-row {
+        display: contents;
+      }
+      .oni-carto-grade-row > span {
+        padding: 2px 0;
       }
       .oni-carto-waiting-label {
         font-size: 0.95rem; opacity: 0.8; text-align: center;
@@ -758,6 +844,16 @@
         font-size: 2.2rem; font-weight: 900;
         letter-spacing: 0.1em; text-transform: uppercase;
       }
+      .oni-carto-res-thresholds {
+        display: flex; flex-direction: column; gap: 4px;
+        font-size: 0.85rem; margin: 2px 0;
+      }
+      .oni-carto-res-check {
+        display: flex; align-items: center; gap: 8px;
+      }
+      .oni-carto-res-check.ok   { color: #4caf50; }
+      .oni-carto-res-check.fail { color: #e74c3c; }
+      .oni-carto-res-check i { width: 14px; text-align: center; }
       .oni-carto-res-row { font-size: 0.98rem; }
       .oni-carto-res-desc {
         font-size: 0.78rem; opacity: .65; font-style: italic;
