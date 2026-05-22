@@ -26,8 +26,8 @@
   // Grade helpers
   // ---------------------------------------------------------------------------
   function _calcGrade(score) {
-    if (score >= 6) return "exceptional";
-    if (score >= 3) return "good";
+    if (score >= 8) return "exceptional";
+    if (score >= 4) return "good";
     return "standard";
   }
 
