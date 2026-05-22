@@ -64,9 +64,21 @@
           return;
         }
 
-        // ── Cartography animation (GM → all) ────────────────────────────
+        // ── Cartography Snake minigame (GM → all, owner → all/GM) ───────
         if (type === CAMP.MSG.CARTOGRAPHY_START) {
           CAMP.CartographyUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_BEGIN) {
+          CAMP.CartographyUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_TICK) {
+          CAMP.CartographyUI?.onTick(payload);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_RESULT && payload?.charges != null) {
+          CAMP.CartographyUI?.applyResult(payload.actorId, payload.score, payload.hits, payload.charges);
           return;
         }
         if (type === CAMP.MSG.CARTOGRAPHY_DONE) {
@@ -248,6 +260,29 @@
           return;
         }
 
+        // ── Gathering minigame (4×4 grid ingredient collector) ────────────
+        if (type === CAMP.MSG.GATHERING_START) {
+          CAMP.GatheringUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.GATHERING_BEGIN) {
+          CAMP.GatheringUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.GATHERING_GAME_STATE) {
+          CAMP.GatheringUI?.onGameState(payload);
+          return;
+        }
+        if (type === CAMP.MSG.GATHERING_RESULT && payload?.grade != null) {
+          // Full result from GM — reveal phase
+          CAMP.GatheringUI?.applyResult(payload.actorId, payload.grade, payload.taste ?? null);
+          return;
+        }
+        if (type === CAMP.MSG.GATHERING_DONE) {
+          CAMP.GatheringUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -282,6 +317,14 @@
 
           case CAMP.MSG.TOGGLE_SET_OUT:
             await _handleToggleSetOut(payload);
+            break;
+
+          case CAMP.MSG.CARTOGRAPHY_RESULT:   // owner → GM: score submitted
+            CAMP.CartographyUI?.resolveScore(payload?.actorId, payload?.score ?? 0, payload?.hits ?? 3);
+            break;
+
+          case CAMP.MSG.CARTOGRAPHY_PROCEED:
+            CAMP.CartographyUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.DAYDREAM_RESULT:   // owner → GM: score submitted
@@ -359,6 +402,17 @@
 
           case CAMP.MSG.SLEEP_SOUNDLY_PROCEED:
             CAMP.SleepSoundlyUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.GATHERING_RESULT:   // owner → GM: score + taste submitted
+            CAMP.GatheringUI?.resolveScore(payload?.actorId, {
+              score: payload?.score ?? 0,
+              taste: payload?.taste ?? null,
+            });
+            break;
+
+          case CAMP.MSG.GATHERING_PROCEED:
+            CAMP.GatheringUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above

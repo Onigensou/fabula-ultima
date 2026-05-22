@@ -1,109 +1,38 @@
 // ============================================================================
 // Camp Activity — Cartography
 // Target: Yourself
-// Effect: Once before the next rest, after your group makes a travel roll,
-//         you may reroll the die and keep the new result.
 //
-// AE survival: uses campRestCharges: 1 (survives the immediate rest after camp,
-//              expires at the following rest if not consumed). Permanent status
-//              prevents _clearTemporaryEffects from wiping it on the same pass.
+// Minigame: Snake
+//   Owner pilots a snake on a 15×15 grid for 15 seconds, collecting treasure
+//   (+10 pts each) and avoiding hazards and their own trail (−5 pts each hit).
+//
+// Grade → campRestCharges (each charge = one Travel Roll reroll):
+//   Perfect: 0 errors AND ≥ 50 pts → 3 charges
+//   Good:   ≤1 error  AND ≥ 30 pts → 2 charges
+//   Standard: anything else         → 1 charge
+//
+// Thresholds are published to CAMP.CARTOGRAPHY so the UI file shares them.
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
   const MODULE_ID = "fabula-ultima-companion";
   const TAG       = "[CampSystem][Cartography]";
 
-  const MAP_ICON  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/dig.png";
-  const OVERLAY_ID = "oni-cartography-overlay";
-  const STYLE_ID   = "oni-cartography-style";
+  const MAP_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/dig.png";
 
-  // ---------------------------------------------------------------------------
-  // CartographyUI — full-screen animation overlay, shown on all clients
-  // ---------------------------------------------------------------------------
-  CAMP.CartographyUI = {
-    show(actorId, actorName) {
-      if (document.getElementById(OVERLAY_ID)) return;
+  // Shared with activity-cartography-ui.js via CAMP.CARTOGRAPHY
+  CAMP.CARTOGRAPHY = Object.freeze({
+    PERFECT_PTS:    50,   // minimum score for Perfect
+    PERFECT_ERRORS:  0,   // maximum errors for Perfect
+    GOOD_PTS:       30,   // minimum score for Good
+    GOOD_ERRORS:     1,   // maximum errors for Good
+  });
 
-      _ensureStyle();
-
-      const overlay = document.createElement("div");
-      overlay.id = OVERLAY_ID;
-      overlay.innerHTML = `
-        <div class="oni-carto-inner">
-          <div class="oni-carto-icon"><i class="fas fa-compass"></i></div>
-          <div class="oni-carto-name">${actorName ?? "?"}</div>
-          <div class="oni-carto-label">Cartography</div>
-          <div class="oni-carto-sub">Charting the region…</div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-
-      // Safety fallback — remove after 5s in case DONE message is lost
-      setTimeout(() => CAMP.CartographyUI?.hide(), 5000);
-    },
-
-    hide() {
-      const overlay = document.getElementById(OVERLAY_ID);
-      if (!overlay) return;
-      overlay.classList.add("oni-carto-fade-out");
-      overlay.addEventListener("animationend", () => overlay.remove(), { once: true });
-    },
-  };
-
-  function _ensureStyle() {
-    if (document.getElementById(STYLE_ID)) return;
-    const style = document.createElement("style");
-    style.id = STYLE_ID;
-    style.textContent = `
-      #${OVERLAY_ID} {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.72);
-        animation: oni-carto-fadein 0.4s ease forwards;
-      }
-      #${OVERLAY_ID}.oni-carto-fade-out {
-        animation: oni-carto-fadeout 0.5s ease forwards;
-      }
-      .oni-carto-inner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        color: #e8dfc0;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-      }
-      .oni-carto-icon {
-        font-size: 3.8rem;
-        animation: oni-carto-spin 4s linear infinite;
-        color: #c8a84b;
-        filter: drop-shadow(0 0 12px rgba(200,168,75,0.6));
-      }
-      .oni-carto-name {
-        font-size: 1.35rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-      }
-      .oni-carto-label {
-        font-size: 1.7rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: #c8a84b;
-      }
-      .oni-carto-sub {
-        font-size: 0.95rem;
-        opacity: 0.75;
-        font-style: italic;
-      }
-      @keyframes oni-carto-fadein  { from { opacity: 0 } to { opacity: 1 } }
-      @keyframes oni-carto-fadeout { from { opacity: 1 } to { opacity: 0 } }
-      @keyframes oni-carto-spin    { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-    `;
-    document.head.appendChild(style);
+  function _calcCharges(score, hits) {
+    const { PERFECT_PTS, PERFECT_ERRORS, GOOD_PTS, GOOD_ERRORS } = CAMP.CARTOGRAPHY;
+    if (hits <= PERFECT_ERRORS && score >= PERFECT_PTS) return 3;
+    if (hits <= GOOD_ERRORS    && score >= GOOD_PTS)    return 2;
+    return 1;
   }
 
   // ---------------------------------------------------------------------------
@@ -117,25 +46,36 @@
           return;
         }
 
-        // 1 — Show animation overlay on all clients (broadcast doesn't loop back to sender)
+        CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
+
+        // 1 — Show minigame overlay on all clients
         CAMP.Socket.broadcast(CAMP.MSG.CARTOGRAPHY_START, {
           actorId:   actor.id,
           actorName: actor.name,
         });
-        CAMP.CartographyUI.show(actor.id, actor.name);
+        CAMP.CartographyUI?.show(actor.id, actor.name);
 
         await new Promise(r => setTimeout(r, 300));
 
-        // 2 — Clear any existing Cartography AE (actor chose this activity again before using it)
-        const existing = actor.effects.find(e => e.flags?.[MODULE_ID]?.cartographyReroll === true);
-        if (existing) await existing.delete();
+        // 2 — Wait for owner to finish the Snake minigame
+        const { score, hits } = await _waitForScore(actor);
+        console.debug(TAG, `Score: ${score}, Hits: ${hits}`);
 
-        // 2b — Apply the Cartography Active Effect
-        //     statuses: ["permanent"] — survives _clearTemporaryEffects
-        //     campRestCharges: 1      — generic tick: survives 1 rest, expires at the 2nd
-        //     cartographyReroll: true — marker read by TravelRoll API
+        const charges = _calcCharges(score, hits);
+        console.debug(TAG, `Charges granted: ${charges}`);
+
+        // 3 — Clear any existing Cartography AEs (player chose this activity again)
+        const existing = actor.effects.filter(
+          e => e.flags?.[MODULE_ID]?.cartographyReroll === true
+        );
+        for (const e of existing) await e.delete();
+
+        // 4 — Create a single AE with a cartographyCharges counter.
+        //     TravelRoll API decrements the counter on each use, deleting the AE at 0.
+        //     campRestCharges: 1 → survives the immediate rest, expires at the next one.
+        const aeName = charges === 1 ? "Cartography" : `Cartography ×${charges}`;
         await actor.createEmbeddedDocuments("ActiveEffect", [{
-          name:        "Cartography",
+          name:        aeName,
           img:         MAP_ICON,
           description: "Once before the next rest, when your group makes a Travel Roll, you may reroll the die and keep the new result.",
           origin:      `Actor.${actor.id}`,
@@ -146,40 +86,100 @@
             [MODULE_ID]: {
               campRestCharges:    1,
               cartographyReroll:  true,
+              cartographyCharges: charges,
               cartographyActorId: actor.id,
             },
           },
         }]);
 
-        // 3 — Chat announcement
-        await _postChatResult(actor);
+        // 5 — Broadcast result to all clients (triggers reveal panel in UI)
+        CAMP.Socket.broadcast(CAMP.MSG.CARTOGRAPHY_RESULT, {
+          actorId: actor.id,
+          score,
+          hits,
+          charges,
+        });
+        CAMP.CartographyUI?.applyResult(actor.id, score, hits, charges);
 
-        // 4 — Hold while the overlay runs
-        await new Promise(r => setTimeout(r, 2200));
+        // 6 — Post chat announcement
+        await _postChatResult(actor, score, hits, charges);
 
-        // 5 — Hide overlay on all clients
+        // 7 — Wait for owner to click "Click to Proceed"
+        await _waitForProceed(actor);
+
+        // 8 — Hide overlay on all clients
         CAMP.Socket.broadcast(CAMP.MSG.CARTOGRAPHY_DONE, { actorId: actor.id });
-        CAMP.CartographyUI.hide();
+        CAMP.CartographyUI?.hide();
       },
     });
   });
 
   // ---------------------------------------------------------------------------
+  // _waitForScore — GM awaits owner's submitted score
+  // ---------------------------------------------------------------------------
+  function _waitForScore(actor) {
+    return new Promise(resolve => {
+      CAMP.CartographyUI ??= {};
+      CAMP.CartographyUI.scoreResolvers ??= {};
+
+      // 90 s covers "Click to Begin" wait + countdown + 15 s game + buffer
+      const timer = setTimeout(() => {
+        if (CAMP.CartographyUI.scoreResolvers[actor.id]) {
+          console.warn(TAG, "Score timeout — defaulting for", actor.name);
+          delete CAMP.CartographyUI.scoreResolvers[actor.id];
+          resolve({ score: 0, hits: 3 });
+        }
+      }, 90_000);
+
+      CAMP.CartographyUI.scoreResolvers[actor.id] = (result) => {
+        clearTimeout(timer);
+        resolve(result);
+      };
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // _waitForProceed — GM awaits owner's "Click to Proceed"
+  // ---------------------------------------------------------------------------
+  function _waitForProceed(actor) {
+    return new Promise(resolve => {
+      CAMP.CartographyUI ??= {};
+      CAMP.CartographyUI.proceedResolvers ??= {};
+      CAMP.CartographyUI.proceedResolvers[actor.id] = resolve;
+    });
+  }
+
+  // ---------------------------------------------------------------------------
   // Chat announcement
   // ---------------------------------------------------------------------------
-  async function _postChatResult(actor) {
+  async function _postChatResult(actor, score, hits, charges) {
+    const { PERFECT_PTS, GOOD_PTS } = CAMP.CARTOGRAPHY;
+    const gradeLabel =
+      charges === 3 ? `Perfect! (${score} pts, 0 errors)` :
+      charges === 2 ? `Good (${score} pts, ${hits} error${hits !== 1 ? "s" : ""})` :
+                      `Standard (${score} pts, ${hits} error${hits !== 1 ? "s" : ""})`;
+    const gradeColor =
+      charges === 3 ? "#c8a84b" :
+      charges === 2 ? "#4caf50" :
+                      "#888";
+    const chargeLabel = charges === 1 ? "1 Charge" : `${charges} Charges`;
+
     const msg = await ChatMessage.create({
       content: `
         <div style="display:flex;align-items:flex-start;gap:10px;padding:4px 0;">
-          <img src="${MAP_ICON}" style="width:36px;height:36px;border-radius:6px;border:none;flex-shrink:0;">
+          <img src="${MAP_ICON}"
+               style="width:36px;height:36px;border-radius:6px;border:none;flex-shrink:0;">
           <div>
             <div style="font-weight:700;font-size:1em;color:#8a6f2e;">
               ${actor.name} — Cartography
             </div>
-            <div style="font-size:.88em;margin-top:4px;opacity:.9;">
-              Studies the maps of the region.
+            <div style="font-size:.88em;margin-top:3px;">
+              Score: <strong>${score}</strong> &middot; Errors: <strong>${hits}</strong>
             </div>
-            <div style="font-size:.82em;margin-top:5px;opacity:.75;font-style:italic;">
+            <div style="font-size:.9em;margin-top:4px;font-weight:700;color:${gradeColor};">
+              ${gradeLabel} &rarr; ${chargeLabel}
+            </div>
+            <div style="font-size:.8em;margin-top:3px;opacity:.7;font-style:italic;">
               Once before the next rest, when your group makes a Travel Roll,
               you may reroll the die and keep the new result.
             </div>
@@ -200,4 +200,6 @@
       document.head.appendChild(style);
     }
   }
+
+  console.debug(TAG, "Cartography activity loaded.");
 })();
