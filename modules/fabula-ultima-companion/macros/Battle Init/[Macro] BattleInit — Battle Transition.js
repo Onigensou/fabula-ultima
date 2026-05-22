@@ -217,9 +217,10 @@
     return;
   }
 
-  const battleBgmName = getBgmNameFromPayload(payload);
   dlog("Resolved battle scene:", { id: battleSceneDoc.id, name: battleSceneDoc.name, uuid: battleSceneDoc.uuid });
-  dlog("BGM chosen:", battleBgmName || "(none)");
+  // Note: BGM playback was moved to the Preload Assets step so the music
+  // kicks in exactly as the black curtain fades. battleBgmName is no longer
+  // read here; getBgmNameFromPayload is invoked again in Preload Assets.
 
   // -----------------------------
   // Preload battle scene assets for all connected users (reduces load hitch)
@@ -239,6 +240,33 @@
   await playTransitionSfxGlobalIfPossible();
 
   await wait(FX_DELAY_MS_BEFORE_SCENE);
+
+  // -----------------------------
+  // Raise black curtain over the scene (NOT the UI) for every client.
+  // This sandwiches with the "drop" in the Preload Assets step so that
+  // scene activate → layout → spawner → preload all happen behind black,
+  // and the entrance animation reveals on a fully-loaded scene.
+  //
+  // - Instant raise so it appears at the same moment screen-transition.js
+  //   covers (canvasTearDown fires on activate), giving a seamless black.
+  // - Broadcast so every player client raises locally in sync (no socket
+  //   round-trip stall — raise is fire-and-forget).
+  // -----------------------------
+  try {
+    const animCache = globalThis.FUCompanion?.api?.animationCache;
+    if (animCache?.raiseCurtain) {
+      await animCache.raiseCurtain({
+        color: "#000000",
+        durationMs: 0,
+        broadcast: true,
+        maxHoldMs: 30000
+      });
+    } else {
+      console.warn(tag, "animationCache.raiseCurtain not available — proceeding without curtain.");
+    }
+  } catch (e) {
+    console.warn(tag, "raiseCurtain failed (continuing):", e);
+  }
 
     // -----------------------------
   // Activate (single switch) + Pull Players (optional)
@@ -270,14 +298,8 @@
 
   await wait(AFTER_ACTIVATE_DELAY_MS);
 
-  // -----------------------------
-  // Play Battle BGM (optional)
-  // -----------------------------
-  if (battleBgmName?.trim()) {
-    const res = await playTrackFromAnyPlaylist(battleBgmName.trim());
-    if (!res.ok) ui.notifications?.warn?.(`BattleInit: BGM track not found in playlists: "${battleBgmName.trim()}"`);
-    else dlog("BGM playing:", res);
-  }
+  // BGM start moved to BattleInit — Preload Assets so the music starts as
+  // the black curtain fades (cinematic reveal). See that macro for the call.
 
   // -----------------------------
   // Write back transition status
