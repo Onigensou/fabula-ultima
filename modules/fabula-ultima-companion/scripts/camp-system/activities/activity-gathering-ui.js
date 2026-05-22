@@ -29,20 +29,20 @@
   const GAME_MS            = 15_000;
   const GRID_COLS          = 4;
   const GRID_ROWS          = 4;
-  const SPAWN_MIN_MS       = 1_500;
-  const SPAWN_MAX_MS       = 2_000;
-  const LIFE_MIN_MS        = 3_500;
-  const LIFE_MAX_MS        = 5_000;
-  const TELEGRAPH_MS       = 1_500;   // ingredient blink-warning before expiry
-  const TELEGRAPH_SPAWN_MS = 1_200;   // preview→materialise delay
-  const MAX_ACTIVE         = 4;       // max ingredients + pending combined
+  const SPAWN_MIN_MS       = 600;
+  const SPAWN_MAX_MS       = 900;
+  const LIFE_MIN_MS        = 2_800;
+  const LIFE_MAX_MS        = 4_000;
+  const TELEGRAPH_MS       = 1_000;   // ingredient blink-warning before expiry
+  const TELEGRAPH_SPAWN_MS = 900;     // preview→materialise delay
+  const MAX_ACTIVE         = 6;       // max ingredients + pending combined
   const POISON_CHANCE      = 0.25;
   const DOUBLE_CHANCE      = 0.15;
   const TELEGRAPH_CHANCE   = 0.30;
   // P(normal) = 1 - DOUBLE_CHANCE - TELEGRAPH_CHANCE = 0.55
 
   const GOOD_EMOJIS   = ["🌿","🫐","🌸","🍋","🍒","🌾","🍃","🌼"];
-  const POISON_EMOJIS = ["🍄","🌵","💀","🧪"];
+  const POISON_EMOJIS = ["🍄","💀","🧪","☠️","🕷️","🐍"];
   const TASTES        = ["Bitter","Salty","Sour","Sweet","Umami"];
 
   // Keys the player uses to move — suppressed from Foundry in capture phase
