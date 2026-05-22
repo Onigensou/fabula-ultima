@@ -64,9 +64,21 @@
           return;
         }
 
-        // ── Cartography animation (GM → all) ────────────────────────────
+        // ── Cartography Snake minigame (GM → all, owner → all/GM) ───────
         if (type === CAMP.MSG.CARTOGRAPHY_START) {
           CAMP.CartographyUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_BEGIN) {
+          CAMP.CartographyUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_TICK) {
+          CAMP.CartographyUI?.onTick(payload);
+          return;
+        }
+        if (type === CAMP.MSG.CARTOGRAPHY_RESULT && payload?.charges != null) {
+          CAMP.CartographyUI?.applyResult(payload.actorId, payload.score, payload.hits, payload.charges);
           return;
         }
         if (type === CAMP.MSG.CARTOGRAPHY_DONE) {
@@ -282,6 +294,14 @@
 
           case CAMP.MSG.TOGGLE_SET_OUT:
             await _handleToggleSetOut(payload);
+            break;
+
+          case CAMP.MSG.CARTOGRAPHY_RESULT:   // owner → GM: score submitted
+            CAMP.CartographyUI?.resolveScore(payload?.actorId, payload?.score ?? 0, payload?.hits ?? 3);
+            break;
+
+          case CAMP.MSG.CARTOGRAPHY_PROCEED:
+            CAMP.CartographyUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.DAYDREAM_RESULT:   // owner → GM: score submitted

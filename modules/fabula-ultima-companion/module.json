@@ -235,6 +235,7 @@
     "scripts/camp-system/activities/activity-registry.js",
     "scripts/camp-system/activities/activity-camp-forge.js",
     "scripts/camp-system/activities/activity-cartography.js",
+    "scripts/camp-system/activities/activity-cartography-ui.js",
     "scripts/camp-system/activities/activity-combat-lesson.js",
     "scripts/camp-system/activities/activity-combat-lesson-ui.js",
     "scripts/camp-system/activities/activity-cooking.js",
