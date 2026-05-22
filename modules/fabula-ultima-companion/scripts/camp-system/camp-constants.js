@@ -114,6 +114,13 @@
     SLEEP_SOUNDLY_RESULT:  "CAMP_SLEEP_SOUNDLY_RESULT",  // owner → GM (score) / GM → all (score + charges)
     SLEEP_SOUNDLY_PROCEED: "CAMP_SLEEP_SOUNDLY_PROCEED", // owner → GM
     SLEEP_SOUNDLY_DONE:    "CAMP_SLEEP_SOUNDLY_DONE",    // GM → all
+    // Gathering minigame (4×4 grid ingredient collector)
+    GATHERING_START:      "CAMP_GATHERING_START",       // GM → all
+    GATHERING_BEGIN:      "CAMP_GATHERING_BEGIN",        // owner → all (Click to Begin; syncs countdown)
+    GATHERING_GAME_STATE: "CAMP_GATHERING_GAME_STATE",  // owner → all (per-move: playerPos + ingredients + score)
+    GATHERING_RESULT:     "CAMP_GATHERING_RESULT",       // owner → GM (score+taste) / GM → all (grade+taste)
+    GATHERING_PROCEED:    "CAMP_GATHERING_PROCEED",      // owner → GM
+    GATHERING_DONE:       "CAMP_GATHERING_DONE",         // GM → all
     // Magic Lesson minigame
     MAGIC_LESSON_START:    "CAMP_MAGIC_LESSON_START",    // GM → all (show ally picker)
     MAGIC_LESSON_TARGET:   "CAMP_MAGIC_LESSON_TARGET",   // owner → GM (ally chosen)

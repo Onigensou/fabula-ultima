@@ -248,6 +248,7 @@
     "scripts/camp-system/activities/activity-exploration-ui.js",
     "scripts/camp-system/activities/activity-fishing.js",
     "scripts/camp-system/activities/activity-gathering.js",
+    "scripts/camp-system/activities/activity-gathering-ui.js",
     "scripts/camp-system/activities/activity-magic-lesson.js",
     "scripts/camp-system/activities/activity-magic-lesson-ui.js",
     "scripts/camp-system/activities/activity-martial-practice.js",
