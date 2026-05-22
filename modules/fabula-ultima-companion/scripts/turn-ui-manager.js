@@ -1088,13 +1088,16 @@
 
   async function handleTurnChange(combat) {
     const cmbt = combat?.combatant;
-    if (!cmbt) { clearAllUI(); return; }
+    // Turn-handoff branches must preserve named menus so in-flight
+    // reaction menus (which belong to the reaction-window lifecycle,
+    // not the turn lifecycle) survive whose-turn-is-it changes.
+    if (!cmbt) { clearAllUI({ preserveNamedMenus: true }); return; }
 
     const tokenId = cmbt.tokenId ?? cmbt.token?.id;
     const token = byIdOnCanvas(tokenId);
 
     // If token isn't on this scene/canvas, just clear
-    if (!token) { clearAllUI(); return; }
+    if (!token) { clearAllUI({ preserveNamedMenus: true }); return; }
 
     // If we're already showing UI for this token AND it's actually visible,
     // skip re-spawn. The buttons/indicator check catches the case where
@@ -1107,20 +1110,27 @@
       (TurnUI.state.buttons || TurnUI.state.indicator)
     ) return;
 
-    // Swap to new turn owner
-    clearAllUI();
+    // Swap to new turn owner. Keep named menus (reaction menus,
+    // ally-indicator rows) — they're tied to in-flight reaction
+    // sub-windows whose lifetime is independent of whose turn it is.
+    // Bandit's attack against Hina can spawn an HoD reaction menu on
+    // Hina that needs to outlive the moment Bandit's turn ends.
+    clearAllUI({ preserveNamedMenus: true });
     TurnUI.state.currentTokenId = token.id;
     forLocalClient_spawnWhat(token);
   }
 
-    function clearAllUI() {
+    function clearAllUI({ preserveNamedMenus = false } = {}) {
     TurnUI.state.currentTokenId = null;
     removeButtons();
     // Tear down any named menus too (reaction menus, etc.) — these
     // outlive the turn-action menu on their own schedule but must not
-    // survive combat end / scene change.
-    for (const namedId of Array.from(TurnUI.state.menus.keys())) {
-      try { removeButtons({ menuId: namedId }); } catch (_) {}
+    // survive combat end / scene change. On a normal turn handoff,
+    // skip this loop so reaction menus mid-flight survive.
+    if (!preserveNamedMenus) {
+      for (const namedId of Array.from(TurnUI.state.menus.keys())) {
+        try { removeButtons({ menuId: namedId }); } catch (_) {}
+      }
     }
     removeIndicator();
   }
