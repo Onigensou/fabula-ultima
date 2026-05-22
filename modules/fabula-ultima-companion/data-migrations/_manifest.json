@@ -131,6 +131,18 @@
     {
       "key": "2026-05-23-skill-effects-panel-css-class",
       "path": "data-migrations/2026-05-23-skill-effects-panel-css-class.js"
+    },
+    {
+      "key": "2026-05-23-heart-of-darkness-rewire",
+      "path": "data-migrations/2026-05-23-heart-of-darkness-rewire.js"
+    },
+    {
+      "key": "2026-05-23-painful-lesson-actor-ref-repair",
+      "path": "data-migrations/2026-05-23-painful-lesson-actor-ref-repair.js"
+    },
+    {
+      "key": "2026-05-23-grant-skills-unified-targeting",
+      "path": "data-migrations/2026-05-23-grant-skills-unified-targeting.js"
     }
   ]
 }
