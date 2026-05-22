@@ -153,9 +153,12 @@
 
     const holder = getCartographyHolder();
     if (holder) {
+      const charges = holder.effect.flags?.["fabula-ultima-companion"]?.cartographyCharges ?? 1;
+      const chargeNote = charges > 1 ? ` <em>(${charges} charges remaining)</em>` : "";
+
       const use = await Dialog.confirm({
         title:   "Cartography — Reroll Available",
-        content: `<p><b>${holder.actor.name}</b> has <b>Cartography</b> active.</p>
+        content: `<p><b>${holder.actor.name}</b> has <b>Cartography</b> active.${chargeNote}</p>
                   <p>Reroll the travel die and keep the new result?</p>`,
         yes:     () => true,
         no:      () => false,
@@ -168,12 +171,19 @@
         rerolled     = true;
         rerollBy     = holder.actor.name;
 
-        // Consume the Cartography charge
+        // Consume one charge — delete AE when last charge is spent
         try {
-          await holder.effect.delete();
-          console.debug(TAG, `Cartography charge consumed from ${holder.actor.name}.`);
+          const remaining = charges - 1;
+          if (remaining <= 0) {
+            await holder.effect.delete();
+          } else {
+            const newName = remaining === 1 ? "Cartography" : `Cartography ×${remaining}`;
+            await holder.effect.update({ name: newName });
+            await holder.effect.setFlag("fabula-ultima-companion", "cartographyCharges", remaining);
+          }
+          console.debug(TAG, `Cartography charge consumed from ${holder.actor.name}. Remaining: ${remaining}`);
         } catch (e) {
-          console.warn(TAG, "Could not delete Cartography AE:", e.message);
+          console.warn(TAG, "Could not update Cartography AE:", e.message);
         }
 
         await _postTravelRollChat({ roll: finalRoll, outcome: finalOutcome, level, formula, rerolled: true, rerollBy });

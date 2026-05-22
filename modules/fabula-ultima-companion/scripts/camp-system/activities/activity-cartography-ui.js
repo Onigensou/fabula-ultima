@@ -75,6 +75,9 @@
   let _lastTickMs  = 0;
   let _lastSyncMs  = 0;
 
+  // Result idempotency — owner shows result immediately; GM broadcast must not double-render
+  let _resultShown = false;
+
   // ── Public API ─────────────────────────────────────────────────────────────
   CAMP.CartographyUI = {
     scoreResolvers:   {},
@@ -110,9 +113,12 @@
       ovl.addEventListener("animationend", () => ovl.remove(), { once: true });
     },
 
-    // Called on all clients when GM broadcasts RESULT (with charges)
+    // Called on all clients when GM broadcasts RESULT (with charges).
+    // Also called immediately by the owner in _endGame() for instant transition.
     applyResult(actorId, score, hits, charges) {
       if (!document.getElementById(OVL_ID)) return;
+      if (_resultShown) return;   // owner already showed it locally — skip GM echo
+      _resultShown = true;
       _phase = "result";
       _stopLoop();
       _sfx(SFX_RESULT);
@@ -225,7 +231,8 @@
     if (hud)  hud.style.display  = "flex";
 
     if (_isOwner) {
-      document.addEventListener("keydown", _onKey);
+      // Capture phase on window fires before Foundry's document listeners → suppresses token movement
+      window.addEventListener("keydown", _onKey, { capture: true });
       _render();
       _rafId = requestAnimationFrame(_frame);
     }
@@ -324,7 +331,16 @@
     }
   }
 
+  // Keys that drive the snake — intercepted at window capture to block Foundry token movement
+  const _GAME_KEYS = new Set(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","w","a","s","d"]);
+
   function _onKey(e) {
+    if (!_GAME_KEYS.has(e.key)) return;
+    // Block Foundry from receiving this event (prevents token movement on canvas)
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
     const map = {
       ArrowUp:    { dx:  0, dy: -1 }, w: { dx:  0, dy: -1 },
       ArrowDown:  { dx:  0, dy:  1 }, s: { dx:  0, dy:  1 },
@@ -332,15 +348,18 @@
       ArrowRight: { dx:  1, dy:  0 }, d: { dx:  1, dy:  0 },
     };
     const nd = map[e.key];
-    if (!nd) return;
-    // Forbid 180° reversal
-    if (nd.dx !== -_dir.dx || nd.dy !== -_dir.dy) _nextDir = nd;
-    if (e.key.startsWith("Arrow")) e.preventDefault();
+    if (nd && (nd.dx !== -_dir.dx || nd.dy !== -_dir.dy)) _nextDir = nd;
   }
 
   function _endGame() {
     _stopLoop();
     if (!_isOwner) return;
+
+    // Show result immediately — no waiting for GM round-trip
+    const localCharges = _hits === 0 ? 3 : _hits === 1 ? 2 : 1;
+    CAMP.CartographyUI.applyResult(_actorId, _score, _hits, localCharges);
+
+    // Send score to GM so execute() can create the AE and broadcast official result
     CAMP.Socket.emit(CAMP.MSG.CARTOGRAPHY_RESULT, {
       actorId: _actorId,
       score:   _score,
@@ -374,7 +393,7 @@
     if (headCell) {
       headCell.classList.add("oni-carto-head");
       headCell.innerHTML = _tokenImg
-        ? `<img src="${_tokenImg}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;pointer-events:none;">`
+        ? `<img src="${_tokenImg}" style="width:100%;height:100%;object-fit:contain;border-radius:3px;pointer-events:none;">`
         : `<i class="fas fa-user" style="font-size:16px;color:#fff;"></i>`;
     }
 
@@ -418,7 +437,7 @@
       if (hc) {
         hc.classList.add("oni-carto-head");
         hc.innerHTML = _tokenImg
-          ? `<img src="${_tokenImg}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;pointer-events:none;">`
+          ? `<img src="${_tokenImg}" style="width:100%;height:100%;object-fit:contain;border-radius:3px;pointer-events:none;">`
           : `<i class="fas fa-user" style="font-size:16px;color:#fff;"></i>`;
       }
     }
@@ -554,7 +573,7 @@
 
   function _stopLoop() {
     if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
-    document.removeEventListener("keydown", _onKey);
+    window.removeEventListener("keydown", _onKey, { capture: true });
   }
 
   function _clearState() {
@@ -567,6 +586,7 @@
     _treasure = null; _hazards = [];
     _gameStartTs = 0; _timeLeft = GAME_DURATION_MS;
     _rafId = null; _lastTickMs = 0; _lastSyncMs = 0;
+    _resultShown = false;
   }
 
   function _checkIsOwner(actorId) {
@@ -599,9 +619,17 @@
         <div id="oni-carto-pre-game" class="oni-carto-pre-game">
           <i class="fas fa-map" style="font-size:2.5rem;color:#c8a84b;opacity:.7;"></i>
           <div id="oni-carto-waiting-label" class="oni-carto-waiting-label">
-            ${_isOwner ? "Navigate the map — collect treasure, avoid hazards!" : "Waiting for the explorer…"}
+            ${_isOwner ? "Collect <strong>treasure</strong>, avoid <strong>hazards</strong> and your own trail!" : "Waiting for the explorer…"}
           </div>
-          ${_isOwner ? `<button id="oni-carto-begin-btn" class="oni-carto-begin-btn">Begin</button>` : ""}
+          ${_isOwner ? `
+            <div class="oni-carto-controls-hint">
+              <i class="fas fa-keyboard"></i>&ensp;
+              <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Arrow Keys
+              &ensp;or&ensp;
+              <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+            </div>
+            <button id="oni-carto-begin-btn" class="oni-carto-begin-btn">Begin</button>
+          ` : ""}
         </div>
 
         <div id="oni-carto-countdown" class="oni-carto-countdown" style="display:none;"></div>
@@ -667,7 +695,17 @@
         padding: 20px 0; min-height: 100px; justify-content: center;
       }
       .oni-carto-waiting-label {
-        font-size: 0.95rem; opacity: 0.75; font-style: italic; text-align: center;
+        font-size: 0.95rem; opacity: 0.8; text-align: center;
+      }
+      .oni-carto-controls-hint {
+        display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+        font-size: 0.82rem; opacity: 0.7; justify-content: center;
+      }
+      .oni-carto-controls-hint kbd {
+        display: inline-block; padding: 2px 6px; font-size: 0.8rem;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 4px; font-family: monospace; line-height: 1.4;
+        color: #e8dfc0;
       }
       .oni-carto-begin-btn {
         padding: 9px 28px; font-size: 1rem; font-weight: 700;

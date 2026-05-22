@@ -62,9 +62,12 @@
         );
         for (const e of existing) await e.delete();
 
-        // 4 — Create one AE per charge (TravelRoll API deletes one per use)
-        const aeBase = {
-          name:        "Cartography",
+        // 4 — Create a single AE with a cartographyCharges counter.
+        //     TravelRoll API decrements the counter on each use, deleting the AE at 0.
+        //     campRestCharges: 1 → survives the immediate rest, expires at the next one.
+        const aeName = charges === 1 ? "Cartography" : `Cartography ×${charges}`;
+        await actor.createEmbeddedDocuments("ActiveEffect", [{
+          name:        aeName,
           img:         MAP_ICON,
           description: "Once before the next rest, when your group makes a Travel Roll, you may reroll the die and keep the new result.",
           origin:      `Actor.${actor.id}`,
@@ -75,14 +78,11 @@
             [MODULE_ID]: {
               campRestCharges:    1,
               cartographyReroll:  true,
+              cartographyCharges: charges,
               cartographyActorId: actor.id,
             },
           },
-        };
-        await actor.createEmbeddedDocuments(
-          "ActiveEffect",
-          Array.from({ length: charges }, () => ({ ...aeBase }))
-        );
+        }]);
 
         // 5 — Broadcast result to all clients (triggers reveal panel in UI)
         CAMP.Socket.broadcast(CAMP.MSG.CARTOGRAPHY_RESULT, {
