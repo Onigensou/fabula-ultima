@@ -42,7 +42,7 @@
   // P(normal) = 1 - DOUBLE_CHANCE - TELEGRAPH_CHANCE = 0.55
 
   const GOOD_EMOJIS   = ["🌿","🫐","🌸","🍋","🍒","🌾","🍃","🌼"];
-  const POISON_EMOJIS = ["🍄","💀","🧪","☠️","🕷️","🐍"];
+  const POISON_EMOJIS = ["🍄","🕷️","🐍"];
   const TASTES        = ["Bitter","Salty","Sour","Sweet","Umami"];
 
   // Keys the player uses to move — suppressed from Foundry in capture phase
