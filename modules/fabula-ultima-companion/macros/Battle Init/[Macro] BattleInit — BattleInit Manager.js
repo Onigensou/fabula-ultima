@@ -40,6 +40,7 @@
   transition: "BattleInit — Battle Transition",
   layout: "BattleInit — Layout Engine",
   spawner: "BattleInit — Encounter Spawner",
+  preload: "BattleInit — Preload Assets",
   entrance: "BattleInit — Entrance Animation",
   initiator: "BattleInit — Battle Initiator",
   unleash: "BattleInit — Unleash Detector",
@@ -226,6 +227,11 @@
       return { status: String(ph?.status ?? "missing"), atMs: parseIsoToMs(ph?.at), details: ph };
     }
 
+    if (stepId === "preload") {
+      const ph = payload?.phases?.preload;
+      return { status: String(ph?.status ?? "missing"), atMs: parseIsoToMs(ph?.at), details: ph };
+    }
+
     if (stepId === "entrance") {
       const ph = payload?.phases?.entrance;
       return { status: String(ph?.status ?? "missing"), atMs: parseIsoToMs(ph?.at), details: ph };
@@ -409,6 +415,7 @@ let { sourceScene, payload, from } = found;
   { id: "transition", name: "Transition",     macroName: MACRO_NAMES.transition, wantsScene: "source" },
   { id: "layout",     name: "Layout Engine",  macroName: MACRO_NAMES.layout,     wantsScene: "battle" },
   { id: "spawner",    name: "Spawner",        macroName: MACRO_NAMES.spawner,    wantsScene: "battle" },
+  { id: "preload",    name: "Preload Assets", macroName: MACRO_NAMES.preload,    wantsScene: "battle" },
   { id: "entrance",   name: "Entrance",       macroName: MACRO_NAMES.entrance,   wantsScene: "battle" },
   { id: "initiator",  name: "Initiator",      macroName: MACRO_NAMES.initiator,  wantsScene: "battle", conditional: (p) => Boolean(p?.options?.combat?.autoStart) },
   { id: "unleash",    name: "Unleash",        macroName: MACRO_NAMES.unleash,    wantsScene: "battle", conditional: (p) => Boolean(p?.options?.unleash?.enabled) },

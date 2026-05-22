@@ -528,10 +528,49 @@ async function buildForCombat(combat){
   if (window[HUD_NS].hooks.deleteCombat) Hooks.off("deleteCombat", window[HUD_NS].hooks.deleteCombat);
   if (window[HUD_NS].hooks.updateCombat) Hooks.off("updateCombat", window[HUD_NS].hooks.updateCombat);
 
-  // Make sure socket is available ASAP
+  // Shared reload-recovery routine. Called from both `ready` and `canvasReady`
+  // because Foundry's startup-hook order isn't stable across modules — in some
+  // sessions canvasReady fires BEFORE the world data is fully wired up and
+  // `game.combat` is still null. The `byCombat.has` guard makes this safe to
+  // call twice: whichever trigger sees a live combat first builds the HUD,
+  // and any subsequent trigger short-circuits.
+  function tryReloadRecovery(triggerName) {
+    const c = game.combat ?? game.combats?.active ?? null;
+    // Inline the field values so they show in the console instead of "Object".
+    dlog(`RELOAD-RECOVERY [${triggerName}] isGM=${game.user?.isGM} haveCombat=${!!c} combatId=${c?.id} started=${c?.started} round=${c?.round} active=${c?.active}`);
+
+    // `active` is a tracker-UI flag, not a "combat is happening" flag. Foundry's
+    // Combat#startCombat() sets round=1/turn=0 but NOT active=true; the flag
+    // only flips when something calls combat.activate(). BattleInit Initiator
+    // skips activate() if game.combat already points at this combat, so a
+    // perfectly live mid-battle combat can persist with active=false. On
+    // reload we'd then refuse to build the HUD. Use `started` as the real
+    // signal instead.
+    const combatLive = !!c && (c.started === true || (c.round ?? 0) > 0);
+    if (!combatLive) {
+      dlog(`RELOAD-RECOVERY [${triggerName}]: not started (started=${c?.started} round=${c?.round}) — waiting for later trigger`);
+      return;
+    }
+
+    if (window[HUD_NS].byCombat?.has(c.id)) {
+      dlog(`RELOAD-RECOVERY [${triggerName}]: HUD already present for combat ${c.id} — skipping`);
+      return;
+    }
+
+    dlog(`RELOAD-RECOVERY [${triggerName}]: local-build HUD for combat ${c.id}`);
+    try {
+      buildForCombat(c);
+    } catch (e) {
+      console.warn("[OniHud2] reload-recovery local-build failed:", e);
+    }
+  }
+
+  // Make sure socket is available ASAP — and immediately try to recover the
+  // HUD in case canvasReady already fired with game.combat still null.
   Hooks.once("ready", () => {
-    dlog("Hooks.ready fired; ensureSocket");
+    dlog("Hooks.ready fired; ensureSocket + tryReloadRecovery");
     ensureSocket();
+    tryReloadRecovery("ready");
   });
 
   // GM: broadcast build when combat starts
@@ -589,13 +628,13 @@ async function buildForCombat(combat){
     }
   });
 
-  // GM: if page reloads while combat is active, rebroadcast a build so all sync
-  Hooks.once("canvasReady", () => {
-    const c = game.combat ?? game.combats?.active ?? null;
-    dlog("HOOK canvasReady", { isGM: game.user?.isGM, haveCombat: !!c, combatId: c?.id, started: c?.started, round: c?.round, active: c?.active });
-    if (game.user.isGM && c && (c.started || (c.round ?? 0) > 0) && c.active !== false) {
-      dlog("canvasReady: rebroadcast BUILD for active combat");
-      broadcastAll(ACTION_BUILD, { combatId: c.id });
-    }
-  });
+  // Reload + scene-switch recovery, canvasReady leg. The actual logic lives
+  // in tryReloadRecovery (called from both ready and canvasReady) — see the
+  // comment on that function for why both triggers are needed.
+  //
+  // `Hooks.on` (not `once`) so this also fires when the user switches AWAY
+  // from the combat scene and back. canvasTearDown at line 585 wipes the
+  // local HUDs on every scene change; without the rebuild here, returning
+  // to the combat scene mid-session would leave the user without a HUD.
+  Hooks.on("canvasReady", () => tryReloadRecovery("canvasReady"));
 })();
