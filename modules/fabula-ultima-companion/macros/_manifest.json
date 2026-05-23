@@ -38,6 +38,8 @@
     { "path": "macros/Command Buttons/[Macro] Study.js",           "name": "Study" },
     { "path": "macros/Battle Init/[Macro] BattleInit — BattleInit Manager.js", "name": "BattleInit — BattleInit Manager" },
     { "path": "macros/Battle Init/[Macro] BattleInit — Battle Transition.js",  "name": "BattleInit — Battle Transition" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Preload Assets.js",     "name": "BattleInit — Preload Assets" }
+    { "path": "macros/Battle Init/[Macro] BattleInit — Preload Assets.js",     "name": "BattleInit — Preload Assets" },
+    { "path": "macros/Battle Init/[Macro] BattleInit — Encounter Spawner.js",  "name": "BattleInit — Encounter Spawner" },
+    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",   "name": "BattleInit — Battle Initiator" }
   ]
 }

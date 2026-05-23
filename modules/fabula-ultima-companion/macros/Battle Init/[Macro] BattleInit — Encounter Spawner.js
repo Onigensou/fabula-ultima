@@ -50,24 +50,39 @@
     const currentSceneId = canvas.scene?.id;
     if (!currentSceneId) return null;
 
-    // 1) current scene
-    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
-    if (local) return { payload: local, sourceScene: canvas.scene };
-
-    // 2) search other scenes that "own" the payload (common if you stored it on exploration scene)
+    // 1) Prefer payloads stored on a DIFFERENT (source) scene whose
+    //    `step4.battleScene.id` points at the current battle scene. This
+    //    is the canonical BattleInit layout: payload lives on the source
+    //    scene, step4 names the battle scene it transitioned into. Score
+    //    by gate/resolve completion + transitionedAt so stale or aborted
+    //    payloads lose to the live one. Critically, we check this BEFORE
+    //    the current-scene flag — otherwise a stale payload that landed
+    //    on the battle scene (from a previous broken Spawner run, etc.)
+    //    shadows the real source-scene payload that the rest of the
+    //    pipeline is actively writing into.
+    let best = null;
     for (const s of (game.scenes?.contents ?? [])) {
       const p = s.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
       if (!p) continue;
-
       const transitionedBattleId =
         p?.step4?.battleScene?.id ??
         p?.step4?.battleSceneId ??
         null;
-
-      if (transitionedBattleId && transitionedBattleId === currentSceneId) {
-        return { payload: p, sourceScene: s };
-      }
+      if (!transitionedBattleId || transitionedBattleId !== currentSceneId) continue;
+      const gateOk = (p?.phases?.gate?.status === "ok");
+      const resolveOk = (p?.phases?.resolve?.status === "ok");
+      const layoutOkBonus = (p?.phases?.layout?.status === "ok") ? 1 : 0;
+      const transitionedAt = Number(p?.step4?.transitionedAt ?? 0) || 0;
+      const score = ((gateOk && resolveOk) ? 1_000_000_000_000 : 0) + (layoutOkBonus * 1_000_000_000) + transitionedAt;
+      if (!best || score > best.score) best = { score, payload: p, sourceScene: s };
     }
+    if (best) return { payload: best.payload, sourceScene: best.sourceScene };
+
+    // 2) Fallback: current scene's local flag. Reached only when no
+    //    source-scene payload references this battle scene.
+    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
+    if (local) return { payload: local, sourceScene: canvas.scene };
+
     return null;
   }
 
@@ -194,9 +209,25 @@
     return;
   }
 
-  // Safety: you should run this on the battle scene
-  if (layout?.battleScene?.id && layout.battleScene.id !== canvas.scene.id) {
-    ui.notifications?.warn?.(`BattleInit: You're not on the intended battle scene (${layout.battleScene.name}). Spawning anyway.`);
+  // Resolve the battle scene from the payload (NOT canvas.scene). Earlier
+  // steps recorded layout.battleScene.id / step4.battleScene.id; that's the
+  // scene the tokens must land on. Using canvas.scene here meant a missed
+  // transition (or a user-initiated scene switch mid-pipeline) would spawn
+  // the entire battle on the source scene, where Initiator would then
+  // create the combat and BattleEnd would later fail to find anything.
+  const battleSceneId =
+    layout?.battleScene?.id ??
+    payload?.step4?.battleScene?.id ??
+    payload?.context?.battleSceneId ??
+    null;
+  const battleScene = battleSceneId ? game.scenes?.get?.(battleSceneId) : null;
+  if (!battleScene) {
+    ui.notifications?.error?.("BattleInit: Couldn't resolve battle scene from payload (need layout.battleScene.id or step4.battleScene.id).");
+    log("Missing battle scene; layout =", layout, "step4 =", payload?.step4);
+    return;
+  }
+  if (battleScene.id !== canvas.scene?.id) {
+    log(`Spawning on payload battle scene "${battleScene.name}" while canvas is on "${canvas.scene?.name}".`);
   }
 
   // -----------------------------
@@ -214,9 +245,9 @@
   const warnings = [];
   const errors = [];
 
-  // Existing token actorIds on the current battle scene
+  // Existing token actorIds on the battle scene
   const existingActorIds = new Set(
-    (canvas.scene.tokens?.contents ?? [])
+    (battleScene.tokens?.contents ?? [])
       .map(t => t.actorId)
       .filter(Boolean)
   );
@@ -240,7 +271,7 @@
 
     // If already present: ADOPT the existing token so Entrance Animation can still reveal it.
     if (existingActorIds.has(actor.id)) {
-      const existing = (canvas.scene.tokens?.contents ?? []).find(t => t.actorId === actor.id) ?? null;
+      const existing = (battleScene.tokens?.contents ?? []).find(t => t.actorId === actor.id) ?? null;
 
       if (!existing) {
         warnings.push(`Party slot ${p?.slot ?? "?"}: actor already present but token not found (actorId=${actor.id}).`);
@@ -384,7 +415,7 @@
   }
 
   // -----------------------------
-  // Create Tokens on the CURRENT scene
+  // Create Tokens on the battle scene (resolved from payload above)
   // -----------------------------
   let createdDocs = [];
   try {
@@ -392,7 +423,7 @@
     if (!all.length) {
       ui.notifications?.warn?.("BattleInit: Nothing to spawn (all party already present, or enemies unresolved).");
     } else {
-      createdDocs = await canvas.scene.createEmbeddedDocuments("Token", all);
+      createdDocs = await battleScene.createEmbeddedDocuments("Token", all);
     }
   } catch (err) {
     errors.push(`Token creation failed: ${err?.message ?? String(err)}`);
@@ -403,7 +434,7 @@
   // This keeps Step 5c (Entrance) consistent even if the party was already on the scene.
   if (adoptedPartyUpdates.length) {
     try {
-      await canvas.scene.updateEmbeddedDocuments("Token", adoptedPartyUpdates);
+      await battleScene.updateEmbeddedDocuments("Token", adoptedPartyUpdates);
       log("Adopted existing party tokens updated:", { count: adoptedPartyUpdates.length });
     } catch (err) {
       errors.push(`Adopted party token update failed: ${err?.message ?? String(err)}`);
@@ -437,7 +468,7 @@
   payload.spawn ??= {};
   payload.spawn.step5b = {
     at: nowIso(),
-    battleScene: { id: canvas.scene.id, name: canvas.scene.name, uuid: canvas.scene.uuid },
+    battleScene: { id: battleScene.id, name: battleScene.name, uuid: battleScene.uuid },
     runId,
 
     // Newly created token ids (this run)

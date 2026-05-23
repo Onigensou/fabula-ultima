@@ -271,10 +271,14 @@
     // -----------------------------
   // Activate (single switch) + Pull Players (optional)
   // -----------------------------
-  try {
-    await battleSceneDoc.activate(); // Activating already causes users to load into the active scene
-    
-      async function waitForCanvasNotLoading(timeoutMs = 15000) {
+  // Wait until Foundry's canvas finishes drawing the activated scene.
+  // `scene.activate()` resolves once the Scene document is flagged active —
+  // it does NOT wait for the renderer to swap. Without this wait, downstream
+  // steps (Spawner places tokens on canvas.scene, Initiator creates combat
+  // for canvas.scene.id) can fire while canvas.scene is still the source
+  // scene, which is exactly the failure mode that leaves combat / tokens
+  // stranded on the source scene after BattleInit completes.
+  async function waitForCanvasNotLoading(timeoutMs = 15000) {
     const t0 = Date.now();
     while (canvas.loading) {
       if ((Date.now() - t0) > timeoutMs) {
@@ -286,7 +290,37 @@
     return true;
   }
 
+  let canvasSettled = false;
+  let activateThrew = false;
+  try {
+    await battleSceneDoc.activate();
+    await waitForCanvasNotLoading();
+    // Belt-and-suspenders: if `activate()` updated the document but the
+    // local canvas didn't actually swap (observed in title-screen contexts
+    // where the dialog/curtain stack seems to swallow the hook chain),
+    // explicitly `view()` the scene to force the local canvas redraw.
+    // `Scene#view()` is the local-only swap and is safe to call even when
+    // the scene is already the active/viewed one.
+    if (canvas.scene?.id !== battleSceneDoc.id) {
+      console.warn(tag,
+        "Canvas didn't swap to battle scene after activate(); forcing local view() retry.",
+        { expected: battleSceneDoc.id, got: canvas.scene?.id });
+      try {
+        await battleSceneDoc.view();
+        await waitForCanvasNotLoading();
+      } catch (vErr) {
+        console.warn(tag, "battleScene.view() retry failed:", vErr);
+      }
+    }
+    canvasSettled = (canvas.scene?.id === battleSceneDoc.id);
+    if (!canvasSettled) {
+      console.warn(tag,
+        "Canvas still did not settle on battle scene after activate()+view(). " +
+        "Expected:", battleSceneDoc.id, "got:", canvas.scene?.id,
+        "— Spawner/Initiator will target the payload battleScene id directly, so this is non-fatal.");
+    }
   } catch (e) {
+    activateThrew = true;
     console.warn(tag, "battleScene.activate() failed (continuing):", e);
   }
 
@@ -297,6 +331,19 @@
   pullAllPlayersToScene(battleSceneDoc.id);
 
   await wait(AFTER_ACTIVATE_DELAY_MS);
+  await waitForCanvasNotLoading();
+  // Re-check after the post-activate settle window for diagnostics. Even if
+  // the canvas didn't land on the battle scene, the Spawner/Initiator now
+  // resolve the target scene from `payload.step4.battleScene.id` directly,
+  // so the pipeline can continue. We still record the observed state so
+  // the issue is visible if it recurs.
+  const canvasSceneAfter = canvas.scene?.id ?? null;
+  if (canvasSceneAfter !== battleSceneDoc.id) {
+    canvasSettled = false;
+    console.warn(tag,
+      "Canvas drifted off battle scene during post-activate wait. " +
+      "Expected:", battleSceneDoc.id, "got:", canvasSceneAfter);
+  }
 
   // BGM start moved to BattleInit — Preload Assets so the music starts as
   // the black curtain fades (cinematic reveal). See that macro for the call.
@@ -304,10 +351,17 @@
   // -----------------------------
   // Write back transition status
   // -----------------------------
+  // step4.ok is the Manager's go/no-go gate for advancing the pipeline (see
+  // BattleInit Manager `stepMarker("transition")` — it polls `step4.ok`).
+  // Activate either threw or it didn't; the canvas-settle check is a soft
+  // diagnostic, not a failure mode, because downstream steps no longer
+  // depend on canvas.scene matching the battle scene.
   const nextPayload = foundry.utils.deepClone(payload);
   nextPayload.step4 = {
-    ok: true,
+    ok: !activateThrew,
     transitionedAt: Date.now(),
+    canvasSettled,
+    canvasSceneAfterTransition: canvasSceneAfter,
     battleScene: {
       id: battleSceneDoc.id,
       name: battleSceneDoc.name,

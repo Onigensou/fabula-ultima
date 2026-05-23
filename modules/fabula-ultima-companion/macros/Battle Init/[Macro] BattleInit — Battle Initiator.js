@@ -40,24 +40,37 @@
     const currentSceneId = canvas.scene?.id;
     if (!currentSceneId) return null;
 
-    // 1) current scene
-    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
-    if (local) return { payload: local, sourceScene: canvas.scene };
-
-    // 2) search other scenes that "own" the payload
+    // 1) Prefer payloads stored on a DIFFERENT (source) scene whose
+    //    `step4.battleScene.id` points at the current battle scene.
+    //    Score by gate/resolve/layout/spawn completion + transitionedAt
+    //    so the live battle wins against any stale flags still sitting
+    //    on the battle scene from earlier aborted runs.
+    let best = null;
     for (const s of (game.scenes?.contents ?? [])) {
       const p = s.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
       if (!p) continue;
-
       const transitionedBattleId =
         p?.step4?.battleScene?.id ??
         p?.step4?.battleSceneId ??
         null;
-
-      if (transitionedBattleId && transitionedBattleId === currentSceneId) {
-        return { payload: p, sourceScene: s };
-      }
+      if (!transitionedBattleId || transitionedBattleId !== currentSceneId) continue;
+      const gateOk = (p?.phases?.gate?.status === "ok");
+      const resolveOk = (p?.phases?.resolve?.status === "ok");
+      const layoutOkBonus = (p?.phases?.layout?.status === "ok") ? 1 : 0;
+      const spawnOkBonus = (p?.phases?.spawn?.status === "ok") ? 1 : 0;
+      const transitionedAt = Number(p?.step4?.transitionedAt ?? 0) || 0;
+      const score = ((gateOk && resolveOk) ? 1_000_000_000_000 : 0)
+        + (layoutOkBonus * 1_000_000_000)
+        + (spawnOkBonus * 100_000_000)
+        + transitionedAt;
+      if (!best || score > best.score) best = { score, payload: p, sourceScene: s };
     }
+    if (best) return { payload: best.payload, sourceScene: best.sourceScene };
+
+    // 2) Fallback: current scene's local flag.
+    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
+    if (local) return { payload: local, sourceScene: canvas.scene };
+
     return null;
   }
 
@@ -207,24 +220,43 @@
   }
 
   // -----------------------------
-  // Locate tokens in current battle scene
+  // Resolve the battle scene from the payload (NOT canvas.scene).
+  // Earlier steps recorded `step4.battleScene.id`; that's the authoritative
+  // scene the spawn step5b token ids live on. Using canvas.scene.id here
+  // meant the combat doc — and therefore everything BattleEnd later keys
+  // off of — could land on the source scene if Battle Transition didn't
+  // actually settle the canvas before this macro ran.
   // -----------------------------
-  const sceneTokens = canvas.scene.tokens?.contents ?? [];
+  const battleSceneId =
+    payload?.step4?.battleScene?.id ??
+    payload?.context?.battleSceneId ??
+    null;
+  const battleScene = battleSceneId ? game.scenes?.get?.(battleSceneId) : null;
+  if (!battleScene) {
+    ui.notifications?.error?.("BattleInit: Couldn't resolve battle scene from payload (need step4.battleScene.id).");
+    log("Missing battle scene; payload.step4 =", payload?.step4);
+    return;
+  }
+
+  // -----------------------------
+  // Locate tokens on the payload's battle scene
+  // -----------------------------
+  const sceneTokens = battleScene.tokens?.contents ?? [];
   const tokensToAdd = allTokenIds
     .map(id => sceneTokens.find(t => t.id === id))
     .filter(Boolean);
 
   if (!tokensToAdd.length) {
-    ui.notifications?.error?.("BattleInit: Spawned token IDs were not found on this scene. Are you on the battle scene?");
+    ui.notifications?.error?.(`BattleInit: Spawned token IDs were not found on the battle scene (${battleScene.name}). Did the Spawner write to a different scene?`);
     log("Token IDs expected:", allTokenIds);
-    log("Scene token count:", sceneTokens.length);
+    log("Battle scene token count:", sceneTokens.length, "battleSceneId:", battleSceneId);
     return;
   }
 
   // -----------------------------
   // Ensure Combat + add combatants
   // -----------------------------
-  const combat = await ensureCombatForScene(canvas.scene.id);
+  const combat = await ensureCombatForScene(battleScene.id);
 
   // Existing combatant tokenIds
   const existing = new Set((combat.combatants?.contents ?? []).map(c => c.tokenId).filter(Boolean));
@@ -288,7 +320,7 @@
   payload.initiator ??= {};
   payload.initiator.step6 = {
     at: nowIso(),
-    battleScene: { id: canvas.scene.id, name: canvas.scene.name, uuid: canvas.scene.uuid },
+    battleScene: { id: battleScene.id, name: battleScene.name, uuid: battleScene.uuid },
     combatId: combat.id,
     tokenIds: allTokenIds,
     addedCombatants: toCreate.length,
