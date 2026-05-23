@@ -258,6 +258,7 @@
     "scripts/camp-system/activities/activity-mending.js",
     "scripts/camp-system/activities/activity-midnight-oil.js",
     "scripts/camp-system/activities/activity-pep-talk.js",
+    "scripts/camp-system/activities/activity-pep-talk-ui.js",
     "scripts/camp-system/activities/activity-planning.js",
     "scripts/camp-system/activities/activity-sing.js",
     "scripts/camp-system/activities/activity-sleep-soundly.js",

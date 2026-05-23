@@ -128,6 +128,19 @@
     MAGIC_LESSON_RESULT:   "CAMP_MAGIC_LESSON_RESULT",   // GM → all (3 payload shapes: spell-pick / rolling / reveal)
     MAGIC_LESSON_PROCEED:  "CAMP_MAGIC_LESSON_PROCEED",  // owner → GM
     MAGIC_LESSON_DONE:     "CAMP_MAGIC_LESSON_DONE",     // GM → all
+    // Pep Talk minigame (Pop Quiz)
+    PEP_TALK_START:               "CAMP_PEP_TALK_START",               // GM → all (show ally picker)
+    PEP_TALK_TARGET:              "CAMP_PEP_TALK_TARGET",               // owner → GM (ally chosen)
+    PEP_TALK_QUIZ_BUILD:          "CAMP_PEP_TALK_QUIZ_BUILD",           // GM → all (quiz-builder phase)
+    PEP_TALK_QUIZ_READY:          "CAMP_PEP_TALK_QUIZ_READY",           // target's owner → GM (3 topics submitted)
+    PEP_TALK_QUESTION:            "CAMP_PEP_TALK_QUESTION",             // GM → all (reveal one question)
+    PEP_TALK_ANSWER:              "CAMP_PEP_TALK_ANSWER",               // owner → all (choice index; spectator sync)
+    PEP_TALK_Q_RESULT:            "CAMP_PEP_TALK_Q_RESULT",             // GM → all (pts + reaction tier)
+    PEP_TALK_RESULT:              "CAMP_PEP_TALK_RESULT",               // GM → all (final score + grade)
+    PEP_TALK_PROCEED:             "CAMP_PEP_TALK_PROCEED",              // owner → GM
+    PEP_TALK_DONE:                "CAMP_PEP_TALK_DONE",                 // GM → all
+    PEP_TALK_CHOICE_REQUEST:      "CAMP_PEP_TALK_CHOICE_REQUEST",       // GM → target's owner (in-combat "you may" dialog)
+    PEP_TALK_CHOICE_RESPONSE:     "CAMP_PEP_TALK_CHOICE_RESPONSE",      // target's owner → GM
   });
 
   // ---------------------------------------------------------------------------
