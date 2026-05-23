@@ -283,6 +283,47 @@
           return;
         }
 
+        // ── Pep Talk minigame (Pop Quiz) ──────────────────────────────────
+        if (type === CAMP.MSG.PEP_TALK_START) {
+          CAMP.PepTalkUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_QUIZ_BUILD) {
+          CAMP.PepTalkUI?.showQuizBuild(
+            payload?.actorId, payload?.actorName,
+            payload?.targetActorId, payload?.targetActorName,
+            payload?.targetImg, payload?.ownerImg,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_QUESTION) {
+          CAMP.PepTalkUI?.showQuestion(
+            payload?.actorId, payload?.targetActorId, payload?.q, payload?.topic,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_Q_RESULT) {
+          CAMP.PepTalkUI?.showQResult(
+            payload?.actorId, payload?.targetActorId,
+            payload?.q, payload?.answerIdx, payload?.pts, payload?.totalScore,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_RESULT) {
+          CAMP.PepTalkUI?.applyResult(
+            payload?.actorId, payload?.targetActorId, payload?.totalScore, payload?.grade,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_DONE) {
+          CAMP.PepTalkUI?.hide();
+          return;
+        }
+        if (type === CAMP.MSG.PEP_TALK_CHOICE_REQUEST) {
+          CAMP.PepTalkUI?.onChoiceRequest(payload);
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -414,6 +455,38 @@
           case CAMP.MSG.GATHERING_PROCEED:
             CAMP.GatheringUI?.resolveProceed(payload?.actorId);
             break;
+
+          case CAMP.MSG.PEP_TALK_TARGET:
+            CAMP.PepTalkUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.PEP_TALK_QUIZ_READY:
+            CAMP.PepTalkUI?.resolveQuizReady(payload?.actorId, payload?.topics);
+            break;
+
+          case CAMP.MSG.PEP_TALK_ANSWER:
+            CAMP.PepTalkUI?.resolveAnswer(payload?.actorId, payload?.answerIdx);
+            break;
+
+          case CAMP.MSG.PEP_TALK_PROCEED:
+            CAMP.PepTalkUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.PEP_TALK_CHOICE_RESPONSE: {
+            const { actorId, aeId, boostedDelta, accepted, originalNewMp, maxMp, currentMp } = payload ?? {};
+            if (!actorId) break;
+            const _ptActor = game.actors?.get(actorId);
+            if (!_ptActor) break;
+            if (accepted) {
+              const finalMp = Math.min((currentMp ?? 0) + (boostedDelta ?? 0), maxMp ?? 9999);
+              await _ptActor.update({ "system.props.current_mp": String(finalMp) });
+            } else if (originalNewMp !== undefined) {
+              await _ptActor.update({ "system.props.current_mp": String(originalNewMp) });
+            }
+            const _ptAe = _ptActor.effects.get(aeId);
+            if (_ptAe) await _ptAe.delete();
+            break;
+          }
 
           // EXPLORATION_RESULT is handled in the all-clients section above
         }
