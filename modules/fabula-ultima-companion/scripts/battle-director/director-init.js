@@ -544,13 +544,35 @@ export async function runDirectorInit(payload) {
     throw new Error("Neither party nor enemies resolved — nothing to spawn");
   }
 
-  // ── 5. Activate battle scene.
+  // ── 5. Activate battle scene + view it locally.
+  //
+  // `Scene.activate()` flips the world's active scene but does NOT
+  // necessarily switch the calling GM's local canvas — `viewedScene` is a
+  // per-client state and `activate()` only does an implicit view() if the
+  // GM hasn't explicitly viewed a different scene since. After launching
+  // from the title (source) scene with the GM viewing it, activate() leaves
+  // the GM stuck on the title scene; subsequent token spawns + entrance
+  // animation happen on the battle scene the GM can't see, and TURN_START's
+  // picker can't find canvas tokens → infinite loop until the rate-limiter
+  // kicks in.
+  //
+  // Calling `scene.view()` explicitly is the per-client switch that the
+  // calling GM (and any GM running PREP) needs. Always run both: activate()
+  // sets the world flag for player clients, view() pulls the GM's local
+  // canvas along.
   if (canvas?.scene?.id !== battleScene.id) {
     log(`Activating battle scene: ${battleScene.name}`);
-    await battleScene.activate();
+    try { await battleScene.activate(); } catch (e) { warn("battleScene.activate threw", e); }
+    try { await battleScene.view();     } catch (e) { warn("battleScene.view threw", e); }
     await waitForCanvasReady(8000);
   } else {
-    log(`Battle scene ${battleScene.name} already active`);
+    log(`Battle scene ${battleScene.name} already active locally`);
+    // Defensive: still call activate() so the world's active flag is set
+    // (covers the case where the GM viewed the battle scene manually before
+    // pressing the combat button).
+    if (!battleScene.active) {
+      try { await battleScene.activate(); } catch (e) { warn("battleScene.activate threw", e); }
+    }
   }
 
   // ── 6. Compute layout (party right, enemies left).
