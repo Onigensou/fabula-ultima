@@ -39,12 +39,22 @@
   };
 
   const PRESET_TOPICS = [
-    "Tell me about today's adventure!",
-    "Eaten anything good today?",
-    "How are you feeling right now?",
-    "Is anything weighing on your mind?",
-    "What are you working towards lately?",
-    "How do you feel about our group?",
+    "Today's adventure has been on my mind.",
+    "I've been thinking about the meals we share at camp.",
+    "I'm not sure how I'm feeling right now.",
+    "Something has been weighing on my mind.",
+    "I've been wondering what I'm really working toward.",
+    "I've been thinking about my place in this group.",
+    "I keep thinking about what happened today.",
+    "I'm worried I held everyone back.",
+    "I don't know if I'm strong enough for what comes next.",
+    "I feel like I don't really belong here.",
+    "I'm afraid of making the wrong choice.",
+    "I miss the way things used to be.",
+    "There's something I regret.",
+    "I want to protect everyone, but I don't know if I can.",
+    "I'm scared of what this journey is turning me into.",
+    "I need to remember why I'm still fighting.",
   ];
 
   // ---------------------------------------------------------------------------
@@ -879,12 +889,20 @@
       const scoreEl = document.getElementById("oni-pt-score");
       if (scoreEl) scoreEl.textContent = totalScore;
 
-      // Highlight chosen button
+      // Reveal which tier each button was and highlight the chosen one
+      const tierBorderColor = { 0: "#22c55e", 1: "#3b82f6", 2: "#ef4444" };
       const choices = document.querySelectorAll(".oni-pt-choice");
-      choices.forEach((btn, i) => {
+      choices.forEach(btn => {
         btn.disabled = true;
-        if (i === answerIdx) btn.style.opacity = "1";
-        else                  btn.style.opacity = "0.35";
+        const tierIdx = parseInt(btn.dataset.idx);
+        if (tierIdx === answerIdx) {
+          btn.style.opacity     = "1";
+          btn.style.borderColor = tierBorderColor[tierIdx];
+          btn.style.borderWidth = "3px";
+          btn.style.boxShadow   = `0 0 10px ${tierBorderColor[tierIdx]}99`;
+        } else {
+          btn.style.opacity = "0.35";
+        }
       });
 
       // Token reaction
