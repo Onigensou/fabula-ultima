@@ -436,12 +436,14 @@
       <div class="oni-pt-panel-title">
         <img src="${PEP_TALK_ICON}" alt=""> Let's Talk!
       </div>
-      <div class="oni-pt-panel-sub">Create a question for your companion.</div>
+      <div class="oni-pt-panel-sub">
+        Share something on your mind with <strong>${_actorName}</strong> — then write how they might reply.
+      </div>
       <div class="oni-pt-build-progress">Topic ${slotIdx + 1} of 3</div>
 
       <div class="oni-pt-build-wrap">
         <div class="oni-pt-build-topic-row">
-          <div class="oni-pt-build-label">Choose a topic or write your own:</div>
+          <div class="oni-pt-build-label">What are you sharing? <span style="font-weight:400;font-style:italic;color:#8d5f38;">(You're speaking to ${_actorName})</span></div>
           ${availablePresets.length > 0 ? `
             <select class="oni-pt-build-preset" id="oni-pt-preset-sel">
               <option value="">— Write your own topic… —</option>
@@ -454,21 +456,21 @@
         </div>
 
         <div class="oni-pt-build-choices" id="oni-pt-choice-wrap">
-          <div class="oni-pt-build-label">Write 3 possible answers:</div>
+          <div class="oni-pt-build-label">How might <strong>${_actorName}</strong> respond? <span style="font-weight:400;font-style:italic;color:#8d5f38;">(write 3 things they could say, best to worst)</span></div>
           <div class="oni-pt-build-choice-row">
             <div class="oni-pt-build-badge oni-pt-badge-2">★★</div>
             <input class="oni-pt-build-choice-input" id="oni-pt-ans-0" type="text" maxlength="100"
-                   placeholder="Overwhelmingly positive response…">
+                   placeholder="The best thing ${_actorName} could say…">
           </div>
           <div class="oni-pt-build-choice-row">
             <div class="oni-pt-build-badge oni-pt-badge-1">★</div>
             <input class="oni-pt-build-choice-input" id="oni-pt-ans-1" type="text" maxlength="100"
-                   placeholder="Positive response…">
+                   placeholder="A decent reply from ${_actorName}…">
           </div>
           <div class="oni-pt-build-choice-row">
             <div class="oni-pt-build-badge oni-pt-badge-0">…</div>
             <input class="oni-pt-build-choice-input" id="oni-pt-ans-2" type="text" maxlength="100"
-                   placeholder="Negative response…">
+                   placeholder="A reply that doesn't quite land…">
           </div>
         </div>
 
