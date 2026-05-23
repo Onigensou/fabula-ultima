@@ -88,6 +88,8 @@ Hooks.once("ready", () => {
         bottom: ${CFG.offsetBottomPx}px;
         z-index: ${CFG.zIndex};
         pointer-events: none; /* allow only button to receive clicks */
+        /* Slide in sync with the sidebar's collapse/expand transition. */
+        transition: right 300ms ease-out;
       }
 
       #${DOM.BTN_ID} {
