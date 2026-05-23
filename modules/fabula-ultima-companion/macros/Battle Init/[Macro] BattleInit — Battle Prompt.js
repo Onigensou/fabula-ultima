@@ -374,6 +374,17 @@ log("Party Defaults (DB):", {
   { id: "manual",          label: "Manual List",          hint: "Paste Actor UUIDs (one per line). Each line = 1 enemy." }
 ];
 
+  // Battle system choice. "legacy" = the shipped flow (turn-ui-manager,
+  // reaction-system, etc.). "director" = the experimental Battle Director
+  // (parallel codepath at scripts/battle-director/). When director is chosen,
+  // the BattleInit Manager runs the same transition + preload steps as legacy
+  // and then starts the director on the new combat via the conditional
+  // "directorStart" pipeline step.
+  const BATTLE_SYSTEMS = [
+    { id: "legacy",   label: "Legacy (default)" },
+    { id: "director", label: "Battle Director (EXPERIMENTAL)" }
+  ];
+
   // Initial BGM prefill
   const initialBattleType = "default";
   const initialBgmValue = battleBGMDefault || "";
@@ -504,6 +515,20 @@ log("Party Defaults (DB):", {
       </div>
     </div>
 
+    <!-- Battle System (legacy vs. experimental director) -->
+    <div style="padding:8px 10px; border:1px solid var(--color-border-light-primary); border-radius:10px; background:rgba(122,155,182,0.08);">
+      <label style="font-weight:900;">Combat System</label>
+      <select name="battleSystem" style="width:100%; margin-top:4px;" data-bi-battlesystem>
+        ${BATTLE_SYSTEMS.map(b => `<option value="${b.id}">${esc(b.label)}</option>`).join("")}
+      </select>
+      <div style="font-size:12px; opacity:0.85; margin-top:6px; line-height:1.4;">
+        <b>Legacy</b> — the shipped battle flow (turn-ui-manager + reaction-system).<br>
+        <b>Battle Director</b> — experimental FSM-based parallel build. Runs alongside the legacy
+        UI; you'll see both stacks of Octopath buttons (gold = legacy, blue = director).
+        Most commands are stubbed in v1 — only <b>Attack</b> and <b>Guard</b> are wired end-to-end.
+      </div>
+    </div>
+
    <!-- Manual List UI: 5 slots (each slot = 1 enemy) -->
 <div data-bi-manualblock style="display:none; padding:10px 12px; border:1px solid var(--color-border-light-primary); border-radius:10px;">
   <div style="font-weight:900; margin-bottom:6px;">Manual Enemy List</div>
@@ -618,6 +643,11 @@ const randomChance = Math.max(0, Math.min(100, Number.isFinite(parsedRandomChanc
     const optRunUnleash      = Boolean(fd.get("optRunUnleash"));
     const optAnimations      = Boolean(fd.get("optAnimations"));
 
+    // Battle system choice. Validated against the BATTLE_SYSTEMS list above;
+    // anything unexpected falls back to "legacy".
+    const battleSystemRaw = String(fd.get("battleSystem") ?? "legacy").trim();
+    const battleSystem = BATTLE_SYSTEMS.some(b => b.id === battleSystemRaw) ? battleSystemRaw : "legacy";
+
     // If enabled, clear battle log NOW (before payload is created)
     let clearBattleLogReport = null;
     if (optClearBattleLog) {
@@ -697,7 +727,10 @@ const randomChance = Math.max(0, Math.min(100, Number.isFinite(parsedRandomChanc
         },
         animations: { enabled: optAnimations },
         combat: { autoStart: optAutoStartCombat },
-        unleash: { enabled: optRunUnleash }
+        unleash: { enabled: optRunUnleash },
+        // "legacy" | "director" — read by BattleInit Manager's directorStart
+        // step. Falls back to "legacy" for backwards-compat with old payloads.
+        battleSystem: battleSystem
       },
       layout: {
         preset: "party_line__enemy_rows",

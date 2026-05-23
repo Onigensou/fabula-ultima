@@ -44,7 +44,10 @@
   entrance: "BattleInit — Entrance Animation",
   initiator: "BattleInit — Battle Initiator",
   unleash: "BattleInit — Unleash Detector",
-  record: "BattleInit — Battle Record Writer"
+  record: "BattleInit — Battle Record Writer",
+  // Director-mode handoff target. The Manager invokes this macro instead of
+  // running its own pipeline when payload.options.battleSystem === "director".
+  directorManager: "BattleInit — Director Manager"
 };
 
   const tag = "[BattleInit:Manager]";
@@ -383,6 +386,25 @@ if (!found || (hintedBattleId && String(found?.payload?.meta?.battleId ?? "") !=
 
 let { sourceScene, payload, from } = found;
 
+// ─── Battle System branch ─────────────────────────────────────────────
+// When the user selected "Battle Director" in the Battle Prompt, the legacy
+// pipeline (gate, resolver, transition, layout, spawner, preload, entrance,
+// initiator, unleash, record) is skipped entirely. Control passes to the
+// director-owned manager macro, which consumes the payload created above
+// and runs its own init flow. This is the only intentional handoff between
+// legacy and director — everything past this point in director mode is
+// director-native code.
+if (String(payload?.options?.battleSystem ?? "legacy") === "director") {
+  log("battleSystem=director — delegating to Director Manager macro, skipping legacy pipeline.");
+  try {
+    await runMacroByName(MACRO_NAMES.directorManager);
+  } catch (e) {
+    error("Director Manager macro threw", e);
+    ui.notifications?.error?.(`BattleInit Manager: director branch failed — ${e?.message ?? e}`);
+  }
+  return;
+}
+
   const runId = `mgr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const battleId = String(payload?.meta?.battleId ?? "(no battleId)");
 
@@ -417,9 +439,9 @@ let { sourceScene, payload, from } = found;
   { id: "spawner",    name: "Spawner",        macroName: MACRO_NAMES.spawner,    wantsScene: "battle" },
   { id: "preload",    name: "Preload Assets", macroName: MACRO_NAMES.preload,    wantsScene: "battle" },
   { id: "entrance",   name: "Entrance",       macroName: MACRO_NAMES.entrance,   wantsScene: "battle" },
-  { id: "initiator",  name: "Initiator",      macroName: MACRO_NAMES.initiator,  wantsScene: "battle", conditional: (p) => Boolean(p?.options?.combat?.autoStart) },
-  { id: "unleash",    name: "Unleash",        macroName: MACRO_NAMES.unleash,    wantsScene: "battle", conditional: (p) => Boolean(p?.options?.unleash?.enabled) },
-  { id: "record",     name: "Record Writer",  macroName: MACRO_NAMES.record,     wantsScene: "battle" }
+  { id: "initiator",     name: "Initiator",      macroName: MACRO_NAMES.initiator,     wantsScene: "battle", conditional: (p) => Boolean(p?.options?.combat?.autoStart) },
+  { id: "unleash",       name: "Unleash",        macroName: MACRO_NAMES.unleash,       wantsScene: "battle", conditional: (p) => Boolean(p?.options?.unleash?.enabled) },
+  { id: "record",        name: "Record Writer",  macroName: MACRO_NAMES.record,        wantsScene: "battle" }
 ];
 
   // -----------------------------

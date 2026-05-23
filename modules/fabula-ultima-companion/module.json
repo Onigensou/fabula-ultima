@@ -311,7 +311,8 @@
     "scripts/custom-ui/expAwarder-sidebar.js",
     "scripts/jrpg-targeting-system/jrpg-targeting-bootstrap.js",
     "scripts/jrpg-targeting-system/jrpg-targeting-test-harness.js",
-    "scripts/jrpg-targeting-system/jrpg-targeting-ui-tuner-bridge.js"
+    "scripts/jrpg-targeting-system/jrpg-targeting-ui-tuner-bridge.js",
+    "scripts/battle-director/director-boot.js"
   ],
   "styles": [
     "styles/style.css",
