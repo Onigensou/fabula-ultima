@@ -1117,7 +1117,64 @@
     // Hina that needs to outlive the moment Bandit's turn ends.
     clearAllUI({ preserveNamedMenus: true });
     TurnUI.state.currentTokenId = token.id;
-    forLocalClient_spawnWhat(token);
+    const ourTokenId = token.id;
+
+    // Defer the turn-action menu spawn until any start-of-turn reaction
+    // prompts have settled — otherwise the action menu and the reaction
+    // menu (e.g. Heart of Darkness on a crisis turn-owner, or an
+    // Aggressive Stance pill) compete for input at the same instant.
+    //
+    // Why: this script's updateCombat listener is registered BEFORE
+    // reaction-phaseHandler's (load order in module.json), so when the
+    // hook fires, we run first and reach this point synchronously,
+    // before the phase handler has had a chance to call
+    // emitPhaseSequential. A `setTimeout(0)` lets the rest of the hook
+    // loop and the reaction system's sync setup finish, after which
+    // `_phaseChain` reflects the in-flight lifecycle promise (GM-side
+    // only — non-GM clients never chain, so their wait is a no-op).
+    await awaitReactionsSettled(ourTokenId);
+    if (TurnUI.state.currentTokenId !== ourTokenId) return;
+
+    const stillToken = byIdOnCanvas(ourTokenId);
+    if (!stillToken) return;
+    forLocalClient_spawnWhat(stillToken);
+  }
+
+  // Block until any in-flight reaction lifecycle phase (and any reaction
+  // menus this client has open) finishes — so the turn-action menu doesn't
+  // spawn on top of a still-open reaction prompt. `ourTokenId` is the
+  // currentTokenId we captured before yielding; we abort the wait if a
+  // subsequent turn change supersedes us mid-await.
+  async function awaitReactionsSettled(ourTokenId, opts = {}) {
+    const totalTimeoutMs = Number.isFinite(opts.totalTimeoutMs) ? opts.totalTimeoutMs : 30000;
+    const pollMs = Number.isFinite(opts.pollMs) ? opts.pollMs : 100;
+
+    // Yield a full task so reaction-phaseHandler's updateCombat listener
+    // runs and the reaction-window's `_phaseChain` is updated to the new
+    // lifecycle promise. After this, `waitForIdle` is meaningful.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    if (TurnUI.state.currentTokenId !== ourTokenId) return;
+
+    const deadline = Date.now() + totalTimeoutMs;
+    try {
+      const rs = globalThis.FUCompanion?.api?.reactionSystem;
+      if (rs?.waitForIdle) {
+        const remaining = Math.max(0, deadline - Date.now());
+        if (remaining > 0) await rs.waitForIdle({ timeoutMs: remaining });
+      }
+    } catch (e) {
+      console.warn("[Turn UI Manager] waitForIdle threw — proceeding to spawn.", e);
+    }
+    if (TurnUI.state.currentTokenId !== ourTokenId) return;
+
+    // Defensive drain for non-GM clients (whose `_phaseChain` is always
+    // idle): if a reaction pill / picker arrived via socket and is still
+    // open, hold the turn-action menu back until it closes. Bounded by
+    // the shared deadline so a stuck pill can't deadlock the turn UI.
+    while (TurnUI.state.menus.size > 0 && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, pollMs));
+      if (TurnUI.state.currentTokenId !== ourTokenId) return;
+    }
   }
 
     function clearAllUI({ preserveNamedMenus = false } = {}) {
