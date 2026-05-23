@@ -111,6 +111,7 @@
     "scripts/emotes-system/emote-bootstrap.js",
     "scripts/custom-ui/chat-scene-network-button.js",
     "scripts/custom-ui/dungeon-configuration-ui.js",
+    "scripts/custom-ui/sidebar-anchor.js",
     "scripts/custom-ui/combat-button-installer.js",
     "scripts/custom-ui/chat-button-final-layout.js",
     "scripts/item-transfer/TransferCardUI.js",

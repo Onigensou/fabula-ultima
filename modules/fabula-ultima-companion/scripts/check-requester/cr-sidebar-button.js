@@ -692,7 +692,10 @@ Hooks.once("ready", () => {
       style.textContent = `
         #${DOM.ROOT_ID} {
           position: fixed;
-          right: ${CFG.offsetRightPx}px;
+          /* Live anchor — slides right when the GM collapses the sidebar.
+             Falls back to the legacy 313px when [SidebarAnchor] hasn't
+             published the var yet (cold boot). */
+          right: var(--fu-sidebar-anchor-right, ${CFG.offsetRightPx}px);
           bottom: ${CFG.offsetBottomPx}px;
           z-index: ${CFG.zIndex};
           pointer-events: none;
