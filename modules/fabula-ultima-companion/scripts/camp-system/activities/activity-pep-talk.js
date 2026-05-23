@@ -42,8 +42,10 @@
   // Activity registration
   // ---------------------------------------------------------------------------
   Hooks.once("ready", () => {
+    console.log(TAG, "ready hook fired — registering pep_talk");
     CAMP.ActivityRegistry?.register("pep_talk", {
       async execute(actor, _scene) {
+        console.log(TAG, "execute() called for", actor?.name);
         if (!actor) {
           console.warn(TAG, "execute() called with null actor.");
           return;
@@ -252,7 +254,7 @@
     const boosted = Math.floor(delta * multiplier);
     const label   = multiplier === 1.5 ? "×1.5" : `×${multiplier}`;
     const cap     = maxMp ?? actor.system?.props?.max_mp ?? 9999;
-    const cur     = currentMp ?? parseInt(actor.system?.props?.current_mp) || 0;
+    const cur     = currentMp ?? (parseInt(actor.system?.props?.current_mp) || 0);
 
     Dialog.confirm({
       title:   "Pep Talk",
