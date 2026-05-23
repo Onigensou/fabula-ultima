@@ -61,6 +61,13 @@
     return ui.notifications.error("Reload broadcast failed (see console).");
   }
 
+  // reload-broadcast.js staggers each non-GM client by 600 ms per index, starting
+  // at index 0 = DELAY_MS.  The GM must reload AFTER all of them so no two clients
+  // disconnect at the same millisecond — simultaneous mass-disconnect crashes the
+  // local Foundry V12 Electron app.
+  const STAGGER_MS = 600;
+  const activePlayers = game.users.filter(u => u.active && u.id !== game.userId);
+  const gmDelay = DELAY_MS + activePlayers.length * STAGGER_MS;
   ui.notifications.info("Reload broadcast sent — reloading you in a moment…");
-  setTimeout(() => location.reload(), DELAY_MS);
+  setTimeout(() => location.reload(), gmDelay);
 })();
