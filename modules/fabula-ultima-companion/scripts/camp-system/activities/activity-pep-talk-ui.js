@@ -625,10 +625,15 @@
     }
 
     const configs = [
-      { cls: "oni-pt-c-positive2", badge: "A", idx: 0 },
-      { cls: "oni-pt-c-positive1", badge: "B", idx: 1 },
-      { cls: "oni-pt-c-negative",  badge: "C", idx: 2 },
+      { cls: "oni-pt-c-positive2", idx: 0 },
+      { cls: "oni-pt-c-positive1", idx: 1 },
+      { cls: "oni-pt-c-negative",  idx: 2 },
     ];
+    for (let i = configs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [configs[i], configs[j]] = [configs[j], configs[i]];
+    }
+    configs.forEach((c, pos) => { c.badge = ["A", "B", "C"][pos]; });
 
     configs.forEach(({ cls, badge, idx }) => {
       const btn = document.createElement("button");
