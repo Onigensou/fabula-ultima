@@ -14,19 +14,24 @@
  *   Slow connections or unlucky CDN routing lose that race and get stuck.
  *
  * How this fixes it:
- *   1. On world "ready": pre-fetch every video asset from all navigation-bar
- *      scenes. These are the scenes the GM is most likely to activate during a
- *      session. By the time anyone transitions, the CDN edge is warm and the
- *      browser has the asset in its HTTP cache.
+ *   1. On world "ready":
+ *      - All clients pre-fetch the active scene (the one PIXI will load next).
+ *      - GM only pre-fetches the remaining nav-bar scenes. Players connect after
+ *        the GM and don't need to bulk-warm scenes they haven't navigated to yet.
+ *        Having every player client hammer the local Foundry server with the full
+ *        nav-scene batch at the same moment they sign in can crash the server when
+ *        two or more players connect simultaneously.
  *   2. On each "canvasInit": pre-fetch the current scene's video tiles as a
- *      safety net for non-navigation scenes. This races with PIXI's own load,
- *      but on repeated scene visits (and with partial cache hits) it still helps.
+ *      safety net for non-navigation scenes and scene switches mid-session.
  *
- * Applies to all users (GM and players) since anyone can get stuck at 99%.
+ * Concurrency:
+ *   Fetches are issued in batches of MAX_CONCURRENT rather than all at once to
+ *   avoid saturating the local server's file I/O on scenes with many video tiles.
  */
 (() => {
   const TAG = "[FUCompanion][ScenePrefetch]";
   const VIDEO_EXT = /\.(webm|mp4|ogg)$/i;
+  const MAX_CONCURRENT = 2;
 
   function collectVideoSrcs(scene) {
     const srcs = new Set();
@@ -43,42 +48,48 @@
 
   async function prefetchUrls(srcs, label) {
     if (!srcs.size) return;
-    console.info(`${TAG} pre-fetching ${srcs.size} video asset(s) for ${label}`);
+    const srcList = [...srcs];
+    console.info(`${TAG} pre-fetching ${srcList.length} video asset(s) for ${label}`);
     const t0 = Date.now();
-    const results = await Promise.allSettled(
-      [...srcs].map(src =>
-        fetch(src, { cache: "force-cache" })
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return src; })
-      )
-    );
-    const ok = results.filter(r => r.status === "fulfilled").length;
-    const fail = results.filter(r => r.status === "rejected");
+    let ok = 0;
+    const fail = [];
+    for (let i = 0; i < srcList.length; i += MAX_CONCURRENT) {
+      const chunk = srcList.slice(i, i + MAX_CONCURRENT);
+      const results = await Promise.allSettled(
+        chunk.map(src =>
+          fetch(src, { cache: "force-cache" })
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return src; })
+        )
+      );
+      ok += results.filter(r => r.status === "fulfilled").length;
+      fail.push(...results.filter(r => r.status === "rejected"));
+    }
     console.info(`${TAG} pre-fetch done (${ok} ok, ${fail.length} failed, ${Date.now() - t0}ms) for ${label}`);
     if (fail.length) {
       console.warn(`${TAG} failed srcs:`, fail.map(r => r.reason?.message ?? r.reason));
     }
   }
 
-  // Primary mitigation: warm the cache for all navigation-bar scenes on world
-  // load, well before any scene transition happens.
-  // Active scene is fetched first (highest priority) so the GM can activate
-  // immediately without racing the rest of the nav-scene batch.
   Hooks.once("ready", async () => {
     try {
       const activeScene = game.scenes.active;
-      const navScenes = game.scenes.filter(s => s.navigation && s !== activeScene);
 
-      // Active scene first — done before iterating the rest.
+      // All clients: warm the active scene so PIXI doesn't race the first fetch.
       if (activeScene) {
         await prefetchUrls(collectVideoSrcs(activeScene), `active scene "${activeScene.name}"`);
       }
 
-      // Remaining nav scenes in parallel.
-      const allSrcs = new Set();
-      for (const scene of navScenes) {
-        for (const src of collectVideoSrcs(scene)) allSrcs.add(src);
+      // GM only: warm all other nav-bar scenes. The GM is already connected
+      // before players arrive, so this never races with a simultaneous login.
+      // Players fetch any new scene on-demand via the canvasInit hook below.
+      if (game.user?.isGM) {
+        const navScenes = game.scenes.filter(s => s.navigation && s !== activeScene);
+        const allSrcs = new Set();
+        for (const scene of navScenes) {
+          for (const src of collectVideoSrcs(scene)) allSrcs.add(src);
+        }
+        await prefetchUrls(allSrcs, `${navScenes.length} other navigation scene(s)`);
       }
-      await prefetchUrls(allSrcs, `${navScenes.length} other navigation scene(s)`);
     } catch (e) {
       console.warn(`${TAG} ready-hook pre-fetch failed (non-fatal)`, e);
     }
