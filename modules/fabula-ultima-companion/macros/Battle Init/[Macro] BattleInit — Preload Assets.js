@@ -73,9 +73,18 @@
     const currentSceneId = canvas.scene?.id;
     if (!currentSceneId) return null;
 
-    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
-    if (local) return { payload: local, sourceScene: canvas.scene };
-
+    // 1. Authoritative path: scan every scene for a payload whose
+    //    step4.battleScene.id points AT our current battle scene. This is
+    //    the only reliable answer to "which BattleInit payload owns this
+    //    canvas scene" — the source scene records that pointer at the
+    //    Transition step and never lies about it.
+    //
+    //    Doing this first prevents a stale payload that the previous
+    //    BattleEnd flow forgot to clear from the battle scene's flag from
+    //    overriding the live source-scene payload. (Pre-2026-05 bug: the
+    //    Preload macro picks up the stale flag, writes its completion
+    //    marker to the wrong scene, and the Manager — polling the source
+    //    scene — times out after 60s.)
     for (const s of (game.scenes?.contents ?? [])) {
       const p = s.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
       if (!p) continue;
@@ -89,6 +98,12 @@
         return { payload: p, sourceScene: s };
       }
     }
+
+    // 2. Fallback: no scene transitioned here, so the current scene IS
+    //    the source. Use its local flag.
+    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
+    if (local) return { payload: local, sourceScene: canvas.scene };
+
     return null;
   }
 

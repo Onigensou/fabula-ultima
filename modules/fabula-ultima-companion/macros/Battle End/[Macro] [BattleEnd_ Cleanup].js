@@ -559,6 +559,28 @@
     } catch (e) {}
   }
 
+  // Defense-in-depth: ALWAYS clear the canonical payload off the battle
+  // scene at the end of every battle, regardless of battleId match. The
+  // Preload Assets step used to (pre-2026-05) write the payload to the
+  // battle scene's local flag — if a prior run failed to clean up there,
+  // the stale leftover would cause the NEXT run's Preload macro to find
+  // and use it (its `findBattleInitPayloadForThisBattleScene` preferred
+  // the battle scene's local flag), routing its completion marker to the
+  // wrong scene and hanging the Manager's poll for 60s. Unsetting here
+  // breaks the chain so no future run inherits stale state. Safe because:
+  // the battle scene's payload is ALWAYS a copy (the source-scene flag is
+  // the authoritative one).
+  if (battleScene && battleScene.id !== sourceScene.id) {
+    try {
+      const stale = battleScene.getFlag(SCOPE, CANONICAL_KEY);
+      if (stale) {
+        await battleScene.unsetFlag(SCOPE, CANONICAL_KEY);
+        clearedCanonicalCount += 1;
+        log(`Cleared stale payload from battle scene "${battleScene.name}".`);
+      }
+    } catch (e) {}
+  }
+
   // Also: optionally clear any battleEnd slice stored under canonical payload scene flags
   // (If you stored these in your own scripts, this ensures cleanup is complete.)
   try {
