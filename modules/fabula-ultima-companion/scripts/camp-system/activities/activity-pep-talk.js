@@ -285,22 +285,7 @@
     return new Promise(resolve => {
       CAMP.PepTalkUI ??= {};
       CAMP.PepTalkUI.targetResolvers ??= {};
-
-      const timer = setTimeout(() => {
-        if (CAMP.PepTalkUI.targetResolvers[actor.id]) {
-          console.warn(TAG, "Target timeout — auto-picking first ally for", actor.name);
-          delete CAMP.PepTalkUI.targetResolvers[actor.id];
-          CAMP.Party.resolve().then(p => {
-            const ally = p.find(e => e.actorId !== actor.id);
-            resolve(ally?.actorId ?? "");
-          });
-        }
-      }, 60_000);
-
-      CAMP.PepTalkUI.targetResolvers[actor.id] = (targetActorId) => {
-        clearTimeout(timer);
-        resolve(targetActorId);
-      };
+      CAMP.PepTalkUI.targetResolvers[actor.id] = resolve;
     });
   }
 
@@ -308,24 +293,7 @@
     return new Promise(resolve => {
       CAMP.PepTalkUI ??= {};
       CAMP.PepTalkUI.quizReadyResolvers ??= {};
-
-      // Generous timeout: target may need time to write 3 full topics
-      const timer = setTimeout(() => {
-        if (CAMP.PepTalkUI.quizReadyResolvers[actor.id]) {
-          console.warn(TAG, "Quiz timeout — generating fallback topics for", actor.name);
-          delete CAMP.PepTalkUI.quizReadyResolvers[actor.id];
-          resolve([
-            { topic: "How are you doing?", choices: [{ text: "Fantastic!", pts: 2 }, { text: "Pretty good.", pts: 1 }, { text: "I'd rather not say.", pts: 0 }], skip: false },
-            { topic: "Anything on your mind?", choices: [{ text: "Not a worry in the world!", pts: 2 }, { text: "Just a little.", pts: 1 }, { text: "A lot, actually.", pts: 0 }], skip: false },
-            { topic: "Looking forward to anything?", choices: [{ text: "So many things!", pts: 2 }, { text: "A few things.", pts: 1 }, { text: "Not really.", pts: 0 }], skip: false },
-          ]);
-        }
-      }, 300_000); // 5 min
-
-      CAMP.PepTalkUI.quizReadyResolvers[actor.id] = (topics) => {
-        clearTimeout(timer);
-        resolve(topics);
-      };
+      CAMP.PepTalkUI.quizReadyResolvers[actor.id] = resolve;
     });
   }
 
@@ -333,19 +301,7 @@
     return new Promise(resolve => {
       CAMP.PepTalkUI ??= {};
       CAMP.PepTalkUI.answerResolvers ??= {};
-
-      const timer = setTimeout(() => {
-        if (CAMP.PepTalkUI.answerResolvers[actor.id]) {
-          console.warn(TAG, "Answer timeout — defaulting to 2 (negative) for", actor.name);
-          delete CAMP.PepTalkUI.answerResolvers[actor.id];
-          resolve(2);
-        }
-      }, 120_000); // 2 min per question
-
-      CAMP.PepTalkUI.answerResolvers[actor.id] = (idx) => {
-        clearTimeout(timer);
-        resolve(idx);
-      };
+      CAMP.PepTalkUI.answerResolvers[actor.id] = resolve;
     });
   }
 
