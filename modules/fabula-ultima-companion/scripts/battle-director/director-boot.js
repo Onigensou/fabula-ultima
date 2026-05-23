@@ -16,6 +16,7 @@
 import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS } from "./state-handlers.js";
+import { STATES } from "./states.js";
 import { IntentChannel } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
@@ -24,6 +25,57 @@ import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.j
 
 // Module-level singleton — at most one director runs per client.
 let _instance = null;
+
+// Pre-flight cleanup: handle leftover state from a prior aborted/wedged run
+// before starting fresh.
+//
+// Cases this catches:
+//   - Rate-limited self-stop: FSM hit STOPPED internally but boot's _instance
+//     never cleared, so a follow-up start() would refuse with "already running".
+//   - Partial PREP failure that didn't fully unwind.
+//   - Director-spawned tokens left on any scene from a prior run that crashed
+//     mid-cleanup.
+//   - Legacy-suppressor still active from a prior run that bypassed stop().
+//   - Lingering Octopath / picker DOM from a UI-only leak.
+async function preflightCleanup() {
+  // 1. If _instance is set but the FSM has wedged itself (STOPPED state or
+  //    _stopped flag), silently route through stop() to clean + clear the ref.
+  if (_instance) {
+    const state = _instance.state;
+    const wedged = _instance._stopped || state === STATES.STOPPED;
+    if (wedged) {
+      log(`pre-flight: detected wedged director (state=${state}); auto-recovering before start`);
+      try { await stop({ reason: "preflight-stale-cleanup" }); }
+      catch (e) { warn("pre-flight stop threw", e); }
+    }
+  }
+
+  // 2. Defensive DOM scrub. Both despawnAll calls are idempotent; safe to
+  //    invoke even if no instance ever ran on this page.
+  try { TurnUI.despawnAll(); } catch {}
+  try { TurnPicker.despawnAll(); } catch {}
+
+  // 3. If the legacy suppressor is still active without a live instance, that
+  //    means a prior run got suppress()'d but never restore()'d. Restore now;
+  //    boot will re-suppress in a moment with a clean slate.
+  try {
+    if (!_instance && LegacySuppressor.isActive?.()) {
+      const n = LegacySuppressor.restore?.() ?? 0;
+      log(`pre-flight: restored ${n} orphaned legacy hooks from prior run`);
+    }
+  } catch (e) { warn("pre-flight suppressor restore threw", e); }
+
+  // 4. Sweep every scene for director-spawned tokens left behind. Most runs
+  //    will have zero; only fires on real leftovers.
+  let swept = 0;
+  for (const scene of (game.scenes?.contents ?? [])) {
+    try {
+      const n = await cleanupDirectorSpawnedTokens(scene);
+      if (n) swept += n;
+    } catch (e) { warn("pre-flight token sweep threw on", scene?.name, e); }
+  }
+  if (swept) log(`pre-flight: cleaned ${swept} orphan director-spawned tokens`);
+}
 
 // start() now accepts either:
 //   - a combat id string  → manual fallback (attaches to an existing combat,
@@ -37,6 +89,14 @@ async function start(arg) {
     ui.notifications?.warn("Battle Director v1 is GM-only.");
     return null;
   }
+
+  // Pre-flight: scrub any leftover state from a prior wedged/aborted run so a
+  // fresh start always begins on a clean slate. Auto-recovers from cases like
+  // the rate-limiter self-stop where `_instance` lingered without a live FSM.
+  await preflightCleanup();
+
+  // After pre-flight, if `_instance` is still set, a LIVE director is running
+  // (state != STOPPED, _stopped not set) — refuse to clobber it.
   if (_instance) {
     ui.notifications?.warn("Battle Director already running. Call .stop() first.");
     return _instance;
