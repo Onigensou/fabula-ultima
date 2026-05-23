@@ -282,16 +282,16 @@
         animation:oni-pt-bubble-in .4s ease forwards;
       }
       .oni-pt-bubble::after {
-        content:""; position:absolute; bottom:-12px; left:50%;
-        transform:translateX(-50%);
+        content:""; position:absolute; right:-12px; top:50%;
+        transform:translateY(-50%);
         border:6px solid transparent;
-        border-top-color:#8d5f38;
+        border-left-color:#8d5f38;
       }
       .oni-pt-bubble::before {
-        content:""; position:absolute; bottom:-9px; left:50%;
-        transform:translateX(-50%);
+        content:""; position:absolute; right:-9px; top:50%;
+        transform:translateY(-50%);
         border:6px solid transparent;
-        border-top-color:#fff8ee; z-index:1;
+        border-left-color:#fff8ee; z-index:1;
       }
       @keyframes oni-pt-bubble-in {
         from { opacity:0; transform:scale(.85) translateY(-6px) }
@@ -315,33 +315,34 @@
       }
       .oni-pt-choice:hover:not(:disabled) { transform:translateY(-2px); filter:brightness(1.1); }
       .oni-pt-choice:disabled { opacity:.45; cursor:not-allowed; transform:none !important; }
-      .oni-pt-c-positive2 { background:rgba(200,168,75,.18); border-color:#c8a84b; color:#f6ebd3; }
-      .oni-pt-c-positive1 { background:rgba(58,122,53,.18);  border-color:#3a7a35; color:#c8e8c4; }
-      .oni-pt-c-negative  { background:rgba(100,100,100,.18); border-color:#888;   color:#ccc;    }
-      .oni-pt-c-badge { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
+      .oni-pt-c-positive2,
+      .oni-pt-c-positive1,
+      .oni-pt-c-negative  { background:rgba(255,248,238,.95); border-color:#8d5f38; color:#3a1a00; }
+      .oni-pt-choice:hover:not(:disabled) { background:#fff8ee; }
+      .oni-pt-c-badge { font-size:.85rem; font-weight:900; flex-shrink:0; width:22px; text-align:center; color:#8d5f38; }
       .oni-pt-c-skip { background:rgba(60,60,60,.3); border-color:#555; color:#aaa; font-style:italic; justify-content:center; }
 
       /* ── Token reaction animations ── */
       @keyframes oni-pt-bounce {
-        0%   { transform:scaleX(-1) translateY(0); }
-        20%  { transform:scaleX(-1) translateY(-14px); }
-        40%  { transform:scaleX(-1) translateY(0); }
-        60%  { transform:scaleX(-1) translateY(-10px); }
-        80%  { transform:scaleX(-1) translateY(0); }
-        100% { transform:scaleX(-1) translateY(-6px); }
+        0%   { transform:translateY(0); }
+        20%  { transform:translateY(-14px); }
+        40%  { transform:translateY(0); }
+        60%  { transform:translateY(-10px); }
+        80%  { transform:translateY(0); }
+        100% { transform:translateY(-6px); }
       }
       @keyframes oni-pt-sway {
-        0%   { transform:scaleX(-1) rotate(0deg); }
-        25%  { transform:scaleX(-1) rotate(6deg); }
-        50%  { transform:scaleX(-1) rotate(-6deg); }
-        75%  { transform:scaleX(-1) rotate(4deg); }
-        100% { transform:scaleX(-1) rotate(0deg); }
+        0%   { transform:rotate(0deg); }
+        25%  { transform:rotate(6deg); }
+        50%  { transform:rotate(-6deg); }
+        75%  { transform:rotate(4deg); }
+        100% { transform:rotate(0deg); }
       }
       @keyframes oni-pt-droop {
-        0%   { transform:scaleX(-1) translateY(0); }
-        40%  { transform:scaleX(-1) translateY(8px); }
-        70%  { transform:scaleX(-1) translateY(6px); }
-        100% { transform:scaleX(-1) translateY(0); }
+        0%   { transform:translateY(0); }
+        40%  { transform:translateY(8px); }
+        70%  { transform:translateY(6px); }
+        100% { transform:translateY(0); }
       }
       .oni-pt-anim-bounce { animation:oni-pt-bounce 0.9s ease forwards !important; }
       .oni-pt-anim-sway   { animation:oni-pt-sway   0.7s ease forwards !important; }
@@ -624,9 +625,9 @@
     }
 
     const configs = [
-      { cls: "oni-pt-c-positive2", badge: "★★", idx: 0 },
-      { cls: "oni-pt-c-positive1", badge: "★",  idx: 1 },
-      { cls: "oni-pt-c-negative",  badge: "…",  idx: 2 },
+      { cls: "oni-pt-c-positive2", badge: "A", idx: 0 },
+      { cls: "oni-pt-c-positive1", badge: "B", idx: 1 },
+      { cls: "oni-pt-c-negative",  badge: "C", idx: 2 },
     ];
 
     configs.forEach(({ cls, badge, idx }) => {
