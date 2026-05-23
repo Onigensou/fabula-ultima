@@ -10,64 +10,59 @@
  * Idle behavior matches the legacy hard-coded `313px` offset — when the
  * sidebar is expanded (~300px wide), this evaluates to 313px.
  *
- * Foundry's `collapseSidebar` hook fires synchronously BEFORE the width
- * transition completes; we re-measure after a short delay to capture the
- * settled width. A `resize` listener handles browser resizes.
+ * Timing note: Foundry's `collapseSidebar` hook fires in the COMPLETION
+ * callback of jQuery's `.animate()` — i.e. AFTER the sidebar's width
+ * animation finishes. We can't use that to sync the button slide with the
+ * sidebar's slide; doing so would push the button slide into a second
+ * disconnected phase after the sidebar settled.
+ *
+ * Solution: a `ResizeObserver` on the sidebar element. jQuery's `.animate()`
+ * mutates the element's inline `style.width` every animation frame, which
+ * triggers ResizeObserver. We update the CSS var on each fire, so the
+ * buttons track the sidebar's live width frame-by-frame.
  */
 
 Hooks.once("ready", () => {
   const TAG = "[ONI][SidebarAnchor]";
   const VAR_NAME = "--fu-sidebar-anchor-right";
-  const PADDING_PX = 13; // small gap between buttons and sidebar / screen edge
-  const TRANSITION_MS = 350; // Foundry's sidebar transition is ~300ms
-  const FALLBACK_PX = 313; // matches the legacy hard-coded value
-  const COLLAPSED_WIDTH = 32; // observed Foundry V12 collapsed sidebar width
+  const PADDING_PX = 13;
+  const FALLBACK_PX = 313;
 
   const root = document.documentElement;
-
-  // Snapshot of the expanded sidebar width — captured the first time we see
-  // the sidebar in an expanded state. Used to predict the post-collapse-back
-  // width at hook-fire time so the buttons slide IN SYNC with the sidebar
-  // (rather than waiting for the sidebar's transition to finish, then jumping).
-  let expandedWidthCache = 300; // Foundry V12 default
-
-  function measure() {
-    const sidebar = document.getElementById("sidebar");
-    if (!sidebar) return 0;
-    const w = sidebar.offsetWidth ?? 0;
-    // Anything notably wider than the collapsed strip is "expanded"; cache its
-    // width so we can predict it later when transitioning from collapsed→expanded.
-    if (w > COLLAPSED_WIDTH + 8) expandedWidthCache = w;
-    return w;
-  }
 
   function setVar(width) {
     const px = width > 0 ? width + PADDING_PX : FALLBACK_PX;
     root.style.setProperty(VAR_NAME, `${px}px`);
   }
 
-  // Re-measure the live width and publish. Called on boot, on resize, and as
-  // a follow-up after the sidebar's transition finishes (corrects any drift
-  // between our hook-time prediction and the actual settled width).
-  function refresh() {
-    setVar(measure());
+  const sidebar = document.getElementById("sidebar");
+  if (!sidebar) {
+    console.warn(`${TAG} #sidebar not in DOM at ready; falling back to ${FALLBACK_PX}px`);
+    setVar(0);
+    return;
   }
 
-  refresh();
+  // Initial publish — covers cold boot before any sidebar interaction.
+  setVar(sidebar.offsetWidth);
 
-  // Foundry V12 hook signature: (sidebar, collapsed). At hook-fire time the
-  // sidebar's offsetWidth still reports the OLD width — its CSS transition
-  // hasn't started yet. Predict the post-transition width from the boolean
-  // so the buttons start sliding the moment the sidebar does (in sync).
-  // Then re-measure after TRANSITION_MS to correct any drift.
-  Hooks.on("collapseSidebar", (_app, collapsed) => {
-    const predicted = collapsed ? COLLAPSED_WIDTH : expandedWidthCache;
-    setVar(predicted);
-    setTimeout(refresh, TRANSITION_MS);
+  // Live width tracking. ResizeObserver fires whenever the observed element's
+  // content-box size changes, including every frame during jQuery's
+  // `.animate({width: ...})`. We just republish the live width; the buttons'
+  // `right: var(--fu-sidebar-anchor-right, ...)` makes them follow in real time.
+  const ro = new ResizeObserver((entries) => {
+    for (const e of entries) {
+      // contentRect.width is the layout width without padding/border. Close
+      // enough for the small-padding sidebar; the difference is < 2px.
+      setVar(e.contentRect.width);
+    }
+  });
+  ro.observe(sidebar);
+
+  // Browser-window resizes don't always trigger ResizeObserver if the sidebar
+  // width stays absolute — refresh defensively next frame.
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(() => setVar(sidebar.offsetWidth));
   });
 
-  // Browser-window resizes don't fire collapseSidebar; refresh on next frame.
-  window.addEventListener("resize", () => requestAnimationFrame(refresh));
-
-  console.debug(`${TAG} Installed (${VAR_NAME} live)`);
+  console.debug(`${TAG} Installed (${VAR_NAME} live, ResizeObserver-driven)`);
 });

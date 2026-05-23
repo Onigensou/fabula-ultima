@@ -87,8 +87,6 @@ Hooks.once("ready", () => {
           bottom: ${CFG.offsetBottomPx}px;
           z-index: ${CFG.zIndex};
           pointer-events: none;
-          /* Slide in sync with the sidebar's collapse/expand transition. */
-          transition: right 300ms ease-out;
         }
 
         #${DOM.BTN_ID} {
