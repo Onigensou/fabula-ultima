@@ -289,7 +289,7 @@
           return;
         }
         if (type === CAMP.MSG.MIDNIGHT_OIL_BEGIN) {
-          CAMP.MidnightOilUI?.spectateBegin(payload?.actorId);
+          CAMP.MidnightOilUI?.spectateBegin(payload);
           return;
         }
         if (type === CAMP.MSG.MIDNIGHT_OIL_STATE) {
