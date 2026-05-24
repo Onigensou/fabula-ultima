@@ -283,6 +283,32 @@
           return;
         }
 
+        // ── Midnight Oil minigame (Lamp Keeper) ──────────────────────────
+        if (type === CAMP.MSG.MIDNIGHT_OIL_START) {
+          CAMP.MidnightOilUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_BEGIN) {
+          CAMP.MidnightOilUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_STATE) {
+          CAMP.MidnightOilUI?.onLampState(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_RESULT && payload?.label != null) {
+          // Full result from GM — reveal phase
+          CAMP.MidnightOilUI?.applyResult(
+            payload.actorId, payload.score,
+            payload.perfectRelights, payload.lampEverExtinguished,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_DONE) {
+          CAMP.MidnightOilUI?.hide();
+          return;
+        }
+
         // ── Pep Talk minigame (Pop Quiz) ──────────────────────────────────
         if (type === CAMP.MSG.PEP_TALK_START) {
           CAMP.PepTalkUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
@@ -454,6 +480,18 @@
 
           case CAMP.MSG.GATHERING_PROCEED:
             CAMP.GatheringUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.MIDNIGHT_OIL_RESULT:   // owner → GM: score data submitted
+            CAMP.MidnightOilUI?.resolveScore(payload?.actorId, {
+              score:               payload?.score ?? 0,
+              perfectRelights:     payload?.perfectRelights ?? 0,
+              lampEverExtinguished: payload?.lampEverExtinguished ?? true,
+            });
+            break;
+
+          case CAMP.MSG.MIDNIGHT_OIL_PROCEED:
+            CAMP.MidnightOilUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.PEP_TALK_TARGET:

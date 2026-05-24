@@ -128,6 +128,13 @@
     MAGIC_LESSON_RESULT:   "CAMP_MAGIC_LESSON_RESULT",   // GM → all (3 payload shapes: spell-pick / rolling / reveal)
     MAGIC_LESSON_PROCEED:  "CAMP_MAGIC_LESSON_PROCEED",  // owner → GM
     MAGIC_LESSON_DONE:     "CAMP_MAGIC_LESSON_DONE",     // GM → all
+    // Midnight Oil minigame (Lamp Keeper)
+    MIDNIGHT_OIL_START:   "CAMP_MIDNIGHT_OIL_START",   // GM → all
+    MIDNIGHT_OIL_BEGIN:   "CAMP_MIDNIGHT_OIL_BEGIN",   // owner → all (Click to Begin; starts spectator countdown)
+    MIDNIGHT_OIL_STATE:   "CAMP_MIDNIGHT_OIL_STATE",   // owner → all (lamp state change: bright/flickering/relighting/extinguished)
+    MIDNIGHT_OIL_RESULT:  "CAMP_MIDNIGHT_OIL_RESULT",  // owner → GM (score data) / GM → all (score + label)
+    MIDNIGHT_OIL_PROCEED: "CAMP_MIDNIGHT_OIL_PROCEED", // owner → GM
+    MIDNIGHT_OIL_DONE:    "CAMP_MIDNIGHT_OIL_DONE",    // GM → all
     // Pep Talk minigame (Pop Quiz)
     PEP_TALK_START:               "CAMP_PEP_TALK_START",               // GM → all (show ally picker)
     PEP_TALK_TARGET:              "CAMP_PEP_TALK_TARGET",               // owner → GM (ally chosen)
