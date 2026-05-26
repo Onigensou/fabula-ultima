@@ -462,6 +462,20 @@
     });
   }
 
+  // Bursts of AE changes (charges decrement + status apply + flag write in one
+  // turn) used to call refreshAllVisibleCards N times. Coalesce into a single
+  // rAF tick so the chat-log walk runs once per frame.
+  let refreshScheduled = false;
+  function scheduleRefresh() {
+    if (refreshScheduled) return;
+    refreshScheduled = true;
+    requestAnimationFrame(() => {
+      refreshScheduled = false;
+      try { refreshAllVisibleCards(); }
+      catch (e) { console.warn(`${TAG} refresh failed`, e); }
+    });
+  }
+
   function effectTouchesUs(effect) {
     const api = globalThis?.FUCompanion?.api?.charges;
     if (!api) return false;
@@ -471,9 +485,9 @@
     return !info.key || info.key === Div.CHARGE_KEY;
   }
 
-  Hooks.on("createActiveEffect", (eff) => { if (effectTouchesUs(eff)) refreshAllVisibleCards(); });
-  Hooks.on("updateActiveEffect", (eff) => { if (effectTouchesUs(eff)) refreshAllVisibleCards(); });
-  Hooks.on("deleteActiveEffect", (eff) => { if (effectTouchesUs(eff)) refreshAllVisibleCards(); });
+  Hooks.on("createActiveEffect", (eff) => { if (effectTouchesUs(eff)) scheduleRefresh(); });
+  Hooks.on("updateActiveEffect", (eff) => { if (effectTouchesUs(eff)) scheduleRefresh(); });
+  Hooks.on("deleteActiveEffect", (eff) => { if (effectTouchesUs(eff)) scheduleRefresh(); });
 
   // Also refresh when the action-card flag changes (e.g. state moves to
   // "resolved" after Apply Damage), so the button hides itself promptly.

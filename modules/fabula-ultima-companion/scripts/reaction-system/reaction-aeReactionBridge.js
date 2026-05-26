@@ -32,6 +32,37 @@
   const TAG = "[ReactionAEBridge]";
   const MODULE_ID = "fabula-ultima-companion";
 
+  // sourceEffId (template AE id) -> { tmpl: ActiveEffect, sourceItem: Item }
+  // Populated on `ready` and maintained via Item/AE CRUD hooks so the
+  // per-AE-create lookup is O(1) instead of O(items × effects-per-item).
+  const templateIndex = new Map();
+  let indexReady = false;
+
+  function indexItem(item) {
+    if (!item || item.documentName !== "Item") return;
+    for (const eff of (item.effects?.contents ?? [])) {
+      if (eff?.flags?.[MODULE_ID]?.reactionConfig) {
+        templateIndex.set(eff.id, { tmpl: eff, sourceItem: item });
+      }
+    }
+  }
+
+  function unindexItem(item) {
+    if (!item) return;
+    for (const eff of (item.effects?.contents ?? [])) {
+      if (templateIndex.get(eff.id)?.sourceItem === item) {
+        templateIndex.delete(eff.id);
+      }
+    }
+  }
+
+  function buildIndex() {
+    templateIndex.clear();
+    for (const item of (game.items?.contents ?? [])) indexItem(item);
+    indexReady = true;
+    console.debug(TAG, `Template index built (${templateIndex.size} entries).`);
+  }
+
   /**
    * Try to locate the template ActiveEffect (the one carrying the
    * `reactionConfig` flag) that an applied AE was cloned from.
@@ -41,10 +72,9 @@
    *      matching effects (rare in practice — CSB-applied AEs usually
    *      stamp the caster's Token UUID into `origin`, not the source
    *      item's UUID).
-   *   2. effect.flags.fabula-ultima-companion.sourceEffId → scan world
-   *      items for one whose effects array contains an effect with this
-   *      id. This is the path that catches CSB-applied bonus-action AEs
-   *      like Acceleration.
+   *   2. effect.flags.fabula-ultima-companion.sourceEffId → O(1) lookup
+   *      against the prebuilt template index. This is the path that
+   *      catches CSB-applied bonus-action AEs like Acceleration.
    */
   async function findTemplateAE(effect) {
     // (1) Origin direct
@@ -66,25 +96,66 @@
       } catch (_) { /* fall through */ }
     }
 
-    // (2) sourceEffId on the FU flag block
+    // (2) sourceEffId — O(1) via prebuilt index
     const sourceEffId = effect?.flags?.[MODULE_ID]?.sourceEffId
       ?? effect?.flags?.[MODULE_ID]?.originItemId
       ?? null;
     if (!sourceEffId) return null;
 
-    for (const item of (game.items?.contents ?? [])) {
-      const match = (item.effects?.contents ?? []).find(e => e.id === sourceEffId);
-      if (match && match.flags?.[MODULE_ID]?.reactionConfig) {
-        return { tmpl: match, sourceItem: item };
-      }
-    }
+    const hit = templateIndex.get(sourceEffId);
+    if (hit && hit.tmpl?.flags?.[MODULE_ID]?.reactionConfig) return hit;
     return null;
   }
+
+  function installIndex() {
+    buildIndex();
+
+    // Keep the index live. Item-level events (create/delete/update) catch
+    // bulk changes; AE-level events catch per-effect edits on world items.
+    Hooks.on("createItem", (item) => indexItem(item));
+    Hooks.on("updateItem", (item) => { unindexItem(item); indexItem(item); });
+    Hooks.on("deleteItem", (item) => unindexItem(item));
+
+    Hooks.on("createActiveEffect", (eff) => {
+      const parent = eff?.parent;
+      if (parent?.documentName === "Item" && !parent.parent) {
+        if (eff?.flags?.[MODULE_ID]?.reactionConfig) {
+          templateIndex.set(eff.id, { tmpl: eff, sourceItem: parent });
+        }
+      }
+    });
+    Hooks.on("updateActiveEffect", (eff) => {
+      const parent = eff?.parent;
+      if (parent?.documentName === "Item" && !parent.parent) {
+        if (eff?.flags?.[MODULE_ID]?.reactionConfig) {
+          templateIndex.set(eff.id, { tmpl: eff, sourceItem: parent });
+        } else {
+          templateIndex.delete(eff.id);
+        }
+      }
+    });
+    Hooks.on("deleteActiveEffect", (eff) => {
+      const parent = eff?.parent;
+      if (parent?.documentName === "Item" && !parent.parent) {
+        templateIndex.delete(eff.id);
+      }
+    });
+  }
+
+  // `ready` may have already fired by the time this classic script loads
+  // (dynamic re-install via evalGM, late module init). Cover both paths.
+  if (game?.ready) installIndex();
+  else Hooks.once("ready", installIndex);
 
   Hooks.on("createActiveEffect", async (effect /*, options, userId */) => {
     try {
       if (!game.user?.isGM) return;
       if (!effect) return;
+      if (!indexReady) return;
+
+      // Only handle AEs applied to actors — template-side AE creates are
+      // index maintenance, not stamping targets.
+      if (effect.parent?.documentName !== "Actor") return;
 
       // Already stamped — nothing to do.
       const existing = effect.getFlag?.(MODULE_ID, "reactionConfig");
