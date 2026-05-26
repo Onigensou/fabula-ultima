@@ -66,9 +66,9 @@
 
   // Phase spawn schedule
   const PHASES = [
-    { start:     0, end:  5_000, fruits: 7,  bombs: 1 },
-    { start: 5_000, end: 10_000, fruits: 9,  bombs: 2 },
-    { start: 10_000, end: 15_000, fruits: 11, bombs: 3 },
+    { start:     0, end:  5_000, fruits: 7,  bombs: 2 },
+    { start: 5_000, end: 10_000, fruits: 9,  bombs: 3 },
+    { start: 10_000, end: 15_000, fruits: 11, bombs: 4 },
   ];
 
   // ---------------------------------------------------------------------------
@@ -99,8 +99,8 @@
         const jitter = (rng() - 0.5) * fSlot * 0.4;
         const t      = phase.start + fSlot * (i + 1) + jitter;
         const def    = FRUIT_POOL[Math.floor(rng() * FRUIT_POOL.length)];
-        const angle  = (rng() * 60 + 60) * (Math.PI / 180); // 60°–120° from horizontal
-        const speed  = 380 + rng() * 120;
+        const angle  = (rng() * 80 + 50) * (Math.PI / 180); // 50°–130° — wider arc variety
+        const speed  = 260 + rng() * 320;                  // 260–580 — slow floaters to fast bullets
         const spawnX = 80 + rng() * (CW - 160);
         entries.push({ tMs: Math.round(t), kind: "fruit", ...def, angle, speed, spawnX });
       }
@@ -110,10 +110,10 @@
       for (let i = 0; i < phase.bombs; i++) {
         const jitter = (rng() - 0.5) * bSlot * 0.4;
         const t      = phase.start + bSlot * (i + 1) + jitter;
-        const angle  = (rng() * 60 + 60) * (Math.PI / 180);
-        const speed  = 340 + rng() * 100;
+        const angle  = (rng() * 80 + 50) * (Math.PI / 180);
+        const speed  = 240 + rng() * 280;                  // 240–520
         const spawnX = 80 + rng() * (CW - 160);
-        entries.push({ tMs: Math.round(t), kind: "bomb", emoji: "💣", score: -20, color: "#404040", angle, speed, spawnX });
+        entries.push({ tMs: Math.round(t), kind: "bomb", emoji: "💣", score: -75, color: "#404040", angle, speed, spawnX });
       }
     }
     entries.sort((a, b) => a.tMs - b.tMs);
@@ -142,7 +142,6 @@
   let _pointerHistory = [];  // [{ x, y, t }] rolling window
   let _activeSlash    = [];  // points of current slash segment being drawn
   let _trailSegments  = [];  // [{ points, birthMs }] fading trails
-  let _pointerDown    = false;
 
   // Particle arrays
   let _particles  = [];  // { x, y, vx, vy, life, maxLife, r, color }
@@ -175,7 +174,7 @@
     }
   }
 
-  function _playBuf(url, volume = 0.7) {
+  function _playBuf(url, volume = 0.3) {
     if (!_audioCtx || !_buffers[url]) return;
     if (_audioCtx.state === "suspended") _audioCtx.resume();
     const gain = _audioCtx.createGain();
@@ -187,7 +186,7 @@
     src.start(0);
   }
 
-  function _playSfx(url, volume = 0.7) {
+  function _playSfx(url, volume = 0.3) {
     if (_audioCtx && _buffers[url]) { _playBuf(url, volume); return; }
     try { new Audio(url).play(); } catch (_) {}
   }
@@ -228,7 +227,6 @@
     _pointerHistory = [];
     _activeSlash    = [];
     _trailSegments  = [];
-    _pointerDown    = false;
     _particles      = [];
     _popTexts       = [];
     _halves         = [];
@@ -425,12 +423,6 @@
   // ---------------------------------------------------------------------------
   // Pointer events — slash detection
   // ---------------------------------------------------------------------------
-  function _onPointerDown(e) {
-    if (!_gameActive || !_isOwner) return;
-    _pointerDown = true;
-    _activeSlash = [{ x: e.offsetX, y: e.offsetY, t: performance.now() }];
-  }
-
   function _onPointerMove(e) {
     if (!_gameActive || !_isOwner) return;
     const now  = performance.now();
@@ -438,29 +430,26 @@
     const y    = e.offsetY;
 
     _pointerHistory.push({ x, y, t: now });
-    // Keep only last 150ms
-    const cutoff = now - 150;
-    _pointerHistory = _pointerHistory.filter(p => p.t >= cutoff);
+    _pointerHistory = _pointerHistory.filter(p => p.t >= now - 150);
 
-    if (_pointerDown) {
-      _activeSlash.push({ x, y, t: now });
-      // Check slash speed
-      if (_pointerHistory.length >= 2) {
-        const oldest = _pointerHistory[0];
-        const dx     = x - oldest.x;
-        const dy     = y - oldest.y;
-        const dt     = (now - oldest.t) / 1000;
-        const speed  = Math.sqrt(dx * dx + dy * dy) / Math.max(dt, 0.001);
-        if (speed >= SLASH_SPEED) {
-          _testSlash(x, y, oldest.x, oldest.y);
-        }
+    // Always accumulate trail — no click required
+    _activeSlash.push({ x, y, t: now });
+    _activeSlash = _activeSlash.filter(p => p.t >= now - 250);
+
+    if (_pointerHistory.length >= 2) {
+      const oldest = _pointerHistory[0];
+      const dx     = x - oldest.x;
+      const dy     = y - oldest.y;
+      const dt     = (now - oldest.t) / 1000;
+      const speed  = Math.sqrt(dx * dx + dy * dy) / Math.max(dt, 0.001);
+      if (speed >= SLASH_SPEED) {
+        _testSlash(x, y, oldest.x, oldest.y);
       }
     }
   }
 
   function _onPointerUp(e) {
     if (!_isOwner) return;
-    _pointerDown = false;
     if (_activeSlash.length > 1) {
       _trailSegments.push({ points: [..._activeSlash], birthMs: performance.now() });
     }
@@ -502,23 +491,26 @@
         slashScore += obj.score; // negative
         _spawnBombParticles(obj.x, obj.y);
         _flashAlpha = 0.45;
-        _playSfx(SFX.BOMB);
+        _playSfx(SFX.BOMB, 0.35);
         _spawnPopText(obj.x, obj.y, `${obj.score}`, "#ff4444");
       } else {
         slashScore += obj.score;
         _spawnFruitParticles(obj.x, obj.y, obj.color);
         _spawnFruitHalves(obj.x, obj.y, obj.emoji, obj.color);
-        _playSfx(SFX.SLASH);
+        _playSfx(SFX.SLASH, 0.2);
         _spawnPopText(obj.x, obj.y, `+${obj.score}`, "#ffd700");
       }
     }
 
     if (hit.length === 0) return;
 
+    // Multi-slash bonus: +5 per additional fruit in one stroke
+    if (hit.length >= 2 && !isBomb) slashScore += (hit.length - 1) * 5;
+
     _score += slashScore;
     _updateScoreHud();
 
-    // Multi-slash bonus visual pop
+    // Multi-slash visual pop
     if (hit.length >= 2 && !isBomb) {
       const cx = (x1 + x2) / 2;
       const cy = (y1 + y2) / 2 - 20;
@@ -778,7 +770,7 @@
     }
 
     // Active (live) slash trail while pointer is held
-    if (_activeSlash.length > 1 && _pointerDown) {
+    if (_activeSlash.length > 1) {
       _drawTrail(ctx, _activeSlash, 0.95);
     }
 
@@ -904,7 +896,6 @@
         // Pointer events on canvas
         const canvas = _getCanvas();
         if (canvas) {
-          canvas.addEventListener("pointerdown", _onPointerDown);
           canvas.addEventListener("pointermove", _onPointerMove);
           canvas.addEventListener("pointerup",   _onPointerUp);
           canvas.addEventListener("pointerleave",_onPointerUp);
@@ -919,7 +910,6 @@
       const seed = Date.now() ^ Math.floor(Math.random() * 0xFFFFFF);
       _seed      = seed;
       _schedule  = _buildSchedule(_mkRng(seed));
-      _schedIdx  = 0;
 
       CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_BEGIN, { actorId: _actorId, seed });
 
@@ -1010,7 +1000,6 @@
     hide() {
       const canvas = _getCanvas();
       if (canvas) {
-        canvas.removeEventListener("pointerdown", _onPointerDown);
         canvas.removeEventListener("pointermove", _onPointerMove);
         canvas.removeEventListener("pointerup",   _onPointerUp);
         canvas.removeEventListener("pointerleave",_onPointerUp);

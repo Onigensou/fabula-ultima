@@ -15,8 +15,8 @@
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/PatronaPassive3.png";
 
   function _calcMultiValue(score) {
-    if (score >= 200) return 4;
-    if (score >= 100) return 3;
+    if (score >= 320) return 4;
+    if (score >= 185) return 3;
     return 2;
   }
 
