@@ -148,6 +148,13 @@
     PEP_TALK_DONE:                "CAMP_PEP_TALK_DONE",                 // GM → all
     PEP_TALK_CHOICE_REQUEST:      "CAMP_PEP_TALK_CHOICE_REQUEST",       // GM → target's owner (in-combat "you may" dialog)
     PEP_TALK_CHOICE_RESPONSE:     "CAMP_PEP_TALK_CHOICE_RESPONSE",      // target's owner → GM
+    // Martial Practice minigame (Fruit Ninja)
+    MARTIAL_PRACTICE_START:   "CAMP_MARTIAL_PRACTICE_START",   // GM → all clients
+    MARTIAL_PRACTICE_BEGIN:   "CAMP_MARTIAL_PRACTICE_BEGIN",   // owner → all (Click to Begin; broadcasts RNG seed)
+    MARTIAL_PRACTICE_SLASH:   "CAMP_MARTIAL_PRACTICE_SLASH",   // owner → all (slash event: { actorId, hitIds, isBomb, slashScore })
+    MARTIAL_PRACTICE_RESULT:  "CAMP_MARTIAL_PRACTICE_RESULT",  // owner → GM (score) / GM → all (score + uses)
+    MARTIAL_PRACTICE_PROCEED: "CAMP_MARTIAL_PRACTICE_PROCEED", // owner → GM
+    MARTIAL_PRACTICE_DONE:    "CAMP_MARTIAL_PRACTICE_DONE",    // GM → all
   });
 
   // ---------------------------------------------------------------------------

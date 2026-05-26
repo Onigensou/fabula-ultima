@@ -350,6 +350,28 @@
           return;
         }
 
+        // ── Martial Practice minigame (Fruit Ninja) ──────────────────────
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_START) {
+          CAMP.MartialPracticeUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_BEGIN) {
+          CAMP.MartialPracticeUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_SLASH) {
+          CAMP.MartialPracticeUI?.onSlash(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_RESULT && payload?.multiValue != null) {
+          CAMP.MartialPracticeUI?.applyResult(payload.actorId, payload.score, payload.multiValue);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_DONE) {
+          CAMP.MartialPracticeUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -525,6 +547,14 @@
             if (_ptAe) await _ptAe.delete();
             break;
           }
+
+          case CAMP.MSG.MARTIAL_PRACTICE_RESULT:   // owner → GM: score submitted
+            CAMP.MartialPracticeUI?.resolveScore(payload?.actorId, payload?.score ?? 0);
+            break;
+
+          case CAMP.MSG.MARTIAL_PRACTICE_PROCEED:
+            CAMP.MartialPracticeUI?.resolveProceed(payload?.actorId);
+            break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
         }
