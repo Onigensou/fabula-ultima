@@ -266,6 +266,7 @@
     "scripts/camp-system/activities/activity-pep-talk.js",
     "scripts/camp-system/activities/activity-pep-talk-ui.js",
     "scripts/camp-system/activities/activity-planning.js",
+    "scripts/camp-system/activities/activity-planning-ui.js",
     "scripts/camp-system/activities/activity-sing.js",
     "scripts/camp-system/activities/activity-sleep-soundly.js",
     "scripts/camp-system/activities/activity-sleep-soundly-ui.js",
