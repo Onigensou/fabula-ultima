@@ -143,6 +143,10 @@
     {
       "key": "2026-05-23-grant-skills-unified-targeting",
       "path": "data-migrations/2026-05-23-grant-skills-unified-targeting.js"
+    },
+    {
+      "key": "2026-05-26-refinement-item-template-fields",
+      "path": "data-migrations/2026-05-26-refinement-item-template-fields.js"
     }
   ]
 }
