@@ -54,7 +54,7 @@ const REFINEMENT_PANEL = {
   editRole: 4,
   permission: 0,
   tooltip: "",
-  visibilityFormula: VF_REFINABLE,
+  visibilityFormula: "",  // container always visible; inner fields carry the type filter
   type: "panel",
   contents: [
     {

@@ -147,6 +147,10 @@
     {
       "key": "2026-05-26-refinement-item-template-fields",
       "path": "data-migrations/2026-05-26-refinement-item-template-fields.js"
+    },
+    {
+      "key": "2026-05-26-refinement-panel-container-visibility",
+      "path": "data-migrations/2026-05-26-refinement-panel-container-visibility.js"
     }
   ]
 }
