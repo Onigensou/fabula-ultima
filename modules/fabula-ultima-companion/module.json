@@ -83,11 +83,6 @@
     "scripts/refinement-system/refinement-core.js",
     "scripts/refinement-system/refinement-socket.js",
     "scripts/refinement-system/refinement-bootstrap.js",
-    "scripts/refinement-system/refineOpen-const.js",
-    "scripts/refinement-system/refineOpen-ui.js",
-    "scripts/refinement-system/refineOpen-backend.js",
-    "scripts/refinement-system/refineWindow-app.js",
-    "scripts/refinement-system/refineOpen-bootstrap.js",
     "scripts/applyDamage-button.js",
     "scripts/invokeButtons.js",
     "scripts/itemRefresh.js",
@@ -325,7 +320,12 @@
     "scripts/custom-ui/expAwarder-sidebar.js",
     "scripts/jrpg-targeting-system/jrpg-targeting-bootstrap.js",
     "scripts/jrpg-targeting-system/jrpg-targeting-test-harness.js",
-    "scripts/jrpg-targeting-system/jrpg-targeting-ui-tuner-bridge.js"
+    "scripts/jrpg-targeting-system/jrpg-targeting-ui-tuner-bridge.js",
+    "scripts/refinement-system/refineOpen-const.js",
+    "scripts/refinement-system/refineOpen-ui.js",
+    "scripts/refinement-system/refineOpen-backend.js",
+    "scripts/refinement-system/refineWindow-app.js",
+    "scripts/refinement-system/refineOpen-bootstrap.js"
   ],
   "styles": [
     "styles/style.css",
