@@ -155,6 +155,17 @@
     MARTIAL_PRACTICE_RESULT:  "CAMP_MARTIAL_PRACTICE_RESULT",  // owner → GM (score) / GM → all (score + uses)
     MARTIAL_PRACTICE_PROCEED: "CAMP_MARTIAL_PRACTICE_PROCEED", // owner → GM
     MARTIAL_PRACTICE_DONE:    "CAMP_MARTIAL_PRACTICE_DONE",    // GM → all
+    // Planning minigame (Pairing Quiz)
+    PLANNING_START:        "CAMP_PLANNING_START",        // GM → all (ally picker)
+    PLANNING_TARGET:       "CAMP_PLANNING_TARGET",       // owner → GM (ally chosen)
+    PLANNING_ARENA:        "CAMP_PLANNING_ARENA",        // GM → all (show arena frame)
+    PLANNING_QUESTION:     "CAMP_PLANNING_QUESTION",     // GM → all (show question q)
+    PLANNING_PICK_OWNER:   "CAMP_PLANNING_PICK_OWNER",   // owner → GM (hidden pick for q)
+    PLANNING_PICK_TARGET:  "CAMP_PLANNING_PICK_TARGET",  // target's owner → GM (hidden pick for q)
+    PLANNING_REVEAL:       "CAMP_PLANNING_REVEAL",       // GM → all (reveal q: both picks + match + score)
+    PLANNING_RESULT:       "CAMP_PLANNING_RESULT",       // GM → all (final matchCount + bonus)
+    PLANNING_PROCEED:      "CAMP_PLANNING_PROCEED",      // owner → GM
+    PLANNING_DONE:         "CAMP_PLANNING_DONE",         // GM → all
   });
 
   // ---------------------------------------------------------------------------

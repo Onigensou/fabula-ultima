@@ -372,6 +372,43 @@
           return;
         }
 
+        // ── Planning minigame (Pairing Quiz) ─────────────────────────────
+        if (type === CAMP.MSG.PLANNING_START) {
+          CAMP.PlanningUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_ARENA) {
+          CAMP.PlanningUI?.showArena(
+            payload?.actorId, payload?.actorName,
+            payload?.targetActorId, payload?.targetActorName,
+            payload?.targetImg, payload?.ownerImg,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_QUESTION) {
+          CAMP.PlanningUI?.showQuestion(payload?.actorId, payload?.targetActorId, payload?.q, payload?.question);
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_REVEAL) {
+          CAMP.PlanningUI?.showReveal(
+            payload?.actorId, payload?.targetActorId,
+            payload?.q, payload?.question,
+            payload?.ownerChoice, payload?.targetChoice,
+            payload?.match, payload?.score,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_RESULT) {
+          CAMP.PlanningUI?.applyResult(
+            payload?.actorId, payload?.targetActorId, payload?.matchCount, payload?.bonus,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_DONE) {
+          CAMP.PlanningUI?.hide();
+          return;
+        }
+
         // ── GM-only: state mutation requests ────────────────────────────
         if (!game.user?.isGM) return;
 
@@ -554,6 +591,22 @@
 
           case CAMP.MSG.MARTIAL_PRACTICE_PROCEED:
             CAMP.MartialPracticeUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.PLANNING_TARGET:
+            CAMP.PlanningUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.PLANNING_PICK_OWNER:
+            CAMP.PlanningUI?.resolveOwnerPick(payload?.actorId, payload?.choiceIdx);
+            break;
+
+          case CAMP.MSG.PLANNING_PICK_TARGET:
+            CAMP.PlanningUI?.resolveTargetPick(payload?.targetActorId, payload?.choiceIdx);
+            break;
+
+          case CAMP.MSG.PLANNING_PROCEED:
+            CAMP.PlanningUI?.resolveProceed(payload?.actorId);
             break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
