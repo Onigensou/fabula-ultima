@@ -962,6 +962,10 @@
   border: 1px solid rgba(200,80,80,.25);
   border-radius: 7px;
 }
+
+/* ── Camp UI Hider — token HUD (HTML overlay on hover) ─────────────────── */
+body.oni-camp-active .token-hud .bar-group      { display: none !important; }
+body.oni-camp-active .token-hud .status-effects { display: none !important; }
   `;
 
   document.head.appendChild(style);
