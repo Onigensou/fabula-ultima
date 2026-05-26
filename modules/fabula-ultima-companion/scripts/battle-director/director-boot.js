@@ -26,6 +26,7 @@ import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
 import { sweepTransientAEsAtSceneEnd } from "./skill-effects.js";
+import { PassiveManager } from "./passive-manager.js";
 import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
 import {
   findSavedDirectorState,
@@ -72,6 +73,7 @@ async function preflightCleanup() {
   try { WeaponModePicker.despawnAll(); } catch {}
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
+  try { PassiveManager.despawn(); } catch {}
 
   // 3. If the legacy suppressor is still active without a live instance, that
   //    means a prior run got suppress()'d but never restore()'d. Restore now;
@@ -265,6 +267,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { WeaponModePicker.despawnAll(); } catch {}
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
+  try { PassiveManager.despawn(); } catch {}
 
   // Remove tokens we spawned during runDirectorInit. Only tokens flagged
   // with fabula-ultima-companion.directorSpawned are touched — manually

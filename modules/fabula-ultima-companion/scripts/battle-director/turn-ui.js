@@ -18,14 +18,23 @@
 
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
+import { PassiveManager } from "./passive-manager.js";
 
 const STYLE_ID = "fud-turnui-style";
 
 const LEGACY_PAGES = [
   { name: "Actions", items: ["Attack", "Guard", "Skill", "Spell", "Item"] },
   // Party Swap (legacy "Switch") and Objective hidden until D.6/D.7 ship.
-  { name: "System",  items: ["Equipment", "Study", "Hinder"] }
+  // "Passive" is the bottom entry on the System tab — intercepted in the
+  // click handler (it does NOT dispatch DECLARE_COMMAND; it just opens
+  // the parchment Passive Manager overlay for the current combatant).
+  { name: "System",  items: ["Equipment", "Study", "Hinder", "Passive"] }
 ];
+
+// Commands that bypass the FSM dispatch — clicking them opens an
+// overlay/dialog directly instead of declaring an action. Listed here
+// so the click handler can short-circuit cleanly.
+const NON_ACTION_COMMANDS = new Set(["Passive"]);
 
 // Per-director instance state — keyed by combatId so multiple directors
 // don't collide on the same client.
@@ -290,6 +299,21 @@ function spawnMenu({ director, token }) {
       if (!it.bound && p >= 1) {
         it.btn.addEventListener("click", async (ev) => {
           ev.stopPropagation();
+          // Non-action commands open an overlay instead of declaring an
+          // action — they don't consume the turn. Currently: "Passive".
+          if (NON_ACTION_COMMANDS.has(it.label)) {
+            if (it.label === "Passive") {
+              try {
+                const actorUuid = director.ctx?.turnSnapshot?.actorUuid
+                  ?? director.dCombat?.current?.actorUuid
+                  ?? null;
+                const actor = actorUuid ? await fromUuid(actorUuid) : null;
+                if (!actor) { warn("Turn UI: Passive button — no active actor"); return; }
+                PassiveManager.show({ actor });
+              } catch (e) { warn("Turn UI: Passive button failed", e); }
+            }
+            return;
+          }
           // Dispatch the declared command into the director.
           director.dispatch({
             type: INTENTS.DECLARE_COMMAND,
