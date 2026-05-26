@@ -785,7 +785,7 @@
     },
     {
       "_raw": "FU Core p.182 — Cost: 10 MP. Targets: One equipped weapon. Duration: Scene. The chosen weapon's damage type becomes Light for the scene. If you have it equipped at cast time, you may perform a free attack with it as part of the same action. Cast on a willing creature's equipped weapon.",
-      "_note": "Two-part: (a) weapon damage-type override AE applied to the wielder, (b) optional free attack chained off the cast. The AE writes to `weapon_damage_type_override` (engine pre-resolution hook reads this when computing damage_type for a weapon attack — see snapshot.js gatherWeapons). For the free-attack: an `effect_kind: 'chain_action'` row routes back to DECLARE with command='Attack' and a pre-picked weapon. Free-attack is GM-prompted via passive_optional. Cross-actor casting (on willing ally) uses `target_ref: 'ally_action_targets'` + a follow-up weapon picker.",
+      "_note": "Two-part: (a) weapon damage-type override AE applied to the wielder, (b) optional free attack chained off the cast. The AE uses a CSB changes row writing `override_damage_type = 'Light'` with mode 5 (OVERRIDE in this build). The Actor template's Status → Miscellaneous → Override Damage Type field reads this prop directly, so the override is visible on the sheet without any extra plumbing. The engine's `applyDamageTypeOverride` helper reads the same prop. To author a Fire / Ice / etc. variant: duplicate Soul Weapon, open the embedded AE, edit the changes row's value (Light → Fire). For the free-attack: an `effect_kind: 'chain_action'` row routes back to DECLARE with command='Attack' and a pre-picked weapon. Cross-actor casting (on willing ally) uses `target_ref: 'ally_action_targets'` + a follow-up weapon picker.",
       "_deferred_free_attack_chain": "The 'free attack as part of the same action' clause needs a `chain_action` effect_kind that re-enters DECLARE/TARGET with the picked weapon pre-locked. For Batch 4, ship the damage-type swap AE; document the chain_action requirement as Phase G work. The GM manually triggers the bonus attack until then.",
       "_deferred_weapon_picker": "RAW lets the caster pick ONE specific weapon from the willing target. For Batch 4 the AE applies to the actor (not a specific weapon item), and the engine treats ALL of that actor's equipped weapons as Light-damage for the duration. Per-weapon scoping needs a Weapon picker UI + per-weapon AE-store.",
       "spec": {
@@ -821,13 +821,15 @@
           {
             "name": "Soul Weapon",
             "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
-            "changes": [],
+            "changes": [
+              { "key": "override_damage_type", "value": "Light", "mode": 5, "priority": 20 }
+            ],
             "duration": { "rounds": null, "seconds": null },
             "transfer": false,
             "statuses": ["fud-soul-weapon"],
-            "description": "<p>This creature's equipped-weapon attacks deal <strong>Light</strong> damage instead of their normal type.</p>",
+            "description": "<p>This creature's equipped-weapon attacks deal <strong>Light</strong> damage instead of their normal type. Shown on the actor sheet as <em>Status → Miscellaneous → Override Damage Type</em>.</p>",
             "system": { "tags": ["buff"] },
-            "flags": { "fabula-ultima-companion": { "category": "buff", "soulWeaponElement": "light", "crossScene": true } }
+            "flags": { "fabula-ultima-companion": { "category": "buff", "crossScene": true } }
           }
         ]
       }

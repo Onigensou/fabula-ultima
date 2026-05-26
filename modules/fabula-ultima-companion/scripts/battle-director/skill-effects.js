@@ -137,23 +137,28 @@ export async function applyMercyClamp(targetActor, curHp, rawDamage) {
   return { newHp: 1, mercyFired: true };
 }
 
-// ── Soul Weapon damage-type override ────────────────────────────────────
+// ── Damage-type override ────────────────────────────────────────────────
 //
-// Spiritist Soul Weapon applies an AE flagged `soulWeaponElement` to a
-// creature. While active, that creature's weapon attacks deal the
-// flagged element (default "light"). Call this helper from the
-// weapon-damage compute path with the attacker actor + the resolved
-// damage type — it returns the override element if Soul Weapon is in
-// effect, otherwise the original element.
-export function applySoulWeaponElementOverride(attackerActor, originalElement) {
+// Generic helper used by the Attack damage-compute path: consults the
+// actor's `system.props.override_damage_type` field (already declared
+// in the Actor template's Miscellaneous panel) and returns the override
+// element when set to a real damage type, otherwise the original
+// element. Powers Soul Weapon today; any future skill that writes the
+// same prop via an AE `changes` entry — mode 5 (OVERRIDE in this CSB
+// build) — gets the same behaviour for free.
+//
+// Treats "None" / empty / null as "no override" so the sheet's default
+// value passes through cleanly.
+export function applyDamageTypeOverride(attackerActor, originalElement) {
   if (!attackerActor) return originalElement;
-  for (const eff of attackerActor.effects ?? []) {
-    if (eff.disabled) continue;
-    const override = eff.flags?.[FLAG_NS]?.soulWeaponElement;
-    if (override) return String(override).toLowerCase();
-  }
-  return originalElement;
+  const raw = String(attackerActor.system?.props?.override_damage_type ?? "").trim();
+  if (!raw || raw.toLowerCase() === "none") return originalElement;
+  return raw.toLowerCase();
 }
+
+// Legacy alias — kept so the prior import name in state-handlers.js still
+// resolves until that import is updated.
+export const applySoulWeaponElementOverride = applyDamageTypeOverride;
 
 // ── Passive trigger layer ───────────────────────────────────────────────
 //

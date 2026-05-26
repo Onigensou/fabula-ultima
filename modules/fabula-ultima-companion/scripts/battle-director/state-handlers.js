@@ -29,7 +29,7 @@ import { OptionPicker } from "./option-picker.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applySoulWeaponElementOverride } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applyDamageTypeOverride } from "./skill-effects.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -1719,13 +1719,14 @@ const Compute = {
       // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69).
       const ignoreHR = isTwoWeapon;
       const effectiveHr = ignoreHR ? 0 : hr;
-      // Soul Weapon override: if the attacker carries a `soulWeaponElement`
-      // AE flag (Spiritist Soul Weapon spell), its declared element
-      // replaces the weapon's native damageType for this Attack. Looked
-      // up on the live actor doc — falls through to the weapon's native
-      // element when no override is active.
+      // Damage-type override: any AE that writes
+      // `system.props.override_damage_type` (Spiritist Soul Weapon + any
+      // future skill that uses the same prop via an AE `changes` mode-5
+      // OVERRIDE) replaces the weapon's native damageType for this
+      // Attack. Looked up on the live actor doc; "None" / empty falls
+      // through to the weapon's native element.
       const liveAttacker = await fromUuid(ar.attackerActorRef).catch(() => null);
-      const overriddenElement = applySoulWeaponElementOverride(liveAttacker, weapon.damageType);
+      const overriddenElement = applyDamageTypeOverride(liveAttacker, weapon.damageType);
       const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
 
       const perTargetResults = [];
