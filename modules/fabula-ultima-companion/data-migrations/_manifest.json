@@ -151,6 +151,10 @@
     {
       "key": "2026-05-26-refinement-panel-container-visibility",
       "path": "data-migrations/2026-05-26-refinement-panel-container-visibility.js"
+    },
+    {
+      "key": "2026-05-26-refinement-field-visibility-formula",
+      "path": "data-migrations/2026-05-26-refinement-field-visibility-formula.js"
     }
   ]
 }

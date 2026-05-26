@@ -20,7 +20,8 @@ export const description =
 
 const ITEM_TEMPLATE_ID = "ZoiV53VaLzeRsEps";
 
-const VF_REFINABLE = "switchCase(item_type, 'weapon', true, 'armor', true, 'shield', true, false)";
+// Show on weapon/armor/shield, AND when item_type is blank (template editor context)
+const VF_REFINABLE = "or(equalText(item_type, ''), switchCase(item_type, 'weapon', true, 'armor', true, 'shield', true, false))";
 
 const NUMBER_FIELD_BASE = {
   colSpan: 1,
@@ -90,10 +91,14 @@ function findPanel(node, targetKey) {
 
 async function migrateTemplate(template, log) {
   const sysClone    = foundry.utils.duplicate(template.system);
-  const backyardPanel = findPanel({ contents: [sysClone.body] }, "backyard_panel");
+
+  // Scope to the status tab first — there are multiple nodes named "backyard_panel"
+  // in the template and a flat search returns the wrong one.
+  const statusTab     = findPanel({ contents: [sysClone.body] }, "status");
+  const backyardPanel = statusTab ? findPanel(statusTab, "backyard_panel") : null;
 
   if (!backyardPanel) {
-    return { ok: false, summary: "backyard_panel not found in item template" };
+    return { ok: false, summary: "backyard_panel not found inside status tab" };
   }
 
   if (backyardPanel.contents?.some(c => c?.key === "refinement_panel")) {

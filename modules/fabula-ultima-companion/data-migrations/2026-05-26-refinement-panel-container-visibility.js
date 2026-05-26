@@ -36,7 +36,8 @@ export async function migrate(game, log) {
   }
 
   const sysClone       = foundry.utils.duplicate(template.system);
-  const refinementPanel = findPanel({ contents: [sysClone.body] }, "refinement_panel");
+  const statusTab       = findPanel({ contents: [sysClone.body] }, "status");
+  const refinementPanel = statusTab ? findPanel(statusTab, "refinement_panel") : null;
 
   if (!refinementPanel) {
     return { applied: false, summary: "refinement_panel not found — run refinement-item-template-fields first" };
