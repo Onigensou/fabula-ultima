@@ -155,6 +155,10 @@
     {
       "key": "2026-05-27-spiritist-batch4-author",
       "path": "data-migrations/2026-05-27-spiritist-batch4-author.js"
+    },
+    {
+      "key": "2026-05-27-skill-template-passive-columns",
+      "path": "data-migrations/2026-05-27-skill-template-passive-columns.js"
     }
   ]
 }
