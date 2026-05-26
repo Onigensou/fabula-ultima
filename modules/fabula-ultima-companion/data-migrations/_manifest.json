@@ -151,6 +151,10 @@
     {
       "key": "2026-05-27-spiritist-batch2-3-author",
       "path": "data-migrations/2026-05-27-spiritist-batch2-3-author.js"
+    },
+    {
+      "key": "2026-05-27-spiritist-batch4-author",
+      "path": "data-migrations/2026-05-27-spiritist-batch4-author.js"
     }
   ]
 }

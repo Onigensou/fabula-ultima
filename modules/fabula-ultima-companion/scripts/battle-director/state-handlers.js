@@ -29,7 +29,7 @@ import { OptionPicker } from "./option-picker.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applySoulWeaponElementOverride } from "./skill-effects.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -268,6 +268,9 @@ async function resolveSkillAction(director, ar, opts = {}) {
     isFumble: !!ar.roll?.isFumble,
     total: ar.roll?.total ?? 0,
     actionIntent: ar.actionIntent,
+    // Surfaces Vismagus's HP-alt-payment flag to chain consumers so the
+    // grant effect can suppress caster self-heal.
+    vismagusHpPaid: !!ar.vismagusHpPaid,
   };
   const ctx = makeChainContext({
     reactorActor: casterActor,
@@ -315,6 +318,13 @@ async function resolveSkillAction(director, ar, opts = {}) {
         let valueDirection = "loss";
         let damageTypeForPayload = ar.damageType;
 
+        // Vismagus self-heal suppression — if the caster paid HP for the
+        // spell via Vismagus, they do NOT recover HP from this spell
+        // (other targets unaffected). Per RAW Spiritist p.182.
+        if (ar.vismagusHpPaid && r.actorUuid === ar.attackerActorRef) {
+          log(`Skill ${ar.skillName}: Vismagus suppresses caster self-heal for ${r.name}`);
+          continue;
+        }
         if (dmgResource === "mp") {
           // MP damage path — Drain Spirit / future MP-burn spells.
           // No AB flip (MP absorb isn't an RAW affinity). Apply the
@@ -342,10 +352,12 @@ async function resolveSkillAction(director, ar, opts = {}) {
             valueDirection = "recover";
             damageTypeForPayload = "healing";
           } else if (r.damage > 0) {
-            const newHp = Math.max(0, curHp - r.damage);
+            const { newHp, mercyFired } = await applyMercyClamp(targetActor, curHp, r.damage);
             await targetActor.update({ "system.props.current_hp": newHp });
-            log(`Skill ${ar.skillName}: applied ${r.damage} dmg [${r.affinity}] to ${r.name}: ${curHp} → ${newHp}`);
-            finalValue = r.damage;
+            log(`Skill ${ar.skillName}: applied ${r.damage} dmg [${r.affinity}] to ${r.name}: ${curHp} → ${newHp}${mercyFired ? " (Mercy clamped at 1 HP)" : ""}`);
+            // Report the effective HP loss, not the raw damage — Mercy
+            // clamps to 1, so finalValue reflects what actually came off.
+            finalValue = Math.max(0, curHp - newHp);
           }
           valueType = "hp";
         }
@@ -381,6 +393,33 @@ async function resolveSkillAction(director, ar, opts = {}) {
   // 5. Toast — director never posts to chat for action confirmation.
   const targetNames = (ar.targets ?? []).map((t) => t.name).join(", ") || "no target";
   ui.notifications?.info(`${ar.attacker?.name ?? "?"} cast ${ar.skillName} on ${targetNames}.`);
+
+  // 6. Passive triggers — fire any caster-side passives whose
+  //    `passive_trigger` matches "spell_complete". Examples: Spiritist's
+  //    Healing Power (post-spell SL×BOND_COUNT heal grant) and Support
+  //    Magic (post-spell bond-bonus on a chosen ally's next Check).
+  //
+  //    Spell-only: skill_type !== "Spell" actions don't fire spell-tagged
+  //    passives. Other triggers (attack_complete, damage_taken, etc.)
+  //    will get their own hook sites as we ship more passives.
+  if (String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell") {
+    try {
+      await firePassiveTriggers({
+        director,
+        casterActor,
+        trigger: "spell_complete",
+        payload: {
+          spellUuid: skill.uuid,
+          spellName: skill.name,
+          targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+          hitTargetTokenUuids: Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid),
+          sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+          sourceActorUuid: ar.attackerActorRef,
+          actionIntent: ar.actionIntent,
+        },
+      });
+    } catch (e) { warn("Skill resolve: firePassiveTriggers threw", e); }
+  }
 }
 
 // Extract a formula-evaluable target count from a free-text
@@ -1078,8 +1117,49 @@ const Target = {
 
       // 3) Re-check affordability with the actual target count (×T tokens).
       const parsedCost = parseSkillCost(String(skill.system?.props?.cost ?? ""));
-      const costMap = resolveCost(parsedCost, { actor: attackerActor, targetCount: targets.length });
-      const gate = checkAffordable(attackerActor, costMap);
+      let costMap = resolveCost(parsedCost, { actor: attackerActor, targetCount: targets.length });
+      let gate = checkAffordable(attackerActor, costMap);
+      // Vismagus alt-cost: when the caster CAN'T pay the MP, but has the
+      // Vismagus passive AND would survive paying 2× the MP cost as HP
+      // instead, offer the swap. On accept the costMap is rewritten so
+      // debitCost burns HP. RAW: paying HP MUST leave the caster with
+      // ≥1 HP — we gate on `curHp > 2*mpNeed`.
+      let vismagusHpPaid = false;
+      if (!gate.ok) {
+        const skillIsSpell = String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell";
+        const hasVismagus = (attackerActor.items?.contents ?? []).some((it) =>
+          it.name === "Vismagus" && it.system?.props?.vismagus_passive === true
+        );
+        const mpNeed = Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0;
+        const curHp = Number(attackerActor.system?.props?.current_hp ?? 0) || 0;
+        const onlyMpMissing = gate.missing.every((m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp");
+        if (skillIsSpell && hasVismagus && mpNeed > 0 && onlyMpMissing && curHp > mpNeed * 2) {
+          const accept = await new Promise((resolve) => {
+            if (typeof Dialog !== "function") return resolve(false);
+            new Dialog({
+              title: "Vismagus — pay HP instead?",
+              content: `<p><strong>${attackerActor.name}</strong> can't afford <strong>${skill.name}</strong> (${gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ")}).</p><p>Vismagus lets them pay <strong>${mpNeed * 2} HP</strong> instead of <strong>${mpNeed} MP</strong>. Their HP would drop from ${curHp} to ${curHp - mpNeed * 2}.</p><p><em>If this spell would heal you, you recover no HP (it still works on other targets).</em></p>`,
+              buttons: {
+                pay:    { label: `Pay ${mpNeed * 2} HP`, callback: () => resolve(true) },
+                cancel: { label: "Cancel",               callback: () => resolve(false) },
+              },
+              default: "pay",
+              close: () => resolve(false),
+            }).render(true);
+          });
+          if (accept) {
+            const newMap = new Map();
+            for (const [k, v] of costMap.entries?.() ?? Object.entries(costMap ?? {})) {
+              if (String(k).toLowerCase() === "mp") continue;
+              newMap.set(k, v);
+            }
+            newMap.set("hp", (Number(newMap.get?.("hp") ?? 0) || 0) + mpNeed * 2);
+            costMap = newMap;
+            gate = checkAffordable(attackerActor, costMap);
+            vismagusHpPaid = true;
+          }
+        }
+      }
       if (!gate.ok) {
         const missing = gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ");
         ui.notifications?.warn(`Can't cast ${skill.name} — missing ${missing}.`);
@@ -1112,6 +1192,11 @@ const Target = {
         costSerialized: serializeCostMap(costMap),
         rawCost: String(skill.system?.props?.cost ?? ""),
         actionIntent: intent,
+        // Vismagus alt-cost flag — resolveSkillAction reads this and
+        // suppresses self-heal when the spell would heal the caster
+        // (RAW: "you instead recover no HP, the spell still works on
+        // other targets").
+        vismagusHpPaid,
       });
       director.ctx.pickedTargetUuids = targetUuids;
       director.dispatch({
@@ -1634,7 +1719,14 @@ const Compute = {
       // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69).
       const ignoreHR = isTwoWeapon;
       const effectiveHr = ignoreHR ? 0 : hr;
-      const elementKey = String(weapon.damageType ?? "Physical").toLowerCase();
+      // Soul Weapon override: if the attacker carries a `soulWeaponElement`
+      // AE flag (Spiritist Soul Weapon spell), its declared element
+      // replaces the weapon's native damageType for this Attack. Looked
+      // up on the live actor doc — falls through to the weapon's native
+      // element when no override is active.
+      const liveAttacker = await fromUuid(ar.attackerActorRef).catch(() => null);
+      const overriddenElement = applySoulWeaponElementOverride(liveAttacker, weapon.damageType);
+      const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
 
       const perTargetResults = [];
       for (const e of targetSnapshots) {
@@ -2044,9 +2136,9 @@ const Resolve = {
             await actor.update({ "system.props.current_hp": newHp });
             log(`Absorbed ${healed} ${r.name}${passLabel}: ${curHp} → ${newHp} (heal)`);
           } else if (r.damage > 0) {
-            const newHp = Math.max(0, curHp - r.damage);
+            const { newHp, mercyFired } = await applyMercyClamp(actor, curHp, r.damage);
             await actor.update({ "system.props.current_hp": newHp });
-            log(`Applied ${r.damage} dmg to ${r.name} [${r.affinity}]${passLabel}: ${curHp} → ${newHp}`);
+            log(`Applied ${r.damage} dmg to ${r.name} [${r.affinity}]${passLabel}: ${curHp} → ${newHp}${mercyFired ? " (Mercy clamped at 1 HP)" : ""}`);
           } else {
             log(`No HP change for ${r.name} [${r.affinity}]${passLabel} (damage was ${r.damage})`);
           }

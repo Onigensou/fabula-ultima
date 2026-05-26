@@ -22,8 +22,15 @@
       "Aura (Spell; apply_ae 'Aura'd' AE that UPGRADEs magic_defense to 12 — floor mechanic via Foundry mode 4)",
       "Barrier (Spell; same pattern as Aura, applied to defense instead of magic_defense)"
     ],
+    "batch_4_in_progress_2026-05-27": [
+      "Ritual Spiritism (Passive; meta — copy of Spiritual Magic pattern; DONE)",
+      "Healing Power (Passive; needs passive-trigger layer)",
+      "Support Magic (Passive; needs passive-trigger + bond-pick + check-bonus AE)",
+      "Vismagus (Passive; needs cost-parser HP-alt path)",
+      "Mercy (Spell; needs reactive 'would-be-reduced-to-0' trigger)",
+      "Soul Weapon (Spell; needs weapon damage-type-swap AE + free attack)"
+    ],
     "deferred_to_later_phases": {
-      "Soul Weapon": "Needs weapon damage-type swap effect_kind (B.2).",
       "Mercy": "Needs Phase F reaction (creature_takes_damage trigger gated by would-reduce-to-0-HP).",
       "Support Magic": "Needs passive layer — post-spell apply_ae with BOND_STRENGTH bonus on next Check.",
       "Healing Power": "Needs passive layer — post-spell heal grant (SL × BOND_COUNT).",
@@ -589,6 +596,238 @@
             "description": "<p><strong>Defense floored at 12</strong> — if the target's DEF would be lower, it's treated as 12 instead. Normal DEF still applies if higher.</p>",
             "system": { "tags": ["buff"] },
             "flags": { "fabula-ultima-companion": { "category": "buff", "barrierFloor": 12 } }
+          }
+        ]
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Passive (meta). You may perform Spiritism Rituals; they use INS+WLP for the Magic Check.",
+      "_note": "Pure metadata, same pattern as Spiritual Magic. The Ritual pipeline (Phase I) reads `class:'Spiritist'` + `skill_type:'Passive'` + `name:'Ritual Spiritism'` to authorize ritual casting. No effect_table; never goes through the director combat pipeline.",
+      "spec": {
+        "name": "Ritual Spiritism",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Passive",
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "",
+          "skill_target": "-",
+          "skill_range": "-",
+          "type_damage": "",
+          "damage_bonus": "0",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>INS + WLP</strong> for the Magic Check.</p>"
+        }
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Passive. When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, each of those allies recovers HP equal to SL × BOND_COUNT.",
+      "_note": "First skill exercising the passive-trigger layer (`passive_trigger: 'spell_complete'` + `passive_trigger_filter: 'ally_targets'`). Condition formula gates on arcane-weapon-equipped via the new `HAS_ARCANE_WEAPON` identifier. RAW 'may' → `passive_optional: true` (GM gets Apply/Skip dialog after cast).",
+      "spec": {
+        "name": "Healing Power",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Passive",
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "",
+          "skill_target": "-",
+          "skill_range": "-",
+          "type_damage": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+          "passive_trigger": "spell_complete",
+          "passive_trigger_filter": "ally_targets",
+          "passive_condition_formula": "HAS_ARCANE_WEAPON",
+          "passive_optional": true,
+          "on_passive_trigger_effect_ref": "healing_power_grant",
+          "effect_table": {
+            "0": {
+              "effect_label": "healing_power_grant",
+              "effect_kind": "grant",
+              "grant_resource": "hp",
+              "grant_amount": "SL * BOND_COUNT",
+              "target_ref": "ally_action_targets"
+            }
+          }
+        }
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Passive. When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, choose one of those allies you have a Bond toward; that ally gains a bonus to their next Check this scene equal to the strength of your Bond toward them.",
+      "_note": "Same passive trigger as Healing Power (spell_complete + ally_targets + arcane gate). open_action_menu picks one targeted ally, then apply_ae stamps a `next_check_bonus` AE with the bond strength (resolved via BOND_STRENGTH against the picked ally). The applied AE auto-consumes on the target's next Check — relies on the existing 'consume on Check' AE behavior (legacy bridge will read `flags.fabula-ultima-companion.consume_on_check`).",
+      "_deferred_bond_filter": "The picker shows ALL ally targets right now. Filtering down to 'allies the caster has a Bond toward' needs a new target_ref filter (e.g. `bonded_only`). Until that lands, the GM picks the right ally manually.",
+      "_deferred_auto_consume": "The bonus AE applies but doesn't yet auto-consume on the target's next Check — Phase F reaction-on-roll will hook this. For now the GM manually deletes the AE after the Check fires.",
+      "spec": {
+        "name": "Support Magic",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Passive",
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "",
+          "skill_target": "-",
+          "skill_range": "-",
+          "type_damage": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
+          "passive_trigger": "spell_complete",
+          "passive_trigger_filter": "ally_targets",
+          "passive_condition_formula": "HAS_ARCANE_WEAPON",
+          "passive_optional": true,
+          "on_passive_trigger_effect_ref": "support_magic_apply",
+          "effect_table": {
+            "0": {
+              "effect_label": "support_magic_apply",
+              "effect_kind": "apply_ae",
+              "ae_template_ref": "Support Magic",
+              "target_ref": "ally_action_targets",
+              "ae_duplicate_mode": "replace_per_caster"
+            }
+          }
+        },
+        "activeEffects": [
+          {
+            "name": "Support Magic",
+            "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+            "changes": [
+              { "key": "bonus_check", "value": "BOND_STRENGTH", "mode": 2, "priority": 20 }
+            ],
+            "duration": { "rounds": null, "seconds": null },
+            "transfer": false,
+            "statuses": ["fud-support-magic"],
+            "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+            "system": { "tags": ["buff"] },
+            "flags": { "fabula-ultima-companion": { "category": "buff", "consume_on_check": true, "crossScene": true } }
+          }
+        ]
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Passive. When you cast a spell and can't afford the MP cost, you may pay twice as many HP instead. Can't reduce yourself to 0 HP this way. If the spell would heal you, you recover no HP (it still works on other targets).",
+      "_note": "Alt-cost passive that the cost gate consults BEFORE rejecting an unaffordable spell. Detection in skill-cost.js: when the MP gate fails AND the caster has Vismagus, offer a Dialog 'Pay 2× HP instead?'. On accept, route the cost to HP (twice the MP amount), tag the cast with `vismagusHpPaid: true` so resolveSkillAction's heal path can suppress self-heal. The 'you can't reduce to 0' check happens in the cost calculator (clamps).",
+      "_deferred_self_heal_suppress": "When the spell HAS self-heal (e.g. Heal cast on self + allies), suppress the self-portion. This needs awareness of which target == caster at heal time. resolveSkillAction's heal loop will check ar.vismagusHpPaid + skip self in the per-target HP grant.",
+      "spec": {
+        "name": "Vismagus",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_BLM/manaward.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Passive",
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "",
+          "skill_target": "-",
+          "skill_range": "-",
+          "type_damage": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
+          "vismagus_passive": true
+        }
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Cost: 20 MP. Targets: One creature. Duration: Scene. Until the spell ends, if the target would be reduced to 0 HP they are instead left at exactly 1 HP. Once that happens, the spell ends.",
+      "_note": "Reactive AE: applies the 'Mercy' AE to one ally; at damage-resolution time, the engine checks for the AE on each damaged target and clamps post-affinity HP at 1 (instead of 0) if reached. Clamp consumes the AE — handled in resolveSkillAction's damage loop via a `clampHpFloorViaMercy(targetActor, damage)` helper that reads `flags.fabula-ultima-companion.mercyActive`.",
+      "_deferred_external_damage_sources": "Damage from non-director-spawned sources (manual HP edits via sheet, legacy macros) WON'T trigger the Mercy clamp until the legacy damage path also calls the clamp helper. Mercy currently only fires when the Director routes the damage.",
+      "spec": {
+        "name": "Mercy",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": false,
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "20 MP",
+          "skill_target": "One creature",
+          "skill_range": "Range",
+          "damage_bonus": "0",
+          "type_damage": "",
+          "description": "<p>You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left at exactly 1 Hit Point. Once that happens, this spell ends.</p>",
+          "effect_table": {
+            "0": {
+              "effect_label": "mercy_apply",
+              "effect_kind": "apply_ae",
+              "ae_template_ref": "Mercy",
+              "target_ref": "action_targets",
+              "ae_duplicate_mode": "replace_per_caster"
+            }
+          },
+          "on_activate_effect_ref": "mercy_apply"
+        },
+        "activeEffects": [
+          {
+            "name": "Mercy",
+            "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+            "changes": [],
+            "duration": { "rounds": null, "seconds": null },
+            "transfer": false,
+            "statuses": ["fud-mercy"],
+            "description": "<p>If this creature would be reduced to 0 HP, they are instead left at exactly 1 HP. Consumed on first trigger; this AE auto-removes when fired.</p>",
+            "system": { "tags": ["buff"] },
+            "flags": { "fabula-ultima-companion": { "category": "buff", "mercyActive": true, "crossScene": true } }
+          }
+        ]
+      }
+    },
+    {
+      "_raw": "FU Core p.182 — Cost: 10 MP. Targets: One equipped weapon. Duration: Scene. The chosen weapon's damage type becomes Light for the scene. If you have it equipped at cast time, you may perform a free attack with it as part of the same action. Cast on a willing creature's equipped weapon.",
+      "_note": "Two-part: (a) weapon damage-type override AE applied to the wielder, (b) optional free attack chained off the cast. The AE writes to `weapon_damage_type_override` (engine pre-resolution hook reads this when computing damage_type for a weapon attack — see snapshot.js gatherWeapons). For the free-attack: an `effect_kind: 'chain_action'` row routes back to DECLARE with command='Attack' and a pre-picked weapon. Free-attack is GM-prompted via passive_optional. Cross-actor casting (on willing ally) uses `target_ref: 'ally_action_targets'` + a follow-up weapon picker.",
+      "_deferred_free_attack_chain": "The 'free attack as part of the same action' clause needs a `chain_action` effect_kind that re-enters DECLARE/TARGET with the picked weapon pre-locked. For Batch 4, ship the damage-type swap AE; document the chain_action requirement as Phase G work. The GM manually triggers the bonus attack until then.",
+      "_deferred_weapon_picker": "RAW lets the caster pick ONE specific weapon from the willing target. For Batch 4 the AE applies to the actor (not a specific weapon item), and the engine treats ALL of that actor's equipped weapons as Light-damage for the duration. Per-weapon scoping needs a Weapon picker UI + per-weapon AE-store.",
+      "spec": {
+        "name": "Soul Weapon",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": false,
+          "isCheck": false,
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "cost": "10 MP",
+          "skill_target": "One creature",
+          "skill_range": "Range",
+          "damage_bonus": "0",
+          "type_damage": "",
+          "description": "<p>You imbue a willing creature's equipped weapon with the cleansing energy of your spirit. Until this spell ends, all damage dealt by that creature's equipped weapons becomes <strong>Light</strong> type. <em>(Per-weapon scoping is a follow-up — currently affects all of the target's equipped weapons.)</em></p>",
+          "effect_table": {
+            "0": {
+              "effect_label": "soul_weapon_apply",
+              "effect_kind": "apply_ae",
+              "ae_template_ref": "Soul Weapon",
+              "target_ref": "action_targets",
+              "ae_duplicate_mode": "replace_per_caster"
+            }
+          },
+          "on_activate_effect_ref": "soul_weapon_apply"
+        },
+        "activeEffects": [
+          {
+            "name": "Soul Weapon",
+            "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
+            "changes": [],
+            "duration": { "rounds": null, "seconds": null },
+            "transfer": false,
+            "statuses": ["fud-soul-weapon"],
+            "description": "<p>This creature's equipped-weapon attacks deal <strong>Light</strong> damage instead of their normal type.</p>",
+            "system": { "tags": ["buff"] },
+            "flags": { "fabula-ultima-companion": { "category": "buff", "soulWeaponElement": "light", "crossScene": true } }
           }
         ]
       }

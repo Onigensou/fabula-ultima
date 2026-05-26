@@ -362,6 +362,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "CRIT":   return payload?.isCrit ? 1 : 0;
       case "FUMBLE": return payload?.isFumble ? 1 : 0;
       case "TOTAL":  return Math.max(0, Number(payload?.total ?? 0) || 0);
+      // Equipped-weapon predicates. Read from actor.system.props.weapon_list
+      // (CSB's stored equip list); each row carries `weapon_type` per the
+      // legacy schema. Returns 1 if at least one EQUIPPED weapon has the
+      // matching type, else 0. Authors call as e.g. `HAS_ARCANE_WEAPON`
+      // (no parens — formula parser identifier).
+      case "HAS_ARCANE_WEAPON":   return hasEquippedWeaponOfType(actor, "arcane") ? 1 : 0;
+      case "HAS_MELEE_WEAPON":    return hasEquippedWeaponOfType(actor, "melee") ? 1 : 0;
+      case "HAS_RANGED_WEAPON":   return hasEquippedWeaponOfType(actor, "ranged") ? 1 : 0;
       default:
         return null;  // unknown → fold to 0 in evalNode
     }
@@ -373,6 +381,27 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
 function readProp(actor, key) {
   const v = actor?.system?.props?.[key];
   return Number.isFinite(Number(v)) ? Number(v) : 0;
+}
+
+// True if the actor has any EQUIPPED weapon of the given `weaponType` —
+// reads CSB's stored `weapon_list` on the actor's props (each row is
+// `{ name, weapon_type, isEquipped, ... }`). Case-insensitive match.
+// Used by Spiritist's Healing Power / Support Magic passives which gate
+// on "arcane weapon equipped". Returns boolean; the formula adapter
+// coerces to 1/0.
+function hasEquippedWeaponOfType(actor, weaponType) {
+  if (!actor) return false;
+  const list = actor.system?.props?.weapon_list;
+  if (!list) return false;
+  const wanted = String(weaponType ?? "").toLowerCase();
+  const rows = Array.isArray(list) ? list : Object.values(list);
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    if (!row.isEquipped) continue;
+    const wt = String(row.weapon_type ?? row.type ?? "").toLowerCase();
+    if (wt === wanted) return true;
+  }
+  return false;
 }
 
 // Count active, non-disabled debuff-classified effects on the actor.

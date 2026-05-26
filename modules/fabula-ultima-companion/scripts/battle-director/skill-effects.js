@@ -104,6 +104,201 @@ export async function sweepTransientAEsAtSceneEnd() {
 // New callers should use `sweepTransientAEsAtSceneEnd`.
 export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 
+// ── Mercy HP clamp ──────────────────────────────────────────────────────
+//
+// Spiritist Mercy applies an AE flagged `mercyActive` to one ally. If the
+// target would be reduced to 0 HP, they instead end at exactly 1 HP and
+// the AE is consumed. Call this helper from any damage-application path
+// BEFORE writing `current_hp` — receives the raw damage and the target
+// actor, returns the clamped final HP and a side-effect (delete the
+// Mercy AE if it fires).
+//
+// Usage:
+//   const { newHp, mercyFired } = await applyMercyClamp(targetActor, curHp, rawDamage);
+//   await targetActor.update({ "system.props.current_hp": newHp });
+//
+// No-op pass-through when target has no `mercyActive` AE or when damage
+// wouldn't kill them.
+export async function applyMercyClamp(targetActor, curHp, rawDamage) {
+  const fallback = { newHp: Math.max(0, curHp - rawDamage), mercyFired: false };
+  if (!targetActor || rawDamage <= 0) return fallback;
+  const wouldBeZeroOrLess = (curHp - rawDamage) <= 0;
+  if (!wouldBeZeroOrLess) return fallback;
+  // Find an active Mercy AE on the target.
+  const mercyAe = Array.from(targetActor.effects ?? []).find((eff) => {
+    if (eff.disabled) return false;
+    return eff.flags?.[FLAG_NS]?.mercyActive === true;
+  });
+  if (!mercyAe) return fallback;
+  try {
+    await mercyAe.delete();
+    log(`mercy: ${targetActor.name} clamped from ${curHp - rawDamage} to 1 HP and consumed Mercy AE`);
+  } catch (e) { warn("applyMercyClamp: AE delete failed", e); }
+  return { newHp: 1, mercyFired: true };
+}
+
+// ── Soul Weapon damage-type override ────────────────────────────────────
+//
+// Spiritist Soul Weapon applies an AE flagged `soulWeaponElement` to a
+// creature. While active, that creature's weapon attacks deal the
+// flagged element (default "light"). Call this helper from the
+// weapon-damage compute path with the attacker actor + the resolved
+// damage type — it returns the override element if Soul Weapon is in
+// effect, otherwise the original element.
+export function applySoulWeaponElementOverride(attackerActor, originalElement) {
+  if (!attackerActor) return originalElement;
+  for (const eff of attackerActor.effects ?? []) {
+    if (eff.disabled) continue;
+    const override = eff.flags?.[FLAG_NS]?.soulWeaponElement;
+    if (override) return String(override).toLowerCase();
+  }
+  return originalElement;
+}
+
+// ── Passive trigger layer ───────────────────────────────────────────────
+//
+// Some skills (skill_type === "Passive") fire automatically in response to
+// pipeline events instead of being picked from the skill menu. They declare:
+//
+//   passive_trigger                   — string event name. Currently honored:
+//                                       "spell_complete" (fires from
+//                                       resolveSkillAction after a Spell
+//                                       resolves on its targets).
+//   passive_trigger_filter            — optional. "ally_targets",
+//                                       "enemy_targets", or "self_only".
+//                                       Only fires if the trigger payload
+//                                       includes a target of that
+//                                       disposition (vs caster). Default:
+//                                       no filter — fires every time the
+//                                       trigger event fires.
+//   passive_condition_formula         — optional formula evaluated against
+//                                       the caster. Must evaluate truthy
+//                                       for the passive to fire.
+//                                       Identifiers available: same as
+//                                       on_activate formulas + the
+//                                       HAS_ARCANE_WEAPON() helper.
+//   on_passive_trigger_effect_ref     — effect_label to fire when the
+//                                       passive matches. Resolves the
+//                                       same way as on_activate_effect_ref.
+//
+// Passives that fire prompt the GM with a Yes/Skip dialog when the RAW
+// uses "may" wording — controlled by the `passive_optional` flag on the
+// skill. Default is `true` (RAW Spiritist passives are all "may").
+//
+// Fire ctx mirrors the action's chain ctx: reactorActor = the casting
+// actor; actionTargetUuids = the action's target token UUIDs; payload
+// carries the trigger event's data (e.g. spell uuid, target uuids).
+async function shouldPassiveFire(skill, casterActor, payload) {
+  const p = skill?.system?.props ?? {};
+  // 1. Filter by trigger payload's target disposition (if filter set).
+  const filter = String(p.passive_trigger_filter ?? "").trim().toLowerCase();
+  if (filter && filter !== "any") {
+    const casterToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor?.uuid)?.document
+      ?? casterActor?.getActiveTokens?.()?.[0]?.document
+      ?? null;
+    const casterDisp = Number(casterToken?.disposition ?? 0);
+    const targetUuids = Array.isArray(payload?.targetTokenUuids) ? payload.targetTokenUuids : [];
+    let matched = false;
+    for (const u of targetUuids) {
+      try {
+        const t = await fromUuid(u);
+        if (!t) continue;
+        const td = Number(t.disposition ?? 0);
+        if (filter === "ally_targets" && (td === casterDisp || td === 0)) { matched = true; break; }
+        if (filter === "enemy_targets" && casterDisp !== 0 && td === -casterDisp) { matched = true; break; }
+        if (filter === "self_only" && t.actor?.uuid === casterActor?.uuid) { matched = true; break; }
+      } catch (_) { /* skip resolution failures */ }
+    }
+    if (!matched) return false;
+  }
+  // 2. Optional condition formula.
+  const condRaw = String(p.passive_condition_formula ?? "").trim();
+  if (condRaw) {
+    const { evaluateFormula: e, buildSkillResolver: b } = await import("./skill-formulas.js");
+    const r = b({ actor: casterActor, payload, skill, round: 0 });
+    const val = e(condRaw, r, 0);
+    if (!val) return false;
+  }
+  return true;
+}
+
+// Optional GM confirmation for "may" passives. Returns true to proceed,
+// false to skip. Falls back to true if no dialog renderer is wired (e.g.
+// in headless test contexts).
+async function promptPassiveOptin(skill, casterActor) {
+  if (!ui?.notifications) return true;
+  if (typeof Dialog !== "function") return true;
+  return new Promise((resolve) => {
+    new Dialog({
+      title: `Passive: ${skill.name}`,
+      content: `<p><strong>${casterActor?.name ?? "Caster"}</strong> may fire <strong>${skill.name}</strong>.</p>${skill.system?.props?.description ?? ""}<p><em>Apply this passive's effect now?</em></p>`,
+      buttons: {
+        apply: { label: "Apply", callback: () => resolve(true) },
+        skip:  { label: "Skip",  callback: () => resolve(false) },
+      },
+      default: "apply",
+      close: () => resolve(false),
+    }).render(true);
+  });
+}
+
+export async function firePassiveTriggers({ director, casterActor, trigger, payload }) {
+  if (!casterActor || !trigger) return { fired: [] };
+  const items = casterActor.items?.contents ?? [];
+  const matched = items.filter((it) => {
+    const p = it.system?.props ?? {};
+    if (String(p.skill_type ?? "").toLowerCase() !== "passive") return false;
+    if (String(p.passive_trigger ?? "").trim() !== trigger) return false;
+    return true;
+  });
+  if (!matched.length) return { fired: [] };
+
+  const fired = [];
+  for (const skill of matched) {
+    const p = skill.system?.props ?? {};
+    if (!(await shouldPassiveFire(skill, casterActor, payload))) {
+      log(`passive: ${skill.name} skipped (filter/condition mismatch)`);
+      continue;
+    }
+    // "may" prompt — defaults to true unless the author sets passive_optional:false.
+    const optional = p.passive_optional !== false;
+    if (optional) {
+      const ok = await promptPassiveOptin(skill, casterActor);
+      if (!ok) { log(`passive: ${skill.name} declined by GM`); continue; }
+    }
+    const refLabel = String(p.on_passive_trigger_effect_ref ?? "").trim();
+    if (!refLabel) { warn(`passive ${skill.name}: no on_passive_trigger_effect_ref`); continue; }
+    // Build a passive-specific chain ctx — reactorActor + caster's token,
+    // payload from the trigger, skill = the passive itself.
+    const { makeChainContext } = await import("./skill-targeting.js");
+    const { getRuntimeSkillView } = await import("./skill-recipes.js");
+    const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
+      ?? casterActor?.getActiveTokens?.()?.[0]?.document
+      ?? null;
+    const view = getRuntimeSkillView(skill);
+    const ctx = makeChainContext({
+      reactorActor: casterActor,
+      reactorToken,
+      skill,
+      dCombat: director?.dCombat ?? null,
+      payload,
+      actionTargetUuids: payload?.targetTokenUuids ?? [],
+      hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
+      isPassive: false,  // GM-prompted → behaves as user-driven; auto-firing passives can set true
+      runtimeEffectTable: view.effect_table,
+      firePoints: view.fire_points,
+    });
+    try {
+      const r = await applyEffectByLabel(refLabel, ctx);
+      fired.push({ skill: skill.name, ok: !!r.ok, kind: r.kind });
+      log(`passive ${skill.name}: fired ref "${refLabel}" → ok=${!!r.ok}`);
+    } catch (e) {
+      warn(`passive ${skill.name}: applyEffectByLabel threw`, e);
+    }
+  }
+  return { fired };
+}
+
 // Tick down `turnsRemaining` on every AE in the world whose
 // `directorAppliedBy.reactorActorUuid` matches the given applier. Called
 // from TurnStart.onEnter when the applier's next turn begins
@@ -299,10 +494,19 @@ async function applyGrantEffect(row, ctx) {
   }
 
   const applied = [];
+  const suppressSelfHpHeal = !!ctx.payload?.vismagusHpPaid
+    && resource === "hp"
+    && amount > 0;
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) {
       warn(`skill-effects.grant: token has no actor (${token.uuid})`);
+      continue;
+    }
+    // Vismagus self-heal suppression — if the caster paid HP for the
+    // spell, they can't ALSO recover HP from it. Other targets unaffected.
+    if (suppressSelfHpHeal && actor.uuid === ctx.reactorActor?.uuid) {
+      log(`skill-effects.grant: Vismagus suppresses caster self-heal on row "${row.effect_label}"`);
       continue;
     }
     const result = await writeResourceDelta(actor, def, amount);

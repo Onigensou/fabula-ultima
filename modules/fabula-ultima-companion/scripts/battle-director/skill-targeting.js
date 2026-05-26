@@ -33,11 +33,13 @@ import { log, warn } from "./logger.js";
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
 const RESERVED_REFS = {
-  self:                { candidate_source: "self" },
-  action_targets:      { candidate_source: "action_targets", mode: "all" },
-  hit_action_targets:  { candidate_source: "hit_action_targets", mode: "all" },
-  trigger_actor:       { candidate_source: "trigger_actor", mode: "exact", count: 1 },
-  trigger_subject:     { candidate_source: "trigger_subject", mode: "exact", count: 1 },
+  self:                  { candidate_source: "self" },
+  action_targets:        { candidate_source: "action_targets", mode: "all" },
+  hit_action_targets:    { candidate_source: "hit_action_targets", mode: "all" },
+  ally_action_targets:   { candidate_source: "action_targets", category: "ally", mode: "all" },
+  enemy_action_targets:  { candidate_source: "action_targets", category: "enemy", mode: "all" },
+  trigger_actor:         { candidate_source: "trigger_actor", mode: "exact", count: 1 },
+  trigger_subject:       { candidate_source: "trigger_subject", mode: "exact", count: 1 },
 };
 
 // Public — resolve a target_ref to a token list within a chain context.
