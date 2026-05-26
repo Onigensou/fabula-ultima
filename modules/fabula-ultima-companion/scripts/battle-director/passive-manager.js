@@ -299,3 +299,52 @@ export const PassiveManager = {
   show: showPassiveManager,
   despawn,
 };
+
+// ── Token HUD button ────────────────────────────────────────────────────
+//
+// Injects a control-icon into the token HUD's right column for GMs. Click
+// opens the same parchment overlay scoped to the token's actor — same
+// surface as the in-turn "Passive" command button, available out of
+// turn (and out of combat) too.
+//
+// Gated on:
+//   - game.user.isGM (passive-mode editing is GM-only authority)
+//   - actor present + has at least one Passive-typed skill
+//
+// Idempotent: runs once on `renderTokenHUD`, which Foundry fires on
+// every HUD render. We inject a fresh button each time (Foundry rebuilds
+// the HUD DOM, so old buttons don't accumulate).
+
+Hooks.on("renderTokenHUD", (hud, html) => {
+  try {
+    if (!game.user?.isGM) return;
+    const actor = hud?.object?.actor;
+    if (!actor) return;
+    const hasPassive = (actor.items?.contents ?? []).some((it) =>
+      String(it.system?.props?.skill_type ?? "").toLowerCase() === "passive"
+    );
+    if (!hasPassive) return;
+
+    // Foundry V12's HUD HTML may arrive as either a jQuery object or a
+    // raw DOM element depending on the active app shim. Support both.
+    const rootEl = html?.[0] ?? html;
+    if (!rootEl?.querySelector) return;
+
+    const rightCol = rootEl.querySelector(".col.right");
+    if (!rightCol) return;
+
+    const btn = document.createElement("div");
+    btn.className = "control-icon fud-token-hud-passive";
+    btn.setAttribute("data-action", "fud-passive-manager");
+    btn.setAttribute("title", "Manage Passives");
+    btn.setAttribute("aria-label", "Manage Passives");
+    btn.innerHTML = `<i class="fa-solid fa-bolt-lightning"></i>`;
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { PassiveManager.show({ actor }); }
+      catch (e) { warn("token-HUD passive button: show failed", e); }
+    });
+    rightCol.appendChild(btn);
+  } catch (e) { warn("renderTokenHUD passive injector threw", e); }
+});
