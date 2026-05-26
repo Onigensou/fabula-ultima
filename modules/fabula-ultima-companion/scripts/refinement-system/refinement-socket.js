@@ -83,8 +83,10 @@ class RefinementSocketHandler {
         updates["system.props.refine_level"] = result.newRefineLevel;
         updates["name"]                      = result.displayName;
 
-        if (result.itemType === "weapon" && typeof result.bonusAfter === "number") {
-          updates["system.props.damage_bonus"] = result.bonusAfter;
+        const bonusDelta = (result.bonusAfter ?? 0) - (result.bonusBefore ?? 0);
+        if (result.itemType === "weapon" && bonusDelta !== 0) {
+          const currentBonus = Number(item.system?.props?.damage_bonus) || 0;
+          updates["system.props.damage_bonus"] = currentBonus + bonusDelta;
         }
         // armor/shield bonus updates go here once formulas are finalized
       }
