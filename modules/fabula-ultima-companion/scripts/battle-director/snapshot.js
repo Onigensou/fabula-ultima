@@ -5,6 +5,101 @@
 
 import { warn } from "./logger.js";
 
+// Element → affinity_N prop key mapping, mirroring legacy AdvanceDamage.js
+// line 278. The CSB template stores elemental affinities under numbered keys
+// (`affinity_1` etc.) — these are dropdown values: "" / "NE" (neutral),
+// "VU" (vulnerable, 2x), "RS" (resistant, 0.5x), "IM" (immune, 0), or
+// "AB" (absorbing, heal).
+export const AFFINITY_KEY = Object.freeze({
+  physical: "affinity_1",
+  air:      "affinity_2",
+  bolt:     "affinity_3",
+  dark:     "affinity_4",
+  earth:    "affinity_5",
+  fire:     "affinity_6",
+  ice:      "affinity_7",
+  light:    "affinity_8",
+  poison:   "affinity_9",
+});
+
+// Read all 9 elemental affinities for an actor in one pass. Returns a frozen
+// map keyed by element name. Missing / empty values are normalised to "NE"
+// so downstream consumers don't have to defend against undefined.
+export function readAffinities(actor) {
+  const props = actor?.system?.props ?? actor?.system ?? {};
+  const out = {};
+  for (const [element, key] of Object.entries(AFFINITY_KEY)) {
+    const raw = String(props?.[key] ?? "").trim().toUpperCase();
+    out[element] = (raw === "VU" || raw === "RS" || raw === "IM" || raw === "AB") ? raw : "NE";
+  }
+  return Object.freeze(out);
+}
+
+// Status conditions that force Vulnerable on a specific element when
+// applied — mirrored from AdvanceDamage.js line 588 (legacy condVU map).
+const FORCED_VU_BY_STATUS = Object.freeze({
+  Wet: "bolt",
+  Oil: "fire",
+  Petrify: "earth",
+  Hypothermia: "ice",
+  Turbulence: "air",
+  Zombie: "light",
+});
+
+// Read the list of active-effect labels currently on an actor. Used by the
+// affinity resolver to apply forced-VU from status conditions.
+function readActiveConditions(actor) {
+  try {
+    const effs = actor?.effects ?? actor?.appliedEffects ?? [];
+    const labels = [];
+    for (const e of effs) {
+      const label = e?.label ?? e?.name ?? null;
+      if (label) labels.push(String(label));
+    }
+    return labels;
+  } catch (_) { return []; }
+}
+
+// Resolve the effective affinity code for an actor against a given element,
+// honouring status-condition forced-Vulnerable. Returns "VU"/"RS"/"IM"/"AB"
+// or "NE".
+export function resolveAffinity(actor, element) {
+  const el = String(element ?? "physical").toLowerCase();
+  const affinities = readAffinities(actor);
+  let code = affinities[el] ?? "NE";
+
+  // Status-forced VU overrides — applied AFTER reading the sheet affinity.
+  // Mirrors legacy AdvanceDamage line 589-591: any of these conditions on
+  // the actor, paired with the matching element, forces VU regardless of
+  // the sheet value (so a fire-resistant actor doused in Oil still takes
+  // doubled fire damage).
+  const conditions = readActiveConditions(actor);
+  for (const cond of conditions) {
+    const forcedEl = FORCED_VU_BY_STATUS[cond];
+    if (forcedEl && forcedEl === el) { code = "VU"; break; }
+  }
+  return code;
+}
+
+// Apply an affinity code to a damage value. Returns the post-affinity
+// damage (always non-negative). The caller checks `affinity === "AB"`
+// separately to flip the effect direction (heal instead of damage) — the
+// `value` returned is always the absolute amount.
+//   VU → ceil(damage * 2)
+//   RS → ceil(damage / 2)
+//   IM → 0
+//   AB → damage (caller flips to heal)
+//   NE → damage
+export function applyAffinityToDamage(damage, code) {
+  const base = Math.max(0, Number(damage) | 0);
+  switch (code) {
+    case "VU": return Math.ceil(base * 2);
+    case "RS": return Math.ceil(base / 2);
+    case "IM": return 0;
+    default:   return base;
+  }
+}
+
 // Numeric prop reader with multiple candidate keys + default.
 export function readPropNum(actor, keys, fallback = 0) {
   const props = actor?.system?.props ?? actor?.system ?? {};
@@ -37,6 +132,107 @@ export function attrDieSize(actor, key) {
   return 8;
 }
 
+// Resolve the attacker's currently-equipped weapon for Attack actions.
+//
+// Reads the same actor props the legacy `[Macro] Attack - Player.js` macro
+// reads (lines 86-120) so the formulas line up: main_hand name lookup in
+// weapon_list, main_attrib_1/2, weapon1_mod (accuracy bonus), weapon1_damage
+// (damage bonus), weapon1_damagetype, plus weapon_range / weapon_type from
+// the weapon_list entry.
+//
+// `which`: "main" | "off" — which equipped hand to read. Defaults to "main".
+//
+// Returns null if the requested hand isn't equipped or resolves to a shield
+// (attribute "SHI"). Caller decides whether to fall back to the other hand
+// or refuse the action.
+//
+// Buff effects (extra_damage_mod_*, attack_accuracy_mod_*) are NOT applied
+// here — that's a later slice. We surface the raw weapon stats so the
+// Compute state can roll them; buff aggregation happens above.
+export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
+  if (!actor) return null;
+  const props = actor?.system?.props ?? actor?.system ?? {};
+  const weaponList = Object.values(props?.weapon_list ?? {});
+  const isMain = which === "main";
+
+  const handName = isMain ? props.main_hand : props.off_hand;
+  if (!handName) return null;
+
+  const entry = weaponList.find((w) => w?.name === handName) ?? null;
+
+  // Attribute pair. Empty/SHI means no usable weapon in this hand.
+  const A1 = String(isMain ? (props.main_attrib_1 ?? "") : (props.off_attrib_1 ?? "")).toUpperCase();
+  const A2 = String(isMain ? (props.main_attrib_2 ?? "") : (props.off_attrib_2 ?? "")).toUpperCase();
+  if (!A1 || A1 === "SHI" || A1 === "UNDEFINED") return null;
+
+  // Accuracy bonus + damage bonus + damage type per hand. The off-hand
+  // prop names are genuinely inverted in the CSB template (off_mod_1 is
+  // accuracy, off_mod_2 is damage) — that's not a typo, it mirrors the
+  // shipped data shape.
+  const checkBonus = Number(
+    isMain ? (props.weapon1_mod ?? 0) : (props.off_mod_1 ?? 0)
+  ) || 0;
+  const damageBonus = Number(
+    isMain ? (props.weapon1_damage ?? 0) : (props.off_mod_2 ?? 0)
+  ) || 0;
+  const damageType = String(
+    isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical")
+  );
+
+  const range = String(entry?.weapon_range ?? "Melee");
+  const weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
+
+  // Resolve weapon item image. The entry's `uuid` field is canonical (the
+  // `id` field is an unresolved CSB template literal `${item.id}$`). Local
+  // lookup on the actor's items is enough — no async needed.
+  let imageUrl = entry?.img ?? entry?.image ?? null;
+  if (!imageUrl && entry?.uuid) {
+    try {
+      const itemId = String(entry.uuid).split(".").pop();
+      const item = actor.items?.get?.(itemId);
+      if (item?.img) imageUrl = item.img;
+    } catch (_) {}
+  }
+
+  return Object.freeze({
+    hand: which,
+    name: String(handName),
+    A1, A2,
+    checkBonus,
+    damageBonus,
+    damageType,
+    range,
+    weaponType,
+    imageUrl,
+  });
+}
+
+// Build the weapon-related fields for a combatant snapshot — main weapon,
+// off-hand, and the two-weapon eligibility flag — in one safe pass. Each
+// piece is individually defended: if `resolveAttackerWeapon` throws for one
+// hand, we still return the other plus `canTwoWeaponFight: false`. The
+// snapshot must NEVER fail because of a malformed weapon entry — the
+// attacker just ends up with no weapon and TARGET / COMPUTE handle that.
+function buildWeaponBundle(actor) {
+  let weapon = null;
+  let offWeapon = null;
+  try { weapon = resolveAttackerWeapon(actor, { which: "main" }); }
+  catch (e) { warn("buildWeaponBundle: main resolve threw", e); weapon = null; }
+  try { offWeapon = resolveAttackerWeapon(actor, { which: "off" }); }
+  catch (e) { warn("buildWeaponBundle: off resolve threw", e); offWeapon = null; }
+
+  let canTwoWeaponFight = false;
+  try {
+    if (weapon && offWeapon) {
+      const mt = String(weapon.weaponType ?? "").trim().toLowerCase();
+      const ot = String(offWeapon.weaponType ?? "").trim().toLowerCase();
+      canTwoWeaponFight = !!mt && mt === ot;
+    }
+  } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
+
+  return { weapon, offWeapon, canTwoWeaponFight };
+}
+
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc
 // refs) and produces the same frozen shape that snapshotCombatant returns.
 // This is what TurnStart calls in the dCombat path.
@@ -55,6 +251,7 @@ export function snapshotDirectorCombatant(dc) {
       actorId: actor.id,
       actorUuid: actor.uuid,
       name: actor.name ?? dc.name ?? "Unknown",
+      tokenImg: tokenDoc.texture?.src ?? tokenDoc.img ?? actor.img ?? null,
       disposition: dc.disposition ?? tokenDoc.disposition ?? 0,
       hp: readPropNum(actor, ["current_hp", "hp"]),
       maxHp: readPropNum(actor, ["max_hp"]),
@@ -68,6 +265,11 @@ export function snapshotDirectorCombatant(dc) {
         MIG: attrDieSize(actor, "MIG"),
         WLP: attrDieSize(actor, "WLP"),
       }),
+      // Default fumble threshold per RAW: a Fumble is two 1s. Per-actor
+      // override via `fumble_threshold` (the highest die value that still
+      // counts as a fumbled die — both dice must be ≤ threshold).
+      fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
+      ...buildWeaponBundle(actor),
     });
   } catch (e) {
     warn("snapshotDirectorCombatant threw", e);
@@ -96,6 +298,7 @@ export function snapshotCombatant(combat) {
       actorId: actor.id,
       actorUuid: actor.uuid,
       name: actor.name ?? "Unknown",
+      tokenImg: token.texture?.src ?? token.img ?? actor.img ?? null,
       disposition: token.disposition ?? 0,
       hp: readPropNum(actor, ["current_hp", "hp"]),
       maxHp: readPropNum(actor, ["max_hp"]),
@@ -109,6 +312,8 @@ export function snapshotCombatant(combat) {
         MIG: attrDieSize(actor, "MIG"),
         WLP: attrDieSize(actor, "WLP"),
       }),
+      fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
+      ...buildWeaponBundle(actor),
     });
   } catch (e) {
     warn("snapshotCombatant threw", e);
@@ -145,12 +350,20 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       tokenUuid: token.uuid,
       actorId: actor.id,
       actorUuid: actor.uuid,
+      // World-actor UUID (the protoUuid the encyclopedia keys by) when the
+      // token is unlinked — derived from token.actorId. Equals actorUuid for
+      // linked actors. Used by the action card's "???" masking when a player
+      // attacker hasn't Studied the target.
+      worldActorUuid: (game.actors?.get?.(token.actorId)?.uuid) ?? actor.uuid,
       name: actor.name,
+      tokenImg: token.texture?.src ?? token.img ?? actor.img ?? null,
       disposition: disp,
       hp,
       maxHp: readPropNum(actor, ["max_hp"]),
       defense: readPropNum(actor, ["defense", "current_def", "def"]),
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
+      affinities: readAffinities(actor),
+      conditions: Object.freeze(readActiveConditions(actor)),
     }));
   }
   return Object.freeze(out);
@@ -185,12 +398,16 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       tokenUuid: token.uuid,
       actorId: actor.id,
       actorUuid: actor.uuid,
+      worldActorUuid: (game.actors?.get?.(token.actorId)?.uuid) ?? actor.uuid,
       name: actor.name,
+      tokenImg: token.document?.texture?.src ?? token.texture?.src ?? token.img ?? actor.img ?? null,
       disposition: disp,
       hp,
       maxHp: readPropNum(actor, ["max_hp"]),
       defense: readPropNum(actor, ["defense", "current_def", "def"]),
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
+      affinities: readAffinities(actor),
+      conditions: Object.freeze(readActiveConditions(actor)),
     }));
   }
   return Object.freeze(out);

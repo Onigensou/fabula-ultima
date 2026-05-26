@@ -6,8 +6,6 @@
 // without CSS or DOM collisions, this version:
 //
 //   - Uses the CSS prefix `fud-octopath` instead of `oni-octopath`.
-//   - Adds a small "DIRECTOR" pip on the budget label so the user can tell
-//     the two stacks apart at a glance.
 //   - Spawns only on the GM client in v1 (player-side spawn is future work
 //     via the IntentChannel).
 //
@@ -25,7 +23,8 @@ const STYLE_ID = "fud-turnui-style";
 
 const LEGACY_PAGES = [
   { name: "Actions", items: ["Attack", "Guard", "Skill", "Spell", "Item"] },
-  { name: "System",  items: ["Equipment", "Study", "Hinder", "Objective", "Switch"] }
+  // Party Swap (legacy "Switch") and Objective hidden until D.6/D.7 ship.
+  { name: "System",  items: ["Equipment", "Study", "Hinder"] }
 ];
 
 // Per-director instance state — keyed by combatId so multiple directors
@@ -201,10 +200,7 @@ function spawnMenu({ director, token }) {
   budgetLabel.className = "budget-label";
   const budgetMain = document.createElement("span");
   budgetMain.textContent = "Turn Action";
-  const directorTag = document.createElement("span");
-  directorTag.className = "director-tag";
-  directorTag.textContent = "DIRECTOR";
-  budgetLabel.append(budgetMain, directorTag);
+  budgetLabel.append(budgetMain);
   root.appendChild(budgetLabel);
 
   document.body.appendChild(root);

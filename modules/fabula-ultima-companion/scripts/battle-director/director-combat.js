@@ -130,6 +130,60 @@ export class DirectorCombat {
     this.firstSide = "party";        // computed by buildDirectorCombat
     this.currentSide = "party";      // flips during nextTurn
     this.currentCombatantId = null;  // resolved by the picker (or auto-pick)
+
+    // Reload-survival commit marker. Flipped to true when RESOLVE has
+    // applied damage/AE/equipment for the current turn (after that, a
+    // reload should resume at TURN_END so the player doesn't re-trigger
+    // the action and double-apply damage). Reset to false at TurnStart
+    // for a fresh turn. See persistence.js + state-handlers TurnStart /
+    // RESOLVE for the write sites, and director-boot resumeFromSavedState
+    // for the read site.
+    this.currentTurnResolved = false;
+
+    // Active Guards table — tracks each guarder's Guard AE + optional
+    // Covered AE for cleanup at the start of their next turn (TURN_START
+    // releases them). One entry per active Guard. Generic enough to also
+    // hold future "until-next-turn" effects (e.g. Provoke), since the
+    // expiry condition is the same: the source actor's turn coming back
+    // around.
+    //   {
+    //     guarderActorUuid: string,
+    //     guarderActorId:   string,    (fast lookup)
+    //     guarderEffectId:  string,    AE id on the guarder
+    //     coveredActorUuid: string|null,
+    //     coveredEffectId:  string|null,
+    //     appliedAtRound:   number,
+    //   }
+    this.activeGuards = [];
+  }
+
+  // Append a new Guard entry. Caller is responsible for the AE create on
+  // the actors first (so the AE ids can be passed in).
+  addActiveGuard(entry) {
+    if (!entry?.guarderActorUuid) return null;
+    this.activeGuards.push({
+      guarderActorUuid: entry.guarderActorUuid,
+      guarderActorId:   entry.guarderActorId   ?? null,
+      guarderEffectId:  entry.guarderEffectId  ?? null,
+      coveredActorUuid: entry.coveredActorUuid ?? null,
+      coveredEffectId:  entry.coveredEffectId  ?? null,
+      appliedAtRound:   entry.appliedAtRound   ?? this.round,
+    });
+    return this.activeGuards[this.activeGuards.length - 1];
+  }
+
+  // Pull (and return) all entries where the guarder matches. Removes
+  // them from the list in one pass. Caller then deletes the AEs.
+  popActiveGuardsFor(guarderActorId) {
+    if (!guarderActorId) return [];
+    const matched = [];
+    const remaining = [];
+    for (const g of this.activeGuards) {
+      if (g.guarderActorId === guarderActorId) matched.push(g);
+      else remaining.push(g);
+    }
+    this.activeGuards = remaining;
+    return matched;
   }
 
   // ── Accessors ───────────────────────────────────────────────────────

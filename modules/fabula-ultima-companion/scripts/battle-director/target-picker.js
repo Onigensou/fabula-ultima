@@ -32,16 +32,63 @@ function ensureStyles() {
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
     .fud-target-banner{
       position:fixed; left:50%; top:18%; transform:translate(-50%, 0);
-      padding:10px 22px; border-radius:14px;
+      padding:10px 14px 10px; border-radius:14px;
       background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
       border:2px solid #5a6a85;
       box-shadow:0 4px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
-      color:#3a3228; z-index:9999; pointer-events:none;
+      color:#3a3228; z-index:9999; pointer-events:auto;
       text-align:center;
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      min-width:260px;
     }
     .fud-target-banner .director-pip{ color:#5a6a85; opacity:.85; font-size:10px; letter-spacing:.5px; display:block; margin-top:2px;}
+    .fud-target-banner .label-line{ font-size:13px; line-height:1.2; }
+    .fud-target-banner .selected-count{
+      display:inline-block;
+      margin-left:6px;
+      padding:1px 8px;
+      border-radius:999px;
+      border:1px solid #5a6a85;
+      background:rgba(255,255,255,.45);
+      color:#5a6a85;
+      font-size:11px;
+    }
+    .fud-target-banner .fud-target-btn-row{
+      display:flex; gap:8px; width:100%;
+    }
+    .fud-target-banner .fud-target-btn{
+      flex:1;
+      padding:7px 12px;
+      border-radius:8px;
+      border:2px solid #5a6a85;
+      font-weight:800; letter-spacing:.32px; text-transform:uppercase;
+      font-size:11.5px;
+      cursor:pointer; user-select:none;
+      text-align:center;
+      box-shadow:0 3px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      transition:transform 100ms ease, filter 100ms ease;
+    }
+    .fud-target-banner .fud-target-btn.confirm{
+      background:linear-gradient(180deg, #a8c4d8, #7a9bb6);
+      color:#221b14;
+    }
+    .fud-target-banner .fud-target-btn.cancel{
+      background:linear-gradient(180deg, #e5d6c5, #c9b294);
+      color:#3a3228;
+    }
+    .fud-target-banner .fud-target-btn.secondary{
+      background:linear-gradient(180deg, #d0d6c5, #aab394);
+      color:#3a3228;
+    }
+    .fud-target-banner .fud-target-btn.is-disabled{
+      filter:grayscale(0.6) brightness(0.85);
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+    .fud-target-banner .fud-target-btn:not(.is-disabled):hover { filter:brightness(1.05); transform:translateY(-1px); }
+    .fud-target-banner .fud-target-btn:not(.is-disabled):active { transform:translateY(0); }
   `;
   document.head.appendChild(css);
 }
@@ -55,15 +102,29 @@ function worldToClient(x, y) {
 }
 
 // `eligible` is the snapshotEligibleTargets() output.
-// Returns Promise<{ ok, cancelled, tokenUuids }>.
+// Returns Promise<{ ok, cancelled, skipped?, tokenUuids }>.
 // `opts.mode`: "exact" or "up_to" (default "exact")
 // `opts.count`: number of targets required/maximum (default 1)
 // `opts.titleText`: banner text override
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null } = {}) {
+// `opts.cancelLabel`: text on the Cancel button (default "Cancel"; use
+//   "Skip" or similar for mid-action picks where the action has already
+//   partially committed and cancelling means "skip rest")
+// `opts.secondaryAction`: optional third button between Cancel + Confirm:
+//   { label: string, value?: string } — when clicked, resolves with
+//   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
+//   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
+//   making a target selection" path distinct from cancel.
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null } = {}) {
   if (!game.user?.isGM) {
     return Promise.resolve({ ok: false, cancelled: true, tokenUuids: [], reason: "non-GM client" });
   }
   if (!Array.isArray(eligible) || eligible.length === 0) {
+    // If the caller offered a secondary "skip" path, treat empty-eligible
+    // as an auto-skip rather than an error. Guard with no allies on scene,
+    // for example, should still let the player proceed with self-guard.
+    if (secondaryAction) {
+      return Promise.resolve({ ok: true, cancelled: false, skipped: true, secondaryValue: secondaryAction.value ?? null, tokenUuids: [] });
+    }
     return Promise.resolve({ ok: false, cancelled: false, tokenUuids: [], reason: "no eligible targets" });
   }
   ensureStyles();
@@ -75,14 +136,75 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
 
     const banner = document.createElement("div");
     banner.className = "fud-target-banner";
+    // Defensive escape on the cancel + secondary labels — caller-supplied
+    // text could contain HTML if a future codepath builds it dynamically.
+    const escapeBtnLabel = (s) => String(s ?? "")
+      .replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    const safeCancelLabel = escapeBtnLabel(cancelLabel || "Cancel");
+    const secondaryBtnHTML = secondaryAction
+      ? `<div class="fud-target-btn secondary" data-fud-target="secondary" role="button" tabindex="0">${escapeBtnLabel(secondaryAction.label ?? "Skip")}</div>`
+      : "";
+    banner.innerHTML = `
+      <div class="label-line"></div>
+      <div class="fud-target-btn-row">
+        <div class="fud-target-btn cancel" data-fud-target="cancel" role="button" tabindex="0">${safeCancelLabel}</div>
+        ${secondaryBtnHTML}
+        <div class="fud-target-btn confirm" data-fud-target="confirm" role="button" tabindex="0">Confirm</div>
+      </div>
+    `;
     document.body.appendChild(banner);
+
+    const labelEl = banner.querySelector(".label-line");
+    const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
+
+    function isValidSelection() {
+      if (mode === "exact") return selected.size === count;
+      if (mode === "up_to") return selected.size >= 1 && selected.size <= count;
+      return selected.size > 0;
+    }
 
     function updateBanner() {
       const verb = mode === "up_to" ? "up to" : "";
       const label = titleText ?? `Pick ${verb ? verb + " " : ""}${count} target${count === 1 ? "" : "s"}`;
-      banner.innerHTML = `<span>${label} — ${selected.size}/${count} selected — [Enter] confirm  [Esc] cancel</span><span class="director-pip">DIRECTOR TARGETING</span>`;
+      const countText = `${selected.size}/${count} selected`;
+      labelEl.innerHTML = `${label}<span class="selected-count">${countText}</span>`;
+      // Confirm is greyed out until the selection is valid — no hidden state.
+      if (isValidSelection()) {
+        confirmBtn.classList.remove("is-disabled");
+      } else {
+        confirmBtn.classList.add("is-disabled");
+      }
     }
     updateBanner();
+
+    function tryConfirm() {
+      if (!isValidSelection()) {
+        if (mode === "exact") {
+          ui.notifications?.warn(`Pick exactly ${count} target${count === 1 ? "" : "s"}.`);
+        } else {
+          ui.notifications?.warn("Pick at least 1 target.");
+        }
+        return;
+      }
+      finish({ ok: true, cancelled: false, tokenUuids: Array.from(selected) });
+    }
+
+    function bannerClick(ev) {
+      const btn = ev.target?.closest?.("[data-fud-target]");
+      if (!btn) return;
+      ev.stopPropagation();
+      ev.preventDefault();
+      if (btn.dataset.fudTarget === "cancel") {
+        finish({ ok: false, cancelled: true, tokenUuids: [] });
+      } else if (btn.dataset.fudTarget === "secondary") {
+        // Proceeds without a target selection (e.g. "Skip Cover"). The
+        // caller distinguishes this from cancel via `result.skipped`.
+        finish({ ok: true, cancelled: false, skipped: true, secondaryValue: secondaryAction?.value ?? null, tokenUuids: [] });
+      } else if (btn.dataset.fudTarget === "confirm") {
+        tryConfirm();
+      }
+    }
+    banner.addEventListener("click", bannerClick);
 
     function positionRing(rec) {
       const t = rec.token;
@@ -157,21 +279,15 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       updateBanner();
     }
 
+    // Keyboard parity for mouse-first players who prefer hotkeys —
+    // Enter / Esc both feed the same code paths the buttons do.
     function onKey(e) {
       if (e.key === "Escape") {
         e.preventDefault(); e.stopPropagation();
         finish({ ok: false, cancelled: true, tokenUuids: [] });
       } else if (e.key === "Enter") {
         e.preventDefault(); e.stopPropagation();
-        if (mode === "exact" && selected.size !== count) {
-          ui.notifications?.warn(`Pick exactly ${count} target${count === 1 ? "" : "s"}.`);
-          return;
-        }
-        if (mode === "up_to" && selected.size < 1) {
-          ui.notifications?.warn("Pick at least 1 target.");
-          return;
-        }
-        finish({ ok: true, cancelled: false, tokenUuids: Array.from(selected) });
+        tryConfirm();
       }
     }
 

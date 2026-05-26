@@ -288,7 +288,8 @@
     "scripts/title-screen/title-load-ui.js",
     "scripts/title-screen/title-quit-ui.js",
     "scripts/title-screen/title-ui.js",
-    "scripts/title-screen/title-bootstrap.js"
+    "scripts/title-screen/title-bootstrap.js",
+    "scripts/battle-director/rewind-button.js"
   ],
   "esmodules": [
     "scripts/shop-system/shopOpen-bootstrap.js",

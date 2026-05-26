@@ -15,13 +15,28 @@
 
 import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
-import { STATE_HANDLERS } from "./state-handlers.js";
+import { STATE_HANDLERS, installGuardHpWatcher } from "./state-handlers.js";
 import { STATES } from "./states.js";
 import { IntentChannel } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
+import { WeaponModePicker } from "./weapon-mode-picker.js";
+import { AttributePairPicker } from "./attribute-pair-picker.js";
+import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
+import { sweepTransientAEsAtSceneEnd } from "./skill-effects.js";
+import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
+import {
+  findSavedDirectorState,
+  reconstructDirectorCombat,
+  clearDirectorStateFlag,
+  clearAllDirectorStateFlags,
+  installItemDeletionTracker,
+  getHistory,
+  findHistorySnapshot,
+  rewindToHistorySnapshot,
+} from "./persistence.js";
 
 // Module-level singleton — at most one director runs per client.
 let _instance = null;
@@ -50,10 +65,13 @@ async function preflightCleanup() {
     }
   }
 
-  // 2. Defensive DOM scrub. Both despawnAll calls are idempotent; safe to
+  // 2. Defensive DOM scrub. All despawnAll calls are idempotent; safe to
   //    invoke even if no instance ever ran on this page.
   try { TurnUI.despawnAll(); } catch {}
   try { TurnPicker.despawnAll(); } catch {}
+  try { WeaponModePicker.despawnAll(); } catch {}
+  try { AttributePairPicker.despawnAll(); } catch {}
+  try { BattlefieldActionCard.despawnAll(); } catch {}
 
   // 3. If the legacy suppressor is still active without a live instance, that
   //    means a prior run got suppress()'d but never restore()'d. Restore now;
@@ -160,7 +178,20 @@ async function start(arg) {
   return director;
 }
 
-async function stop({ reason = "manual" } = {}) {
+// `clearFlags` controls whether stop() also wipes the scene flags. Default
+// true — the normal End-Battle / wedge-recovery path nukes both
+// directorState + directorHistory because the combat is over. The rewind
+// tool passes `clearFlags: false` so the orchestrator can write the
+// rewound state back to directorState (and truncate, not erase, history)
+// AFTER stop tears down the live instance.
+//
+// `cleanupTokens` controls the director-spawned-token sweep. Default true
+// for the same reasons — End Battle should remove the tokens it created.
+// The rewind tool passes `cleanupTokens: false` because the rewound
+// snapshot still references those tokens by UUID; deleting them here
+// would force `reconstructDirectorCombat` to drop every combatant as
+// "stale" on the next mount.
+async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true } = {}) {
   if (!_instance) {
     log("Director.stop: no instance running");
     return;
@@ -170,14 +201,78 @@ async function stop({ reason = "manual" } = {}) {
   const battleScene = _instance.dCombat?.scene ?? _instance.combat?.scene ?? canvas?.scene ?? null;
 
   try { _instance.intentChannel?.uninstall(); } catch {}
+
+  // Release any still-active Guard / Covered AEs before tearing down
+  // dCombat. Once the director stops, TURN_START won't fire again to
+  // release them — they'd live as zombies on actors until manually
+  // removed. RAW: "until the start of your next turn" is moot once the
+  // conflict ends, so combat-end auto-releases.
+  //
+  // Batching strategy: group every effect-id by its owning actor, then
+  // issue ONE `deleteEmbeddedDocuments` call per actor (combines Guard +
+  // Covered when the same actor happens to hold both), and run those calls
+  // for different actors in PARALLEL. Sequential per-AE awaits used to
+  // stack a 2-actor cleanup into 4+ round-trips and visibly stuttered the
+  // End-Battle button; this collapses it to two parallel calls.
+  const liveGuards = Array.isArray(_instance.dCombat?.activeGuards) ? _instance.dCombat.activeGuards : [];
+  if (liveGuards.length) {
+    const deletesByActor = new Map(); // actorUuid → Set<effectId>
+    for (const g of liveGuards) {
+      if (g.guarderActorUuid && g.guarderEffectId) {
+        let set = deletesByActor.get(g.guarderActorUuid);
+        if (!set) { set = new Set(); deletesByActor.set(g.guarderActorUuid, set); }
+        set.add(g.guarderEffectId);
+      }
+      if (g.coveredActorUuid && g.coveredEffectId) {
+        let set = deletesByActor.get(g.coveredActorUuid);
+        if (!set) { set = new Set(); deletesByActor.set(g.coveredActorUuid, set); }
+        set.add(g.coveredEffectId);
+      }
+    }
+    await Promise.all(Array.from(deletesByActor.entries()).map(async ([actorUuid, ids]) => {
+      try {
+        const actor = await fromUuid(actorUuid);
+        if (!actor) return;
+        // Filter to AEs that still exist — drop any the GM hand-deleted
+        // before End Battle (no-op deletes throw in Foundry V12).
+        const existing = Array.from(ids).filter((id) => !!actor.effects?.get?.(id));
+        if (!existing.length) return;
+        await actor.deleteEmbeddedDocuments("ActiveEffect", existing);
+      } catch (e) {
+        warn(`stop: AE cleanup failed for ${actorUuid}`, e);
+      }
+    }));
+    log(`Cleared ${liveGuards.length} active Guard entr${liveGuards.length === 1 ? "y" : "ies"} on stop (${deletesByActor.size} actor${deletesByActor.size === 1 ? "" : "s"})`);
+  }
+  if (_instance.dCombat) _instance.dCombat.activeGuards = [];
+
+  // Sweep every TRANSIENT AE on every actor — director-applied (Aura,
+  // Barrier, Reinforce, ...), duration-bearing (Slow, Dazed, Buff, ...),
+  // or opt-in buff/debuff-tagged. Passive AEs (equipment-derived, class
+  // traits, no-duration unmarked) are preserved. AEs with the
+  // `crossScene` or `directorPermanent` flag opt out of the sweep.
+  // Skipped on the rewind path so the rewound state survives the
+  // stop→reconstruct cycle.
+  if (cleanupTokens) {
+    try {
+      await sweepTransientAEsAtSceneEnd();
+    } catch (e) { warn("stop: sweepTransientAEsAtSceneEnd threw", e); }
+  }
+
   try { await _instance.stop({ reason }); } catch (e) { warn("stop threw", e); }
   try { TurnUI.despawnAll(); } catch {}
   try { TurnPicker.despawnAll(); } catch {}
+  try { WeaponModePicker.despawnAll(); } catch {}
+  try { AttributePairPicker.despawnAll(); } catch {}
+  try { BattlefieldActionCard.despawnAll(); } catch {}
 
   // Remove tokens we spawned during runDirectorInit. Only tokens flagged
   // with fabula-ultima-companion.directorSpawned are touched — manually
-  // placed tokens stay.
-  if (battleScene) {
+  // placed tokens stay. Skipped on the rewind path (caller passes
+  // `cleanupTokens: false`) since the snapshot's combatants reference
+  // these tokens by UUID — sweeping them would force the reconstruct
+  // step to drop every combatant.
+  if (battleScene && cleanupTokens) {
     try {
       const n = await cleanupDirectorSpawnedTokens(battleScene);
       if (n) log(`Cleaned up ${n} director-spawned tokens`);
@@ -197,9 +292,192 @@ async function stop({ reason = "manual" } = {}) {
     warn("LegacySuppressor.restore threw", e);
   }
   _instance = null;
+  // Clear any persisted director-state flag — the combat is over, no
+  // resume is possible. Defensive `clearAll` (not scoped to the battle
+  // scene) so that any orphaned flag from an earlier crash is also
+  // swept on next stop. BattleEnd Cleanup macro does the same as
+  // defense-in-depth in case a stop() path is bypassed.
+  // Skipped when called from the rewind orchestrator (it just rewrote
+  // the flags to the rewound state and will mount a fresh director
+  // from them).
+  if (clearFlags) {
+    clearAllDirectorStateFlags().catch((e) => warn("stop: clearAll flags failed", e));
+  }
   // Notify UI surfaces that the director has stopped so they can refresh state.
   try { Hooks.callAll("fu-director-stopped", { reason }); } catch (e) { warn("fu-director-stopped hook threw", e); }
   ui.notifications?.info("Battle Director stopped.");
+}
+
+// Resume an in-progress combat from a persisted scene flag. Returns the
+// new director instance, or null on failure.
+//
+// Bypasses PREP entirely — the tokens are already on the battle scene,
+// the dCombat is rebuilt from the saved snapshot, and we transition
+// straight to TURN_START. The picker re-prompts on the saved currentSide
+// (we deliberately cleared currentCombatantId during reconstruction so
+// the GM gets one re-pick — handy if the reload was triggered because
+// they made a wrong declaration).
+async function resumeFromSavedState({ scene, state, suppressNextHistoryPush = false }) {
+  log(`Director resume: found saved state on scene "${scene.name}" (round ${state.dCombat?.round ?? "?"})`);
+
+  // Refuse to clobber a live director (shouldn't happen at `ready`-time
+  // since we just loaded, but guard anyway).
+  if (_instance) {
+    warn("resume: a director is already running — skipping");
+    return null;
+  }
+
+  // Reconstruct dCombat from the saved snapshot. Token UUIDs are
+  // re-resolved; missing combatants are dropped with a warning toast.
+  const dCombat = await reconstructDirectorCombat(state, scene);
+  if (!dCombat) {
+    warn("resume: reconstruction failed (no combatants survived)");
+    await clearDirectorStateFlag(scene);
+    return null;
+  }
+
+  // Suppress legacy hooks (same as fresh start path).
+  try {
+    const n = LegacySuppressor.suppress();
+    log(`Legacy listeners suppressed for resume (${n} hooks)`);
+  } catch (e) {
+    warn("LegacySuppressor.suppress threw on resume", e);
+  }
+
+  // Activate + view the battle scene so the GM sees the right canvas.
+  try {
+    if (canvas?.scene?.id !== scene.id) {
+      await scene.activate();
+    }
+    scene.view?.();
+  } catch (e) {
+    warn("resume: scene.activate/view threw", e);
+  }
+
+  // Build the director. No combat, no payload — we'll install dCombat
+  // directly and skip START_COMBAT routing by going straight to TURN_START.
+  const director = new BattleDirector({
+    stateHandlers: STATE_HANDLERS,
+    onNaturalStop: ({ reason }) => stop({ reason }),
+  });
+  director._setDirectorCombat(dCombat);
+  // Make `ctx.payload` accessible for diagnostics (the snapshot has it).
+  director.ctx.payload = state.payload ?? null;
+  // Stash payload on the director itself too, mirroring the fresh-start path.
+  director.payload = state.payload ?? null;
+
+  const channel = new IntentChannel({ director });
+  director.intentChannel = channel;
+  channel.install();
+
+  // Re-install the guard-HP watcher (PrepState.onEnter does this on the
+  // fresh path; on resume we install it here since we bypass PREP).
+  installGuardHpWatcher(director);
+  // Rewind tool: same reasoning — re-install the item-deletion tracker
+  // on the resume path so the rewind history's deletedItemsLog keeps
+  // getting populated post-reload.
+  installItemDeletionTracker(director);
+
+  _instance = director;
+
+  // Notify UI surfaces (rewind button, combat-button-installer, etc.) that
+  // the director is now running. Fired BEFORE the resume's blocking
+  // transitionTo(...) below: if pendingAction is set, the transition awaits
+  // the spawned Action Card's promise — gating the started event behind
+  // the user's click would leave the rewind button hidden for the whole
+  // duration of that card. Listeners are idempotent (just call refresh
+  // functions reading isRunning()), so the later fire at the bottom of
+  // resumeFromSavedState is a harmless safety re-tick.
+  try { Hooks.callAll("fu-director-started", director); } catch (e) { warn("fu-director-started hook threw on resume (early)", e); }
+
+  // Rewind-path opt-in: suppress the history push from the FIRST save
+  // fired by the resumed state's onEnter. Without this, every rewind to
+  // a snapshot adds another duplicate entry at that snapshot — rewinding
+  // 3× to "Round 2 · Hina Turn Start" would leave 3 identical rows in
+  // the rewind list. Read-and-clear in `saveDirectorState`.
+  if (suppressNextHistoryPush) {
+    director.ctx._suppressNextHistoryPush = true;
+  }
+
+  // Branch on what the survival flag is pointing at:
+  //   - pendingAction set (F5 happened with an Action Card on-screen) →
+  //     restore actionResult + the ctx subset CONFIRM/RESOLVE/CLEANUP
+  //     need, prime turnSnapshot from dCombat.current, then jump
+  //     straight to CONFIRM so the same card re-spawns. The
+  //     pendingAction is cleared inside Confirm.onEnter the moment the
+  //     card's promise resolves, so this only fires on a true mid-card
+  //     reload.
+  //   - currentTurnResolved=true → land at TURN_END so the turn advances
+  //     without re-running RESOLVE (damage/AE/equipment was already
+  //     applied to actor docs before the reload; replaying would double-
+  //     apply). See state-handlers RESOLVE.onEnter for the write site.
+  //   - otherwise → land at TURN_START, which auto-picks the saved
+  //     combatant (currentCombatantId preserved through reconstruction)
+  //     and routes to DECLARE for a fresh action.
+  let resumeAt;
+  let resumedFromCard = false;
+  if (state.pendingAction?.actionResult) {
+    try {
+      director.ctx.actionResult = freezeActionResult(state.pendingAction.actionResult);
+      // Restore the ctx subset Confirm.onEnter persisted. Each field is
+      // copied individually rather than via Object.assign so an
+      // unexpectedly-shaped ctx blob can't clobber unrelated ctx state.
+      const savedCtx = state.pendingAction.ctx ?? {};
+      if (savedCtx.passIndex != null) director.ctx.passIndex = savedCtx.passIndex;
+      if (savedCtx.totalPasses != null) director.ctx.totalPasses = savedCtx.totalPasses;
+      if (savedCtx.attackMode !== undefined) director.ctx.attackMode = savedCtx.attackMode;
+      if (savedCtx.pendingPasses !== undefined) director.ctx.pendingPasses = savedCtx.pendingPasses;
+      if (savedCtx.pickedTargetUuids !== undefined) director.ctx.pickedTargetUuids = savedCtx.pickedTargetUuids;
+      if (savedCtx.currentWeapon !== undefined) director.ctx.currentWeapon = savedCtx.currentWeapon;
+      if (savedCtx.hinderCheckConfig !== undefined) director.ctx.hinderCheckConfig = savedCtx.hinderCheckConfig;
+      if (savedCtx.declaredCommand !== undefined) director.ctx.declaredCommand = savedCtx.declaredCommand;
+      // turnSnapshot isn't persisted — re-derive from the saved
+      // currentCombatant so handlers that read ctx.turnSnapshot stay
+      // happy. Falls back to the actionResult.attacker as a last resort
+      // (e.g. token UUID no longer resolves after a reload).
+      if (dCombat.current) {
+        try {
+          director.ctx.turnSnapshot = snapshotDirectorCombatant(dCombat.current);
+        } catch (e) {
+          warn("resume: snapshotDirectorCombatant threw", e);
+        }
+      }
+      if (!director.ctx.turnSnapshot) {
+        director.ctx.turnSnapshot = director.ctx.actionResult.attacker ?? null;
+      }
+      // One-shot flag — Confirm.onEnter reads this to skip the
+      // pendingAction save (the survival flag already holds the same
+      // payload from the pre-reload Confirm save; re-saving would
+      // duplicate the rewind history entry).
+      director.ctx._resumedFromPendingAction = true;
+      resumeAt = STATES.CONFIRM;
+      resumedFromCard = true;
+    } catch (e) {
+      warn("resume: failed to restore pendingAction — falling back to TURN_START", e);
+      resumeAt = STATES.TURN_START;
+    }
+  } else if (dCombat.currentTurnResolved) {
+    resumeAt = STATES.TURN_END;
+  } else {
+    resumeAt = STATES.TURN_START;
+  }
+  try {
+    await director.transitionTo(resumeAt);
+  } catch (e) {
+    warn(`resume: transitionTo(${resumeAt}) threw`, e);
+  }
+
+  const toastSuffix = resumedFromCard
+    ? ` (resuming Action Card — ${state.pendingAction.actionResult?.kind ?? "?"})`
+    : (dCombat.currentTurnResolved
+      ? ` (turn was already resolved — advancing)`
+      : `, ${dCombat.currentSide} acting`);
+  ui.notifications?.info(
+    `Battle Director resumed — round ${dCombat.round}${toastSuffix}`
+  );
+
+  try { Hooks.callAll("fu-director-started", director); } catch (e) { warn("fu-director-started hook threw on resume", e); }
+  return director;
 }
 
 // Public read of "is the director running on this client?" — used by the
@@ -250,6 +528,114 @@ function status() {
   };
 }
 
+// ─── Rewind tool API ───────────────────────────────────────────────────
+//
+// Two entry points used by the rewind-button UI:
+//   - `history()`     → slim metadata list (newest first) for the panel.
+//   - `rewindTo(id)`  → reverse to a saved snapshot. Stops the live
+//                       director, restores actors, mounts a fresh director.
+
+// Return the metadata for each history entry on the running director's
+// battle scene, newest first. Full snapshot data stays on the flag — the
+// panel only needs labels / description / timing to render. Returns []
+// if no director is running or no history exists.
+function history() {
+  if (!game.user?.isGM) return [];
+  if (!_instance) return [];
+  const scene = _instance.dCombat?.scene;
+  if (!scene) return [];
+  const list = getHistory(scene);
+  if (!list.length) return [];
+  // Newest first — convert to slim metadata so the panel doesn't have
+  // to walk through full actor snapshots on render. Ordinal is "1 = most
+  // recent" for human-friendly display.
+  return list.slice().reverse().map((entry, i) => ({
+    id: entry.id,
+    label: entry.label ?? "",
+    description: entry.description ?? "",
+    savedAt: entry.savedAt ?? 0,
+    round: entry.dCombat?.round ?? 0,
+    currentSide: entry.dCombat?.currentSide ?? null,
+    currentTurnResolved: !!entry.dCombat?.currentTurnResolved,
+    ordinal: i + 1,
+    isLatest: i === 0,
+  }));
+}
+
+// Rewind to a saved snapshot. Steps:
+//   1. Validate GM + snapshot exists.
+//   2. Stop the running director WITHOUT clearing flags (the orchestrator
+//      writes the rewound state back into them).
+//   3. Run rewindToHistorySnapshot — reconstructs dCombat, restores
+//      actors, truncates history at the target, rewrites directorState.
+//   4. Mount a fresh director via resumeFromSavedState (same path used
+//      for reload survival).
+//
+// Returns `{ ok: true, snapshot }` on success or `{ ok: false, error }`.
+// Failure does NOT auto-restart the prior director — the user can pick
+// a different snapshot or manually restart combat.
+async function rewindTo(snapshotId) {
+  if (!game.user?.isGM) {
+    ui.notifications?.warn("Battle Director rewind is GM-only.");
+    return { ok: false, error: "GM only" };
+  }
+  if (!snapshotId) {
+    return { ok: false, error: "missing snapshotId" };
+  }
+
+  // Look up FIRST so we fail fast without tearing down a running director.
+  const found = findHistorySnapshot(snapshotId);
+  if (!found) {
+    ui.notifications?.warn("Rewind target not found in history.");
+    return { ok: false, error: "snapshot not found" };
+  }
+
+  // Tear down the live director, keeping the flags AND the spawned
+  // tokens intact. The rewound snapshot points at the same token UUIDs
+  // we'd otherwise sweep here, so cleanupTokens:false is mandatory for
+  // reconstruct to find them again.
+  if (_instance) {
+    try {
+      await stop({ reason: "rewind", clearFlags: false, cleanupTokens: false });
+    } catch (e) {
+      warn("rewindTo: stop threw", e);
+    }
+  }
+
+  // Apply the snapshot — reconstructs dCombat, restores actor state,
+  // truncates history past the target, rewrites the directorState flag.
+  const result = await rewindToHistorySnapshot(snapshotId);
+  if (!result.ok) {
+    ui.notifications?.error(`Rewind failed: ${result.error}`);
+    return result;
+  }
+
+  // Mount a fresh director from the rewound state. The snapshot is a
+  // superset of the directorState shape so resumeFromSavedState accepts
+  // it as-is (it reads dCombat / sourceSceneId / payload from `state`,
+  // ignoring the extra `actors` / `label` / `description` / `id`).
+  //
+  // `suppressNextHistoryPush: true` tells the first save fired by the
+  // resumed state's onEnter (TURN_START / TURN_END / CONFIRM) to skip
+  // the history push — otherwise rewinding to a snapshot adds a
+  // duplicate entry at that snapshot every time, so 3× rewinds to the
+  // same point pile up 3 identical rows in the rewind list.
+  const mountResult = await resumeFromSavedState({
+    scene: result.scene,
+    state: result.snapshot,
+    suppressNextHistoryPush: true,
+  });
+  if (!mountResult) {
+    ui.notifications?.error("Rewind: director mount failed after restore.");
+    return { ok: false, error: "mount failed" };
+  }
+
+  // resumeFromSavedState's own toast (round / acting side) already
+  // surfaced; add a confirmation noting the rewind target.
+  ui.notifications?.info(`Rewound to: ${result.snapshot.label || "earlier checkpoint"}`);
+  return { ok: true, snapshot: result.snapshot };
+}
+
 // Register the public API on ready. The `FUCompanion.api` root is set up by
 // the rest of the module's boot sequence; we attach an `experimental`
 // namespace under it so the director never shadows production APIs.
@@ -263,6 +649,9 @@ Hooks.once("ready", () => {
     status,
     isRunning,
     getSourceSceneId,
+    // Rewind tool (GM-only). See [[director-rewind-tool-plan]].
+    history,
+    rewindTo,
     // Director-owned battle init pipeline (replaces the legacy Manager flow
     // when battleSystem === "director"). Called by the new "Director Manager"
     // macro after the user confirms the Battle Prompt.
@@ -280,4 +669,23 @@ Hooks.once("ready", () => {
     _STATE_HANDLERS: STATE_HANDLERS,
   };
   log("Battle Director API registered at FUCompanion.api.experimental.battleDirector");
+
+  // Auto-resume mid-combat reloads. GM-only — the director is GM-side
+  // authoritative, and a player reload should never auto-start anything.
+  // Wrapped in setTimeout so the API registration completes first; if
+  // resume throws, the rest of the module is still usable.
+  if (game.user?.isGM) {
+    setTimeout(() => {
+      try {
+        const found = findSavedDirectorState();
+        if (found) {
+          resumeFromSavedState(found).catch((e) => {
+            warn("Auto-resume threw", e);
+          });
+        }
+      } catch (e) {
+        warn("Auto-resume detection threw", e);
+      }
+    }, 0);
+  }
 });

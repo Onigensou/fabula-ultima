@@ -33,6 +33,22 @@
 //                                               //   _equippableItemTemplate.
 //
 //     folder: "FXvx1GCGhUWCMScV",               // optional — items folder id
+//                                               //   (back-compat). If `class`
+//                                               //   is set, this is read as a
+//                                               //   sub-folder NAME under the
+//                                               //   Battle Director tree
+//                                               //   instead (see below).
+//     class: "Arcanist",                        // optional — when set, the
+//                                               //   item lands in
+//                                               //   `Battle Director / <class>
+//                                               //    / <folder>` (defaults to
+//                                               //   "Skill" if folder absent).
+//                                               //   Valid folder names per
+//                                               //   class: "Skill" /
+//                                               //   "Heroic Skill" (+ "Arcana"
+//                                               //   for Arcanist). Run the
+//                                               //   folder-scaffold once per
+//                                               //   world to create the tree.
 //     actorUuid: null,                          // optional — if set, the new
 //                                               //   skill is created on that
 //                                               //   actor instead of in world
@@ -261,10 +277,62 @@ return (async () => {
     type: "equippableItem",
     system: {
       template: templateItem.id,
-      uniqueId: (spec.uniqueId ?? "").toString()
+      uniqueId: (spec.uniqueId ?? "").toString(),
+      // CSB "Make item unique" flag. Battle Director skills default to
+      // unique:true (a PC shouldn't carry two copies of the same skill
+      // — duplicates would double-fire reactions, double-bill costs in
+      // confused ways, etc.). Author can override with `spec.unique:
+      // false` for cases where stacking IS intended (rare).
+      unique: spec.unique ?? true
     }
   };
-  if (spec.folder && !parent) createData.folder = spec.folder;
+  // Folder resolution.
+  //
+  //   • `spec.class` set → resolve `Battle Director / <class> /
+  //     <spec.folder or "Skill">` via the org tree (folders created by
+  //     the world's scaffold). Authors write
+  //     `{ class: "Arcanist", folder: "Skill" }` — no ID lookup needed.
+  //
+  //   • `spec.class` unset → `spec.folder` is treated as a literal
+  //     folder ID (back-compat with pre-tree authoring).
+  //
+  // A failed resolution warns + falls back to root (no folder). Run
+  // the scaffold once if the tree's missing.
+  if (!parent) {
+    let folderId = null;
+    if (spec.class) {
+      const subName = (spec.folder ?? spec.category ?? "Skill").toString();
+      const root = game.folders.find(f =>
+        f.type === "Item" && f.name === "Battle Director" && !(f.folder?.id ?? f.folder)
+      );
+      if (!root) {
+        warnings.push(`Battle Director root folder not found — run the folder scaffold first; item created at world root.`);
+      } else {
+        const clsFolder = game.folders.find(f =>
+          f.type === "Item" &&
+          f.name === spec.class &&
+          ((f.folder?.id ?? f.folder ?? null) === root.id)
+        );
+        if (!clsFolder) {
+          warnings.push(`Battle Director / ${spec.class} not found — run the folder scaffold for that class; item created at world root.`);
+        } else {
+          const sub = game.folders.find(f =>
+            f.type === "Item" &&
+            f.name === subName &&
+            ((f.folder?.id ?? f.folder ?? null) === clsFolder.id)
+          );
+          if (!sub) {
+            warnings.push(`Battle Director / ${spec.class} / ${subName} not found; item created at world root.`);
+          } else {
+            folderId = sub.id;
+          }
+        }
+      }
+    } else if (spec.folder) {
+      folderId = spec.folder;  // legacy: literal ID
+    }
+    if (folderId) createData.folder = folderId;
+  }
 
   let newItem;
   try {

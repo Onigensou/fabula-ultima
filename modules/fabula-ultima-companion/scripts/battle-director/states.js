@@ -27,17 +27,28 @@ export const STATES = Object.freeze({
 
 // Default timeout per state in ms. null = synchronous, no timeout.
 // Used by Director to set a fallback timer on state entry.
+//
+// Player/GM-input states (DECLARE / TARGET / CONFIRM / REACTION_WINDOW)
+// are NOT timed in v1 — the director is GM-only, the GM sees every
+// player's menu, and a long pause is far more likely to be the GM
+// composing an equipment swap, scrolling the action menu, or waiting
+// for a player to decide than a hung pipeline. The previous 5-min
+// CONFIRM timeout caused silent turn-skips when a user lingered on the
+// Equipment card. The dispatch-loop rate limiter in director.js still
+// catches genuinely runaway transition loops, and the GM can always End
+// Battle to recover. Re-enable specific timeouts later if player-side
+// flows ship without GM oversight.
 export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.IDLE]:            null,
   [STATES.PREP]:            120 * 1000,      // 2 min — full prep (preload + entrance + combat create); overrun signals a stuck pipeline
   [STATES.ROUND_START]:     null,
   [STATES.TURN_START]:      null,
-  [STATES.DECLARE]:         5 * 60 * 1000,   // 5 min — player thinks
-  [STATES.TARGET]:          2 * 60 * 1000,   // 2 min — target picker
+  [STATES.DECLARE]:         null,            // was 5 min — disabled to prevent silent turn-skip on long menu pause
+  [STATES.TARGET]:          null,            // was 2 min — disabled, same reason
   [STATES.COMPUTE]:         null,
-  [STATES.CONFIRM]:         5 * 60 * 1000,   // 5 min — player reads the card
+  [STATES.CONFIRM]:         null,            // was 5 min — disabled, same reason (Equipment / Item composition can be long)
   [STATES.RESOLVE]:         null,
-  [STATES.REACTION_WINDOW]: 30 * 1000,       // 30 s for reactions in v1
+  [STATES.REACTION_WINDOW]: null,            // was 30 s — disabled; GM manually advances when player reactions are done (GM sees all menus). v1 stub still self-fires INTERNAL_DONE after 100ms.
   [STATES.CLEANUP]:         null,
   [STATES.TURN_END]:        null,
   [STATES.ROUND_END]:       null,
@@ -124,7 +135,18 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.CLEANUP]: {
-    INTERNAL_DONE: { next: STATES.TURN_END },
+    // Multi-pass attacks (Two-Weapon Fighting per RAW Core p.69): when
+    // CLEANUP runs and the attack queue still has weapons, loop back to
+    // TARGET so the player can pick a (possibly different) target for the
+    // next pass. RAW: "they may both be aimed at the same target or
+    // different targets." The Cleanup handler preserves attackMode +
+    // pendingPasses + passIndex; TARGET detects re-entry and skips the
+    // weapon-mode picker.
+    INTERNAL_DONE: {
+      next: (ctx) => (Array.isArray(ctx.pendingPasses) && ctx.pendingPasses.length > 0)
+        ? STATES.TARGET
+        : STATES.TURN_END
+    },
     [INTENTS.ABORT]: { next: STATES.STOPPED },
   },
 

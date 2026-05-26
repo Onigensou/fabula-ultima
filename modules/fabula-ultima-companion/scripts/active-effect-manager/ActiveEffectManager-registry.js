@@ -473,7 +473,7 @@
 
     if (
       /\bbuff\b/.test(allText) ||
-      /swift|awake|strong|focus|clarity|energized|regen|regeneration|shield|barrier|protect|haste|bless|boost|defense up|power up/.test(allText)
+      /swift|awake|strong|focus|clarity|energized|regen|regeneration|shield|barrier|haste|bless|boost|defense up|power up/.test(allText)
     ) {
       return "Buff";
     }

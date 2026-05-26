@@ -31,8 +31,11 @@ export class BattleDirector {
   constructor({ combat, payload, stateHandlers, onNaturalStop } = {}) {
     // Combat can be null at construction when started via a payload — the
     // PREP state will create the combat doc and set it via _setCombat.
+    // Both null is allowed for the reload-survival resume path, where the
+    // boot calls `_setDirectorCombat()` directly with a reconstructed
+    // dCombat and then transitions straight to TURN_START.
     if (!combat && !payload) {
-      throw new Error("BattleDirector requires either a Combat document or a battle-init payload");
+      log("BattleDirector constructed without combat/payload — caller must _setDirectorCombat() before transitioning");
     }
     this.combat = combat ?? null;
     // Director-owned combat state. The FSM treats `dCombat` as authoritative

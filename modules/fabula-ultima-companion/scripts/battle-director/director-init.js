@@ -25,6 +25,7 @@
 
 import { log, warn, err } from "./logger.js";
 import { buildDirectorCombat } from "./director-combat.js";
+import { DIRECTOR_STATIC_URLS } from "./director-vfx.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -157,6 +158,12 @@ function buildPreloadUrls({ tokens, payload }) {
   if (api?.STATIC_BATTLE_URLS) {
     for (const u of api.STATIC_BATTLE_URLS) urls.add(u);
   }
+
+  // Director's own runtime assets — Guard / Covered AE icons (Forge-vtt,
+  // remote = slow first-fetch), Study VFX file, study sound. Preloading
+  // these here means the first time the player uses Guard or Study mid-
+  // battle there's no icon-fetch lag.
+  for (const u of DIRECTOR_STATIC_URLS) urls.add(u);
 
   // Per-token textures + linked sounds
   for (const td of tokens) {
