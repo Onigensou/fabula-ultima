@@ -302,13 +302,15 @@ export const PassiveManager = {
 
 // ── Token HUD button ────────────────────────────────────────────────────
 //
-// Injects a control-icon into the token HUD's right column for GMs. Click
-// opens the same parchment overlay scoped to the token's actor — same
-// surface as the in-turn "Passive" command button, available out of
-// turn (and out of combat) too.
+// Injects a control-icon into the token HUD's right column. Click opens
+// the same parchment overlay scoped to the token's actor — same surface
+// as the in-turn "Passive" command button, available out of turn (and
+// out of combat) too.
 //
 // Gated on:
-//   - game.user.isGM (passive-mode editing is GM-only authority)
+//   - actor.isOwner (GMs always; players on PCs they own). Non-owners
+//     can't write `item.update` anyway, so showing the button to them
+//     would just produce permission errors on click.
 //   - actor present + has at least one Passive-typed skill
 //
 // Idempotent: runs once on `renderTokenHUD`, which Foundry fires on
@@ -317,9 +319,9 @@ export const PassiveManager = {
 
 Hooks.on("renderTokenHUD", (hud, html) => {
   try {
-    if (!game.user?.isGM) return;
     const actor = hud?.object?.actor;
     if (!actor) return;
+    if (!actor.isOwner) return;
     const hasPassive = (actor.items?.contents ?? []).some((it) =>
       String(it.system?.props?.skill_type ?? "").toLowerCase() === "passive"
     );
