@@ -159,6 +159,10 @@
     {
       "key": "2026-05-27-skill-template-passive-columns",
       "path": "data-migrations/2026-05-27-skill-template-passive-columns.js"
+    },
+    {
+      "key": "2026-05-27-skill-template-passive-mode",
+      "path": "data-migrations/2026-05-27-skill-template-passive-mode.js"
     }
   ]
 }

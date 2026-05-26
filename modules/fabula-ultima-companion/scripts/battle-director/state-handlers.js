@@ -29,7 +29,7 @@ import { OptionPicker } from "./option-picker.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applyDamageTypeOverride } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applyDamageTypeOverride, resolvePassiveMode } from "./skill-effects.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -1127,26 +1127,37 @@ const Target = {
       let vismagusHpPaid = false;
       if (!gate.ok) {
         const skillIsSpell = String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell";
-        const hasVismagus = (attackerActor.items?.contents ?? []).some((it) =>
+        // Find the caster's Vismagus passive (if any). Mode controls
+        // whether it offers (on), asks (ask), or stays out of the way (off).
+        const vismagusItem = (attackerActor.items?.contents ?? []).find((it) =>
           it.name === "Vismagus" && it.system?.props?.vismagus_passive === true
         );
+        const vismagusMode = vismagusItem ? resolvePassiveMode(vismagusItem.system?.props) : null;
         const mpNeed = Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0;
         const curHp = Number(attackerActor.system?.props?.current_hp ?? 0) || 0;
         const onlyMpMissing = gate.missing.every((m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp");
-        if (skillIsSpell && hasVismagus && mpNeed > 0 && onlyMpMissing && curHp > mpNeed * 2) {
-          const accept = await new Promise((resolve) => {
-            if (typeof Dialog !== "function") return resolve(false);
-            new Dialog({
-              title: "Vismagus — pay HP instead?",
-              content: `<p><strong>${attackerActor.name}</strong> can't afford <strong>${skill.name}</strong> (${gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ")}).</p><p>Vismagus lets them pay <strong>${mpNeed * 2} HP</strong> instead of <strong>${mpNeed} MP</strong>. Their HP would drop from ${curHp} to ${curHp - mpNeed * 2}.</p><p><em>If this spell would heal you, you recover no HP (it still works on other targets).</em></p>`,
-              buttons: {
-                pay:    { label: `Pay ${mpNeed * 2} HP`, callback: () => resolve(true) },
-                cancel: { label: "Cancel",               callback: () => resolve(false) },
-              },
-              default: "pay",
-              close: () => resolve(false),
-            }).render(true);
-          });
+        if (skillIsSpell && vismagusMode && vismagusMode !== "off" && mpNeed > 0 && onlyMpMissing && curHp > mpNeed * 2) {
+          let accept;
+          if (vismagusMode === "on") {
+            // Auto-pay HP — no prompt. Notify so the GM still knows it fired.
+            ui.notifications?.info(`Vismagus: ${attackerActor.name} paid ${mpNeed * 2} HP for ${skill.name}.`);
+            accept = true;
+          } else {
+            // "ask" — current prompt behaviour.
+            accept = await new Promise((resolve) => {
+              if (typeof Dialog !== "function") return resolve(false);
+              new Dialog({
+                title: "Vismagus — pay HP instead?",
+                content: `<p><strong>${attackerActor.name}</strong> can't afford <strong>${skill.name}</strong> (${gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ")}).</p><p>Vismagus lets them pay <strong>${mpNeed * 2} HP</strong> instead of <strong>${mpNeed} MP</strong>. Their HP would drop from ${curHp} to ${curHp - mpNeed * 2}.</p><p><em>If this spell would heal you, you recover no HP (it still works on other targets).</em></p>`,
+                buttons: {
+                  pay:    { label: `Pay ${mpNeed * 2} HP`, callback: () => resolve(true) },
+                  cancel: { label: "Cancel",               callback: () => resolve(false) },
+                },
+                default: "pay",
+                close: () => resolve(false),
+              }).render(true);
+            });
+          }
           if (accept) {
             const newMap = new Map();
             for (const [k, v] of costMap.entries?.() ?? Object.entries(costMap ?? {})) {

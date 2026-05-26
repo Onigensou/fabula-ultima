@@ -644,7 +644,7 @@
           "passive_trigger": "spell_complete",
           "passive_trigger_filter": "ally_targets",
           "passive_condition_formula": "HAS_ARCANE_WEAPON",
-          "passive_optional": true,
+          "passive_mode": "ask",
           "on_passive_trigger_effect_ref": "healing_power_grant",
           "effect_table": {
             "0": {
@@ -682,7 +682,7 @@
           "passive_trigger": "spell_complete",
           "passive_trigger_filter": "ally_targets",
           "passive_condition_formula": "HAS_ARCANE_WEAPON",
-          "passive_optional": true,
+          "passive_mode": "ask",
           "on_passive_trigger_effect_ref": "support_magic_apply",
           "effect_table": {
             "0": {
@@ -731,7 +731,8 @@
           "type_damage": "",
           "damage_bonus": "0",
           "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
-          "vismagus_passive": true
+          "vismagus_passive": true,
+          "passive_mode": "ask"
         }
       }
     },

@@ -227,6 +227,19 @@ async function shouldPassiveFire(skill, casterActor, payload) {
   return true;
 }
 
+// Resolve a passive skill's tri-state mode from its props. Returns one
+// of "on" / "ask" / "off". Exported so the Vismagus cost-gate path
+// (state-handlers.js) and any future passive consumer can read the
+// same field without recomputing the fallback. New `passive_mode`
+// wins; legacy `passive_optional` is honoured for items authored
+// before the field existed; default is "ask".
+export function resolvePassiveMode(props) {
+  const explicit = String(props?.passive_mode ?? "").trim().toLowerCase();
+  if (explicit === "on" || explicit === "ask" || explicit === "off") return explicit;
+  if (props?.passive_optional === false) return "on";
+  return "ask";
+}
+
 // Optional GM confirmation for "may" passives. Returns true to proceed,
 // false to skip. Falls back to true if no dialog renderer is wired (e.g.
 // in headless test contexts).
@@ -265,12 +278,20 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       log(`passive: ${skill.name} skipped (filter/condition mismatch)`);
       continue;
     }
-    // "may" prompt — defaults to true unless the author sets passive_optional:false.
-    const optional = p.passive_optional !== false;
-    if (optional) {
+    // Tri-state passive mode — "on" / "ask" / "off". The legacy
+    // `passive_optional` boolean maps to "ask" (true) or "on" (false)
+    // for back-compat with skills authored before the mode field existed.
+    // Default when neither is set: "ask" (RAW "may" wording).
+    const mode = resolvePassiveMode(p);
+    if (mode === "off") {
+      log(`passive: ${skill.name} mode=off — skipping`);
+      continue;
+    }
+    if (mode === "ask") {
       const ok = await promptPassiveOptin(skill, casterActor);
       if (!ok) { log(`passive: ${skill.name} declined by GM`); continue; }
     }
+    // mode === "on" → fire without prompting
     const refLabel = String(p.on_passive_trigger_effect_ref ?? "").trim();
     if (!refLabel) { warn(`passive ${skill.name}: no on_passive_trigger_effect_ref`); continue; }
     // Build a passive-specific chain ctx — reactorActor + caster's token,
