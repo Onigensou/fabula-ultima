@@ -43,7 +43,7 @@ function ensureStyles() {
 
     .fud-skp-card {
       pointer-events: auto;
-      width: 440px;
+      width: 480px;
       max-width: 92vw;
       max-height: 70vh;
       display: flex; flex-direction: column;
@@ -88,8 +88,12 @@ function ensureStyles() {
       font-style: italic;
     }
     .fud-skp-card .fud-skp-row {
-      display: grid; grid-template-columns: 44px 1fr auto;
-      gap: 10px;
+      /* Fixed-width shortcut slot keeps the row layout identical whether
+         or not the row has a number-key shortcut — without it, the cost
+         badge would shift left for unshortcut rows (rank 10+ after the
+         9-shortcut cap). */
+      display: grid; grid-template-columns: 22px 44px 1fr auto;
+      gap: 8px;
       align-items: center;
       padding: 8px 10px;
       border-radius: 9px;
@@ -110,6 +114,20 @@ function ensureStyles() {
       transform: none;
     }
     .fud-skp-card .fud-skp-row.is-disabled:hover { filter: grayscale(0.7) brightness(0.85); transform: none; }
+    .fud-skp-card .fud-skp-row .shortcut-slot {
+      display: flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      font-size: 11px; font-weight: 900;
+      color: rgba(34, 27, 20, 0.55);
+      background: rgba(40, 30, 18, 0.12);
+      border: 1px solid rgba(40, 30, 18, 0.22);
+      letter-spacing: 0;
+    }
+    .fud-skp-card .fud-skp-row .shortcut-slot.empty {
+      background: transparent;
+      border-color: transparent;
+    }
     .fud-skp-card .fud-skp-row .icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
     .fud-skp-card .fud-skp-row .icon img {
       width: 40px; height: 40px;
@@ -117,7 +135,11 @@ function ensureStyles() {
       border: 0 !important; outline: 0 !important; background: transparent !important;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
     }
-    .fud-skp-card .fud-skp-row .info { min-width: 0; }
+    /* min-width:0 lets the grid track shrink below its content's intrinsic
+       width — without it the long subtitle would push the .info column
+       wider than the column track and overlap the cost badge. overflow:
+       hidden caps it visually as a safety net. */
+    .fud-skp-card .fud-skp-row .info { min-width: 0; overflow: hidden; }
     .fud-skp-card .fud-skp-row .primary {
       font-weight: 900; font-size: 13px;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -126,8 +148,26 @@ function ensureStyles() {
     .fud-skp-card .fud-skp-row .primary .source-tag {
       font-size: 10px; opacity: 0.8;
     }
-    .fud-skp-card .fud-skp-row .secondary { font-size: 10.5px; opacity: 0.82; font-weight: 600; margin-top: 2px; }
+    /* Subtitle is allowed to wrap to a second line when bullets exceed
+       the available width (long subtitles like "MP Burn · Range · One
+       creature · INS + WLP"). Bullets keep their tokens intact via
+       white-space:nowrap; the spaces around the dot join (added in the
+       row builder) supply the wrap opportunities. line-height:1.3 keeps
+       the wrap from feeling cramped. */
+    .fud-skp-card .fud-skp-row .secondary {
+      font-size: 10.5px; opacity: 0.82; font-weight: 600;
+      margin-top: 2px; line-height: 1.3;
+    }
     .fud-skp-card .fud-skp-row .secondary .dot { margin: 0 5px; opacity: 0.6; }
+    .fud-skp-card .fud-skp-row .secondary .bullet { white-space: nowrap; }
+    .fud-skp-card .fud-skp-row .secondary .check-attr {
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(40, 30, 18, 0.14);
+      color: #4a3208;
+    }
     .fud-skp-card .fud-skp-row .cost-badge {
       font-size: 11px; font-weight: 800;
       padding: 4px 8px;
@@ -303,6 +343,10 @@ function buildCandidateFromItem(skill, actor, { source, sourceItem }) {
     range: String(p.skill_range ?? "").trim(),
     skillTarget: String(p.skill_target ?? "").trim(),
     descriptionHtml: String(p.description ?? ""),
+    isCheck: !!p.isCheck,
+    isOffensiveSpell: !!p.isOffensiveSpell,
+    rolledA1: String(p.rolled_atr1 ?? "").trim(),
+    rolledA2: String(p.rolled_atr2 ?? "").trim(),
     rawCost,
     parsedCost,
     costMap,
@@ -335,6 +379,10 @@ async function buildCandidate(uuid, actor, { source, sourceItem }) {
     range: String(p.skill_range ?? "").trim(),
     skillTarget: String(p.skill_target ?? "").trim(),
     descriptionHtml: String(p.description ?? ""),
+    isCheck: !!p.isCheck,
+    isOffensiveSpell: !!p.isOffensiveSpell,
+    rolledA1: String(p.rolled_atr1 ?? "").trim(),
+    rolledA2: String(p.rolled_atr2 ?? "").trim(),
     rawCost,
     parsedCost,
     costMap,
@@ -406,15 +454,34 @@ export async function pickSkill({
   if (actorOwned.length) sections.push({ label: "Active Skills", items: actorOwned });
   if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
 
-  // Build HTML. Number-key shortcuts on first 9 affordable rows.
+  // Build HTML. Number-key shortcuts on first 9 affordable rows; rows
+  // past the 9-cap still render but with an empty shortcut slot so the
+  // grid layout stays identical.
   let nextKey = 1;
   const sectionsHTML = sections.map((section) => {
     const itemsHTML = section.items.map((c) => {
+      // Subtitle bullets — wrap each so the cost-style chunk ("5 x T MP")
+      // and the check-attr chip ("INS+WLP") don't fracture across lines.
       const subtitleParts = [];
+      // Element first (when present), then range / target.
       if (c.element) subtitleParts.push(escapeHtml(c.element));
       if (c.range) subtitleParts.push(escapeHtml(c.range));
       if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
-      const subtitle = subtitleParts.join(`<span class="dot">•</span>`);
+      // Check-attribute pair for offensive / Check-bearing spells. RAW
+      // for Spiritist offensive spells is INS+WLP; other classes have
+      // their own pairs. We surface whatever the skill carries so the
+      // GM can see at a glance what the Check rolls. No bullet when
+      // rolled_atr1/2 are blank (e.g. "-").
+      const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;
+      const a2 = c.rolledA2 && c.rolledA2 !== "-" ? c.rolledA2 : null;
+      if (c.isCheck && a1 && a2) {
+        subtitleParts.push(`<span class="check-attr">${escapeHtml(a1)} + ${escapeHtml(a2)}</span>`);
+      }
+      // Spaces around the dot give the browser explicit wrap opportunities
+      // — without them, `</span><span>` adjacency blocks line breaks and
+      // the subtitle overflows into the cost-badge column.
+      const wrappedBullets = subtitleParts.map((b) => `<span class="bullet">${b}</span>`);
+      const subtitle = wrappedBullets.join(` <span class="dot">•</span> `);
 
       const costLabel = c.parsedCost.tokens.length ? escapeHtml(formatParsedCost(c.parsedCost)) : "Free";
       const costClass = c.parsedCost.tokens.length ? "" : "free";
@@ -423,9 +490,13 @@ export async function pickSkill({
         ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span>` : "";
 
       const disabled = c.affordable ? "" : " is-disabled";
-      const keyTag = c.affordable && nextKey <= 9
-        ? `<span class="cost-badge" style="margin-right:6px;opacity:0.6;font-size:9px;padding:2px 5px;">${nextKey++}</span>`
-        : "";
+      // Reserved-slot shortcut: always render the cell so the grid
+      // doesn't reflow between shortcut-bearing and shortcut-less rows.
+      const hasShortcut = c.affordable && nextKey <= 9;
+      const shortcutLabel = hasShortcut ? String(nextKey++) : "";
+      const shortcutHTML = hasShortcut
+        ? `<div class="shortcut-slot">${shortcutLabel}</div>`
+        : `<div class="shortcut-slot empty"></div>`;
       const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
 
       const tipBody = stripHtml(c.descriptionHtml || "(no description)");
@@ -442,12 +513,13 @@ export async function pickSkill({
              data-fud-source-uuid="${escapeHtml(c.sourceItemUuid ?? "")}"
              data-fud-tip="${tipPayload}"
              role="button" tabindex="0">
+          ${shortcutHTML}
           <div class="icon"><img src="${safeImg}" alt=""></div>
           <div class="info">
             <div class="primary">${sourceTag}${escapeHtml(c.name)}</div>
             <div class="secondary">${subtitle}</div>
           </div>
-          ${keyTag}<div class="cost-badge ${costClass}">${costLabel}</div>
+          <div class="cost-badge ${costClass}">${costLabel}</div>
         </div>
       `;
     }).join("");
