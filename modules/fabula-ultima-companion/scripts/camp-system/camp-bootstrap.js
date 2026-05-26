@@ -31,6 +31,7 @@
     _campActive = true;
     console.debug(TAG, "Camp mode activated for scene:", scene?.name);
 
+    CAMP.UIHider?.activate();
     CAMP.Button.show();
     CAMP.GMPanel?.show();
     // Restore UI for current phase immediately
@@ -42,6 +43,7 @@
     _campActive = false;
     console.debug(TAG, "Camp mode deactivated.");
 
+    CAMP.UIHider?.deactivate();
     CAMP.Button.hide();
     CAMP.GMPanel?.hide();
     _closeOverlay();
