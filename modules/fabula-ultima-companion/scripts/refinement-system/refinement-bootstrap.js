@@ -8,7 +8,7 @@ Hooks.once("ready", () => {
   if (mod) {
     mod.api ??= {};
     mod.api.refinement = {
-      refine:             ({ itemUuid, actorUuid }) => handler.requestRefine({ itemUuid, actorUuid }),
+      refine:             ({ itemUuid, actorUuid, refinerActorUuid = null }) => handler.requestRefine({ itemUuid, actorUuid, refinerActorUuid }),
       canRefine:          rfCanRefine,
       getRefineLevel:     rfGetRefineLevel,
       getMaxRefineLevel:  rfGetMaxRefineLevel,

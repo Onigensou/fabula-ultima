@@ -28,7 +28,10 @@ function rfGetTargetLevel(item) {
   return rfGetRefineLevel(item) + 1;
 }
 
-function rfCanRefine(item) {
+// context shape: { refinerActor: ActorDocument | null }
+// Passed through the pipeline for future refiner-stat hooks; unused for now.
+
+function rfCanRefine(item, _context = {}) {
   const type = rfGetItemType(item);
   if (!["weapon", "armor", "shield"].includes(type)) {
     const label = _rfProps(item).item_type ?? type;
@@ -44,7 +47,7 @@ function rfCanRefine(item) {
   return { allowed: true, reason: null };
 }
 
-function rfGetSuccessRate(item) {
+function rfGetSuccessRate(item, _context = {}) {
   const rarity    = rfGetItemRarity(item);
   const maxLevel  = rfGetMaxRefineLevel(item);
   const target    = rfGetTargetLevel(item);
@@ -91,8 +94,8 @@ function rfRollAttempt(successRate) {
   return Math.random() * 100 < successRate;
 }
 
-function rfBuildResult(item, rolled, cost) {
-  const check = rfCanRefine(item);
+function rfBuildResult(item, rolled, cost, context = {}) {
+  const check = rfCanRefine(item, context);
   if (!check.allowed) {
     const level = rfGetRefineLevel(item);
     return {
@@ -118,7 +121,7 @@ function rfBuildResult(item, rolled, cost) {
   const oldLevel    = rfGetRefineLevel(item);
   const targetLevel = oldLevel + 1;
   const newLevel    = rolled ? targetLevel : oldLevel;
-  const successRate = rfGetSuccessRate(item);
+  const successRate = rfGetSuccessRate(item, context);
   const baseName    = rfStripPrefix(item.name);
   const displayName = rfBuildDisplayName(baseName, newLevel);
   const bonusBefore = rfComputeBonus(item, oldLevel);

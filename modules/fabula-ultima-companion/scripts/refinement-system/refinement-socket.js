@@ -16,9 +16,9 @@ class RefinementSocketHandler {
   // Player-side: initiate a refinement request
   // ─────────────────────────────────────────────
 
-  async requestRefine({ itemUuid, actorUuid }) {
+  async requestRefine({ itemUuid, actorUuid, refinerActorUuid = null }) {
     if (game.user.isGM) {
-      return this.executeRefine({ itemUuid, actorUuid, requesterUserId: game.user.id });
+      return this.executeRefine({ itemUuid, actorUuid, refinerActorUuid, requesterUserId: game.user.id });
     }
 
     const refineId = foundry.utils.randomID();
@@ -27,7 +27,7 @@ class RefinementSocketHandler {
 
       game.socket.emit(REFINEMENT_CHANNEL, {
         type:    REFINE_MSG.REQ,
-        payload: { refineId, itemUuid, actorUuid, requesterUserId: game.user.id },
+        payload: { refineId, itemUuid, actorUuid, refinerActorUuid, requesterUserId: game.user.id },
       });
 
       setTimeout(() => {
@@ -42,19 +42,25 @@ class RefinementSocketHandler {
   // GM-side: execute the refinement
   // ─────────────────────────────────────────────
 
-  async executeRefine({ itemUuid, actorUuid, requesterUserId }) {
+  async executeRefine({ itemUuid, actorUuid, refinerActorUuid = null, requesterUserId }) {
     try {
       const _resolve = (uuid) =>
         (typeof fromUuidSync === "function" ? fromUuidSync(uuid) : null) ?? fromUuid(uuid);
 
-      const [item, actor] = await Promise.all([_resolve(itemUuid), _resolve(actorUuid)]);
+      const [item, actor, refinerActor] = await Promise.all([
+        _resolve(itemUuid),
+        _resolve(actorUuid),
+        refinerActorUuid ? _resolve(refinerActorUuid) : Promise.resolve(null),
+      ]);
 
       if (!item)  return { ok: false, reason: "item_not_found" };
       if (!actor) return { ok: false, reason: "actor_not_found" };
 
-      const check = rfCanRefine(item);
+      const context = { refinerActor };
+
+      const check = rfCanRefine(item, context);
       if (!check.allowed) {
-        return { ok: false, reason: check.reason, result: rfBuildResult(item, false, 0) };
+        return { ok: false, reason: check.reason, result: rfBuildResult(item, false, 0, context) };
       }
 
       const cost         = rfGetCost();
@@ -72,9 +78,9 @@ class RefinementSocketHandler {
         await actor.update({ "system.props.zenit": currentZenit - cost });
       }
 
-      const successRate = rfGetSuccessRate(item);
+      const successRate = rfGetSuccessRate(item, context);
       const rolled      = rfRollAttempt(successRate);
-      const result      = rfBuildResult(item, rolled, cost);
+      const result      = rfBuildResult(item, rolled, cost, context);
 
       const newCount = rfGetRefineCount(item) + 1;
       const updates  = { "system.props.refine_count": newCount };
