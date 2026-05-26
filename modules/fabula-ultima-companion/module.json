@@ -95,6 +95,7 @@
     "scripts/auto-defeat.js",
     "scripts/creature-defeated-emitter.js",
     "scripts/daydream-hp-hook.js",
+    "scripts/martial-practice-hook.js",
     "scripts/remote-choice-api.js",
     "scripts/custom-ui/chat-character-button.js",
     "scripts/custom-ui/chat-party-button.js",

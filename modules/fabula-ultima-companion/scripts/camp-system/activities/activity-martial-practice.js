@@ -2,8 +2,8 @@
 // Camp Activity — Martial Practice
 // Target: Yourself
 // Effect: Once before the next rest, when you perform an attack, you may grant
-//         that attack multi (2) or increase its multi property by one.
-//         Score ≥ 200 → 3 uses | ≥ 100 → 2 uses | else → 1 use.
+//         that attack multi (X) or increase its multi property to X.
+//         Score ≥ 200 → Multi 4 (exceptional) | ≥ 100 → Multi 3 (great) | else → Multi 2.
 // Minigame: Fruit Ninja (15 s cursor-slash game)
 // ============================================================================
 (() => {
@@ -12,12 +12,12 @@
   const TAG       = "[CampSystem][MartialPractice]";
 
   const ICON =
-    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Chung/DivinePhanesPassive2.png";
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/PatronaPassive3.png";
 
-  function _calcUses(score) {
-    if (score >= 200) return 3;
-    if (score >= 100) return 2;
-    return 1;
+  function _calcMultiValue(score) {
+    if (score >= 200) return 4;
+    if (score >= 100) return 3;
+    return 2;
   }
 
   // ---------------------------------------------------------------------------
@@ -52,20 +52,19 @@
   // ---------------------------------------------------------------------------
   // Chat result
   // ---------------------------------------------------------------------------
-  async function _postChatResult(actor, score, uses) {
+  async function _postChatResult(actor, score, multiValue) {
     const rank =
-      uses >= 3 ? "Master Swordsman" :
-      uses >= 2 ? "Skilled Warrior"  : "Diligent Trainee";
+      multiValue >= 4 ? "Master Swordsman" :
+      multiValue >= 3 ? "Skilled Warrior"  : "Diligent Trainee";
 
     const flavor =
-      uses >= 3 ? "Precise, relentless, unstoppable. The blade moves as an extension of the will." :
-      uses >= 2 ? "A solid session. The sword arm is sharper for it."                              :
-                  "Practice makes progress. One more rep tomorrow.";
+      multiValue >= 4 ? "Precise, relentless, unstoppable. The blade moves as an extension of the will." :
+      multiValue >= 3 ? "A solid session. The sword arm is sharper for it."                               :
+                        "Practice makes progress. One more rep tomorrow.";
 
-    const usesText = uses === 1 ? "1 use" : `${uses} uses`;
-    const usesColor =
-      uses >= 3 ? "#c8a84b" :
-      uses >= 2 ? "#3a7a35" : "#7a5010";
+    const multiColor =
+      multiValue >= 4 ? "#c8a84b" :
+      multiValue >= 3 ? "#3a7a35" : "#7a5010";
 
     const msg = await ChatMessage.create({
       content: `
@@ -78,15 +77,16 @@
             <div style="font-size:.88em;margin-top:3px;">
               ${rank} — Score: <strong>${score}</strong>
             </div>
-            <div style="font-size:.9em;margin-top:4px;font-weight:700;color:${usesColor};">
-              Multi Charge: ${usesText}
+            <div style="font-size:.9em;margin-top:4px;font-weight:700;color:${multiColor};">
+              Multi Charge: Multi (${multiValue})
             </div>
             <div style="font-size:.8em;margin-top:2px;opacity:.7;font-style:italic;">
               ${flavor}
             </div>
             <div style="font-size:.8em;margin-top:3px;opacity:.7;font-style:italic;">
-              ${actor.name} may grant an attack <strong>multi (2)</strong> or increase
-              its <strong>multi</strong> by one — ${usesText} before the next rest.
+              Once before the next rest, ${actor.name} may grant an attack
+              <strong>multi (${multiValue})</strong> or increase its
+              <strong>multi</strong> property to ${multiValue}.
             </div>
           </div>
         </div>
@@ -128,9 +128,9 @@
         await new Promise(r => setTimeout(r, 300));
 
         // 2 — Await owner's final score
-        const score = await _waitForScore(actor);
-        const uses  = _calcUses(score);
-        console.debug(TAG, `Score: ${score} → ${uses} use(s)`);
+        const score      = await _waitForScore(actor);
+        const multiValue = _calcMultiValue(score);
+        console.debug(TAG, `Score: ${score} → Multi(${multiValue})`);
 
         // 3 — Apply AE (replace stale one if present)
         const existing = actor.effects.find(
@@ -138,20 +138,19 @@
         );
         if (existing) await existing.delete();
 
-        const usesWord = uses === 1 ? "once" : uses === 2 ? "twice" : "three times";
         await actor.createEmbeddedDocuments("ActiveEffect", [{
           name:        "Martial Practice",
           img:         ICON,
-          description: `${usesWord.charAt(0).toUpperCase() + usesWord.slice(1)} before the next rest, when you perform an attack you may grant that attack multi (2) or increase its multi property by one.`,
+          description: `Once before the next rest, when you perform an attack you may grant that attack multi (${multiValue}) or increase its multi property to ${multiValue}.`,
           origin:      `Actor.${actor.id}`,
           disabled:    false,
           changes:     [],
           statuses:    ["permanent"],
           flags: {
             [MODULE_ID]: {
-              campRestCharges:        1,
-              martialPracticeActive:  true,
-              martialPracticeUses:    uses,
+              campRestCharges:       1,
+              martialPracticeActive: true,
+              martialPracticeMulti:  multiValue,
             },
           },
         }]);
@@ -160,12 +159,12 @@
         CAMP.Socket.broadcast(CAMP.MSG.MARTIAL_PRACTICE_RESULT, {
           actorId: actor.id,
           score,
-          uses,
+          multiValue,
         });
-        CAMP.MartialPracticeUI?.applyResult(actor.id, score, uses);
+        CAMP.MartialPracticeUI?.applyResult(actor.id, score, multiValue);
 
         // 5 — Post chat announcement
-        await _postChatResult(actor, score, uses);
+        await _postChatResult(actor, score, multiValue);
 
         // 6 — Wait for owner to click "Click to Proceed"
         await _waitForProceed(actor);

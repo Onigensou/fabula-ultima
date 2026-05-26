@@ -363,8 +363,8 @@
           CAMP.MartialPracticeUI?.onSlash(payload);
           return;
         }
-        if (type === CAMP.MSG.MARTIAL_PRACTICE_RESULT && payload?.uses != null) {
-          CAMP.MartialPracticeUI?.applyResult(payload.actorId, payload.score, payload.uses);
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_RESULT && payload?.multiValue != null) {
+          CAMP.MartialPracticeUI?.applyResult(payload.actorId, payload.score, payload.multiValue);
           return;
         }
         if (type === CAMP.MSG.MARTIAL_PRACTICE_DONE) {

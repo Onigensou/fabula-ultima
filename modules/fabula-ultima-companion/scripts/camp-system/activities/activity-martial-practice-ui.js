@@ -8,7 +8,7 @@
 //   1 — Waiting     ("Click to Begin" panel + rules; spectators see waiting panel)
 //   2 — Countdown   (3 → 2 → 1 → GO!)
 //   3 — Minigame    (15 s: fruit arcs up from bottom, player slashes with cursor)
-//   4 — Result      (score + rank + uses + "Click to Proceed" for owner)
+//   4 — Result      (score + rank + multiValue + "Click to Proceed" for owner)
 //
 // Sync flow:
 //   GM broadcasts MARTIAL_PRACTICE_START  → all call show()        (GM direct too)
@@ -16,7 +16,7 @@
 //   Owner slashes objects → emits MARTIAL_PRACTICE_SLASH { actorId, hitIds, isBomb, slashScore }
 //   [15 s game; owner tracks score]
 //   Owner emits MARTIAL_PRACTICE_RESULT { score }   → GM
-//   GM broadcasts MARTIAL_PRACTICE_RESULT { score, uses } → all applyResult()
+//   GM broadcasts MARTIAL_PRACTICE_RESULT { score, multiValue } → all applyResult()
 //   Owner clicks Proceed → emits MARTIAL_PRACTICE_PROCEED → GM
 //   GM broadcasts MARTIAL_PRACTICE_DONE → all hide()
 // ============================================================================
@@ -123,21 +123,20 @@
   // ---------------------------------------------------------------------------
   // Module state (reset on hide)
   // ---------------------------------------------------------------------------
-  let _actorId      = null;
-  let _actorName    = null;
-  let _isOwner      = false;
-  let _score        = 0;
-  let _gameActive   = false;
-  let _gameStartMs  = null;
-  let _schedule     = [];
-  let _schedIdx     = 0;
-  let _objects      = [];   // live fruit/bomb objects
-  let _nextId       = 0;
-  let _rafId        = null;
-  let _lastFrameMs  = 0;
-  let _endTimer     = null;
-  let _resultShown  = false;
-  let _seed         = 0;
+  let _actorId         = null;
+  let _actorName       = null;
+  let _isOwner         = false;
+  let _score           = 0;
+  let _gameActive      = false;
+  let _gameStartMs     = null;
+  let _schedule        = [];
+  let _pendingObjects  = [];   // pre-baked, not yet on screen
+  let _objects         = [];   // currently visible fruit/bomb objects
+  let _rafId           = null;
+  let _lastFrameMs     = 0;
+  let _endTimer        = null;
+  let _resultShown     = false;
+  let _seed            = 0;
 
   // Slash trail
   let _pointerHistory = [];  // [{ x, y, t }] rolling window
@@ -221,9 +220,8 @@
     _gameActive     = false;
     _gameStartMs    = null;
     _schedule       = [];
-    _schedIdx       = 0;
+    _pendingObjects = [];
     _objects        = [];
-    _nextId         = 0;
     _lastFrameMs    = 0;
     _resultShown    = false;
     _seed           = 0;
@@ -538,21 +536,26 @@
   // ---------------------------------------------------------------------------
   // Object management
   // ---------------------------------------------------------------------------
-  function _spawnObject(entry) {
-    const vx = Math.cos(Math.PI - entry.angle) * entry.speed;
-    const vy = -Math.sin(entry.angle) * entry.speed;
 
-    _objects.push({
-      id:    `mp-${_nextId++}`,
-      kind:  entry.kind,
-      emoji: entry.emoji,
-      score: entry.score,
-      color: entry.color,
-      x:     entry.spawnX,
-      y:     CH + 20,
-      vx,
-      vy,
-    });
+  // Called once when the countdown finishes. Pre-bakes every object's full
+  // trajectory so the rAF loop never needs to call Math.cos/sin or consult
+  // the schedule again — positions are computed analytically from elapsed time.
+  function _prepareObjects() {
+    _pendingObjects = _schedule.map((entry, i) => ({
+      id:      `mp-${i}`,
+      kind:    entry.kind,
+      emoji:   entry.emoji,
+      score:   entry.score,
+      color:   entry.color,
+      spawnMs: entry.tMs,
+      spawnX:  entry.spawnX,
+      vx:      Math.cos(Math.PI - entry.angle) * entry.speed,
+      vy:      -Math.sin(entry.angle) * entry.speed,
+      x:       entry.spawnX,
+      y:       CH + 20,
+    }));
+    // _schedule is already sorted by tMs so _pendingObjects is too
+    _objects = [];
   }
 
   function _removeObject(obj) {
@@ -631,22 +634,21 @@
       _lastFrameMs  = now;
       const elapsed = now - _gameStartMs;
 
-      // Spawn due objects
-      while (_schedIdx < _schedule.length && _schedule[_schedIdx].tMs <= elapsed) {
-        _spawnObject(_schedule[_schedIdx]);
-        _schedIdx++;
+      // Promote pre-baked objects onto screen when their spawn time arrives
+      while (_pendingObjects.length && _pendingObjects[0].spawnMs <= elapsed) {
+        _objects.push(_pendingObjects.shift());
       }
 
       // Update timer HUD
       const timerEl = document.getElementById("oni-mp-timer");
       if (timerEl) timerEl.textContent = Math.max(0, Math.ceil((GAME_MS - elapsed) / 1000));
 
-      // Physics update
+      // Analytical position update — no integration error, no per-frame trig
       const toRemove = [];
       for (const obj of _objects) {
-        obj.vy += GRAVITY * dt;
-        obj.x  += obj.vx * dt;
-        obj.y  += obj.vy * dt;
+        const ageSec = (elapsed - obj.spawnMs) / 1000;
+        obj.x = obj.spawnX + obj.vx * ageSec;
+        obj.y = (CH + 20) + obj.vy * ageSec + 0.5 * GRAVITY * ageSec * ageSec;
         if (obj.y > CH + 60) toRemove.push(obj);
       }
       for (const obj of toRemove) _removeObject(obj);
@@ -853,19 +855,17 @@
   // ---------------------------------------------------------------------------
   // Show result panel
   // ---------------------------------------------------------------------------
-  function _showResultPanel(score, uses) {
+  function _showResultPanel(score, multiValue) {
     const rank =
-      uses >= 3 ? "✦ Master Swordsman"  :
-      uses >= 2 ? "⚔️ Skilled Warrior"  : "🗡️ Diligent Trainee";
-
-    const usesText = uses === 1 ? "1 use" : `${uses} uses`;
+      multiValue >= 4 ? "✦ Master Swordsman"  :
+      multiValue >= 3 ? "⚔️ Skilled Warrior"  : "🗡️ Diligent Trainee";
 
     const el = document.getElementById("oni-mp-rank");
     if (el) el.textContent = rank;
     const el2 = document.getElementById("oni-mp-final-score");
     if (el2) el2.textContent = `Score: ${score}`;
     const el3 = document.getElementById("oni-mp-uses");
-    if (el3) el3.textContent = `Martial Practice — ${usesText} before next rest`;
+    if (el3) el3.textContent = `Martial Practice — Multi (${multiValue}) charge earned`;
 
     const panel = document.getElementById("oni-mp-result-panel");
     if (panel) panel.style.display = "block";
@@ -924,6 +924,7 @@
       CAMP.Socket.emit(CAMP.MSG.MARTIAL_PRACTICE_BEGIN, { actorId: _actorId, seed });
 
       _runCountdown(() => {
+        _prepareObjects();   // pre-bake trajectories right before game starts
         _gameActive = true;
         _score      = 0;
         _updateScoreHud();
@@ -937,8 +938,8 @@
       if (!document.getElementById(OVL_ID)) return;
       _seed     = payload.seed;
       _schedule = _buildSchedule(_mkRng(_seed));
-      _schedIdx = 0;
       _runCountdown(() => {
+        _prepareObjects();   // pre-bake trajectories right before game starts
         _gameActive = true;
         _startLoop();
         _endTimer = setTimeout(() => {
@@ -967,13 +968,13 @@
       }
     },
 
-    applyResult(actorId, score, uses) {
+    applyResult(actorId, score, multiValue) {
       if (_resultShown) return;
       _resultShown = true;
       _gameActive  = false;
       if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
       _score = score;
-      _showResultPanel(score, uses);
+      _showResultPanel(score, multiValue);
 
       const actor = game.actors?.get(actorId);
       if (actor && _isOwnerOf(actor)) {
