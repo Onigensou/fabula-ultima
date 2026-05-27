@@ -14,11 +14,11 @@
   // into the same sweep, giving a denser/faster feel without shortening the game.
   const OVL_ID       = "oni-curse-overlay";
   const GAME_MS      = 10_000;  // master duration: timer + indicator sweep
-  const LABEL_COUNT  = 16;      // more nodes → denser ritual
-  const MAX_SCORE    = LABEL_COUNT * 2;   // 32 pts total (2 per perfect, 1 per good)
+  const LABEL_COUNT  = 20;      // dense ritual nodes
+  const MAX_SCORE    = LABEL_COUNT * 2;   // 40 pts total (2 per perfect, 1 per good)
   const XFRAC_MIN    = 0.08;
   const XFRAC_MAX    = 0.92;
-  const MIN_GAP      = 0.028;  // tighter gap → fits 16 labels within 15 s window
+  const MIN_GAP      = 0.025;  // tight gap → fits 20 labels comfortably
   const WIN_GOOD     = 0.033;   // ±xFrac for a Good hit
   const WIN_PERFECT  = 0.012;   // ±xFrac for a Perfect hit (subset of GOOD)
   const TICK_MS      = 16;      // ~60fps rAF throttle
@@ -29,6 +29,13 @@
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage2.ogg",
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage3.ogg",
   ];
+
+  // AudioHelper sounds (low-latency; no pre-decode needed)
+  const SFX = {
+    COUNTDOWN: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_ready.wav",
+    GO:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Critical_1.wav",
+    MISS:      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/participant_exit.wav",
+  };
 
   const VALID_KEYS = new Set([
     "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
@@ -520,6 +527,12 @@
     // Don't tear down audioCtx — keep decoded buffers across calls
   }
 
+  // ── AudioHelper wrapper (matches other minigame pattern) ──────────────────
+  function _playSound(src, volume = 0.7) {
+    try { AudioHelper.play({ src, volume, autoplay: true, loop: false }, false); }
+    catch(e) { /* silent */ }
+  }
+
   // ── Countdown helper ───────────────────────────────────────────────────────
   function _runCountdown(callback) {
     const el = document.getElementById("oni-curse-countdown");
@@ -532,13 +545,17 @@
         el.style.display = "none";
         return callback();
       }
-      el.textContent = steps[i++];
+      const step = steps[i++];
+      el.textContent = step;
       // Re-trigger animation
       el.classList.remove("curse-cd-pulse-active");
       void el.offsetWidth;
       el.style.animation = "none";
       void el.offsetWidth;
       el.style.animation = "";
+      // Sound: tick for numbers, GO stinger for "GO!"
+      if (step === "GO!") _playSound(SFX.GO, 0.9);
+      else                _playSound(SFX.COUNTDOWN, 0.8);
       setTimeout(next, 750);
     }
     next();
@@ -714,6 +731,7 @@
   }
 
   function _doMissFeedback() {
+    _playSound(SFX.MISS, 0.75);
     // Brief red flash on the timeline
     const tl = document.getElementById("oni-curse-timeline");
     if (!tl) return;
