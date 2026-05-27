@@ -74,6 +74,12 @@ export class RefineWindowApp {
   _damageBonus(item){ return Number(RefineWindowApp._gp(item, "system.props.damage_bonus", 0) ?? 0); }
   _zenit(actor)     { return Math.max(0, Number(RefineWindowApp._gp(actor, "system.props.zenit", 0) ?? 0)); }
 
+  _rateLabel(rate) {
+    if (rate >= 50) return { label: "High",   cls: "fu-rate-high"   };
+    if (rate >= 25) return { label: "Medium", cls: "fu-rate-medium" };
+    return               { label: "Low",    cls: "fu-rate-low"    };
+  }
+
   _api()            { return game.modules.get("fabula-ultima-companion")?.api?.refinement; }
   _canRefineApi(item)    { return this._api()?.canRefine(item)      ?? { allowed: false, reason: "API not loaded" }; }
   _successRateApi(item)  { return this._api()?.getSuccessRate(item) ?? 0; }
@@ -399,7 +405,8 @@ export class RefineWindowApp {
 
     el.querySelector("#fu-rs-name").textContent  = item.name ?? "—";
     el.querySelector("#fu-rs-level").textContent = `+${level} → +${level + 1} (max +${max})`;
-    el.querySelector("#fu-rs-rate").textContent  = `${rate}%`;
+    const { label: rLabel, cls: rCls } = this._rateLabel(rate);
+    el.querySelector("#fu-rs-rate").innerHTML = `<span class="${rCls}">${rLabel}</span>`;
     el.querySelector("#fu-rs-cost").innerHTML    = `${GP_ICON} ${cost.toLocaleString()}`;
     el.querySelector("#fu-rs-zenit").innerHTML   = `${GP_ICON} ${zenit.toLocaleString()}`;
 
@@ -793,6 +800,9 @@ export class RefineWindowApp {
 .fu-sv { color: #2c1a0a; font-weight: 700; padding: 2px 0; }
 .fu-sv .fu-zenit-icon { width: 13px; height: 13px; }
 .fu-stat-insufficient { color: #9a2a1a !important; }
+.fu-rate-high   { color: #2a5acc; font-weight: 800; }
+.fu-rate-medium { color: #2a7a2a; font-weight: 800; }
+.fu-rate-low    { color: #9a2a1a; font-weight: 800; }
 
 /* ── Actions ── */
 .fu-rw-actions { display: flex; flex-direction: column; gap: 7px; }
