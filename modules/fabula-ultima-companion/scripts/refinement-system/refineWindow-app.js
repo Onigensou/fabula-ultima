@@ -19,6 +19,7 @@ const SFX = {
   cancel:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
   success:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/refine_success.mp3",
   failure:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/refine_failed.mp3",
+  break:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/refine_break.mp3",
 };
 
 const VOL = { open: 0.65, tabSwitch: 0.55, itemSel: 0.45, cancel: 0.55, result: 0.75 };
@@ -77,7 +78,7 @@ export class RefineWindowApp {
   _canRefineApi(item)    { return this._api()?.canRefine(item)      ?? { allowed: false, reason: "API not loaded" }; }
   _successRateApi(item)  { return this._api()?.getSuccessRate(item) ?? 0; }
   _maxLevelApi(item)     { return this._api()?.getMaxRefineLevel(item) ?? 0; }
-  _costApi()             { return this._api()?.getCost() ?? 250; }
+  _costApi(item)         { return this._api()?.getCost(item) ?? 250; }
 
   _playerItems()         { return (this._playerActor?.items.contents ?? []).filter(i => REFINE_CATS.some(c => c.key === this._itemType(i))); }
   _itemsForCategory(cat) { return this._playerItems().filter(i => this._itemType(i) === cat); }
@@ -387,7 +388,7 @@ export class RefineWindowApp {
     const level     = this._refineLevel(item);
     const max       = this._maxLevelApi(item);
     const rate      = this._successRateApi(item);
-    const cost      = this._costApi();
+    const cost      = this._costApi(item);
     const zenit     = this._zenit(this._playerActor);
     const after     = zenit - cost;
     const canAfford = zenit >= cost;
@@ -413,7 +414,7 @@ export class RefineWindowApp {
   _showConfirmOverlay(el, show) {
     const overlay = el.querySelector("#fu-rw-confirm-overlay");
     if (show && this._selectedItem) {
-      const cost = this._costApi();
+      const cost = this._costApi(this._selectedItem);
       const info = el.querySelector("#fu-rw-confirm-info");
       info.innerHTML = `<span>${RefineWindowApp._esc(this._selectedItem.name)}</span><br>${GP_ICON} ${cost.toLocaleString()} zenit will be consumed`;
     }
@@ -436,9 +437,13 @@ export class RefineWindowApp {
     try {
       const result = await api.refine({ itemUuid, actorUuid, refinerActorUuid });
 
-      if (result?.ok && result?.result?.success) {
+      const outcome = result?.result?.outcome;
+      if (result?.ok && outcome === "success") {
         this._playSound(SFX.success, VOL.result);
         this._animatePortrait(el, "success");
+      } else if (result?.ok && outcome === "break") {
+        this._playSound(SFX.break, VOL.result);
+        this._animatePortrait(el, "break");
       } else {
         this._playSound(SFX.failure, VOL.result);
         this._animatePortrait(el, "failure");
@@ -481,8 +486,10 @@ export class RefineWindowApp {
     if (!el) return;
     const p   = el.querySelector(".fu-rw-npc-portrait");
     if (!p) return;
-    const cls = type === "success" ? "fu-rw-anim-bounce" : "fu-rw-anim-shake";
-    p.classList.remove("fu-rw-anim-bounce", "fu-rw-anim-shake");
+    const cls = type === "success" ? "fu-rw-anim-bounce"
+              : type === "break"   ? "fu-rw-anim-break"
+              :                      "fu-rw-anim-shake";
+    p.classList.remove("fu-rw-anim-bounce", "fu-rw-anim-shake", "fu-rw-anim-break");
     void p.offsetWidth;
     p.classList.add(cls);
     p.addEventListener("animationend", () => p.classList.remove(cls), { once: true });
@@ -758,6 +765,16 @@ export class RefineWindowApp {
 }
 .fu-rw-anim-bounce { animation: fu-bounce 0.65s cubic-bezier(.36,.07,.19,.97); }
 .fu-rw-anim-shake  { animation: fu-shake  0.55s cubic-bezier(.36,.07,.19,.97); }
+.fu-rw-anim-break  { animation: fu-break  0.72s cubic-bezier(.36,.07,.19,.97); }
+
+@keyframes fu-break {
+  0%   { transform: translateY(0) scale(1);    filter: none; }
+  15%  { transform: translateY(-6px) scale(1.06); filter: brightness(1.4) saturate(0.2); }
+  30%  { transform: translateY(5px) scale(0.86);  filter: brightness(0.45) saturate(0) sepia(0.9); }
+  50%  { transform: translateY(-3px) scale(0.96); filter: brightness(0.65); }
+  70%  { transform: translateY(3px) scale(0.93);  filter: brightness(0.8); }
+  100% { transform: translateY(0) scale(1);    filter: none; }
+}
 
 /* ── Stats table ── */
 .fu-rw-stats {

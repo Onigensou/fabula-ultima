@@ -60,10 +60,10 @@ class RefinementSocketHandler {
 
       const check = rfCanRefine(item, context);
       if (!check.allowed) {
-        return { ok: false, reason: check.reason, result: rfBuildResult(item, false, 0, context) };
+        return { ok: false, reason: check.reason, result: rfBuildResult(item, "blocked", 0, context) };
       }
 
-      const cost         = rfGetCost();
+      const cost         = rfGetCost(item, context);
       const currentZenit = Math.max(0, Number(actor.system?.props?.zenit ?? 0));
 
       if (currentZenit < cost) {
@@ -79,13 +79,14 @@ class RefinementSocketHandler {
       }
 
       const successRate = rfGetSuccessRate(item, context);
-      const rolled      = rfRollAttempt(successRate);
-      const result      = rfBuildResult(item, rolled, cost, context);
+      const breakRate   = rfGetBreakRate(item, context);
+      const outcome     = rfRollOutcome(successRate, breakRate);
+      const result      = rfBuildResult(item, outcome, cost, context);
 
       const newCount = rfGetRefineCount(item) + 1;
       const updates  = { "system.props.refine_count": newCount };
 
-      if (rolled) {
+      if (outcome === "success" || outcome === "break") {
         updates["system.props.refine_level"] = result.newRefineLevel;
         updates["name"]                      = result.displayName;
 
@@ -94,16 +95,11 @@ class RefinementSocketHandler {
           const currentBonus = Number(item.system?.props?.damage_bonus) || 0;
           updates["system.props.damage_bonus"] = currentBonus + bonusDelta;
         }
-        // armor/shield bonus updates go here once formulas are finalized
       }
+      // "fail" → no level/name changes
 
       await item.update(updates);
-
-      await ChatMessage.create({
-        content: result.success
-          ? `⚒️ <b>${result.displayName}</b> — refinement succeeded! (+${result.oldRefineLevel} → +${result.newRefineLevel}) [${successRate}% chance]`
-          : `⚒️ <b>${result.baseName}</b> — refinement failed. Remains at +${result.oldRefineLevel}. [${successRate}% chance, ${cost}z consumed]`,
-      });
+      await _rfPostChatCard(actor, result);
 
       return { ok: true, result };
     } catch (e) {
@@ -155,4 +151,57 @@ class RefinementSocketHandler {
       console.error("[Refinement] _onSocket error:", e);
     }
   }
+}
+
+// ── Compact parchment chat card ────────────────────────────────────────────
+
+function _rfEsc(v) {
+  return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+async function _rfPostChatCard(actor, result) {
+  const portrait = actor.prototypeToken?.texture?.src ?? actor.img ?? "";
+  const oldName  = rfBuildDisplayName(result.baseName, result.oldRefineLevel);
+
+  let outcomeClass, icon, bodyHtml;
+
+  if (result.outcome === "success") {
+    outcomeClass = "fu-rc-success";
+    icon = "⚒️";
+    bodyHtml = `
+      <span class="fu-rc-from">${_rfEsc(oldName)}</span>
+      <span class="fu-rc-sep">→</span>
+      <span class="fu-rc-to fu-rc-to-success">${_rfEsc(result.displayName)}</span>`;
+  } else if (result.outcome === "break") {
+    outcomeClass = "fu-rc-break";
+    icon = "💔";
+    bodyHtml = `
+      <span class="fu-rc-from">${_rfEsc(oldName)}</span>
+      <span class="fu-rc-sep">→</span>
+      <span class="fu-rc-to fu-rc-to-break">${_rfEsc(result.displayName)}</span>
+      <span class="fu-rc-tag">broke</span>`;
+  } else {
+    outcomeClass = "fu-rc-fail";
+    icon = "✗";
+    bodyHtml = `
+      <span class="fu-rc-from">${_rfEsc(oldName)}</span>
+      <span class="fu-rc-sep">—</span>
+      <span class="fu-rc-to fu-rc-to-fail">no change</span>`;
+  }
+
+  const html = `
+    <div class="fu-refine-card ${outcomeClass}">
+      <img class="fu-rc-portrait" src="${_rfEsc(portrait)}" alt="">
+      <div class="fu-rc-body">
+        <span class="fu-rc-icon">${icon}</span>
+        ${bodyHtml}
+      </div>
+    </div>`;
+
+  await ChatMessage.create({
+    content: html,
+    speaker: null,
+    flags: { core: { cssClass: "fu-refine-msg" } },
+  });
 }

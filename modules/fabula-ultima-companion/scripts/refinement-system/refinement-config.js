@@ -8,9 +8,13 @@ const REFINEMENT_CONFIG = {
     accessory:  0,
   },
 
-  // 10-entry array: index 0 = target +1, index 9 = target +10
-  // Armor/Shield use offset = (10 - maxLevel) = 8, so:
-  //   +1 refinement → index 8, +2 refinement → index 9 (low rates from the start)
+  // Weapon damage bonus at each refinement level (index = level, 0–10).
+  // Tops out at +7 bonus damage at +10 refinement.
+  WEAPON_BONUS_TABLE: [0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7],
+
+  // 10-entry success rate arrays: index 0 = target +1, index 9 = target +10.
+  // Armor/shield use offset = (10 - maxLevel) = 8, mapping their low max level
+  // to the high-difficulty tail of this table.
   SUCCESS_RATES: {
     Common:    [100, 100, 100, 100, 100, 100, 100, 60, 40, 19],
     Uncommon:  [100, 100, 100, 100, 100, 100,  60, 40, 20, 19],
@@ -18,5 +22,21 @@ const REFINEMENT_CONFIG = {
     Legendary: [100, 100, 100, 100,  60,  40,  40, 20, 20,  9],
   },
 
-  COST_PER_ATTEMPT: 250, // zenit, flat rate for v1 — easy to convert to a table later
+  // ── Dynamic cost formula ──────────────────────────────────────────────────
+  // cost = clamp(COST_BASE * RARITY_COST_MULT[rarity] * COST_LEVEL_SCALE[level],
+  //             COST_MIN, COST_MAX)
+  // Reference: Rare at current level 4 = 250 exactly ("standard cost").
+  COST_BASE:        250,
+  COST_MIN:          50,
+  COST_MAX:         500,
+  RARITY_COST_MULT: { Common: 0.4, Uncommon: 0.7, Rare: 1.0, Legendary: 1.8 },
+  // index = current refine level (0 = item at +0 attempting +1, 9 = attempting +10)
+  COST_LEVEL_SCALE: [0.4, 0.55, 0.7, 0.85, 1.0, 1.2, 1.4, 1.65, 1.9, 2.2],
+
+  // ── Break chance ──────────────────────────────────────────────────────────
+  // Base break % per current refine level index (0–9).
+  // Actual break rate = baseBreak * dexFactor, capped to 50% of remaining fail space.
+  BREAK_RATE_BASE: [1, 1, 2, 2, 3, 4, 5, 7, 10, 15],
+  // Each DEX point above/below 9 (standard) multiplies break by ±this fraction.
+  BREAK_DEX_SCALE: 0.06,
 };
