@@ -124,6 +124,11 @@
   let _battleLastMs    = 0;
   let _hitIntervalId   = null;
 
+  // Battle timeout (0 = unlimited; set per-call via show() options)
+  let _battleTimeout    = 0;   // seconds; 0 = no limit
+  let _battleTimeoutId  = null;
+  let _battleTimeoutEnd = 0;   // performance.now() ms when the timeout fires
+
   // Spectator interpolation — smooth battle playback between 50ms server packets
   let _spectFishY        = BATTLE_BAR_H / 2;
   let _spectBarY         = 0;
@@ -134,6 +139,9 @@
   let _spectInZone       = false;
   let _spectBattleRafId  = null;
   let _spectBattleLast   = 0;
+  // Spectator countdown — dead-reckoned from last server packet
+  let _spectRemaining    = -1;   // last received remaining seconds (-1 = no timeout)
+  let _spectRemainingTs  = 0;    // performance.now() when it was received
 
   // Audio
   let _slowReelAudio = null;
@@ -243,6 +251,10 @@
     if (_battleRafId      !== null) { cancelAnimationFrame(_battleRafId);      _battleRafId      = null; }
     if (_spectBattleRafId !== null) { cancelAnimationFrame(_spectBattleRafId); _spectBattleRafId = null; }
     if (_hitIntervalId    !== null) { clearInterval(_hitIntervalId);           _hitIntervalId    = null; }
+    if (_battleTimeoutId  !== null) { clearTimeout(_battleTimeoutId);          _battleTimeoutId  = null; }
+    _battleTimeoutEnd = 0;
+    _spectRemaining   = -1;
+    _spectRemainingTs = 0;
     _removeSpaceHandler();
     _stopLoop(_slowReelAudio); _slowReelAudio = null;
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
@@ -530,6 +542,21 @@
       }
       .oni-fish-hp-num { font-size:.82em; font-weight:700; color:#e86060; text-align:center; margin-top:4px; }
 
+      /* ── Battle timer ──────────── */
+      @keyframes oni-fish-timer-pulse {
+        0%,100% { opacity:1; transform:scale(1); }
+        50%     { opacity:.65; transform:scale(1.08); }
+      }
+      .oni-fish-timer-row {
+        text-align:center; margin:8px 0 2px;
+        font-size:1.05em; font-weight:700; letter-spacing:.04em;
+        color:#e8c840;
+      }
+      .oni-fish-timer-row.urgent {
+        color:#e84040;
+        animation:oni-fish-timer-pulse .7s ease-in-out infinite;
+      }
+
       /* ── Hint ───────────────────── */
       .oni-fish-hint { text-align:center; font-size:.8em; opacity:.5; margin-top:9px; letter-spacing:.04em; }
       .oni-fish-key { display:inline-block; padding:2px 8px; background:#0a1520; border:1px solid #1e4a6b; border-radius:4px; font-family:monospace; }
@@ -694,6 +721,11 @@
           <div class="oni-fish-hp-num" id="oni-fish-hp-num">${Math.round(_fishHp)}%</div>
         </div>
       </div>
+      ${_battleTimeout > 0 ? `
+        <div class="oni-fish-timer-row" id="oni-fish-timer-row">
+          ⏱ <span id="oni-fish-countdown">${_battleTimeout.toFixed(1)}s</span>
+        </div>
+      ` : ""}
       ${interactive
         ? `<div class="oni-fish-hint">Hold <span class="oni-fish-key">SPACE</span> to reel in</div>`
         : `<div class="oni-fish-hint">Spectating battle…</div>`
@@ -711,10 +743,12 @@
   }
 
   function _cacheBattleEls() {
-    _el.pbar   = document.getElementById("oni-fish-pbar");
-    _el.ficon  = document.getElementById("oni-fish-ficon");
-    _el.hpFill = document.getElementById("oni-fish-hp-fill");
-    _el.hpNum  = document.getElementById("oni-fish-hp-num");
+    _el.pbar      = document.getElementById("oni-fish-pbar");
+    _el.ficon     = document.getElementById("oni-fish-ficon");
+    _el.hpFill    = document.getElementById("oni-fish-hp-fill");
+    _el.hpNum     = document.getElementById("oni-fish-hp-num");
+    _el.timerRow  = document.getElementById("oni-fish-timer-row");   // null when no timeout
+    _el.countdown = document.getElementById("oni-fish-countdown");   // null when no timeout
   }
 
   function _updateRoundLbl() {
@@ -869,10 +903,19 @@
     _fishBurstEndMs  = 0;
     _nextBurstMs     = now + BURST_INT_MIN + Math.random() * (BURST_INT_MAX - BURST_INT_MIN);
     _spaceDown    = false;
+    _spaceHeldMs  = 0;
     _battleActive = true;
 
     stage.innerHTML = _htmlBattleScene(true);
     _cacheBattleEls();
+
+    // Battle timeout — fish escapes if not caught in time
+    if (_battleTimeout > 0) {
+      _battleTimeoutEnd = now + _battleTimeout * 1000;
+      _battleTimeoutId  = setTimeout(() => {
+        if (_battleActive) _endBattle(actorId, false, fishName);
+      }, _battleTimeout * 1000);
+    }
 
     _fastReelAudio = _startLoop(SFX.FAST_REEL, 0.45);
 
@@ -951,6 +994,13 @@
       if (_el.hpFill) _el.hpFill.style.height  = `${_fishHp.toFixed(1)}%`;
       if (_el.hpNum)  _el.hpNum.textContent     = `${Math.round(_fishHp)}%`;
 
+      // Countdown timer display (if timeout active)
+      if (_el.countdown && _battleTimeout > 0) {
+        const rem = Math.max(0, (_battleTimeoutEnd - ts) / 1000);
+        _el.countdown.textContent = rem.toFixed(1) + "s";
+        _el.timerRow?.classList.toggle("urgent", rem < 5);
+      }
+
       // End conditions
       if (_fishHp >= 100) { _endBattle(actorId, true,  fishName); return; }
       if (_fishHp <= 0)   { _endBattle(actorId, false, fishName); return; }
@@ -959,23 +1009,28 @@
     }
     _battleRafId = requestAnimationFrame(_frame);
 
-    // Heartbeat to spectators
+    // Heartbeat to spectators (50ms / 20fps)
     _hitIntervalId = setInterval(() => {
       if (!_battleActive) return;
+      const remaining = _battleTimeout > 0
+        ? Math.max(0, (_battleTimeoutEnd - performance.now()) / 1000)
+        : -1;   // -1 signals "no timeout" to spectators
       CAMP.Socket.emit(CAMP.MSG.FISHING_HIT, {
         actorId,
         fishY:  _fishY,
         barY:   _playerBarY,
         fishHp: _fishHp,
         inZone: (_fishY >= _playerBarY && _fishY <= _playerBarY + _playerBarH),
+        remaining,
       });
     }, HIT_INTERVAL_MS);
   }
 
   function _endBattle(actorId, won, fishName) {
     _battleActive = false;
-    if (_battleRafId   !== null) { cancelAnimationFrame(_battleRafId); _battleRafId = null; }
-    if (_hitIntervalId !== null) { clearInterval(_hitIntervalId); _hitIntervalId = null; }
+    if (_battleRafId     !== null) { cancelAnimationFrame(_battleRafId); _battleRafId     = null; }
+    if (_hitIntervalId   !== null) { clearInterval(_hitIntervalId);      _hitIntervalId   = null; }
+    if (_battleTimeoutId !== null) { clearTimeout(_battleTimeoutId);     _battleTimeoutId = null; }
     _removeSpaceHandler();
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
 
@@ -1017,6 +1072,14 @@
       }
       if (_el.hpFill) _el.hpFill.style.height = `${_spectFishHp.toFixed(1)}%`;
       if (_el.hpNum)  _el.hpNum.textContent   = `${Math.round(_spectFishHp)}%`;
+
+      // Countdown — dead-reckon from last server snapshot + local elapsed time
+      if (_el.countdown && _spectRemaining >= 0) {
+        const elapsed = (ts - _spectRemainingTs) / 1000;
+        const disp = Math.max(0, _spectRemaining - elapsed);
+        _el.countdown.textContent = disp.toFixed(1) + "s";
+        _el.timerRow?.classList.toggle("urgent", disp < 5);
+      }
 
       _spectBattleRafId = requestAnimationFrame(_frame);
     }
@@ -1119,6 +1182,7 @@
       // Stop spectator battle rAF and clear stale _el refs from previous round
       if (_spectBattleRafId !== null) { cancelAnimationFrame(_spectBattleRafId); _spectBattleRafId = null; }
       Object.keys(_el).forEach(k => _el[k] = null);
+      _spectRemaining = -1;   // reset countdown state for new round
       stage.innerHTML = _htmlCastScene(false);
       _cacheCastEls();
       _startGaugeLoop(); // spectator mirrors gauge at same speed
@@ -1135,14 +1199,16 @@
   Object.assign(CAMP.FishingUI, {
 
     // GM broadcasts FISHING_START → all clients call show()
-    show(actorId, actorName, broadcastStats) {
+    // options.battleTimeout: seconds before fish auto-escapes (0 = unlimited)
+    show(actorId, actorName, broadcastStats, options) {
       _clearState();
-      _actorId      = actorId;
-      _actorName    = actorName;
-      _isOwner      = _checkIsOwner(actorId);
-      _catches      = [];
-      _currentRound = 1;
-      _totalRounds  = 3;
+      _actorId       = actorId;
+      _actorName     = actorName;
+      _isOwner       = _checkIsOwner(actorId);
+      _catches       = [];
+      _currentRound  = 1;
+      _totalRounds   = 3;
+      _battleTimeout = options?.battleTimeout ?? 0;
 
       if (_isOwner) {
         _loadStats(actorId);   // read fresh from actor
@@ -1204,7 +1270,7 @@
     onHit(payload) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
-      const { fishY, barY, fishHp, inZone } = payload ?? {};
+      const { fishY, barY, fishHp, inZone, remaining } = payload ?? {};
 
       // Check actual DOM — never trust _el refs across rounds (they go stale when
       // _showRoundResult replaces innerHTML without nulling _el).
@@ -1224,6 +1290,12 @@
       if (barY   != null) _spectTargetBarY   = barY;
       if (fishHp != null) _spectTargetFishHp = fishHp;
       _spectInZone = !!inZone;
+
+      // Countdown dead-reckoning — store the server value + local timestamp
+      if (remaining != null && remaining >= 0) {
+        _spectRemaining   = remaining;
+        _spectRemainingTs = performance.now();
+      }
 
       _startSpectBattleLoop();
     },

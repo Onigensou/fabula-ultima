@@ -175,12 +175,14 @@
 
         // Broadcast START with stats so all clients can display them
         const stats = _getStats(actor);
+        const BATTLE_TIMEOUT = 15;   // seconds — fish escapes if not caught in time
         CAMP.Socket.broadcast(CAMP.MSG.FISHING_START, {
-          actorId:   actor.id,
-          actorName: actor.name,
+          actorId:      actor.id,
+          actorName:    actor.name,
           stats,
+          battleTimeout: BATTLE_TIMEOUT,
         });
-        CAMP.FishingUI?.show(actor.id, actor.name, stats);
+        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT });
 
         await new Promise(r => setTimeout(r, 300));
 
