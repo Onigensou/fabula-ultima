@@ -16,6 +16,7 @@
 // stopped, manual cancel).
 
 import { log, warn } from "./logger.js";
+import { INTENTS } from "./intents.js";
 
 const STYLE_ID = "fud-turnpicker-style";
 
@@ -106,12 +107,18 @@ function anchorPointWorld(token, side) {
 
 // Build the picker DOM root + return its handle. `entries` is an array of
 // { combatantId, name, side, token } where `token` is the live canvas Token.
-function spawnPicker({ director, entries, onPick }) {
+//
+// `director` is optional. When omitted (player client), this falls back
+// to global Hooks.on for canvas-pan/token-move tracking and uses a
+// fixed root id since there's no combatId to key against. See
+// [[director-player-driven-input]].
+function spawnPicker({ director, entries, onPick, combatId }) {
   ensureStyles();
 
+  const rootKey = combatId ?? director?.combatId ?? "noid";
   const root = document.createElement("div");
   root.className = "fud-pickturn";
-  root.id = `fud-pickturn-${director.combatId ?? "noid"}`;
+  root.id = `fud-pickturn-${rootKey}`;
   document.body.appendChild(root);
 
   const records = [];
@@ -167,10 +174,23 @@ function spawnPicker({ director, entries, onPick }) {
   };
   ticker.add(tickFn);
 
-  const h1 = director.hooks.on("canvasPan", () => position(), { label: "turn-picker:canvasPan" });
-  const h2 = director.hooks.on("updateToken", (doc) => {
+  // Position-tracking hooks. GM uses director.hooks (HookRegistry-managed
+  // cleanup); player has no director, so register against the global
+  // Hooks bus and tear down manually.
+  const manualHooks = [];
+  const onUpdate = (doc) => {
     if (records.some((r) => r.entry.token?.document?.id === doc?.id)) position();
-  }, { label: "turn-picker:updateToken" });
+  };
+  const onPan = () => position();
+  if (director?.hooks?.on) {
+    director.hooks.on("canvasPan", onPan, { label: "turn-picker:canvasPan" });
+    director.hooks.on("updateToken", onUpdate, { label: "turn-picker:updateToken" });
+  } else {
+    const id1 = Hooks.on("canvasPan", onPan);
+    const id2 = Hooks.on("updateToken", onUpdate);
+    manualHooks.push(() => { try { Hooks.off("canvasPan", id1); } catch {} });
+    manualHooks.push(() => { try { Hooks.off("updateToken", id2); } catch {} });
+  }
 
   function cleanup() {
     try { ticker.remove(tickFn); } catch {}
@@ -178,7 +198,9 @@ function spawnPicker({ director, entries, onPick }) {
       try { r.pill.removeEventListener("click", r.onClick); } catch {}
     }
     try { root.remove(); } catch {}
-    // Hooks owned by HookRegistry; director.disposeAll handles them on stop.
+    // Director-owned hooks: HookRegistry.disposeAll handles them on stop.
+    // Player-side manual hooks: unbind explicitly.
+    for (const fn of manualHooks) { try { fn(); } catch {} }
     log("Turn picker cleaned up");
   }
 
@@ -189,24 +211,41 @@ export const TurnPicker = {
   // Show "Take Action" pills for each eligible combatant. Returns a Promise
   // that resolves with the picked combatantId, or null if the picker is
   // despawned externally without a pick.
-  show({ director, eligible }) {
-    if (!game.user?.isGM) {
-      log("Turn picker show skipped — non-GM client (v1 is GM-only)");
-      return Promise.resolve(null);
-    }
-    // Despawn any prior picker for this director (paranoid).
-    const prior = _instances.get(director.combatId);
+  //
+  // GM-mode: pass { director, eligible } — eligible is an array of
+  // DirectorCombatant-shaped objects (id, name, side, tokenId).
+  //
+  // Player-mode: pass { eligible, combatId, onPick? } — director is
+  // null; the player handler in registerPlayerTurnPickerHandler wires
+  // its own onPick to emit TURN_COMBATANT_PICKED over the socket.
+  show({ director = null, eligible, combatId = null, onPick = null }) {
+    const overlayKey = combatId ?? director?.combatId ?? "no-director";
+
+    // Despawn any prior picker keyed by this combatId.
+    const prior = _instances.get(overlayKey);
     if (prior) { try { prior.rec.cleanup(); prior.resolve(null); } catch {} }
 
     const entries = [];
     for (const dc of eligible) {
-      const token = canvas?.tokens?.get(dc.tokenId);
+      // Accept either a DirectorCombatant (live) or a serialized snap
+      // { id|combatantId, name, side, tokenUuid|tokenId }. The player
+      // path receives serialized data over the socket.
+      const tokenId = dc.tokenId ?? null;
+      const tokenUuid = dc.tokenUuid ?? null;
+      let token = null;
+      if (tokenId) token = canvas?.tokens?.get(tokenId) ?? null;
+      if (!token && tokenUuid) {
+        try {
+          const doc = fromUuidSync?.(tokenUuid);
+          token = doc?.object ?? null;
+        } catch {}
+      }
       if (!token) {
-        warn(`Turn picker: no canvas token for ${dc.name} (tokenId=${dc.tokenId})`);
+        warn(`Turn picker: no canvas token for ${dc.name} (tokenId=${tokenId}, uuid=${tokenUuid})`);
         continue;
       }
       entries.push({
-        combatantId: dc.id,
+        combatantId: dc.id ?? dc.combatantId,
         name: dc.name,
         side: dc.side,
         token,
@@ -223,20 +262,30 @@ export const TurnPicker = {
         if (resolved) return;
         resolved = true;
         try { rec.cleanup(); } catch {}
-        _instances.delete(director.combatId);
+        _instances.delete(overlayKey);
         resolve(id);
       };
       const rec = spawnPicker({
         director,
         entries,
-        onPick: (id) => finish(id),
+        combatId: overlayKey,
+        // If caller provided its own onPick (player-side: emit intent),
+        // use it; otherwise default to finish (GM-side: resolve Promise).
+        onPick: (id) => {
+          if (typeof onPick === "function") {
+            try { onPick(id); } catch (e) { warn("Turn picker onPick threw", e); }
+          }
+          finish(id);
+        },
       });
-      _instances.set(director.combatId, { rec, resolve: finish });
+      _instances.set(overlayKey, { rec, resolve: finish });
     });
   },
 
-  despawn({ director }) {
-    const inst = _instances.get(director.combatId);
+  despawn({ director, combatId } = {}) {
+    const key = combatId ?? director?.combatId;
+    if (!key) return;
+    const inst = _instances.get(key);
     if (!inst) return;
     try { inst.resolve(null); } catch {}
   },
@@ -248,3 +297,71 @@ export const TurnPicker = {
     _instances.clear();
   },
 };
+
+// ─── Player-side handler ──────────────────────────────────────────────
+//
+// Spawns the turn picker on a player's client when the GM broadcasts a
+// "turn-picker" MENU_OPEN. The player only sees pills over combatants
+// they OWN — the GM does the ownership filter before broadcasting, so
+// the menuSpec.eligible is already pre-filtered for this user.
+//
+// On click → emits TURN_COMBATANT_PICKED over IntentChannel. GM's
+// TURN_START races this against its own local picker click.
+export function registerPlayerTurnPickerHandler(channel) {
+  const offOpen = channel.onMenuOpen(async (menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "turn-picker") return;
+    log(`turn-picker MENU_OPEN received: ${menuSpec.eligible?.length ?? 0} eligible, sceneUuid=${menuSpec.sceneUuid ?? "none"}`);
+    if (!Array.isArray(menuSpec.eligible) || !menuSpec.eligible.length) {
+      log("turn-picker MENU_OPEN: empty eligible list, skipping");
+      return;
+    }
+    // Switch to the battle scene if we're not there — pills are anchored
+    // to canvas tokens. scene.view() only affects this user.
+    try {
+      if (menuSpec.sceneUuid) {
+        const scene = await fromUuid(menuSpec.sceneUuid);
+        if (scene && scene.id !== canvas?.scene?.id) {
+          log(`turn-picker MENU_OPEN: switching view to ${scene.name}`);
+          try { await scene.view(); } catch (e) { warn("scene.view threw", e); }
+          // scene.view() returns before canvas is fully rendered with
+          // tokens. Wait for canvasReady before spawning pills so
+          // canvas.tokens.get() can actually resolve the tokens.
+          if (!canvas?.ready) {
+            log(`turn-picker MENU_OPEN: waiting for canvasReady`);
+            await new Promise((resolve) => {
+              const handler = () => { Hooks.off("canvasReady", handler); resolve(); };
+              Hooks.once("canvasReady", handler);
+              // Safety timeout — don't hang forever if canvas never finishes.
+              setTimeout(() => { try { Hooks.off("canvasReady", handler); } catch {} resolve(); }, 5000);
+            });
+          }
+        }
+      }
+    } catch (e) { warn("turn-picker scene-switch threw", e); }
+
+    log(`turn-picker MENU_OPEN: spawning pills (canvas.ready=${!!canvas?.ready}, scene=${canvas?.scene?.name})`);
+    TurnPicker.show({
+      director: null,
+      combatId: menuSpec.combatId,
+      eligible: menuSpec.eligible,
+      // Click → emit intent; GM's awaitIntent resolves the FSM picker.
+      onPick: (combatantId) => {
+        log(`turn-picker: emitting TURN_COMBATANT_PICKED ${combatantId}`);
+        channel.emit({
+          type: INTENTS.TURN_COMBATANT_PICKED,
+          body: { combatantId },
+          combatId: menuSpec.combatId,
+        });
+      },
+    });
+  });
+
+  const offClose = channel.onMenuClose((payload) => {
+    if (payload?.kind && payload.kind !== "turn-picker") return;
+    // No reliable combatId on the payload; just despawn anything open.
+    // At most one turn-picker is up per client at a time.
+    try { TurnPicker.despawnAll(); } catch {}
+  });
+
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };
+}

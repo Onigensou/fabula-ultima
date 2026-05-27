@@ -156,11 +156,7 @@ export async function pickOption({
     warn("option-picker: no options provided — auto-cancelling");
     return null;
   }
-  if (!game.user?.isGM) {
-    log("option-picker: non-GM client — director picks are GM-only in v1");
-    return null;
-  }
-
+  // No GM gate: option picker is client-local.
   ensureStyles();
 
   const overlayId = ++_spawnSeq;

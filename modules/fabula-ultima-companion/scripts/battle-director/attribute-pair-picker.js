@@ -250,10 +250,7 @@ export async function pickAttributePair({
   includeDL = false,
   defaultDL = 10,
 } = {}) {
-  if (!game.user?.isGM) {
-    log("AttributePairPicker: non-GM client, skipping");
-    return { ok: false, cancelled: true };
-  }
+  // No GM gate: attribute-pair picker is client-local.
   ensureStyles();
 
   // Despawn any prior.

@@ -114,10 +114,10 @@ function worldToClient(x, y) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null } = {}) {
-  if (!game.user?.isGM) {
-    return Promise.resolve({ ok: false, cancelled: true, tokenUuids: [], reason: "non-GM client" });
-  }
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null } = {}) {
+  // No GM gate: target picking is client-local. The GM client uses this
+  // as fallback when an NPC acts; player clients use it inside their
+  // own composeAction() chain. See [[director-player-driven-input]].
   if (!Array.isArray(eligible) || eligible.length === 0) {
     // If the caller offered a secondary "skip" path, treat empty-eligible
     // as an auto-skip rather than an error. Guard with no allies on scene,
@@ -291,11 +291,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       }
     }
 
-    // Wire hooks via the director's HookRegistry so cleanup is guaranteed.
-    const hH = director.hooks.on("hoverToken", onTokenHover, { label: "tp:hoverToken" });
-    const hP = director.hooks.on("canvasPan", repositionAll, { label: "tp:canvasPan" });
-    const hU = director.hooks.on("updateToken", repositionAll, { label: "tp:updateToken" });
-    const hD = director.hooks.on("preDeleteToken", (_scene, doc) => {
+    // Wire hooks via the director's HookRegistry (GM) for managed cleanup,
+    // or fall back to global Hooks.on + manual cleanup (player clients
+    // running composeAction with no director).
+    const manualHooks = [];
+    const onPreDel = (_scene, doc) => {
       const uuid = doc?.uuid;
       if (uuid && rings.has(uuid)) {
         const rec = rings.get(uuid);
@@ -304,7 +304,23 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         if (selected.has(uuid)) selected.delete(uuid);
         updateBanner();
       }
-    }, { label: "tp:preDeleteToken" });
+    };
+    let hH, hP, hU, hD;
+    if (director?.hooks?.on) {
+      hH = director.hooks.on("hoverToken", onTokenHover, { label: "tp:hoverToken" });
+      hP = director.hooks.on("canvasPan", repositionAll, { label: "tp:canvasPan" });
+      hU = director.hooks.on("updateToken", repositionAll, { label: "tp:updateToken" });
+      hD = director.hooks.on("preDeleteToken", onPreDel, { label: "tp:preDeleteToken" });
+    } else {
+      const id1 = Hooks.on("hoverToken", onTokenHover);
+      const id2 = Hooks.on("canvasPan", repositionAll);
+      const id3 = Hooks.on("updateToken", repositionAll);
+      const id4 = Hooks.on("preDeleteToken", onPreDel);
+      manualHooks.push(() => { try { Hooks.off("hoverToken", id1); } catch {} });
+      manualHooks.push(() => { try { Hooks.off("canvasPan", id2); } catch {} });
+      manualHooks.push(() => { try { Hooks.off("updateToken", id3); } catch {} });
+      manualHooks.push(() => { try { Hooks.off("preDeleteToken", id4); } catch {} });
+    }
 
     // Token click via libWrapper-style — fall back to canvas pointer event.
     // For v1 we use the Foundry hook "clickToken" if available; otherwise
@@ -338,18 +354,35 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     buildRings();
     repositionAll();
 
+    // External cancellation: when composeAction is racing GM-local vs
+    // remote and the remote wins, the local picker overlay must tear
+    // down even though no Cancel button was clicked. The caller resolves
+    // `externalCancel` to trigger the same finish() path as a Cancel.
+    let extCancelled = false;
+    if (externalCancel && typeof externalCancel.then === "function") {
+      externalCancel.then(() => {
+        if (extCancelled) return;
+        extCancelled = true;
+        try { finish({ ok: false, cancelled: true, tokenUuids: [], reason: "external-cancel" }); }
+        catch (e) { warn("target picker externalCancel finish threw", e); }
+      });
+    }
+
     function finish(result) {
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}
       for (const rec of rings.values()) { try { rec.el.remove(); } catch {} }
       rings.clear();
-      // Hooks owned by HookRegistry — caller's director.hooks.disposeAll
-      // handles them. But these are per-call so off them now.
-      try { director.hooks.off(hH); } catch {}
-      try { director.hooks.off(hP); } catch {}
-      try { director.hooks.off(hU); } catch {}
-      try { director.hooks.off(hD); } catch {}
+      // Hooks: director.hooks.off when registered there; manual Hooks.off
+      // when the player-side fallback path registered them.
+      if (director?.hooks?.off) {
+        try { director.hooks.off(hH); } catch {}
+        try { director.hooks.off(hP); } catch {}
+        try { director.hooks.off(hU); } catch {}
+        try { director.hooks.off(hD); } catch {}
+      }
+      for (const fn of manualHooks) { try { fn(); } catch {} }
       log("Target picker resolved:", result);
       resolve(result);
     }

@@ -17,9 +17,11 @@ import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher } from "./state-handlers.js";
 import { STATES } from "./states.js";
-import { IntentChannel } from "./intent-channel.js";
+import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
-import { TurnPicker } from "./turn-picker.js";
+import { registerPlayerComposeActionHandler } from "./compose-action.js";
+import { registerPlayerActionCardHandler } from "./action-card.js";
+import { TurnPicker, registerPlayerTurnPickerHandler } from "./turn-picker.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
@@ -158,9 +160,12 @@ async function start(arg) {
     // through the same stop() path as a manual call so cleanup is uniform.
     onNaturalStop: ({ reason }) => stop({ reason }),
   });
-  const channel = new IntentChannel({ director });
+  // Attach the per-client IntentChannel singleton (installed on `ready`
+  // for every user). On GM, this wires the director ref so socket-arrived
+  // INTENT envelopes can fall back to director.dispatch when nothing's
+  // awaiting them.
+  const channel = attachDirector(director);
   director.intentChannel = channel;
-  channel.install();
 
   // No Foundry Combat doc exists in director mode, so the legacy auto-stop
   // hooks (deleteCombat/combatEnd/updateCombat) are no-ops. The only entry to
@@ -202,7 +207,12 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   // back to canvas.scene. Used for cleanupDirectorSpawnedTokens.
   const battleScene = _instance.dCombat?.scene ?? _instance.combat?.scene ?? canvas?.scene ?? null;
 
-  try { _instance.intentChannel?.uninstall(); } catch {}
+  // Detach the director from the per-client IntentChannel singleton, but
+  // KEEP it installed — players still need it to receive future MENU_OPEN
+  // events from the next start, and the GM uses it to log unmatched
+  // intents. (Old behavior was to uninstall + recreate per start; now the
+  // channel is session-lifetime.)
+  try { detachDirector(); } catch {}
 
   // Release any still-active Guard / Covered AEs before tearing down
   // dCombat. Once the director stops, TURN_START won't fire again to
@@ -268,6 +278,27 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
+
+  // Broadcast MENU_CLOSE to every online non-GM client so any player-side
+  // mirror overlays (action-card mirror, compose-action local Octopath /
+  // pickers) tear down too. The per-state onExit/onAbort that normally
+  // sends these doesn't run on End-Battle-mid-CONFIRM — director.stop()
+  // calls the current state's onAbort which doesn't exist for CONFIRM,
+  // so player overlays would otherwise linger forever.
+  // Passing no `kind` matches both registered close handlers
+  // (action-card + compose-action) — see their `if (payload?.kind && ...)` gates.
+  try {
+    const channel = getIntentChannel();
+    const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+    for (const u of onlinePlayers) {
+      try {
+        channel.broadcastMenuClose({
+          targetUserId: u.id,
+          reason: `director-stop:${reason}`,
+        });
+      } catch (e) { warn(`stop: broadcastMenuClose to ${u.name} threw`, e); }
+    }
+  } catch (e) { warn("stop: player-mirror MENU_CLOSE sweep threw", e); }
 
   // Remove tokens we spawned during runDirectorInit. Only tokens flagged
   // with fabula-ultima-companion.directorSpawned are touched — manually
@@ -369,9 +400,8 @@ async function resumeFromSavedState({ scene, state, suppressNextHistoryPush = fa
   // Stash payload on the director itself too, mirroring the fresh-start path.
   director.payload = state.payload ?? null;
 
-  const channel = new IntentChannel({ director });
+  const channel = attachDirector(director);
   director.intentChannel = channel;
-  channel.install();
 
   // Re-install the guard-HP watcher (PrepState.onEnter does this on the
   // fresh path; on resume we install it here since we bypass PREP).
@@ -667,11 +697,79 @@ Hooks.once("ready", () => {
     // currently neutralized; .isActive() returns true while a director is
     // running. Should not need manual suppress/restore in normal use.
     legacySuppressor: LegacySuppressor,
+    // Player-driven input scaffolding. The IntentChannel singleton is
+    // installed on every client at `ready` (below). See
+    // [[director-player-driven-input]] for the migration plan.
+    intentChannel: {
+      get: () => getIntentChannel(),
+      // GM → player ping. Resolves with { rtt, fromUserId, payload } or
+      // rejects on timeout. Used to validate the socket round-trip
+      // before wiring real surfaces.
+      ping: (targetUserIdOrName, payload = null, opts = {}) => {
+        const ch = getIntentChannel();
+        const user = game.users?.get(targetUserIdOrName)
+          ?? game.users?.find?.((u) => u.name === targetUserIdOrName);
+        if (!user) throw new Error(`pingPlayer: user not found "${targetUserIdOrName}"`);
+        return ch.ping(user.id, payload, opts);
+      },
+      // List online non-GM users (handy for picking a target in the
+      // bridge test runner without having to know UUIDs).
+      onlinePlayers: () => {
+        return (game.users?.contents ?? [])
+          .filter((u) => u.active && !u.isGM)
+          .map((u) => ({ id: u.id, name: u.name }));
+      },
+    },
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
   };
   log("Battle Director API registered at FUCompanion.api.experimental.battleDirector");
+
+  // Install the IntentChannel singleton on EVERY client (not just GM).
+  // Players need it to receive MENU_OPEN broadcasts and to reply to PINGs;
+  // GM uses it for INTENT receipt + MENU_OPEN broadcast. Idempotent —
+  // calling install() twice is a no-op.
+  try {
+    getIntentChannel().install();
+    // Player-side: wire up the per-surface MENU_OPEN handlers + a
+    // default catch-all logger for any kinds we haven't converted yet.
+    if (!game.user?.isGM) {
+      // Compose-action — when the GM broadcasts that this player's PC's
+      // turn has started, run the full pick chain locally (Octopath →
+      // weapon mode → target picker) and emit ACTION_COMPOSED with the
+      // bundle. No per-pick socket traffic; one commit per action.
+      // See [[director-player-driven-input]].
+      registerPlayerComposeActionHandler(getIntentChannel());
+      // Action-card mirror — render the GM's card on this client; owner
+      // sees interactive buttons, observers see read-only.
+      registerPlayerActionCardHandler(getIntentChannel());
+      // Turn picker — show "Take Action" pills over the player's OWN
+      // eligible combatants so they can pick which of their PCs acts
+      // next on the current side.
+      registerPlayerTurnPickerHandler(getIntentChannel());
+      // Catch-all observer for any other surface kinds we haven't wired
+      // up yet (future kinds). Lets us tell during testing that the
+      // broadcast arrived even before the UI exists.
+      getIntentChannel().onMenuOpen((menuSpec) => {
+        const wired = new Set(["compose-action", "action-card", "turn-picker"]);
+        if (!wired.has(menuSpec?.kind)) {
+          log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
+        }
+      });
+      getIntentChannel().onMenuClose((payload) => {
+        log(`[player] MENU_CLOSE: kind=${payload?.kind ?? "?"} reason=${payload?.reason ?? "?"}`);
+      });
+      // Announce ready to GM AFTER all handlers are attached. If the GM
+      // already broadcast a MENU_OPEN (e.g. resumeFromSavedState fired
+      // during our boot), this triggers a replay so we don't miss it.
+      // See IntentChannel._onPlayerHello.
+      try { getIntentChannel().announceReady(); }
+      catch (e) { warn("announceReady threw", e); }
+    }
+  } catch (e) {
+    warn("IntentChannel install on ready threw", e);
+  }
 
   // Auto-resume mid-combat reloads. GM-only — the director is GM-side
   // authoritative, and a player reload should never auto-start anything.

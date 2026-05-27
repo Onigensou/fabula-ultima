@@ -427,17 +427,19 @@ export async function pickSkill({
   titleText = "Choose a Skill",
   allowedSkillTypes = ["active"],
   emptyMessage = null,
+  externalCancel = null,
 }) {
-  if (!game.user?.isGM) {
-    log("SkillPicker spawn skipped — non-GM client (v1 GM-only)");
-    return null;
-  }
+  // No GM gate: skill-pick is client-local. Both GM and acting actor's
+  // owner spawn this inside their own composeAction() chain.
   ensureStyles();
   ensureTip();
 
+  // Overlay keying. GM uses director.combatId; player has no director.
+  const overlayKey = director?.combatId ?? "no-director";
+
   // Despawn any prior.
-  const prior = _overlays.get(director.combatId);
-  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
+  const prior = _overlays.get(overlayKey);
+  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(overlayKey); }
 
   const all = await gatherSkillsForActor(actor);
   const candidates = filterBySkillTypes(all, allowedSkillTypes);
@@ -555,7 +557,7 @@ export async function pickSkill({
       root.classList.add("is-resolving");
       despawnTid = setTimeout(() => {
         try { root.remove(); } catch {}
-        _overlays.delete(director.combatId);
+        _overlays.delete(overlayKey);
       }, 200);
       if (keyListener) { try { window.removeEventListener("keydown", keyListener, true); } catch {} keyListener = null; }
       if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
@@ -626,11 +628,20 @@ export async function pickSkill({
       try { clearTimeout(despawnTid); } catch {}
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
       try { root.remove(); } catch {}
-      _overlays.delete(director.combatId);
+      _overlays.delete(overlayKey);
       hideTip();
       if (!resolved) { resolved = true; resolve(null); }
     };
-    _overlays.set(director.combatId, { cleanup, root });
+    _overlays.set(overlayKey, { cleanup, root });
+
+    // External cancellation — composeAction lost the race, tear down the
+    // overlay and resolve with null (same as Esc).
+    if (externalCancel && typeof externalCancel.then === "function") {
+      externalCancel.then(() => {
+        if (resolved) return;
+        try { cleanup(); } catch {}
+      });
+    }
   });
 }
 
@@ -669,10 +680,11 @@ function hideTip() {
 
 export const SkillPicker = {
   despawn({ director }) {
-    const rec = _overlays.get(director.combatId);
+    const key = director?.combatId ?? "no-director";
+    const rec = _overlays.get(key);
     if (!rec) return;
     try { rec.cleanup(); } catch {}
-    _overlays.delete(director.combatId);
+    _overlays.delete(key);
   },
   despawnAll() {
     for (const rec of _overlays.values()) {

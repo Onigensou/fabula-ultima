@@ -26,6 +26,8 @@ import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFla
 // Phase B.1 Skill engine
 import { pickSkill, SkillPicker } from "./skill-picker.js";
 import { OptionPicker } from "./option-picker.js";
+// Player-driven input: client-local compose chain runner.
+import { composeAction, makeCancelToken } from "./compose-action.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
@@ -655,7 +657,123 @@ const TurnStart = {
           log(`TURN_START: auto-picked ${eligible[0].name} (only eligible on ${dc.currentSide})`);
         } else {
           log(`TURN_START: ${eligible.length} eligible on ${dc.currentSide} — prompting picker`);
-          const pickedId = await TurnPicker.show({ director, eligible });
+
+          // GM-local picker (always spawned — fallback for unowned
+          // combatants AND so the GM can pick on behalf of an offline
+          // player). Pills appear over ALL eligible.
+          const localPromise = TurnPicker.show({ director, eligible });
+
+          // Per-user broadcast: each online non-GM user gets a MENU_OPEN
+          // with ONLY the eligible combatants they own. Players see pills
+          // only over their own PCs. Owner-less combatants (NPC allies on
+          // the party side, etc.) are GM-only.
+          const channel = director.intentChannel;
+          const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+          const sceneUuid = director.dCombat?.scene?.uuid ?? null;
+          const broadcastedUserIds = [];
+          log(`TURN_START: ${onlinePlayers.length} online non-GM user(s); channel=${channel ? "attached" : "MISSING"}`);
+          if (channel) {
+            for (const u of onlinePlayers) {
+              // Filter eligible to ones this user has OWNER permission on.
+              // Use the live actorDoc on the combatant — it was resolved
+              // either at PREP/RECONSTRUCT time. Falling back to fromUuid
+              // is a defensive fallback in case actorDoc went stale.
+              const myEligible = [];
+              for (const dc2 of eligible) {
+                try {
+                  let actor = dc2.actorDoc ?? null;
+                  if (!actor && dc2.actorUuid) {
+                    actor = await fromUuid(dc2.actorUuid).catch(() => null);
+                  }
+                  if (!actor) {
+                    log(`TURN_START owner-filter[${u.name}]: ${dc2.name} — no actor doc`);
+                    continue;
+                  }
+                  const owns = actor.testUserPermission?.(u, "OWNER");
+                  log(`TURN_START owner-filter[${u.name}]: ${dc2.name} (${actor.uuid}) → owns=${owns}`);
+                  if (owns) {
+                    myEligible.push({
+                      combatantId: dc2.id,
+                      name: dc2.name,
+                      side: dc2.side,
+                      tokenUuid: dc2.tokenUuid ?? null,
+                      tokenId: dc2.tokenId ?? null,
+                    });
+                  }
+                } catch (e) { warn("TURN_START: owner check threw", e); }
+              }
+              if (!myEligible.length) {
+                log(`TURN_START: no owned eligible for ${u.name} — skipping broadcast`);
+                continue;
+              }
+              try {
+                channel.broadcastMenuOpen({
+                  targetUserId: u.id,
+                  menuSpec: {
+                    kind: "turn-picker",
+                    combatId: director.combatId,
+                    eligible: myEligible,
+                    sceneUuid,
+                  },
+                });
+                broadcastedUserIds.push(u.id);
+                log(`TURN_START: broadcast turn-picker to ${u.name} (${myEligible.length} pills)`);
+              } catch (e) { warn(`TURN_START: broadcast to ${u.name} threw`, e); }
+            }
+          }
+
+          // Remote await — single channel for ANY user's TURN_COMBATANT_PICKED.
+          let remoteAwait = null;
+          if (channel && broadcastedUserIds.length > 0) {
+            remoteAwait = channel.awaitIntent(INTENTS.TURN_COMBATANT_PICKED, {
+              timeoutMs: 30 * 60 * 1000,
+            });
+          }
+
+          // Race
+          let pickedId = null;
+          try {
+            const result = await Promise.race([
+              localPromise.then((id) => ({ source: "local", id })),
+              remoteAwait
+                ? remoteAwait.then((intent) => ({ source: "remote", id: intent?.body?.combatantId ?? null }))
+                : new Promise(() => {}),
+            ]);
+            pickedId = result.id;
+
+            // Cancel the loser side's UI.
+            if (result.source === "local") {
+              try { remoteAwait?.abort?.("local-won"); } catch {}
+              // Close player mirrors.
+              for (const uid of broadcastedUserIds) {
+                try {
+                  channel?.broadcastMenuClose({
+                    targetUserId: uid,
+                    kind: "turn-picker",
+                    reason: "local-won",
+                  });
+                } catch {}
+              }
+            } else {
+              // Remote won — close GM's local picker.
+              try { TurnPicker.despawn({ director }); } catch {}
+              // Also close any OTHER player's mirror (only one combatant
+              // is picked; everyone else's picker should go).
+              for (const uid of broadcastedUserIds) {
+                try {
+                  channel?.broadcastMenuClose({
+                    targetUserId: uid,
+                    kind: "turn-picker",
+                    reason: "remote-won",
+                  });
+                } catch {}
+              }
+            }
+          } catch (e) {
+            warn("TURN_START: turn-picker race threw", e);
+            try { remoteAwait?.abort?.("error"); } catch {}
+          }
+
           if (!pickedId) {
             warn("TURN_START: picker cancelled — aborting turn");
             director.ctx.abortReason = "no combatant picked";
@@ -771,9 +889,47 @@ const TurnStart = {
   },
 };
 
+// Resolve the actor-owner user that should drive an interactive surface
+// for `actor`. Returns the userId of the first ACTIVE non-GM owner, or
+// null if no eligible owner is online. Deterministic on multi-owner
+// actors (sort by userId).
+//
+// "Owner" means OWNER-level Foundry permission (level 3) — same threshold
+// Foundry uses for sheet-edit access. NPCs typically have no non-GM
+// owner; PCs have exactly one.
+function resolveActingOwnerForActor(actor) {
+  if (!actor) return null;
+  const candidates = (game.users?.contents ?? []).filter((u) => {
+    if (u.isGM) return false;
+    if (!u.active) return false;
+    try { return actor.testUserPermission?.(u, "OWNER"); }
+    catch { return false; }
+  });
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.id.localeCompare(b.id));
+  return candidates[0].id;
+}
+
 // ─── DECLARE ───────────────────────────────────────────────────────────
-// Spawn the Octopath buttons over the current combatant's token. Wait for
-// the user to click a command.
+// Run the compose chain (Octopath → per-command pickers) on whichever
+// client is fastest. Two chains run in parallel:
+//
+//   1. GM-local: composeAction() runs on the GM client (fallback path —
+//      ensures the GM always has the UI even when no PC owns the actor,
+//      AND lets the GM take over if the owner is unresponsive).
+//
+//   2. Remote:   if the acting actor has an active non-GM owner, the GM
+//      also broadcasts MENU_OPEN to that client. The player runs an
+//      identical composeAction locally and emits ACTION_COMPOSED when
+//      they finish.
+//
+// Whoever finishes first wins. We cancel the loser, populate ctx from
+// the winning bundle, and dispatch DECLARE_COMMAND to move into TARGET.
+// Downstream states (TARGET, WEAPON_MODE skip-checks below) read the
+// pre-populated ctx fields and skip their pickers when bundle data is
+// available.
+//
+// See [[director-player-driven-input]] for the design.
 const Declare = {
   async onEnter(director) {
     const snap = director.ctx.turnSnapshot;
@@ -794,19 +950,222 @@ const Declare = {
     director.ctx.passIndex = 0;
     director.ctx.pickedTargetUuids = null;
     director.ctx.hinderCheckConfig = null;
+    director.ctx._composedBundle = null;
 
     const token = canvas?.tokens?.get(snap.tokenId);
     if (!token) {
       warn("DECLARE: token not on canvas", snap.tokenId);
-      // For NPC turns the GM still needs the UI somewhere; bail to TURN_END.
       director.enqueue({ type: INTENTS.TIMEOUT });
       return;
     }
-    TurnUI.spawn({ director, token });
+
+    // Resolve owner. fromUuid is async but cheap; on error, only GM runs.
+    let actor = null;
+    try { actor = await fromUuid(snap.actorUuid); } catch {}
+    const ownerUserId = resolveActingOwnerForActor(actor);
+
+    // Pre-bake eligible target snapshots. We do this here (with full
+    // dCombat access) so the player's client doesn't have to recompute —
+    // they get the list via menuSpec. Used by both sides' composeAction.
+    const eligibleEnemies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "enemy" });
+    const eligibleAllies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "ally" });
+
+    // GM-local compose chain. The cancel token lets us tear it down when
+    // the player wins the race.
+    const cancelToken = makeCancelToken();
+    director.ctx._composeCancelToken = cancelToken;
+    const localCompose = composeAction({
+      director,
+      snap,
+      token,
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+      cancelSentinel: cancelToken.promise,
+      combatId: director.combatId,
+      actorUuid: snap.actorUuid,
+    }).catch((e) => {
+      warn("DECLARE: local composeAction threw", e);
+      return { cancelled: true, reason: "exception" };
+    });
+
+    // Remote chain (if owner is online): broadcast MENU_OPEN + await
+    // ACTION_COMPOSED. The player's composeAction emits this when they
+    // finish.
+    let remoteAwait = null;
+    if (ownerUserId) {
+      log(`DECLARE: broadcasting compose-action to player ${ownerUserId} (${snap.name})`);
+      try {
+        director.intentChannel?.broadcastMenuOpen({
+          targetUserId: ownerUserId,
+          menuSpec: {
+            kind: "compose-action",
+            combatId: director.combatId,
+            tokenUuid: token.document.uuid,
+            actorUuid: snap.actorUuid,
+            snap,
+            eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+          },
+        });
+        // 30-minute timeout — practically forever. The race will resolve
+        // sooner via GM-local OR the player will eventually act.
+        remoteAwait = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
+          fromUserId: ownerUserId,
+          timeoutMs: 30 * 60 * 1000,
+        });
+        director.ctx._activeRemoteMenu = { kind: "compose-action", targetUserId: ownerUserId };
+      } catch (e) {
+        warn("DECLARE: broadcast/await setup threw, GM-local only", e);
+        remoteAwait = null;
+      }
+    }
+
+    // Race. If only GM is running (no remote), the remote side is a
+    // never-resolving Promise so localCompose alone determines the
+    // winner.
+    let winnerSource = null;
+    let winnerBundle = null;
+    // Wrap the remote await so we can abort it on local-wins. Without
+    // this, an unresolved awaitIntent for ACTION_COMPOSED would linger
+    // in _pendingAwaits and the NEXT turn's emit would resolve the
+    // stale entry first (Map insertion order). See [[director-player-driven-input]].
+    try {
+      const result = await Promise.race([
+        localCompose.then((r) => ({ source: "local", result: r })),
+        remoteAwait
+          ? remoteAwait.then((intent) => ({ source: "remote", result: { cancelled: !intent?.body?.bundle, bundle: intent?.body?.bundle ?? null } }))
+          : new Promise(() => {}),
+      ]);
+      winnerSource = result.source;
+
+      // Cancel the loser.
+      if (winnerSource === "local") {
+        // Abort the dangling remote awaitIntent so it doesn't leak.
+        try { remoteAwait?.abort?.("local-won"); } catch {}
+        if (ownerUserId) {
+          try {
+            director.intentChannel?.broadcastMenuClose({
+              targetUserId: ownerUserId,
+              kind: "compose-action",
+              reason: "local-won",
+            });
+          } catch (e) { warn("DECLARE: broadcastMenuClose (local-won) threw", e); }
+          director.ctx._activeRemoteMenu = null;
+        }
+      } else {
+        // Remote won — cancel GM's local compose so its overlays close.
+        cancelToken.cancel("remote-won");
+        // Wait for local to actually unwind so its UI is gone before we
+        // move to TARGET (avoids dangling Octopath).
+        try { await localCompose; } catch {}
+      }
+
+      if (result.result.cancelled) {
+        log(`DECLARE: compose cancelled (winner=${winnerSource})`);
+        // Bounce back to TURN_END so the FSM can move on or End Battle.
+        director.enqueue({ type: INTENTS.TIMEOUT });
+        return;
+      }
+
+      winnerBundle = result.result.bundle;
+    } catch (e) {
+      warn("DECLARE: compose race threw", e);
+      director.enqueue({ type: INTENTS.ABORT });
+      return;
+    } finally {
+      director.ctx._composeCancelToken = null;
+    }
+
+    if (!winnerBundle || !winnerBundle.command) {
+      warn("DECLARE: race winner produced no bundle", winnerBundle);
+      director.enqueue({ type: INTENTS.TIMEOUT });
+      return;
+    }
+
+    log(`DECLARE: winner=${winnerSource}, command=${winnerBundle.command}`);
+
+    // Apply bundle to ctx — sets up pre-populated picks so TARGET state
+    // can skip its pickers when data is already provided. For
+    // "_commandOnly" bundles (Skill/Spell/Item — not yet supported by
+    // composeAction beyond the Octopath click), the GM still runs its
+    // normal pickers in TARGET state.
+    if (!winnerBundle._commandOnly) {
+      // Generic marker that any branch can read for "did the player
+      // pre-compose this?" — set to the full bundle for fine-grained
+      // dispatch in per-command branches below.
+      director.ctx._composedBundle = winnerBundle;
+
+      if (winnerBundle.command === "Attack") {
+        if (winnerBundle.attackMode) director.ctx.attackMode = winnerBundle.attackMode;
+        if (Array.isArray(winnerBundle.targetUuids)) {
+          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+        }
+      } else if (winnerBundle.command === "Study" || winnerBundle.command === "Hinder") {
+        // Both share the same shape — a single enemy target.
+        if (Array.isArray(winnerBundle.targetUuids)) {
+          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+        }
+      } else if (winnerBundle.command === "Skill" || winnerBundle.command === "Spell") {
+        // Skill/Spell carries the picked skill + sourceItem + targets.
+        // TARGET's Skill branch reads ctx._composedBundle to skip
+        // pickSkill / requestTargeting; the affordability check +
+        // Vismagus + actionResult build stay GM-authority.
+        if (Array.isArray(winnerBundle.targetUuids)) {
+          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+        }
+      }
+      // Guard: bundle.coverTokenUuid (null = skip, string = ally) is
+      //   consumed by TARGET's Guard branch via ctx._composedBundle.
+      // Equipment: no extra ctx — TARGET branch already needs nothing
+      //   beyond declaredCommand.
+    } else {
+      director.ctx._composedBundle = null;
+    }
+    director.ctx.declaredCommand = winnerBundle.command;
+
+    // Advance the FSM. TARGET's per-command branches read ctx and skip
+    // their pickers when pre-populated.
+    director.dispatch({
+      type: INTENTS.DECLARE_COMMAND,
+      body: { command: winnerBundle.command },
+    });
   },
 
   async onExit(director) {
     TurnUI.despawn({ director });
+    // Cancel any in-flight local compose (defensive — race usually
+    // resolves before onExit fires).
+    try { director.ctx._composeCancelToken?.cancel("state-exit"); } catch {}
+    // Tell the player's client to close its compose UI if it's still up.
+    const remote = director.ctx._activeRemoteMenu;
+    if (remote) {
+      try {
+        director.intentChannel?.broadcastMenuClose({
+          targetUserId: remote.targetUserId,
+          kind: remote.kind,
+          reason: "state-exit",
+        });
+      } catch (e) { warn("DECLARE.onExit: broadcastMenuClose threw", e); }
+      director.ctx._activeRemoteMenu = null;
+    }
+  },
+
+  async onAbort(director, { reason } = {}) {
+    TurnUI.despawn({ director });
+    try { director.ctx._composeCancelToken?.cancel(`abort:${reason ?? "unknown"}`); } catch {}
+    const remote = director.ctx._activeRemoteMenu;
+    if (remote) {
+      try {
+        director.intentChannel?.broadcastMenuClose({
+          targetUserId: remote.targetUserId,
+          kind: remote.kind,
+          reason: `abort:${reason ?? "unknown"}`,
+        });
+      } catch (e) { warn("DECLARE.onAbort: broadcastMenuClose threw", e); }
+      director.ctx._activeRemoteMenu = null;
+    }
   },
 };
 
@@ -835,24 +1194,35 @@ const Target = {
       const coverEligible = (allies ?? []).filter((a) => a.tokenUuid !== attackerSnap.tokenUuid);
       director.ctx.eligibleTargets = coverEligible;
 
-      const result = await requestTargeting({
-        director,
-        eligible: coverEligible,
-        mode: "exact",
-        count: 1,
-        titleText: `${attackerSnap.name}: pick an ally to Cover (optional)`,
-        cancelLabel: "Cancel Guard",
-        secondaryAction: { label: "Skip Cover", value: "skip" },
-      });
-      if (!result.ok) {
-        // Cancel Guard entirely → bounce back to DECLARE.
-        director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-        return;
+      // Pre-composed by player? composeGuard's bundle carries
+      // coverTokenUuid (null = skip cover, uuid = picked ally). Skip
+      // the local picker and feed the choice through directly.
+      const composedGuard = director.ctx._composedBundle;
+      let coverTarget;
+      if (composedGuard && composedGuard.command === "Guard" && "coverTokenUuid" in composedGuard) {
+        log(`TARGET (Guard): using pre-composed coverTokenUuid=${composedGuard.coverTokenUuid ?? "none"}`);
+        coverTarget = composedGuard.coverTokenUuid
+          ? coverEligible.find((t) => t.tokenUuid === composedGuard.coverTokenUuid) ?? null
+          : null;
+      } else {
+        const result = await requestTargeting({
+          director,
+          eligible: coverEligible,
+          mode: "exact",
+          count: 1,
+          titleText: `${attackerSnap.name}: pick an ally to Cover (optional)`,
+          cancelLabel: "Cancel Guard",
+          secondaryAction: { label: "Skip Cover", value: "skip" },
+        });
+        if (!result.ok) {
+          // Cancel Guard entirely → bounce back to DECLARE.
+          director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+          return;
+        }
+        coverTarget = (result.skipped || result.tokenUuids.length === 0)
+          ? null
+          : coverEligible.find((t) => t.tokenUuid === result.tokenUuids[0]) ?? null;
       }
-
-      const coverTarget = (result.skipped || result.tokenUuids.length === 0)
-        ? null
-        : coverEligible.find((t) => t.tokenUuid === result.tokenUuids[0]) ?? null;
 
       director.ctx.actionResult = freezeActionResult({
         kind: "Guard",
@@ -912,19 +1282,27 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
-      const result = await requestTargeting({
-        director,
-        eligible,
-        mode: "exact",
-        count: 1,
-        titleText: `${attackerSnap.name}: pick a creature to Study`,
-      });
-      if (!result.ok) {
-        director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-        return;
+      // Pre-composed targets from player's composeStudy?
+      let tokenUuids;
+      if (director.ctx.pickedTargetUuids?.length) {
+        log(`TARGET (Study): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
+        tokenUuids = [...director.ctx.pickedTargetUuids];
+      } else {
+        const result = await requestTargeting({
+          director,
+          eligible,
+          mode: "exact",
+          count: 1,
+          titleText: `${attackerSnap.name}: pick a creature to Study`,
+        });
+        if (!result.ok) {
+          director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+          return;
+        }
+        tokenUuids = [...result.tokenUuids];
+        director.ctx.pickedTargetUuids = tokenUuids;
       }
-      director.ctx.pickedTargetUuids = [...result.tokenUuids];
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: result.tokenUuids } });
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: tokenUuids } });
       return;
     }
 
@@ -948,16 +1326,25 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
-      const targetResult = await requestTargeting({
-        director,
-        eligible,
-        mode: "exact",
-        count: 1,
-        titleText: `${attackerSnap.name}: pick an opponent to Hinder`,
-      });
-      if (!targetResult.ok) {
-        director.dispatch({ type: targetResult.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-        return;
+      // Pre-composed targets from player's composeHinder? The target is
+      // the player's call but the attribute pair stays GM-side per RAW.
+      let targetTokenUuids;
+      if (director.ctx.pickedTargetUuids?.length) {
+        log(`TARGET (Hinder): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
+        targetTokenUuids = [...director.ctx.pickedTargetUuids];
+      } else {
+        const targetResult = await requestTargeting({
+          director,
+          eligible,
+          mode: "exact",
+          count: 1,
+          titleText: `${attackerSnap.name}: pick an opponent to Hinder`,
+        });
+        if (!targetResult.ok) {
+          director.dispatch({ type: targetResult.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+          return;
+        }
+        targetTokenUuids = [...targetResult.tokenUuids];
       }
 
       // Per RAW Core p.71, the GM picks the attribute pair AFTER the
@@ -965,7 +1352,7 @@ const Target = {
       // now — the player is committed to the target but waits for the GM
       // to call the check. Default DL is 10 (the fixed RAW value) but the
       // GM can adjust for situational difficulty.
-      const targetSnap = eligible.find((t) => t.tokenUuid === targetResult.tokenUuids[0]) ?? null;
+      const targetSnap = eligible.find((t) => t.tokenUuid === targetTokenUuids[0]) ?? null;
       const targetName = targetSnap?.name ?? "target";
       const checkConfig = await pickAttributePair({
         director,
@@ -980,13 +1367,13 @@ const Target = {
         director.dispatch({ type: INTENTS.TARGET_BACK });
         return;
       }
-      director.ctx.pickedTargetUuids = [...targetResult.tokenUuids];
+      director.ctx.pickedTargetUuids = targetTokenUuids;
       director.ctx.hinderCheckConfig = {
         A1: checkConfig.A1,
         A2: checkConfig.A2,
         dl: checkConfig.dl ?? 10,
       };
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: targetResult.tokenUuids } });
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids } });
       return;
     }
 
@@ -1011,20 +1398,36 @@ const Target = {
         return;
       }
 
+      // Pre-composed by player? Bundle carries skillUuid + sourceItemUuid
+      // + targetUuids. Skip pickSkill on this client.
+      const composedSpell = director.ctx._composedBundle;
+      const usingPreComposed = !!(composedSpell
+        && (composedSpell.command === "Skill" || composedSpell.command === "Spell")
+        && composedSpell.skillUuid);
+
       // 1) Pick from the actor's roster (+ equipped-item grants).
       //    Spell action filters to skill_type=Spell; Skill action to Active.
-      const pick = await pickSkill({
-        director,
-        actor: attackerActor,
-        allowedSkillTypes: isSpellAction ? ["spell"] : ["active"],
-        titleText: isSpellAction ? "Choose a Spell" : "Choose a Skill",
-        emptyMessage: isSpellAction
-          ? `${attackerActor.name ?? "Combatant"} knows no spells.`
-          : `${attackerActor.name ?? "Combatant"} has no Active skills available.`,
-      });
-      if (!pick) {
-        director.dispatch({ type: INTENTS.TARGET_BACK });
-        return;
+      let pick;
+      if (usingPreComposed) {
+        log(`TARGET (${command}): using pre-composed skillUuid=${composedSpell.skillUuid}`);
+        pick = {
+          skillUuid: composedSpell.skillUuid,
+          sourceItemUuid: composedSpell.sourceItemUuid ?? null,
+        };
+      } else {
+        pick = await pickSkill({
+          director,
+          actor: attackerActor,
+          allowedSkillTypes: isSpellAction ? ["spell"] : ["active"],
+          titleText: isSpellAction ? "Choose a Spell" : "Choose a Skill",
+          emptyMessage: isSpellAction
+            ? `${attackerActor.name ?? "Combatant"} knows no spells.`
+            : `${attackerActor.name ?? "Combatant"} has no Active skills available.`,
+        });
+        if (!pick) {
+          director.dispatch({ type: INTENTS.TARGET_BACK });
+          return;
+        }
       }
       let skill = null;
       try { skill = await fromUuid(pick.skillUuid); } catch {}
@@ -1098,14 +1501,21 @@ const Target = {
             return;
           }
           director.ctx.eligibleTargets = eligibleRaw;
-          const titleText = `${attackerSnap.name}: pick target${count > 1 ? "s" : ""} for ${skill.name}`;
-          const result = await requestTargeting({
-            director,
-            eligible: eligibleRaw,
-            mode,
-            count,
-            titleText,
-          });
+          // Pre-composed targets from player's composeSkill?
+          let result;
+          if (usingPreComposed && Array.isArray(composedSpell.targetUuids) && composedSpell.targetUuids.length) {
+            log(`TARGET (${command}): using pre-composed targets=${composedSpell.targetUuids.join(",")}`);
+            result = { ok: true, cancelled: false, tokenUuids: [...composedSpell.targetUuids] };
+          } else {
+            const titleText = `${attackerSnap.name}: pick target${count > 1 ? "s" : ""} for ${skill.name}`;
+            result = await requestTargeting({
+              director,
+              eligible: eligibleRaw,
+              mode,
+              count,
+              titleText,
+            });
+          }
           if (!result.ok) {
             director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
             return;
@@ -1300,7 +1710,13 @@ const Target = {
         return;
       }
       let attackMode = "main";
-      if (hasMain && hasOff) {
+      // Pre-populated by composeAction's bundle (player- or GM-driven
+      // race winner). When set, skip the weapon-mode picker — the
+      // decision was already made client-side.
+      if (director.ctx.attackMode) {
+        attackMode = director.ctx.attackMode;
+        log(`TARGET (Attack): using pre-composed attackMode=${attackMode}`);
+      } else if (hasMain && hasOff) {
         const picked = await pickWeaponMode({
           director,
           mainWeapon: attacker.weapon,
@@ -1393,14 +1809,32 @@ const Target = {
       cancelLabel = "Cancel";
     }
 
-    const result = await requestTargeting({
-      director,
-      eligible,
-      mode: "exact",
-      count: 1,
-      titleText,
-      cancelLabel,
-    });
+    // Pre-populated target check (first pass only). composeAction's
+    // bundle already provided pickedTargetUuids for pass 1; skip the
+    // picker and feed those straight through. Multi-pass re-entry
+    // (pass 2 of two-weapon) always re-prompts because pass 1's
+    // targets shouldn't auto-carry over and the player needs to
+    // re-decide (per RAW: "both aimed at the same target or different").
+    let result;
+    if (!isMultiPassReEntry && director.ctx.pickedTargetUuids?.length) {
+      log(`TARGET (Attack): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
+      result = {
+        ok: true,
+        cancelled: false,
+        tokenUuids: [...director.ctx.pickedTargetUuids],
+      };
+      // Cleared so pass 2 (if any) re-prompts via the picker.
+      director.ctx.pickedTargetUuids = null;
+    } else {
+      result = await requestTargeting({
+        director,
+        eligible,
+        mode: "exact",
+        count: 1,
+        titleText,
+        cancelLabel,
+      });
+    }
     if (!result.ok) {
       if (isMultiPassReEntry && result.cancelled) {
         // Skip the remaining passes; let CLEANUP → TURN_END finish the
@@ -1735,8 +2169,10 @@ const Compute = {
       // future skill that uses the same prop via an AE `changes` mode-5
       // OVERRIDE) replaces the weapon's native damageType for this
       // Attack. Looked up on the live actor doc; "None" / empty falls
-      // through to the weapon's native element.
-      const liveAttacker = await fromUuid(ar.attackerActorRef).catch(() => null);
+      // through to the weapon's native element. Uses `attacker.actorUuid`
+      // from the snapshot — actionResult is constructed later in this
+      // branch (Attack builds it here in COMPUTE, not back in TARGET).
+      const liveAttacker = await fromUuid(attacker.actorUuid).catch(() => null);
       const overriddenElement = applyDamageTypeOverride(liveAttacker, weapon.damageType);
       const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
 

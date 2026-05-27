@@ -195,16 +195,18 @@ function weaponIcon(weaponType) {
 // RAW grants both orders ("you perform the two attacks in any order you
 // prefer"). Order matters because some weapon riders (poison ticks,
 // status applies, on-hit reactions) depend on which strike lands first.
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false }) {
-  if (!game.user?.isGM) {
-    log("WeaponModePicker spawn skipped — non-GM client (v1 GM-only)");
-    return null;
-  }
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, externalCancel = null }) {
+  // No GM gate: weapon-mode picker is client-local.
   ensureStyles();
 
+  // Overlay keying. GM uses director.combatId; player runs without a
+  // director so falls back to a fixed key (only one weapon-mode picker
+  // is ever open per client at a time).
+  const overlayKey = director?.combatId ?? "no-director";
+
   // Despawn any prior.
-  const prior = _overlays.get(director.combatId);
-  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
+  const prior = _overlays.get(overlayKey);
+  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(overlayKey); }
 
   // Inline URL guard — strips anything that could break inline HTML.
   const safeUrl = (raw) => {
@@ -324,7 +326,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       root.classList.add("is-resolving");
       despawnTid = setTimeout(() => {
         try { root.remove(); } catch {}
-        _overlays.delete(director.combatId);
+        _overlays.delete(overlayKey);
       }, 200);
 
       if (keyListener) {
@@ -352,18 +354,28 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     };
     window.addEventListener("keydown", keyListener, true);
 
+    // External cancellation: caller resolves externalCancel to tear
+    // down this overlay (e.g. composeAction lost the race and needs
+    // to close its picker). Routes through the same path as Esc.
+    if (externalCancel && typeof externalCancel.then === "function") {
+      externalCancel.then(() => {
+        if (resolved) return;
+        try { finish("cancel"); } catch {}
+      });
+    }
+
     const cleanup = () => {
       try { clearTimeout(despawnTid); } catch {}
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
       try { root.remove(); } catch {}
-      _overlays.delete(director.combatId);
+      _overlays.delete(overlayKey);
       if (!resolved) {
         resolved = true;
         resolve(null);
       }
     };
 
-    _overlays.set(director.combatId, { cleanup, root });
+    _overlays.set(overlayKey, { cleanup, root });
   });
 }
 
@@ -372,7 +384,7 @@ export const WeaponModePicker = {
     const rec = _overlays.get(director.combatId);
     if (!rec) return;
     try { rec.cleanup(); } catch {}
-    _overlays.delete(director.combatId);
+    _overlays.delete(overlayKey);
   },
 
   despawnAll() {

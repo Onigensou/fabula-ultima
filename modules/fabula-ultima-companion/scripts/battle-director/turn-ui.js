@@ -6,11 +6,14 @@
 // without CSS or DOM collisions, this version:
 //
 //   - Uses the CSS prefix `fud-octopath` instead of `oni-octopath`.
-//   - Spawns only on the GM client in v1 (player-side spawn is future work
-//     via the IntentChannel).
+//   - Spawn works on BOTH GM and player clients — director is optional.
+//     GM-acting-on-NPC uses local dispatch; player-owned acting actor
+//     spawns on the owner's client via MENU_OPEN and emits an INTENT
+//     back over the socket. See [[director-player-driven-input]].
 //
-// On a button click, this fires:
-//   director.dispatch({ type: INTENTS.DECLARE_COMMAND, body: { command } })
+// Click → `onPick(command)` callback (caller decides what to do):
+//   - GM: dispatch DECLARE_COMMAND into the director directly.
+//   - Player: emit DECLARE_COMMAND over IntentChannel → GM dispatches.
 //
 // All other behavior (animation, pager, SFX, hooks for camera pan) is copied
 // from the legacy verbatim — modified only to namespace state and not to
@@ -178,9 +181,24 @@ function worldAnchor(token) {
   }
 }
 
-// Spawn the menu for a director instance over a given token. Returns a
-// `record` with cleanup() that the caller invokes to despawn.
-function spawnMenu({ director, token }) {
+// Spawn the menu over a given token. Returns a `record` with cleanup()
+// that the caller invokes to despawn.
+//
+// Params:
+//   - director:  optional. GM client passes the running director; player
+//                client passes null. When present, position-tracking hooks
+//                register via director.hooks (managed cleanup). Without
+//                it, hooks register on `Hooks.on` and we tear them down
+//                manually in cleanup().
+//   - token:     the token to anchor over (required, on both clients).
+//   - combatId:  used for DOM id keying. If not passed, falls back to
+//                director?.combatId.
+//   - onPick:    (command) => void. Called when a non-passive button is
+//                clicked. GM dispatches into director; player emits
+//                intent over socket. Must be supplied if no director.
+//   - onPassive: () => void. Called when the Passive button is clicked.
+//                Default opens PassiveManager for the actor.
+function spawnMenu({ director, token, combatId, onPick, onPassive }) {
   ensureBaseStyles();
 
   const PAGES = LEGACY_PAGES.map((p) => ({
@@ -191,7 +209,7 @@ function spawnMenu({ director, token }) {
 
   const root = document.createElement("div");
   root.className = "fud-octopath";
-  root.id = `fud-octopath-${director.combatId}`;
+  root.id = `fud-octopath-${combatId ?? "no-combat"}`;
 
   const pivot = document.createElement("div");
   pivot.className = "pivot";
@@ -303,22 +321,15 @@ function spawnMenu({ director, token }) {
           // action — they don't consume the turn. Currently: "Passive".
           if (NON_ACTION_COMMANDS.has(it.label)) {
             if (it.label === "Passive") {
-              try {
-                const actorUuid = director.ctx?.turnSnapshot?.actorUuid
-                  ?? director.dCombat?.current?.actorUuid
-                  ?? null;
-                const actor = actorUuid ? await fromUuid(actorUuid) : null;
-                if (!actor) { warn("Turn UI: Passive button — no active actor"); return; }
-                PassiveManager.show({ actor });
-              } catch (e) { warn("Turn UI: Passive button failed", e); }
+              try { await onPassive?.(); }
+              catch (e) { warn("Turn UI: onPassive threw", e); }
             }
             return;
           }
-          // Dispatch the declared command into the director.
-          director.dispatch({
-            type: INTENTS.DECLARE_COMMAND,
-            body: { command: it.label },
-          });
+          // Fire the pick callback. Caller decides whether to dispatch
+          // locally (GM) or emit over socket (player).
+          try { onPick?.(it.label); }
+          catch (e) { warn("Turn UI: onPick threw", e); }
         });
         it.btn.style.pointerEvents = "auto";
         it.bound = true;
@@ -344,10 +355,25 @@ function spawnMenu({ director, token }) {
   };
   ticker.add(tickFn);
 
-  const h1 = director.hooks.on("updateToken", (doc) => {
-    if (doc?.id === token.document?.id) render();
-  }, { label: "turn-ui:updateToken" });
-  const h2 = director.hooks.on("canvasPan", render, { label: "turn-ui:canvasPan" });
+  // Position-tracking hooks. GM uses director.hooks (managed cleanup via
+  // director.disposeAll); player has no director, so we register on the
+  // global Hooks bus and tear down manually in cleanup().
+  const manualHookCleanups = [];
+  if (director?.hooks?.on) {
+    director.hooks.on("updateToken", (doc) => {
+      if (doc?.id === token.document?.id) render();
+    }, { label: "turn-ui:updateToken" });
+    director.hooks.on("canvasPan", render, { label: "turn-ui:canvasPan" });
+  } else {
+    const onUpdateToken = (doc) => {
+      if (doc?.id === token.document?.id) render();
+    };
+    const onCanvasPan = () => render();
+    const hookIdUpdate = Hooks.on("updateToken", onUpdateToken);
+    const hookIdPan = Hooks.on("canvasPan", onCanvasPan);
+    manualHookCleanups.push(() => { try { Hooks.off("updateToken", hookIdUpdate); } catch {} });
+    manualHookCleanups.push(() => { try { Hooks.off("canvasPan", hookIdPan); } catch {} });
+  }
 
   function flipPage(dir) {
     pageIndex = (pageIndex + dir + PAGES.length) % PAGES.length;
@@ -369,37 +395,74 @@ function spawnMenu({ director, token }) {
     try { ticker.remove(tickFn); } catch {}
     try { window.removeEventListener("keydown", keyListener, true); } catch {}
     try { root.remove(); } catch {}
-    // Hooks are owned by HookRegistry; the director's disposeAll handles them.
+    // Director-owned hooks: HookRegistry's disposeAll cleans them up.
+    // Player-side hooks: manual unbind via the cleanup list.
+    for (const fn of manualHookCleanups) {
+      try { fn(); } catch {}
+    }
     log("Turn UI cleaned up for", token?.name);
   }
 
   return { cleanup, root };
 }
 
-// Public surface used by state handlers.
+// Public surface used by state handlers AND by the player-side
+// MENU_OPEN handler. The shape of args determines who's driving:
+//   - GM-acting-on-NPC: pass { director, token } → uses defaults
+//     (onPick → director.dispatch; onPassive → PassiveManager.show).
+//   - Player-on-PC:     pass { token, combatId, actorUuid, onPick }
+//     where onPick emits DECLARE_COMMAND over IntentChannel.
 export const TurnUI = {
-  spawn({ director, token }) {
-    if (!game.user?.isGM) {
-      log("Turn UI spawn skipped — non-GM client (v1 is GM-only)");
-      return null;
-    }
+  spawn({ director, token, combatId, actorUuid, onPick, onPassive }) {
     if (!token) {
       warn("Turn UI spawn: no token");
       return null;
     }
-    // Despawn any prior instance for this director
-    const prior = _instances.get(director.combatId);
+    const key = combatId ?? director?.combatId ?? "no-combat";
+
+    // Despawn any prior instance keyed by this combatId.
+    const prior = _instances.get(key);
     if (prior) { try { prior.cleanup(); } catch {} }
-    const rec = spawnMenu({ director, token });
-    _instances.set(director.combatId, rec);
+
+    // Default onPick: dispatch into the director. Requires `director`.
+    const pickCb = onPick ?? ((command) => {
+      if (!director) {
+        warn("Turn UI: onPick called without director or callback override");
+        return;
+      }
+      director.dispatch({
+        type: INTENTS.DECLARE_COMMAND,
+        body: { command },
+      });
+    });
+
+    // Default onPassive: open the PassiveManager for the acting actor.
+    // Reads actorUuid from (in order) explicit arg, director snapshot,
+    // or director.dCombat.current.
+    const passiveCb = onPassive ?? (async () => {
+      try {
+        const aUuid = actorUuid
+          ?? director?.ctx?.turnSnapshot?.actorUuid
+          ?? director?.dCombat?.current?.actorUuid
+          ?? null;
+        const actor = aUuid ? await fromUuid(aUuid) : null;
+        if (!actor) { warn("Turn UI: Passive button — no active actor"); return; }
+        PassiveManager.show({ actor });
+      } catch (e) { warn("Turn UI: Passive button failed", e); }
+    });
+
+    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb });
+    _instances.set(key, rec);
     return rec;
   },
 
-  despawn({ director }) {
-    const rec = _instances.get(director.combatId);
+  despawn({ director, combatId } = {}) {
+    const key = combatId ?? director?.combatId;
+    if (!key) return;
+    const rec = _instances.get(key);
     if (!rec) return;
     try { rec.cleanup(); } catch {}
-    _instances.delete(director.combatId);
+    _instances.delete(key);
   },
 
   despawnAll() {
@@ -409,3 +472,63 @@ export const TurnUI = {
     _instances.clear();
   },
 };
+
+// DEPRECATED — per-pick MENU_OPEN("turn-ui") handler from an earlier
+// architecture iteration. Superseded by composeAction.js's
+// registerPlayerComposeActionHandler — which runs the entire Octopath +
+// per-command picker chain client-locally and only emits one
+// ACTION_COMPOSED intent at the end. Kept as a reference; not imported.
+// See [[director-player-driven-input]] §"Implementation log".
+export function registerPlayerTurnUiHandler(channel) {
+  const offOpen = channel.onMenuOpen(async (menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "turn-ui") return;
+    if (!menuSpec.tokenUuid) {
+      warn("turn-ui MENU_OPEN: missing tokenUuid");
+      return;
+    }
+    try {
+      const tokenDoc = await fromUuid(menuSpec.tokenUuid);
+      if (!tokenDoc) {
+        warn(`turn-ui MENU_OPEN: tokenDoc not found ${menuSpec.tokenUuid}`);
+        return;
+      }
+      // Make sure the player is viewing the battle scene so the canvas
+      // anchor resolves. scene.view() switches the player's own viewport
+      // without affecting other clients (unlike scene.activate(), which
+      // is GM-only).
+      const tokenScene = tokenDoc.parent;
+      if (tokenScene && tokenScene.id !== canvas?.scene?.id) {
+        log(`turn-ui MENU_OPEN: switching player view to ${tokenScene.name}`);
+        try { await tokenScene.view(); } catch (e) { warn("scene.view threw", e); }
+      }
+      const token = tokenDoc.object ?? canvas?.tokens?.get(tokenDoc.id);
+      if (!token) {
+        warn(`turn-ui MENU_OPEN: token not on canvas ${menuSpec.tokenUuid}`);
+        return;
+      }
+      TurnUI.spawn({
+        director: null,
+        token,
+        combatId: menuSpec.combatId,
+        actorUuid: menuSpec.actorUuid,
+        onPick: (command) => {
+          channel.emit({
+            type: INTENTS.DECLARE_COMMAND,
+            body: { command },
+            combatId: menuSpec.combatId,
+          });
+        },
+        // onPassive falls through to default (opens PassiveManager).
+      });
+    } catch (e) { warn("turn-ui MENU_OPEN handler threw", e); }
+  });
+
+  const offClose = channel.onMenuClose((payload) => {
+    if (payload?.kind && payload.kind !== "turn-ui") return;
+    // No reliable combatId in the payload at the moment — close all.
+    // At most one Turn UI is open per client, so this is safe.
+    try { TurnUI.despawnAll(); } catch {}
+  });
+
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };
+}

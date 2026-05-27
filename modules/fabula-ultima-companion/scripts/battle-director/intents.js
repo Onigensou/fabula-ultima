@@ -11,11 +11,24 @@ export const INTENTS = Object.freeze({
   // External — sent by Turn UI on the GM's client
   DECLARE_COMMAND: "DECLARE_COMMAND",   // body: { command: "Attack" | "Guard" | ... }
 
+  // External — sent by a player client when they finish composing an
+  // action locally (composeAction.js). Carries the entire commit bundle
+  // so the GM doesn't have to ask back per-pick. See
+  // [[director-player-driven-input]].
+  ACTION_COMPOSED: "ACTION_COMPOSED",   // body: { bundle: {...} }
+
+  // External — sent by a player client when they click "Take Action" on
+  // one of their owned combatants in the turn picker. GM-side TURN_START
+  // races this against its own local picker click; whoever clicks first
+  // wins.
+  TURN_COMBATANT_PICKED: "TURN_COMBATANT_PICKED", // body: { combatantId: string }
+
   // External — sent by Target Picker
   TARGET_PICKED:   "TARGET_PICKED",     // body: { targetTokenUuids: string[] }
   TARGET_BACK:    "TARGET_BACK",        // user wants to re-pick command
 
-  // External — sent by Action Card buttons
+  // External — sent by Action Card buttons (GM-local OR player-owner
+  // via socket). Carry no body — the FSM reads ctx.actionResult.
   CONFIRM_ACTION:  "CONFIRM_ACTION",
   CANCEL_ACTION:   "CANCEL_ACTION",
 

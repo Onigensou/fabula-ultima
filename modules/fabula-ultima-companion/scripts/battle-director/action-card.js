@@ -26,8 +26,29 @@
 // action-card identity flags, chat-log persistence.
 
 import { log, warn } from "./logger.js";
+import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
+
+// Resolve which active non-GM user owns the actor at `actorUuid`.
+// Returns userId or null. Used to gate which player's mirror card
+// has interactive Confirm/Cancel buttons. Deterministic on
+// multi-owner actors (sort by id).
+async function resolveCardOwnerUserId(actorUuid) {
+  try {
+    const actor = await fromUuid(actorUuid);
+    if (!actor) return null;
+    const candidates = (game.users?.contents ?? []).filter((u) => {
+      if (u.isGM) return false;
+      if (!u.active) return false;
+      try { return actor.testUserPermission?.(u, "OWNER"); }
+      catch { return false; }
+    });
+    if (!candidates.length) return null;
+    candidates.sort((a, b) => a.id.localeCompare(b.id));
+    return candidates[0].id;
+  } catch { return null; }
+}
 
 const CSS_ID  = "fud-battlefield-card-style";
 const ROOT_ID = "fud-battlefield-card-root";
@@ -2434,8 +2455,12 @@ function stripHtmlForDesc(html) {
 // Public surface
 // ─────────────────────────────────────────────────────────────────────
 export async function postActionCard({ director, kind, payload }) {
+  // GM-only entry — this builds the authoritative card + manages the
+  // resolve Promise that the state-handler awaits. Player clients see
+  // the card via the broadcast mirror (spawnActionCardMirror below),
+  // not via this function.
   if (!game.user?.isGM) {
-    log("Action card spawn skipped — non-GM client (v1 GM-only)");
+    log("Action card spawn skipped — non-GM client (state-handlers run GM-side)");
     return { confirmed: false };
   }
 
@@ -2530,6 +2555,40 @@ export async function postActionCard({ director, kind, payload }) {
 
   log("Battlefield action card spawned", card.titleText);
 
+  // Broadcast the rendered card to all active non-GM clients so they
+  // see the same card as the GM. Owner gets interactive buttons; other
+  // observers get a read-only mirror. See [[director-player-driven-input]].
+  //
+  // We send the rendered outerHTML (simplest portable representation —
+  // re-deriving the card on each client requires importing the whole
+  // builder graph). Owner detection uses the attacker actor UUID
+  // embedded in the payload.
+  try {
+    const attackerActorUuid = payload?.attacker?.actorUuid
+      ?? payload?.attackerActorRef
+      ?? null;
+    const ownerUserId = attackerActorUuid
+      ? (await resolveCardOwnerUserId(attackerActorUuid))
+      : null;
+    const cardHTML = root.outerHTML;
+    const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+    for (const u of onlinePlayers) {
+      try {
+        director.intentChannel?.broadcastMenuOpen({
+          targetUserId: u.id,
+          menuSpec: {
+            kind: "action-card",
+            combatId: director.combatId,
+            cardKind: kind,
+            ownerUserId,
+            attackerActorUuid,
+            html: cardHTML,
+          },
+        });
+      } catch (e) { warn(`postActionCard: broadcast to ${u.name} threw`, e); }
+    }
+  } catch (e) { warn("postActionCard: broadcast setup threw", e); }
+
   return new Promise((resolve) => {
     let resolved = false;
     let despawnTid = null;
@@ -2538,6 +2597,25 @@ export async function postActionCard({ director, kind, payload }) {
     const finish = (outcome, extras = {}) => {
       if (resolved) return;
       resolved = true;
+      // Abort the unused remote awaits so they don't linger and steal
+      // the next turn's matching intent. Defined below in this Promise
+      // constructor; safe to reference via closure hoisting.
+      try { abortPendingAwaits?.(); } catch {}
+      // Tell all player clients to close their mirror cards. The GM-side
+      // DOM is despawned by the timeout below; this just keeps the
+      // player's view in sync.
+      try {
+        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+        for (const u of onlinePlayers) {
+          try {
+            director.intentChannel?.broadcastMenuClose({
+              targetUserId: u.id,
+              kind: "action-card",
+              reason: `card-${outcome}`,
+            });
+          } catch {}
+        }
+      } catch {}
 
       for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
 
@@ -2565,6 +2643,47 @@ export async function postActionCard({ director, kind, payload }) {
       // back to Confirm. Currently used for `statusValue`.
       resolve({ confirmed: outcome === "confirm", ...extras });
     };
+
+    // Player-driven confirm/cancel via IntentChannel. The acting actor's
+    // owner sees their own copy of the card; clicking Confirm/Cancel
+    // there emits an intent which lands here via awaitIntent. Either
+    // side (GM-local button OR player-side intent) resolves the same
+    // `finish` — whichever wins first.
+    //
+    // CRITICAL: we abort the unused side's await as soon as ANY path
+    // resolves. Without this, e.g. a CONFIRM-fired finish() leaves the
+    // CANCEL_ACTION await dangling in _pendingAwaits. On the NEXT turn,
+    // an emitted CANCEL_ACTION would match the stale entry first
+    // (Map insertion order) and the new turn's await would never fire.
+    let confirmAwait = null;
+    let cancelAwait = null;
+    const abortPendingAwaits = () => {
+      try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
+    };
+    if (director?.intentChannel) {
+      try {
+        confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, {
+          timeoutMs: 30 * 60 * 1000,
+        });
+        cancelAwait = director.intentChannel.awaitIntent(INTENTS.CANCEL_ACTION, {
+          timeoutMs: 30 * 60 * 1000,
+        });
+        confirmAwait.then((intent) => {
+          log("postActionCard: remote CONFIRM_ACTION received");
+          const extras = intent?.body ?? {};
+          finish("confirm", extras);
+        }).catch((e) => {
+          if (!resolved) warn("postActionCard: CONFIRM_ACTION await failed", e?.message);
+        });
+        cancelAwait.then(() => {
+          log("postActionCard: remote CANCEL_ACTION received");
+          finish("cancel");
+        }).catch((e) => {
+          if (!resolved) warn("postActionCard: CANCEL_ACTION await failed", e?.message);
+        });
+      } catch (e) { warn("postActionCard: remote intent setup threw", e); }
+    }
 
     const onClick = (ev) => {
       const lockedInvoke = ev.target?.closest?.(".fud-btn-invoke.is-locked");
@@ -2887,3 +3006,285 @@ export const BattlefieldActionCard = {
     _overlays.clear();
   },
 };
+
+// ─── Player-side mirror ───────────────────────────────────────────────
+//
+// Player clients receive the GM's rendered action card via MENU_OPEN
+// { kind: "action-card", html, ownerUserId, ... } and inject the HTML
+// into their own document body. Interactive buttons (Confirm/Cancel)
+// are gated: only the acting actor's owner can click. Everyone else
+// gets a read-only render.
+//
+// On owner-click → emit CONFIRM_ACTION or CANCEL_ACTION over the
+// IntentChannel. GM's awaitIntent in postActionCard resolves on
+// receipt, finishing the local Promise and broadcasting MENU_CLOSE
+// to all clients (closing the mirror DOM).
+//
+// State: only one mirror card lives at a time per client. A second
+// MENU_OPEN supersedes the prior.
+const MIRROR_ROOT_ID = "fud-bf-mirror-root";
+let _mirrorCleanup = null;
+
+function cleanupMirror() {
+  if (_mirrorCleanup) {
+    try { _mirrorCleanup(); } catch {}
+    _mirrorCleanup = null;
+  }
+  const existing = document.getElementById(MIRROR_ROOT_ID);
+  if (existing) try { existing.remove(); } catch {}
+}
+
+export function registerPlayerActionCardHandler(channel) {
+  const offOpen = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card") return;
+    if (!menuSpec.html) {
+      warn("action-card MENU_OPEN: missing html");
+      return;
+    }
+
+    // Inject the card's stylesheet on this client. The CSS rules are
+    // GM-injected on first postActionCard() call there; player clients
+    // never reach that code path, so without this call the imported
+    // HTML renders unstyled and shoves document layout (the original
+    // bug: card pushed the player's sidebar around). ensureStyles is
+    // idempotent — checks for the existing <style id="..."> before
+    // injecting.
+    try { ensureStyles(); }
+    catch (e) { warn("mirror ensureStyles threw — card will render unstyled", e); }
+
+    // Replace any prior mirror — only one card on screen at a time.
+    cleanupMirror();
+
+    // Build a wrapper so we can hold both the imported HTML and the
+    // event handlers. The imported HTML preserves the original DOM ids
+    // (e.g. "fud-bf-action-card-root") so styles attach correctly.
+    const wrapper = document.createElement("div");
+    wrapper.id = MIRROR_ROOT_ID;
+    wrapper.innerHTML = menuSpec.html;
+    document.body.appendChild(wrapper);
+
+    // Permission gate. Owner of the acting actor gets interactive
+    // buttons; non-owners see them but clicks are no-ops with a hint.
+    const isOwner = menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id;
+    const card = wrapper.querySelector(".fud-bf-card");
+
+    if (!isOwner && card) {
+      // Visually mark the card as read-only — also disables click via
+      // event guard below. The class is purely informational; the real
+      // gate is the event listener.
+      card.classList.add("is-readonly-mirror");
+      // Add a subtle banner so the observer knows they can't act.
+      const banner = document.createElement("div");
+      banner.style.cssText = "position:absolute; top:8px; left:50%; transform:translateX(-50%); padding:4px 10px; border-radius:6px; background:rgba(0,0,0,0.55); color:#fff; font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; pointer-events:none; z-index:10;";
+      banner.textContent = "Observing";
+      card.appendChild(banner);
+    }
+
+    // Click logic — replicates the GM-side onClick for interactive card
+    // UI (Equipment dropdowns, Item tabs+rows, "Open Sheet" button,
+    // Confirm/Cancel buttons). Non-owner observers get no bindings at
+    // all (.is-readonly-mirror set above visually disables hover/focus).
+    let onClick = null;
+    if (isOwner) {
+      onClick = (ev) => {
+        // "Open Character Sheet" — fire-and-forget; opens the actor's
+        // sheet for the player to rearrange equipment manually.
+        const openSheet = ev.target?.closest?.("[data-fud-open-sheet]");
+        if (openSheet) {
+          ev.stopPropagation();
+          const uuid = openSheet.dataset.fudOpenSheet;
+          (async () => {
+            try {
+              const doc = await fromUuid(uuid);
+              const sheet = doc?.sheet ?? doc?.actor?.sheet;
+              if (sheet?.render) sheet.render(true);
+              else ui.notifications?.warn("Could not open the character sheet.");
+            } catch (e) {
+              warn("Open sheet (mirror) failed", e);
+              ui.notifications?.error("Failed to open the character sheet.");
+            }
+          })();
+          return;
+        }
+        // Equipment dropdown handling — mirrors GM-side logic. The
+        // helpers setEquipRowSelection / applyHandPick are module-level
+        // so they work against any DOM tree.
+        const equipOption = ev.target?.closest?.(".fud-bf-equip-option");
+        const equipTrigger = ev.target?.closest?.(".fud-bf-equip-trigger");
+        if (equipOption || equipTrigger) {
+          ev.stopPropagation();
+          const row = (equipOption ?? equipTrigger).closest(".fud-bf-equip-row");
+          if (!row) return;
+          if (equipOption) {
+            const newValue = equipOption.dataset.fudEquipValue || "";
+            const newIsTwoHanded = equipOption.dataset.fudEquipTwohanded === "1";
+            const isHandGroup = row.dataset.fudEquipGroup === "hand";
+            if (isHandGroup) {
+              const group = row.dataset.fudEquipGroup;
+              const peer = Array.from(wrapper.querySelectorAll(
+                `.fud-bf-equip-row[data-fud-equip-group="${group}"]`
+              )).find((p) => p !== row) ?? null;
+              applyHandPick(row, peer, newValue, newIsTwoHanded);
+            } else {
+              const oldValue = row.dataset.fudEquipCurrent || "";
+              const group = row.dataset.fudEquipGroup;
+              const peers = wrapper.querySelectorAll(
+                `.fud-bf-equip-row[data-fud-equip-group="${group}"]`
+              );
+              for (const peer of peers) {
+                if (peer === row) continue;
+                if (newValue && (peer.dataset.fudEquipCurrent || "") === newValue) {
+                  setEquipRowSelection(peer, oldValue);
+                }
+              }
+              setEquipRowSelection(row, newValue);
+            }
+            row.classList.remove("is-open");
+            const trig = row.querySelector(".fud-bf-equip-trigger");
+            if (trig) trig.setAttribute("aria-expanded", "false");
+            return;
+          }
+          // Trigger clicked — toggle popover, close others.
+          const isOpen = row.classList.contains("is-open");
+          for (const other of wrapper.querySelectorAll(".fud-bf-equip-row.is-open")) {
+            if (other === row) continue;
+            other.classList.remove("is-open");
+            const t = other.querySelector(".fud-bf-equip-trigger");
+            if (t) t.setAttribute("aria-expanded", "false");
+          }
+          row.classList.toggle("is-open", !isOpen);
+          equipTrigger.setAttribute("aria-expanded", String(!isOpen));
+          return;
+        }
+        // Click outside an open popover closes it.
+        const anyOpen = wrapper.querySelectorAll(".fud-bf-equip-row.is-open");
+        if (anyOpen.length) {
+          for (const r of anyOpen) {
+            r.classList.remove("is-open");
+            const t = r.querySelector(".fud-bf-equip-trigger");
+            if (t) t.setAttribute("aria-expanded", "false");
+          }
+        }
+        // Item-card tab switch.
+        const itemTab = ev.target?.closest?.(".fud-bf-item-tab");
+        if (itemTab) {
+          ev.stopPropagation();
+          const tabKey = itemTab.dataset.fudItemTab;
+          for (const t of wrapper.querySelectorAll(".fud-bf-item-tab")) {
+            t.classList.toggle("is-active", t === itemTab);
+          }
+          for (const p of wrapper.querySelectorAll(".fud-bf-item-panel")) {
+            p.classList.toggle("is-active", p.dataset.fudItemPanel === tabKey);
+          }
+          return;
+        }
+        // Item-card row select.
+        const itemRow = ev.target?.closest?.(".fud-bf-item-row");
+        if (itemRow) {
+          ev.stopPropagation();
+          if (itemRow.dataset.fudItemDisabled === "1") return;
+          for (const r of wrapper.querySelectorAll(".fud-bf-item-row")) {
+            r.classList.toggle("is-selected", r === itemRow);
+          }
+          // Item-card root is the .fud-bf-card child (NOT our wrapper).
+          // GM's path stores selection on root.dataset; we do the same on
+          // the imported card div so the data lookup at Confirm finds it.
+          const cardEl = wrapper.querySelector(".fud-bf-card");
+          if (cardEl) {
+            cardEl.dataset.fudItemMode = itemRow.dataset.fudItemMode || "";
+            cardEl.dataset.fudItemKey  = itemRow.dataset.fudItemKey  || "";
+            cardEl.dataset.fudItemCost = itemRow.dataset.fudItemCost || "0";
+          }
+          const confirmBtn = wrapper.querySelector(".fud-btn-confirm");
+          if (confirmBtn) confirmBtn.classList.remove("is-disabled");
+          return;
+        }
+        // Final Confirm / Cancel button — collect extras + emit intent.
+        const btn = ev.target?.closest?.("[data-fud-action]");
+        if (!btn) return;
+        if (btn.classList.contains("is-disabled")) {
+          ev.stopPropagation();
+          return;
+        }
+        ev.stopPropagation();
+        const action = btn.dataset.fudAction;
+        const extras = {};
+        // Status pick (Hinder)
+        if (btn.dataset.fudStatusValue) extras.statusValue = btn.dataset.fudStatusValue;
+        // Equipment selections (one entry per slot)
+        const equipRows = wrapper.querySelectorAll(".fud-bf-equip-row[data-fud-equip-slot]");
+        if (equipRows.length) {
+          const map = {};
+          for (const r of equipRows) {
+            const slot = r.dataset.fudEquipSlot;
+            if (slot) map[slot] = r.dataset.fudEquipCurrent || null;
+          }
+          extras.equipmentSelections = map;
+        }
+        // Item selection (mode/key/cost stamped on .fud-bf-card root)
+        const cardEl = wrapper.querySelector(".fud-bf-card");
+        if (cardEl?.dataset.fudItemMode && cardEl?.dataset.fudItemKey) {
+          extras.itemSelection = {
+            mode: cardEl.dataset.fudItemMode,
+            key:  cardEl.dataset.fudItemKey,
+            cost: Number(cardEl.dataset.fudItemCost || 0) || 0,
+          };
+        }
+        if (action === "confirm") {
+          channel.emit({
+            type: INTENTS.CONFIRM_ACTION,
+            body: extras,
+            combatId: menuSpec.combatId,
+          });
+          for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+        } else if (action === "cancel") {
+          channel.emit({
+            type: INTENTS.CANCEL_ACTION,
+            body: {},
+            combatId: menuSpec.combatId,
+          });
+          for (const b of wrapper.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+        }
+      };
+      wrapper.addEventListener("click", onClick);
+    } else {
+      // Non-owner observer — soft block: log a hint but consume the
+      // click so it doesn't fall through to anything below.
+      onClick = (ev) => {
+        const btn = ev.target?.closest?.("[data-fud-action]");
+        if (btn) {
+          ev.stopPropagation();
+          ui.notifications?.info("Only the acting player or GM can confirm this action.");
+        }
+      };
+      wrapper.addEventListener("click", onClick);
+    }
+
+    // Make the card visible. The CSS animation rule is keyed on
+    // `#${ROOT_ID}.is-visible` (NOT .fud-bf-card.is-visible), so we
+    // have to add the class to the root element (the imported div with
+    // id="fud-bf-action-card-root"), not the card child. Without this,
+    // the root stays at opacity:0 and the player sees nothing.
+    //
+    // The GM-side broadcast captures outerHTML before its own RAF
+    // adds is-visible (RAF fires after the synchronous broadcast),
+    // so the class is essentially never in the incoming HTML.
+    const importedRoot = wrapper.querySelector(`#${ROOT_ID}`);
+    if (importedRoot && !importedRoot.classList.contains("is-visible")) {
+      requestAnimationFrame(() => importedRoot.classList.add("is-visible"));
+    }
+
+    _mirrorCleanup = () => {
+      try { wrapper.removeEventListener("click", onClick); } catch {}
+    };
+
+    log(`action-card mirror rendered (owner=${isOwner ? "yes" : "observer"})`);
+  });
+
+  const offClose = channel.onMenuClose((payload) => {
+    if (payload?.kind && payload.kind !== "action-card") return;
+    cleanupMirror();
+  });
+
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };
+}
