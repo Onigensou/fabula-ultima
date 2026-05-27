@@ -175,6 +175,13 @@
     PLANNING_RESULT:       "CAMP_PLANNING_RESULT",       // GM → all (final matchCount + bonus)
     PLANNING_PROCEED:      "CAMP_PLANNING_PROCEED",      // owner → GM
     PLANNING_DONE:         "CAMP_PLANNING_DONE",         // GM → all
+    // Curse minigame (Straw Doll Hex)
+    CURSE_START:   "CAMP_CURSE_START",   // GM → all clients
+    CURSE_BEGIN:   "CAMP_CURSE_BEGIN",   // owner → all (Click to Begin; starts spectator countdown)
+    CURSE_HIT:     "CAMP_CURSE_HIT",     // owner → all (per-key press: { actorId, success, perfect })
+    CURSE_RESULT:  "CAMP_CURSE_RESULT",  // owner → GM (score) / GM → all (score + tier)
+    CURSE_PROCEED: "CAMP_CURSE_PROCEED", // owner → GM
+    CURSE_DONE:    "CAMP_CURSE_DONE",    // GM → all
   });
 
   // ---------------------------------------------------------------------------
