@@ -109,6 +109,29 @@
           return;
         }
 
+        // ── Curse minigame (Straw Doll Hex) ──────────────────────────────
+        if (type === CAMP.MSG.CURSE_START) {
+          CAMP.CurseUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_BEGIN) {
+          CAMP.CurseUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_HIT) {
+          CAMP.CurseUI?.onHit(payload?.success, payload?.perfect);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_RESULT && payload?.tier != null) {
+          // Full result from GM — reveal phase
+          CAMP.CurseUI?.applyResult(payload.actorId, payload.score, payload.tier);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_DONE) {
+          CAMP.CurseUI?.hide();
+          return;
+        }
+
         // ── Combat Lesson minigame (GM → all, owner → GM) ────────────────
         if (type === CAMP.MSG.COMBAT_LESSON_START) {
           CAMP.CombatLessonUI?.show(payload?.actorId, payload?.allies);
@@ -491,6 +514,14 @@
 
           case CAMP.MSG.DAYDREAM_PROCEED:
             CAMP.DaydreamUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.CURSE_RESULT:    // owner → GM: score submitted
+            CAMP.CurseUI?.resolveScore(payload?.actorId, payload?.score);
+            break;
+
+          case CAMP.MSG.CURSE_PROCEED:
+            CAMP.CurseUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.COMBAT_LESSON_TARGET:
