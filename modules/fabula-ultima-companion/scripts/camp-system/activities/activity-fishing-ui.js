@@ -69,12 +69,19 @@
   const BASE_GAUGE_SPEED = 45;    // units/sec at DEX 8
   const BATTLE_BAR_H     = 300;   // px — gameplay bar height
   const BASE_BAR_H       = 60;    // px — fishing bar height at INS 8
-  const BASE_UP_SPEED    = 180;   // px/sec bar rises when SPACE held (DEX 8)
-  const BAR_DOWN_SPEED   = 120;   // px/sec bar falls (gravity, fixed)
-  const BASE_FILL_RATE   = 15;    // %/sec HP fills when fish in zone (MIG 8)
-  const HP_DRAIN_RATE    = 10;    // %/sec HP drains when fish out of zone (fixed)
+  const BASE_UP_SPEED    = 160;   // px/sec bar rises when SPACE held (DEX 8)
+  const BAR_DOWN_SPEED   = 90;    // px/sec bar falls (gravity, fixed) — kept low so bar stays up easily
+  const BASE_FILL_RATE   = 12;    // %/sec HP fills when fish in zone (MIG 8)
+  const HP_DRAIN_RATE    = 20;    // %/sec HP drains when fish out of zone — fast, punishing
   const FISH_START_HP    = 50;    // %
   const HIT_INTERVAL_MS  = 250;   // ms — battle heartbeat to spectators
+
+  // Fish movement — calm-with-bursts pattern
+  const FISH_CRUISE_SPD  = 35;    // px/sec normal, relaxed swimming speed
+  const FISH_BURST_SPD   = 150;   // px/sec sudden burst (still beatable; ~same as DEX-8 bar speed)
+  const FISH_BURST_MS    = 550;   // ms a burst lasts before returning to calm
+  const BURST_INT_MIN    = 3500;  // ms minimum quiet time between bursts
+  const BURST_INT_MAX    = 6500;  // ms maximum quiet time between bursts
 
   // ---------------------------------------------------------------------------
   // Module state
@@ -104,8 +111,9 @@
 
   // Battle phase
   let _fishY           = BATTLE_BAR_H / 2;
-  let _fishVel         = 100;
-  let _fishDirChangeMs = 0;
+  let _fishVel         = FISH_CRUISE_SPD;   // positive = moving down
+  let _fishBurstEndMs  = 0;    // >0 while in burst mode
+  let _nextBurstMs     = 0;    // timestamp when next burst triggers
   let _playerBarY      = 0;
   let _fishHp          = FISH_START_HP;
   let _spaceDown       = false;
@@ -218,14 +226,17 @@
     _stopLoop(_slowReelAudio); _slowReelAudio = null;
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
 
-    _gaugeValue   = 0;
-    _gaugeDir     = 1;
-    _castLocked   = false;
-    _fishY        = BATTLE_BAR_H / 2;
-    _playerBarY   = BATTLE_BAR_H / 2 - BASE_BAR_H / 2;
-    _fishHp       = FISH_START_HP;
-    _spaceDown    = false;
-    _battleActive = false;
+    _gaugeValue    = 0;
+    _gaugeDir      = 1;
+    _castLocked    = false;
+    _fishY         = BATTLE_BAR_H / 2;
+    _fishVel       = FISH_CRUISE_SPD;
+    _fishBurstEndMs = 0;
+    _nextBurstMs   = 0;
+    _playerBarY    = BATTLE_BAR_H / 2 - BASE_BAR_H / 2;
+    _fishHp        = FISH_START_HP;
+    _spaceDown     = false;
+    _battleActive  = false;
     Object.keys(_el).forEach(k => _el[k] = null);
   }
 
@@ -717,11 +728,13 @@
     if (!stage) return;
 
     // Reset state
+    const now     = performance.now();
     _fishY        = BATTLE_BAR_H * 0.35;
     _playerBarY   = BATTLE_BAR_H / 2 - _playerBarH / 2;
     _fishHp       = FISH_START_HP;
-    _fishVel      = (Math.random() < 0.5 ? 1 : -1) * (90 + Math.random() * 60);
-    _fishDirChangeMs = performance.now() + 500 + Math.random() * 700;
+    _fishVel      = FISH_CRUISE_SPD;   // start drifting downward calmly
+    _fishBurstEndMs  = 0;
+    _nextBurstMs     = now + BURST_INT_MIN + Math.random() * (BURST_INT_MAX - BURST_INT_MIN);
     _spaceDown    = false;
     _battleActive = true;
 
@@ -749,15 +762,32 @@
       const dt = Math.min(ts - _battleLastMs, 50) / 1000;
       _battleLastMs = ts;
 
-      // Fish movement
-      if (ts >= _fishDirChangeMs) {
-        const spd = 80 + Math.random() * 100 + (_fishHp / 100) * 80;
-        _fishVel = (Math.random() < 0.5 ? 1 : -1) * spd;
-        _fishDirChangeMs = ts + 500 + Math.random() * 900;
+      // ── Fish movement — calm cruise with periodic bursts ──────────────────
+      if (_fishBurstEndMs > 0) {
+        // BURST MODE: fish dashes at high speed in current direction
+        _fishY += _fishVel * dt;
+        if (ts >= _fishBurstEndMs) {
+          // Burst over — return to calm cruise in the same direction
+          _fishBurstEndMs  = 0;
+          _fishVel = Math.sign(_fishVel) * FISH_CRUISE_SPD;
+          _nextBurstMs = ts + BURST_INT_MIN + Math.random() * (BURST_INT_MAX - BURST_INT_MIN);
+        }
+      } else {
+        // CALM MODE: gentle drift, bounce off walls
+        _fishY += _fishVel * dt;
+        // Trigger burst when scheduled
+        if (ts >= _nextBurstMs) {
+          // Pick a random direction for the burst (slightly biased toward whichever
+          // direction gives the player more challenge — toward the bar edge)
+          _fishBurstEndMs = ts + FISH_BURST_MS;
+          // Burst speed scales slightly with HP (higher HP = fiercer fish)
+          const burstSpd  = FISH_BURST_SPD + (_fishHp / 100) * 30;
+          _fishVel = (Math.random() < 0.5 ? 1 : -1) * burstSpd;
+        }
       }
-      _fishY += _fishVel * dt;
-      if (_fishY < 14)                 { _fishY = 14;                   _fishVel = Math.abs(_fishVel); }
-      if (_fishY > BATTLE_BAR_H - 14)  { _fishY = BATTLE_BAR_H - 14;   _fishVel = -Math.abs(_fishVel); }
+      // Wall bounce (both modes)
+      if (_fishY < 14)                { _fishY = 14;                  _fishVel = Math.abs(_fishVel); }
+      if (_fishY > BATTLE_BAR_H - 14) { _fishY = BATTLE_BAR_H - 14;  _fishVel = -Math.abs(_fishVel); }
 
       // Player bar
       if (_spaceDown) {
