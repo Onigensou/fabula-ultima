@@ -1,6 +1,6 @@
 // ============================================================================
 // Camp Activity UI — Curse (Straw Doll Hex)
-// Minigame: Horizontal timeline; indicator sweeps left→right over 15 s.
+// Minigame: Horizontal timeline; indicator sweeps left→right over 13 s.
 //           Player presses the matching key as the indicator crosses each label.
 //           Hit VFX accumulate on a straw doll image; progressive damage states.
 // ============================================================================
@@ -9,11 +9,11 @@
 
   // ── Constants ──────────────────────────────────────────────────────────────
   const OVL_ID       = "oni-curse-overlay";
-  const GAME_MS      = 15_000;
+  const GAME_MS      = 13_000;   // 13s — slightly snappier sweep
   const LABEL_COUNT  = 12;
   const XFRAC_MIN    = 0.08;
   const XFRAC_MAX    = 0.92;
-  const MIN_GAP      = 0.055;   // minimum xFrac between labels
+  const MIN_GAP      = 0.038;   // tighter spacing between labels
   const WIN_GOOD     = 0.033;   // ±xFrac for a Good hit
   const WIN_PERFECT  = 0.012;   // ±xFrac for a Perfect hit (subset of GOOD)
   const TICK_MS      = 16;      // ~60fps rAF throttle
@@ -169,7 +169,7 @@
 #oni-curse-overlay {
   position: fixed; inset: 0; z-index: 10000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at center, #1a0a0a 0%, #000 100%);
+  background: rgba(8, 2, 2, 0.68);
   font-family: "Signika", serif;
   overflow: hidden;
 }
@@ -577,7 +577,7 @@
 
     // Update timer
     const remaining = Math.max(0, GAME_MS - elapsed) / 1000;
-    const timerEl   = document.getElementById("oni-curse-timer");
+    const timerEl = document.getElementById("oni-curse-timer");
     if (timerEl) timerEl.textContent = remaining.toFixed(1);
 
     // Expire labels the indicator has passed
