@@ -1,19 +1,22 @@
 // ============================================================================
 // Camp Activity UI — Curse (Straw Doll Hex)
-// Minigame: Horizontal timeline; indicator sweeps left→right over 13 s.
+// Minigame: Horizontal timeline; indicator sweeps left→right over 15 s.
 //           Player presses the matching key as the indicator crosses each label.
 //           Hit VFX accumulate on a straw doll image; progressive damage states.
 // ============================================================================
 (() => {
   const CAMP = globalThis.CampSystem ??= {};
 
-  // ── Constants ──────────────────────────────────────────────────────────────
-  const OVL_ID       = "oni-curse-overlay";
-  const GAME_MS      = 13_000;   // 13s — slightly snappier sweep
+  // ── Constants ─────────────────────────────────────────────────────────────
+  // GAME_MS is the single source of truth for duration.
+  // MIN_GAP and XFRAC ranges are expressed as fractions of the timeline so they
+  // automatically scale when GAME_MS changes — narrower gap → more labels fit
+  // into the same sweep, giving a denser/faster feel without shortening the game.
+  const GAME_MS      = 15_000;  // master duration: timer + indicator sweep
   const LABEL_COUNT  = 12;
   const XFRAC_MIN    = 0.08;
   const XFRAC_MAX    = 0.92;
-  const MIN_GAP      = 0.038;   // tighter spacing between labels
+  const MIN_GAP      = 0.038;  // ↓ from 0.055 — tighter labels → denser within 15 s
   const WIN_GOOD     = 0.033;   // ±xFrac for a Good hit
   const WIN_PERFECT  = 0.012;   // ±xFrac for a Perfect hit (subset of GOOD)
   const TICK_MS      = 16;      // ~60fps rAF throttle
