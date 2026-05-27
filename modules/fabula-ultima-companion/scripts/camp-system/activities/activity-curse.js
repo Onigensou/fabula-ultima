@@ -32,10 +32,10 @@
     },
   };
 
-  // ── Grade from raw score (max 24 pts — 12 labels × 2) ─────────────────────
+  // ── Grade from raw score (max 32 pts — 16 labels × 2) ─────────────────────
   function _scoreToTier(score) {
-    if (score >= 18) return "perfect";
-    if (score >= 12) return "good";
+    if (score >= 24) return "perfect";   // ≥ 75 % of 32
+    if (score >= 16) return "good";      // ≥ 50 % of 32
     return "standard";
   }
 
@@ -94,7 +94,7 @@
       content: `
         <p><strong>${actor.name}</strong> drives pins into the straw effigy, channelling dark intent.</p>
         <p>${meta.desc}</p>
-        <p style="font-size:0.85em;opacity:0.7;margin-top:6px;">Score: ${score} / 24 &nbsp;·&nbsp; ${meta.name}</p>
+        <p style="font-size:0.85em;opacity:0.7;margin-top:6px;">Score: ${score} / 32 &nbsp;·&nbsp; ${meta.name}</p>
       `.trim(),
     });
   }

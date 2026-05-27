@@ -13,11 +13,12 @@
   // automatically scale when GAME_MS changes — narrower gap → more labels fit
   // into the same sweep, giving a denser/faster feel without shortening the game.
   const OVL_ID       = "oni-curse-overlay";
-  const GAME_MS      = 15_000;  // master duration: timer + indicator sweep
-  const LABEL_COUNT  = 12;
+  const GAME_MS      = 10_000;  // master duration: timer + indicator sweep
+  const LABEL_COUNT  = 16;      // more nodes → denser ritual
+  const MAX_SCORE    = LABEL_COUNT * 2;   // 32 pts total (2 per perfect, 1 per good)
   const XFRAC_MIN    = 0.08;
   const XFRAC_MAX    = 0.92;
-  const MIN_GAP      = 0.038;  // ↓ from 0.055 — tighter labels → denser within 15 s
+  const MIN_GAP      = 0.028;  // tighter gap → fits 16 labels within 15 s window
   const WIN_GOOD     = 0.033;   // ±xFrac for a Good hit
   const WIN_PERFECT  = 0.012;   // ±xFrac for a Perfect hit (subset of GOOD)
   const TICK_MS      = 16;      // ~60fps rAF throttle
@@ -453,9 +454,9 @@
     el.innerHTML = `
       <!-- HUD -->
       <div class="oni-curse-hud">
-        <span class="oni-curse-timer" id="oni-curse-timer">15.0</span>
+        <span class="oni-curse-timer" id="oni-curse-timer">${(GAME_MS / 1000).toFixed(1)}</span>
         <span class="oni-curse-title-hud">☽ Curse Ritual ☾</span>
-        <span class="oni-curse-score-display" id="oni-curse-score">0 / 24</span>
+        <span class="oni-curse-score-display" id="oni-curse-score">0 / ${MAX_SCORE}</span>
       </div>
 
       <!-- Confirmation panel -->
@@ -763,7 +764,7 @@
   // ── HUD update ─────────────────────────────────────────────────────────────
   function _updateScoreHUD() {
     const el = document.getElementById("oni-curse-score");
-    if (el) el.textContent = `${_score} / 24`;
+    if (el) el.textContent = `${_score} / ${MAX_SCORE}`;
   }
 
   // ── Start game (after countdown) ──────────────────────────────────────────
@@ -899,7 +900,7 @@
       const meta = TIER_UI[tier] ?? TIER_UI.standard;
       if (title)   { title.textContent = meta.title; title.style.color = meta.color; }
       if (desc)    desc.innerHTML = meta.desc;
-      if (scoreEl) scoreEl.textContent = `Score: ${score} / 24`;
+      if (scoreEl) scoreEl.textContent = `Score: ${score} / ${MAX_SCORE}`;
       if (panel)   panel.style.display = "flex";
 
       // Only owner gets the proceed button
