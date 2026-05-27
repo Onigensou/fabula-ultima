@@ -155,6 +155,15 @@
     MARTIAL_PRACTICE_RESULT:  "CAMP_MARTIAL_PRACTICE_RESULT",  // owner → GM (score) / GM → all (score + uses)
     MARTIAL_PRACTICE_PROCEED: "CAMP_MARTIAL_PRACTICE_PROCEED", // owner → GM
     MARTIAL_PRACTICE_DONE:    "CAMP_MARTIAL_PRACTICE_DONE",    // GM → all
+    // Fishing minigame (Stardew-style two-phase)
+    FISHING_START:   "CAMP_FISHING_START",   // GM → all (show UI; payload: actorId, actorName)
+    FISHING_BEGIN:   "CAMP_FISHING_BEGIN",   // owner → all (Click to Begin; spectator gauge starts)
+    FISHING_CAST:    "CAMP_FISHING_CAST",    // owner → all (cast result: { actorId, strength, perfect })
+    FISHING_HIT:     "CAMP_FISHING_HIT",     // owner → all (battle heartbeat: { actorId, fishY, barY, fishHp, inZone })
+    FISHING_RESULT:  "CAMP_FISHING_RESULT",  // owner → GM (round done) / GM → all (round+fishName+round#)
+    FISHING_NEXT_ROUND: "CAMP_FISHING_NEXT_ROUND", // GM → all (start cast for round 2/3: { actorId, round, totalRounds })
+    FISHING_PROCEED: "CAMP_FISHING_PROCEED", // owner → GM
+    FISHING_DONE:    "CAMP_FISHING_DONE",    // GM → all
     // Planning minigame (Pairing Quiz)
     PLANNING_START:        "CAMP_PLANNING_START",        // GM → all (ally picker)
     PLANNING_TARGET:       "CAMP_PLANNING_TARGET",       // owner → GM (ally chosen)
