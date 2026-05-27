@@ -74,7 +74,7 @@
   const BASE_FILL_RATE   = 12;    // %/sec HP fills when fish in zone (MIG 8)
   const HP_DRAIN_RATE    = 20;    // %/sec HP drains when fish out of zone — fast, punishing
   const FISH_START_HP    = 50;    // %
-  const HIT_INTERVAL_MS  = 250;   // ms — battle heartbeat to spectators
+  const HIT_INTERVAL_MS  = 50;    // ms — battle heartbeat to spectators (20fps; spectators lerp between packets)
 
   // Fish movement — calm-with-bursts pattern
   const FISH_CRUISE_SPD  = 58;    // px/sec normal swimming — fast enough to feel alive
@@ -123,6 +123,17 @@
   let _battleRafId     = null;
   let _battleLastMs    = 0;
   let _hitIntervalId   = null;
+
+  // Spectator interpolation — smooth battle playback between 50ms server packets
+  let _spectFishY        = BATTLE_BAR_H / 2;
+  let _spectBarY         = 0;
+  let _spectFishHp       = FISH_START_HP;
+  let _spectTargetFishY  = BATTLE_BAR_H / 2;
+  let _spectTargetBarY   = 0;
+  let _spectTargetFishHp = FISH_START_HP;
+  let _spectInZone       = false;
+  let _spectBattleRafId  = null;
+  let _spectBattleLast   = 0;
 
   // Audio
   let _slowReelAudio = null;
@@ -228,9 +239,10 @@
   // State cleanup
   // ---------------------------------------------------------------------------
   function _clearState() {
-    if (_gaugeRafId  !== null) { cancelAnimationFrame(_gaugeRafId);  _gaugeRafId  = null; }
-    if (_battleRafId !== null) { cancelAnimationFrame(_battleRafId); _battleRafId = null; }
-    if (_hitIntervalId !== null) { clearInterval(_hitIntervalId); _hitIntervalId = null; }
+    if (_gaugeRafId       !== null) { cancelAnimationFrame(_gaugeRafId);       _gaugeRafId       = null; }
+    if (_battleRafId      !== null) { cancelAnimationFrame(_battleRafId);      _battleRafId      = null; }
+    if (_spectBattleRafId !== null) { cancelAnimationFrame(_spectBattleRafId); _spectBattleRafId = null; }
+    if (_hitIntervalId    !== null) { clearInterval(_hitIntervalId);           _hitIntervalId    = null; }
     _removeSpaceHandler();
     _stopLoop(_slowReelAudio); _slowReelAudio = null;
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
@@ -976,13 +988,50 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Spectator battle rAF — interpolates smoothly toward server-sent targets
+  // ---------------------------------------------------------------------------
+  function _startSpectBattleLoop() {
+    if (_spectBattleRafId !== null) return;   // already running
+    _spectBattleLast = performance.now();
+
+    function _frame(ts) {
+      // Auto-stop if overlay was removed or owner took over
+      if (_isOwner || !document.getElementById(OVL_ID)) {
+        _spectBattleRafId = null;
+        return;
+      }
+      const dt = Math.min(ts - _spectBattleLast, 50) / 1000;
+      _spectBattleLast = ts;
+
+      // Lerp current display values toward server targets (dt*20 ≈ reaches in ~3 frames at 60fps)
+      const t = Math.min(1, dt * 20);
+      _spectFishY  += (_spectTargetFishY  - _spectFishY)  * t;
+      _spectBarY   += (_spectTargetBarY   - _spectBarY)   * t;
+      _spectFishHp += (_spectTargetFishHp - _spectFishHp) * t;
+
+      if (_el.ficon)  _el.ficon.style.top     = `${(_spectFishY - 14).toFixed(1)}px`;
+      if (_el.pbar) {
+        _el.pbar.style.top    = `${_spectBarY.toFixed(1)}px`;
+        _el.pbar.style.height = `${_playerBarH}px`;
+        _el.pbar.classList.toggle("in-zone", _spectInZone);
+      }
+      if (_el.hpFill) _el.hpFill.style.height = `${_spectFishHp.toFixed(1)}%`;
+      if (_el.hpNum)  _el.hpNum.textContent   = `${Math.round(_spectFishHp)}%`;
+
+      _spectBattleRafId = requestAnimationFrame(_frame);
+    }
+    _spectBattleRafId = requestAnimationFrame(_frame);
+  }
+
+  // ---------------------------------------------------------------------------
   // Round result display (called on all clients via applyResult)
   // ---------------------------------------------------------------------------
   function _showRoundResult(actorId, round, fishName, catches) {
-    // Stop any live loops
+    // Stop any live loops (owner + spectator)
     _battleActive = false;
-    if (_battleRafId !== null) { cancelAnimationFrame(_battleRafId); _battleRafId = null; }
-    if (_hitIntervalId !== null) { clearInterval(_hitIntervalId); _hitIntervalId = null; }
+    if (_battleRafId      !== null) { cancelAnimationFrame(_battleRafId);      _battleRafId      = null; }
+    if (_spectBattleRafId !== null) { cancelAnimationFrame(_spectBattleRafId); _spectBattleRafId = null; }
+    if (_hitIntervalId    !== null) { clearInterval(_hitIntervalId);           _hitIntervalId    = null; }
 
     _catches = catches ?? [];
 
@@ -1067,6 +1116,9 @@
       _startGaugeLoop();
       _attachCastSpace(actorId);
     } else {
+      // Stop spectator battle rAF and clear stale _el refs from previous round
+      if (_spectBattleRafId !== null) { cancelAnimationFrame(_spectBattleRafId); _spectBattleRafId = null; }
+      Object.keys(_el).forEach(k => _el[k] = null);
       stage.innerHTML = _htmlCastScene(false);
       _cacheCastEls();
       _startGaugeLoop(); // spectator mirrors gauge at same speed
@@ -1148,29 +1200,32 @@
       if (_el.bubble) _el.bubble.textContent = perfect ? "✨ Perfect cast!" : `Cast: ${strength}`;
     },
 
-    // Spectators receive battle heartbeat
+    // Spectators receive battle heartbeat (50ms / 20fps)
     onHit(payload) {
       if (_isOwner) return;
       if (!document.getElementById(OVL_ID)) return;
       const { fishY, barY, fishHp, inZone } = payload ?? {};
 
-      // Ensure battle DOM exists
-      if (!_el.ficon) {
-        const stage = document.getElementById("oni-fish-stage");
-        if (stage && !stage.querySelector(".oni-fish-battle")) {
-          stage.innerHTML = _htmlBattleScene(false);
-          _cacheBattleEls();
-        }
+      // Check actual DOM — never trust _el refs across rounds (they go stale when
+      // _showRoundResult replaces innerHTML without nulling _el).
+      const stage = document.getElementById("oni-fish-stage");
+      if (!stage?.querySelector(".oni-fish-battle")) {
+        if (!stage) return;
+        stage.innerHTML = _htmlBattleScene(false);
+        _cacheBattleEls();
+        // Seed interpolation from the first received snapshot so bar doesn't lerp from origin
+        _spectFishY  = fishY  ?? BATTLE_BAR_H / 2;
+        _spectBarY   = barY   ?? 0;
+        _spectFishHp = fishHp ?? FISH_START_HP;
       }
 
-      if (_el.ficon  && fishY  != null) _el.ficon.style.top    = `${(fishY - 14).toFixed(1)}px`;
-      if (_el.pbar   && barY   != null) {
-        _el.pbar.style.top    = `${barY.toFixed(1)}px`;
-        _el.pbar.style.height = `${_playerBarH}px`;
-        _el.pbar.classList.toggle("in-zone", !!inZone);
-      }
-      if (_el.hpFill && fishHp != null) _el.hpFill.style.height  = `${fishHp.toFixed(1)}%`;
-      if (_el.hpNum  && fishHp != null) _el.hpNum.textContent     = `${Math.round(fishHp)}%`;
+      // Update lerp targets; spectator rAF does the actual DOM writes
+      if (fishY  != null) _spectTargetFishY  = fishY;
+      if (barY   != null) _spectTargetBarY   = barY;
+      if (fishHp != null) _spectTargetFishHp = fishHp;
+      _spectInZone = !!inZone;
+
+      _startSpectBattleLoop();
     },
 
     // GM broadcasts FISHING_RESULT → all clients call applyResult()
