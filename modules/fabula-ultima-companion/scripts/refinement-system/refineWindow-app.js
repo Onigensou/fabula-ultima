@@ -503,7 +503,10 @@ export class RefineWindowApp {
       if (e.target.classList.contains("fu-rw-close")) return;
       e.preventDefault();
       mx = e.clientX; my = e.clientY;
-      ox = win.offsetLeft; oy = win.offsetTop;
+      // getBoundingClientRect captures the actual rendered position including CSS transform,
+      // so the first drag doesn't jump when the window is centered via translate(-50%, -50%).
+      const rect = win.getBoundingClientRect();
+      ox = rect.left; oy = rect.top;
       handle.style.cursor = "grabbing";
       const onMove = (ev) => {
         win.style.left      = `${ox + ev.clientX - mx}px`;

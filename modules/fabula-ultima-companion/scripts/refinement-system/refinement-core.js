@@ -56,9 +56,12 @@ function rfCanRefine(item, _context = {}) {
 }
 
 function rfGetSuccessRate(item, context = {}) {
+  const target = rfGetTargetLevel(item);
+  // First four refinements are always guaranteed regardless of rarity or refiner stats
+  if (target <= 4) return 100;
+
   const rarity   = rfGetItemRarity(item);
   const maxLevel = rfGetMaxRefineLevel(item);
-  const target   = rfGetTargetLevel(item);
   const rates    = REFINEMENT_CONFIG.SUCCESS_RATES[rarity] ?? REFINEMENT_CONFIG.SUCCESS_RATES.Common;
   const offset   = 10 - maxLevel;
   const idx      = Math.min(9, Math.max(0, offset + (target - 1)));
