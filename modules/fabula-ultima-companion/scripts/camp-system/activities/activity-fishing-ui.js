@@ -99,7 +99,8 @@
   // Derived from stats
   let _gaugeSpeed  = BASE_GAUGE_SPEED;
   let _fillRate    = BASE_FILL_RATE;
-  let _barUpSpeed  = BASE_UP_SPEED;
+  let _barUpSpeed  = BASE_UP_SPEED;   // MIG-driven max bar speed
+  let _rampTime    = 0;               // ms to reach full bar speed after pressing SPACE (DEX-driven)
   let _playerBarH  = BASE_BAR_H;
 
   // Casting phase
@@ -117,6 +118,7 @@
   let _playerBarY      = 0;
   let _fishHp          = FISH_START_HP;
   let _spaceDown       = false;
+  let _spaceHeldMs     = 0;    // ms SPACE has been held — drives DEX ramp factor
   let _battleActive    = false;
   let _battleRafId     = null;
   let _battleLastMs    = 0;
@@ -165,10 +167,17 @@
   }
 
   function _applyStats() {
-    _gaugeSpeed  = Math.max(20, BASE_GAUGE_SPEED - (_stats.dex - 8) * 10);   // DEX 8→120, DEX 12→80, DEX 20→20
-    _fillRate    = Math.max(5,  BASE_FILL_RATE   + (_stats.mig - 8) * 0.75);
-    _barUpSpeed  = Math.max(80, BASE_UP_SPEED    + (_stats.dex - 8) * 5);
-    _playerBarH  = Math.min(130, Math.max(30, BASE_BAR_H + (_stats.ins - 8) * 5));
+    // DEX: gauge speed (casting) + bar ramp stability (battle)
+    _gaugeSpeed = Math.max(20, BASE_GAUGE_SPEED - (_stats.dex - 8) * 10);  // DEX 8→120, DEX 12→80, DEX 20→20
+    _rampTime   = Math.max(0,  (12 - _stats.dex) * 120);                   // DEX 12 → 0ms (instant); DEX 8 → 480ms
+
+    // MIG: HP fill rate + maximum bar up-speed (both top out at MIG 12)
+    _fillRate   = Math.max(5,   BASE_FILL_RATE + (_stats.mig - 8) * 0.75);
+    _barUpSpeed = Math.max(40,  Math.min(BASE_UP_SPEED, BASE_UP_SPEED * _stats.mig / 12));
+    //   MIG 2 → 40 px/s   MIG 8 → 107 px/s   MIG 12 → 160 px/s   MIG 14+ → 160 px/s (capped)
+
+    // INS: fishing bar height
+    _playerBarH = Math.min(130, Math.max(30, BASE_BAR_H + (_stats.ins - 8) * 5));
   }
 
   function _catchChance(strength) {
@@ -236,6 +245,7 @@
     _playerBarY    = BATTLE_BAR_H / 2 - BASE_BAR_H / 2;
     _fishHp        = FISH_START_HP;
     _spaceDown     = false;
+    _spaceHeldMs   = 0;
     _battleActive  = false;
     Object.keys(_el).forEach(k => _el[k] = null);
   }
@@ -861,6 +871,7 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       _spaceDown = (e.type === "keydown");
+      if (e.type === "keyup") _spaceHeldMs = 0;   // restart ramp on every press
     };
     _spaceHandler = spH;
     document.addEventListener("keydown", _spaceHandler, { capture: true });
@@ -900,9 +911,11 @@
       if (_fishY < 14)                { _fishY = 14;                  _fishVel = Math.abs(_fishVel); }
       if (_fishY > BATTLE_BAR_H - 14) { _fishY = BATTLE_BAR_H - 14;  _fishVel = -Math.abs(_fishVel); }
 
-      // Player bar
+      // Player bar — DEX ramp: speed builds from 0 → full over _rampTime ms
       if (_spaceDown) {
-        _playerBarY -= _barUpSpeed  * dt;
+        _spaceHeldMs += dt * 1000;
+        const rampFactor = _rampTime > 0 ? Math.min(1, _spaceHeldMs / _rampTime) : 1;
+        _playerBarY -= _barUpSpeed * rampFactor * dt;
       } else {
         _playerBarY += BAR_DOWN_SPEED * dt;
       }
