@@ -372,6 +372,37 @@
           return;
         }
 
+        // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
+        if (type === CAMP.MSG.FISHING_START) {
+          CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_BEGIN) {
+          CAMP.FishingUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_CAST) {
+          CAMP.FishingUI?.onCast(payload);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_HIT) {
+          CAMP.FishingUI?.onHit(payload);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_RESULT && payload?.round != null) {
+          // Full result from GM — round reveal
+          CAMP.FishingUI?.applyResult(payload.actorId, payload.round, payload.fishName ?? null, payload.catches ?? []);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_NEXT_ROUND) {
+          CAMP.FishingUI?.beginRound(payload?.actorId, payload?.round, payload?.totalRounds);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_DONE) {
+          CAMP.FishingUI?.hide();
+          return;
+        }
+
         // ── Planning minigame (Pairing Quiz) ─────────────────────────────
         if (type === CAMP.MSG.PLANNING_START) {
           CAMP.PlanningUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
@@ -591,6 +622,14 @@
 
           case CAMP.MSG.MARTIAL_PRACTICE_PROCEED:
             CAMP.MartialPracticeUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.FISHING_RESULT:   // owner → GM: round result submitted
+            CAMP.FishingUI?.resolveRound(payload?.actorId, { fishName: payload?.fishName ?? null });
+            break;
+
+          case CAMP.MSG.FISHING_PROCEED:
+            CAMP.FishingUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.PLANNING_TARGET:
