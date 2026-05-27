@@ -316,6 +316,18 @@
       .oni-fish-anim-victory { animation:oni-fish-victory-bounce 0.85s ease; }
       .oni-fish-anim-defeat  { animation:oni-fish-defeat-slump  0.7s  ease forwards; }
 
+      @keyframes oni-fish-reel {
+        0%,100% { transform:translateY(0px) rotate(0deg); }
+        25%     { transform:translateY(-5px) rotate(-7deg); }
+        60%     { transform:translateY(4px) rotate(5deg); }
+      }
+      .oni-fish-anim-reel { animation:oni-fish-reel 0.85s ease-in-out infinite; }
+
+      /* ── Battle avatar layout ── */
+      .oni-fish-battle-avatar {
+        display:flex; align-items:flex-end; align-self:flex-end;
+      }
+
       /* ── Bobber ────────────────── */
       @keyframes oni-fish-bobber-dip {
         0%,100% { transform:translateY(0px); }
@@ -636,6 +648,12 @@
   function _htmlBattleScene(interactive) {
     return `
       <div class="oni-fish-battle">
+        <div class="oni-fish-battle-avatar">
+          <div class="oni-fish-avatar-flip">
+            <img id="oni-fish-avatar-img" class="oni-fish-avatar oni-fish-anim-reel"
+                 src="${_actorImg()}" alt="">
+          </div>
+        </div>
         <div>
           <div class="oni-fish-bar-lbl">Reel</div>
           <div class="oni-fish-game-bar" id="oni-fish-game-bar">
@@ -937,8 +955,7 @@
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
 
     _playSound(won ? SFX.FISH_CAUGHT : SFX.FISH_LOST, 0.9);
-    // Note: battle replaces the stage DOM so there's no avatar visible here,
-    // but emit result immediately; the round-result screen will show outcome.
+    _setAvatarAnim(won ? "oni-fish-anim-victory" : "oni-fish-anim-defeat");
     CAMP.Socket.emit(CAMP.MSG.FISHING_RESULT, {
       actorId,
       fishName: won ? fishName : null,
