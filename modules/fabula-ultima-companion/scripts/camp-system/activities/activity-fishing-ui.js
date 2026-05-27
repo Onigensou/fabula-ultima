@@ -77,8 +77,8 @@
   const HIT_INTERVAL_MS  = 250;   // ms — battle heartbeat to spectators
 
   // Fish movement — calm-with-bursts pattern
-  const FISH_CRUISE_SPD  = 35;    // px/sec normal, relaxed swimming speed
-  const FISH_BURST_SPD   = 150;   // px/sec sudden burst (still beatable; ~same as DEX-8 bar speed)
+  const FISH_CRUISE_SPD  = 58;    // px/sec normal swimming — fast enough to feel alive
+  const FISH_BURST_SPD   = 185;   // px/sec sudden burst — threatening but reactable
   const FISH_BURST_MS    = 550;   // ms a burst lasts before returning to calm
   const BURST_INT_MIN    = 3500;  // ms minimum quiet time between bursts
   const BURST_INT_MAX    = 6500;  // ms maximum quiet time between bursts
@@ -344,6 +344,7 @@
       .oni-fish-avatar {
         width:80px; height:80px; border-radius:8px;
         border:2px solid #1e4a6b; object-fit:cover;
+        transform:scaleX(-1);   /* flip: most tokens face left by default */
       }
       .oni-fish-pond {
         width:220px; height:120px;
@@ -468,7 +469,11 @@
   // HTML builders
   // ---------------------------------------------------------------------------
   function _actorImg() {
-    return game.actors?.get(_actorId)?.img ?? "icons/svg/mystery-man.svg";
+    const actor = game.actors?.get(_actorId);
+    // Prefer prototype token image; fall back to actor portrait
+    return actor?.prototypeToken?.texture?.src
+        ?? actor?.img
+        ?? "icons/svg/mystery-man.svg";
   }
 
   function _buildOverlay() {
