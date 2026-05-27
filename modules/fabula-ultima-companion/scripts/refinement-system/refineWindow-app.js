@@ -131,13 +131,13 @@ export class RefineWindowApp {
     const plrName   = RefineWindowApp._esc(this._playerActor?.name ?? "");
     const zenit     = this._playerActor ? this._zenit(this._playerActor).toLocaleString() : "—";
     const catTabs   = REFINE_CATS.map(c => `
-      <button class="fu-rw-cat-tab${c.key === this._activeCategory ? " active" : ""}"
+      <button type="button" class="fu-rw-cat-tab${c.key === this._activeCategory ? " active" : ""}"
               data-cat="${c.key}" title="${c.label}">${c.emoji}</button>`).join("");
 
     return `
       <div class="fu-rw-titlebar">
         <span class="fu-rw-title">⚒️ Blacksmith — ${npcName}</span>
-        <button class="fu-rw-close" title="Close">✕</button>
+        <button type="button" class="fu-rw-close" title="Close">✕</button>
       </div>
       <div class="fu-rw-body">
 
@@ -188,7 +188,7 @@ export class RefineWindowApp {
 
           <!-- actions -->
           <div class="fu-rw-actions">
-            <button class="fu-rw-refine-btn" id="fu-rw-refine-btn" disabled>⚒️ Refine</button>
+            <button type="button" class="fu-rw-refine-btn" id="fu-rw-refine-btn" disabled>⚒️ Refine</button>
             <label class="fu-rw-skip-label">
               <input type="checkbox" id="fu-rw-skip-confirm" ${this._skipConfirm ? "checked" : ""}>
               Skip confirmation
@@ -204,8 +204,8 @@ export class RefineWindowApp {
           <div class="fu-rw-confirm-title">Confirm Refinement?</div>
           <div class="fu-rw-confirm-info" id="fu-rw-confirm-info"></div>
           <div class="fu-rw-confirm-btns">
-            <button class="fu-rw-confirm-yes" id="fu-rw-confirm-yes">✔ Refine</button>
-            <button class="fu-rw-confirm-no"  id="fu-rw-confirm-no">✕ Cancel</button>
+            <button type="button" class="fu-rw-confirm-yes" id="fu-rw-confirm-yes">✔ Refine</button>
+            <button type="button" class="fu-rw-confirm-no"  id="fu-rw-confirm-no">✕ Cancel</button>
           </div>
         </div>
       </div>
@@ -517,8 +517,12 @@ export class RefineWindowApp {
 
   _destroy() {
     const el = document.getElementById(WIN_ID);
-    if (el) { el.classList.remove("is-open"); setTimeout(() => el.remove(), 220); }
-    document.getElementById(STYLE_ID)?.remove();
+    if (el) {
+      el.classList.remove("is-open");
+      setTimeout(() => { el.remove(); document.getElementById(STYLE_ID)?.remove(); }, 220);
+    } else {
+      document.getElementById(STYLE_ID)?.remove();
+    }
     _instance = null;
   }
 
@@ -728,6 +732,7 @@ export class RefineWindowApp {
   width: 88px; height: 88px;
   object-fit: contain; object-position: bottom;
   background: transparent;
+  border: none !important; outline: none; box-shadow: none !important; border-radius: 0;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
 }
 .fu-rw-npc-name {
