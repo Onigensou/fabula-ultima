@@ -66,7 +66,7 @@
   // Base game constants
   // ---------------------------------------------------------------------------
   const GAUGE_H          = 260;   // px — gauge track height
-  const BASE_GAUGE_SPEED = 45;    // units/sec at DEX 8
+  const BASE_GAUGE_SPEED = 120;   // units/sec at DEX 8 — fast/hard; DEX 12 ≈ 80 (manageable)
   const BATTLE_BAR_H     = 300;   // px — gameplay bar height
   const BASE_BAR_H       = 60;    // px — fishing bar height at INS 8
   const BASE_UP_SPEED    = 160;   // px/sec bar rises when SPACE held (DEX 8)
@@ -165,7 +165,7 @@
   }
 
   function _applyStats() {
-    _gaugeSpeed  = Math.max(20, BASE_GAUGE_SPEED - (_stats.dex - 8) * 0.75);
+    _gaugeSpeed  = Math.max(20, BASE_GAUGE_SPEED - (_stats.dex - 8) * 10);   // DEX 8→120, DEX 12→80, DEX 20→20
     _fillRate    = Math.max(5,  BASE_FILL_RATE   + (_stats.mig - 8) * 0.75);
     _barUpSpeed  = Math.max(80, BASE_UP_SPEED    + (_stats.dex - 8) * 5);
     _playerBarH  = Math.min(130, Math.max(30, BASE_BAR_H + (_stats.ins - 8) * 5));
@@ -279,6 +279,65 @@
         100%{ opacity:0; transform:scale(1.3); }
       }
 
+      /* ── Token animations ──────── */
+      @keyframes oni-fish-idle {
+        0%,100% { transform:translateY(0px); }
+        50%     { transform:translateY(-5px); }
+      }
+      @keyframes oni-fish-cast-lunge {
+        0%   { transform:translateY(0px) rotate(0deg); }
+        20%  { transform:translateY(-14px) rotate(-10deg); }
+        55%  { transform:translateY(5px) rotate(6deg); }
+        80%  { transform:translateY(-2px) rotate(-2deg); }
+        100% { transform:translateY(0px) rotate(0deg); }
+      }
+      @keyframes oni-fish-wait-lean {
+        0%,100% { transform:translateY(0px) rotate(0deg); }
+        50%     { transform:translateY(3px) rotate(4deg); }
+      }
+      @keyframes oni-fish-victory-bounce {
+        0%   { transform:translateY(0px); }
+        25%  { transform:translateY(-20px); }
+        45%  { transform:translateY(0px); }
+        65%  { transform:translateY(-12px); }
+        82%  { transform:translateY(0px); }
+        93%  { transform:translateY(-5px); }
+        100% { transform:translateY(0px); }
+      }
+      @keyframes oni-fish-defeat-slump {
+        0%   { transform:translateY(0px) rotate(0deg); opacity:1; }
+        35%  { transform:translateY(6px) rotate(-12deg); opacity:.9; }
+        70%  { transform:translateY(10px) rotate(-18deg); opacity:.75; }
+        100% { transform:translateY(10px) rotate(-18deg); opacity:.7; }
+      }
+      .oni-fish-anim-idle    { animation:oni-fish-idle    2.2s ease-in-out infinite; }
+      .oni-fish-anim-cast    { animation:oni-fish-cast-lunge    0.55s ease forwards; }
+      .oni-fish-anim-wait    { animation:oni-fish-wait-lean     3s   ease-in-out infinite; }
+      .oni-fish-anim-victory { animation:oni-fish-victory-bounce 0.85s ease; }
+      .oni-fish-anim-defeat  { animation:oni-fish-defeat-slump  0.7s  ease forwards; }
+
+      /* ── Bobber ────────────────── */
+      @keyframes oni-fish-bobber-dip {
+        0%,100% { transform:translateY(0px); }
+        50%     { transform:translateY(-6px); }
+      }
+      .oni-fish-bobber {
+        position:absolute; bottom:30%; left:56%;
+        display:none; flex-direction:column; align-items:center;
+        z-index:2;
+      }
+      .oni-fish-bobber.active { display:flex; }
+      .oni-fish-bobber-line {
+        width:1px; height:20px;
+        background:#a08030; opacity:.75;
+      }
+      .oni-fish-bobber-float {
+        width:9px; height:9px; border-radius:50%;
+        background:radial-gradient(circle at 35% 35%,#ff6060,#c83030);
+        box-shadow:0 0 5px rgba(200,50,50,.55);
+        animation:oni-fish-bobber-dip 1.25s ease-in-out infinite;
+      }
+
       /* ── Card ─────────────────── */
       .oni-fish-card {
         background:linear-gradient(160deg,#0d1a24,#162636);
@@ -341,10 +400,15 @@
         color:#b8d4e8; margin-bottom:6px; white-space:nowrap;
         min-height:28px; display:flex; align-items:center; justify-content:center;
       }
+      /* flip wrapper handles scaleX so animations on img need no transform adjustment */
+      .oni-fish-avatar-flip {
+        transform:scaleX(-1);
+        display:flex; align-items:flex-end;
+      }
       .oni-fish-avatar {
-        width:80px; height:80px; border-radius:8px;
-        border:2px solid #1e4a6b; object-fit:cover;
-        transform:scaleX(-1);   /* flip: most tokens face left by default */
+        max-height:140px; width:auto;
+        border:none; border-radius:0;
+        object-fit:contain;
       }
       .oni-fish-pond {
         width:220px; height:120px;
@@ -544,12 +608,19 @@
               <div class="oni-fish-bubble" id="oni-fish-bubble">
                 ${interactive ? "Press SPACE to cast!" : "Casting…"}
               </div>
-              <img class="oni-fish-avatar" src="${_actorImg()}" alt="">
+              <div class="oni-fish-avatar-flip">
+                <img id="oni-fish-avatar-img" class="oni-fish-avatar oni-fish-anim-idle"
+                     src="${_actorImg()}" alt="">
+              </div>
             </div>
             <div class="oni-fish-pond">
               <div class="oni-fish-shimmer"></div>
               <div class="oni-fish-fshadow">🐟</div>
               <div class="oni-fish-fshadow oni-fish-fshadow2">🐡</div>
+              <div class="oni-fish-bobber" id="oni-fish-bobber">
+                <div class="oni-fish-bobber-line"></div>
+                <div class="oni-fish-bobber-float"></div>
+              </div>
             </div>
           </div>
           <div class="oni-fish-ground"></div>
@@ -619,6 +690,7 @@
     _gaugeDir    = 1;
     _castLocked  = false;
     _gaugeLastMs = performance.now();
+    _setAvatarAnim("oni-fish-anim-idle");
 
     function _frame(ts) {
       if (_castLocked || !document.getElementById(OVL_ID)) return;
@@ -642,6 +714,13 @@
       _el.gNum.textContent = Math.round(val);
       _el.gNum.classList.toggle("perfect", val >= 97);
     }
+  }
+
+  // Set a CSS animation class on the token image (replaces all previous anim classes)
+  function _setAvatarAnim(cls) {
+    const img = document.getElementById("oni-fish-avatar-img");
+    if (!img) return;
+    img.className = `oni-fish-avatar ${cls}`;
   }
 
   // ---------------------------------------------------------------------------
@@ -671,6 +750,9 @@
     if (_el.bubble) _el.bubble.textContent = perfect ? "✨ Perfect cast!" : `Cast: ${strength}`;
     if (_el.gNum)   { _el.gNum.style.fontSize = perfect ? "1.3em" : ""; }
 
+    // Cast lunge animation → naturally finishes before wait phase begins
+    _setAvatarAnim("oni-fish-anim-cast");
+
     _playSound(SFX.LINE_CAST, 0.8);
     CAMP.Socket.emit(CAMP.MSG.FISHING_CAST, { actorId, strength, perfect });
 
@@ -682,6 +764,10 @@
   // ---------------------------------------------------------------------------
   function _beginWaitPhase(actorId, strength) {
     if (_el.bubble) _el.bubble.textContent = "…";
+    // Lean forward + show bobber in the pond
+    _setAvatarAnim("oni-fish-anim-wait");
+    const bobber = document.getElementById("oni-fish-bobber");
+    if (bobber) bobber.classList.add("active");
     _slowReelAudio = _startLoop(SFX.SLOW_REEL, 0.4);
 
     const waitMs = 1500 + Math.random() * 1500;
@@ -707,6 +793,7 @@
 
   function _onNoCatch(actorId) {
     if (_el.bubble) _el.bubble.textContent = "Nothing…";
+    _setAvatarAnim("oni-fish-anim-defeat");
     CAMP.Socket.emit(CAMP.MSG.FISHING_RESULT, { actorId, fishName: null });
   }
 
@@ -715,6 +802,7 @@
   // ---------------------------------------------------------------------------
   function _onCaught(actorId, fishName, tier) {
     if (_el.bubble) _el.bubble.textContent = "Fish on!";
+    _setAvatarAnim("oni-fish-anim-victory");
 
     const flash = document.createElement("div");
     flash.className = "oni-fish-hit-overlay";
@@ -849,6 +937,8 @@
     _stopLoop(_fastReelAudio); _fastReelAudio = null;
 
     _playSound(won ? SFX.FISH_CAUGHT : SFX.FISH_LOST, 0.9);
+    // Note: battle replaces the stage DOM so there's no avatar visible here,
+    // but emit result immediately; the round-result screen will show outcome.
     CAMP.Socket.emit(CAMP.MSG.FISHING_RESULT, {
       actorId,
       fishName: won ? fishName : null,
