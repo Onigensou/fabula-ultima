@@ -12,6 +12,7 @@
   // MIN_GAP and XFRAC ranges are expressed as fractions of the timeline so they
   // automatically scale when GAME_MS changes — narrower gap → more labels fit
   // into the same sweep, giving a denser/faster feel without shortening the game.
+  const OVL_ID       = "oni-curse-overlay";
   const GAME_MS      = 15_000;  // master duration: timer + indicator sweep
   const LABEL_COUNT  = 12;
   const XFRAC_MIN    = 0.08;
