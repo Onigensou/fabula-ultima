@@ -183,6 +183,23 @@
     } catch (_) { return keys.size ? keys : null; }
   }
 
+  // Canonical trigger keys only (no aliases). Used by the template/engine
+  // enum lint: aliases are duplicates of canonical triggers, not separate
+  // dropdown options. Without this, `start_of_conflict` (legacy alias)
+  // would shadow `conflict_start` (canonical) and produce false positives.
+  function listCanonicalTriggerKeys() {
+    const reg = window["oni.ReactionTriggers"];
+    const keys = new Set(getDirectorTriggers());
+    if (!reg?.listTriggers) return keys.size ? keys : null;
+    try {
+      const triggers = reg.listTriggers();
+      for (const t of triggers ?? []) {
+        if (t?.key) keys.add(t.key);
+      }
+      return keys.size ? keys : null;
+    } catch (_) { return keys.size ? keys : null; }
+  }
+
   // CSB tables can show up as either arrays or objects keyed by index
   // strings. Normalize to an array of rows tagged with their original key.
   function tableToArray(tbl) {
@@ -1226,7 +1243,7 @@
       }
     }
 
-    const engineTriggers = listTriggerKeys();
+    const engineTriggers = listCanonicalTriggerKeys();
     if (engineTriggers) {
       for (const t of engineTriggers) {
         if (!tmplTriggers.has(t)) {
