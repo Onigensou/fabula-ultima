@@ -171,6 +171,10 @@
     {
       "key": "2026-05-28-passive-to-reaction-config",
       "path": "data-migrations/2026-05-28-passive-to-reaction-config.js"
+    },
+    {
+      "key": "2026-05-29-spiritist-spell-subfolder",
+      "path": "data-migrations/2026-05-29-spiritist-spell-subfolder.js"
     }
   ]
 }

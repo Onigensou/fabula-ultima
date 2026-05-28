@@ -45,10 +45,16 @@
 //                                               //   "Skill" if folder absent).
 //                                               //   Valid folder names per
 //                                               //   class: "Skill" /
-//                                               //   "Heroic Skill" (+ "Arcana"
-//                                               //   for Arcanist). Run the
-//                                               //   folder-scaffold once per
-//                                               //   world to create the tree.
+//                                               //   "Spell" / "Heroic Skill"
+//                                               //   (+ "Arcana" for Arcanist).
+//                                               //   Convention: skills that
+//                                               //   are MAGIC SPELLS (skill_type
+//                                               //   = "Spell") go in "Spell";
+//                                               //   active + passive non-spell
+//                                               //   skills go in "Skill". Run
+//                                               //   the folder scaffold once
+//                                               //   per world to create the
+//                                               //   tree.
 //     actorUuid: null,                          // optional — if set, the new
 //                                               //   skill is created on that
 //                                               //   actor instead of in world

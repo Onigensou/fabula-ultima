@@ -92,7 +92,7 @@
         "name": "Heal",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -120,7 +120,7 @@
         "name": "Lux",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/glare.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -144,7 +144,7 @@
         "name": "Reinforce",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -261,7 +261,7 @@
         "name": "Cleanse",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -297,7 +297,7 @@
         "name": "Torpor",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/medica.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -349,7 +349,7 @@
         "name": "Hallucination",
         "img": "icons/magic/control/hypnosis-mesmerism-eye.webp",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -402,7 +402,7 @@
         "name": "Enrage",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_beast.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -438,7 +438,7 @@
         "name": "Awaken",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure_iii.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -509,7 +509,7 @@
         "name": "Aura",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/tetragrammaton.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -558,7 +558,7 @@
         "name": "Barrier",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -758,7 +758,7 @@
         "name": "Mercy",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
@@ -833,7 +833,7 @@
         "name": "Soul Weapon",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
         "class": "Spiritist",
-        "folder": "Skill",
+        "folder": "Spell",
         "props": {
           "skill_type": "Spell",
           "isSpell": true,
