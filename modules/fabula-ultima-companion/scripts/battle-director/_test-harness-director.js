@@ -983,6 +983,70 @@ async function runDirectorAttackSimulate(args = {}) {
   };
 }
 
+// ─── Passive trigger dispatch test (Gap 11) ─────────────────────────────
+//
+// Tightened TARGET-state coverage: a Skill / Spell never goes through
+// TARGET in the regression bundle (we shortcut through COMPUTE → RESOLVE),
+// so passives that fire from a TARGET-emitted trigger like
+// `caster_short_on_mp` can't be tested end-to-end via runDirectorSkillSimulate.
+// This wrapper invokes `firePassiveTriggers` directly with the same
+// scaffolding (formula overrides, passive auto-acceptor, write captures)
+// so authors can assert "trigger T fires passive P with payload X". The
+// full TARGET simulator (cost gate UI + Dialog auto-accept) is deferred.
+//
+// Usage:
+//   const fx = await FUCompanion.api.test.getDirectorTestFixtures();
+//   const caster = await fromUuid(fx.caster.actorUuid);
+//   await FUCompanion.api.test.runDirectorPassiveTriggerTest({
+//     casterActor: caster,
+//     trigger: "caster_short_on_mp",
+//     payload: { actorUuid: caster.uuid, costMap: new Map([["mp", 10]]), mpNeeded: 10, curHp: 50 },
+//     acceptPassives: { "Vismagus": true },
+//     override: { CHAR_LEVEL: 10, SL: 1 },
+//   });
+//   // → { ok, fired, captures, perActorWrites }
+//
+async function runDirectorPassiveTriggerTest(args = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  if (!args.casterActor) return { ok: false, reason: "missing_caster_actor" };
+  if (!args.trigger) return { ok: false, reason: "missing_trigger" };
+
+  const formulaOverrides = installFormulaOverrides(args.override);
+  const preApplied = await installPreAppliedAEs(args.preApply);
+  const acceptPassives = args.acceptPassives ?? false;
+  const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
+  const { captures, restore } = installWriteCaptures();
+
+  let result = null;
+  let err = null;
+  try {
+    const se = await import(
+      `/modules/fabula-ultima-companion/scripts/battle-director/skill-effects.js?harness=${Date.now()}`,
+    );
+    result = await se.firePassiveTriggers({
+      director: null,
+      casterActor: args.casterActor,
+      trigger: args.trigger,
+      payload: args.payload ?? {},
+    });
+  } catch (e) {
+    err = { message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };
+  } finally {
+    restore();
+    passiveAcceptor.restore();
+    await preApplied.cleanup();
+    formulaOverrides.restore();
+  }
+
+  return {
+    ok: !err,
+    fired: result?.fired ?? [],
+    captures,
+    perActorWrites: summarizeWrites(captures),
+    error: err,
+  };
+}
+
 // ─── Scenario runner (Phase 2.8) ────────────────────────────────────────
 //
 // Drives `runDirectorSkillSimulate` / `runDirectorAttackSimulate` from a
@@ -1183,8 +1247,9 @@ function registerHarness() {
   root.api.test.runDirectorAttackCompute  = runDirectorAttackCompute;
   root.api.test.runDirectorAttackSimulate = runDirectorAttackSimulate;
   root.api.test.runDirectorScenarios      = runDirectorScenarios;
+  root.api.test.runDirectorPassiveTriggerTest = runDirectorPassiveTriggerTest;
   root.api.test.getDirectorTestFixtures   = getDirectorTestFixtures;
-  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, getDirectorTestFixtures`);
+  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, runDirectorPassiveTriggerTest, getDirectorTestFixtures`);
 }
 // Boot-time registration via the ready hook OR fast-path when the module
 // is dynamically re-imported with cache-bust at runtime (Foundry's ready
@@ -1193,6 +1258,7 @@ if (typeof game !== "undefined" && game?.ready) registerHarness();
 else Hooks.once("ready", registerHarness);
 
 export {
+  runDirectorPassiveTriggerTest,
   runDirectorSkillCompute,
   runDirectorSkillSimulate,
   runDirectorAttackCompute,
