@@ -203,6 +203,10 @@
     {
       "key": "2026-05-29-template-options-modify-damage-taken",
       "path": "data-migrations/2026-05-29-template-options-modify-damage-taken.js"
+    },
+    {
+      "key": "2026-05-29-sync-spiritist-passive-copies",
+      "path": "data-migrations/2026-05-29-sync-spiritist-passive-copies.js"
     }
   ]
 }
