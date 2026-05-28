@@ -1646,6 +1646,13 @@
 
     if (opts.postChat) await postGroupedChatCard(confirmPayloads, label, dl, opts.hiddenDl ?? false);
 
+    // Opportunity system: offer picker for any crits before reactions trigger.
+    // Awaited so reactions are blocked until all pickers resolve or are declined.
+    const critPayloads = confirmPayloads.filter(cp => cp.isCrit && !cp.isFumble);
+    if (critPayloads.length > 0) {
+      await globalThis.ONI?.OpportunitySystem?.processCheckCrits?.(critPayloads);
+    }
+
     // Emit reaction phase events per actor (GM-only, local)
     for (const cp of confirmPayloads) emitCheckReactions(cp);
 
