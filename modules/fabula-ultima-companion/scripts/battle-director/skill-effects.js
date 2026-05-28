@@ -1010,8 +1010,10 @@ async function applyApplyAeEffect(row, ctx) {
     // AE then carries its own baked value (Ally A: bonus_check += 3;
     // Ally B: bonus_check += 1). Non-formula values (plain numbers,
     // strings like "Light") pass through unchanged.
-    if (Array.isArray(data.changes) && data.changes.length) {
-      const bakeResolver = buildSkillResolver({
+    let bakeResolver = null;
+    function getBakeResolver() {
+      if (bakeResolver) return bakeResolver;
+      bakeResolver = buildSkillResolver({
         actor: ctx.reactorActor,
         skill: ctx.skill,
         payload: {
@@ -1023,13 +1025,43 @@ async function applyApplyAeEffect(row, ctx) {
         },
         round: ctx.dCombat?.round ?? 0,
       });
+      return bakeResolver;
+    }
+
+    if (Array.isArray(data.changes) && data.changes.length) {
       for (const ch of data.changes) {
         if (typeof ch?.value !== "string") continue;
         if (!isFormulaString(ch.value)) continue;
-        const resolved = evaluateFormula(ch.value, bakeResolver, null);
+        const resolved = evaluateFormula(ch.value, getBakeResolver(), null);
         if (resolved == null || !Number.isFinite(resolved)) continue;
         log(`apply_ae bake: "${ch.value}" → ${resolved} (target=${actor.name})`);
         ch.value = String(resolved);
+      }
+    }
+
+    // Gap 9 from canon hardening: bake formula identifiers in a narrow
+    // set of `flags["fabula-ultima-companion"].*` fields at apply-time.
+    // Same rationale as the changes[].value bake — the caster's state at
+    // apply-time is what we want recorded, not the bearer's state at
+    // fire-time. Allowlist (intentionally narrow):
+    //   • chargesMax — integer; consumed by skill-charges.consume.
+    //     Authors may want `chargesMax: "SL"` etc.
+    //   • <anything>Formula — convention for "this flag carries a formula".
+    //     Bake to a literal numeric value.
+    function shouldBakeFlagKey(k) {
+      if (k === "chargesMax") return true;
+      if (typeof k === "string" && k.endsWith("Formula")) return true;
+      return false;
+    }
+    if (data.flags?.[FLAG_NS]) {
+      for (const [k, v] of Object.entries(data.flags[FLAG_NS])) {
+        if (!shouldBakeFlagKey(k)) continue;
+        if (typeof v !== "string") continue;
+        if (!isFormulaString(v)) continue;
+        const resolved = evaluateFormula(v, getBakeResolver(), null);
+        if (resolved == null || !Number.isFinite(resolved)) continue;
+        log(`apply_ae bake: flags.${FLAG_NS}.${k} "${v}" → ${resolved} (target=${actor.name})`);
+        data.flags[FLAG_NS][k] = Number.isInteger(resolved) ? resolved : Number(resolved);
       }
     }
     if (!data.flags) data.flags = {};
