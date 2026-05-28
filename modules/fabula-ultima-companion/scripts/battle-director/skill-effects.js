@@ -527,9 +527,21 @@ async function promptPassiveOptin(itemName, reactorActor, description) {
 // dispatcher.
 export async function firePassiveTriggers({ director, casterActor, trigger, payload }) {
   if (!casterActor || !trigger) return { fired: [] };
-  const items = casterActor.items?.contents ?? [];
+
+  // ── Collect candidates from BOTH items and AEs ───────────────────────
+  //
+  // Carrier kinds:
+  //   - "item": props.reaction_config_table on the item, effect_table on
+  //             the item via getRuntimeSkillView. Classic firing site for
+  //             passives like Healing Power / Support Magic (item-bound).
+  //   - "ae":   ae.flags.fabula-ultima-companion.reactionConfig carries
+  //             both reaction_config_table and effect_table. Used by
+  //             AE-bound buffs that react to subsequent events on the
+  //             AE's bearer (Support Magic's check-bonus AE auto-consume,
+  //             Mercy-style damage-time clamps without the bespoke
+  //             resolveDamageReactions path).
   const candidates = [];
-  for (const item of items) {
+  for (const item of casterActor.items?.contents ?? []) {
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     for (const key of Object.keys(rc)) {
@@ -537,35 +549,52 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       if (!row || row.$deleted) continue;
       if (row.reaction_isPassive !== true) continue;
       if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
-      candidates.push({ item, row });
+      candidates.push({
+        carrierKind: "item",
+        carrier: item,
+        carrierName: item.name,
+        carrierDescription: item.system?.props?.description,
+        row,
+      });
+    }
+  }
+  for (const ae of casterActor.effects?.contents ?? []) {
+    if (ae.disabled) continue;
+    const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
+    if (!cfg || typeof cfg !== "object") continue;
+    const rc = cfg.reaction_config_table;
+    if (!rc || typeof rc !== "object") continue;
+    for (const key of Object.keys(rc)) {
+      const row = rc[key];
+      if (!row || row.$deleted) continue;
+      if (row.reaction_isPassive !== true) continue;
+      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      candidates.push({
+        carrierKind: "ae",
+        carrier: ae,
+        carrierName: ae.name,
+        carrierDescription: ae.description ?? "",
+        aeEffectTable: cfg.effect_table ?? {},
+        row,
+      });
     }
   }
   if (!candidates.length) return { fired: [] };
 
   const fired = [];
-  for (const { item, row } of candidates) {
-    if (!(await shouldReactionPassiveFire(row, item, casterActor, payload))) {
-      log(`passive: ${item.name} skipped (reaction-config filter/condition mismatch)`);
+  for (const cand of candidates) {
+    const { carrierKind, carrier, carrierName, row } = cand;
+    if (!(await shouldReactionPassiveFire(row, carrier, casterActor, payload))) {
+      log(`passive: ${carrierName} skipped (reaction-config filter/condition mismatch)`);
       continue;
     }
     const mode = resolveReactionPassiveMode(row);
     if (mode === "off") {
-      log(`passive: ${item.name} mode=off — skipping`);
+      log(`passive: ${carrierName} mode=off — skipping`);
       continue;
     }
     if (mode === "ask") {
-      // Harness override (Phase 2.1): when a test harness has set
-      // `globalThis.__FU_HARNESS_ACCEPT_PASSIVES__`, skip the Dialog and
-      // honor the override directly. Shape:
-      //   - true                                 → accept every ask-mode passive
-      //   - false                                → decline every ask-mode passive
-      //   - { "Healing Power": true, ... }       → per-skill map; unmatched
-      //                                             passives fall through to the
-      //                                             real Dialog (won't happen in
-      //                                             a clean harness call)
-      // Monkey-patching `Dialog` at the global level was unreliable —
-      // V8 inlines / re-binds `new Dialog` across cache-busted module
-      // instances, so the patch sometimes missed.
+      // Harness override (Phase 2.1): see __FU_HARNESS_ACCEPT_PASSIVES__.
       const ovAccept = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
       let ok;
       if (ovAccept !== undefined && ovAccept !== null) {
@@ -573,42 +602,96 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
         else if (typeof ovAccept === "object") {
           let matched = null;
           for (const [name, val] of Object.entries(ovAccept)) {
-            if (item.name.includes(name) || name.includes(item.name)) { matched = !!val; break; }
+            if (carrierName.includes(name) || name.includes(carrierName)) { matched = !!val; break; }
           }
-          ok = matched ?? await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
-        } else ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+          ok = matched ?? await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
+        } else ok = await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
       } else {
-        ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+        ok = await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
       }
-      if (!ok) { log(`passive: ${item.name} declined by GM`); continue; }
+      if (!ok) { log(`passive: ${carrierName} declined by GM`); continue; }
     }
     const refLabel = String(row.reaction_effect_ref ?? "").trim();
-    if (!refLabel) { warn(`passive ${item.name}: row has no reaction_effect_ref`); continue; }
 
     const { makeChainContext } = await import("./skill-targeting.js");
-    const { getRuntimeSkillView } = await import("./skill-recipes.js");
     const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
       ?? casterActor?.getActiveTokens?.()?.[0]?.document
       ?? null;
-    const view = getRuntimeSkillView(item);
+
+    // Build the effect_table that applyEffectByLabel will resolve against.
+    // For item carriers, run through getRuntimeSkillView so recipes / sugar
+    // expand. For AE carriers, the AE-borne effect_table is already the
+    // final shape.
+    let runtimeEffectTable;
+    let firePoints;
+    let skillForCtx;
+    if (carrierKind === "item") {
+      const { getRuntimeSkillView } = await import("./skill-recipes.js");
+      const view = getRuntimeSkillView(carrier);
+      runtimeEffectTable = view.effect_table;
+      firePoints = view.fire_points;
+      skillForCtx = carrier;
+    } else {
+      runtimeEffectTable = cand.aeEffectTable;
+      firePoints = null;
+      // AE-bound reactions don't have a parent skill — pass the AE for
+      // any formula resolver that wants SL/recipe context (resolver
+      // tolerates null skill).
+      skillForCtx = null;
+    }
     const ctx = makeChainContext({
       reactorActor: casterActor,
       reactorToken,
-      skill: item,
+      skill: skillForCtx,
       dCombat: director?.dCombat ?? null,
       payload,
       actionTargetUuids: payload?.targetTokenUuids ?? [],
       hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
       isPassive: mode === "on",
-      runtimeEffectTable: view.effect_table,
-      firePoints: view.fire_points,
+      runtimeEffectTable,
+      firePoints,
     });
     try {
-      const r = await applyEffectByLabel(refLabel, ctx);
-      fired.push({ skill: item.name, ok: !!r.ok, kind: r.kind });
-      log(`passive ${item.name}: fired ref "${refLabel}" → ok=${!!r.ok}`);
+      // refLabel may be blank for AE-bound reactions that only need to
+      // consume themselves (the firing IS the effect). Skip the dispatch
+      // in that case; the post-fire consume-self path still runs.
+      let r = { ok: true, kind: "noop" };
+      if (refLabel) {
+        r = await applyEffectByLabel(refLabel, ctx);
+      }
+      fired.push({ carrier: carrierName, carrierKind, ok: !!r.ok, kind: r.kind });
+      log(`passive ${carrierName} (${carrierKind}): fired ref "${refLabel || "(none)"}" → ok=${!!r.ok}`);
+
+      // Post-fire bookkeeping for AE carriers: consume self / decrement
+      // charges. AE-bound passives commonly want "fire once then remove";
+      // the dispatcher handles this so individual reactions don't have
+      // to author a consume_charge effect_row pointing at themselves.
+      //
+      // Two consume signals supported:
+      //   - row.consume_self === true       → unconditional delete after fire
+      //   - effectRow.consume_self === true → effect-row-driven delete
+      //   - AE carries charges flag         → decrement; delete when 0
+      if (carrierKind === "ae" && r.ok) {
+        const effRow = refLabel
+          ? Object.values(cand.aeEffectTable).find((er) => er?.effect_label === refLabel)
+          : null;
+        const consumeSelfFlag = row.consume_self === true || effRow?.consume_self === true;
+        const chargeFlags = carrier.flags?.[FLAG_NS] ?? {};
+        const hasCharges = chargeFlags.charges != null || chargeFlags.chargesMax != null;
+        if (consumeSelfFlag) {
+          try {
+            await carrier.delete();
+            log(`passive ${carrierName}: consume_self → AE deleted`);
+          } catch (e) { warn(`consume_self delete failed`, e); }
+        } else if (hasCharges) {
+          // Decrement via the shared charges API (auto-deletes at 0).
+          const { consume: consumeCharge } = await import("./skill-charges.js");
+          const res = await consumeCharge(carrier, { count: 1 });
+          log(`passive ${carrierName}: charge consumed (remaining=${res?.remaining ?? "?"}, deleted=${!!res?.deleted})`);
+        }
+      }
     } catch (e) {
-      warn(`passive ${item.name}: applyEffectByLabel threw`, e);
+      warn(`passive ${carrierName}: applyEffectByLabel threw`, e);
     }
   }
   return { fired };

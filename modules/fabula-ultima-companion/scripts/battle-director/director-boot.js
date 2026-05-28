@@ -27,7 +27,7 @@ import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
-import { sweepTransientAEsAtSceneEnd } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { PassiveManager } from "./passive-manager.js";
 import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
 import {
@@ -775,6 +775,50 @@ Hooks.once("ready", () => {
   } catch (e) {
     warn("IntentChannel install on ready threw", e);
   }
+
+  // ── Director-native passive dispatcher for legacy reaction events ───
+  //
+  // The legacy reaction-window emits `oni:reactionPhase` events for many
+  // triggers the director cares about (creature_performs_check,
+  // creature_fumbles_check, creature_recovers_hp, etc.). Director-native
+  // skills + AE-bound reactionConfig blobs both consume the same trigger
+  // keys, so we bridge: GM-side, on every `oni:reactionPhase` whose
+  // trigger key the director should respond to, call
+  // `firePassiveTriggers` on the subject actor. Walks BOTH items and
+  // AEs (see firePassiveTriggers in skill-effects.js).
+  //
+  // Triggers fired from Skill RESOLVE (`creature_completes_spell`) are
+  // dispatched directly by state-handlers and don't pass through this
+  // bridge — listing them here would double-fire. Keep this set to
+  // triggers the LEGACY emits but DIRECTOR doesn't yet own.
+  const DIRECTOR_BRIDGED_TRIGGERS = new Set([
+    "creature_performs_check",
+    "creature_fumbles_check",
+    "creature_check_outcome_flipped",
+    "creature_recovers_hp",
+    "creature_recovers_mp",
+    "creature_lose_mp",
+  ]);
+  Hooks.on("oni:reactionPhase", async (payload) => {
+    try {
+      if (!game.user?.isGM) return;
+      const trigger = payload?.trigger;
+      if (!trigger || !DIRECTOR_BRIDGED_TRIGGERS.has(trigger)) return;
+      // Resolve subject actor. The legacy payload uses `actorUuid` (some
+      // emit sites) or carries an `actor` directly; tolerate both.
+      let actor = payload.actor ?? null;
+      if (!actor && payload.actorUuid) {
+        actor = await fromUuid(payload.actorUuid).catch(() => null);
+      }
+      if (!actor) return;
+      await firePassiveTriggers({
+        director: _instance ?? null,
+        casterActor: actor,
+        trigger,
+        payload,
+      });
+    } catch (e) { warn(`oni:reactionPhase bridge (${payload?.trigger}) threw`, e); }
+  });
 
   // Auto-resume mid-combat reloads. GM-only — the director is GM-side
   // authoritative, and a player reload should never auto-start anything.

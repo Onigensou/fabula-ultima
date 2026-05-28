@@ -179,6 +179,10 @@
     {
       "key": "2026-05-29-passive-mode-dedup-healing-power-support-magic",
       "path": "data-migrations/2026-05-29-passive-mode-dedup-healing-power-support-magic.js"
+    },
+    {
+      "key": "2026-05-29-support-magic-ae-reaction-config",
+      "path": "data-migrations/2026-05-29-support-magic-ae-reaction-config.js"
     }
   ]
 }

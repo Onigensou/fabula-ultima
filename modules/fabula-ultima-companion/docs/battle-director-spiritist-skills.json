@@ -720,7 +720,27 @@
             "statuses": ["fud-support-magic"],
             "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
             "system": { "tags": ["buff"] },
-            "flags": { "fabula-ultima-companion": { "category": "buff", "consume_on_check": true, "crossScene": true } }
+            "flags": {
+              "fabula-ultima-companion": {
+                "category": "buff",
+                "crossScene": true,
+                "charges": 1,
+                "chargesMax": 1,
+                "chargeKey": "support-magic",
+                "reactionConfig": {
+                  "reaction_config_table": {
+                    "0": {
+                      "reaction_trigger": "creature_performs_check",
+                      "reaction_source": "self",
+                      "reaction_isPassive": true,
+                      "reaction_passive_mode": "on",
+                      "reaction_effect_ref": ""
+                    }
+                  },
+                  "effect_table": {}
+                }
+              }
+            }
           }
         ]
       }
