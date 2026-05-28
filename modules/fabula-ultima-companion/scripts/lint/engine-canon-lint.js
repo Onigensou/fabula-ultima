@@ -27,6 +27,12 @@
  *     world UUIDs that don't survive a fresh world. Author lookups by
  *     `name` or `system.uniqueId` instead.
  *
+ *   ENGINE_FILE_UNCLASSIFIED (info)
+ *     A .js file lives in scripts/battle-director/ but appears in neither
+ *     ENGINE_FILES (scanned) nor NON_ENGINE_FILES (excluded). Classify it.
+ *     Gap 5 from canon hardening — prevents the lint silently stopping
+ *     coverage when a new engine file is added but the array isn't updated.
+ *
  * Usage:
  *   await FUCompanion.api.lint.runEngineCanonLint();
  *   // → { issues: [...], summary: { total, errors, warnings, byCode } }
@@ -61,6 +67,40 @@
     "scripts/battle-director/equipment-swap.js",
     "scripts/battle-director/compose-action.js",
   ];
+
+  // Files in the battle-director folder that are EXPLICITLY NOT engine
+  // code — UI, registry, boot, harness, etc. Gap 5 from canon hardening:
+  // auto-discover files in the folder and warn for any not in ENGINE_FILES
+  // or this exclude list (i.e. an unclassified file that may need to be
+  // added to ENGINE_FILES if it implements skill behavior).
+  const ENGINE_FOLDER = "modules/fabula-ultima-companion/scripts/battle-director";
+  const NON_ENGINE_FILES = new Set([
+    "scripts/battle-director/_test-harness-director.js",
+    "scripts/battle-director/action-card.js",
+    "scripts/battle-director/attribute-pair-picker.js",
+    "scripts/battle-director/director-boot.js",
+    "scripts/battle-director/director-combat.js",
+    "scripts/battle-director/director-init.js",
+    "scripts/battle-director/director-triggers.js",
+    "scripts/battle-director/director-vfx.js",
+    "scripts/battle-director/director.js",
+    "scripts/battle-director/intent-channel.js",
+    "scripts/battle-director/intents.js",
+    "scripts/battle-director/item-resource.js",
+    "scripts/battle-director/legacy-suppressor.js",
+    "scripts/battle-director/logger.js",
+    "scripts/battle-director/option-picker.js",
+    "scripts/battle-director/persistence.js",
+    "scripts/battle-director/registries.js",
+    "scripts/battle-director/rewind-button.js",
+    "scripts/battle-director/skill-picker.js",
+    "scripts/battle-director/snapshot.js",
+    "scripts/battle-director/states.js",
+    "scripts/battle-director/target-picker.js",
+    "scripts/battle-director/turn-picker.js",
+    "scripts/battle-director/turn-ui.js",
+    "scripts/battle-director/weapon-mode-picker.js",
+  ]);
 
   // Known intentional violations. Each entry kills one issue. Use sparingly —
   // every entry is an admission that the canon doesn't yet cover the case.
@@ -200,8 +240,49 @@
     return await res.text();
   }
 
+  // Auto-discover files in the battle-director folder via FilePicker.
+  // Warn for any .js file that's neither in ENGINE_FILES nor in
+  // NON_ENGINE_FILES — author either missed adding it to ENGINE_FILES
+  // (so the lint scans it) or missed classifying it as non-engine
+  // (so this warning stops nagging).
+  async function discoverUnlistedFiles() {
+    const out = [];
+    try {
+      const picker = await FilePicker.browse("data", ENGINE_FOLDER);
+      const allFiles = (picker?.files ?? [])
+        .filter((p) => p.endsWith(".js"))
+        .map((p) => p.replace(/^modules\/fabula-ultima-companion\//, ""));
+      const known = new Set([...ENGINE_FILES, ...NON_ENGINE_FILES]);
+      for (const f of allFiles) {
+        if (!known.has(f)) {
+          out.push({
+            severity: "info",
+            code: "ENGINE_FILE_UNCLASSIFIED",
+            file: f, line: 0,
+            snippet: "",
+            message:
+              `Battle-director file "${f}" is not in ENGINE_FILES nor ` +
+              `NON_ENGINE_FILES. If it dispatches skill behavior, add to ` +
+              `ENGINE_FILES so the lint scans it. If it's UI / boot / ` +
+              `harness, add to NON_ENGINE_FILES to silence this warning.`,
+          });
+        }
+      }
+    } catch (e) {
+      out.push({
+        severity: "warning",
+        code: "ENGINE_FILE_DISCOVERY_FAILED",
+        file: ENGINE_FOLDER, line: 0,
+        snippet: "",
+        message: `FilePicker.browse failed: ${e?.message ?? e}`,
+      });
+    }
+    return out;
+  }
+
   async function runEngineCanonLint(opts = {}) {
     const allIssues = [];
+    allIssues.push(...await discoverUnlistedFiles());
     for (const file of ENGINE_FILES) {
       let src;
       try {
