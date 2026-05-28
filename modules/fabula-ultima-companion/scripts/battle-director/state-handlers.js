@@ -31,7 +31,7 @@ import { composeAction, makeCancelToken } from "./compose-action.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride, resolvePassiveMode } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -1509,56 +1509,55 @@ const Target = {
       const parsedCost = parseSkillCost(String(skill.system?.props?.cost ?? ""));
       let costMap = resolveCost(parsedCost, { actor: attackerActor, targetCount: targets.length });
       let gate = checkAffordable(attackerActor, costMap);
-      // Vismagus alt-cost: when the caster CAN'T pay the MP, but has the
-      // Vismagus passive AND would survive paying 2× the MP cost as HP
-      // instead, offer the swap. On accept the costMap is rewritten so
-      // debitCost burns HP. RAW: paying HP MUST leave the caster with
-      // ≥1 HP — we gate on `curHp > 2*mpNeed`.
+
+      // ── Short-on-MP reactions (Vismagus + future cost-swap traits) ──
+      //
+      // When the cost gate fails ONLY on MP, fire the
+      // `caster_short_on_mp` reaction trigger. Carriers (Vismagus item,
+      // any future "spend X instead of MP" class trait) author a
+      // `substitute_cost` effect_table row that rewrites `costMap` in
+      // place. After dispatch, re-check affordability against the new
+      // map. The dispatcher is generic: no skill name / class flag
+      // hardcoding lives here.
+      //
+      // The substitute_cost effect stamps `payload.vismagusHpPaid` (and
+      // `payload.suppressSelfGrantOf`) when it mutates the map, so
+      // RESOLVE's self-heal suppression continues to work for Vismagus.
       let vismagusHpPaid = false;
-      if (!gate.ok) {
-        const skillIsSpell = String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell";
-        // Find the caster's Vismagus passive (if any). Mode controls
-        // whether it offers (on), asks (ask), or stays out of the way (off).
-        const vismagusItem = (attackerActor.items?.contents ?? []).find((it) =>
-          it.name === "Vismagus" && it.system?.props?.vismagus_passive === true
-        );
-        const vismagusMode = vismagusItem ? resolvePassiveMode(vismagusItem.system?.props) : null;
-        const mpNeed = Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0;
-        const curHp = Number(attackerActor.system?.props?.current_hp ?? 0) || 0;
-        const onlyMpMissing = gate.missing.every((m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp");
-        if (skillIsSpell && vismagusMode && vismagusMode !== "off" && mpNeed > 0 && onlyMpMissing && curHp > mpNeed * 2) {
-          let accept;
-          if (vismagusMode === "on") {
-            // Auto-pay HP — no prompt. Notify so the GM still knows it fired.
-            ui.notifications?.info(`Vismagus: ${attackerActor.name} paid ${mpNeed * 2} HP for ${skill.name}.`);
-            accept = true;
-          } else {
-            // "ask" — current prompt behaviour.
-            accept = await new Promise((resolve) => {
-              if (typeof Dialog !== "function") return resolve(false);
-              new Dialog({
-                title: "Vismagus — pay HP instead?",
-                content: `<p><strong>${attackerActor.name}</strong> can't afford <strong>${skill.name}</strong> (${gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ")}).</p><p>Vismagus lets them pay <strong>${mpNeed * 2} HP</strong> instead of <strong>${mpNeed} MP</strong>. Their HP would drop from ${curHp} to ${curHp - mpNeed * 2}.</p><p><em>If this spell would heal you, you recover no HP (it still works on other targets).</em></p>`,
-                buttons: {
-                  pay:    { label: `Pay ${mpNeed * 2} HP`, callback: () => resolve(true) },
-                  cancel: { label: "Cancel",               callback: () => resolve(false) },
-                },
-                default: "pay",
-                close: () => resolve(false),
-              }).render(true);
-            });
-          }
-          if (accept) {
-            const newMap = new Map();
-            for (const [k, v] of costMap.entries?.() ?? Object.entries(costMap ?? {})) {
-              if (String(k).toLowerCase() === "mp") continue;
-              newMap.set(k, v);
-            }
-            newMap.set("hp", (Number(newMap.get?.("hp") ?? 0) || 0) + mpNeed * 2);
-            costMap = newMap;
-            gate = checkAffordable(attackerActor, costMap);
-            vismagusHpPaid = true;
-          }
+      const onlyMpMissing = !gate.ok && gate.missing.every(
+        (m) => String(m.resource ?? m.label ?? "").toLowerCase() === "mp"
+      );
+      const skillIsSpell = String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell";
+      if (!gate.ok && onlyMpMissing && skillIsSpell) {
+        const reactionPayload = {
+          sourceActorUuid: attackerActor.uuid,
+          actorUuid:       attackerActor.uuid,
+          skillUuid:       skill.uuid,
+          skillName:       skill.name,
+          skillType:       "Spell",
+          costMap,
+          mpNeeded:        Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0,
+          curHp:           Number(attackerActor.system?.props?.current_hp ?? 0) || 0,
+        };
+        let reactionResult = { fired: [] };
+        try {
+          reactionResult = await firePassiveTriggers({
+            director,
+            casterActor: attackerActor,
+            trigger: "caster_short_on_mp",
+            payload: reactionPayload,
+          });
+        } catch (e) { warn("caster_short_on_mp reaction threw", e); }
+        if (reactionResult.fired?.some((f) => f.kind === "substitute_cost" && f.ok)) {
+          // The effect mutated costMap in place — re-check the gate.
+          gate = checkAffordable(attackerActor, costMap);
+          vismagusHpPaid = !!reactionPayload.vismagusHpPaid;
+          ui.notifications?.info(
+            `${attackerActor.name}: ${reactionResult.fired.find((f) => f.kind === "substitute_cost").fromAmount} ` +
+            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").fromResource} → ` +
+            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").toAmount} ` +
+            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").toResource} for ${skill.name}.`
+          );
         }
       }
       if (!gate.ok) {

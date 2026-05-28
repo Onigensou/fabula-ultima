@@ -765,8 +765,27 @@
           "type_damage": "",
           "damage_bonus": "0",
           "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
-          "vismagus_passive": true,
-          "passive_mode": "ask"
+          "isReaction": true,
+          "reaction_config_table": {
+            "0": {
+              "reaction_trigger": "caster_short_on_mp",
+              "reaction_source": "self",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "ask",
+              "reaction_effect_ref": "vismagus_swap"
+            }
+          },
+          "effect_table": {
+            "0": {
+              "effect_label": "vismagus_swap",
+              "effect_kind": "substitute_cost",
+              "from_resource": "mp",
+              "to_resource": "hp",
+              "multiplier": 2,
+              "min_remaining": 1,
+              "target_ref": "self"
+            }
+          }
         }
       }
     },

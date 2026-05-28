@@ -191,6 +191,14 @@
     {
       "key": "2026-05-29-sweep-isreaction-flag",
       "path": "data-migrations/2026-05-29-sweep-isreaction-flag.js"
+    },
+    {
+      "key": "2026-05-29-template-options-caster-short-on-mp",
+      "path": "data-migrations/2026-05-29-template-options-caster-short-on-mp.js"
+    },
+    {
+      "key": "2026-05-29-vismagus-reaction-config",
+      "path": "data-migrations/2026-05-29-vismagus-reaction-config.js"
     }
   ]
 }

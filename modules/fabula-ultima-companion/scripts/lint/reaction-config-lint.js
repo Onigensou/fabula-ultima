@@ -111,7 +111,8 @@
   const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy"]);
   const EFFECT_KIND_VALUES      = new Set([
     "grant", "apply_ae", "consume_charge", "consume_resource",
-    "redirect_target", "chain", "open_action_menu", "targeting"
+    "redirect_target", "chain", "open_action_menu", "targeting",
+    "remove_tagged_ae", "modify_damage_taken", "substitute_cost",
   ]);
   // Kinds that operate on tokens and therefore require a target_ref. apply_ae
   // is conditional (target_prompt: "visible" bypasses), handled inline.
@@ -122,18 +123,27 @@
   // ------------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------------
+  // Director-native triggers that don't live in the legacy
+  // `oni.ReactionTriggers` registry (added 2026-05-29 for Vismagus +
+  // future cost-substitution traits). Keep this list in sync with the
+  // triggers the director's firePassiveTriggers + state-handlers
+  // bridge dispatch.
+  const DIRECTOR_TRIGGERS = new Set([
+    "caster_short_on_mp",
+  ]);
+
   function listTriggerKeys() {
     const reg = window["oni.ReactionTriggers"];
-    if (!reg?.listTriggers) return null;
+    const keys = new Set(DIRECTOR_TRIGGERS);
+    if (!reg?.listTriggers) return keys.size ? keys : null;
     try {
       const triggers = reg.listTriggers();
-      const keys = new Set();
       for (const t of triggers ?? []) {
         if (t?.key) keys.add(t.key);
         for (const a of t?.aliases ?? []) keys.add(a);
       }
       return keys.size ? keys : null;
-    } catch (_) { return null; }
+    } catch (_) { return keys.size ? keys : null; }
   }
 
   // CSB tables can show up as either arrays or objects keyed by index

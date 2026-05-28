@@ -778,6 +778,7 @@ export async function applyEffectRow(row, ctx) {
     case "chain":          return applyChainEffect(row, ctx);
     case "open_action_menu": return applyOpenActionMenuEffect(row, ctx);
     case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
+    case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     // B.2+:
     case "consume_resource":
     case "redirect_target":
@@ -1153,6 +1154,92 @@ async function applyConsumeChargeEffect(row, ctx) {
   }
   // on_empty=skip: silently no-op the failures; chain continues.
   return { ok: true, kind: "consume_charge", applied };
+}
+
+// ── substitute_cost ─────────────────────────────────────────────────────
+//
+// Generalizes Vismagus-style "spend X instead of Y" cost-substitution.
+// Fires from a reaction on `caster_short_on_mp` (or any future trigger
+// thread that hands us a cost map). The effect MUTATES
+// `ctx.payload.costMap` in-place — the calling cost gate re-reads it
+// after the reaction returns.
+//
+// Row fields:
+//   from_resource    "mp" | "hp" | "ip" | "zenit" | ... — the resource
+//                    the caster can't afford
+//   to_resource      "hp" | "mp" | "ip" | ... — the substitute
+//   multiplier       Number — to_amount = from_amount * multiplier.
+//                    Default 2 (RAW Vismagus: 2× HP for missing MP).
+//   min_remaining    Number — minimum the caster must retain in the
+//                    target resource AFTER substitution. Default 1
+//                    (Vismagus: "cannot reduce yourself to 0 HP").
+//   suppress_self_grant
+//                    Optional. When true, also stamps a flag on the
+//                    payload so RESOLVE suppresses any grant TO the
+//                    substituting resource on the caster (Vismagus
+//                    RAW: "if the spell would heal you, you recover
+//                    no HP"). Renamed from the legacy `vismagusHpPaid`
+//                    AR flag; we set BOTH for back-compat.
+async function applySubstituteCostEffect(row, ctx) {
+  const fromRes = String(row.from_resource ?? "mp").trim().toLowerCase();
+  const toRes   = String(row.to_resource   ?? "hp").trim().toLowerCase();
+  const multiplier   = Number(row.multiplier ?? 2) || 2;
+  const minRemaining = Number(row.min_remaining ?? 1) || 1;
+  const suppressSelf = row.suppress_self_grant === true || fromRes === "mp"; // RAW Vismagus default
+
+  const costMap = ctx.payload?.costMap;
+  if (!costMap) {
+    warn(`substitute_cost: no costMap on payload for row "${row.effect_label}"`);
+    return { ok: false, kind: "substitute_cost", reason: "no-cost-map" };
+  }
+
+  // Read the current required amount of `fromRes` from the cost map.
+  const readMap = (k) => Number(
+    (costMap.get ? costMap.get(k) : costMap[k]) ?? 0
+  ) || 0;
+  const writeMap = (k, v) => {
+    if (costMap.set) costMap.set(k, v);
+    else costMap[k] = v;
+  };
+  const deleteMap = (k) => {
+    if (costMap.delete) costMap.delete(k);
+    else delete costMap[k];
+  };
+
+  const fromAmount = readMap(fromRes);
+  if (fromAmount <= 0) {
+    return { ok: false, kind: "substitute_cost", reason: "from-not-required" };
+  }
+
+  // Affordability check on the TARGET resource: caster must have enough
+  // to pay AND still retain `minRemaining` after the substitution.
+  const actor = ctx.reactorActor;
+  const propKey = ({ hp: "current_hp", mp: "current_mp", ip: "current_ip" })[toRes] ?? `current_${toRes}`;
+  const curTo = Number(actor?.system?.props?.[propKey] ?? 0) || 0;
+  const newToCost = fromAmount * multiplier;
+  if (curTo - newToCost < minRemaining) {
+    log(`substitute_cost: ${actor?.name ?? "?"} cur ${toRes}=${curTo}, needs ${newToCost}, min_remaining=${minRemaining} → reject`);
+    return {
+      ok: false, kind: "substitute_cost", reason: "not-enough-target-resource",
+      curTo, needed: newToCost, minRemaining,
+    };
+  }
+
+  // Rewrite the cost map: remove `fromRes`, add `toRes`.
+  deleteMap(fromRes);
+  writeMap(toRes, readMap(toRes) + newToCost);
+  if (suppressSelf) {
+    ctx.payload.suppressSelfGrantOf = toRes;
+    // Back-compat: legacy RESOLVE grant handler reads `vismagusHpPaid`.
+    if (toRes === "hp") ctx.payload.vismagusHpPaid = true;
+  }
+  log(`substitute_cost: rewrote ${fromAmount} ${fromRes} → ${newToCost} ${toRes} (caster=${actor?.name ?? "?"})`);
+  return {
+    ok: true, kind: "substitute_cost",
+    fromResource: fromRes, toResource: toRes,
+    fromAmount, toAmount: newToCost,
+    suppressSelfGrantOf: suppressSelf ? toRes : null,
+  };
 }
 
 // ── shared helpers for ref-list–style effect_kinds ──────────────────────
