@@ -142,19 +142,28 @@
   // ------------------------------------------------------------------
   // Helpers
   // ------------------------------------------------------------------
-  // Director-native triggers that don't live in the legacy
-  // `oni.ReactionTriggers` registry (added 2026-05-29 for Vismagus +
-  // future cost-substitution traits). Keep this list in sync with the
-  // triggers the director's firePassiveTriggers + state-handlers
-  // bridge dispatch.
-  const DIRECTOR_TRIGGERS = new Set([
+  // Director-native triggers. Canonical registry lives at
+  // scripts/battle-director/director-triggers.js (Gap 4 from canon
+  // hardening). The classic-script lint reads from the runtime registry
+  // when available, otherwise falls back to this inline mirror.
+  // Bootstrap order: if the ES module hasn't loaded yet (race at
+  // canvasReady), the fallback covers it; we re-poll the registry inside
+  // listTriggerKeys so the lint picks up the registry on subsequent
+  // invocations.
+  const DIRECTOR_TRIGGERS_FALLBACK = new Set([
     "caster_short_on_mp",
     "creature_completes_spell",
   ]);
 
+  function getDirectorTriggers() {
+    const reg = globalThis.FUCompanion?.api?.directorTriggers;
+    if (reg?.all instanceof Set && reg.all.size) return reg.all;
+    return DIRECTOR_TRIGGERS_FALLBACK;
+  }
+
   function listTriggerKeys() {
     const reg = window["oni.ReactionTriggers"];
-    const keys = new Set(DIRECTOR_TRIGGERS);
+    const keys = new Set(getDirectorTriggers());
     if (!reg?.listTriggers) return keys.size ? keys : null;
     try {
       const triggers = reg.listTriggers();

@@ -28,6 +28,7 @@ import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
+import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
 import {
@@ -789,21 +790,13 @@ Hooks.once("ready", () => {
   //
   // Triggers fired from Skill RESOLVE (`creature_completes_spell`) are
   // dispatched directly by state-handlers and don't pass through this
-  // bridge — listing them here would double-fire. Keep this set to
-  // triggers the LEGACY emits but DIRECTOR doesn't yet own.
-  const DIRECTOR_BRIDGED_TRIGGERS = new Set([
-    "creature_performs_check",
-    "creature_fumbles_check",
-    "creature_check_outcome_flipped",
-    "creature_recovers_hp",
-    "creature_recovers_mp",
-    "creature_lose_mp",
-  ]);
+  // bridge — listing them here would double-fire. The canonical set
+  // lives in `./director-triggers.js` (Gap 4 from canon hardening).
   Hooks.on("oni:reactionPhase", async (payload) => {
     try {
       if (!game.user?.isGM) return;
       const trigger = payload?.trigger;
-      if (!trigger || !DIRECTOR_BRIDGED_TRIGGERS.has(trigger)) return;
+      if (!trigger || !LEGACY_BRIDGED_TRIGGERS.has(trigger)) return;
       // Resolve subject actor. The legacy payload uses `actorUuid` (some
       // emit sites) or carries an `actor` directly; tolerate both.
       let actor = payload.actor ?? null;
