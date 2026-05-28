@@ -256,79 +256,29 @@ return (async () => {
 
   // ── Canon-deprecation guard (BLOCK, not warn) ─────────────────────────
   //
-  // The Skill Effects panel and any conditional/triggered behavior live
-  // in `reaction_config_table` rows. Top-level deprecation list mirrors
-  // the lint at scripts/lint/reaction-config-lint.js — keep them in sync.
+  // The shared validator lives at
+  // `modules/fabula-ultima-companion/scripts/lint/spec-canon-guard.js`
+  // so migrations that author items via `Item.create({...})` can reuse
+  // the same rules without bypassing them. Keep the macro and the
+  // module in sync — both ultimately read from there.
   const specProps = spec?.props ?? {};
-  const FORBIDDEN_TOP_LEVEL_PROPS = [
-    {
-      key: "passive_mode",
-      message: "Mode lives on reaction_config_table[N].reaction_passive_mode. " +
-               "Remove props.passive_mode from the spec.",
-    },
-    {
-      key: "post_damage_effect_ref",
-      message: "Author a reaction_config_table row with trigger " +
-               "`creature_deals_damage` + source=self + effect_ref pointing " +
-               "into effect_table. The top-level field is deprecated.",
-    },
-    {
-      key: "passive_check_bonus_formula",
-      message: "Author a reaction_config_table row with trigger " +
-               "`creature_performs_check` + effect_kind=grant. The top-level " +
-               "field is deprecated.",
-    },
-    {
-      key: "passive_damage_bonus",
-      message: "Author a reaction_config_table row with trigger " +
-               "`creature_deals_damage` + effect_kind=grant. The top-level " +
-               "field is deprecated.",
-    },
-  ];
-  const canonErrors = [];
-  for (const { key: badKey, message } of FORBIDDEN_TOP_LEVEL_PROPS) {
-    if (Object.prototype.hasOwnProperty.call(specProps, badKey)) {
-      canonErrors.push(`Forbidden top-level prop "${badKey}" — ${message}`);
-    }
-  }
-  for (const k of Object.keys(specProps)) {
-    if (!k.endsWith("_passive")) continue;
-    if (k === "isPassive") continue;
-    if (specProps[k] !== true) continue;
-    canonErrors.push(
-      `Forbidden top-level passive flag "${k}: true" — replace with a ` +
-      `reaction_config_table row carrying the appropriate trigger + ` +
-      `reaction_effect_ref. The engine should not gate on class-specific ` +
-      `boolean props.`
+  let canonErrors = [];
+  try {
+    const guard = await import(
+      "/modules/fabula-ultima-companion/scripts/lint/spec-canon-guard.js"
     );
-  }
-  // ── isReaction flag requirement ──────────────────────────────────────
-  //
-  // If the spec authors reaction infrastructure (rows on the skill OR a
-  // reactionConfig blob on any embedded AE), the skill MUST flag
-  // isReaction:true so the CSB sheet renders the Reactions panel and
-  // the structural lint runs on it. Authoring rows without the flag
-  // silently disables every other reaction rule on the item — caught
-  // Mercy mid-Vismagus refactor on 2026-05-29.
-  const rcRowKeys = Object.keys(specProps?.reaction_config_table ?? {});
-  const hasSpecRC = rcRowKeys.some((k) => {
-    const r = specProps.reaction_config_table[k];
-    return r && !r.$deleted && (r.reaction_trigger || r.reaction_effect_ref);
-  });
-  const hasAERC = (spec?.activeEffects ?? []).some((ae) => {
-    const cfg = ae?.flags?.["fabula-ultima-companion"]?.reactionConfig;
-    if (!cfg) return false;
-    return Object.values(cfg.reaction_config_table ?? {}).some(
-      (r) => r && !r.$deleted && (r.reaction_trigger)
-    );
-  });
-  if ((hasSpecRC || hasAERC) && specProps?.isReaction !== true) {
-    canonErrors.push(
-      `Spec authors reaction_config_table rows ${hasSpecRC ? "on the skill" : ""}${hasSpecRC && hasAERC ? " AND " : ""}${hasAERC ? "on an embedded AE" : ""} ` +
-      `but props.isReaction is not true. Set props.isReaction: true so ` +
-      `the CSB sheet shows the Reactions panel + the lint can verify ` +
-      `the rest of the reaction shape.`
-    );
+    const verdict = guard.validateSpecCanon({
+      props: specProps,
+      activeEffects: spec?.activeEffects,
+    });
+    canonErrors = verdict.errors ?? [];
+  } catch (e) {
+    console.error(`${TAG} spec-canon-guard load failed; failing safe`, e);
+    return {
+      ok: false,
+      reason: "canon_guard_load_failed",
+      error: String(e?.message ?? e),
+    };
   }
   if (canonErrors.length) {
     console.error(`${TAG} Spec rejected (canon violations):`, canonErrors);
