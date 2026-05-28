@@ -1,13 +1,16 @@
 /**
- * [ONI] Opportunity System — Dialog (Wheel UI v2)
+ * [ONI] Opportunity System — Dialog (Wheel UI v3)
  *
- * Radial wheel layout: actor portrait at center, 12 option pills arranged in a ring.
- * - Fan-out spawn: slots fly outward from center with a staggered ease-out.
- * - Mouse wheel / arrow keys cycle selection; selected slot is always at 6 o'clock.
- * - Clicking any slot jumps it to the bottom.
- * - Hovering plays cursor sound; scrolling plays shuffle sound.
- * - "Spend" triggers a screen flash, confirm sound, then resolves.
- * - "Decline" / ESC resolves cancelled.
+ * Stability fix: slot positions are encoded entirely in `transform` — `left` and `top`
+ * are set once to 50%/50% and never change. Only `transform` and `opacity` animate,
+ * which are GPU-composited and cause zero layout reflow. This eliminates the jitter
+ * that occurred when text-width differences interacted with left/top transitions.
+ *
+ * Slot width is fixed (128px) so scale changes never shift neighbouring items.
+ *
+ * Visual: parchment-style pills (warm gradient, dark brown text) on dark backdrop —
+ * matches the existing CheckRequester / reaction-window aesthetic, but the light
+ * buttons contrast well against the dark opportunity backdrop.
  *
  * CSS prefix: oni-opp-   z-index: 100020
  * Public: window["oni.OpportunityDialog"].showPicker(opts) → Promise
@@ -16,11 +19,12 @@
   const TAG      = "[ONI][OpportunitySystem:Dialog]";
   const STYLE_ID = "oni-opp-styles";
 
-  const RING_RADIUS   = 170;  // px — center of wheel to center of each slot
-  const WHEEL_SIZE    = 500;  // px — wheel container (must fit RING_RADIUS + largest slot half-width)
-  const PORTRAIT_SIZE = 90;   // px — actor portrait diameter
-  const TRANSITION_MS = 260;  // ms — slot position/opacity transition
-  const SPAWN_STAGGER = 45;   // ms — per-slot delay during fan-out
+  const RING_RADIUS   = 185;  // px — wheel center to slot center
+  const WHEEL_SIZE    = 520;  // px — container (RING_RADIUS × 2 + slot-half-width × 2 + padding)
+  const PORTRAIT_SIZE = 92;   // px — center portrait diameter
+  const TRANSITION_MS = 260;  // ms — slot transform/opacity transition
+  const SPAWN_STAGGER = 45;   // ms — per-slot delay during fan-out spawn
+  const SLOT_WIDTH    = 128;  // px — fixed slot width (prevents text-width jitter)
 
   const SFX_HOVER   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
   const SFX_SCROLL  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav";
@@ -29,8 +33,8 @@
 
   const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
 
-  let _lastHoverIdx    = -1;  // tracks last hovered slot index to debounce hover SFX
-  let _scrollThrottle  = 0;   // timestamp of last scroll step
+  let _lastHoverIdx   = -1;
+  let _scrollThrottle = 0;
 
   // ── Sound ──────────────────────────────────────────────────────────────────
   function playSound(url, vol = 0.65) {
@@ -39,25 +43,22 @@
   }
 
   // ── Geometry ───────────────────────────────────────────────────────────────
-  // Selected slot lives at 6 o'clock → angle = π/2 in screen coords (y increases down).
-  // Other slots fan around it: slot i has angle = π/2 + (i − sel) × 2π/N.
+  // Selected slot at 6 o'clock = angle π/2 (y increases downward in screen coords).
   function slotPos(idx, sel, N) {
     const a = (Math.PI / 2) + (idx - sel) * (2 * Math.PI / N);
     return { x: Math.cos(a) * RING_RADIUS, y: Math.sin(a) * RING_RADIUS };
   }
 
-  // Circular (shortest-path) distance from idx to sel.
   function circDist(idx, sel, N) {
     const raw = ((idx - sel) % N + N) % N;
     return raw <= N / 2 ? raw : N - raw;
   }
 
-  // Visual weight based on distance from selected.
   function slotVis(idx, sel, N) {
     const d = circDist(idx, sel, N);
     return {
-      opacity:    d === 0 ? 1.0 : d === 1 ? 0.55 : d <= 3 ? 0.35 : 0.22,
-      scale:      d === 0 ? 1.18 : d === 1 ? 1.0 : 0.87,
+      opacity:    d === 0 ? 1.0 : d === 1 ? 0.65 : d <= 3 ? 0.42 : 0.25,
+      scale:      d === 0 ? 1.16 : d === 1 ? 1.0 : 0.88,
       isSelected: d === 0,
     };
   }
@@ -68,7 +69,7 @@
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
-      /* ── Backdrop ─────────────────────────────────────────────────── */
+      /* Backdrop */
       .oni-opp-backdrop {
         position: fixed; inset: 0;
         background: rgba(0,0,0,.8);
@@ -79,7 +80,7 @@
         overflow-y: auto; padding: 20px 0;
       }
 
-      /* ── Title ────────────────────────────────────────────────────── */
+      /* Title */
       .oni-opp-title {
         font-family: 'Palatino Linotype', Palatino, serif;
         font-size: 1.05rem; font-weight: 900; color: #fcd470;
@@ -92,14 +93,14 @@
         margin-top: -8px; text-align: center;
       }
 
-      /* ── Wheel container ──────────────────────────────────────────── */
+      /* Wheel container */
       .oni-opp-wheel {
         position: relative;
         width: ${WHEEL_SIZE}px; height: ${WHEEL_SIZE}px;
         flex-shrink: 0;
       }
 
-      /* ── Center actor portrait ────────────────────────────────────── */
+      /* Actor portrait */
       .oni-opp-center {
         position: absolute; left: 50%; top: 50%;
         transform: translate(-50%, -50%);
@@ -116,22 +117,38 @@
         box-shadow: none !important; filter: none !important;
       }
 
-      /* ── Option slots (pills) ─────────────────────────────────────── */
+      /* Option slots — parchment pills, FIXED width to prevent text-width jitter */
       .oni-opp-slot {
         position: absolute;
-        padding: 5px 15px;
-        border-radius: 20px;
-        border: 2px solid;
-        font-weight: 800; font-size: .76rem; white-space: nowrap;
+        left: 50%; top: 50%;   /* STATIC — never changed after mount */
+        /* transform is the ONLY animated property for position; no left/top animation */
+        will-change: transform, opacity;
+        width: ${SLOT_WIDTH}px;
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+        padding: 6px 10px; box-sizing: border-box;
+        border-radius: 20px; border: 2px solid rgba(91,63,38,.7);
+        font-weight: 800; font-size: .76rem;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         cursor: pointer; user-select: none;
         font-family: 'Signika', sans-serif;
-        background: rgba(18, 12, 4, 0.90);
-        backdrop-filter: blur(6px);
+        /* Warm parchment — contrasts strongly against dark backdrop */
+        background: linear-gradient(180deg, #f6ebd3 0%, #eddecb 55%, #e4d0b5 100%);
+        color: #3b2a19;
+        box-shadow:
+          0 2px 8px rgba(0,0,0,.45),
+          inset 0 1px 0 rgba(255,248,232,.6);
         z-index: 1;
-        /* transition is set via JS per-slot during spawn, then switched to uniform */
+        /* transition injected via JS during spawn, then replaced with uniform */
+      }
+      .oni-opp-slot i {
+        flex-shrink: 0;
+        font-size: .74rem;
+      }
+      .oni-opp-slot span {
+        overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: center;
       }
 
-      /* ── Description panel ────────────────────────────────────────── */
+      /* Description panel */
       .oni-opp-desc {
         max-width: 440px; width: 100%;
         background: rgba(18,12,4,.92);
@@ -154,7 +171,7 @@
         animation: oni-opp-desc-in 160ms ease-out both;
       }
 
-      /* ── Footer ───────────────────────────────────────────────────── */
+      /* Footer */
       .oni-opp-footer { display: flex; gap: 14px; }
       .oni-opp-btn {
         padding: 8px 26px; font-size: .86rem; font-weight: 800;
@@ -177,28 +194,26 @@
     document.head.appendChild(s);
   }
 
-  // ── Apply slot layout (positions + visual weights) ─────────────────────────
-  // Does NOT set transition — caller manages that.
+  // ── Slot layout — transform only, no left/top ──────────────────────────────
+  // Slots have left:50% top:50% permanently. All X/Y positioning lives inside transform.
   function applyLayout(slots, sel, N) {
     slots.forEach((slot, i) => {
       const pos = slotPos(i, sel, N);
       const vis = slotVis(i, sel, N);
       const opt = slot._option;
 
-      slot.style.left      = `calc(50% + ${pos.x}px)`;
-      slot.style.top       = `calc(50% + ${pos.y}px)`;
-      slot.style.transform = `translate(-50%,-50%) scale(${vis.scale})`;
+      slot.style.transform = `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px)) scale(${vis.scale})`;
       slot.style.opacity   = String(vis.opacity);
 
       if (vis.isSelected) {
         slot.style.borderColor = opt?.color ?? "#fcd470";
         slot.style.color       = opt?.color ?? "#fcd470";
-        slot.style.boxShadow   = `0 0 14px ${opt?.color ?? "#fcd470"}55`;
+        slot.style.boxShadow   = `0 2px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,248,232,.6), 0 0 14px ${opt?.color ?? "#fcd470"}55`;
         slot.classList.add("is-selected");
       } else {
-        slot.style.borderColor = "rgba(252,212,112,.26)";
-        slot.style.color       = "rgba(246,235,211,.68)";
-        slot.style.boxShadow   = "none";
+        slot.style.borderColor = "rgba(91,63,38,.7)";
+        slot.style.color       = "#3b2a19";
+        slot.style.boxShadow   = "0 2px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,248,232,.6)";
         slot.classList.remove("is-selected");
       }
     });
@@ -208,7 +223,7 @@
   function refreshDesc(descEl, opt) {
     if (!descEl || !opt) return;
     descEl.classList.remove("is-updating");
-    void descEl.offsetWidth; // restart animation
+    void descEl.offsetWidth;
     descEl.classList.add("is-updating");
     const iconEl  = descEl.querySelector(".oni-opp-desc-icon");
     const labelEl = descEl.querySelector(".oni-opp-desc-label");
@@ -242,25 +257,16 @@
   }
 
   // ── Main showPicker ────────────────────────────────────────────────────────
-  /**
-   * @param {object}  opts
-   * @param {string}  opts.actorName      Display name shown as subtitle
-   * @param {string}  [opts.actorPortrait] URL of actor portrait
-   * @param {Array}   opts.options         OpportunityConfig.OPTIONS
-   * @param {boolean} [opts.canDecline]    Show Decline button (default true)
-   * @returns {Promise<{optionId:string}|{cancelled:true}>}
-   */
   function showPicker({ actorName, actorPortrait, options, canDecline = true }) {
     ensureStyles();
 
     return new Promise(resolve => {
-      // Remove any stale picker
       document.getElementById("oni-opp-backdrop")?.remove();
 
       const N = options.length;
-      let sel = 0; // currently selected index (slot at 6 o'clock)
+      let sel = 0;
 
-      // ── Backdrop ─────────────────────────────────────────────────────────
+      // Backdrop
       const backdrop = document.createElement("div");
       backdrop.className = "oni-opp-backdrop";
       backdrop.id = "oni-opp-backdrop";
@@ -271,50 +277,51 @@
       backdrop.appendChild(titleEl);
 
       if (actorName) {
-        const subEl = document.createElement("div");
-        subEl.className = "oni-opp-subtitle";
-        subEl.textContent = actorName;
-        backdrop.appendChild(subEl);
+        const sub = document.createElement("div");
+        sub.className = "oni-opp-subtitle";
+        sub.textContent = actorName;
+        backdrop.appendChild(sub);
       }
 
-      // ── Wheel ─────────────────────────────────────────────────────────────
+      // Wheel
       const wheel = document.createElement("div");
       wheel.className = "oni-opp-wheel";
 
       // Center portrait
-      const centerEl = document.createElement("div");
-      centerEl.className = "oni-opp-center";
+      const center = document.createElement("div");
+      center.className = "oni-opp-center";
       if (actorPortrait) {
         const isVid = /\.(webm|mp4|ogg)(\?|$)/i.test(actorPortrait);
         const media = isVid
           ? Object.assign(document.createElement("video"), { src: actorPortrait, autoplay: true, loop: true, muted: true, playsInline: true })
-          : Object.assign(document.createElement("img"), { src: actorPortrait, alt: "" });
+          : Object.assign(document.createElement("img"),  { src: actorPortrait, alt: "" });
         media.onerror = () => { try { media.src = "icons/svg/mystery-man.svg"; } catch(_){} };
-        centerEl.appendChild(media);
+        center.appendChild(media);
       }
-      wheel.appendChild(centerEl);
+      wheel.appendChild(center);
 
-      // Slots — all start at center (opacity 0, scale 0.5) for spawn animation
+      // Slots — left:50% top:50% are set once and never changed
+      // spawn starts at transform: translate(-50%,-50%) scale(0.35), opacity 0
+      const SPAWN_TRANSFORM = "translate(-50%, -50%) scale(0.35)";
       const slots = options.map((opt, i) => {
         const slot = document.createElement("div");
         slot.className = "oni-opp-slot";
-        slot.textContent = opt.label;
+        // Icon + label — both inside, flex handles layout
+        slot.innerHTML = `<i class="fas ${esc(opt.icon ?? "fa-star")}"></i><span>${esc(opt.label)}</span>`;
         slot._option = opt;
         slot._idx    = i;
-        slot.style.transition  = "none";
-        slot.style.left        = "50%";
-        slot.style.top         = "50%";
-        slot.style.transform   = "translate(-50%,-50%) scale(0.4)";
-        slot.style.opacity     = "0";
-        slot.style.borderColor = "rgba(252,212,112,.26)";
-        slot.style.color       = "rgba(246,235,211,.68)";
+        slot.style.left      = "50%";
+        slot.style.top       = "50%";
+        slot.style.transform = SPAWN_TRANSFORM;
+        slot.style.opacity   = "0";
+        slot.style.transition = "none";
         wheel.appendChild(slot);
         return slot;
       });
 
       backdrop.appendChild(wheel);
 
-      // ── Description panel ─────────────────────────────────────────────────
+      // Description
       const descEl = document.createElement("div");
       descEl.className = "oni-opp-desc";
       descEl.innerHTML = `
@@ -325,10 +332,9 @@
         <div class="oni-opp-desc-text"></div>`;
       backdrop.appendChild(descEl);
 
-      // ── Footer ────────────────────────────────────────────────────────────
-      const footer    = document.createElement("div");
+      // Footer
+      const footer = document.createElement("div");
       footer.className = "oni-opp-footer";
-
       const spendBtn = document.createElement("button");
       spendBtn.className = "oni-opp-btn oni-opp-btn-spend";
       spendBtn.textContent = "✦ Spend";
@@ -344,36 +350,28 @@
       backdrop.appendChild(footer);
       document.body.appendChild(backdrop);
 
-      // Initial description (selected = index 0)
       refreshDesc(descEl, options[sel]);
 
-      // ── Spawn fan-out animation ───────────────────────────────────────────
-      // Double rAF so the browser commits `left:50%; top:50%` before transitioning.
+      // ── Spawn fan-out ──────────────────────────────────────────────────────
+      // Double rAF ensures browser commits left:50% top:50% + spawn transform
+      // before the transitions fire, so all slots animate from center outward.
+      const UNIFORM_TR = `transform ${TRANSITION_MS}ms ease-out, opacity 200ms ease-out`;
+
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        // Apply per-slot staggered transitions, then final positions + opacities
+        // Staggered per-slot transitions for the spawn fan
         slots.forEach((slot, i) => {
-          const delay = i * SPAWN_STAGGER;
-          slot.style.transition = [
-            `left ${TRANSITION_MS}ms ease-out ${delay}ms`,
-            `top ${TRANSITION_MS}ms ease-out ${delay}ms`,
-            `transform ${TRANSITION_MS}ms ease-out ${delay}ms`,
-            `opacity 200ms ease-out ${delay}ms`,
-          ].join(",");
+          const d = i * SPAWN_STAGGER;
+          slot.style.transition = `transform ${TRANSITION_MS}ms ease-out ${d}ms, opacity 200ms ease-out ${d}ms`;
         });
+        // Apply final ring positions (sets transform only)
         applyLayout(slots, sel, N);
 
-        // After all slots have arrived, replace per-slot delays with a uniform transition
-        const spawnTotal = SPAWN_STAGGER * (N - 1) + TRANSITION_MS + 80;
-        const uniformTr  = [
-          `left ${TRANSITION_MS}ms ease-out`,
-          `top ${TRANSITION_MS}ms ease-out`,
-          `transform ${TRANSITION_MS}ms ease-out`,
-          `opacity 200ms ease-out`,
-        ].join(",");
-        setTimeout(() => slots.forEach(sl => { sl.style.transition = uniformTr; }), spawnTotal);
+        // After all slots land, replace stagger delays with the uniform transition
+        const spawnDone = SPAWN_STAGGER * (N - 1) + TRANSITION_MS + 80;
+        setTimeout(() => slots.forEach(sl => { sl.style.transition = UNIFORM_TR; }), spawnDone);
       }));
 
-      // ── Selection helper ──────────────────────────────────────────────────
+      // ── Selection ─────────────────────────────────────────────────────────
       function changeSel(newIdx, sfx = true) {
         const ns = ((newIdx % N) + N) % N;
         if (ns === sel) return;
@@ -383,7 +381,7 @@
         refreshDesc(descEl, options[sel]);
       }
 
-      // ── Mouse wheel scroll ────────────────────────────────────────────────
+      // Mouse wheel
       backdrop.addEventListener("wheel", e => {
         e.preventDefault();
         const now = Date.now();
@@ -392,7 +390,7 @@
         changeSel(sel + (e.deltaY > 0 ? 1 : -1));
       }, { passive: false });
 
-      // ── Slot hover + click ────────────────────────────────────────────────
+      // Slot hover + click
       slots.forEach((slot, i) => {
         slot.addEventListener("mouseenter", () => {
           if (_lastHoverIdx === i) return;
@@ -405,16 +403,16 @@
         slot.addEventListener("click", () => changeSel(i));
       });
 
-      // ── Keyboard navigation ───────────────────────────────────────────────
+      // Keyboard
       const onKey = e => {
-        if      (e.key === "ArrowRight" || e.key === "ArrowDown")  { e.preventDefault(); changeSel(sel + 1); }
-        else if (e.key === "ArrowLeft"  || e.key === "ArrowUp")    { e.preventDefault(); changeSel(sel - 1); }
-        else if (e.key === "Enter")                                 { e.preventDefault(); spendBtn.click(); }
-        else if (e.key === "Escape")                                { e.preventDefault(); (declineBtn ?? spendBtn).click(); }
+        if      (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); changeSel(sel + 1); }
+        else if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   { e.preventDefault(); changeSel(sel - 1); }
+        else if (e.key === "Enter")                                { e.preventDefault(); spendBtn.click(); }
+        else if (e.key === "Escape")                               { e.preventDefault(); (declineBtn ?? spendBtn).click(); }
       };
       document.addEventListener("keydown", onKey);
 
-      // ── Spend ─────────────────────────────────────────────────────────────
+      // Spend
       spendBtn.addEventListener("click", async () => {
         if (spendBtn.disabled) return;
         spendBtn.disabled = true;
@@ -425,7 +423,7 @@
         resolve({ optionId: options[sel].id });
       });
 
-      // ── Decline ───────────────────────────────────────────────────────────
+      // Decline
       if (declineBtn) {
         declineBtn.addEventListener("click", () => {
           playSound(SFX_CANCEL, 0.65);
@@ -442,5 +440,5 @@
   }
 
   window["oni.OpportunityDialog"] = Object.freeze({ showPicker });
-  console.debug(`${TAG} Ready (Wheel UI v2).`);
+  console.debug(`${TAG} Ready (Wheel UI v3 — transform-only, parchment slots).`);
 })();
