@@ -183,6 +183,14 @@
     {
       "key": "2026-05-29-support-magic-ae-reaction-config",
       "path": "data-migrations/2026-05-29-support-magic-ae-reaction-config.js"
+    },
+    {
+      "key": "2026-05-29-mercy-set-isreaction",
+      "path": "data-migrations/2026-05-29-mercy-set-isreaction.js"
+    },
+    {
+      "key": "2026-05-29-sweep-isreaction-flag",
+      "path": "data-migrations/2026-05-29-sweep-isreaction-flag.js"
     }
   ]
 }

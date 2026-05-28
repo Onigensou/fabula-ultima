@@ -26,6 +26,24 @@ export const description =
   "reaction_config_table[0].reaction_passive_mode.";
 
 const TARGET_NAMES = ["Healing Power", "Support Magic"];
+const BD_ROOT_NAME = "Battle Director";
+
+function isInBattleDirectorTree(item) {
+  let f = item?.folder;
+  while (f) {
+    if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) return true;
+    f = f.folder;
+  }
+  return false;
+}
+
+function actorCopyIsBattleDirector(item, masterIndexByUniqueId) {
+  const uid = String(item?.system?.uniqueId ?? "").trim();
+  if (!uid) return false;
+  const master = masterIndexByUniqueId.get(uid);
+  if (!master) return false;
+  return isInBattleDirectorTree(master);
+}
 
 function hasCanonicalPassiveRow(item) {
   const rc = item?.system?.props?.reaction_config_table;
@@ -60,15 +78,30 @@ export async function migrate(game, log) {
     }
   }
 
-  // World master items
+  // Build uniqueId → master index for actor-copy folder lookup.
+  const masterIndexByUniqueId = new Map();
+  for (const item of game.items?.contents ?? []) {
+    const uid = String(item?.system?.uniqueId ?? "").trim();
+    if (uid && !masterIndexByUniqueId.has(uid)) masterIndexByUniqueId.set(uid, item);
+  }
+
+  // World master items (BD only)
   for (const item of game.items?.contents ?? []) {
     if (!TARGET_NAMES.includes(item.name)) continue;
+    if (!isInBattleDirectorTree(item)) {
+      log(`  world / "${item.name}": skipped (not in Battle Director folder)`);
+      continue;
+    }
     await maybeClear(item, "world");
   }
-  // Actor-embedded copies
+  // Actor-embedded copies (linked to BD masters only)
   for (const actor of game.actors?.contents ?? []) {
     for (const item of actor.items?.contents ?? []) {
       if (!TARGET_NAMES.includes(item.name)) continue;
+      if (!actorCopyIsBattleDirector(item, masterIndexByUniqueId)) {
+        log(`  actor "${actor.name}" / "${item.name}": skipped (master not in BD tree)`);
+        continue;
+      }
       await maybeClear(item, `actor "${actor.name}"`);
     }
   }

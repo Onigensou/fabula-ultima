@@ -302,6 +302,34 @@ return (async () => {
       `boolean props.`
     );
   }
+  // ── isReaction flag requirement ──────────────────────────────────────
+  //
+  // If the spec authors reaction infrastructure (rows on the skill OR a
+  // reactionConfig blob on any embedded AE), the skill MUST flag
+  // isReaction:true so the CSB sheet renders the Reactions panel and
+  // the structural lint runs on it. Authoring rows without the flag
+  // silently disables every other reaction rule on the item — caught
+  // Mercy mid-Vismagus refactor on 2026-05-29.
+  const rcRowKeys = Object.keys(specProps?.reaction_config_table ?? {});
+  const hasSpecRC = rcRowKeys.some((k) => {
+    const r = specProps.reaction_config_table[k];
+    return r && !r.$deleted && (r.reaction_trigger || r.reaction_effect_ref);
+  });
+  const hasAERC = (spec?.activeEffects ?? []).some((ae) => {
+    const cfg = ae?.flags?.["fabula-ultima-companion"]?.reactionConfig;
+    if (!cfg) return false;
+    return Object.values(cfg.reaction_config_table ?? {}).some(
+      (r) => r && !r.$deleted && (r.reaction_trigger)
+    );
+  });
+  if ((hasSpecRC || hasAERC) && specProps?.isReaction !== true) {
+    canonErrors.push(
+      `Spec authors reaction_config_table rows ${hasSpecRC ? "on the skill" : ""}${hasSpecRC && hasAERC ? " AND " : ""}${hasAERC ? "on an embedded AE" : ""} ` +
+      `but props.isReaction is not true. Set props.isReaction: true so ` +
+      `the CSB sheet shows the Reactions panel + the lint can verify ` +
+      `the rest of the reaction shape.`
+    );
+  }
   if (canonErrors.length) {
     console.error(`${TAG} Spec rejected (canon violations):`, canonErrors);
     ui.notifications?.error(

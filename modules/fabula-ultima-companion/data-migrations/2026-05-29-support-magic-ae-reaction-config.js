@@ -52,6 +52,24 @@ export const description =
 const SKILL_NAME = "Support Magic";
 const AE_NAME    = "Support Magic";
 const FLAG_NS    = "fabula-ultima-companion";
+const BD_ROOT_NAME = "Battle Director";
+
+function isInBattleDirectorTree(item) {
+  let f = item?.folder;
+  while (f) {
+    if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) return true;
+    f = f.folder;
+  }
+  return false;
+}
+
+function actorCopyIsBattleDirector(item, masterIndexByUniqueId) {
+  const uid = String(item?.system?.uniqueId ?? "").trim();
+  if (!uid) return false;
+  const master = masterIndexByUniqueId.get(uid);
+  if (!master) return false;
+  return isInBattleDirectorTree(master);
+}
 
 const REACTION_CONFIG = {
   reaction_config_table: {
@@ -99,19 +117,35 @@ async function applyAeFlagPatch(ae, ownerLabel, log) {
 export async function migrate(game, log) {
   let updated = 0;
 
-  // 1. World master items named "Support Magic" → walk embedded AEs.
+  // Build uniqueId → master index for actor-copy folder lookup.
+  const masterIndexByUniqueId = new Map();
+  for (const item of game.items?.contents ?? []) {
+    const uid = String(item?.system?.uniqueId ?? "").trim();
+    if (uid && !masterIndexByUniqueId.has(uid)) masterIndexByUniqueId.set(uid, item);
+  }
+
+  // 1. World master items named "Support Magic" in BD tree → walk embedded AEs.
   for (const item of game.items?.contents ?? []) {
     if (item.name !== SKILL_NAME) continue;
+    if (!isInBattleDirectorTree(item)) {
+      log(`  world / "${item.name}": skipped (not in Battle Director folder)`);
+      continue;
+    }
     for (const ae of item.effects?.contents ?? []) {
       if (ae.name !== AE_NAME) continue;
       if (await applyAeFlagPatch(ae, `world master "${item.name}"`, log)) updated += 1;
     }
   }
 
-  // 2. Actor-borne Support Magic SKILL ITEMS' embedded AE templates.
+  // 2. Actor-borne Support Magic SKILL ITEMS (linked to BD master) →
+  //    walk their embedded AE templates.
   for (const actor of game.actors?.contents ?? []) {
     for (const item of actor.items?.contents ?? []) {
       if (item.name !== SKILL_NAME) continue;
+      if (!actorCopyIsBattleDirector(item, masterIndexByUniqueId)) {
+        log(`  actor "${actor.name}" / "${item.name}": skipped (master not in BD tree)`);
+        continue;
+      }
       for (const ae of item.effects?.contents ?? []) {
         if (ae.name !== AE_NAME) continue;
         if (await applyAeFlagPatch(ae, `actor "${actor.name}" / skill "${item.name}"`, log)) updated += 1;
@@ -119,11 +153,25 @@ export async function migrate(game, log) {
     }
   }
 
-  // 3. LIVE Support Magic AEs already applied to actors (rare — would
-  //    only exist if the GM cast Support Magic recently).
+  // 3. LIVE Support Magic AEs already applied to actors. These don't
+  //    carry the skill's uniqueId, so we filter by the AE's origin —
+  //    must point at a BD-tree skill item.
   for (const actor of game.actors?.contents ?? []) {
     for (const ae of actor.effects?.contents ?? []) {
       if (ae.name !== AE_NAME) continue;
+      const originUuid = ae?.origin ?? null;
+      if (!originUuid) continue;
+      try {
+        const originItem = await fromUuid(originUuid);
+        if (!originItem) continue;
+        // originItem may be Item (master) or actor-embedded; recurse to
+        // its parent Item if needed. For master lookup use uniqueId.
+        const masterItem = originItem.documentName === "Item"
+          ? (masterIndexByUniqueId.get(String(originItem?.system?.uniqueId ?? "")) ?? originItem)
+          : null;
+        const checkItem = masterItem ?? originItem;
+        if (!isInBattleDirectorTree(checkItem)) continue;
+      } catch { continue; }
       if (await applyAeFlagPatch(ae, `actor "${actor.name}" (live AE)`, log)) updated += 1;
     }
   }

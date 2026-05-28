@@ -516,6 +516,39 @@
       out.push(i);
     }
 
+    // REACTION_FLAG_MISSING — item carries reaction infrastructure
+    // (rows on the skill itself OR a reactionConfig blob on an embedded
+    // AE) but `system.props.isReaction` isn't set true. The structural
+    // checks below short-circuit on items without isReaction, so this
+    // inversion silently hides every other lint rule for the item.
+    // Caught Mercy mid-Vismagus-refactor on 2026-05-29.
+    const hasItemRC = hasMeaningfulRows(
+      props?.reaction_config_table, ["reaction_trigger", "reaction_effect_ref"]
+    );
+    const hasAERC = (item?.effects?.contents ?? []).some((ae) => {
+      const cfg = ae?.flags?.[MODULE_ID]?.reactionConfig;
+      if (!cfg) return false;
+      return hasMeaningfulRows(
+        cfg.reaction_config_table, ["reaction_trigger"]
+      );
+    });
+    if ((hasItemRC || hasAERC) && props?.isReaction !== true) {
+      out.push({
+        severity: "warning",
+        code: "REACTION_FLAG_MISSING",
+        owner: ownerLabel,
+        itemUuid: item?.uuid ?? null,
+        itemName: item?.name ?? "(unnamed)",
+        location: "system.props.isReaction",
+        message:
+          `Item carries reaction_config_table rows ${hasItemRC ? "(on the skill" : ""}${hasItemRC && hasAERC ? " AND on an embedded AE" : hasAERC ? "(on an embedded AE" : ""}) but ` +
+          `isReaction !== true. Set props.isReaction = true so the CSB ` +
+          `sheet renders the Reactions panel + the rest of this lint runs. ` +
+          `Without the flag, every structural reaction rule silently skips ` +
+          `this item.`,
+      });
+    }
+
     if (props?.isReaction !== true) return out;
 
     // Custom-script annotation — emit BEFORE declarative checks so the

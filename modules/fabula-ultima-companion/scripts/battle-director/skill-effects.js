@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString } from "./skill-formulas.js";
 import { pickOption } from "./option-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume } from "./skill-charges.js";
@@ -995,6 +995,42 @@ async function applyApplyAeEffect(row, ctx) {
     // but the engine guarantees the runtime invariant either way.
     data.transfer = false;
     if (!data.origin) data.origin = ctx.skill?.uuid ?? ctx.reactorActor?.uuid ?? null;
+
+    // ── Bake formula identifiers in `changes[].value` at apply-time ──
+    //
+    // AE templates often carry identifiers like `BOND_STRENGTH` or
+    // `SL` as the change's `value`. CSB's own AE-formula bridge resolves
+    // against the BEARER actor (the ally), which is wrong for caster-
+    // derived values — caster's bond toward THIS specific ally has to
+    // be evaluated NOW, against the caster + this target's pair.
+    //
+    // We resolve via the director's buildSkillResolver and write the
+    // computed literal number into `data.changes[].value`. Each target's
+    // AE then carries its own baked value (Ally A: bonus_check += 3;
+    // Ally B: bonus_check += 1). Non-formula values (plain numbers,
+    // strings like "Light") pass through unchanged.
+    if (Array.isArray(data.changes) && data.changes.length) {
+      const bakeResolver = buildSkillResolver({
+        actor: ctx.reactorActor,
+        skill: ctx.skill,
+        payload: {
+          ...(ctx.payload ?? {}),
+          subjectName: actor.name,
+          targetName:  actor.name,
+          actorName:   actor.name,
+          tokenName:   token.name ?? actor.name,
+        },
+        round: ctx.dCombat?.round ?? 0,
+      });
+      for (const ch of data.changes) {
+        if (typeof ch?.value !== "string") continue;
+        if (!isFormulaString(ch.value)) continue;
+        const resolved = evaluateFormula(ch.value, bakeResolver, null);
+        if (resolved == null || !Number.isFinite(resolved)) continue;
+        log(`apply_ae bake: "${ch.value}" → ${resolved} (target=${actor.name})`);
+        ch.value = String(resolved);
+      }
+    }
     if (!data.flags) data.flags = {};
     data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
     // Per-AE duration counter (homebrew rule: default 3 turns, tick at
