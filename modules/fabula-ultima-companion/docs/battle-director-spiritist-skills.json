@@ -624,7 +624,7 @@
     },
     {
       "_raw": "FU Core p.182 — Passive. When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, each of those allies recovers HP equal to SL × BOND_COUNT.",
-      "_note": "First skill exercising the passive-trigger layer (`passive_trigger: 'spell_complete'` + `passive_trigger_filter: 'ally_targets'`). Condition formula gates on arcane-weapon-equipped via the new `HAS_ARCANE_WEAPON` identifier. RAW 'may' → `passive_optional: true` (GM gets Apply/Skip dialog after cast).",
+      "_note": "Passive driven by reaction_config_table: trigger `creature_completes_spell` + source=self + action_target=ally + condition_formula=HAS_ARCANE_WEAPON + isPassive=true + passive_mode=ask. Effect_ref points at the effect_table row. CSB renders the row in the Reaction Config panel of the Skill sheet.",
       "spec": {
         "name": "Healing Power",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
@@ -641,11 +641,18 @@
           "type_damage": "",
           "damage_bonus": "0",
           "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
-          "passive_trigger": "spell_complete",
-          "passive_trigger_filter": "ally_targets",
-          "passive_condition_formula": "HAS_ARCANE_WEAPON",
-          "passive_mode": "ask",
-          "on_passive_trigger_effect_ref": "healing_power_grant",
+          "reaction_config_table": {
+            "0": {
+              "reaction_trigger": "creature_completes_spell",
+              "reaction_source": "self",
+              "reaction_action_target": "ally",
+              "reaction_isPassive": true,
+              "reaction_passive_target": "self",
+              "reaction_passive_mode": "ask",
+              "condition_formula": "HAS_ARCANE_WEAPON",
+              "reaction_effect_ref": "healing_power_grant"
+            }
+          },
           "effect_table": {
             "0": {
               "effect_label": "healing_power_grant",
@@ -660,7 +667,7 @@
     },
     {
       "_raw": "FU Core p.182 — Passive. When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, choose one of those allies you have a Bond toward; that ally gains a bonus to their next Check this scene equal to the strength of your Bond toward them.",
-      "_note": "Same passive trigger as Healing Power (spell_complete + ally_targets + arcane gate). open_action_menu picks one targeted ally, then apply_ae stamps a `next_check_bonus` AE with the bond strength (resolved via BOND_STRENGTH against the picked ally). The applied AE auto-consumes on the target's next Check — relies on the existing 'consume on Check' AE behavior (legacy bridge will read `flags.fabula-ultima-companion.consume_on_check`).",
+      "_note": "Same passive trigger as Healing Power (creature_completes_spell + ally action target + HAS_ARCANE_WEAPON). open_action_menu picks one targeted ally, then apply_ae stamps a `next_check_bonus` AE with the bond strength (resolved via BOND_STRENGTH against the picked ally). The applied AE auto-consumes on the target's next Check — relies on the existing 'consume on Check' AE behavior (legacy bridge will read `flags.fabula-ultima-companion.consume_on_check`).",
       "_deferred_bond_filter": "The picker shows ALL ally targets right now. Filtering down to 'allies the caster has a Bond toward' needs a new target_ref filter (e.g. `bonded_only`). Until that lands, the GM picks the right ally manually.",
       "_deferred_auto_consume": "The bonus AE applies but doesn't yet auto-consume on the target's next Check — Phase F reaction-on-roll will hook this. For now the GM manually deletes the AE after the Check fires.",
       "spec": {
@@ -679,11 +686,18 @@
           "type_damage": "",
           "damage_bonus": "0",
           "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
-          "passive_trigger": "spell_complete",
-          "passive_trigger_filter": "ally_targets",
-          "passive_condition_formula": "HAS_ARCANE_WEAPON",
-          "passive_mode": "ask",
-          "on_passive_trigger_effect_ref": "support_magic_apply",
+          "reaction_config_table": {
+            "0": {
+              "reaction_trigger": "creature_completes_spell",
+              "reaction_source": "self",
+              "reaction_action_target": "ally",
+              "reaction_isPassive": true,
+              "reaction_passive_target": "self",
+              "reaction_passive_mode": "ask",
+              "condition_formula": "HAS_ARCANE_WEAPON",
+              "reaction_effect_ref": "support_magic_apply"
+            }
+          },
           "effect_table": {
             "0": {
               "effect_label": "support_magic_apply",
@@ -738,7 +752,7 @@
     },
     {
       "_raw": "FU Core p.182 — Cost: 20 MP. Targets: One creature. Duration: Scene. Until the spell ends, if the target would be reduced to 0 HP they are instead left at exactly 1 HP. Once that happens, the spell ends.",
-      "_note": "Reactive AE: applies the 'Mercy' AE to one ally; at damage-resolution time, the engine checks for the AE on each damaged target and clamps post-affinity HP at 1 (instead of 0) if reached. Clamp consumes the AE — handled in resolveSkillAction's damage loop via a `clampHpFloorViaMercy(targetActor, damage)` helper that reads `flags.fabula-ultima-companion.mercyActive`.",
+      "_note": "Reactive AE — fully data-driven via the AE's `reactionConfig` blob (visible/editable in the AE-sheet's Reactions panel). Trigger: `creature_takes_damage` + filter `reaction_damage_outcome: would_reduce_to_zero`. Effect: `modify_damage_taken` mode=`set_hp_floor` value=1 + `consume_self: true`. The director's RESOLVE damage paths call `resolveDamageReactions` from skill-effects.js BEFORE writing `current_hp`; the helper walks the target's AEs and applies any matching modifications. No hardcoded Mercy logic — any AE with the same reactionConfig shape gets the same clamp behavior.",
       "_deferred_external_damage_sources": "Damage from non-director-spawned sources (manual HP edits via sheet, legacy macros) WON'T trigger the Mercy clamp until the legacy damage path also calls the clamp helper. Mercy currently only fires when the Director routes the damage.",
       "spec": {
         "name": "Mercy",
@@ -779,7 +793,33 @@
             "statuses": ["fud-mercy"],
             "description": "<p>If this creature would be reduced to 0 HP, they are instead left at exactly 1 HP. Consumed on first trigger; this AE auto-removes when fired.</p>",
             "system": { "tags": ["buff"] },
-            "flags": { "fabula-ultima-companion": { "category": "buff", "mercyActive": true, "crossScene": true } }
+            "flags": {
+              "fabula-ultima-companion": {
+                "category": "buff",
+                "crossScene": true,
+                "reactionConfig": {
+                  "name": "Mercy",
+                  "reaction_config_table": {
+                    "0": {
+                      "reaction_trigger": "creature_takes_damage",
+                      "reaction_source": "self",
+                      "reaction_damage_outcome": "would_reduce_to_zero",
+                      "reaction_effect_ref": "mercy_clamp",
+                      "reaction_isPassive": true
+                    }
+                  },
+                  "effect_table": {
+                    "0": {
+                      "effect_label": "mercy_clamp",
+                      "effect_kind": "modify_damage_taken",
+                      "modify_mode": "set_hp_floor",
+                      "modify_value": 1,
+                      "consume_self": true
+                    }
+                  }
+                }
+              }
+            }
           }
         ]
       }
@@ -788,7 +828,7 @@
       "_raw": "FU Core p.182 — Cost: 10 MP. Targets: One equipped weapon. Duration: Scene. The chosen weapon's damage type becomes Light for the scene. If you have it equipped at cast time, you may perform a free attack with it as part of the same action. Cast on a willing creature's equipped weapon.",
       "_note": "Two-part: (a) weapon damage-type override AE applied to the wielder, (b) optional free attack chained off the cast. The AE uses a CSB changes row writing `override_damage_type = 'Light'` with mode 5 (OVERRIDE in this build). The Actor template's Status → Miscellaneous → Override Damage Type field reads this prop directly, so the override is visible on the sheet without any extra plumbing. The engine's `applyDamageTypeOverride` helper reads the same prop. To author a Fire / Ice / etc. variant: duplicate Soul Weapon, open the embedded AE, edit the changes row's value (Light → Fire). For the free-attack: an `effect_kind: 'chain_action'` row routes back to DECLARE with command='Attack' and a pre-picked weapon. Cross-actor casting (on willing ally) uses `target_ref: 'ally_action_targets'` + a follow-up weapon picker.",
       "_deferred_free_attack_chain": "The 'free attack as part of the same action' clause needs a `chain_action` effect_kind that re-enters DECLARE/TARGET with the picked weapon pre-locked. For Batch 4, ship the damage-type swap AE; document the chain_action requirement as Phase G work. The GM manually triggers the bonus attack until then.",
-      "_deferred_weapon_picker": "RAW lets the caster pick ONE specific weapon from the willing target. For Batch 4 the AE applies to the actor (not a specific weapon item), and the engine treats ALL of that actor's equipped weapons as Light-damage for the duration. Per-weapon scoping needs a Weapon picker UI + per-weapon AE-store.",
+      "_note_weapon_scope": "Homebrew interpretation (confirmed 2026-05-28): the AE affects whatever weapon(s) the target wields during the buff's duration, not a specific weapon locked at cast time. Swapping weapons mid-scene keeps the override active on the new one. Implemented as actor-level `override_damage_type` prop. NO per-weapon picker needed.",
       "spec": {
         "name": "Soul Weapon",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
@@ -823,7 +863,7 @@
             "name": "Soul Weapon",
             "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
             "changes": [
-              { "key": "override_damage_type", "value": "Light", "mode": 5, "priority": 20 }
+              { "key": "override_attack_damage_type", "value": "Light", "mode": 5, "priority": 20 }
             ],
             "duration": { "rounds": null, "seconds": null },
             "transfer": false,

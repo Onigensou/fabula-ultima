@@ -294,6 +294,13 @@ export function makeChainContext({
   // Recipe-merged fire-point dict ({on_activate_effect_ref, post_damage_effect_ref});
   // falls back to skill props.
   firePoints = null,
+  // Test-harness only — when set, applyOpenActionMenuEffect consumes a
+  // pick from this queue instead of awaiting the interactive picker.
+  // Shape: [{ menuLabel?: string, index?: number }, ...]. Per-pick:
+  // `menuLabel` (case-insensitive) selects by display label; `index`
+  // selects by ordinal; raw string is shorthand for `menuLabel`. Live
+  // play never sets this. See FUCompanion.api.test.runDirectorSkillSimulate.
+  harnessPicks = null,
 } = {}) {
   return {
     reactorActor,
@@ -306,6 +313,7 @@ export function makeChainContext({
     isPassive,
     runtimeEffectTable,
     firePoints,
+    harnessPicks,
     resolvedTargets: new Map(),
   };
 }

@@ -40,6 +40,11 @@ import {
   findHistorySnapshot,
   rewindToHistorySnapshot,
 } from "./persistence.js";
+// Test harness — side-effect import (registers
+// FUCompanion.api.test.runDirectorSkillCompute on the "ready" hook).
+// Doesn't add behavior to the live director; lets the test bridge
+// drive skill COMPUTE for autonomous regression checks.
+import "./_test-harness-director.js";
 
 // Module-level singleton — at most one director runs per client.
 let _instance = null;

@@ -383,23 +383,27 @@ function readProp(actor, key) {
   return Number.isFinite(Number(v)) ? Number(v) : 0;
 }
 
-// True if the actor has any EQUIPPED weapon of the given `weaponType` —
-// reads CSB's stored `weapon_list` on the actor's props (each row is
-// `{ name, weapon_type, isEquipped, ... }`). Case-insensitive match.
-// Used by Spiritist's Healing Power / Support Magic passives which gate
-// on "arcane weapon equipped". Returns boolean; the formula adapter
+// True if the actor has any EQUIPPED weapon of the given `weaponType`.
+// Walks `actor.items` for items with `item_type === "weapon"` and
+// `isEquipped === true`, matching on `category` (CSB's authoritative
+// weapon-class field — values like "Arcane", "Sword", "Bow"). Used by
+// Spiritist's Healing Power / Support Magic passives which gate on
+// "arcane weapon equipped". Returns boolean; the formula adapter
 // coerces to 1/0.
+//
+// Why not `actor.system.props.weapon_list`? Those rows are a derived
+// presentation list — they carry `name` + `type` + `uuid` but NOT
+// `isEquipped` (the source-of-truth flag lives on the item itself).
 function hasEquippedWeaponOfType(actor, weaponType) {
   if (!actor) return false;
-  const list = actor.system?.props?.weapon_list;
-  if (!list) return false;
   const wanted = String(weaponType ?? "").toLowerCase();
-  const rows = Array.isArray(list) ? list : Object.values(list);
-  for (const row of rows) {
-    if (!row || typeof row !== "object") continue;
-    if (!row.isEquipped) continue;
-    const wt = String(row.weapon_type ?? row.type ?? "").toLowerCase();
-    if (wt === wanted) return true;
+  const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  for (const item of items) {
+    const p = item?.system?.props ?? {};
+    if (String(p.item_type ?? "").toLowerCase() !== "weapon") continue;
+    if (!p.isEquipped) continue;
+    const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
+    if (cat === wanted) return true;
   }
   return false;
 }

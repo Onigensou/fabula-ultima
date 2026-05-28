@@ -172,12 +172,50 @@ function stripHtml(html) {
   } catch { return String(html).replace(/<[^>]*>/g, "").trim(); }
 }
 
+// Return the first row in the item's reaction_config_table marked
+// `reaction_isPassive: true`, with its dict-key. Used to read/write
+// the canonical `reaction_passive_mode` field. Returns null if the
+// item has no passive reaction row (legacy skills like Vismagus that
+// still use the props-level `passive_mode` field).
+function findPassiveRow(item) {
+  const rc = item.system?.props?.reaction_config_table;
+  if (!rc || typeof rc !== "object") return null;
+  for (const key of Object.keys(rc)) {
+    const row = rc[key];
+    if (row && !row.$deleted && row.reaction_isPassive === true) {
+      return { key, row };
+    }
+  }
+  return null;
+}
+
 function readMode(item) {
+  // Canonical path: reaction_config_table row's reaction_passive_mode.
+  const passive = findPassiveRow(item);
+  if (passive) {
+    const m = String(passive.row.reaction_passive_mode ?? "").trim().toLowerCase();
+    if (m === "on" || m === "ask" || m === "off") return m;
+    return "ask";
+  }
+  // Legacy fallback — props-level passive_mode (Vismagus etc.).
   const m = String(item.system?.props?.passive_mode ?? "").trim().toLowerCase();
   if (m === "on" || m === "ask" || m === "off") return m;
-  // Legacy fallback — passive_optional: false → "on", true → "ask", default "ask".
   if (item.system?.props?.passive_optional === false) return "on";
   return "ask";
+}
+
+// Write a new mode. Mirrors readMode's resolution order — canonical
+// reaction_config_table row first, props-level fallback otherwise.
+async function writeMode(item, next) {
+  const passive = findPassiveRow(item);
+  if (passive) {
+    // Deep-merge the dict — write only the modified row, keep others.
+    const rc = foundry.utils.deepClone(item.system.props.reaction_config_table ?? {});
+    rc[passive.key] = { ...rc[passive.key], reaction_passive_mode: next };
+    await item.update({ "system.props.reaction_config_table": rc });
+    return;
+  }
+  await item.update({ "system.props.passive_mode": next });
 }
 
 function despawn() {
@@ -220,9 +258,9 @@ function buildRow({ item, container }) {
     const next = btn.dataset.mode;
     if (next === readMode(item)) return;
     try {
-      await item.update({ "system.props.passive_mode": next });
+      await writeMode(item, next);
       refresh();
-      log(`PassiveManager: "${item.name}" → passive_mode="${next}"`);
+      log(`PassiveManager: "${item.name}" → mode="${next}"`);
     } catch (e) { warn("PassiveManager: update failed", e); }
   });
   container.appendChild(row);

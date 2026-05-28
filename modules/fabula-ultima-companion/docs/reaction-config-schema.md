@@ -128,12 +128,14 @@ Damage Card emits per-target, so the hook fires per-target).
 | `reaction_effect_ref` | string (an `effect_label` from `effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
 | `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
 | `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
-| `condition_formula` | formula string | no | Universal gate. When non-blank, the trigger matcher evaluates this via `window["oni.ReactionFormula"].evaluate` and only fires the row when the result is truthy. The grammar supports arithmetic (`+ - * /`), modulo (`%`), comparison (`== != < > <= >=`), and logical operators (`&& || !`). Identifier list under [Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload) — `ROUND` and `ACTION_TARGET_COUNT` are common gates. Blank disables. Example: `"ROUND % 2 == 0"` (only even rounds); `"ACTION_TARGET_COUNT >= 2"` (only multi-target dangers). |
+| `reaction_passive_mode` | `"on" \| "ask" \| "off"` | when `reaction_isPassive: true` | Tri-state firing mode for passives. `on` = auto-fire on match. `ask` = GM gets Apply/Skip dialog (RAW "may" wording). `off` = disabled. Default `ask`. |
+| `reaction_action_target` | `"" \| "ally" \| "enemy" \| "neutral"` | no | Action-target disposition filter. Fires only when the subject's action targeted at least one creature with the given disposition relative to the reactor. Used by passives like Healing Power that should only fire when an ally was targeted. Blank disables. Available on triggers whose subject performs an action (`creature_performs_action`, `creature_completes_spell`, `creature_deals_damage`, etc.). |
+| `condition_formula` | formula string | no | Universal gate. When non-blank, the trigger matcher evaluates this via `window["oni.ReactionFormula"].evaluate` and only fires the row when the result is truthy. The grammar supports arithmetic (`+ - * /`), modulo (`%`), comparison (`== != < > <= >=`), and logical operators (`&& || !`). Identifier list under [Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload) — `ROUND` and `ACTION_TARGET_COUNT` are common gates. Blank disables. Example: `"ROUND % 2 == 0"` (only even rounds); `"ACTION_TARGET_COUNT >= 2"` (only multi-target dangers); `"HAS_ARCANE_WEAPON"` (Spiritist arcane-weapon gate). |
 | `requires_skill` | string (skill master `uniqueId`) | no | Prerequisite-skill gate. When non-blank, the reactor's actor must own an item whose `system.uniqueId` equals this value (i.e. has learned the named skill master). Use the master's `uniqueId`, not the actor-copy id. Blank disables. Example: Hina's Prophetic Defender Style gates its even-round PP gain on `BmgIHS4DdDAT1rUc` (Divination's master uniqueId) so the gain only fires when she actually knows Divination. |
 
 ### Canonical trigger keys
 
-30 triggers, grouped by phase bucket. The bucket determines when the
+31 triggers, grouped by phase bucket. The bucket determines when the
 reaction window opens/closes. Reactions in the same bucket coexist in a
 single merged window (e.g. damage + crisis + defeat all stay available
 in `resolution_phase`).
@@ -147,7 +149,13 @@ in `resolution_phase`).
 | `turn_start` | `turn_start` |
 | `turn_end` | `turn_end` |
 | `action_phase` | `creature_performs_check`, `creature_performs_action`, `creature_targeted_by_action`, `creature_fumbles_check`, `creature_check_outcome_flipped` |
-| `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_unleashes_zero_power` |
+| `resolution_phase` | `creature_hit_by_action`, `creature_critical_hit`, `creature_miss_action`, `creature_deals_damage`, `creature_takes_damage`, `creature_takes_vulnerable_damage`, `creature_takes_weak_damage`, `creature_resists_damage`, `creature_absorbs_damage`, `creature_immune_damage`, `creature_shield_break`, `creature_recovers_hp`, `creature_lose_mp`, `creature_recovers_mp`, `creature_status_applied`, `creature_enter_crisis`, `creature_exit_crisis`, `creature_defeated`, `creature_unleashes_zero_power`, `creature_completes_spell` |
+
+`creature_completes_spell` fires from the director's Skill RESOLVE
+handler after a Spell-typed action finishes resolving on its targets.
+Subject = performer (the caster); payload carries `targetTokenUuids` so
+`reaction_action_target` can filter "spell hit at least one ally" etc.
+Used by Spiritist's Healing Power and Support Magic.
 
 ### Subject + filter matrix
 
@@ -186,11 +194,17 @@ write them in JSON regardless — they just won't be evaluated.
 | `creature_exit_crisis` | state-changed | yes | — | — | — |
 | `creature_defeated` | state-changed | yes | — | — | — |
 | `creature_unleashes_zero_power` | performer | yes | — | — | — |
+| `creature_completes_spell` | performer | yes | — | — | — |
 
-(The `_Skill Template`'s dropdown options list omits
-`creature_unleashes_zero_power` — that trigger was added later and the
-template UI is one behind. It still works correctly at runtime; just
-type the key directly.)
+(The `_Skill Template`'s dropdown options list may be one or two
+triggers behind the runtime — e.g. `creature_unleashes_zero_power` was
+added later. New triggers work correctly at runtime; just type the key
+directly if it's missing from the dropdown.)
+
+`reaction_action_target` is universal across triggers whose subject
+performs an action (`creature_performs_action`, `creature_completes_spell`,
+`creature_deals_damage`, etc.), filtering on the *targets* of that
+action by disposition vs the reactor.
 
 **`reaction_subject_kind`, `reaction_ownership`, `reaction_action_intent`,
 `reaction_bond_presence`, and `reaction_bond_emotion` are universal across
@@ -264,7 +278,7 @@ Common to every row:
 | Field | Type | Notes |
 |-------|------|-------|
 | `effect_label` | string | Unique identifier; trigger rows reference this in their `reaction_effect_ref` column. Other effect rows reference it via `target_ref` / `destination_ref` / `chain_steps`. Must be non-blank for the row to be findable. |
-| `effect_kind` | `"targeting" \| "grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain"` | Default: `"grant"`. Dispatches to the matching handler. |
+| `effect_kind` | `"targeting" \| "grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain" \| "modify_damage_taken"` | Default: `"grant"`. Dispatches to the matching handler. |
 
 Per-kind fields below. Fields irrelevant to the chosen kind are hidden
 in the UI but harmless in JSON.
@@ -538,6 +552,59 @@ grant directly and apply / consume on confirm.
 
 Stops at the first step that returns `abort: true` OR `ok: false`.
 Aborts the whole chain (and the skill body) when any step does.
+
+---
+
+### `effect_kind: "modify_damage_taken"` — mutate pending damage before HP write
+
+Fires from the director's RESOLVE damage paths via `resolveDamageReactions`,
+which walks the target's AEs at damage-application time and applies any
+matching reactions BEFORE writing `current_hp`. Pair with trigger
+`creature_takes_damage` (and the `reaction_damage_outcome` filter when
+relevant).
+
+Used by **Mercy** (clamp HP floor at 1). Other modes are placeholders for
+future Phase F reactions (Damage Cap, Mirror reflect, etc.).
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `modify_mode` | `"set_hp_floor"` (only mode implemented; future: `"cap_damage"`, `"reflect_damage"`, `"multiply_damage"`) | What to do with the pending damage. `set_hp_floor` clamps the resulting HP up to `modify_value` if it would land lower. |
+| `modify_value` | number or formula | Mode-dependent argument. For `set_hp_floor` this is the floor HP. |
+| `consume_self` | bool | When `true`, the AE bearing this reaction is deleted after firing. Used by Mercy ("Consumed on first trigger"). |
+
+**Trigger-row filter** (used alongside this effect_kind):
+
+| Field | Values | Notes |
+|---|---|---|
+| `reaction_damage_outcome` | `"any"` (default) `\| "would_reduce_to_zero"` | Pre-write outcome test. `would_reduce_to_zero` only matches when the target's HP minus pending damage would land at 0 or below. |
+
+Example — **Mercy** AE's `reactionConfig` blob (lives on
+`flags.fabula-ultima-companion.reactionConfig` of the AE; visible in the
+AE-sheet Reactions panel):
+
+```jsonc
+{
+  "name": "Mercy",
+  "reaction_config_table": {
+    "0": {
+      "reaction_trigger":         "creature_takes_damage",
+      "reaction_source":          "self",
+      "reaction_damage_outcome":  "would_reduce_to_zero",
+      "reaction_effect_ref":      "mercy_clamp",
+      "reaction_isPassive":       true
+    }
+  },
+  "effect_table": {
+    "0": {
+      "effect_label":   "mercy_clamp",
+      "effect_kind":    "modify_damage_taken",
+      "modify_mode":    "set_hp_floor",
+      "modify_value":   1,
+      "consume_self":   true
+    }
+  }
+}
+```
 
 ---
 

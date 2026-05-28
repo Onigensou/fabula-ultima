@@ -487,6 +487,11 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-target-row .t-result.crit   { color: #b40000; font-weight: 900; }
     .fud-bf-card .fud-bf-target-row .t-result.miss   { color: #9a4a4a; }
     .fud-bf-card .fud-bf-target-row .t-result.absorb { color: #2a8a3a; font-weight: 800; }
+    /* Healing / resource-restore / shield rows — recipe-grant skills.
+       Distinct hues from damage so a Heal vs an Attack reads at a glance. */
+    .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
+    .fud-bf-card .fud-bf-target-row .t-result.restore-mp { color: #1e6cff; font-weight: 800; text-shadow: 0 0 6px rgba(30,108,255,0.25); }
+    .fud-bf-card .fud-bf-target-row .t-result.shield     { color: #1f8a9e; font-weight: 800; text-shadow: 0 0 6px rgba(31,138,158,0.25); }
     .fud-bf-card .fud-bf-target-row .t-affinity {
       display: inline-flex; align-items: center;
       margin-left: 6px;
@@ -997,6 +1002,23 @@ function ensureStyles() {
       background: rgba(42, 110, 61, 0.18);
       color: #2a6e3d;
     }
+    /* Weapon/shield/accessory trait chips — lighter, secondary tone. Used
+       for type, range, hand-slots, attack stat, martial flag, rarity. */
+    .fud-bf-desc-tip .fud-bf-desc-tip-stat-trait {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      background: rgba(58, 50, 40, 0.10);
+      color: var(--fud-ink, #3a3228);
+    }
+    .fud-bf-desc-tip .fud-bf-desc-tip-stat-trait.is-flag {
+      background: rgba(154, 75, 34, 0.16);
+      color: #8a4b22;
+      text-transform: uppercase;
+    }
     .fud-bf-desc-tip .fud-bf-desc-tip-body { font-weight: 400; }
     .fud-bf-desc-tip .fud-bf-desc-tip-body p { margin: 0 0 6px; }
     .fud-bf-desc-tip .fud-bf-desc-tip-body p:last-child { margin-bottom: 0; }
@@ -1151,23 +1173,34 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   // tooltip's affinity note too (MP damage is always NE — no sheet
   // supports MP affinity).
   const isMpDamage = String(damage.resource ?? "").toLowerCase() === "mp";
+  const isHealing  = !!damage.isHealing || !!damage.declaresHealing;
+  const isHpHeal   = isHealing && !isMpDamage;
+  const isMpHeal   = isHealing && isMpDamage;
   const elemKey = String(damage.element ?? "physical").toLowerCase();
-  const color = isMpDamage
-    ? "#1e6cff"
-    : (ELEMENT_COLOR[elemKey] ?? ELEMENT_COLOR.physical);
-  const glow  = isMpDamage
-    ? "rgba(30,108,255,0.45)"
-    : (ELEMENT_GLOW[elemKey]  ?? ELEMENT_GLOW.physical);
+  const color = isHpHeal
+    ? "#2a8a3a"   // healing green
+    : (isMpHeal || isMpDamage)
+      ? "#1e6cff" // mp blue (damage or restore — context distinguishes)
+      : (ELEMENT_COLOR[elemKey] ?? ELEMENT_COLOR.physical);
+  const glow  = isHpHeal
+    ? "rgba(42,138,58,0.45)"
+    : (isMpHeal || isMpDamage)
+      ? "rgba(30,108,255,0.45)"
+      : (ELEMENT_GLOW[elemKey]  ?? ELEMENT_GLOW.physical);
 
   // Final shown is HR + base. If the roll is a fumble, show "—".
   const shown = roll?.isFumble ? "—" : (damage.finalIfHit ?? 0);
   const hrPill = (damage.ignoreHR || roll?.isFumble) ? "" : `<span class="hr-pill">+HR</span>`;
-  const label = damage.declaresHealing
+  const label = isHpHeal
     ? "Heal"
-    : (isMpDamage ? "MP Damage" : "Damage");
-  const elementLabel = damage.declaresHealing
-    ? ""
-    : (isMpDamage ? "MP" : escapeHtml(cap(elemKey)));
+    : isMpHeal
+      ? "Restore"
+      : (isMpDamage ? "MP Damage" : "Damage");
+  const elementLabel = isHpHeal
+    ? "HP"
+    : isMpHeal
+      ? "MP"
+      : (isMpDamage ? "MP" : escapeHtml(cap(elemKey)));
   const suffix = legendSuffix ? ` <span style="opacity:0.7; font-weight: 700;">— ${escapeHtml(legendSuffix)}</span>` : "";
 
   // Calculation tooltip — surfaces base damage + HR contribution + how
@@ -1244,6 +1277,14 @@ function buildAffinityTagHTML({ affinity, hit, studied }) {
 // damage, so AB / IM never appear there in practice.
 function resultLabelFor(r, { hasDamage = true } = {}) {
   if (!r.hit) return "MISS";
+  // Recipe-grant rows (Heal, MP restore, future shield) — show what
+  // the target will recover. `grantResource` picks the unit/verb.
+  if (typeof r.grantAmount === "number") {
+    const amt = Math.max(0, r.grantAmount);
+    if (r.grantResource === "mp")     return `RESTORED ${amt} MP`;
+    if (r.grantResource === "shield") return `SHIELDED ${amt}`;
+    return `HEALED ${amt} HP`;
+  }
   // Status-only Checks (Torpor / Hallucination / Enrage): the skill has
   // no damage component, so a successful Check yields a clean "HIT" —
   // the inflicted status is the effect, not a number to display here.
@@ -1257,6 +1298,11 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
 function resultClsFor(r) {
   if (!r.hit) return "miss";
   if (r.crit) return "crit";
+  if (typeof r.grantAmount === "number") {
+    if (r.grantResource === "mp")     return "restore-mp";
+    if (r.grantResource === "shield") return "shield";
+    return "heal";
+  }
   if (r.affinity === "AB") return "absorb";
   if (r.affinity === "IM") return "miss";  // visually muted
   return "hit";
@@ -1313,7 +1359,18 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     }
     const cls = resultClsFor(r);
     const label = resultLabelFor(r, { hasDamage });
-    const defLabel = `${defLabelTag} ${r.defense}`;
+    // Grant rows (Heal etc.) don't have a defense check — show the
+    // target's current resource value instead so the player sees
+    // "HP 18/24" → "HEALED 40 HP" at a glance.
+    let defLabel;
+    if (typeof r.grantAmount === "number") {
+      const unit = r.grantResource === "mp" ? "MP" : "HP";
+      defLabel = (r.resourceCur != null && r.resourceMax != null)
+        ? `${unit} ${r.resourceCur}/${r.resourceMax}`
+        : unit;
+    } else {
+      defLabel = `${defLabelTag} ${r.defense}`;
+    }
     const aff = buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
 
     // Per-target tooltip — surfaces weapon/element/affinity context for
@@ -1794,7 +1851,21 @@ function buildEquipmentCard({ attacker, attackerActor }) {
     if (cand.defenseLine) {
       statBits.push(`<span class="fud-bf-desc-tip-stat-def">${escapeHtml(cand.defenseLine)}</span>`);
     }
-    const statsAttr = (descAttr && statBits.length)
+    // Trait chips — element, weapon type, range, hand slots, attack stat,
+    // martial flag, rarity. These give the player the full weapon profile
+    // in the hover without having to open the sheet.
+    const trait = (text) => `<span class="fud-bf-desc-tip-stat-trait">${escapeHtml(text)}</span>`;
+    const flag  = (text) => `<span class="fud-bf-desc-tip-stat-trait is-flag">${escapeHtml(text)}</span>`;
+    if (cand.element && cand.element !== "-") statBits.push(trait(cand.element));
+    if (cand.weaponType) statBits.push(trait(cap(cand.weaponType)));
+    else if (cand.category === "shield") statBits.push(trait("Shield"));
+    else if (cand.category === "accessory") statBits.push(trait("Accessory"));
+    if (cand.weaponRange) statBits.push(trait(cand.weaponRange));
+    if (cand.handSlots && cand.category !== "accessory") statBits.push(trait(cand.handSlots));
+    if (cand.attackStat) statBits.push(trait(cand.attackStat));
+    if (cand.isMartial) statBits.push(flag("Martial"));
+    if (cand.rarity && cand.rarity !== "Common") statBits.push(flag(cand.rarity));
+    const statsAttr = statBits.length
       ? ` data-fud-equip-stats="${escapeHtml(statBits.join(""))}"`
       : "";
     return `
@@ -2333,7 +2404,7 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
-    damageType, hasDamage, rawCost, targets, roll, damage,
+    damageType, hasDamage, hasHealing, rawCost, targets, roll, damage,
     perTargetResults, descriptionHtml,
   } = payload ?? {};
 
@@ -2353,10 +2424,12 @@ function buildSkillCard(payload) {
   const titleText = skillName ?? (isSpellish ? "Spell" : "Skill");
   const subtitle = buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish });
 
-  // Damage preview — only when the skill deals damage. Heals / buffs /
-  // status applications skip both Damage and Per-target sections; the
-  // Effect section carries the narrative for them.
-  const damageHTML = hasDamage && damage
+  // Damage / Heal preview — fires for both elemental damage AND
+  // recipe-grant skills (Heal, MP-restore). `damage` carries the
+  // shape, `damage.declaresHealing` flips wording + colors via
+  // buildDamagePreviewHTML. Status-only buff/debuff spells skip the
+  // panel — the Effect section narrates them.
+  const damageHTML = (hasDamage || hasHealing) && damage
     ? tryBuild("skillDamage", () => buildDamagePreviewHTML({ damage, roll }))
     : "";
 

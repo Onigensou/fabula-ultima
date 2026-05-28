@@ -22,6 +22,7 @@ import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { pickOption } from "./option-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume } from "./skill-charges.js";
+import { readPropNum } from "./snapshot.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -104,135 +105,385 @@ export async function sweepTransientAEsAtSceneEnd() {
 // New callers should use `sweepTransientAEsAtSceneEnd`.
 export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 
-// ── Mercy HP clamp ──────────────────────────────────────────────────────
+// ── Damage-taken reaction resolver ─────────────────────────────────────
 //
-// Spiritist Mercy applies an AE flagged `mercyActive` to one ally. If the
-// target would be reduced to 0 HP, they instead end at exactly 1 HP and
-// the AE is consumed. Call this helper from any damage-application path
-// BEFORE writing `current_hp` — receives the raw damage and the target
-// actor, returns the clamped final HP and a side-effect (delete the
-// Mercy AE if it fires).
+// Generic data-driven hook called BEFORE the director writes
+// `current_hp` on a damage-application path. Walks the target's AEs for
+// any `reactionConfig` declaring a `creature_takes_damage` trigger whose
+// filter (e.g. `reaction_damage_outcome: "would_reduce_to_zero"`)
+// matches the pending damage. Matching AEs' effect rows can MUTATE the
+// pending HP — set a floor (Mercy), cap damage (future), reflect, etc.
+//
+// Currently implemented modify modes (via effect_kind: "modify_damage_taken"):
+//   - `set_hp_floor` — if the computed newHp would be below `modify_value`,
+//     clamp it up to that value. Used by Mercy (value=1).
+//
+// Future modes (placeholder):
+//   - `cap_damage`     — cap pre-affinity damage at modify_value
+//   - `reflect_damage` — reflect pct/value back at the source
+//   - `multiply_damage` — additional affinity-like multiplier
+//
+// Reaction config shape (on the AE's flags.fabula-ultima-companion.reactionConfig):
+//   {
+//     name: "Mercy",
+//     reaction_config_table: {
+//       "0": {
+//         reaction_trigger: "creature_takes_damage",
+//         reaction_source: "self",
+//         reaction_damage_outcome: "would_reduce_to_zero",
+//         reaction_effect_ref: "mercy_clamp",
+//         reaction_isPassive: true
+//       }
+//     },
+//     effect_table: {
+//       "0": {
+//         effect_label: "mercy_clamp",
+//         effect_kind: "modify_damage_taken",
+//         modify_mode: "set_hp_floor",
+//         modify_value: 1,
+//         consume_self: true
+//       }
+//     }
+//   }
 //
 // Usage:
-//   const { newHp, mercyFired } = await applyMercyClamp(targetActor, curHp, rawDamage);
-//   await targetActor.update({ "system.props.current_hp": newHp });
+//   const { newHp, consumedAeIds, fired } =
+//     await resolveDamageReactions({ target: actor, curHp, rawDamage });
+//   await actor.update({ "system.props.current_hp": newHp });
+//   // Consume AEs that fired with consume_self:
+//   for (const id of consumedAeIds) {
+//     const ae = actor.effects?.get?.(id);
+//     if (ae) await ae.delete();
+//   }
+export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
+  const baselineHp = Math.max(0, curHp - rawDamage);
+  const result = { newHp: baselineHp, consumedAeIds: [], fired: [] };
+  if (!target || rawDamage <= 0) return result;
+
+  for (const ae of (target.effects?.contents ?? Array.from(target.effects ?? []))) {
+    if (ae.disabled) continue;
+    const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
+    if (!cfg || typeof cfg !== "object") continue;
+    const triggerRows = Object.values(cfg.reaction_config_table ?? {});
+    const effectTable = cfg.effect_table ?? {};
+
+    for (const tRow of triggerRows) {
+      if (tRow.reaction_trigger !== "creature_takes_damage") continue;
+      // reaction_source defaults to "self" — reactor IS the damage target.
+      // For damage-time clamps the AE-bearer is always the target, so
+      // anything except an explicit cross-actor source ("ally" etc.) is
+      // a match. Leaving the full source-matrix to Phase F.
+      const src = tRow.reaction_source ?? "self";
+      if (src !== "self" && src !== "all" && src !== "") continue;
+
+      // Filter: damage_outcome.
+      const outcome = tRow.reaction_damage_outcome ?? "any";
+      if (outcome === "would_reduce_to_zero") {
+        if ((curHp - rawDamage) > 0) continue; // damage wouldn't drop them → skip
+      }
+      // (Future filters — reaction_damage_source / element / intent — can
+      // gate here. For Mercy none are needed.)
+
+      // Find effect row by label.
+      const effRow = Object.values(effectTable)
+        .find((r) => r.effect_label === tRow.reaction_effect_ref);
+      if (!effRow) continue;
+      if (effRow.effect_kind !== "modify_damage_taken") continue;
+
+      const mode = effRow.modify_mode ?? "set_hp_floor";
+      if (mode === "set_hp_floor") {
+        const floor = Number(effRow.modify_value ?? 1) || 1;
+        if (result.newHp < floor) {
+          log(`damage-reaction: ${target.name} clamped HP floor at ${floor} via AE "${ae.name}"`);
+          result.newHp = floor;
+          result.fired.push({ aeId: ae.id, aeName: ae.name, mode, floor });
+        }
+      }
+      // (Other modes wire here when implemented.)
+
+      if (effRow.consume_self) {
+        if (!result.consumedAeIds.includes(ae.id)) result.consumedAeIds.push(ae.id);
+      }
+    }
+  }
+  return result;
+}
+
+// ── Damage application (shared by Attack + Skill RESOLVE) ─────────────
 //
-// No-op pass-through when target has no `mercyActive` AE or when damage
-// wouldn't kill them.
+// The single source of truth for "apply this per-target damage result to
+// an actor": handles AB-affinity heal flip (HP only), routes through
+// resolveDamageReactions (so Mercy and similar AEs work for ANY damage
+// source), consumes reacted AEs, and writes the appropriate resource.
+//
+// Inputs:
+//   - target:       the live target actor doc
+//   - damage:       the post-affinity damage value (can be 0 — no-op then)
+//   - affinity:     "AB" | "VU" | "RS" | "IM" | "NE" (HP-resource only;
+//                   ignored when resource === "mp")
+//   - resource:     "hp" (default) or "mp"
+//   - targetName:   for log strings
+//   - logPrefix:    e.g. "Skill Heal:" — appears before the log line
+//   - logSuffix:    e.g. " (pass 2/2)" — appears at end
+//
+// Returns:
+//   { resource, finalValue, valueDirection, fired }
+//     - resource:        "hp" | "mp"
+//     - finalValue:      effective amount that came off (or healed for AB)
+//     - valueDirection:  "loss" | "recover" | "none"
+//     - fired:           reaction-fired descriptors (for post_damage payload)
+export async function applyDamageToTarget({
+  target,
+  damage,
+  affinity = "NE",
+  resource = "hp",
+  targetName = "",
+  logPrefix = "",
+  logSuffix = "",
+} = {}) {
+  const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
+  if (!target) return empty;
+  const prefix = logPrefix ? `${logPrefix} ` : "";
+
+  // MP path — drain spells, future MP-burn. No AB flip; no reactions
+  // (could add later for an MP-clamp AE if a use case appears).
+  if (resource === "mp") {
+    if (damage <= 0) return empty;
+    const curMp = readPropNum(target, ["current_mp", "mp"]);
+    const newMp = Math.max(0, curMp - damage);
+    await target.update({ "system.props.current_mp": newMp });
+    log(`${prefix}applied ${damage} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
+    return { resource: "mp", finalValue: damage, valueDirection: "loss", fired: [] };
+  }
+
+  // HP path — full affinity rules.
+  const curHp = readPropNum(target, ["current_hp", "hp"]);
+  const maxHp = readPropNum(target, ["max_hp"], curHp);
+
+  // AB → heal flip.
+  if (affinity === "AB") {
+    const healed = Math.max(0, damage);
+    if (healed > 0) {
+      const newHp = Math.min(maxHp, curHp + healed);
+      await target.update({ "system.props.current_hp": newHp });
+      log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
+    } else {
+      log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
+    }
+    return { resource: "hp", finalValue: healed, valueDirection: "recover", fired: [] };
+  }
+
+  // Normal damage path — reaction AEs first, then write, then consume.
+  if (damage > 0) {
+    const { newHp, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: damage });
+    await target.update({ "system.props.current_hp": newHp });
+    for (const aeId of consumedAeIds) {
+      const ae = target.effects?.get?.(aeId);
+      if (ae) {
+        try { await ae.delete(); }
+        catch (e) { warn("applyDamageToTarget: consume AE delete failed", e); }
+      }
+    }
+    const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
+    log(`${prefix}applied ${damage} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${reactionNote}${logSuffix}`);
+    return {
+      resource: "hp",
+      finalValue: Math.max(0, curHp - newHp),
+      valueDirection: "loss",
+      fired,
+    };
+  }
+
+  log(`${prefix}no HP change for ${targetName} [${affinity}]${logSuffix} (damage was ${damage})`);
+  return empty;
+}
+
+// Legacy alias — kept temporarily so any straggling call sites resolve.
+// New code should use resolveDamageReactions() above.
 export async function applyMercyClamp(targetActor, curHp, rawDamage) {
-  const fallback = { newHp: Math.max(0, curHp - rawDamage), mercyFired: false };
-  if (!targetActor || rawDamage <= 0) return fallback;
-  const wouldBeZeroOrLess = (curHp - rawDamage) <= 0;
-  if (!wouldBeZeroOrLess) return fallback;
-  // Find an active Mercy AE on the target.
-  const mercyAe = Array.from(targetActor.effects ?? []).find((eff) => {
-    if (eff.disabled) return false;
-    return eff.flags?.[FLAG_NS]?.mercyActive === true;
-  });
-  if (!mercyAe) return fallback;
-  try {
-    await mercyAe.delete();
-    log(`mercy: ${targetActor.name} clamped from ${curHp - rawDamage} to 1 HP and consumed Mercy AE`);
-  } catch (e) { warn("applyMercyClamp: AE delete failed", e); }
-  return { newHp: 1, mercyFired: true };
+  const r = await resolveDamageReactions({ target: targetActor, curHp, rawDamage });
+  // Consume the AEs that fired (matches the old helper's behavior).
+  for (const id of r.consumedAeIds) {
+    const ae = targetActor?.effects?.get?.(id);
+    if (ae) { try { await ae.delete(); } catch (e) { warn("applyMercyClamp compat: AE delete failed", e); } }
+  }
+  return { newHp: r.newHp, mercyFired: r.fired.length > 0 };
 }
 
 // ── Damage-type override ────────────────────────────────────────────────
 //
-// Generic helper used by the Attack damage-compute path: consults the
-// actor's `system.props.override_damage_type` field (already declared
-// in the Actor template's Miscellaneous panel) and returns the override
-// element when set to a real damage type, otherwise the original
-// element. Powers Soul Weapon today; any future skill that writes the
-// same prop via an AE `changes` entry — mode 5 (OVERRIDE in this CSB
-// build) — gets the same behaviour for free.
+// Three scopes, written via AE changes rows, looked up in priority order:
+//   - `override_attack_damage_type` — overrides ATTACK damage only
+//   - `override_spell_damage_type`  — overrides SPELL damage only
+//   - `override_all_damage_type`    — overrides BOTH (catch-all)
 //
-// Treats "None" / empty / null as "no override" so the sheet's default
-// value passes through cleanly.
-export function applyDamageTypeOverride(attackerActor, originalElement) {
-  if (!attackerActor) return originalElement;
-  const raw = String(attackerActor.system?.props?.override_damage_type ?? "").trim();
-  if (!raw || raw.toLowerCase() === "none") return originalElement;
-  return raw.toLowerCase();
+// Resolution: scope-specific key first → `override_all_damage_type` →
+// native (the weapon/skill's declared element).
+//
+// AE author writes ONE changes row depending on intent:
+//   - Soul Weapon (RAW: weapon imbue): `override_attack_damage_type`
+//   - Future "Pyromancer Affinity" (all spells become Fire):
+//     `override_spell_damage_type`
+//   - Future "Voidstrider Form" (everything is Dark):
+//     `override_all_damage_type`
+//
+// Treats "" / "None" / null as "no override" so the sheet's default
+// passes through cleanly. Backward compatibility: still reads the legacy
+// `override_damage_type` key as an alias for the attack scope. That key
+// is the pre-refactor name; this kept here so any old AE / migration in
+// flight doesn't silently lose its override before being repathed.
+export function resolveDamageElementOverride({ actor, scope, native } = {}) {
+  if (!actor) return native;
+  const props = actor.system?.props ?? {};
+  const isReal = (v) => {
+    const s = String(v ?? "").trim();
+    return s && s.toLowerCase() !== "none";
+  };
+  const norm = (v) => String(v).trim().toLowerCase();
+  // Scope-specific first.
+  if (scope === "attack") {
+    if (isReal(props.override_attack_damage_type)) return norm(props.override_attack_damage_type);
+    // Back-compat alias.
+    if (isReal(props.override_damage_type)) return norm(props.override_damage_type);
+  } else if (scope === "spell") {
+    if (isReal(props.override_spell_damage_type)) return norm(props.override_spell_damage_type);
+  }
+  // Catch-all fallback.
+  if (isReal(props.override_all_damage_type)) return norm(props.override_all_damage_type);
+  return native;
 }
 
-// Legacy alias — kept so the prior import name in state-handlers.js still
-// resolves until that import is updated.
+// Legacy single-arg helper kept so the existing import sites resolve
+// during the transition. Implicitly scope="attack" because that's
+// the only damage-compute path that calls it today.
+export function applyDamageTypeOverride(attackerActor, originalElement) {
+  return resolveDamageElementOverride({
+    actor: attackerActor,
+    scope: "attack",
+    native: originalElement,
+  });
+}
+
+// Older alias name retained for compatibility.
 export const applySoulWeaponElementOverride = applyDamageTypeOverride;
 
-// ── Passive trigger layer ───────────────────────────────────────────────
+// ── Passive trigger layer (reaction_config_table-driven) ───────────────
 //
-// Some skills (skill_type === "Passive") fire automatically in response to
-// pipeline events instead of being picked from the skill menu. They declare:
+// Passive behaviors live in any item's `system.props.reaction_config_table`
+// as rows with `reaction_isPassive: true`. The dispatcher walks every item
+// on the caster (not just skill_type==="Passive" — buffs / equipment with
+// reactionConfig blobs work the same way), matches rows by `reaction_trigger`
+// + filters, and fires the linked `reaction_effect_ref` against the item's
+// `effect_table`.
 //
-//   passive_trigger                   — string event name. Currently honored:
-//                                       "spell_complete" (fires from
-//                                       resolveSkillAction after a Spell
-//                                       resolves on its targets).
-//   passive_trigger_filter            — optional. "ally_targets",
-//                                       "enemy_targets", or "self_only".
-//                                       Only fires if the trigger payload
-//                                       includes a target of that
-//                                       disposition (vs caster). Default:
-//                                       no filter — fires every time the
-//                                       trigger event fires.
-//   passive_condition_formula         — optional formula evaluated against
-//                                       the caster. Must evaluate truthy
-//                                       for the passive to fire.
-//                                       Identifiers available: same as
-//                                       on_activate formulas + the
-//                                       HAS_ARCANE_WEAPON() helper.
-//   on_passive_trigger_effect_ref     — effect_label to fire when the
-//                                       passive matches. Resolves the
-//                                       same way as on_activate_effect_ref.
-//
-// Passives that fire prompt the GM with a Yes/Skip dialog when the RAW
-// uses "may" wording — controlled by the `passive_optional` flag on the
-// skill. Default is `true` (RAW Spiritist passives are all "may").
+// Row fields honored by this dispatcher:
+//   reaction_trigger          — must equal the event key (e.g. "creature_completes_spell")
+//   reaction_isPassive        — must be true (manual reactions don't auto-fire here)
+//   reaction_source           — "self" / "ally" / "enemy" filters the SUBJECT's disposition vs reactor
+//   reaction_action_target    — "ally" / "enemy" / "neutral" requires at least 1 such target in payload
+//   condition_formula         — optional formula gate, evaluated against the reactor
+//   reaction_passive_mode     — "on" / "ask" / "off" (default "ask"); GM dialog when "ask"
+//   reaction_effect_ref       — `effect_label` in the same item's `effect_table` to fire
 //
 // Fire ctx mirrors the action's chain ctx: reactorActor = the casting
-// actor; actionTargetUuids = the action's target token UUIDs; payload
-// carries the trigger event's data (e.g. spell uuid, target uuids).
-async function shouldPassiveFire(skill, casterActor, payload) {
-  const p = skill?.system?.props ?? {};
-  // 1. Filter by trigger payload's target disposition (if filter set).
-  const filter = String(p.passive_trigger_filter ?? "").trim().toLowerCase();
-  if (filter && filter !== "any") {
-    const casterToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor?.uuid)?.document
-      ?? casterActor?.getActiveTokens?.()?.[0]?.document
-      ?? null;
-    const casterDisp = Number(casterToken?.disposition ?? 0);
-    const targetUuids = Array.isArray(payload?.targetTokenUuids) ? payload.targetTokenUuids : [];
-    let matched = false;
-    for (const u of targetUuids) {
-      try {
-        const t = await fromUuid(u);
-        if (!t) continue;
-        const td = Number(t.disposition ?? 0);
-        if (filter === "ally_targets" && (td === casterDisp || td === 0)) { matched = true; break; }
-        if (filter === "enemy_targets" && casterDisp !== 0 && td === -casterDisp) { matched = true; break; }
-        if (filter === "self_only" && t.actor?.uuid === casterActor?.uuid) { matched = true; break; }
-      } catch (_) { /* skip resolution failures */ }
-    }
-    if (!matched) return false;
+// actor; actionTargetUuids = the action's target token UUIDs.
+
+function dispositionOf(actorOrToken) {
+  // Resolve a token document → disposition number. For actors, find any
+  // active token; 0 (neutral) if nothing on canvas.
+  if (!actorOrToken) return 0;
+  if (typeof actorOrToken.disposition === "number") return actorOrToken.disposition;
+  const tok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actorOrToken?.uuid)?.document
+    ?? actorOrToken?.getActiveTokens?.()?.[0]?.document
+    ?? null;
+  return Number(tok?.disposition ?? 0);
+}
+
+// True if at least one token in `targetUuids` matches `wantDisp` relative
+// to `reactorDisp`. wantDisp: "ally" | "enemy" | "neutral".
+async function payloadHasTargetOfDisposition(targetUuids, reactorDisp, wantDisp) {
+  for (const u of targetUuids) {
+    try {
+      const t = await fromUuid(u);
+      if (!t) continue;
+      const td = Number(t.disposition ?? 0);
+      if (wantDisp === "ally" && (td === reactorDisp || td === 0)) return true;
+      if (wantDisp === "enemy" && reactorDisp !== 0 && td === -reactorDisp) return true;
+      if (wantDisp === "neutral" && td === 0) return true;
+    } catch (_) {}
   }
-  // 2. Optional condition formula.
-  const condRaw = String(p.passive_condition_formula ?? "").trim();
+  return false;
+}
+
+// True if `subjectActorUuid` matches `wantSource` (self/ally/enemy/all)
+// relative to the reactor. Used for `reaction_source` filtering.
+function subjectMatchesSource(wantSource, subjectActorUuid, reactorActor) {
+  if (!wantSource || wantSource === "all") return true;
+  if (wantSource === "self") return subjectActorUuid === reactorActor?.uuid;
+  // ally/enemy need canvas tokens for both reactor + subject.
+  const reactorDisp = dispositionOf(reactorActor);
+  const subjTok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === subjectActorUuid)?.document ?? null;
+  const subjDisp = Number(subjTok?.disposition ?? 0);
+  if (wantSource === "ally") return subjectActorUuid !== reactorActor?.uuid && (subjDisp === reactorDisp || subjDisp === 0);
+  if (wantSource === "enemy") return reactorDisp !== 0 && subjDisp === -reactorDisp;
+  if (wantSource === "neutral") return subjDisp === 0;
+  return true;
+}
+
+async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
+  // 1. Subject-side source filter (e.g. only "self" performed the action).
+  const wantSource = String(row.reaction_source ?? "").trim().toLowerCase();
+  const subjectActorUuid = payload?.sourceActorUuid ?? null;
+  if (!subjectMatchesSource(wantSource, subjectActorUuid, reactorActor)) {
+    log(`passive ${item.name}: source filter failed — wantSource="${wantSource}" subjectActorUuid="${subjectActorUuid}" reactorUuid="${reactorActor?.uuid}"`);
+    return false;
+  }
+
+  // 2. Target-disposition filter — at least one ally/enemy/neutral in payload.
+  const wantActionTarget = String(row.reaction_action_target ?? "").trim().toLowerCase();
+  if (wantActionTarget && wantActionTarget !== "any") {
+    const reactorDisp = dispositionOf(reactorActor);
+    const targets = Array.isArray(payload?.targetTokenUuids) ? payload.targetTokenUuids : [];
+    if (!(await payloadHasTargetOfDisposition(targets, reactorDisp, wantActionTarget))) {
+      log(`passive ${item.name}: action_target filter failed — want="${wantActionTarget}" reactorDisp=${reactorDisp} targets=${targets.length}`);
+      return false;
+    }
+  }
+
+  // 3. Action-intent filter (harmful / aid / neutral).
+  const wantIntent = String(row.reaction_action_intent ?? "").trim().toLowerCase();
+  if (wantIntent) {
+    const payloadIntent = String(payload?.actionIntent ?? "").trim().toLowerCase();
+    if (payloadIntent !== wantIntent) {
+      log(`passive ${item.name}: action_intent filter failed — want="${wantIntent}" got="${payloadIntent}"`);
+      return false;
+    }
+  }
+
+  // 4. Optional condition formula (resolved against the reactor).
+  const condRaw = String(row.condition_formula ?? "").trim();
   if (condRaw) {
-    const { evaluateFormula: e, buildSkillResolver: b } = await import("./skill-formulas.js");
-    const r = b({ actor: casterActor, payload, skill, round: 0 });
-    const val = e(condRaw, r, 0);
-    if (!val) return false;
+    const { evaluateFormula, buildSkillResolver } = await import("./skill-formulas.js");
+    const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round: 0 });
+    const val = evaluateFormula(condRaw, resolver, 0);
+    if (!val) {
+      log(`passive ${item.name}: condition_formula="${condRaw}" → ${val} (falsy)`);
+      return false;
+    }
   }
   return true;
 }
 
-// Resolve a passive skill's tri-state mode from its props. Returns one
-// of "on" / "ask" / "off". Exported so the Vismagus cost-gate path
-// (state-handlers.js) and any future passive consumer can read the
-// same field without recomputing the fallback. New `passive_mode`
-// wins; legacy `passive_optional` is honoured for items authored
-// before the field existed; default is "ask".
+// Resolve the tri-state mode (on/ask/off) for a reaction-config passive row.
+// Reads `reaction_passive_mode`, default "ask".
+function resolveReactionPassiveMode(row) {
+  const explicit = String(row?.reaction_passive_mode ?? "").trim().toLowerCase();
+  if (explicit === "on" || explicit === "ask" || explicit === "off") return explicit;
+  return "ask";
+}
+
+// Legacy shim — old callers (Vismagus cost-gate etc.) read passive_mode off
+// the props directly. Kept until those paths are migrated to reaction config.
 export function resolvePassiveMode(props) {
   const explicit = String(props?.passive_mode ?? "").trim().toLowerCase();
   if (explicit === "on" || explicit === "ask" || explicit === "off") return explicit;
@@ -240,16 +491,13 @@ export function resolvePassiveMode(props) {
   return "ask";
 }
 
-// Optional GM confirmation for "may" passives. Returns true to proceed,
-// false to skip. Falls back to true if no dialog renderer is wired (e.g.
-// in headless test contexts).
-async function promptPassiveOptin(skill, casterActor) {
+async function promptPassiveOptin(itemName, reactorActor, description) {
   if (!ui?.notifications) return true;
   if (typeof Dialog !== "function") return true;
   return new Promise((resolve) => {
     new Dialog({
-      title: `Passive: ${skill.name}`,
-      content: `<p><strong>${casterActor?.name ?? "Caster"}</strong> may fire <strong>${skill.name}</strong>.</p>${skill.system?.props?.description ?? ""}<p><em>Apply this passive's effect now?</em></p>`,
+      title: `Passive: ${itemName}`,
+      content: `<p><strong>${reactorActor?.name ?? "Reactor"}</strong> may fire <strong>${itemName}</strong>.</p>${description ?? ""}<p><em>Apply this passive's effect now?</em></p>`,
       buttons: {
         apply: { label: "Apply", callback: () => resolve(true) },
         skip:  { label: "Skip",  callback: () => resolve(false) },
@@ -260,66 +508,68 @@ async function promptPassiveOptin(skill, casterActor) {
   });
 }
 
+// Walk every reaction_config_table row on the reactor's items, fire any
+// passive rows matching `trigger`. Replaces the old passive_trigger-field
+// dispatcher.
 export async function firePassiveTriggers({ director, casterActor, trigger, payload }) {
   if (!casterActor || !trigger) return { fired: [] };
   const items = casterActor.items?.contents ?? [];
-  const matched = items.filter((it) => {
-    const p = it.system?.props ?? {};
-    if (String(p.skill_type ?? "").toLowerCase() !== "passive") return false;
-    if (String(p.passive_trigger ?? "").trim() !== trigger) return false;
-    return true;
-  });
-  if (!matched.length) return { fired: [] };
+  const candidates = [];
+  for (const item of items) {
+    const rc = item.system?.props?.reaction_config_table;
+    if (!rc || typeof rc !== "object") continue;
+    for (const key of Object.keys(rc)) {
+      const row = rc[key];
+      if (!row || row.$deleted) continue;
+      if (row.reaction_isPassive !== true) continue;
+      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      candidates.push({ item, row });
+    }
+  }
+  if (!candidates.length) return { fired: [] };
 
   const fired = [];
-  for (const skill of matched) {
-    const p = skill.system?.props ?? {};
-    if (!(await shouldPassiveFire(skill, casterActor, payload))) {
-      log(`passive: ${skill.name} skipped (filter/condition mismatch)`);
+  for (const { item, row } of candidates) {
+    if (!(await shouldReactionPassiveFire(row, item, casterActor, payload))) {
+      log(`passive: ${item.name} skipped (reaction-config filter/condition mismatch)`);
       continue;
     }
-    // Tri-state passive mode — "on" / "ask" / "off". The legacy
-    // `passive_optional` boolean maps to "ask" (true) or "on" (false)
-    // for back-compat with skills authored before the mode field existed.
-    // Default when neither is set: "ask" (RAW "may" wording).
-    const mode = resolvePassiveMode(p);
+    const mode = resolveReactionPassiveMode(row);
     if (mode === "off") {
-      log(`passive: ${skill.name} mode=off — skipping`);
+      log(`passive: ${item.name} mode=off — skipping`);
       continue;
     }
     if (mode === "ask") {
-      const ok = await promptPassiveOptin(skill, casterActor);
-      if (!ok) { log(`passive: ${skill.name} declined by GM`); continue; }
+      const ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+      if (!ok) { log(`passive: ${item.name} declined by GM`); continue; }
     }
-    // mode === "on" → fire without prompting
-    const refLabel = String(p.on_passive_trigger_effect_ref ?? "").trim();
-    if (!refLabel) { warn(`passive ${skill.name}: no on_passive_trigger_effect_ref`); continue; }
-    // Build a passive-specific chain ctx — reactorActor + caster's token,
-    // payload from the trigger, skill = the passive itself.
+    const refLabel = String(row.reaction_effect_ref ?? "").trim();
+    if (!refLabel) { warn(`passive ${item.name}: row has no reaction_effect_ref`); continue; }
+
     const { makeChainContext } = await import("./skill-targeting.js");
     const { getRuntimeSkillView } = await import("./skill-recipes.js");
     const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
       ?? casterActor?.getActiveTokens?.()?.[0]?.document
       ?? null;
-    const view = getRuntimeSkillView(skill);
+    const view = getRuntimeSkillView(item);
     const ctx = makeChainContext({
       reactorActor: casterActor,
       reactorToken,
-      skill,
+      skill: item,
       dCombat: director?.dCombat ?? null,
       payload,
       actionTargetUuids: payload?.targetTokenUuids ?? [],
       hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
-      isPassive: false,  // GM-prompted → behaves as user-driven; auto-firing passives can set true
+      isPassive: mode === "on",
       runtimeEffectTable: view.effect_table,
       firePoints: view.fire_points,
     });
     try {
       const r = await applyEffectByLabel(refLabel, ctx);
-      fired.push({ skill: skill.name, ok: !!r.ok, kind: r.kind });
-      log(`passive ${skill.name}: fired ref "${refLabel}" → ok=${!!r.ok}`);
+      fired.push({ skill: item.name, ok: !!r.ok, kind: r.kind });
+      log(`passive ${item.name}: fired ref "${refLabel}" → ok=${!!r.ok}`);
     } catch (e) {
-      warn(`passive ${skill.name}: applyEffectByLabel threw`, e);
+      warn(`passive ${item.name}: applyEffectByLabel threw`, e);
     }
   }
   return { fired };
@@ -845,7 +1095,39 @@ async function applyOpenActionMenuEffect(row, ctx) {
   }
 
   let chosen = null;
-  if (ctx.isPassive) {
+  // Test harness — consume a queued pick if present (set by
+  // FUCompanion.api.test.runDirectorSkillSimulate via harnessPicks).
+  // The shape is { menuLabel?: string, index?: number } or a plain
+  // string (alias for menuLabel). Falls through to the normal path if
+  // the queue is empty.
+  // `ctx.harnessPicks` may be a frozen array (freezeActionResult applied
+  // it recursively when the harness stamped `_harnessPicks` on the ar).
+  // We can't shift() a frozen array, so we mutate a parallel index via
+  // a counter on the ctx instead. First call initializes the cursor at 0.
+  const harnessQueue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks : null;
+  if (harnessQueue && harnessQueue.length > (ctx._harnessPicksCursor ?? 0)) {
+    const cursor = ctx._harnessPicksCursor ?? 0;
+    ctx._harnessPicksCursor = cursor + 1;
+    const next = harnessQueue[cursor];
+    let idx = -1;
+    if (typeof next === "number" && Number.isFinite(next)) idx = next;
+    else if (typeof next === "string") {
+      const want = next.trim().toLowerCase();
+      idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+    } else if (next && typeof next === "object") {
+      if (Number.isFinite(next.index)) idx = next.index;
+      else if (next.menuLabel) {
+        const want = String(next.menuLabel).trim().toLowerCase();
+        idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+      }
+    }
+    if (idx < 0 || idx >= options.length) {
+      warn(`skill-effects.open_action_menu: harnessPick ${JSON.stringify(next)} did not match any of ${options.map(o => o.label).join(", ")} — falling back to index 0`);
+      idx = 0;
+    }
+    chosen = { index: idx, option: options[idx] };
+    log(`skill-effects.open_action_menu: harness pick → "${options[idx].label}"`);
+  } else if (ctx.isPassive) {
     // Passive: no prompt — pick the first option. Author-controlled
     // ordering means option[0] = "default" for autoresolution.
     chosen = { index: 0, option: options[0] };

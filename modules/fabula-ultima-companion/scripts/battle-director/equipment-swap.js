@@ -81,8 +81,8 @@ function buildHandCandidate(it) {
   // [Item] template — see Game Object/Template/[Item] Blazing Sword.json.
   // Match case-insensitively + on the substring "two" so any locale or
   // capitalisation variant still trips the flag.
-  const handSlots = String(p.hand_slots ?? "").toLowerCase();
-  const isTwoHanded = !isShield && handSlots.includes("two");
+  const handSlotsRaw = String(p.hand_slots ?? "").trim();
+  const isTwoHanded = !isShield && handSlotsRaw.toLowerCase().includes("two");
   const base = {
     id: it.id,
     name: p.name ?? it.name ?? "(unnamed)",
@@ -91,6 +91,10 @@ function buildHandCandidate(it) {
     typeIcon: isShield ? "🛡️" : "⚔️",
     element: null,
     weaponType: null,
+    weaponRange: null,
+    handSlots: null,
+    isMartial: false,
+    rarity: null,
     attackStat: null,
     defenseLine: null,
     isTwoHanded,
@@ -102,9 +106,17 @@ function buildHandCandidate(it) {
     const def  = Number(p.item_def_bonus ?? 0)  || 0;
     const mdef = Number(p.item_mdef_bonus ?? 0) || 0;
     base.defenseLine = `DEF ${def >= 0 ? "+" : ""}${def} • MDEF ${mdef >= 0 ? "+" : ""}${mdef}`;
+    base.handSlots = handSlotsRaw || null;
+    base.rarity    = String(p.item_rarity ?? "") || null;
   } else {
     base.element     = String(p.type_damage ?? "Physical");
-    base.weaponType  = String(p.weapon_type ?? "");
+    // CSB stores weapon class in `category` (Arcane / Bow / Spear / Sword …);
+    // legacy world data sometimes has `weapon_type` or `type` instead.
+    base.weaponType  = String(p.category ?? p.weapon_type ?? p.type ?? "");
+    base.weaponRange = String(p.weapon_range ?? "") || null;
+    base.handSlots   = handSlotsRaw || null;
+    base.isMartial   = !!p.isMartial;
+    base.rarity      = String(p.item_rarity ?? "") || null;
     base.checkBonus  = Number(p.check_bonus ?? 0)  || 0;
     base.damageBonus = Number(p.damage_bonus ?? 0) || 0;
     const a1 = String(p.rolled_atr1 ?? "").toUpperCase();

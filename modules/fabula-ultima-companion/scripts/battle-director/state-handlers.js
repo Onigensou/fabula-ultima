@@ -31,7 +31,7 @@ import { composeAction, makeCancelToken } from "./compose-action.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyMercyClamp, applyDamageTypeOverride, resolvePassiveMode } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride, resolvePassiveMode } from "./skill-effects.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -285,6 +285,10 @@ async function resolveSkillAction(director, ar, opts = {}) {
     isPassive: false,
     runtimeEffectTable: view.effect_table,
     firePoints: view.fire_points,
+    // Test-harness opt-in — `_harnessPicks` lives on the synthetic ar
+    // built by FUCompanion.api.test.runDirectorSkillSimulate and lets
+    // it auto-resolve open_action_menu prompts. Always null in live play.
+    harnessPicks: ar?._harnessPicks ?? null,
   });
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
@@ -315,11 +319,6 @@ async function resolveSkillAction(director, ar, opts = {}) {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
 
-        let finalValue = 0;
-        let valueType = dmgResource;
-        let valueDirection = "loss";
-        let damageTypeForPayload = ar.damageType;
-
         // Vismagus self-heal suppression — if the caster paid HP for the
         // spell via Vismagus, they do NOT recover HP from this spell
         // (other targets unaffected). Per RAW Spiritist p.182.
@@ -327,42 +326,22 @@ async function resolveSkillAction(director, ar, opts = {}) {
           log(`Skill ${ar.skillName}: Vismagus suppresses caster self-heal for ${r.name}`);
           continue;
         }
-        if (dmgResource === "mp") {
-          // MP damage path — Drain Spirit / future MP-burn spells.
-          // No AB flip (MP absorb isn't an RAW affinity). Apply the
-          // raw post-affinity damage (always NE for MP) directly.
-          if (r.damage > 0) {
-            const curMp = readPropNum(targetActor, ["current_mp", "mp"]);
-            const newMp = Math.max(0, curMp - r.damage);
-            await targetActor.update({ "system.props.current_mp": newMp });
-            log(`Skill ${ar.skillName}: applied ${r.damage} MP damage to ${r.name}: ${curMp} → ${newMp}`);
-          }
-          finalValue = r.damage;
-          valueType = "mp";
-        } else {
-          // HP damage path — full affinity rules (incl AB → heal flip).
-          const curHp = readPropNum(targetActor, ["current_hp", "hp"]);
-          const maxHp = readPropNum(targetActor, ["max_hp"], curHp);
-          if (r.affinity === "AB") {
-            const healed = Math.max(0, r.damage);
-            if (healed > 0) {
-              const newHp = Math.min(maxHp, curHp + healed);
-              await targetActor.update({ "system.props.current_hp": newHp });
-              log(`Skill ${ar.skillName}: absorbed ${healed} on ${r.name}: ${curHp} → ${newHp} (heal)`);
-            }
-            finalValue = healed;
-            valueDirection = "recover";
-            damageTypeForPayload = "healing";
-          } else if (r.damage > 0) {
-            const { newHp, mercyFired } = await applyMercyClamp(targetActor, curHp, r.damage);
-            await targetActor.update({ "system.props.current_hp": newHp });
-            log(`Skill ${ar.skillName}: applied ${r.damage} dmg [${r.affinity}] to ${r.name}: ${curHp} → ${newHp}${mercyFired ? " (Mercy clamped at 1 HP)" : ""}`);
-            // Report the effective HP loss, not the raw damage — Mercy
-            // clamps to 1, so finalValue reflects what actually came off.
-            finalValue = Math.max(0, curHp - newHp);
-          }
-          valueType = "hp";
-        }
+
+        // Shared damage-write path. Handles MP-resource, AB → heal flip,
+        // resolveDamageReactions (Mercy + future clamp/cap AEs), and the
+        // log line. See applyDamageToTarget in skill-effects.js.
+        const dmgRes = await applyDamageToTarget({
+          target: targetActor,
+          damage: r.damage,
+          affinity: r.affinity,
+          resource: dmgResource,
+          targetName: r.name,
+          logPrefix: `Skill ${ar.skillName}:`,
+        });
+        const finalValue = dmgRes.finalValue;
+        const valueType = dmgRes.resource;
+        const valueDirection = dmgRes.valueDirection;
+        const damageTypeForPayload = valueDirection === "recover" ? "healing" : ar.damageType;
 
         // Per-target post_damage payload — HP_DEALT / MP_DEALT resolve
         // here. Roll-derived identifiers (HR / CRIT / FUMBLE / TOTAL)
@@ -396,20 +375,21 @@ async function resolveSkillAction(director, ar, opts = {}) {
   const targetNames = (ar.targets ?? []).map((t) => t.name).join(", ") || "no target";
   ui.notifications?.info(`${ar.attacker?.name ?? "?"} cast ${ar.skillName} on ${targetNames}.`);
 
-  // 6. Passive triggers — fire any caster-side passives whose
-  //    `passive_trigger` matches "spell_complete". Examples: Spiritist's
-  //    Healing Power (post-spell SL×BOND_COUNT heal grant) and Support
-  //    Magic (post-spell bond-bonus on a chosen ally's next Check).
+  // 6. Passive triggers — fire any reaction_config_table rows on the
+  //    caster's items whose `reaction_trigger` matches
+  //    `creature_completes_spell` and `reaction_isPassive: true`.
+  //    Examples: Spiritist's Healing Power (post-spell SL×BOND_COUNT heal)
+  //    and Support Magic (post-spell bond-bonus on a chosen ally's Check).
   //
-  //    Spell-only: skill_type !== "Spell" actions don't fire spell-tagged
-  //    passives. Other triggers (attack_complete, damage_taken, etc.)
-  //    will get their own hook sites as we ship more passives.
+  //    Spell-only: non-Spell actions don't fire this trigger. Other
+  //    triggers (creature_deals_damage etc.) fire from their own hook
+  //    sites elsewhere.
   if (String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell") {
     try {
       await firePassiveTriggers({
         director,
         casterActor,
-        trigger: "spell_complete",
+        trigger: "creature_completes_spell",
         payload: {
           spellUuid: skill.uuid,
           spellName: skill.name,
@@ -1897,14 +1877,26 @@ const Compute = {
         round: director.dCombat?.round ?? 0,
       });
       const damageBonus = evaluateFormula(ar.damageBonus, resolver, 0);
-      const damageType = String(ar.damageType ?? "").toLowerCase();
+      const nativeDamageType = String(ar.damageType ?? "").toLowerCase();
       // Resource the damage burns through. Default is HP (regular
       // elemental damage); `mp` routes the same hit/crit pipeline but
       // writes to current_mp instead and skips elemental affinity (no
       // sheet supports "Vulnerable to MP damage"). Heal-style strings
       // ("healing", "recovery", "hp" as a bare type, "") are still
       // excluded from the damage path — those are recipe-driven grants.
-      const isMpDamage = damageType === "mp";
+      const isMpDamage = nativeDamageType === "mp";
+      // Spell-damage element override — applies the caster's
+      // override_spell_damage_type (or override_all_damage_type
+      // fallback). Only flips for ELEMENTAL damage; MP / heal-style
+      // strings ignore the override since they aren't an element. See
+      // resolveDamageElementOverride in skill-effects.js.
+      const damageType = isMpDamage
+        ? nativeDamageType
+        : String(resolveDamageElementOverride({
+            actor: casterActor,
+            scope: "spell",
+            native: nativeDamageType,
+          }) ?? nativeDamageType).toLowerCase();
       const isElementalDamage = !!damageType
         && !["", "none", "healing", "heal", "hp", "recovery"].includes(damageType)
         && !isMpDamage;
@@ -2061,12 +2053,79 @@ const Compute = {
         }
       }
 
+      // Heal / grant preview — for skills using the recipe sugar
+      // (`recipe: heal_target` etc.) where the COMPUTE branch above
+      // doesn't fire because there's no elemental/MP damage. We mirror
+      // damage's per-target row + preview-panel UX so the player sees
+      // exactly how much each target will recover.
+      let healingObj = null;
+      if (!hasDamage) {
+        const view = getRuntimeSkillView(skill);
+        // Find the first grant row in the runtime view (recipe-synthesized
+        // OR author-authored on_activate_effect_ref).
+        let grantRow = null;
+        const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
+        const tbl = view?.effect_table ?? {};
+        for (const k of Object.keys(tbl)) {
+          const row = tbl[k];
+          if (!row || row.$deleted) continue;
+          if (row.effect_kind !== "grant") continue;
+          // Prefer the row referenced by on_activate; else first grant.
+          if (fireLabel && row.effect_label === fireLabel) { grantRow = row; break; }
+          if (!grantRow) grantRow = row;
+        }
+        if (grantRow) {
+          const grantResource = String(grantRow.grant_resource ?? "").toLowerCase();
+          const grantAmount = evaluateFormula(grantRow.grant_amount, resolver, 0);
+          if (grantAmount > 0 && ["hp", "mp"].includes(grantResource)) {
+            // Build per-target rows for each action target. No Check, no
+            // affinity — every target receives the same amount (clamped
+            // at write time by max-resource).
+            for (const e of allTargets) {
+              const tActor = await fromUuid(e.actorUuid).catch(() => null);
+              const cur = Number(tActor?.system?.props?.[grantResource === "mp" ? "current_mp" : "current_hp"] ?? 0) || 0;
+              const max = Number(tActor?.system?.props?.[grantResource === "mp" ? "max_mp" : "max_hp"] ?? 0) || 0;
+              perTargetResults.push({
+                tokenUuid: e.tokenUuid,
+                actorUuid: e.actorUuid,
+                name: e.name,
+                tokenImg: e.tokenImg,
+                disposition: e.disposition,
+                defense: 0,
+                hit: true,
+                crit: false,
+                grantAmount,
+                grantResource,
+                resourceCur: cur,
+                resourceMax: max,
+                affinity: "NE",
+                studied: true,
+              });
+            }
+            // Damage-shaped object so the card's existing damage preview
+            // panel renders correctly. `declaresHealing: true` flips the
+            // label to "Heal" + tooltip wording. Color is decided by
+            // the panel — green for HP, blue for MP.
+            healingObj = {
+              base: grantAmount,
+              element: grantResource === "mp" ? "mp" : "healing",
+              resource: grantResource,
+              ignoreHR: true,
+              finalIfHit: grantAmount,
+              declaresHealing: grantResource === "hp",
+              isHealing: true,
+            };
+          }
+        }
+      }
+
       director.ctx.actionResult = freezeActionResult({
         ...ar,
         roll,
         damageComputed: damageBonus,
-        damage: damageObj,
+        damage: damageObj ?? healingObj,
         hasDamage,
+        hasHealing: !!healingObj,
         damageResource,
         perTargetResults,
         hitTokenUuids,
@@ -2164,16 +2223,20 @@ const Compute = {
       // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69).
       const ignoreHR = isTwoWeapon;
       const effectiveHr = ignoreHR ? 0 : hr;
-      // Damage-type override: any AE that writes
-      // `system.props.override_damage_type` (Spiritist Soul Weapon + any
-      // future skill that uses the same prop via an AE `changes` mode-5
-      // OVERRIDE) replaces the weapon's native damageType for this
-      // Attack. Looked up on the live actor doc; "None" / empty falls
-      // through to the weapon's native element. Uses `attacker.actorUuid`
-      // from the snapshot — actionResult is constructed later in this
-      // branch (Attack builds it here in COMPUTE, not back in TARGET).
+      // Damage-element override (3 scopes; see
+      // resolveDamageElementOverride in skill-effects.js):
+      //   override_attack_damage_type → applies here (attack scope)
+      //   override_all_damage_type    → fallback catch-all
+      //   weapon.damageType           → native, lowest priority
+      // Soul Weapon writes the attack-scope key; future class traits
+      // can write the all-scope key. Spell damage uses scope="spell"
+      // separately in the Skill COMPUTE branch.
       const liveAttacker = await fromUuid(attacker.actorUuid).catch(() => null);
-      const overriddenElement = applyDamageTypeOverride(liveAttacker, weapon.damageType);
+      const overriddenElement = resolveDamageElementOverride({
+        actor: liveAttacker,
+        scope: "attack",
+        native: weapon.damageType,
+      });
       const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
 
       const perTargetResults = [];
@@ -2240,7 +2303,12 @@ const Compute = {
         },
         damage: {
           base: damageBonus,
-          element: weapon.damageType,
+          // Use the overridden element (set by Spiritist Soul Weapon and
+          // any future damage-type override AE) instead of the weapon's
+          // raw type — so the action card label + affinity routing on
+          // the per-target rows agree. Falls through to the weapon's
+          // native type when no override is active.
+          element: overriddenElement ?? weapon.damageType,
           ignoreHR,
           finalIfHit: effectiveHr + damageBonus,
         },
@@ -2491,6 +2559,7 @@ const Confirm = {
         skillTarget: ar.skillTarget,
         damageType: ar.damageType,
         hasDamage: ar.hasDamage,
+        hasHealing: ar.hasHealing,
         rawCost: ar.rawCost,
         costSerialized: ar.costSerialized,
         descriptionHtml: ar.descriptionHtml,
@@ -2575,21 +2644,17 @@ const Resolve = {
         try {
           const actor = await fromUuid(r.actorUuid);
           if (!actor) { warn("RESOLVE: actor not found", r.actorUuid); continue; }
-          const curHp = readPropNum(actor, ["current_hp", "hp"]);
-          const maxHp = readPropNum(actor, ["max_hp"], curHp);
-          if (r.affinity === "AB") {
-            const healed = Math.max(0, r.damage);
-            if (healed === 0) continue;
-            const newHp = Math.min(maxHp, curHp + healed);
-            await actor.update({ "system.props.current_hp": newHp });
-            log(`Absorbed ${healed} ${r.name}${passLabel}: ${curHp} → ${newHp} (heal)`);
-          } else if (r.damage > 0) {
-            const { newHp, mercyFired } = await applyMercyClamp(actor, curHp, r.damage);
-            await actor.update({ "system.props.current_hp": newHp });
-            log(`Applied ${r.damage} dmg to ${r.name} [${r.affinity}]${passLabel}: ${curHp} → ${newHp}${mercyFired ? " (Mercy clamped at 1 HP)" : ""}`);
-          } else {
-            log(`No HP change for ${r.name} [${r.affinity}]${passLabel} (damage was ${r.damage})`);
-          }
+          // Shared damage path — same helper Skill RESOLVE uses, so any
+          // damage-time reaction AE (Mercy + family) fires uniformly
+          // regardless of source. Attack is always HP-resource.
+          await applyDamageToTarget({
+            target: actor,
+            damage: r.damage,
+            affinity: r.affinity,
+            resource: "hp",
+            targetName: r.name,
+            logSuffix: passLabel,
+          });
         } catch (e) {
           err("RESOLVE: failed to apply damage", r, e);
         }
@@ -3077,6 +3142,13 @@ const TurnEnd = {
         warn("TURN_END: dCombat.nextTurn threw", e);
         director.ctx.endOfCombat = true;
       }
+      // The turn we just wrapped up is now in the past — clear the
+      // resolved-flag so a reload/rewind to THIS save site routes
+      // through TURN_START (next turn's picker), not back into TURN_END
+      // (which would re-run nextTurn and incorrectly flip currentSide
+      // a second time, e.g. "Enemies Pick Next Turn" snapshot rewinds
+      // into a party-side picker).
+      director.dCombat.currentTurnResolved = false;
       // Persistence checkpoint #3 — round / currentSide / turnsRemaining
       // have been advanced. Saving here means a reload between TURN_END
       // and the NEXT TURN_START still resumes at the right turn.
