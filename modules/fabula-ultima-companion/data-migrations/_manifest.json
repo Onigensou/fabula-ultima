@@ -199,6 +199,10 @@
     {
       "key": "2026-05-29-vismagus-reaction-config",
       "path": "data-migrations/2026-05-29-vismagus-reaction-config.js"
+    },
+    {
+      "key": "2026-05-29-template-options-modify-damage-taken",
+      "path": "data-migrations/2026-05-29-template-options-modify-damage-taken.js"
     }
   ]
 }
