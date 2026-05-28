@@ -104,7 +104,10 @@ function buildAttackerSnapshot(tokenDoc, deps) {
       WLP: attrDieSize(actor, "WLP"),
     }),
     fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
-    weapon: resolveAttackerWeapon(actor, { which: "main" })?.weapon ?? null,
+    // `resolveAttackerWeapon` returns the weapon-shaped object DIRECTLY
+    // (not wrapped in `{ weapon }`). Mirror snapshot.js buildWeaponBundle.
+    weapon: resolveAttackerWeapon(actor, { which: "main" }) ?? null,
+    offWeapon: resolveAttackerWeapon(actor, { which: "off" }) ?? null,
   });
 }
 
@@ -762,6 +765,392 @@ async function runDirectorSkillSimulate(args = {}) {
   };
 }
 
+// ─── Attack pipeline simulate (Phase 2.3) ───────────────────────────────
+//
+// Runs the Attack COMPUTE + RESOLVE branches in state-handlers.js against
+// a synthetic director context, capturing damage writes via the same
+// monkey-patched document prototypes used by `runDirectorSkillSimulate`.
+//
+// Bypasses TARGET — caller supplies attacker token + target tokens + mode.
+// For two-weapon attacks (mode: "two-weapon"), the harness loops COMPUTE +
+// RESOLVE twice — once for the main hand, once for the off hand — matching
+// the FSM's CLEANUP→COMPUTE cycle. Each pass produces its own actionResult
+// and its writes accumulate in the same captures bag.
+//
+// Args:
+//   attackerTokenUuid: required string
+//   targetTokenUuids:  required string[]
+//   mode:              "main" | "off" | "two-weapon" (default "main")
+//   force:             same shape as Skill harness; first target's DEF
+//                      is the gate for `force.hit`/`force.miss`
+//   preApply:          AEs to install on target/attacker before run
+//                      (e.g. Guard AE, status conditions for forced-VU)
+//   override:          formula identifiers (mostly irrelevant for attacks;
+//                      kept for parity)
+//   acceptPassives:    default false; reactive passives that fire on
+//                      `creature_deals_damage` etc. (currently no such
+//                      Spiritist trigger uses it via Attack — wired anyway
+//                      so future class deliveries don't need re-plumbing)
+//   round:             dCombat.round override; default 1
+async function runDirectorAttackCompute({
+  attackerTokenUuid, targetTokenUuids, mode = "main", force = null,
+  pendingPasses = null, passIndex = 0, totalPasses = null,
+} = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  if (!attackerTokenUuid || !Array.isArray(targetTokenUuids) || !targetTokenUuids.length) {
+    return { ok: false, reason: "missing_args",
+      hint: "attackerTokenUuid + targetTokenUuids[] required" };
+  }
+  const attackerToken = await fromUuid(attackerTokenUuid).catch(() => null);
+  if (!attackerToken?.actor) return { ok: false, reason: "attacker_token_not_found", attackerTokenUuid };
+  const targetTokens = [];
+  for (const u of targetTokenUuids) {
+    const t = await fromUuid(u).catch(() => null);
+    if (!t?.actor) return { ok: false, reason: "target_token_not_found", missing: u };
+    targetTokens.push(t);
+  }
+
+  const deps = await loadDeps();
+  const { STATE_HANDLERS, STATES, INTENTS, resolveAttackerWeapon } = deps;
+  const attackerSnap = buildAttackerSnapshot(attackerToken, deps);
+  const targetSnaps  = targetTokens.map((t) => buildTargetSnapshot(t, deps));
+  if (!attackerSnap) return { ok: false, reason: "attacker_snapshot_failed" };
+
+  // Resolve the weapon queue. Single-pass: [main] or [off]. Two-weapon:
+  // [main, off]. The caller can also pass a pre-built pendingPasses for
+  // pass 2 of two-weapon (the simulate wrapper does this).
+  let queue;
+  if (Array.isArray(pendingPasses) && pendingPasses.length) {
+    queue = [...pendingPasses];
+  } else if (mode === "two-weapon" || mode === "two-weapon-main-first") {
+    const off = attackerSnap.offWeapon;
+    if (!attackerSnap.weapon || !off) {
+      return { ok: false, reason: "two_weapon_needs_both_hands",
+        hint: "Need a weapon in each hand for two-weapon mode" };
+    }
+    queue = [attackerSnap.weapon, off];
+  } else if (mode === "off") {
+    if (!attackerSnap.offWeapon) return { ok: false, reason: "no_off_weapon" };
+    queue = [attackerSnap.offWeapon];
+  } else {
+    if (!attackerSnap.weapon) return { ok: false, reason: "no_main_weapon" };
+    queue = [attackerSnap.weapon];
+  }
+
+  const synthDirector = {
+    ctx: {
+      declaredCommand: "Attack",
+      turnSnapshot: attackerSnap,
+      pickedTargetUuids: targetSnaps.map((t) => t.tokenUuid),
+      eligibleTargets: targetSnaps,
+      pendingPasses: [...queue],
+      attackMode: mode,
+      passIndex,
+      totalPasses: Number.isFinite(totalPasses) ? totalPasses : queue.length,
+    },
+    dCombat: { round: 1 },
+    state: STATES.COMPUTE,
+    enqueue() {},
+    dispatch() {},
+  };
+
+  const weapon = queue[0];
+  const dA = attackerSnap.attributes?.[weapon.A1] ?? 8;
+  const dB = attackerSnap.attributes?.[weapon.A2] ?? 8;
+  // Attack force semantics: gate is target.defense (DEF, not MDEF).
+  const resolvedForce = expandForceSemantics(force, {
+    dA, dB,
+    fumbleThreshold: attackerSnap.fumbleThreshold ?? 1,
+    checkBonus: weapon.checkBonus ?? 0,
+    isSpell: false,
+    targetSnaps,
+  });
+  const rollOverride = installRollOverride(resolvedForce, dA, dB);
+  try {
+    await STATE_HANDLERS[STATES.COMPUTE].onEnter(synthDirector, {
+      triggerIntent: { type: INTENTS.TARGET_PICKED,
+        body: { targetTokenUuids: synthDirector.ctx.pickedTargetUuids } },
+    });
+  } finally {
+    rollOverride.restore();
+  }
+
+  const finalAr = synthDirector.ctx.actionResult;
+  return {
+    ok: true,
+    actionResult: finalAr,
+    summary: summarize(finalAr),
+    // Surface the remaining queue so the simulate wrapper can iterate
+    // for two-weapon passes. After COMPUTE shifts, queue.length-1 remain.
+    pendingPasses: synthDirector.ctx.pendingPasses,
+    nextPassIndex: synthDirector.ctx.passIndex,
+    totalPasses: synthDirector.ctx.totalPasses,
+  };
+}
+
+async function runDirectorAttackSimulate(args = {}) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+
+  const formulaOverrides = installFormulaOverrides(args.override);
+  const preApplied = await installPreAppliedAEs(args.preApply);
+
+  const deps = await loadDeps();
+  const { STATE_HANDLERS, STATES, INTENTS } = deps;
+  const round = Number.isFinite(args.round) ? args.round : 1;
+
+  // Captures accumulate ACROSS passes for two-weapon. The acceptor + write
+  // captures stay installed for the whole simulate, restored in finally.
+  const acceptPassives = args.acceptPassives ?? false;
+  const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
+  const { captures, restore } = installWriteCaptures();
+
+  const passResults = [];
+  let resolveError = null;
+
+  try {
+    // First pass (or only pass).
+    let computeArgs = {
+      attackerTokenUuid: args.attackerTokenUuid,
+      targetTokenUuids: args.targetTokenUuids,
+      mode: args.mode ?? "main",
+      force: args.force,
+    };
+    let totalPasses = null;
+    let passIndex = 0;
+    while (true) {
+      const compute = await runDirectorAttackCompute(computeArgs);
+      if (!compute.ok) {
+        // Bail with the compute error and clean up.
+        await preApplied.cleanup();
+        formulaOverrides.restore();
+        restore();
+        passiveAcceptor.restore();
+        return compute;
+      }
+
+      const ar = compute.actionResult;
+      const synthDirector = {
+        ctx: { actionResult: ar, _resumedFromPendingAction: true },
+        dCombat: { round, currentTurnResolved: false },
+        state: STATES.RESOLVE,
+        enqueue() {}, dispatch() {},
+      };
+      try {
+        await STATE_HANDLERS[STATES.RESOLVE].onEnter(synthDirector, {
+          triggerIntent: { type: INTENTS.CONFIRM_ACTION },
+        });
+      } catch (e) {
+        resolveError = { pass: passIndex + 1, message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };
+        break;
+      }
+
+      passResults.push({
+        passIndex: compute.nextPassIndex,
+        weapon: ar.weapon?.name ?? null,
+        summary: compute.summary,
+        actionResult: ar,
+      });
+
+      // Continue with remaining pendingPasses (two-weapon's second hand).
+      const remaining = compute.pendingPasses ?? [];
+      if (!remaining.length) break;
+      totalPasses = compute.totalPasses;
+      passIndex = compute.nextPassIndex;
+      computeArgs = {
+        attackerTokenUuid: args.attackerTokenUuid,
+        targetTokenUuids: args.targetTokenUuids,
+        mode: args.mode ?? "main",
+        force: args.force,
+        pendingPasses: remaining,
+        passIndex,
+        totalPasses,
+      };
+    }
+  } finally {
+    restore();
+    passiveAcceptor.restore();
+    await preApplied.cleanup();
+    formulaOverrides.restore();
+  }
+
+  return {
+    ok: !resolveError,
+    passes: passResults,
+    captures,
+    perActorWrites: summarizeWrites(captures),
+    preApplied: preApplied.created,
+    resolveError,
+  };
+}
+
+// ─── Scenario runner (Phase 2.8) ────────────────────────────────────────
+//
+// Drives `runDirectorSkillSimulate` / `runDirectorAttackSimulate` from a
+// declarative JSON scenario list. Lets a future test suite live as
+// version-controlled .test.json files instead of ad-hoc bridge invocations.
+//
+// Scenario shape:
+//   {
+//     name: "Heal at SL 1 with full bonds",
+//     kind: "skill" | "attack",                       // default "skill"
+//     setup: {
+//       caster:  "Test Caster",                        // actor name lookup
+//       targets: ["Test Target Ally"]                  // actor names
+//     },
+//     action: { skill: "Heal" }                        // for kind: "skill"
+//     // OR    { weapon: "main" | "off" | "two-weapon" } for kind: "attack"
+//     args: { force, picks, override, acceptPassives, ... },
+//     expect: {
+//       writes: [{ actor: "Test Target Ally",
+//                  "system.props.current_hp": 60 }],
+//       aeApplied: [{ actor: "Test Target Ally", name: "Support Magic" }],
+//       aeRemoved: [{ actor: "Test Target Ally", name: "Slow" }],
+//     }
+//   }
+//
+// Returns `{ total, pass, fail, results: [{name, pass, failures, writes,
+// aeApplied, aeRemoved}] }`. Use `failures` to see WHICH assertions
+// failed; the rest of the result mirrors the simulate output so callers
+// can drill in.
+
+function tokenForActor(scene, actor) {
+  return Array.from(scene.tokens).find((t) => t.actor?.id === actor.id);
+}
+
+function lookupActorByName(name) {
+  return game.actors.find((a) => a.name === name);
+}
+
+async function runOneScenario(scenario, scene) {
+  const result = { name: scenario.name ?? "(unnamed)", pass: false, failures: [] };
+  try {
+    const setup = scenario.setup ?? {};
+    const caster = lookupActorByName(setup.caster);
+    if (!caster) { result.failures.push(`caster "${setup.caster}" not found`); return result; }
+    const casterTok = tokenForActor(scene, caster);
+    if (!casterTok) { result.failures.push(`no token for caster "${setup.caster}" on scene`); return result; }
+    const targetActors = (setup.targets ?? []).map(lookupActorByName);
+    for (let i = 0; i < targetActors.length; i++) {
+      if (!targetActors[i]) {
+        result.failures.push(`target "${setup.targets[i]}" not found`);
+        return result;
+      }
+    }
+    const targetToks = targetActors.map((a) => tokenForActor(scene, a));
+    for (let i = 0; i < targetToks.length; i++) {
+      if (!targetToks[i]) {
+        result.failures.push(`no token for target "${setup.targets[i]}" on scene`);
+        return result;
+      }
+    }
+
+    const kind = String(scenario.kind ?? "skill").toLowerCase();
+    let simResult;
+    if (kind === "skill" || kind === "spell") {
+      const skillName = scenario.action?.skill;
+      const skillItem = caster.items.getName(skillName);
+      if (!skillItem) {
+        result.failures.push(`caster "${caster.name}" has no skill named "${skillName}"`);
+        return result;
+      }
+      simResult = await runDirectorSkillSimulate({
+        skillUuid: skillItem.uuid,
+        casterTokenUuid: casterTok.uuid,
+        targetTokenUuids: targetToks.map((t) => t.uuid),
+        ...(scenario.args ?? {}),
+      });
+    } else if (kind === "attack") {
+      simResult = await runDirectorAttackSimulate({
+        attackerTokenUuid: casterTok.uuid,
+        targetTokenUuids: targetToks.map((t) => t.uuid),
+        mode: scenario.action?.weapon ?? "main",
+        ...(scenario.args ?? {}),
+      });
+    } else {
+      result.failures.push(`unsupported kind "${kind}"`);
+      return result;
+    }
+
+    if (!simResult.ok) {
+      result.failures.push(`simulate returned !ok: ${simResult.reason ?? simResult.resolveError?.message ?? "unknown"}`);
+      result.simulate = simResult;
+      return result;
+    }
+
+    const caps = simResult.captures ?? { actorUpdates: [], aeCreates: [], aeDeletes: [] };
+    result.writes = caps.actorUpdates;
+    result.aeApplied = caps.aeCreates;
+    result.aeRemoved = caps.aeDeletes;
+
+    // Assert expected writes (LAST write per actor+key wins). Compares with
+    // == (== loose because patches may carry string-typed numbers in CSB).
+    const expect = scenario.expect ?? {};
+    if (Array.isArray(expect.writes)) {
+      for (const w of expect.writes) {
+        const actorName = w.actor;
+        const lastByKey = {};
+        for (const u of caps.actorUpdates) {
+          if (u.actorName !== actorName) continue;
+          for (const [k, v] of Object.entries(u.patch ?? {})) lastByKey[k] = v;
+        }
+        for (const [k, v] of Object.entries(w)) {
+          if (k === "actor") continue;
+          if (lastByKey[k] === undefined) {
+            result.failures.push(`expected write ${actorName}.${k} = ${JSON.stringify(v)}; no write captured`);
+          } else if (String(lastByKey[k]) !== String(v)) {
+            result.failures.push(`expected write ${actorName}.${k} = ${JSON.stringify(v)}; got ${JSON.stringify(lastByKey[k])}`);
+          }
+        }
+      }
+    }
+    if (Array.isArray(expect.aeApplied)) {
+      for (const a of expect.aeApplied) {
+        const match = caps.aeCreates.find((c) => c.parentName === a.actor && c.name === a.name);
+        if (!match) {
+          result.failures.push(`expected AE "${a.name}" applied to ${a.actor}; not captured`);
+        }
+      }
+    }
+    if (Array.isArray(expect.aeRemoved)) {
+      for (const a of expect.aeRemoved) {
+        const match = caps.aeDeletes.find((d) => d.aeName === a.name);
+        if (!match) {
+          result.failures.push(`expected AE "${a.name}" removed; not captured`);
+        }
+      }
+    }
+
+    result.pass = result.failures.length === 0;
+    return result;
+  } catch (e) {
+    result.failures.push(`threw: ${String(e?.message ?? e)}`);
+    result.error = String(e?.stack ?? e).slice(0, 500);
+    return result;
+  }
+}
+
+async function runDirectorScenarios(scenarios = []) {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  if (!Array.isArray(scenarios) || !scenarios.length) {
+    return { ok: false, reason: "no_scenarios" };
+  }
+  const scene = game.scenes.find((s) => s.name === "Training Ground");
+  if (!scene) return { ok: false, reason: "training_ground_not_found" };
+
+  const results = [];
+  for (const sc of scenarios) {
+    results.push(await runOneScenario(sc, scene));
+  }
+  const pass = results.filter((r) => r.pass).length;
+  return {
+    ok: true,
+    total: results.length,
+    pass,
+    fail: results.length - pass,
+    results,
+  };
+}
+
 // Convenience: enumerate the test fixtures. Returns Test Caster + targets
 // with their items mapped by name so callers don't have to look up uuids.
 // Returns null if the test actors aren't set up yet.
@@ -785,14 +1174,29 @@ async function getDirectorTestFixtures() {
 
 // Register on the FUCompanion.api.test namespace alongside the legacy
 // harness. We don't replace the legacy methods — they coexist.
-Hooks.once("ready", () => {
+function registerHarness() {
   const root = (globalThis.FUCompanion = globalThis.FUCompanion || {});
   root.api = root.api || {};
   root.api.test = root.api.test || {};
-  root.api.test.runDirectorSkillCompute  = runDirectorSkillCompute;
-  root.api.test.runDirectorSkillSimulate = runDirectorSkillSimulate;
-  root.api.test.getDirectorTestFixtures  = getDirectorTestFixtures;
-  console.info(`${TAG} registered: runDirectorSkillCompute, runDirectorSkillSimulate, getDirectorTestFixtures`);
-});
+  root.api.test.runDirectorSkillCompute   = runDirectorSkillCompute;
+  root.api.test.runDirectorSkillSimulate  = runDirectorSkillSimulate;
+  root.api.test.runDirectorAttackCompute  = runDirectorAttackCompute;
+  root.api.test.runDirectorAttackSimulate = runDirectorAttackSimulate;
+  root.api.test.runDirectorScenarios      = runDirectorScenarios;
+  root.api.test.getDirectorTestFixtures   = getDirectorTestFixtures;
+  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, getDirectorTestFixtures`);
+}
+// Boot-time registration via the ready hook OR fast-path when the module
+// is dynamically re-imported with cache-bust at runtime (Foundry's ready
+// has already fired by then — Hooks.once("ready") would silently no-op).
+if (typeof game !== "undefined" && game?.ready) registerHarness();
+else Hooks.once("ready", registerHarness);
 
-export { runDirectorSkillCompute, runDirectorSkillSimulate, getDirectorTestFixtures };
+export {
+  runDirectorSkillCompute,
+  runDirectorSkillSimulate,
+  runDirectorAttackCompute,
+  runDirectorAttackSimulate,
+  runDirectorScenarios,
+  getDirectorTestFixtures,
+};
