@@ -59,6 +59,17 @@
  *   Cross-document (actor copy ↔ master, by system.uniqueId):
  *     MASTER_COPY_REF_DRIFT   actor copy's reaction_effect_ref differs
  *                             from master's for the same trigger row
+ *     MASTER_COPY_FLAG_DRIFT  master has isReaction:true but copy doesn't
+ *     MASTER_COPY_FIELD_DRIFT any other canonical trigger-row field
+ *                             differs (passive_mode, source, condition,
+ *                             ownership, isPassive, consume_self, etc.)
+ *     MASTER_COPY_ROW_MISSING master has a trigger row that copy lacks
+ *     MASTER_COPY_EFFECT_DRIFT/MISSING — effect_table row (matched by
+ *                             effect_label) drifts or is absent on copy
+ *     MASTER_COPY_AE_MISSING  master has an embedded AE with
+ *                             reactionConfig that copy lacks
+ *     MASTER_COPY_AE_ROW_MISSING/AE_FIELD_DRIFT — same checks inside the
+ *                             AE-bound reactionConfig blob
  *
  *   Informational (severity: "info") — surfaces non-failures that change
  *   how you should interpret other findings:
@@ -685,9 +696,79 @@
   }
 
   // ------------------------------------------------------------------
-  // Cross-document drift: actor copy's effect_ref vs master's (matched
-  // by system.uniqueId, the skill template link contract).
+  // Cross-document drift: actor copy vs master (matched by
+  // system.uniqueId, the skill template link contract). Extended Gap 1
+  // from canon hardening: compare ALL canonical reaction-row fields,
+  // effect_table rows (matched by effect_label), AND AE-bound
+  // reactionConfig blobs (matched by AE name).
   // ------------------------------------------------------------------
+
+  // Fields whose drift between master and copy indicates the copy's
+  // template wasn't refreshed after a master edit (or vice versa). Any
+  // mismatch here changes behavior at dispatch time. Each entry is the
+  // string-comparable raw value — undefined/null/"" all normalize to "".
+  const TRIGGER_ROW_CANONICAL_FIELDS = [
+    "reaction_source",
+    "reaction_action_target",
+    "reaction_condition",
+    "reaction_isPassive",
+    "reaction_passive_mode",
+    "reaction_effect_ref",
+    "reaction_damage_source",
+    "reaction_action_intent",
+    "reaction_ownership",
+    "consume_self",
+  ];
+  const EFFECT_ROW_CANONICAL_FIELDS = [
+    "effect_kind",
+    "target_ref",
+    "grant_resource",
+    "grant_amount",
+    "grant_target",
+    "ae_template_ref",
+    "ae_duplicate_mode",
+    "target_prompt",
+    "chain_steps",
+    "charge_key",
+    "consume_self",
+    "destination_ref",
+    "candidate_source",
+    "mode",
+    "category",
+    "from_resource",
+    "to_resource",
+    "multiplier",
+    "min_remaining",
+  ];
+
+  function normField(v) {
+    if (v === undefined || v === null) return "";
+    if (typeof v === "boolean") return v ? "true" : "false";
+    return String(v).trim();
+  }
+
+  function compareRow(mRow, cRow, fields) {
+    const diffs = [];
+    for (const f of fields) {
+      const mv = normField(mRow?.[f]);
+      const cv = normField(cRow?.[f]);
+      if (mv !== cv) diffs.push({ field: f, master: mv, copy: cv });
+    }
+    return diffs;
+  }
+
+  function pushDrift(out, ctx, code, location, message) {
+    out.push({
+      severity: "warning",
+      code,
+      owner: ctx.ownerLabel,
+      itemUuid: ctx.copy?.uuid ?? null,
+      itemName: ctx.copy?.name ?? "(unnamed)",
+      location,
+      message,
+    });
+  }
+
   function lintMasterCopyDrift(masterIndex) {
     const out = [];
     for (const actor of (game.actors?.contents ?? [])) {
@@ -696,31 +777,107 @@
         if (!uniqueId) continue;
         const master = masterIndex.get(uniqueId);
         if (!master) continue;
-        if (master.id === item.id) continue; // master == self
-        if (item?.system?.props?.isReaction !== true) continue;
+        if (master.id === item.id) continue;
+        // If master isn't isReaction we skip (legacy / non-reaction item).
+        if (master?.system?.props?.isReaction !== true) continue;
 
-        const masterRows = activeRows(master?.system?.props?.reaction_config_table);
-        const copyRows   = activeRows(item?.system?.props?.reaction_config_table);
+        const ctx = { ownerLabel: `actor "${actor.name}"`, copy: item };
 
-        // Match rows by reaction_trigger; flag any active master row whose
-        // ref differs on the copy (most common drift mode).
-        for (const mRow of masterRows) {
-          const mTrig = String(mRow?.reaction_trigger ?? "").trim();
-          const mRef  = String(mRow?.reaction_effect_ref ?? "").trim();
-          if (!mTrig || !mRef) continue;
-          const cRow = copyRows.find(r => String(r?.reaction_trigger ?? "").trim() === mTrig);
-          if (!cRow) continue; // copy doesn't have this trigger — different drift
-          const cRef = String(cRow?.reaction_effect_ref ?? "").trim();
-          if (cRef === mRef) continue;
-          out.push({
-            severity: "warning",
-            code: "MASTER_COPY_REF_DRIFT",
-            owner: `actor "${actor.name}"`,
-            itemUuid: item?.uuid ?? null,
-            itemName: item?.name ?? "(unnamed)",
-            location: `reaction_config_table[${cRow.$key}].reaction_effect_ref`,
-            message: `Actor copy's reaction_effect_ref "${cRef || "(blank)"}" diverges from master's "${mRef}" for trigger "${mTrig}". Re-author migration likely required.`
-          });
+        // isReaction flag mismatch — the copy silently disables all
+        // reaction handling if this isn't true.
+        if (item?.system?.props?.isReaction !== true) {
+          pushDrift(out, ctx, "MASTER_COPY_FLAG_DRIFT",
+            "system.props.isReaction",
+            `Master has isReaction:true but copy doesn't. Reaction rows on this copy won't fire. Re-sync from master.`);
+        }
+
+        const masterTrig = activeRows(master?.system?.props?.reaction_config_table);
+        const copyTrig   = activeRows(item?.system?.props?.reaction_config_table);
+        for (const mRow of masterTrig) {
+          const mTrigVal = String(mRow?.reaction_trigger ?? "").trim();
+          if (!mTrigVal) continue;
+          const cRow = copyTrig.find(r => String(r?.reaction_trigger ?? "").trim() === mTrigVal);
+          if (!cRow) {
+            pushDrift(out, ctx, "MASTER_COPY_ROW_MISSING",
+              `reaction_config_table[?].reaction_trigger="${mTrigVal}"`,
+              `Master row trigger "${mTrigVal}" has no matching row on copy. Reaction won't fire on this actor's copy.`);
+            continue;
+          }
+          const diffs = compareRow(mRow, cRow, TRIGGER_ROW_CANONICAL_FIELDS);
+          for (const d of diffs) {
+            const code = d.field === "reaction_effect_ref"
+              ? "MASTER_COPY_REF_DRIFT"
+              : "MASTER_COPY_FIELD_DRIFT";
+            pushDrift(out, ctx, code,
+              `reaction_config_table[${cRow.$key}].${d.field}`,
+              `Trigger "${mTrigVal}": master.${d.field} = "${d.master}" vs copy.${d.field} = "${d.copy || "(blank)"}". Re-author migration or template refresh likely required.`);
+          }
+        }
+
+        // Effect rows compared by effect_label.
+        const masterEff = activeRows(master?.system?.props?.effect_table);
+        const copyEff   = activeRows(item?.system?.props?.effect_table);
+        const copyEffByLabel = new Map();
+        for (const r of copyEff) {
+          const lbl = String(r?.effect_label ?? "").trim();
+          if (lbl) copyEffByLabel.set(lbl, r);
+        }
+        for (const mRow of masterEff) {
+          const lbl = String(mRow?.effect_label ?? "").trim();
+          if (!lbl) continue;
+          const cRow = copyEffByLabel.get(lbl);
+          if (!cRow) {
+            pushDrift(out, ctx, "MASTER_COPY_EFFECT_MISSING",
+              `effect_table[?].effect_label="${lbl}"`,
+              `Master effect row labeled "${lbl}" has no matching row on copy. Dispatch will fail to resolve any trigger pointing at it.`);
+            continue;
+          }
+          const diffs = compareRow(mRow, cRow, EFFECT_ROW_CANONICAL_FIELDS);
+          for (const d of diffs) {
+            pushDrift(out, ctx, "MASTER_COPY_EFFECT_DRIFT",
+              `effect_table[${cRow.$key}].${d.field}`,
+              `Effect "${lbl}": master.${d.field} = "${d.master}" vs copy.${d.field} = "${d.copy || "(blank)"}". Re-sync needed.`);
+          }
+        }
+
+        // AE-bound reactionConfig blobs (matched by AE name).
+        const masterAEByName = new Map();
+        for (const ae of (master?.effects?.contents ?? [])) {
+          if (ae?.flags?.[MODULE_ID]?.reactionConfig) masterAEByName.set(ae.name, ae);
+        }
+        const copyAEByName = new Map();
+        for (const ae of (item?.effects?.contents ?? [])) {
+          if (ae?.flags?.[MODULE_ID]?.reactionConfig) copyAEByName.set(ae.name, ae);
+        }
+        for (const [name, mAE] of masterAEByName) {
+          const cAE = copyAEByName.get(name);
+          if (!cAE) {
+            pushDrift(out, ctx, "MASTER_COPY_AE_MISSING",
+              `AE["${name}"]`,
+              `Master carries embedded AE "${name}" with reactionConfig blob, but copy has no matching AE. Apply-AE-then-reactor pattern won't arm on this actor's copy.`);
+            continue;
+          }
+          const mCfg = mAE.flags?.[MODULE_ID]?.reactionConfig ?? {};
+          const cCfg = cAE.flags?.[MODULE_ID]?.reactionConfig ?? {};
+          // Compare trigger-row fields inside the blob.
+          const mAERows = activeRows(mCfg.reaction_config_table);
+          const cAERows = activeRows(cCfg.reaction_config_table);
+          for (const mRow of mAERows) {
+            const mTrig = String(mRow?.reaction_trigger ?? "").trim();
+            if (!mTrig) continue;
+            const cRow = cAERows.find(r => String(r?.reaction_trigger ?? "").trim() === mTrig);
+            if (!cRow) {
+              pushDrift(out, ctx, "MASTER_COPY_AE_ROW_MISSING",
+                `AE["${name}"].reaction_config_table[?]`,
+                `Master AE "${name}" has trigger row "${mTrig}" with no match on copy's AE.`);
+              continue;
+            }
+            for (const d of compareRow(mRow, cRow, TRIGGER_ROW_CANONICAL_FIELDS)) {
+              pushDrift(out, ctx, "MASTER_COPY_AE_FIELD_DRIFT",
+                `AE["${name}"].reaction_config_table[${cRow.$key}].${d.field}`,
+                `AE "${name}" trigger "${mTrig}": master.${d.field} = "${d.master}" vs copy.${d.field} = "${d.copy || "(blank)"}".`);
+            }
+          }
         }
       }
     }
