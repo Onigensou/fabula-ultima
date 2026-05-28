@@ -1130,6 +1130,33 @@ async function runOneScenario(scenario, scene) {
         mode: scenario.action?.weapon ?? "main",
         ...(scenario.args ?? {}),
       });
+    } else if (kind === "passive-trigger" || kind === "passive_trigger") {
+      // Direct firePassiveTriggers dispatch — Gap 11.
+      const trigger = scenario.trigger ?? scenario.action?.trigger;
+      if (!trigger) {
+        result.failures.push(`passive-trigger scenario missing "trigger"`);
+        return result;
+      }
+      // Allow payload.costMap to be authored as a plain object; convert
+      // to Map (the engine expects a Map and mutates it for substitute_cost).
+      let payload = scenario.payload ? { ...scenario.payload } : {};
+      if (payload.costMap && !(payload.costMap instanceof Map)) {
+        payload.costMap = new Map(Object.entries(payload.costMap));
+      }
+      if (!payload.actorUuid && !payload.sourceActorUuid) {
+        payload.actorUuid = caster.uuid;
+        payload.sourceActorUuid = caster.uuid;
+      }
+      simResult = await runDirectorPassiveTriggerTest({
+        casterActor: caster,
+        trigger,
+        payload,
+        ...(scenario.args ?? {}),
+      });
+      // Stash mutated costMap so the expect block can assert on it.
+      if (payload.costMap instanceof Map) {
+        simResult._costMapAfter = Object.fromEntries(payload.costMap);
+      }
     } else {
       result.failures.push(`unsupported kind "${kind}"`);
       return result;
@@ -1180,6 +1207,26 @@ async function runOneScenario(scenario, scene) {
         const match = caps.aeDeletes.find((d) => d.aeName === a.name);
         if (!match) {
           result.failures.push(`expected AE "${a.name}" removed; not captured`);
+        }
+      }
+    }
+    // Passive-trigger scenario assertions: fired carriers + cost-map.
+    if (Array.isArray(expect.fired)) {
+      const fired = simResult.fired ?? [];
+      for (const e of expect.fired) {
+        const match = fired.find((f) =>
+          f.carrier === e.carrier && (!e.kind || f.kind === e.kind) && f.ok !== false,
+        );
+        if (!match) {
+          result.failures.push(`expected fired { carrier: "${e.carrier}"${e.kind ? `, kind: "${e.kind}"` : ""} } not captured; got ${JSON.stringify(fired)}`);
+        }
+      }
+    }
+    if (expect.costMapAfter && simResult._costMapAfter) {
+      for (const [k, v] of Object.entries(expect.costMapAfter)) {
+        const got = simResult._costMapAfter[k];
+        if (String(got) !== String(v)) {
+          result.failures.push(`expected costMapAfter.${k} = ${JSON.stringify(v)}; got ${JSON.stringify(got)}`);
         }
       }
     }
