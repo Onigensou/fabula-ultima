@@ -56,6 +56,14 @@
  *                             Skipped when AE flag directorPermanent or
  *                             crossScene is set (explicit opt-in).
  *
+ *   AE shape (BD-tree only):
+ *     AE_CLASSIFICATION_MISSING  AE has no "buff" or "debuff" tag in
+ *                                system.tags — counts as "Other" and
+ *                                doesn't contribute to STATUS_COUNT.
+ *     AE_STATUSES_EMPTY          AE has empty statuses[] — V12 token-icon
+ *                                ring won't render it (invisible AE).
+ *                                Both skip when directorPermanent is set.
+ *
  *   Cross-document (actor copy ↔ master, by system.uniqueId):
  *     MASTER_COPY_REF_DRIFT   actor copy's reaction_effect_ref differs
  *                             from master's for the same trigger row
@@ -625,6 +633,20 @@
       }
     }
 
+    // AE shape lint (Gaps 7+8) — scoped to BD-tree items. Runs on EVERY
+    // AE embedded in the item, regardless of reactionConfig presence.
+    if (isInBattleDirectorTree(item)) {
+      for (const ae of (item?.effects?.contents ?? [])) {
+        for (const i of lintAeShape(ae)) {
+          i.owner = ownerLabel;
+          i.itemUuid = item?.uuid ?? null;
+          i.itemName = item?.name ?? "(unnamed)";
+          i.aeName = ae?.name ?? null;
+          out.push(i);
+        }
+      }
+    }
+
     // Nested AE reactionConfig flags (on the item's own AEs).
     for (const ae of (item?.effects?.contents ?? [])) {
       const cfg = ae?.flags?.[MODULE_ID]?.reactionConfig;
@@ -659,6 +681,69 @@
       }
     }
     return out;
+  }
+
+  // BD-tree scoping helper. The safety rule from the canon-hardening
+  // session: only enforce structural constraints on items inside the
+  // `Battle Director` folder tree. Legacy NPC items predate the canon
+  // and would generate too much noise.
+  const BD_ROOT_NAME = "Battle Director";
+  function isInBattleDirectorTree(item) {
+    let f = item?.folder;
+    while (f) {
+      if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) return true;
+      f = f.folder;
+    }
+    return false;
+  }
+
+  // Gap 7 + Gap 8 from canon hardening:
+  //   AE_CLASSIFICATION_MISSING (Gap 7): AE has no `system.tags` containing
+  //     "buff" or "debuff". Untagged AEs are 'Other' per
+  //     [[opt-in-ae-classification]] and don't count toward STATUS_COUNT
+  //     formulas; almost always a mistake on Director-applied AEs.
+  //
+  //   AE_STATUSES_EMPTY (Gap 8): AE has empty `statuses[]`. The V12
+  //     token-icon ring won't render the AE without a status id; the AE
+  //     applies its changes invisibly. See [[ae-needs-statuses-for-token-icon]].
+  //
+  // Both rules skip when the AE opts in via `directorPermanent` flag
+  // (signals "this is a persistent class-feature AE; classification rules
+  // don't apply"). Scoped to BD-tree items only.
+  function lintAeShape(ae) {
+    const issues = [];
+    const aeFlags = ae?.flags?.[MODULE_ID] ?? {};
+    if (aeFlags.directorPermanent === true) return issues;
+    const tags = Array.isArray(ae?.system?.tags) ? ae.system.tags.map((t) => String(t).toLowerCase()) : [];
+    const hasBuffTag = tags.includes("buff") || tags.includes("debuff");
+    if (!hasBuffTag) {
+      issues.push(mkIssue({
+        severity: "warning",
+        code: "AE_CLASSIFICATION_MISSING",
+        location: `AE["${ae.name}"].system.tags`,
+        message:
+          `AE has no "buff" or "debuff" tag — it counts as "Other" per ` +
+          `the AE classification system, so STATUS_COUNT formulas won't ` +
+          `see it. Director-applied buffs/debuffs almost always need a ` +
+          `classification. Add "buff" or "debuff" to system.tags, or ` +
+          `mark the AE flags["${MODULE_ID}"].directorPermanent = true ` +
+          `if it's a persistent class feature.`,
+      }));
+    }
+    const statuses = Array.from(ae?.statuses ?? []);
+    if (statuses.length === 0) {
+      issues.push(mkIssue({
+        severity: "warning",
+        code: "AE_STATUSES_EMPTY",
+        location: `AE["${ae.name}"].statuses`,
+        message:
+          `AE has empty statuses[] — the V12 token-icon ring won't render ` +
+          `it, so the AE applies invisibly. Add a status id (convention: ` +
+          `"fud-<slug>") so players see it on the token. Mark ` +
+          `directorPermanent if the AE is intentionally invisible.`,
+      }));
+    }
+    return issues;
   }
 
   // AE-bound passive without consume_self / charges → warn.
