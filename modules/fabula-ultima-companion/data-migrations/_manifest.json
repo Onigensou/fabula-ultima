@@ -175,6 +175,10 @@
     {
       "key": "2026-05-29-spiritist-spell-subfolder",
       "path": "data-migrations/2026-05-29-spiritist-spell-subfolder.js"
+    },
+    {
+      "key": "2026-05-29-passive-mode-dedup-healing-power-support-magic",
+      "path": "data-migrations/2026-05-29-passive-mode-dedup-healing-power-support-magic.js"
     }
   ]
 }

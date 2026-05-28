@@ -396,9 +396,126 @@
   // ------------------------------------------------------------------
   // Item-level walker — flat tables + nested AE reactionConfigs.
   // ------------------------------------------------------------------
+  // ─── Canon: deprecated top-level skill props ──────────────────────────
+  //
+  // Each entry: { key, code, message, suggest }. `key` is the
+  // `system.props.*` field that's deprecated. `suggest` is the
+  // reaction_config_table path or effect_kind that replaces it. The
+  // `match` predicate lets us only flag NON-EMPTY occurrences (an empty
+  // string from a stale template column shouldn't false-positive).
+  const DEPRECATED_PROPS = [
+    {
+      key: "passive_mode",
+      code: "DEPRECATED_PROPS_PASSIVE_MODE",
+      severity: "warning",
+      match: (v) => typeof v === "string" && ["on", "ask", "off"].includes(v.trim().toLowerCase()),
+      suggest:
+        "Move mode to reaction_config_table[N].reaction_passive_mode " +
+        "(the canonical home; passive-manager.js reads it via findPassiveRow()).",
+    },
+    {
+      // Vismagus-style hardcoded boolean flag pattern. Match any prop key
+      // ending in `_passive` whose value is `true`. These bypass the
+      // reaction-config pipeline and require per-skill engine wiring.
+      key: "<*>_passive",
+      code: "DEPRECATED_HARDCODED_PASSIVE_FLAG",
+      severity: "warning",
+      match: null, // handled inline below — keyset scan
+      suggest:
+        "Replace the `<X>_passive: true` flag with a reaction_config_table " +
+        "row carrying the appropriate trigger + reaction_effect_ref. The " +
+        "engine should never read class-specific boolean flags off props.",
+    },
+    {
+      key: "post_damage_effect_ref",
+      code: "DEPRECATED_FIRE_POINT_POST_DAMAGE",
+      severity: "info",
+      match: (v) => typeof v === "string" && v.trim().length > 0,
+      suggest:
+        "Eventually move to a reaction_config_table row with trigger " +
+        "`creature_deals_damage` + source=self. Current engine still reads " +
+        "this field (see skill-fire-points memory), so emitting info-only " +
+        "until the migration sweep lands.",
+    },
+    {
+      key: "passive_check_bonus_formula",
+      code: "DEPRECATED_FIRE_POINT_PASSIVE_CHECK_BONUS",
+      severity: "info",
+      match: (v) => typeof v === "string" && v.trim().length > 0,
+      suggest:
+        "Eventually move to a reaction_config_table row with trigger " +
+        "`creature_performs_check` + effect_kind=grant (bonus_check). Engine " +
+        "still reads this field; info-only.",
+    },
+    {
+      key: "passive_damage_bonus",
+      code: "DEPRECATED_FIRE_POINT_PASSIVE_DAMAGE_BONUS",
+      severity: "info",
+      match: (v) => Number.isFinite(Number(v)) && Number(v) !== 0,
+      suggest:
+        "Eventually move to a reaction_config_table row with trigger " +
+        "`creature_deals_damage` + effect_kind=grant. Engine still reads " +
+        "this field; info-only.",
+    },
+  ];
+
+  function lintCanonDeprecations(props) {
+    const out = [];
+    if (!props || typeof props !== "object") return out;
+
+    for (const rule of DEPRECATED_PROPS) {
+      if (rule.key.startsWith("<*>")) continue; // wildcard scan handled below
+      const v = props[rule.key];
+      if (v === undefined) continue;
+      if (rule.match && !rule.match(v)) continue;
+      out.push({
+        severity: rule.severity,
+        code: rule.code,
+        location: `system.props.${rule.key}`,
+        message: `Deprecated top-level field "${rule.key}" = ${JSON.stringify(v)}. ${rule.suggest}`,
+      });
+    }
+
+    // Wildcard scan: any `<class>_passive: true` boolean flag.
+    for (const k of Object.keys(props)) {
+      if (!k.endsWith("_passive")) continue;
+      if (k === "isPassive") continue; // template flag, fine
+      if (props[k] !== true) continue;
+      out.push({
+        severity: "warning",
+        code: "DEPRECATED_HARDCODED_PASSIVE_FLAG",
+        location: `system.props.${k}`,
+        message:
+          `Hardcoded passive-marker flag "${k}: true" detected. Replace ` +
+          `with a reaction_config_table row whose trigger + effect_ref ` +
+          `expresses the same behavior; the engine should never gate on ` +
+          `class-specific boolean props.`,
+      });
+    }
+    return out;
+  }
+
   function lintItem(item, triggerKeys, ownerLabel) {
     const out = [];
     const props = item?.system?.props ?? {};
+
+    // ── Canon-deprecation gate (runs on EVERY item, ignores isReaction) ──
+    // Catches the historical class of mistake where conditional/triggered
+    // behavior lived in top-level skill props (passive_mode, *_passive
+    // flags, post_damage_effect_ref, passive_check_bonus_formula, etc.)
+    // instead of reaction_config_table rows. These fields are deprecated:
+    // mode lives on `reaction_config_table[N].reaction_passive_mode`, and
+    // every trigger-driven behavior is a reaction row. The lint flags
+    // their presence so they can be migrated; engines may still read them
+    // as legacy fallbacks during the transition.
+    const canonIssues = lintCanonDeprecations(props);
+    for (const i of canonIssues) {
+      i.owner    = ownerLabel;
+      i.itemUuid = item?.uuid ?? null;
+      i.itemName = item?.name ?? "(unnamed)";
+      out.push(i);
+    }
+
     if (props?.isReaction !== true) return out;
 
     // Custom-script annotation — emit BEFORE declarative checks so the

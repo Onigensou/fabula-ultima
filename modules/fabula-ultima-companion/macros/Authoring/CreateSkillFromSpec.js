@@ -254,6 +254,66 @@ return (async () => {
     }
   }
 
+  // ── Canon-deprecation guard (BLOCK, not warn) ─────────────────────────
+  //
+  // The Skill Effects panel and any conditional/triggered behavior live
+  // in `reaction_config_table` rows. Top-level deprecation list mirrors
+  // the lint at scripts/lint/reaction-config-lint.js — keep them in sync.
+  const specProps = spec?.props ?? {};
+  const FORBIDDEN_TOP_LEVEL_PROPS = [
+    {
+      key: "passive_mode",
+      message: "Mode lives on reaction_config_table[N].reaction_passive_mode. " +
+               "Remove props.passive_mode from the spec.",
+    },
+    {
+      key: "post_damage_effect_ref",
+      message: "Author a reaction_config_table row with trigger " +
+               "`creature_deals_damage` + source=self + effect_ref pointing " +
+               "into effect_table. The top-level field is deprecated.",
+    },
+    {
+      key: "passive_check_bonus_formula",
+      message: "Author a reaction_config_table row with trigger " +
+               "`creature_performs_check` + effect_kind=grant. The top-level " +
+               "field is deprecated.",
+    },
+    {
+      key: "passive_damage_bonus",
+      message: "Author a reaction_config_table row with trigger " +
+               "`creature_deals_damage` + effect_kind=grant. The top-level " +
+               "field is deprecated.",
+    },
+  ];
+  const canonErrors = [];
+  for (const { key: badKey, message } of FORBIDDEN_TOP_LEVEL_PROPS) {
+    if (Object.prototype.hasOwnProperty.call(specProps, badKey)) {
+      canonErrors.push(`Forbidden top-level prop "${badKey}" — ${message}`);
+    }
+  }
+  for (const k of Object.keys(specProps)) {
+    if (!k.endsWith("_passive")) continue;
+    if (k === "isPassive") continue;
+    if (specProps[k] !== true) continue;
+    canonErrors.push(
+      `Forbidden top-level passive flag "${k}: true" — replace with a ` +
+      `reaction_config_table row carrying the appropriate trigger + ` +
+      `reaction_effect_ref. The engine should not gate on class-specific ` +
+      `boolean props.`
+    );
+  }
+  if (canonErrors.length) {
+    console.error(`${TAG} Spec rejected (canon violations):`, canonErrors);
+    ui.notifications?.error(
+      `${TAG} Spec rejected: ${canonErrors.length} canon violation(s). See console.`
+    );
+    return {
+      ok: false,
+      reason: "canon_violation",
+      errors: canonErrors,
+    };
+  }
+
   if (warnings.length) {
     console.warn(`${TAG} Spec warnings:`, warnings);
   }
