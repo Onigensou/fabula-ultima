@@ -149,6 +149,7 @@
   // bridge dispatch.
   const DIRECTOR_TRIGGERS = new Set([
     "caster_short_on_mp",
+    "creature_completes_spell",
   ]);
 
   function listTriggerKeys() {
@@ -1011,6 +1012,186 @@
     return { issues: allIssues, summary };
   }
 
+  // ------------------------------------------------------------------
+  // Gap 2 from canon hardening: template ↔ engine enum consistency.
+  //
+  // The CSB `_Skill Template` exposes `effect_kind` and `reaction_trigger`
+  // as select columns with hardcoded option arrays. The engine has its
+  // own set of dispatch cases (skill-effects.js applyEffectRow) and
+  // trigger registry (oni.ReactionTriggers + DIRECTOR_TRIGGERS).
+  //
+  // Drift modes this catches:
+  //   • Engine added a new effect_kind / trigger but template wasn't
+  //     surgery'd → authors can't write it from the CSB sheet (CSB
+  //     silently strips unknown values, see [[csb-template-gating]]).
+  //   • Template has an option but the engine doesn't handle it →
+  //     authors can write it but it no-ops or warns at dispatch.
+  //
+  // Async because it parses skill-effects.js via fetch.
+  // ------------------------------------------------------------------
+  const DEFAULT_SKILL_TEMPLATE_UUID = "Item.j0F5Msw5RZ8aIB3j";
+  const SKILL_EFFECTS_PATH = "/modules/fabula-ultima-companion/scripts/battle-director/skill-effects.js";
+  // Effect kinds dispatched outside applyEffectRow's central switch.
+  // These are handled in side pipelines (e.g. modify_damage_taken fires
+  // from the damage-application path, not the standard dispatcher). Add
+  // to this list whenever we introduce another out-of-band kind.
+  const SIDECAR_EFFECT_KINDS = new Set(["modify_damage_taken"]);
+
+  // Walk a CSB template tree for nodes that look like a select-column.
+  // CSB select columns have shape `{ key: "<colKey>", options: [...] }`
+  // where options is an array of strings (the dropdown values).
+  function collectTemplateSelectOptions(node, targetKey, out = new Set()) {
+    if (!node || typeof node !== "object") return out;
+    if (Array.isArray(node)) {
+      for (const child of node) collectTemplateSelectOptions(child, targetKey, out);
+      return out;
+    }
+    if (node.key === targetKey && Array.isArray(node.options)) {
+      for (const opt of node.options) {
+        // CSB select-options are `{ key: "<stored>", value: "<label>" }`.
+        // We want the stored key (matches what's written to the row), not
+        // the display label.
+        const v = typeof opt === "string" ? opt : (opt?.key ?? opt?.value);
+        if (v != null && String(v).trim()) out.add(String(v).trim());
+      }
+    }
+    for (const v of Object.values(node)) {
+      if (v && typeof v === "object") collectTemplateSelectOptions(v, targetKey, out);
+    }
+    return out;
+  }
+
+  async function parseEngineEffectKinds() {
+    try {
+      const res = await fetch(SKILL_EFFECTS_PATH + "?cb=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return null;
+      const src = await res.text();
+      // Match `case "<kind>":` inside the applyEffectRow switch.
+      const block = src.match(/applyEffectRow[\s\S]*?\bswitch\s*\([^)]*\)\s*\{([\s\S]*?)\n\s*\}/);
+      const out = new Set(SIDECAR_EFFECT_KINDS);
+      const re = /case\s+["']([a-z_]+)["']/g;
+      const scan = block ? block[1] : src;
+      let m;
+      while ((m = re.exec(scan))) out.add(m[1]);
+      return out;
+    } catch (e) {
+      console.warn(`${TAG} parseEngineEffectKinds fetch failed`, e);
+      return null;
+    }
+  }
+
+  async function lintTemplateEngineEnums({ skillTemplateUuid } = {}) {
+    const issues = [];
+    const uuid = skillTemplateUuid || DEFAULT_SKILL_TEMPLATE_UUID;
+    let template = null;
+    try { template = await fromUuid(uuid); }
+    catch (_) { template = null; }
+    if (!template) {
+      issues.push({
+        severity: "warning",
+        code: "TEMPLATE_NOT_FOUND",
+        owner: "template-engine",
+        location: uuid,
+        message: `_Skill Template at ${uuid} not found — enum consistency check skipped. Set FUCompanion.api.lint.runTemplateEngineEnums({ skillTemplateUuid: "Item.<id>" }) if it moved.`,
+      });
+      return issues;
+    }
+    const tmplKinds   = collectTemplateSelectOptions(template?.system, "effect_kind");
+    const tmplTriggers = collectTemplateSelectOptions(template?.system, "reaction_trigger");
+
+    const engineKinds = await parseEngineEffectKinds();
+    if (!engineKinds) {
+      issues.push({
+        severity: "warning",
+        code: "ENGINE_PARSE_FAILED",
+        owner: "template-engine",
+        message: `Could not fetch/parse skill-effects.js for engine kind set — comparison skipped.`,
+      });
+    } else {
+      for (const k of engineKinds) {
+        if (!tmplKinds.has(k)) {
+          issues.push({
+            severity: "warning",
+            code: "ENGINE_KIND_UNEXPOSED",
+            owner: "template-engine",
+            location: `_Skill Template effect_kind options`,
+            message: `Engine dispatches effect_kind "${k}" but the _Skill Template options array does NOT include it. CSB sheet authors cannot select this kind; only programmatic Item.create can use it. Run a template-surgery migration to add the option.`,
+          });
+        }
+      }
+      for (const k of tmplKinds) {
+        if (!engineKinds.has(k)) {
+          issues.push({
+            severity: "warning",
+            code: "TEMPLATE_KIND_ORPHAN",
+            owner: "template-engine",
+            location: `_Skill Template effect_kind options`,
+            message: `_Skill Template exposes effect_kind "${k}" but the engine has no dispatch case. Author can write this value but dispatch will warn + no-op. Either implement the kind or remove the template option.`,
+          });
+        }
+      }
+    }
+
+    const engineTriggers = listTriggerKeys();
+    if (engineTriggers) {
+      for (const t of engineTriggers) {
+        if (!tmplTriggers.has(t)) {
+          issues.push({
+            severity: "info",
+            code: "ENGINE_TRIGGER_UNEXPOSED",
+            owner: "template-engine",
+            location: `_Skill Template reaction_trigger options`,
+            message: `Engine knows reaction_trigger "${t}" but the _Skill Template options array does NOT include it. CSB sheet authors cannot select this trigger; run a template-surgery migration.`,
+          });
+        }
+      }
+      for (const t of tmplTriggers) {
+        if (!engineTriggers.has(t)) {
+          issues.push({
+            severity: "warning",
+            code: "TEMPLATE_TRIGGER_ORPHAN",
+            owner: "template-engine",
+            location: `_Skill Template reaction_trigger options`,
+            message: `_Skill Template exposes reaction_trigger "${t}" but the engine has no registered trigger emit site. Rows using this trigger will never fire.`,
+          });
+        }
+      }
+    }
+    return issues;
+  }
+
+  async function runTemplateEngineEnums(opts = {}) {
+    const issues = await lintTemplateEngineEnums(opts);
+    const summary = {
+      total: issues.length,
+      errors:   issues.filter(i => i.severity === "error").length,
+      warnings: issues.filter(i => i.severity === "warning").length,
+      info:     issues.filter(i => i.severity === "info").length,
+      byCode: {},
+    };
+    for (const i of issues) summary.byCode[i.code] = (summary.byCode[i.code] || 0) + 1;
+    if (opts.console !== false) {
+      const byCode = new Map();
+      for (const i of issues) {
+        if (!byCode.has(i.code)) byCode.set(i.code, []);
+        byCode.get(i.code).push(i);
+      }
+      console.group(`${TAG} Template/Engine enum lint: ${issues.length} issue(s)`);
+      for (const [code, items] of byCode) {
+        console.group(`[${code}] ${items.length}`);
+        for (const i of items) {
+          const fn = i.severity === "error"   ? console.error
+                  : i.severity === "warning" ? console.warn
+                  :                            console.info;
+          fn.call(console, `${TAG} [${i.code}] ${i.location ?? "(scope)"} — ${i.message}`);
+        }
+        console.groupEnd();
+      }
+      console.groupEnd();
+    }
+    return { issues, summary };
+  }
+
   // GM-only auto-run at ready. Surfaces a notification when issues exist
   // so we notice drift after a migration without having to remember.
   Hooks.once("ready", () => {
@@ -1029,12 +1210,21 @@
     } catch (e) {
       console.error(`${TAG} auto-run failed:`, e);
     }
+    // Async sibling — fire-and-forget; notification deferred until done.
+    runTemplateEngineEnums({ console: true }).then(({ summary }) => {
+      if (summary.warnings > 0 || summary.errors > 0) {
+        ui.notifications?.warn(
+          `[Template/Engine Lint] ${summary.errors} error / ${summary.warnings} warning / ${summary.info} info — see console.`
+        );
+      }
+    }).catch((e) => console.error(`${TAG} template/engine auto-run failed:`, e));
   });
 
   globalThis.FUCompanion        = globalThis.FUCompanion        || {};
   globalThis.FUCompanion.api    = globalThis.FUCompanion.api    || {};
   globalThis.FUCompanion.api.lint = globalThis.FUCompanion.api.lint || {};
   globalThis.FUCompanion.api.lint.runReactionLint = runReactionLint;
+  globalThis.FUCompanion.api.lint.runTemplateEngineEnums = runTemplateEngineEnums;
 
-  console.debug(`${TAG} Installed. Call FUCompanion.api.lint.runReactionLint() to scan.`);
+  console.debug(`${TAG} Installed. Call FUCompanion.api.lint.runReactionLint() or runTemplateEngineEnums() to scan.`);
 })();
