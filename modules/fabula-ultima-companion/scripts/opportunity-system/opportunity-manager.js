@@ -205,31 +205,40 @@
     if (document.getElementById(BANNER_STYLE_ID)) return;
     const s = document.createElement("style");
     s.id = BANNER_STYLE_ID;
+    // Parchment panel floating near the top — NOT edge-anchored.
+    // transform/opacity are driven entirely by JS for the horizontal slide + fade.
     s.textContent = `
       .oni-opp-log-banner {
-        position: fixed; top: 0; left: 0; right: 0; height: 62px;
-        background: linear-gradient(180deg, rgba(10,6,2,.98) 0%, rgba(20,13,4,.96) 100%);
+        position: fixed;
+        top: 36px;       /* float with margin, like JRPG action-name panels */
+        left: 50%;       /* centred; JS encodes x-offset into translateX */
         z-index: 100035;
-        display: flex; align-items: center; justify-content: center;
-        transform: translateY(-100%);
-        box-shadow: 0 4px 20px rgba(0,0,0,.65);
         pointer-events: none;
+        /* Warm parchment — matches wheel slot buttons */
+        background:
+          radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.40) 0%,
+            rgba(255,255,255,.12) 22%, transparent 40%),
+          linear-gradient(180deg, #f6ebd3 0%, #eddecb 55%, #e4d0b5 100%);
+        border: 2.5px solid rgba(91,63,38,.82);
+        border-radius: 10px;
+        box-shadow: 0 6px 22px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,248,232,.7);
+        padding: 10px 22px;
+        display: flex; align-items: center; gap: 11px;
+        white-space: nowrap;
       }
-      .oni-opp-log-banner-inner {
-        display: flex; align-items: center; gap: 12px;
-        font-family: 'Signika', sans-serif; padding: 0 28px;
-      }
-      .oni-opp-log-banner-icon  { font-size: 1.45rem; line-height: 1; }
+      .oni-opp-log-banner-icon  { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
       .oni-opp-log-banner-label {
-        font-size: 1.1rem; font-weight: 900;
-        letter-spacing: .10em; text-transform: uppercase;
+        font-family: 'Signika', sans-serif;
+        font-size: 1.0rem; font-weight: 900;
+        letter-spacing: .06em; color: #3b2a19;
       }
     `;
     document.head.appendChild(s);
   }
 
   /**
-   * Play a top-anchored JRPG-style log banner showing the chosen option.
+   * Play a floating JRPG action-name panel near the top of the screen.
+   * Slides in from the left + fades in, lingers, slides out to the right + fades out.
    * Fire-and-forget — caller awaits LOG_BANNER_TOTAL_MS separately.
    */
   function playLogBanner({ optionLabel, optionIcon, color }) {
@@ -239,30 +248,38 @@
 
     const banner = document.createElement("div");
     banner.className = "oni-opp-log-banner";
-    banner.style.borderBottom = `3px solid ${col}`;
-    banner.style.transform    = "translateY(-100%)"; // start above viewport
+    // Thick left border strip in option accent colour
+    banner.style.borderLeftColor = col;
+    banner.style.borderLeftWidth = "5px";
+    // Initial state: offset left + invisible
+    banner.style.transform = "translateX(calc(-50% - 100px))";
+    banner.style.opacity   = "0";
 
-    const inner = document.createElement("div");
-    inner.className = "oni-opp-log-banner-inner";
-    inner.innerHTML = `
+    banner.innerHTML = `
       <span class="oni-opp-log-banner-icon" style="color:${col}">
         <i class="fas ${escStr(optionIcon ?? "fa-star")}"></i>
       </span>
-      <span class="oni-opp-log-banner-label" style="color:${col}">${escStr(optionLabel)}</span>`;
-    banner.appendChild(inner);
+      <span class="oni-opp-log-banner-label">${escStr(optionLabel)}</span>`;
     document.body.appendChild(banner);
 
-    // Enter: ease-out slide down
+    // Enter: slide right into centre + fade in
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      banner.style.transition = `transform ${LOG_BANNER_ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`;
-      banner.style.transform  = "translateY(0)";
+      banner.style.transition = [
+        `transform ${LOG_BANNER_ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+        `opacity   ${Math.round(LOG_BANNER_ENTER_MS * 0.7)}ms ease-out`,
+      ].join(", ");
+      banner.style.transform = "translateX(-50%)";
+      banner.style.opacity   = "1";
     }));
 
-    // Exit: ease-in slide up + fade after linger
+    // Exit: slide right out + fade out
     setTimeout(() => {
-      banner.style.transition = `transform ${LOG_BANNER_EXIT_MS}ms cubic-bezier(0.55,0,1,0.45), opacity ${LOG_BANNER_EXIT_MS}ms ease-in`;
-      banner.style.transform  = "translateY(-100%)";
-      banner.style.opacity    = "0";
+      banner.style.transition = [
+        `transform ${LOG_BANNER_EXIT_MS}ms cubic-bezier(0.55, 0, 1, 0.45)`,
+        `opacity   ${Math.round(LOG_BANNER_EXIT_MS * 0.7)}ms ease-in`,
+      ].join(", ");
+      banner.style.transform = "translateX(calc(-50% + 100px))";
+      banner.style.opacity   = "0";
       setTimeout(() => banner.remove(), LOG_BANNER_EXIT_MS + 60);
     }, LOG_BANNER_ENTER_MS + LOG_BANNER_LINGER_MS);
   }
