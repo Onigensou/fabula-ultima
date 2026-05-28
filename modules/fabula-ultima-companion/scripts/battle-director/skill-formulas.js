@@ -306,6 +306,18 @@ export function isFormulaString(value) {
 
 export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0 } = {}) {
   return (name) => {
+    // Harness override hook — when `runDirectorSkillSimulate` was called
+    // with `override: { SL, CHAR_LEVEL, BOND_COUNT, BOND_STRENGTH }`, the
+    // harness stamps those values into a global registry that this resolver
+    // consults BEFORE its switch. Lets tests pin identifiers that CSB would
+    // otherwise derive from actor state (CHAR_LEVEL ← class_list, BOND_COUNT
+    // ← bond_N) and clobber on every prepareData. Lives at
+    // globalThis.__FU_HARNESS_FORMULA_OVERRIDES__; cleared in `finally`.
+    const ov = globalThis.__FU_HARNESS_FORMULA_OVERRIDES__;
+    if (ov && Object.prototype.hasOwnProperty.call(ov, name)) {
+      const n = Number(ov[name]);
+      if (Number.isFinite(n)) return n;
+    }
     switch (name) {
       // Skill level
       case "SL": return Number(skill?.system?.level ?? skill?.system?.props?.skill_level ?? skill?.system?.props?.level ?? 1) || 1;

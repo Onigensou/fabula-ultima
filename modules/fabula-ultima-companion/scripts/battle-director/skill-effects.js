@@ -389,13 +389,27 @@ export const applySoulWeaponElementOverride = applyDamageTypeOverride;
 // actor; actionTargetUuids = the action's target token UUIDs.
 
 function dispositionOf(actorOrToken) {
-  // Resolve a token document → disposition number. For actors, find any
-  // active token; 0 (neutral) if nothing on canvas.
+  // Resolve a token document → disposition number. Tries (in order):
+  //   1. Direct: actorOrToken.disposition (TokenDocument fast path)
+  //   2. Canvas: token on the currently-rendered scene
+  //   3. getActiveTokens: linked tokens Foundry tracks across scenes
+  //   4. Cross-scene walk: any TokenDocument in any scene whose actor
+  //      uuid matches. Needed when the reactor isn't on the active scene
+  //      (test harness running RESOLVE off-scene, multi-scene combats).
+  // Final fallback: 0 (neutral).
   if (!actorOrToken) return 0;
   if (typeof actorOrToken.disposition === "number") return actorOrToken.disposition;
-  const tok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actorOrToken?.uuid)?.document
+  let tok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actorOrToken?.uuid)?.document
     ?? actorOrToken?.getActiveTokens?.()?.[0]?.document
     ?? null;
+  if (!tok) {
+    const targetUuid = actorOrToken?.uuid;
+    const targetId   = actorOrToken?.id;
+    for (const scene of game.scenes ?? []) {
+      const td = scene.tokens?.find?.((t) => t.actor?.uuid === targetUuid || t.actorId === targetId);
+      if (td) { tok = td; break; }
+    }
+  }
   return Number(tok?.disposition ?? 0);
 }
 
@@ -540,7 +554,32 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       continue;
     }
     if (mode === "ask") {
-      const ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+      // Harness override (Phase 2.1): when a test harness has set
+      // `globalThis.__FU_HARNESS_ACCEPT_PASSIVES__`, skip the Dialog and
+      // honor the override directly. Shape:
+      //   - true                                 → accept every ask-mode passive
+      //   - false                                → decline every ask-mode passive
+      //   - { "Healing Power": true, ... }       → per-skill map; unmatched
+      //                                             passives fall through to the
+      //                                             real Dialog (won't happen in
+      //                                             a clean harness call)
+      // Monkey-patching `Dialog` at the global level was unreliable —
+      // V8 inlines / re-binds `new Dialog` across cache-busted module
+      // instances, so the patch sometimes missed.
+      const ovAccept = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
+      let ok;
+      if (ovAccept !== undefined && ovAccept !== null) {
+        if (typeof ovAccept === "boolean") ok = ovAccept;
+        else if (typeof ovAccept === "object") {
+          let matched = null;
+          for (const [name, val] of Object.entries(ovAccept)) {
+            if (item.name.includes(name) || name.includes(item.name)) { matched = !!val; break; }
+          }
+          ok = matched ?? await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+        } else ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+      } else {
+        ok = await promptPassiveOptin(item.name, casterActor, item.system?.props?.description);
+      }
       if (!ok) { log(`passive: ${item.name} declined by GM`); continue; }
     }
     const refLabel = String(row.reaction_effect_ref ?? "").trim();

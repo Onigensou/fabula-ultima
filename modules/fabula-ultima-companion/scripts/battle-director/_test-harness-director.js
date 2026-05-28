@@ -28,6 +28,21 @@
  *   - Passive trigger fires (firePassiveTriggers)
  *   - Reaction matching
  *
+ * `runDirectorSkillSimulate(...)` extends compute with RESOLVE under
+ * monkey-patched Foundry document prototypes that capture (not commit)
+ * every write. Phase 2 args:
+ *   - acceptPassives: true | false | { "Healing Power": true, ... }
+ *       Auto-Apply/Skip the `promptPassiveOptin` Dialog for ask-mode
+ *       passives. Without this, Healing Power / Support Magic silently
+ *       no-op because the Dialog never resolves.
+ *   - override: { SL, CHAR_LEVEL, BOND_COUNT, BOND_STRENGTH } — installs
+ *       a global formula-resolver registry consulted BEFORE actor reads.
+ *       Side-steps CSB's class_list → level and bond_N → BOND_COUNT
+ *       derivation (which clobbered the previous actor-mutation approach).
+ *   - vismagusHpPaid: true — stamps the AR flag that RESOLVE checks to
+ *       suppress self-heal (lets Vismagus's RESOLVE-side behavior be
+ *       tested without driving TARGET's alt-cost Dialog).
+ *
  * GM only (mirrors the legacy test harness gate).
  */
 
@@ -564,56 +579,66 @@ function summarizeWrites(captures) {
   return [...byActor.values()];
 }
 
-// Install identifier overrides. These DO mutate the world briefly —
-// skill.system.props.level for SL, actor bond/class for BOND_COUNT /
-// CHAR_LEVEL. `round` is non-mutating (caller threads it via dCombat).
+// Install identifier overrides via the global formula registry —
+// `globalThis.__FU_HARNESS_FORMULA_OVERRIDES__`. `buildSkillResolver`
+// consults this map BEFORE its normal cases (see skill-formulas.js).
+// No actor mutation: previous implementation wrote class_list / bond_N
+// directly, which CSB's prepareData re-derives on every read, clobbering
+// the values mid-cast. Registry approach side-steps the whole problem.
 //
-// Shape: { SL, BOND_COUNT, CHAR_LEVEL } — all optional integers.
-async function installOverrides(override, skillUuid, casterTokenUuid) {
-  const restores = [];
-  if (!override) return { cleanup: async () => {} };
+// Shape: { SL, BOND_COUNT, BOND_STRENGTH, CHAR_LEVEL } — all optional
+// integers. Unknown keys ignored.
+function installFormulaOverrides(override) {
+  if (!override || typeof override !== "object") return { restore() {} };
+  const KEYS = ["SL", "CHAR_LEVEL", "BOND_COUNT", "BOND_STRENGTH"];
+  const map = {};
+  for (const k of KEYS) {
+    const v = Number(override[k]);
+    if (Number.isFinite(v)) map[k] = v;
+  }
+  if (!Object.keys(map).length) return { restore() {} };
+  const prev = globalThis.__FU_HARNESS_FORMULA_OVERRIDES__;
+  globalThis.__FU_HARNESS_FORMULA_OVERRIDES__ = { ...(prev ?? {}), ...map };
+  return {
+    restore() {
+      if (prev) globalThis.__FU_HARNESS_FORMULA_OVERRIDES__ = prev;
+      else delete globalThis.__FU_HARNESS_FORMULA_OVERRIDES__;
+    },
+  };
+}
 
-  if (Number.isFinite(override.SL)) {
-    const skill = await fromUuid(skillUuid).catch(() => null);
-    if (skill) {
-      const prev = skill.system?.props?.level;
-      await skill.update({ "system.props.level": String(override.SL) });
-      restores.push(async () => skill.update({ "system.props.level": prev }));
-    }
+// ─── Passive auto-accept (Phase 2.1) ────────────────────────────────────
+//
+// Sets `globalThis.__FU_HARNESS_ACCEPT_PASSIVES__` so `firePassiveTriggers`
+// can short-circuit the `ask`-mode Dialog (see skill-effects.js). We do
+// NOT monkey-patch `Dialog`: V8 inlines the bare-identifier reference
+// across cache-busted module instances, so the patch races itself and
+// sometimes opens a real UI Dialog (which then hangs the harness).
+// Reading a global at the actual prompt call-site is order-of-magnitude
+// more reliable.
+//
+// `acceptPassives` shape:
+//   - true                                → accept every ask-mode passive
+//   - false                               → decline every ask-mode passive
+//   - { "Healing Power": true, ... }      → per-skill map (substring match
+//                                            on item.name; unmatched
+//                                            passives fall through to the
+//                                            real Dialog — should never
+//                                            happen in a clean test)
+//   - null / undefined                    → no override (real Dialog opens,
+//                                            harness will hang on it)
+function installPassiveAutoAcceptor(acceptPassives) {
+  if (acceptPassives === null || acceptPassives === undefined) {
+    return { restore() {} };
   }
-  if (Number.isFinite(override.BOND_COUNT) || Number.isFinite(override.CHAR_LEVEL)) {
-    const tok = await fromUuid(casterTokenUuid).catch(() => null);
-    const actor = tok?.actor;
-    if (actor) {
-      const prevBonds = {};
-      const prevClassList = actor.system?.props?.class_list;
-      const update = {};
-      if (Number.isFinite(override.BOND_COUNT)) {
-        for (let i = 1; i <= 6; i++) prevBonds[`bond_${i}`] = actor.system?.props?.[`bond_${i}`];
-        prevBonds.bond_temp = actor.system?.props?.bond_temp;
-        for (let i = 1; i <= 6; i++) update[`system.props.bond_${i}`] = i <= override.BOND_COUNT ? `Test Bond ${i}` : "";
-        update["system.props.bond_temp"] = "";
-      }
-      if (Number.isFinite(override.CHAR_LEVEL)) {
-        // CHAR_LEVEL formula reads `system.props.level`, which CSB
-        // DERIVES from `class_list` on every actor prep — writes to
-        // `level` directly are clobbered. So we override class_list
-        // instead: a single TestClass entry sized to the requested
-        // total level. Restored from `prevClassList`.
-        update["system.props.class_list"] = {
-          "0": { "$deleted": false, level: String(override.CHAR_LEVEL), class_name: "TestClass", benefit: "hp" },
-        };
-      }
-      await actor.update(update);
-      restores.push(async () => {
-        const r = {};
-        for (const k of Object.keys(prevBonds)) r[`system.props.${k}`] = prevBonds[k];
-        if (Number.isFinite(override.CHAR_LEVEL)) r["system.props.class_list"] = prevClassList;
-        await actor.update(r);
-      });
-    }
-  }
-  return { cleanup: async () => { for (const fn of restores.reverse()) await fn(); } };
+  const prev = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
+  globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = acceptPassives;
+  return {
+    restore() {
+      if (prev === undefined) delete globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
+      else globalThis.__FU_HARNESS_ACCEPT_PASSIVES__ = prev;
+    },
+  };
 }
 
 // Install pre-applied AEs on the target actors. These DO mutate the
@@ -650,9 +675,10 @@ async function installPreAppliedAEs(preApply) {
 async function runDirectorSkillSimulate(args = {}) {
   if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
 
-  // Step 0a — install identifier overrides (SL / BOND_COUNT / CHAR_LEVEL).
-  // Briefly mutates the skill / actor; restored in `finally`.
-  const overrides = await installOverrides(args.override, args.skillUuid, args.casterTokenUuid);
+  // Step 0a — install identifier overrides (SL / BOND_COUNT /
+  // BOND_STRENGTH / CHAR_LEVEL) via the global formula registry.
+  // Non-mutating; restored in `finally`.
+  const formulaOverrides = installFormulaOverrides(args.override);
 
   // Step 0b — install pre-applied AEs (Mercy on caster for clamp tests, etc.).
   // These actually land on the actor — caveat: if our simulate throws BEFORE
@@ -663,17 +689,23 @@ async function runDirectorSkillSimulate(args = {}) {
   const compute = await runDirectorSkillCompute(args);
   if (!compute.ok) {
     await preApplied.cleanup();
-    await overrides.cleanup();
+    formulaOverrides.restore();
     return compute;
   }
 
-  // If the caller passed `picks: [...]`, stamp them onto the ar as
-  // `_harnessPicks` so makeChainContext picks them up during RESOLVE.
-  // Have to re-freeze since freezeActionResult emits a sealed object.
+  // Stamp harness-only fields onto the ar for RESOLVE / makeChainContext
+  // to consume. `_harnessPicks` feeds the open_action_menu auto-pick
+  // queue; `vismagusHpPaid` triggers RESOLVE's self-heal suppression
+  // (state-handlers.js line ~325) without needing to drive TARGET's
+  // alt-cost Dialog. Have to re-freeze — freezeActionResult emits a
+  // sealed object.
   const deps = await loadDeps();
   const { STATE_HANDLERS, STATES, INTENTS, freezeActionResult } = deps;
-  const ar = Array.isArray(args.picks)
-    ? freezeActionResult({ ...compute.actionResult, _harnessPicks: [...args.picks] })
+  const arPatch = {};
+  if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
+  if (args.vismagusHpPaid === true) arPatch.vismagusHpPaid = true;
+  const ar = Object.keys(arPatch).length
+    ? freezeActionResult({ ...compute.actionResult, ...arPatch })
     : compute.actionResult;
 
   // Step 2 — set up a synthetic director that resolveSkillAction can
@@ -688,14 +720,23 @@ async function runDirectorSkillSimulate(args = {}) {
     dispatch() {},
   };
 
-  // Step 3 — install write captures + run RESOLVE.
+  // Step 3 — install passive auto-acceptor + write captures, then run
+  // RESOLVE. Default is `false` (decline all ask-mode passives) so the
+  // harness never hangs on an unsolicited Dialog. Callers who want a
+  // passive to fire pass `acceptPassives: true` (or a per-skill map).
+  // Note this only affects `ask` mode; `on`-mode passives fire
+  // unconditionally and `off`-mode never fire.
+  const acceptPassives = args.acceptPassives ?? false;
+  const passiveAcceptor = installPassiveAutoAcceptor(acceptPassives);
   const { captures, restore } = installWriteCaptures();
   let resolveError = null;
   try {
     const resolveHandler = STATE_HANDLERS[STATES.RESOLVE];
     if (!resolveHandler?.onEnter) {
       restore();
+      passiveAcceptor.restore();
       await preApplied.cleanup();
+      formulaOverrides.restore();
       return { ok: false, reason: "resolve_handler_missing" };
     }
     await resolveHandler.onEnter(synthDirector, {
@@ -705,8 +746,9 @@ async function runDirectorSkillSimulate(args = {}) {
     resolveError = { message: String(e?.message ?? e), stack: String(e?.stack ?? "").slice(0, 500) };
   } finally {
     restore();
+    passiveAcceptor.restore();
     await preApplied.cleanup();
-    await overrides.cleanup();
+    formulaOverrides.restore();
   }
 
   return {
