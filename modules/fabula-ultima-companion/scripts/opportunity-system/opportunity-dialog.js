@@ -22,16 +22,17 @@
   const TAG      = "[ONI][OpportunitySystem:Dialog]";
   const STYLE_ID = "oni-opp-styles";
 
-  const RING_NORMAL   = 200;  // px — radius for all non-selected slots
-  const RING_SELECTED = 248;  // px — radius for the selected slot (pushed further out)
-  const WHEEL_SIZE    = 645;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
-  const PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
-  const TRANSITION_MS = 260;  // ms — slot transition
-  const SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
-  const SLOT_WIDTH    = 140;  // px — fixed slot width
+  // `let` so the tuner can override them live at showPicker() time
+  let RING_NORMAL   = 200;  // px — radius for all non-selected slots
+  let RING_SELECTED = 248;  // px — radius for the selected slot (pushed further out)
+  let WHEEL_SIZE    = 645;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
+  let PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
+  let TRANSITION_MS = 260;  // ms — slot transition
+  let SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
+  let SLOT_WIDTH    = 140;  // px — fixed slot width
 
   // Distance-based visual table (index = circular distance from selected)
-  const VIS = [
+  let VIS = [
     { scale: 1.45, opacity: 1.00, zIndex: 11 },  // dist 0 — selected
     { scale: 0.90, opacity: 0.62, zIndex:  8 },  // dist 1
     { scale: 0.85, opacity: 0.45, zIndex:  6 },  // dist 2
@@ -39,6 +40,22 @@
     { scale: 0.80, opacity: 0.24, zIndex:  3 },  // dist 4
     { scale: 0.78, opacity: 0.20, zIndex:  2 },  // dist 5+
   ];
+
+  // ── Tuner override ─────────────────────────────────────────────────────────
+  // Reads window["oni.OpportunityTuner"] and replaces module-level vars.
+  // Called at the top of showPicker() so every open reflects latest tuner values.
+  function applyTunerOverrides() {
+    const T = window["oni.OpportunityTuner"];
+    if (!T) return;
+    if (T.RING_NORMAL   != null) RING_NORMAL   = Number(T.RING_NORMAL);
+    if (T.RING_SELECTED != null) RING_SELECTED = Number(T.RING_SELECTED);
+    if (T.WHEEL_SIZE    != null) WHEEL_SIZE    = Number(T.WHEEL_SIZE);
+    if (T.PORTRAIT_IMG  != null) PORTRAIT_IMG  = Number(T.PORTRAIT_IMG);
+    if (T.TRANSITION_MS != null) TRANSITION_MS = Number(T.TRANSITION_MS);
+    if (T.SPAWN_STAGGER != null) SPAWN_STAGGER = Number(T.SPAWN_STAGGER);
+    if (T.SLOT_WIDTH    != null) SLOT_WIDTH    = Number(T.SLOT_WIDTH);
+    if (Array.isArray(T.VIS))    VIS           = T.VIS;
+  }
 
   const SFX_HOVER   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
   const SFX_SCROLL  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav";
@@ -79,7 +96,7 @@
 
   // ── CSS ────────────────────────────────────────────────────────────────────
   function ensureStyles() {
-    if (document.getElementById(STYLE_ID)) return;
+    document.getElementById(STYLE_ID)?.remove(); // always regenerate — tuner may have changed dimensions
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
@@ -269,7 +286,8 @@
 
   // ── Main showPicker ────────────────────────────────────────────────────────
   function showPicker({ actorName, actorPortrait, options, canDecline = true }) {
-    ensureStyles();
+    applyTunerOverrides(); // pick up any live tuner changes before rebuilding
+    ensureStyles();        // always regenerates CSS with current dimension vars
 
     return new Promise(resolve => {
       document.getElementById("oni-opp-backdrop")?.remove();

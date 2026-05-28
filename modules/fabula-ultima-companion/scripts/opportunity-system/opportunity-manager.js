@@ -38,11 +38,12 @@
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
 
-  // Log banner timing (shown after option is confirmed)
-  const LOG_BANNER_ENTER_MS  = 380;
-  const LOG_BANNER_LINGER_MS = 3000;
-  const LOG_BANNER_EXIT_MS   = 360;
-  const LOG_BANNER_TOTAL_MS  = LOG_BANNER_ENTER_MS + LOG_BANNER_LINGER_MS + LOG_BANNER_EXIT_MS; // 3740 ms
+  // Log banner timing — `let` so the tuner can change them live
+  let _bannerEnterMs  = 380;
+  let _bannerLingerMs = 3000;
+  let _bannerExitMs   = 360;
+  // Computed total used in applyAndAnnounce — always reads live vars
+  const bannerTotalMs = () => _bannerEnterMs + _bannerLingerMs + _bannerExitMs;
   const SFX_DRAMATIC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg";
 
   // ── Dependency shortcuts ────────────────────────────────────────────────────
@@ -265,8 +266,8 @@
     // Enter: slide right into centre + fade in
     requestAnimationFrame(() => requestAnimationFrame(() => {
       banner.style.transition = [
-        `transform ${LOG_BANNER_ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
-        `opacity   ${Math.round(LOG_BANNER_ENTER_MS * 0.7)}ms ease-out`,
+        `transform ${_bannerEnterMs}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+        `opacity   ${Math.round(_bannerEnterMs * 0.7)}ms ease-out`,
       ].join(", ");
       banner.style.transform = "translateX(-50%)";
       banner.style.opacity   = "1";
@@ -275,13 +276,13 @@
     // Exit: slide right out + fade out
     setTimeout(() => {
       banner.style.transition = [
-        `transform ${LOG_BANNER_EXIT_MS}ms cubic-bezier(0.55, 0, 1, 0.45)`,
-        `opacity   ${Math.round(LOG_BANNER_EXIT_MS * 0.7)}ms ease-in`,
+        `transform ${_bannerExitMs}ms cubic-bezier(0.55, 0, 1, 0.45)`,
+        `opacity   ${Math.round(_bannerExitMs * 0.7)}ms ease-in`,
       ].join(", ");
       banner.style.transform = "translateX(calc(-50% + 100px))";
       banner.style.opacity   = "0";
-      setTimeout(() => banner.remove(), LOG_BANNER_EXIT_MS + 60);
-    }, LOG_BANNER_ENTER_MS + LOG_BANNER_LINGER_MS);
+      setTimeout(() => banner.remove(), _bannerExitMs + 60);
+    }, _bannerEnterMs + _bannerLingerMs);
   }
 
   // ── Local dialog flow ───────────────────────────────────────────────────────
@@ -316,7 +317,7 @@
     playLogBanner(bannerPayload); // GM plays locally (socket.emit doesn't echo to sender)
 
     // 2. Wait for the banner to complete before posting the chat card
-    await new Promise(r => setTimeout(r, LOG_BANNER_TOTAL_MS));
+    await new Promise(r => setTimeout(r, bannerTotalMs()));
 
     // 3. Placeholder effect handler
     const handler = effects?.[optionId];
@@ -510,9 +511,33 @@
   const api = {
     offer,
     processCheckCrits,
-    get OPTIONS()    { return getConfig()?.OPTIONS ?? []; },
-    get staggerMs()  { return _staggerMs; },
-    set staggerMs(v) { _staggerMs = Math.max(0, Number(v) || 0); },
+    get OPTIONS()       { return getConfig()?.OPTIONS ?? []; },
+    get staggerMs()     { return _staggerMs; },
+    set staggerMs(v)    { _staggerMs     = Math.max(0,   Number(v) || 0); },
+    get bannerEnterMs() { return _bannerEnterMs; },
+    set bannerEnterMs(v){ _bannerEnterMs  = Math.max(50,  Number(v) || 380); },
+    get bannerLingerMs(){ return _bannerLingerMs; },
+    set bannerLingerMs(v){ _bannerLingerMs = Math.max(100, Number(v) || 3000); },
+    get bannerExitMs()  { return _bannerExitMs; },
+    set bannerExitMs(v) { _bannerExitMs   = Math.max(50,  Number(v) || 360); },
+
+    // Test helper: fire the log banner without triggering a full opportunity flow
+    testBanner(optionId = "advantage") {
+      const opt = getConfig()?.OPTIONS?.find(o => o.id === optionId)
+                  ?? { label: optionId, icon: "fa-star", color: "#fcd470" };
+      playLogBanner({ optionLabel: opt.label, optionIcon: opt.icon, color: opt.color ?? "#fcd470" });
+    },
+
+    // Test helper: open the picker with no stagger and no announcement
+    testPicker(actorName = "Test", actorPortrait = "") {
+      const cfg = getConfig();
+      if (!cfg) return;
+      window["oni.OpportunityDialog"]?.showPicker({
+        actorName, actorPortrait,
+        options:    cfg.OPTIONS,
+        canDecline: true,
+      }).then(r => console.log(`${TAG} testPicker result:`, r)).catch(console.error);
+    },
   };
 
   globalThis.ONI = globalThis.ONI ?? {};

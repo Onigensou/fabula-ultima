@@ -185,6 +185,7 @@
     "scripts/opportunity-system/opportunity-dialog.js",
     "scripts/opportunity-system/opportunity-manager.js",
     "scripts/opportunity-system/opportunity-action-hook.js",
+    "scripts/opportunity-system/opportunity-tuner.js",
     "scripts/treasure-roulette/treasureRoulette-core.js",
     "scripts/treasure-roulette/treasureRoulette-UI.js",
     "scripts/treasure-roulette/treasureRoulette-net.js",
