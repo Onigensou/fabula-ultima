@@ -1254,6 +1254,128 @@
     return issues;
   }
 
+  // ------------------------------------------------------------------
+  // Gap 10 from canon hardening: spec JSON vs live drift.
+  //
+  // Load docs/battle-director-spiritist-skills.json (the canonical spec
+  // file for the Spiritist class) and compare each spec entry's canon-
+  // relevant props against the live world Item with the same name. Drift
+  // means either:
+  //   (a) the spec was updated but no migration ran to sync live, OR
+  //   (b) live was edited but the spec file is stale documentation.
+  //
+  // INFO severity — surfaces drift, doesn't insist on action. Scoped to
+  // a narrow allowlist of canon fields to avoid GM-edit-induced noise.
+  // ------------------------------------------------------------------
+  const SPEC_JSON_PATHS = [
+    "modules/fabula-ultima-companion/docs/battle-director-spiritist-skills.json",
+  ];
+  // Spec fields where drift is genuinely actionable. NOT included:
+  // labels, costs, ranges, descriptions (intentional GM edits or
+  // localisation tweaks).
+  const SPEC_CANON_TOP_LEVEL = ["isReaction"];
+
+  async function lintSpecVsLiveDrift() {
+    const issues = [];
+    for (const path of SPEC_JSON_PATHS) {
+      let spec = null;
+      try {
+        const res = await fetch("/" + path.replace(/^\/+/, ""), { cache: "no-store" });
+        if (!res.ok) continue;
+        spec = await res.json();
+      } catch (_) { continue; }
+      const skills = Array.isArray(spec?.skills) ? spec.skills : [];
+      for (const entry of skills) {
+        const specShape = entry?.spec ?? entry;
+        const name = specShape?.name;
+        if (!name) continue;
+        const specProps = specShape?.props ?? {};
+        const live = game.items?.getName(name);
+        if (!live) {
+          issues.push({
+            severity: "info",
+            code: "SPEC_LIVE_MISSING",
+            owner: "spec",
+            itemName: name,
+            location: path,
+            message: `Spec lists skill "${name}" but no live world Item with that name exists. Run CreateSkillFromSpec to materialize it, or remove the spec entry.`,
+          });
+          continue;
+        }
+        const liveProps = live?.system?.props ?? {};
+        // Top-level canon fields.
+        for (const key of SPEC_CANON_TOP_LEVEL) {
+          if (!(key in specProps)) continue;
+          if (specProps[key] === liveProps[key]) continue;
+          issues.push({
+            severity: "info",
+            code: "SPEC_LIVE_DRIFT",
+            owner: "spec",
+            itemUuid: live.uuid,
+            itemName: name,
+            location: `system.props.${key}`,
+            message: `Spec.props.${key} = ${JSON.stringify(specProps[key])} but live = ${JSON.stringify(liveProps[key])}. Migrate live or update spec.`,
+          });
+        }
+        // Reaction-config-table row presence by trigger.
+        const specRows = activeRows(specProps?.reaction_config_table);
+        const liveRows = activeRows(liveProps?.reaction_config_table);
+        for (const sRow of specRows) {
+          const sTrig = String(sRow?.reaction_trigger ?? "").trim();
+          if (!sTrig) continue;
+          const lRow = liveRows.find((r) => String(r?.reaction_trigger ?? "").trim() === sTrig);
+          if (!lRow) {
+            issues.push({
+              severity: "info",
+              code: "SPEC_LIVE_RC_MISSING",
+              owner: "spec",
+              itemUuid: live.uuid,
+              itemName: name,
+              location: `reaction_config_table[trigger="${sTrig}"]`,
+              message: `Spec says "${name}" should have a reaction_config_table row with trigger "${sTrig}" but no matching row on live. Likely needs migration.`,
+            });
+          }
+        }
+        // Effect-table label presence.
+        const specEff = activeRows(specProps?.effect_table);
+        const liveEff = activeRows(liveProps?.effect_table);
+        const liveLabels = new Set(liveEff.map((r) => String(r?.effect_label ?? "").trim()).filter(Boolean));
+        for (const sRow of specEff) {
+          const lbl = String(sRow?.effect_label ?? "").trim();
+          if (!lbl) continue;
+          if (!liveLabels.has(lbl)) {
+            issues.push({
+              severity: "info",
+              code: "SPEC_LIVE_EFFECT_MISSING",
+              owner: "spec",
+              itemUuid: live.uuid,
+              itemName: name,
+              location: `effect_table[effect_label="${lbl}"]`,
+              message: `Spec says "${name}" should have an effect_table row labeled "${lbl}" but live has no row with that label.`,
+            });
+          }
+        }
+      }
+    }
+    return issues;
+  }
+
+  async function runSpecVsLiveDrift(opts = {}) {
+    const issues = await lintSpecVsLiveDrift();
+    const summary = {
+      total: issues.length,
+      info: issues.filter(i => i.severity === "info").length,
+      byCode: {},
+    };
+    for (const i of issues) summary.byCode[i.code] = (summary.byCode[i.code] || 0) + 1;
+    if (opts.console !== false && issues.length) {
+      console.group(`${TAG} Spec/live drift: ${issues.length} info finding(s)`);
+      for (const i of issues) console.info(`${TAG} [${i.code}] ${i.itemName ?? "?"} ${i.location ?? ""} — ${i.message}`);
+      console.groupEnd();
+    }
+    return { issues, summary };
+  }
+
   async function runTemplateEngineEnums(opts = {}) {
     const issues = await lintTemplateEngineEnums(opts);
     const summary = {
@@ -1312,6 +1434,9 @@
         );
       }
     }).catch((e) => console.error(`${TAG} template/engine auto-run failed:`, e));
+    // Spec/live drift — info-only, no notification toast (just console).
+    runSpecVsLiveDrift({ console: true })
+      .catch((e) => console.error(`${TAG} spec/live drift auto-run failed:`, e));
   });
 
   globalThis.FUCompanion        = globalThis.FUCompanion        || {};
@@ -1319,6 +1444,7 @@
   globalThis.FUCompanion.api.lint = globalThis.FUCompanion.api.lint || {};
   globalThis.FUCompanion.api.lint.runReactionLint = runReactionLint;
   globalThis.FUCompanion.api.lint.runTemplateEngineEnums = runTemplateEngineEnums;
+  globalThis.FUCompanion.api.lint.runSpecVsLiveDrift = runSpecVsLiveDrift;
 
   console.debug(`${TAG} Installed. Call FUCompanion.api.lint.runReactionLint() or runTemplateEngineEnums() to scan.`);
 })();
