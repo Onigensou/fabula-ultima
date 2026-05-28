@@ -38,11 +38,12 @@
     v3s: 0.82, v3o: 0.33,              // dist-3
     v4s: 0.80, v4o: 0.24,              // dist-4
     v5s: 0.78, v5o: 0.20,              // dist-5
-    // Timing (manager)
-    staggerMs:     1500,
-    bannerEnterMs:  380,
-    bannerLingerMs: 3000,
-    bannerExitMs:   360,
+    // Timing + position (manager)
+    staggerMs:     800,
+    bannerEnterMs:  750,
+    bannerLingerMs: 2500,
+    bannerExitMs:   410,
+    bannerTopPx:     36,
   };
 
   // ── State — starts from current live values or defaults ─────────────────────
@@ -71,6 +72,7 @@
       S.bannerEnterMs  = sys.bannerEnterMs  ?? DEFAULTS.bannerEnterMs;
       S.bannerLingerMs = sys.bannerLingerMs ?? DEFAULTS.bannerLingerMs;
       S.bannerExitMs   = sys.bannerExitMs   ?? DEFAULTS.bannerExitMs;
+      S.bannerTopPx    = sys.bannerTopPx    ?? DEFAULTS.bannerTopPx;
     }
   }
 
@@ -101,6 +103,7 @@
       sys.bannerEnterMs  = S.bannerEnterMs;
       sys.bannerLingerMs = S.bannerLingerMs;
       sys.bannerExitMs   = S.bannerExitMs;
+      sys.bannerTopPx    = S.bannerTopPx;
     }
   }
 
@@ -318,6 +321,7 @@
     addRow(tim, "Banner Enter",   "bannerEnterMs",  50, 1200,  20, "ms");
     addRow(tim, "Banner Linger",  "bannerLingerMs", 500, 8000, 250, "ms");
     addRow(tim, "Banner Exit",    "bannerExitMs",   50, 1200,  20, "ms");
+    addRow(tim, "Banner Top",     "bannerTopPx",     0,  400,   5, "px");
 
     // ── Footer buttons
     const footer = document.createElement("div");
@@ -364,6 +368,7 @@
         `  let _bannerEnterMs  = ${S.bannerEnterMs};`,
         `  let _bannerLingerMs = ${S.bannerLingerMs};`,
         `  let _bannerExitMs   = ${S.bannerExitMs};`,
+        `  let _bannerTopPx    = ${S.bannerTopPx};`,
       ].join("\n");
 
       console.log(`${TAG} Config:\n${lines}`);

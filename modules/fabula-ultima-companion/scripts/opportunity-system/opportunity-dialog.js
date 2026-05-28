@@ -23,21 +23,21 @@
   const STYLE_ID = "oni-opp-styles";
 
   // `let` so the tuner can override them live at showPicker() time
-  let RING_NORMAL   = 200;  // px — radius for all non-selected slots
-  let RING_SELECTED = 248;  // px — radius for the selected slot (pushed further out)
+  let RING_NORMAL   = 230;  // px — radius for all non-selected slots
+  let RING_SELECTED = 265;  // px — radius for the selected slot (pushed further out)
   let WHEEL_SIZE    = 645;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
-  let PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
+  let PORTRAIT_IMG  = 175;  // px — full-sprite image area (unclipped, transparent bg)
   let TRANSITION_MS = 260;  // ms — slot transition
   let SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
   let SLOT_WIDTH    = 140;  // px — fixed slot width
 
   // Distance-based visual table (index = circular distance from selected)
   let VIS = [
-    { scale: 1.45, opacity: 1.00, zIndex: 11 },  // dist 0 — selected
-    { scale: 0.90, opacity: 0.62, zIndex:  8 },  // dist 1
-    { scale: 0.85, opacity: 0.45, zIndex:  6 },  // dist 2
-    { scale: 0.82, opacity: 0.33, zIndex:  4 },  // dist 3
-    { scale: 0.80, opacity: 0.24, zIndex:  3 },  // dist 4
+    { scale: 1.81, opacity: 1.00, zIndex: 11 },  // dist 0 — selected
+    { scale: 0.95, opacity: 0.77, zIndex:  8 },  // dist 1
+    { scale: 0.93, opacity: 0.71, zIndex:  6 },  // dist 2
+    { scale: 0.82, opacity: 0.56, zIndex:  4 },  // dist 3
+    { scale: 0.80, opacity: 0.39, zIndex:  3 },  // dist 4
     { scale: 0.78, opacity: 0.20, zIndex:  2 },  // dist 5+
   ];
 

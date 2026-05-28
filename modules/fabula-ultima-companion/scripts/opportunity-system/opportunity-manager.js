@@ -38,10 +38,11 @@
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
 
-  // Log banner timing — `let` so the tuner can change them live
-  let _bannerEnterMs  = 380;
-  let _bannerLingerMs = 3000;
-  let _bannerExitMs   = 360;
+  // Log banner timing + position — all `let` so the tuner can change them live
+  let _bannerEnterMs  = 750;
+  let _bannerLingerMs = 2500;
+  let _bannerExitMs   = 410;
+  let _bannerTopPx    = 36;   // px from top of viewport; drives banner.style.top inline
   // Computed total used in applyAndAnnounce — always reads live vars
   const bannerTotalMs = () => _bannerEnterMs + _bannerLingerMs + _bannerExitMs;
   const SFX_DRAMATIC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg";
@@ -56,7 +57,7 @@
   // ms to wait before the picker appears after a crit is detected.
   // Gives players time to register their roll result before the menu interrupts.
   // Readable/writable via ONI.OpportunitySystem.staggerMs at runtime.
-  let _staggerMs = 1500;  // delay BEFORE the "Opportunity!" animation fires
+  let _staggerMs = 800;   // delay BEFORE the "Opportunity!" animation fires
 
   // ── In-flight offer tracking ────────────────────────────────────────────────
   const _pending = new Map(); // offerKey → { resolve, actorUuid }
@@ -211,7 +212,7 @@
     s.textContent = `
       .oni-opp-log-banner {
         position: fixed;
-        top: 36px;       /* float with margin, like JRPG action-name panels */
+        /* top is set inline by playLogBanner() so the tuner can adjust it */
         left: 50%;       /* centred; JS encodes x-offset into translateX */
         z-index: 100035;
         pointer-events: none;
@@ -249,6 +250,8 @@
 
     const banner = document.createElement("div");
     banner.className = "oni-opp-log-banner";
+    // Vertical position driven by _bannerTopPx — tunable at runtime
+    banner.style.top = `${_bannerTopPx}px`;
     // Thick left border strip in option accent colour
     banner.style.borderLeftColor = col;
     banner.style.borderLeftWidth = "5px";
@@ -520,6 +523,8 @@
     set bannerLingerMs(v){ _bannerLingerMs = Math.max(100, Number(v) || 3000); },
     get bannerExitMs()  { return _bannerExitMs; },
     set bannerExitMs(v) { _bannerExitMs   = Math.max(50,  Number(v) || 360); },
+    get bannerTopPx()   { return _bannerTopPx; },
+    set bannerTopPx(v)  { _bannerTopPx    = Math.max(0,   Number(v) || 36); },
 
     // Test helper: fire the log banner without triggering a full opportunity flow
     testBanner(optionId = "advantage") {
