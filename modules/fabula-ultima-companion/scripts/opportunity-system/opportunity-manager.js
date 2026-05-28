@@ -33,9 +33,16 @@
   const MSG_OFFER     = "OPP_OFFER";
   const MSG_PICKED    = "OPP_PICKED";
   const MSG_CANCELLED = "OPP_CANCELLED";
-  const MSG_DRAMATIC  = "OPP_DRAMATIC";
+  const MSG_DRAMATIC   = "OPP_DRAMATIC";
+  const MSG_LOG_BANNER = "OPP_LOG_BANNER";
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
+
+  // Log banner timing (shown after option is confirmed)
+  const LOG_BANNER_ENTER_MS  = 380;
+  const LOG_BANNER_LINGER_MS = 3000;
+  const LOG_BANNER_EXIT_MS   = 360;
+  const LOG_BANNER_TOTAL_MS  = LOG_BANNER_ENTER_MS + LOG_BANNER_LINGER_MS + LOG_BANNER_EXIT_MS; // 3740 ms
   const SFX_DRAMATIC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg";
 
   // ── Dependency shortcuts ────────────────────────────────────────────────────
@@ -48,7 +55,7 @@
   // ms to wait before the picker appears after a crit is detected.
   // Gives players time to register their roll result before the menu interrupts.
   // Readable/writable via ONI.OpportunitySystem.staggerMs at runtime.
-  let _staggerMs = 3000;
+  let _staggerMs = 1500;  // delay BEFORE the "Opportunity!" animation fires
 
   // ── In-flight offer tracking ────────────────────────────────────────────────
   const _pending = new Map(); // offerKey → { resolve, actorUuid }
@@ -191,6 +198,75 @@
     setTimeout(() => overlay.remove(), DRAMATIC_DURATION + 150);
   }
 
+  // ── JRPG log banner (confirmation panel at top of screen) ──────────────────
+  const BANNER_STYLE_ID = "oni-opp-banner-css";
+
+  function ensureBannerStyles() {
+    if (document.getElementById(BANNER_STYLE_ID)) return;
+    const s = document.createElement("style");
+    s.id = BANNER_STYLE_ID;
+    s.textContent = `
+      .oni-opp-log-banner {
+        position: fixed; top: 0; left: 0; right: 0; height: 62px;
+        background: linear-gradient(180deg, rgba(10,6,2,.98) 0%, rgba(20,13,4,.96) 100%);
+        z-index: 100035;
+        display: flex; align-items: center; justify-content: center;
+        transform: translateY(-100%);
+        box-shadow: 0 4px 20px rgba(0,0,0,.65);
+        pointer-events: none;
+      }
+      .oni-opp-log-banner-inner {
+        display: flex; align-items: center; gap: 12px;
+        font-family: 'Signika', sans-serif; padding: 0 28px;
+      }
+      .oni-opp-log-banner-icon  { font-size: 1.45rem; line-height: 1; }
+      .oni-opp-log-banner-label {
+        font-size: 1.1rem; font-weight: 900;
+        letter-spacing: .10em; text-transform: uppercase;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
+  /**
+   * Play a top-anchored JRPG-style log banner showing the chosen option.
+   * Fire-and-forget — caller awaits LOG_BANNER_TOTAL_MS separately.
+   */
+  function playLogBanner({ optionLabel, optionIcon, color }) {
+    ensureBannerStyles();
+    const escStr = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    const col = escStr(color ?? "#fcd470");
+
+    const banner = document.createElement("div");
+    banner.className = "oni-opp-log-banner";
+    banner.style.borderBottom = `3px solid ${col}`;
+    banner.style.transform    = "translateY(-100%)"; // start above viewport
+
+    const inner = document.createElement("div");
+    inner.className = "oni-opp-log-banner-inner";
+    inner.innerHTML = `
+      <span class="oni-opp-log-banner-icon" style="color:${col}">
+        <i class="fas ${escStr(optionIcon ?? "fa-star")}"></i>
+      </span>
+      <span class="oni-opp-log-banner-label" style="color:${col}">${escStr(optionLabel)}</span>`;
+    banner.appendChild(inner);
+    document.body.appendChild(banner);
+
+    // Enter: ease-out slide down
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      banner.style.transition = `transform ${LOG_BANNER_ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+      banner.style.transform  = "translateY(0)";
+    }));
+
+    // Exit: ease-in slide up + fade after linger
+    setTimeout(() => {
+      banner.style.transition = `transform ${LOG_BANNER_EXIT_MS}ms cubic-bezier(0.55,0,1,0.45), opacity ${LOG_BANNER_EXIT_MS}ms ease-in`;
+      banner.style.transform  = "translateY(-100%)";
+      banner.style.opacity    = "0";
+      setTimeout(() => banner.remove(), LOG_BANNER_EXIT_MS + 60);
+    }, LOG_BANNER_ENTER_MS + LOG_BANNER_LINGER_MS);
+  }
+
   // ── Local dialog flow ───────────────────────────────────────────────────────
   async function showDialogLocally({ actorName, actorUuid, offerKey }) {
     const cfg = getConfig();
@@ -217,13 +293,13 @@
     const option = cfg?.OPTIONS?.find(o => o.id === optionId);
     if (!option) { console.warn(TAG, `Unknown option id: ${optionId}`); return; }
 
-    // 1. Broadcast dramatic animation to ALL clients (GM plays locally, others via socket)
-    const dramaticPayload = { optionLabel: option.label, color: option.color ?? "#fcd470", optionId };
-    game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: dramaticPayload });
-    playDramaticAnimation(dramaticPayload); // GM plays its own copy immediately
+    // 1. Broadcast JRPG log banner to ALL clients (top-anchored panel with option name)
+    const bannerPayload = { optionLabel: option.label, optionIcon: option.icon, color: option.color ?? "#fcd470" };
+    game.socket.emit(SOCKET_CH, { type: MSG_LOG_BANNER, payload: bannerPayload });
+    playLogBanner(bannerPayload); // GM plays locally (socket.emit doesn't echo to sender)
 
-    // 2. Wait for the animation to finish before posting the card
-    await new Promise(r => setTimeout(r, DRAMATIC_DURATION + 100));
+    // 2. Wait for the banner to complete before posting the chat card
+    await new Promise(r => setTimeout(r, LOG_BANNER_TOTAL_MS));
 
     // 3. Placeholder effect handler
     const handler = effects?.[optionId];
@@ -257,15 +333,16 @@
 
     // Case 1: I am the owner (or GM-owned actor) — show dialog directly
     if (amOwner) {
-      if (_staggerMs > 0) {
-        // Broadcast "Opportunity!" fly-text to ALL clients to fill the stagger gap,
-        // then wait. The animation (2800 ms) finishes just before the menu opens.
-        const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
-        game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
-        playDramaticAnimation(annPayload); // socket.emit doesn't echo to sender
-        await new Promise(r => setTimeout(r, _staggerMs));
-      }
+      // Step 1 — stagger pause: player reads their roll result
+      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
 
+      // Step 2 — broadcast "Opportunity!" fly-text to all, then wait for it to finish
+      const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+      game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+      playDramaticAnimation(annPayload);
+      await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+
+      // Step 3 — show picker
       const offerKey = makeOfferKey(actorUuid, actionCardId);
       const result   = await showDialogLocally({ actorName, actorUuid, offerKey });
 
@@ -289,23 +366,25 @@
       return result ?? { cancelled: true };
     }
 
-    // Case 2: GM, actor is owned by a player — send picker via socket, await response
+    // Case 2: GM, player-owned actor — stagger + animation run GM-side first, then send offer
     if (amGM) {
+      // Step 1 — stagger pause (GM awaits before sending offer)
+      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
+
+      // Step 2 — broadcast "Opportunity!" and wait; player receives it via MSG_DRAMATIC
+      const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+      game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+      playDramaticAnimation(annPayload);
+      await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+
+      // Step 3 — send offer; player opens menu immediately (stagger already done)
       return new Promise(resolve => {
         const offerKey = makeOfferKey(actorUuid, actionCardId);
         _pending.set(offerKey, { resolve, actorUuid });
 
-        // Broadcast "Opportunity!" so everyone sees the animation while the player waits
-        if (_staggerMs > 0) {
-          const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
-          game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
-          playDramaticAnimation(annPayload); // GM plays locally too
-        }
-
-        // OPP_OFFER carries staggerMs — the player waits that long before opening their picker
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
-          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, staggerMs: _staggerMs },
+          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, staggerMs: 0 },
         });
 
         // Safety timeout: give up after 120 s
@@ -350,14 +429,13 @@
     game.socket.on(SOCKET_CH, async msg => {
       if (!msg?.type?.startsWith("OPP_")) return;
 
-      // OPP_OFFER — targeted player shows picker, sends result back
+      // OPP_OFFER — targeted player shows picker immediately (stagger+animation already done GM-side)
       if (msg.type === MSG_OFFER) {
         const { offerKey, actorUuid, actorName, context, targetUserId, staggerMs: msgStagger } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
 
-        // Honour the stagger sent by the GM (falls back to local _staggerMs)
-        const delay = msgStagger ?? _staggerMs;
-        if (delay > 0) await new Promise(r => setTimeout(r, delay));
+        // Residual stagger if any (should be 0 in normal flow; kept for edge-case overrides)
+        if ((msgStagger ?? 0) > 0) await new Promise(r => setTimeout(r, msgStagger));
 
         const result = await showDialogLocally({ actorName, actorUuid, offerKey })
           .catch(e => { console.error(TAG, "Socket offer dialog error:", e); return { cancelled: true }; });
@@ -395,9 +473,15 @@
         return;
       }
 
-      // OPP_DRAMATIC — every client plays the animation locally
+      // OPP_DRAMATIC — every client plays the "Opportunity!" fly-text locally
       if (msg.type === MSG_DRAMATIC) {
         playDramaticAnimation(msg.payload ?? {});
+        return;
+      }
+
+      // OPP_LOG_BANNER — every client plays the confirmation banner locally
+      if (msg.type === MSG_LOG_BANNER) {
+        playLogBanner(msg.payload ?? {});
         return;
       }
     });
