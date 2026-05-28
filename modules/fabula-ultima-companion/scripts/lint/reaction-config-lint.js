@@ -1290,7 +1290,12 @@
         const name = specShape?.name;
         if (!name) continue;
         const specProps = specShape?.props ?? {};
-        const live = game.items?.getName(name);
+        // Name collision handling: prefer the BD-tree item when there are
+        // multiple items with the same name (e.g. legacy `Spiritist Spell`
+        // folder still holds a stub `Reinforce` shadowing the canonical
+        // `Battle Director / Spiritist / Spell` Reinforce).
+        const candidates = game.items?.contents?.filter((it) => it.name === name) ?? [];
+        const live = candidates.find(isInBattleDirectorTree) ?? candidates[0] ?? null;
         if (!live) {
           issues.push({
             severity: "info",
