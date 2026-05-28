@@ -22,14 +22,13 @@
   const TAG      = "[ONI][OpportunitySystem:Dialog]";
   const STYLE_ID = "oni-opp-styles";
 
-  const RING_NORMAL   = 150;  // px — radius for all non-selected slots
-  const RING_SELECTED = 188;  // px — radius for the selected slot (pushed further out)
-  const WHEEL_SIZE    = 510;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
-  const PORTRAIT_IMG  = 148;  // px — full-sprite image area (unclipped, transparent bg)
-  const PORTRAIT_RING = 88;   // px — decorative gold ring overlay (separate from image)
+  const RING_NORMAL   = 175;  // px — radius for all non-selected slots
+  const RING_SELECTED = 218;  // px — radius for the selected slot (pushed further out)
+  const WHEEL_SIZE    = 600;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
+  const PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
   const TRANSITION_MS = 260;  // ms — slot transition
   const SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
-  const SLOT_WIDTH    = 120;  // px — fixed slot width
+  const SLOT_WIDTH    = 140;  // px — fixed slot width
 
   // Distance-based visual table (index = circular distance from selected)
   const VIS = [
@@ -112,7 +111,7 @@
         flex-shrink: 0;
       }
 
-      /* Actor portrait — full sprite, no circular crop */
+      /* Actor portrait — full sprite, no crop, no ring overlay */
       .oni-opp-center {
         position: absolute; left: 50%; top: 50%;
         transform: translate(-50%, -50%);
@@ -120,17 +119,7 @@
         background: transparent; border: none; overflow: visible;
         z-index: 6; pointer-events: none;
       }
-      /* Decorative gold ring — sits over the image, sized independently */
-      .oni-opp-center-ring {
-        position: absolute; left: 50%; top: 50%;
-        transform: translate(-50%, -50%);
-        width: ${PORTRAIT_RING}px; height: ${PORTRAIT_RING}px;
-        border-radius: 50%;
-        border: 3px solid #fcd470;
-        box-shadow: 0 0 22px rgba(252,212,112,.6), 0 0 44px rgba(0,0,0,.75);
-        pointer-events: none; z-index: 2;
-      }
-      /* Full sprite: contain (no crop), transparent, no borders */
+      /* Full sprite: contain (no crop), fully transparent, no borders of any kind */
       .oni-opp-center img, .oni-opp-center video {
         position: absolute; left: 50%; top: 50%;
         transform: translate(-50%, -50%);
@@ -310,10 +299,6 @@
 
       const center = document.createElement("div");
       center.className = "oni-opp-center";
-      // Gold ring sits above the image so it's always visible
-      const ring = document.createElement("div");
-      ring.className = "oni-opp-center-ring";
-      center.appendChild(ring);
       if (actorPortrait) {
         const isVid = /\.(webm|mp4|ogg)(\?|$)/i.test(actorPortrait);
         const media = isVid
@@ -456,5 +441,5 @@
   }
 
   window["oni.OpportunityDialog"] = Object.freeze({ showPicker });
-  console.debug(`${TAG} Ready (Wheel UI v6 — larger selected, full-sprite portrait).`);
+  console.debug(`${TAG} Ready (Wheel UI v7 — no ring, larger layout, stagger-ready).`);
 })();

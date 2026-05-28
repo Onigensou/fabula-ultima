@@ -44,6 +44,12 @@
   const getChatCard = () => window["oni.OpportunityChatCard"];
   const getEffects  = () => window["oni.OpportunityEffects"];
 
+  // ── Stagger delay ───────────────────────────────────────────────────────────
+  // ms to wait before the picker appears after a crit is detected.
+  // Gives players time to register their roll result before the menu interrupts.
+  // Readable/writable via ONI.OpportunitySystem.staggerMs at runtime.
+  let _staggerMs = 3000;
+
   // ── In-flight offer tracking ────────────────────────────────────────────────
   const _pending = new Map(); // offerKey → { resolve, actorUuid }
 
@@ -251,6 +257,9 @@
 
     // Case 1: I am the owner (or GM-owned actor) — show dialog directly
     if (amOwner) {
+      // Stagger: pause so the player can read their roll result before the menu appears
+      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
+
       const offerKey = makeOfferKey(actorUuid, actionCardId);
       const result   = await showDialogLocally({ actorName, actorUuid, offerKey });
 
@@ -282,7 +291,8 @@
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
-          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId },
+          // staggerMs is forwarded so the player-side also waits before opening
+          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, staggerMs: _staggerMs },
         });
 
         // Safety timeout: give up after 120 s
@@ -329,8 +339,12 @@
 
       // OPP_OFFER — targeted player shows picker, sends result back
       if (msg.type === MSG_OFFER) {
-        const { offerKey, actorUuid, actorName, context, targetUserId } = msg.payload ?? {};
+        const { offerKey, actorUuid, actorName, context, targetUserId, staggerMs: msgStagger } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
+
+        // Honour the stagger sent by the GM (falls back to local _staggerMs)
+        const delay = msgStagger ?? _staggerMs;
+        if (delay > 0) await new Promise(r => setTimeout(r, delay));
 
         const result = await showDialogLocally({ actorName, actorUuid, offerKey })
           .catch(e => { console.error(TAG, "Socket offer dialog error:", e); return { cancelled: true }; });
@@ -382,7 +396,9 @@
   const api = {
     offer,
     processCheckCrits,
-    get OPTIONS() { return getConfig()?.OPTIONS ?? []; },
+    get OPTIONS()    { return getConfig()?.OPTIONS ?? []; },
+    get staggerMs()  { return _staggerMs; },
+    set staggerMs(v) { _staggerMs = Math.max(0, Number(v) || 0); },
   };
 
   globalThis.ONI = globalThis.ONI ?? {};
