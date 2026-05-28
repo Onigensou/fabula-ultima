@@ -48,6 +48,14 @@
  *     TARGET_REF_NOT_TARGETING target_ref points at non-targeting row
  *     DESTINATION_REF_MISSING redirect_target without destination_ref
  *
+ *   AE-bound passive (one-shot enforcement):
+ *     AE_ONESHOT_MISSING      AE-bound reaction_isPassive:true row with
+ *                             no consume_self field AND no charges flag
+ *                             on the AE — dispatcher won't auto-remove,
+ *                             passive re-fires every trigger match.
+ *                             Skipped when AE flag directorPermanent or
+ *                             crossScene is set (explicit opt-in).
+ *
  *   Cross-document (actor copy ↔ master, by system.uniqueId):
  *     MASTER_COPY_REF_DRIFT   actor copy's reaction_effect_ref differs
  *                             from master's for the same trigger row
@@ -614,8 +622,66 @@
         i.aeName = ae?.name ?? null;
         out.push(i);
       }
+      // AE one-shot enforcement (Gap 3 from canon hardening retrospective).
+      // AE-bound reactionConfig rows with reaction_isPassive:true fire on
+      // EVERY trigger match for the AE's lifetime. Without consume_self or
+      // a charges flag, the dispatcher has no built-in deactivation — only
+      // the AE's duration / scene-end sweep ends it. Most one-shots want
+      // explicit termination so the passive doesn't double-fire on a
+      // single round of trigger-spam (e.g. multi-target damage event).
+      for (const i of lintAeOneShot(cfg, ae)) {
+        i.owner = ownerLabel;
+        i.itemUuid = item?.uuid ?? null;
+        i.itemName = item?.name ?? "(unnamed)";
+        i.aeName = ae?.name ?? null;
+        out.push(i);
+      }
     }
     return out;
+  }
+
+  // AE-bound passive without consume_self / charges → warn.
+  // Skipped when the AE explicitly opts into persistent passive behavior
+  // via `directorPermanent` or `crossScene` flags (those signal "this AE
+  // is meant to fire repeatedly until something else removes it").
+  function lintAeOneShot(cfg, ae) {
+    const issues = [];
+    const rows = activeRows(cfg?.reaction_config_table);
+    const eff  = cfg?.effect_table ?? cfg?.reaction_effect_table;
+    const effRows = activeRows(eff);
+    const labelToEff = new Map();
+    for (const r of effRows) {
+      const lbl = String(r?.effect_label ?? "").trim();
+      if (lbl) labelToEff.set(lbl, r);
+    }
+    const aeFlags = ae?.flags?.[MODULE_ID] ?? {};
+    const hasCharges = aeFlags.charges != null || aeFlags.chargesMax != null;
+    const isPermanent =
+      aeFlags.directorPermanent === true || aeFlags.crossScene === true;
+    if (isPermanent) return issues;
+    for (const row of rows) {
+      if (row?.reaction_isPassive !== true) continue;
+      if (row?.consume_self === true) continue;
+      const ref = String(row?.reaction_effect_ref ?? "").trim();
+      const effRow = ref ? labelToEff.get(ref) : null;
+      if (effRow?.consume_self === true) continue;
+      if (hasCharges) continue;
+      issues.push(mkIssue({
+        severity: "warning",
+        code: "AE_ONESHOT_MISSING",
+        location: `AE["${ae.name}"].reaction_config_table[${row.$key}]`,
+        message:
+          `AE-bound passive row (reaction_isPassive:true) has no ` +
+          `consume_self field and the AE has no charges/chargesMax flag. ` +
+          `The dispatcher won't auto-remove this AE — it will re-fire on ` +
+          `every trigger match until the AE itself expires. If that's ` +
+          `intentional, mark the AE with ` +
+          `flags["${MODULE_ID}"].directorPermanent: true. Otherwise add ` +
+          `consume_self:true on the row (or effect_row), or arm the AE ` +
+          `with chargesMax (skill-charges API auto-deletes at 0).`
+      }));
+    }
+    return issues;
   }
 
   // ------------------------------------------------------------------
@@ -715,6 +781,13 @@
             triggerKeys
           });
           for (const i of issues) {
+            i.owner = `actor "${actor.name}" AE-stamp`;
+            i.itemUuid = ae?.uuid ?? null;
+            i.itemName = ae?.name ?? `(AE on ${actor.name})`;
+            i.aeName = ae?.name ?? null;
+            allIssues.push(i);
+          }
+          for (const i of lintAeOneShot(cfg, ae)) {
             i.owner = `actor "${actor.name}" AE-stamp`;
             i.itemUuid = ae?.uuid ?? null;
             i.itemName = ae?.name ?? `(AE on ${actor.name})`;
