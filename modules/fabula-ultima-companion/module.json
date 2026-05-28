@@ -19,6 +19,7 @@
     "scripts/_module-boot.js",
     "scripts/data-migration-runner.js",
     "scripts/lint/reaction-config-lint.js",
+    "scripts/lint/engine-canon-lint.js",
     "scripts/shared-utils.js",
     "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",

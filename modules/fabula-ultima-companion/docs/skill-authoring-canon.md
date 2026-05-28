@@ -20,22 +20,40 @@ everything else is a reaction row.
 
 ## Enforcement
 
-- `scripts/lint/reaction-config-lint.js` flags every canon-deprecated
-  prop at boot:
-  - `DEPRECATED_PROPS_PASSIVE_MODE` — top-level `passive_mode` set
-  - `DEPRECATED_HARDCODED_PASSIVE_FLAG` — `<class>_passive: true`
-  - `DEPRECATED_FIRE_POINT_POST_DAMAGE`
-  - `DEPRECATED_FIRE_POINT_PASSIVE_CHECK_BONUS`
-  - `DEPRECATED_FIRE_POINT_PASSIVE_DAMAGE_BONUS`
+Two lint passes — one for the data side, one for the engine source —
+plus a spec-time guard. All run automatically at GM `ready`.
 
-  Auto-runs on `ready`; GM sees a notification if any errors fire.
-- `macros/Authoring/CreateSkillFromSpec.js` REJECTS new specs that
-  author the deprecated fields — returns `{ ok: false, reason:
-  "canon_violation" }` and notifies the GM. Migration scripts that
-  bypass the macro (writing directly via `Item.create`) aren't gated;
-  they should still follow canon or carry a deprecation note.
-- Run `FUCompanion.api.lint.runReactionLint()` after any data migration
-  to verify no regressions slipped in.
+**Data lint** — `scripts/lint/reaction-config-lint.js`
+Flags every canon-deprecated prop on every Item (master + actor copy):
+- `DEPRECATED_PROPS_PASSIVE_MODE` — top-level `passive_mode` set
+- `DEPRECATED_HARDCODED_PASSIVE_FLAG` — `<class>_passive: true`
+- `DEPRECATED_FIRE_POINT_POST_DAMAGE`
+- `DEPRECATED_FIRE_POINT_PASSIVE_CHECK_BONUS`
+- `DEPRECATED_FIRE_POINT_PASSIVE_DAMAGE_BONUS`
+
+Plus structural checks on `reaction_config_table` and `effect_table`
+rows. Run manually: `FUCompanion.api.lint.runReactionLint()`.
+
+**Engine lint** — `scripts/lint/engine-canon-lint.js`
+Static-greps director engine source files for code that hardcodes
+skill-specific behavior — the *other* class of canon violation, where
+the engine reads a class-specific flag or branches on a skill name
+instead of dispatching via reaction_config_table:
+- `ENGINE_HARDCODED_SKILL_NAME` — `*.name === "<SpecificSkill>"`
+- `ENGINE_DEPRECATED_PASSIVE_FLAG_READ` — `props.<x>_passive` reads
+- `ENGINE_HARDCODED_UUID` — `Item.<...>` / `Actor.<...>` literals
+
+Run manually: `FUCompanion.api.lint.runEngineCanonLint()`. Intentional
+violations can be moved to the `ALLOWLIST` constant in that file —
+every entry is an admission that the canon doesn't yet cover the case
+and is a TODO for refactoring.
+
+**Spec-time guard** — `macros/Authoring/CreateSkillFromSpec.js`
+REJECTS new specs that author the deprecated fields — returns
+`{ ok: false, reason: "canon_violation" }` and notifies the GM.
+Migration scripts that bypass the macro (writing directly via
+`Item.create`) aren't gated; they should still follow canon or carry a
+deprecation note.
 
 ## Transition states
 
