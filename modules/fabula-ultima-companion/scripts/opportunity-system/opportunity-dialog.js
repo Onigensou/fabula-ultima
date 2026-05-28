@@ -22,9 +22,9 @@
   const TAG      = "[ONI][OpportunitySystem:Dialog]";
   const STYLE_ID = "oni-opp-styles";
 
-  const RING_NORMAL   = 175;  // px — radius for all non-selected slots
-  const RING_SELECTED = 218;  // px — radius for the selected slot (pushed further out)
-  const WHEEL_SIZE    = 600;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
+  const RING_NORMAL   = 200;  // px — radius for all non-selected slots
+  const RING_SELECTED = 248;  // px — radius for the selected slot (pushed further out)
+  const WHEEL_SIZE    = 645;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
   const PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
   const TRANSITION_MS = 260;  // ms — slot transition
   const SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
@@ -89,8 +89,8 @@
         z-index: 100020;
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        gap: 12px; pointer-events: auto;
-        overflow-y: auto; padding: 20px 0;
+        gap: 10px; pointer-events: auto;
+        overflow-y: auto; padding: 10px 0;
       }
       .oni-opp-title {
         font-family: 'Palatino Linotype', Palatino, serif;

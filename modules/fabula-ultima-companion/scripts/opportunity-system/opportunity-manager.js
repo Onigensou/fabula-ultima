@@ -257,8 +257,14 @@
 
     // Case 1: I am the owner (or GM-owned actor) — show dialog directly
     if (amOwner) {
-      // Stagger: pause so the player can read their roll result before the menu appears
-      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
+      if (_staggerMs > 0) {
+        // Broadcast "Opportunity!" fly-text to ALL clients to fill the stagger gap,
+        // then wait. The animation (2800 ms) finishes just before the menu opens.
+        const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+        game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+        playDramaticAnimation(annPayload); // socket.emit doesn't echo to sender
+        await new Promise(r => setTimeout(r, _staggerMs));
+      }
 
       const offerKey = makeOfferKey(actorUuid, actionCardId);
       const result   = await showDialogLocally({ actorName, actorUuid, offerKey });
@@ -289,9 +295,16 @@
         const offerKey = makeOfferKey(actorUuid, actionCardId);
         _pending.set(offerKey, { resolve, actorUuid });
 
+        // Broadcast "Opportunity!" so everyone sees the animation while the player waits
+        if (_staggerMs > 0) {
+          const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+          game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+          playDramaticAnimation(annPayload); // GM plays locally too
+        }
+
+        // OPP_OFFER carries staggerMs — the player waits that long before opening their picker
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
-          // staggerMs is forwarded so the player-side also waits before opening
           payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, staggerMs: _staggerMs },
         });
 
