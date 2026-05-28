@@ -38,12 +38,14 @@
     v3s: 0.82, v3o: 0.33,              // dist-3
     v4s: 0.80, v4o: 0.24,              // dist-4
     v5s: 0.78, v5o: 0.20,              // dist-5
-    // Timing + position (manager)
-    staggerMs:     800,
+    // Timing + position + size (manager)
+    staggerMs:      800,
     bannerEnterMs:  750,
     bannerLingerMs: 2500,
     bannerExitMs:   410,
-    bannerTopPx:     36,
+    bannerTopPx:    100,  // px from top (100 = confirmed good)
+    bannerWidthPx:    0,  // 0 = auto (content-driven)
+    bannerHeightPx:   0,  // 0 = auto
   };
 
   // ── State — starts from current live values or defaults ─────────────────────
@@ -68,11 +70,13 @@
 
     // Pull live manager values (setters are the source of truth for timing)
     if (sys) {
-      S.staggerMs     = sys.staggerMs     ?? DEFAULTS.staggerMs;
+      S.staggerMs      = sys.staggerMs      ?? DEFAULTS.staggerMs;
       S.bannerEnterMs  = sys.bannerEnterMs  ?? DEFAULTS.bannerEnterMs;
       S.bannerLingerMs = sys.bannerLingerMs ?? DEFAULTS.bannerLingerMs;
       S.bannerExitMs   = sys.bannerExitMs   ?? DEFAULTS.bannerExitMs;
       S.bannerTopPx    = sys.bannerTopPx    ?? DEFAULTS.bannerTopPx;
+      S.bannerWidthPx  = sys.bannerWidthPx  ?? DEFAULTS.bannerWidthPx;
+      S.bannerHeightPx = sys.bannerHeightPx ?? DEFAULTS.bannerHeightPx;
     }
   }
 
@@ -99,11 +103,13 @@
     };
     const sys = globalThis.ONI?.OpportunitySystem;
     if (sys) {
-      sys.staggerMs     = S.staggerMs;
+      sys.staggerMs      = S.staggerMs;
       sys.bannerEnterMs  = S.bannerEnterMs;
       sys.bannerLingerMs = S.bannerLingerMs;
       sys.bannerExitMs   = S.bannerExitMs;
       sys.bannerTopPx    = S.bannerTopPx;
+      sys.bannerWidthPx  = S.bannerWidthPx;
+      sys.bannerHeightPx = S.bannerHeightPx;
     }
   }
 
@@ -317,11 +323,13 @@
 
     // ── Timing
     const tim = section("Timing");
-    addRow(tim, "Stagger",        "staggerMs",      0,  6000, 100, "ms");
-    addRow(tim, "Banner Enter",   "bannerEnterMs",  50, 1200,  20, "ms");
-    addRow(tim, "Banner Linger",  "bannerLingerMs", 500, 8000, 250, "ms");
-    addRow(tim, "Banner Exit",    "bannerExitMs",   50, 1200,  20, "ms");
-    addRow(tim, "Banner Top",     "bannerTopPx",     0,  400,   5, "px");
+    addRow(tim, "Stagger",           "staggerMs",       0,  6000, 100, "ms");
+    addRow(tim, "Banner Enter",      "bannerEnterMs",  50,  1200,  20, "ms");
+    addRow(tim, "Banner Linger",     "bannerLingerMs", 500, 8000, 250, "ms");
+    addRow(tim, "Banner Exit",       "bannerExitMs",   50,  1200,  20, "ms");
+    addRow(tim, "Banner Top",        "bannerTopPx",     0,   500,   5, "px");
+    addRow(tim, "Banner Width(0=auto)","bannerWidthPx", 0,  1400,  10, "px");
+    addRow(tim, "Banner Ht(0=auto)", "bannerHeightPx",  0,   200,   5, "px");
 
     // ── Footer buttons
     const footer = document.createElement("div");
@@ -369,6 +377,8 @@
         `  let _bannerLingerMs = ${S.bannerLingerMs};`,
         `  let _bannerExitMs   = ${S.bannerExitMs};`,
         `  let _bannerTopPx    = ${S.bannerTopPx};`,
+        `  let _bannerWidthPx  = ${S.bannerWidthPx};`,
+        `  let _bannerHeightPx = ${S.bannerHeightPx};`,
       ].join("\n");
 
       console.log(`${TAG} Config:\n${lines}`);

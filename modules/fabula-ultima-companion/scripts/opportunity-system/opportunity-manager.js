@@ -42,7 +42,9 @@
   let _bannerEnterMs  = 750;
   let _bannerLingerMs = 2500;
   let _bannerExitMs   = 410;
-  let _bannerTopPx    = 36;   // px from top of viewport; drives banner.style.top inline
+  let _bannerTopPx    = 100;  // px from top of viewport (inline on element)
+  let _bannerWidthPx  = 0;    // 0 = auto (content-driven); >0 = fixed px width
+  let _bannerHeightPx = 0;    // 0 = auto; >0 = fixed px height
   // Computed total used in applyAndAnnounce — always reads live vars
   const bannerTotalMs = () => _bannerEnterMs + _bannerLingerMs + _bannerExitMs;
   const SFX_DRAMATIC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg";
@@ -225,7 +227,7 @@
         border-radius: 10px;
         box-shadow: 0 6px 22px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,248,232,.7);
         padding: 10px 22px;
-        display: flex; align-items: center; gap: 11px;
+        display: flex; align-items: center; justify-content: center; gap: 11px;
         white-space: nowrap;
       }
       .oni-opp-log-banner-icon  { font-size: 1.4rem; line-height: 1; flex-shrink: 0; }
@@ -250,8 +252,10 @@
 
     const banner = document.createElement("div");
     banner.className = "oni-opp-log-banner";
-    // Vertical position driven by _bannerTopPx — tunable at runtime
+    // Position + dimensions driven by tunable vars (0 = auto for width/height)
     banner.style.top = `${_bannerTopPx}px`;
+    if (_bannerWidthPx  > 0) banner.style.width  = `${_bannerWidthPx}px`;
+    if (_bannerHeightPx > 0) banner.style.height = `${_bannerHeightPx}px`;
     // Thick left border strip in option accent colour
     banner.style.borderLeftColor = col;
     banner.style.borderLeftWidth = "5px";
@@ -523,8 +527,12 @@
     set bannerLingerMs(v){ _bannerLingerMs = Math.max(100, Number(v) || 3000); },
     get bannerExitMs()  { return _bannerExitMs; },
     set bannerExitMs(v) { _bannerExitMs   = Math.max(50,  Number(v) || 360); },
-    get bannerTopPx()   { return _bannerTopPx; },
-    set bannerTopPx(v)  { _bannerTopPx    = Math.max(0,   Number(v) || 36); },
+    get bannerTopPx()    { return _bannerTopPx; },
+    set bannerTopPx(v)   { _bannerTopPx    = Math.max(0, Number(v) || 0); },
+    get bannerWidthPx()  { return _bannerWidthPx; },
+    set bannerWidthPx(v) { _bannerWidthPx  = Math.max(0, Number(v) || 0); },
+    get bannerHeightPx() { return _bannerHeightPx; },
+    set bannerHeightPx(v){ _bannerHeightPx = Math.max(0, Number(v) || 0); },
 
     // Test helper: fire the log banner without triggering a full opportunity flow
     testBanner(optionId = "advantage") {
