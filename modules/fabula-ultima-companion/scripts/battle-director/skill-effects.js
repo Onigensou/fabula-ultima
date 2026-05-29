@@ -675,6 +675,128 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied };
 }
 
+// Phase 2: sender-side damage accumulator for pre-resolve add_damage
+// candidates (Cheap Shot et al.).
+//
+// Walks the accepted pre-resolve candidates and finds every effect row
+// of `effect_kind: "add_damage"`. For each, evaluates `damage_amount`
+// against the candidate's payload + carrier skill and accumulates a
+// **base-damage** bonus on the candidate's subject (the specific hit
+// target). Returns Map<subjectActorUuid, totalBaseDamageBonus>.
+//
+// The result feeds `recomputePerTargetDamages` below, which produces a
+// new perTargetResults array with `damage` re-derived from
+// `applyAffinityToDamage(rawDamage + bonus, affinity)`. So affinity
+// re-applies once over the combined total — the user's "base damage,
+// affinity applied once" rule.
+//
+// Candidate shape (as augmented by the per-target dispatch in Phase 3):
+//   {
+//     ...findPassiveCandidates fields...,
+//     subjectActorUuid,         // which target this candidate targets
+//     subjectTokenUuid,
+//     payloadAtFire,            // the payload at trigger fire-time
+//                               // (carries rawDamage, damageType, etc.)
+//   }
+//
+// dCombat.round threads through to the resolver so ROUND-aware formulas
+// (and SL via the carrier skill's level) resolve cleanly.
+export async function computeSenderDamageBonuses({
+  casterActor,
+  acceptedPrePassives,
+  dCombat,
+} = {}) {
+  const out = new Map();
+  if (!Array.isArray(acceptedPrePassives) || !acceptedPrePassives.length) return out;
+
+  for (const cand of acceptedPrePassives) {
+    if (!cand?.ref) continue;
+    // Carrier resolution mirrors firePreAcceptedCandidate so item-bound
+    // and AE-bound effects both work. Bail on missing carriers — a
+    // deleted skill mid-resolve shouldn't crash the recompute pass.
+    let runtimeEffectTable;
+    let carrierSkill = null;
+    if (cand.carrierKind === "item") {
+      const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+      if (!carrier) continue;
+      const { getRuntimeSkillView } = await import("./skill-recipes.js");
+      const view = getRuntimeSkillView(carrier);
+      runtimeEffectTable = view.effect_table;
+      carrierSkill = carrier;
+    } else {
+      const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+      if (!carrier) continue;
+      const cfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
+      runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
+      carrierSkill = null;
+    }
+    // Find the labelled effect row pointed to by cand.ref.
+    const effRow = Object.values(runtimeEffectTable ?? {})
+      .find((r) => r?.effect_label === cand.ref);
+    if (!effRow) continue;
+    if (String(effRow.effect_kind ?? "").toLowerCase() !== "add_damage") continue;
+
+    const subjectActorUuid = String(cand.subjectActorUuid ?? cand.payloadAtFire?.subjectActorUuid ?? "").trim();
+    if (!subjectActorUuid) continue;
+
+    // Evaluate damage_amount against the candidate's payload.
+    let amount = 0;
+    try {
+      const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+      const resolver = buildSkillResolver({
+        actor: casterActor,
+        payload: cand.payloadAtFire ?? null,
+        skill: carrierSkill,
+        round: dCombat?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(String(effRow.damage_amount ?? "0"), resolver)) || 0;
+    } catch (e) {
+      warn(`computeSenderDamageBonuses: damage_amount eval threw on ${cand.carrierName}`, e);
+      amount = 0;
+    }
+    amount = Math.max(0, Math.floor(amount));
+
+    out.set(subjectActorUuid, (out.get(subjectActorUuid) ?? 0) + amount);
+  }
+  return out;
+}
+
+// Phase 2: produce a recomputed perTargetResults array given a bonus
+// map from computeSenderDamageBonuses. For each entry:
+//   newRaw = entry.rawDamage + bonus
+//   newDamage = applyAffinityToDamage(newRaw, entry.affinity)
+// Entries without a bonus pass through unchanged (referential equality
+// preserved per-entry so DOM diffs stay minimal). Returns a new array
+// — callers (CONFIRM preview + RESOLVE applier) re-freeze actionResult
+// with this so downstream reads see the modified values.
+//
+// `applyAffinity` is injected so this helper stays decoupled from the
+// snapshot module (snapshot has the affinity table). state-handlers
+// passes `applyAffinityToDamage` from snapshot.js at call sites.
+export function recomputePerTargetDamages(perTargetResults, bonusMap, applyAffinity) {
+  if (!Array.isArray(perTargetResults) || !perTargetResults.length) return perTargetResults;
+  if (!bonusMap || bonusMap.size === 0) return perTargetResults;
+  if (typeof applyAffinity !== "function") {
+    warn("recomputePerTargetDamages: applyAffinity not supplied; returning original");
+    return perTargetResults;
+  }
+  return perTargetResults.map((entry) => {
+    const bonus = bonusMap.get(entry?.actorUuid) ?? 0;
+    if (bonus <= 0) return entry;
+    if (!entry.hit) return entry;  // misses don't accumulate damage bonuses
+    const newRaw = (Number(entry.rawDamage) || 0) + bonus;
+    const newDamage = applyAffinity(newRaw, String(entry.affinity ?? "NE"));
+    return {
+      ...entry,
+      rawDamage: newRaw,
+      damage: newDamage,
+      // Diagnostic — lets the action card show a "+X (Cheap Shot)" hint
+      // and lets the RESOLVE log explain where the extra came from.
+      bonusBreakdown: { baseBonus: bonus },
+    };
+  });
+}
+
 // Walk every reaction_config_table row on the reactor's items, fire any
 // passive rows matching `trigger`. Replaces the old passive_trigger-field
 // dispatcher.
@@ -946,6 +1068,15 @@ export async function applyEffectRow(row, ctx) {
     case "open_action_menu": return applyOpenActionMenuEffect(row, ctx);
     case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
+    // add_damage is data-only — read by `computeSenderDamageBonuses`
+    // which walks acceptedPrePassives BEFORE the standard fire loop and
+    // accumulates per-target base-damage bonuses. By the time
+    // firePreAcceptedCandidate routes this row through applyEffectRow,
+    // the bonus is already accumulated and perTargetResults is already
+    // recomputed; firing here is a no-op. Returning ok keeps the chain
+    // log clean. See Phase 2/3 of the Cheap Shot integration plan.
+    case "add_damage":
+      return { ok: true, kind, applied: [], reason: "data-only" };
     // B.2+:
     case "consume_resource":
     case "redirect_target":

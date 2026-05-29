@@ -2698,14 +2698,42 @@ const Confirm = {
     // so RESOLVE can fire them via firePreAcceptedCandidate. The
     // post-resolve creature_completes_spell dispatcher reads the same
     // list to skip already-evaluated candidates (avoid double-fire).
+    //
+    // Phase 2 (Cheap Shot): after stamping accepted decisions, recompute
+    // perTargetResults from any accepted `add_damage` candidates so the
+    // damage values RESOLVE applies match what the player chose. The
+    // sender-side accumulator sums base-damage bonuses per subject; the
+    // recompute reapplies affinity over (rawDamage + bonus). This makes
+    // affinity multiply once over the combined total — the user's
+    // "base damage, affinity applied once" rule.
     if (Array.isArray(result.reactionDecisions) && result.reactionDecisions.length) {
       const applied = result.reactionDecisions.filter((d) => d?.decision === "apply");
       const evaluated = result.reactionDecisions.map((d) => ({
         carrierUuid: d.carrierUuid,
         rowKey: d.rowKey,
       }));
+      // Recompute per-target damage if any add_damage candidates landed.
+      // Spell + Attack RESOLVE both read ar.perTargetResults; updating
+      // it here is the single point of truth.
+      let recomputedPerTargets = ar.perTargetResults ?? null;
+      try {
+        const { computeSenderDamageBonuses, recomputePerTargetDamages } = await getSkillEffectsExtras();
+        const bonusMap = await computeSenderDamageBonuses({
+          casterActor: attackerActor,
+          acceptedPrePassives: applied,
+          dCombat: director.dCombat,
+        });
+        if (bonusMap.size > 0 && Array.isArray(ar.perTargetResults)) {
+          const { applyAffinityToDamage } = await import("./snapshot.js");
+          recomputedPerTargets = recomputePerTargetDamages(
+            ar.perTargetResults, bonusMap, applyAffinityToDamage,
+          );
+          log(`CONFIRM: add_damage recompute applied — ${bonusMap.size} subject(s) modified`);
+        }
+      } catch (e) { warn("CONFIRM: add_damage recompute threw", e); }
       director.ctx.actionResult = freezeActionResult({
         ...director.ctx.actionResult,
+        perTargetResults: recomputedPerTargets,
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
       });
