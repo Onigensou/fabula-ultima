@@ -1,7 +1,7 @@
 {
   "_class": "Rogue",
   "_book": "Core",
-  "_status": "design (2026-05-29) — spec drafted; batches not yet authored to BD tree.",
+  "_status": "Batch 1 AUTHORED 2026-05-30 — Dodge / See You Later / Soul Steal materialized in Battle Director / Rogue / Skill via CreateSkillFromSpec. Soul Steal full mechanical wiring (DEX+WLP check vs MDEF + IP grant on hit via reaction_config_table + effect_table). See You Later narrative-only (per RAW). Dodge description-only skeleton — the conditional `bonus_def: SL while no shields + no martial armor` mechanical wiring needs new formula identifiers (`HAS_SHIELD`, `HAS_MARTIAL_ARMOR`) in skill-formulas.js + a self-AE with the bonus_def change; deferred. Batches 2-4 still pending per their notes.",
   "_comment": "Rogue skill+heroic-skill authoring set for the Battle Director engine. Mirrors the Spiritist spec shape: each entry carries `class: 'Rogue'` + `folder: 'Skill'` (or 'Heroic Skill') hints so CreateSkillFromSpec drops the Item into `Battle Director / Rogue / <folder>`. RAW text + icons reused from the world's existing legacy Rogue items (`💥 Skill / Class Skill / Rogue` and `💥 Skill / Heroic Skill`). CSB `system.unique` defaults to TRUE (PCs shouldn't carry duplicates).",
 
   "_batches": {
