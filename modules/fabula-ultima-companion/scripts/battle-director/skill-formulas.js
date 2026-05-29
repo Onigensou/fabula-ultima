@@ -358,6 +358,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const t = payload?.targets;
         return Array.isArray(t) ? t.length : 0;
       }
+      // Count of targets that PASSED the Check (hit). For Active Skill
+      // RESOLVE, chainPayload populates payload.hitTargets (see
+      // state-handlers.js Skill resolve). For attack RESOLVE the same
+      // shape is used. Falls back to 0 when no hit info is threaded
+      // (no-Check skill / passive grant) — pairs with the legacy
+      // "fold unknown to 0" convention so `condition_formula:
+      // "HIT_COUNT > 0"` on a grant row resolves to false (no grant)
+      // instead of erroring. Used by Soul Steal to gate the IP grant
+      // on Check success.
+      case "HIT_COUNT": {
+        const h = payload?.hitTargets;
+        return Array.isArray(h) ? h.length : 0;
+      }
       // Roll-derived identifiers — populated whenever the action's roll
       // is threaded onto `payload` (Skill resolveSkillAction does this
       // via makeChainContext.payload and the firePostDamageEffect
@@ -382,6 +395,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "HAS_ARCANE_WEAPON":   return hasEquippedWeaponOfType(actor, "arcane") ? 1 : 0;
       case "HAS_MELEE_WEAPON":    return hasEquippedWeaponOfType(actor, "melee") ? 1 : 0;
       case "HAS_RANGED_WEAPON":   return hasEquippedWeaponOfType(actor, "ranged") ? 1 : 0;
+      // Equipped-shield + martial-armor predicates. Walk actor.items
+      // for any EQUIPPED item whose item_type matches "shield" or
+      // "armor" (martial flag required for the armor variant). Used by
+      // Dodge's "while no shield and no martial armor" RAW gate.
+      case "HAS_SHIELD":          return hasEquippedItemOfType(actor, "shield") ? 1 : 0;
+      case "HAS_MARTIAL_ARMOR":   return hasEquippedItemOfType(actor, "armor", { requireMartial: true }) ? 1 : 0;
       default:
         return null;  // unknown → fold to 0 in evalNode
     }
@@ -416,6 +435,25 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     if (!p.isEquipped) continue;
     const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
     if (cat === wanted) return true;
+  }
+  return false;
+}
+
+// True if the actor has any EQUIPPED item with the given `item_type`
+// (e.g. "shield", "armor"). Optional `requireMartial` filters for
+// items whose `isMartial` flag is true — matches CSB's stored bool
+// field on armor/shield items. Used by `HAS_SHIELD` and
+// `HAS_MARTIAL_ARMOR` formula identifiers for Dodge's RAW gate.
+function hasEquippedItemOfType(actor, item_type, { requireMartial = false } = {}) {
+  if (!actor) return false;
+  const wanted = String(item_type ?? "").toLowerCase();
+  const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  for (const item of items) {
+    const p = item?.system?.props ?? {};
+    if (String(p.item_type ?? "").toLowerCase() !== wanted) continue;
+    if (!p.isEquipped) continue;
+    if (requireMartial && !p.isMartial) continue;
+    return true;
   }
   return false;
 }

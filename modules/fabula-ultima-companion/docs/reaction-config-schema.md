@@ -440,6 +440,10 @@ Identifiers (all return 0 if unresolvable):
 | `HP_DEALT` / `MP_DEALT` / `SHIELD_DEALT` | Same value but returns 0 unless the event's `valueType` matches. |
 | `ROUND` | Current combat round number (1-indexed). 0 outside combat. Used by `condition_formula` gates like `"ROUND % 2 == 0"` (even rounds only). |
 | `ACTION_TARGET_COUNT` | `payload.targets.length` — how many tokens the triggering action targets. 0 when the payload carries no target list (lifecycle triggers). Used by gates like `"ACTION_TARGET_COUNT >= 2"` for multi-target-only reactions. |
+| `HIT_COUNT` | `payload.hitTargets.length` — how many targets passed the Check. Threaded onto chainPayload by the Skill RESOLVE path (state-handlers.js), so it's available to `on_activate_effect_ref` chains for gating "fire only on hit" effects. 0 when no roll info was threaded (no-Check skill / passive grant). Example: Soul Steal's IP grant uses `condition_formula: "HIT_COUNT > 0"` to skip on miss. |
+| `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | 1 if the reactor has at least one equipped weapon whose `category` matches the type (case-insensitive), else 0. Used by Spiritist's Healing Power / Support Magic to gate on arcane-weapon presence. |
+| `HAS_SHIELD` | 1 if the reactor has any equipped item with `item_type === "shield"`, else 0. |
+| `HAS_MARTIAL_ARMOR` | 1 if the reactor has any equipped item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
 
 Per-target semantics: damage triggers fire once per affected target, so a
 grant that uses `DAMAGE_DEALT` also fires once per target — cumulatively
