@@ -19,7 +19,7 @@
       if (!pickToken || !pickItem) { console.error(TAG, "OppEffectUtils not loaded."); return; }
 
       // Step 1: pick whose item is lost (any token on scene)
-      const token = await pickToken({ title: "Lost Item — Choose Actor" });
+      const token = await pickToken({ title: "Lost Item — Choose Actor", sourceActorUuid: ctx.actorUuid });
       if (!token) return;
 
       const actor = token.actor;

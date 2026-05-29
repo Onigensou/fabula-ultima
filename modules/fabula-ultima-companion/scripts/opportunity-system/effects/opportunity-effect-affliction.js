@@ -39,10 +39,9 @@
       if (!status) return;
 
       // Step 2: pick target (exclude the afflicting actor)
-      const scannerActor = await resolveActor(ctx.actorUuid);
       const token = await pickToken({
         title:          "Affliction — Choose Target",
-        excludeActorId: scannerActor?.id ?? null,
+        sourceActorUuid: ctx.actorUuid,
       });
       if (!token) return;
 

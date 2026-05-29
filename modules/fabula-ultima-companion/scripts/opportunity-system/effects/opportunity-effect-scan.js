@@ -57,12 +57,9 @@
       const { resolveActor, pickToken } = window["oni.OppEffectUtils"] ?? {};
       if (!resolveActor || !pickToken) { console.error(TAG, "OppEffectUtils not loaded."); return; }
 
-      // Exclude the scanning actor from the target list
-      const scannerActor = await resolveActor(ctx.actorUuid);
-
       const token = await pickToken({
         title:          "Scan — Choose Target",
-        excludeActorId: scannerActor?.id ?? null,
+        sourceActorUuid: ctx.actorUuid,
       });
       if (!token) return;
 

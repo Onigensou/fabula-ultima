@@ -30,7 +30,7 @@
       const { pickToken } = window["oni.OppEffectUtils"] ?? {};
       if (!pickToken) { console.error(TAG, "OppEffectUtils not loaded."); return; }
 
-      const token = await pickToken({ title: "Faux Pas — Choose Creature" });
+      const token = await pickToken({ title: "Faux Pas — Choose Creature", sourceActorUuid: ctx.actorUuid });
       if (!token) return;
 
       const targetActor = token.actor;

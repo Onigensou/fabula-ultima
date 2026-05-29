@@ -52,7 +52,7 @@
       const { pickToken, gmTextPrompt } = window["oni.OppEffectUtils"] ?? {};
       if (!pickToken || !gmTextPrompt) { console.error(TAG, "OppEffectUtils not loaded."); return; }
 
-      const token = await pickToken({ title: "Unmask — Choose Creature" });
+      const token = await pickToken({ title: "Unmask — Choose Creature", sourceActorUuid: ctx.actorUuid });
       if (!token) return;
 
       const targetActor = token.actor;
