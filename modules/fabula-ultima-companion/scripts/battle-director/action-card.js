@@ -601,6 +601,25 @@ function ensureStyles() {
       text-align: center;
       letter-spacing: 0.3px;
     }
+    /* Mode footer inside the reaction tooltip body — small chip-like
+       hint so the player sees whether the pill is auto / ask / off. */
+    .fud-bf-desc-tip .fud-bf-reaction-tip-foot {
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-top: 1px solid rgba(120, 80, 200, 0.35);
+      font-size: 10.5px;
+      font-weight: 700;
+      font-style: italic;
+      color: #4a2f87;
+      letter-spacing: 0.3px;
+    }
+    /* Cursor hint — the pill is hoverable for info. */
+    .fud-bf-card .fud-bf-reaction-pill {
+      cursor: help;
+    }
+    .fud-bf-card .fud-bf-reaction-pill .fud-btn-reaction {
+      cursor: pointer;
+    }
 
     /* Buttons row */
     .fud-bf-card .fud-bf-btn-row {
@@ -2500,11 +2519,18 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 }
 
 // Pre-resolve reaction pill row. Each entry shape:
-//   { carrierUuid, carrierName, carrierImg, mode: "on"|"ask"|"off", rowKey, ref }
+//   { carrierKind, carrierUuid, carrierName, carrierImg, carrierDescription,
+//     mode: "on"|"ask"|"off", rowKey, ref }
 // "off" entries are not rendered (auto-rejected upstream); "on" entries
 // render as an auto-applied chip (no buttons); "ask" entries render with
 // Apply/Skip buttons. The row carries data-fud-reactions-pending=<count>
 // on the card root so CSS can disable Confirm while any ask remains.
+//
+// Each pill carries data-fud-equip-desc + data-fud-equip-desc-name so
+// the existing dwell-tooltip (used by equipment options and target
+// rows) surfaces the skill's description on hover. The body bundles a
+// "Mode" footer chip so the player can see whether the pill is acting
+// automatically vs. waiting on their click vs. disabled.
 function buildReactionPillRow(prePassives) {
   const visible = prePassives.filter((p) => p?.mode !== "off");
   if (!visible.length) return "";
@@ -2515,16 +2541,28 @@ function buildReactionPillRow(prePassives) {
     const iconHtml = p.carrierImg
       ? `<img class="fud-bf-reaction-icon" src="${escapeHtml(p.carrierImg)}" alt="" />`
       : `<span class="fud-bf-reaction-icon" aria-hidden="true">⚡</span>`;
+    const modeLabel =
+      p.mode === "on"  ? "Auto-apply (On)"  :
+      p.mode === "off" ? "Disabled (Off)"   :
+                         "Asks (You choose)";
+    // Skill descriptions in CSB are rich HTML; trusted (local actor
+    // data, not user input). Bundle a mode footer chip so the player
+    // sees the dispatch behavior without leaving the card.
+    const descBody =
+      (p.carrierDescription ?? "") +
+      `<div class="fud-bf-reaction-tip-foot">Mode: ${escapeHtml(modeLabel)}</div>`;
+    const tipAttrs =
+      ` data-fud-equip-desc="${escapeHtml(descBody)}" data-fud-equip-desc-name="${safeName}"`;
     if (p.mode === "on") {
       return `
-        <div class="fud-bf-reaction-pill is-auto" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}">
+        <div class="fud-bf-reaction-pill is-auto" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${tipAttrs}>
           ${iconHtml}
           <span class="fud-bf-reaction-name">${safeName}</span>
           <span class="fud-bf-reaction-status">Auto-applied</span>
         </div>`;
     }
     return `
-      <div class="fud-bf-reaction-pill is-ask" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}" data-fud-reaction-pending="1">
+      <div class="fud-bf-reaction-pill is-ask" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}" data-fud-reaction-pending="1"${tipAttrs}>
         ${iconHtml}
         <span class="fud-bf-reaction-name">${safeName}</span>
         <div class="fud-bf-reaction-actions">
@@ -3628,6 +3666,101 @@ export function registerPlayerActionCardHandler(channel) {
       wrapper.addEventListener("click", onClick);
     }
 
+    // Dwell tooltip — wires the same data-fud-equip-desc /
+    // data-fud-equip-desc-name attributes the GM-side card uses
+    // (equipment options, target rows, reaction pills). Mirrors the
+    // singleton tooltip pattern from postActionCard, scoped to this
+    // mirror wrapper. Both owners and observers get hover-info on the
+    // reaction pills so the player can read what each reaction does
+    // without taking action on it.
+    let mirrorTipCleanup = null;
+    {
+      let mirrorTip = null;
+      let mirrorTarget = null;
+      let mirrorShowTid = null;
+      let mirrorShowRaf = null;
+      const ensureMirrorTip = () => {
+        if (mirrorTip) return mirrorTip;
+        mirrorTip = document.createElement("div");
+        mirrorTip.className = "fud-bf-desc-tip";
+        mirrorTip.innerHTML = `
+          <div class="fud-bf-desc-tip-name"></div>
+          <div class="fud-bf-desc-tip-stats"></div>
+          <div class="fud-bf-desc-tip-body"></div>`;
+        document.body.appendChild(mirrorTip);
+        return mirrorTip;
+      };
+      const positionMirrorTip = (anchor) => {
+        if (!mirrorTip || !anchor) return;
+        const r = anchor.getBoundingClientRect();
+        const tip = mirrorTip.getBoundingClientRect();
+        let left = r.right + 12;
+        let top  = r.top;
+        const margin = 8;
+        if (left + tip.width > window.innerWidth - margin) {
+          left = r.left - tip.width - 12;
+        }
+        if (top + tip.height > window.innerHeight - margin) {
+          top = window.innerHeight - tip.height - margin;
+        }
+        if (top < margin) top = margin;
+        mirrorTip.style.left = `${Math.max(margin, left)}px`;
+        mirrorTip.style.top  = `${top}px`;
+      };
+      const showMirrorTip = (target) => {
+        const desc  = target.dataset.fudEquipDesc;
+        const stats = target.dataset.fudEquipStats || "";
+        if (!desc && !stats) return;
+        const name = target.dataset.fudEquipDescName || "";
+        const tip = ensureMirrorTip();
+        tip.querySelector(".fud-bf-desc-tip-name").textContent = name;
+        tip.querySelector(".fud-bf-desc-tip-stats").innerHTML = stats;
+        tip.querySelector(".fud-bf-desc-tip-body").innerHTML  = desc ?? "";
+        positionMirrorTip(target);
+        if (mirrorShowRaf != null) {
+          try { cancelAnimationFrame(mirrorShowRaf); } catch {}
+        }
+        mirrorShowRaf = requestAnimationFrame(() => {
+          mirrorShowRaf = null;
+          tip.classList.add("is-visible");
+        });
+      };
+      const hideMirrorTip = () => {
+        if (mirrorShowTid != null) { try { clearTimeout(mirrorShowTid); } catch {} mirrorShowTid = null; }
+        if (mirrorShowRaf != null) { try { cancelAnimationFrame(mirrorShowRaf); } catch {} mirrorShowRaf = null; }
+        mirrorTarget = null;
+        if (!mirrorTip) return;
+        mirrorTip.classList.remove("is-visible");
+      };
+      const mirrorTipSelector = "[data-fud-equip-desc], [data-fud-equip-stats]";
+      wrapper.addEventListener("mouseover", (ev) => {
+        const opt = ev.target?.closest?.(mirrorTipSelector);
+        if (!opt) return;
+        if (opt === mirrorTarget) return;
+        hideMirrorTip();
+        mirrorTarget = opt;
+        mirrorShowTid = setTimeout(() => {
+          if (mirrorTarget === opt && document.body.contains(opt)) showMirrorTip(opt);
+        }, 600);
+      });
+      wrapper.addEventListener("mouseout", (ev) => {
+        const opt = ev.target?.closest?.(mirrorTipSelector);
+        if (!opt) return;
+        const next = ev.relatedTarget?.closest?.(mirrorTipSelector);
+        if (next === opt) return;
+        hideMirrorTip();
+      });
+      // Expose the tooltip cleanup so the mirror's final cleanup
+      // assignment below can chain to it. Without this the tooltip DOM
+      // node stays in document.body after the mirror is dismantled,
+      // and a leftover dwell could surface a stale tooltip.
+      mirrorTipCleanup = () => {
+        try { hideMirrorTip(); } catch {}
+        try { mirrorTip?.remove(); } catch {}
+        mirrorTip = null;
+      };
+    }
+
     // Make the card visible. The CSS animation rule is keyed on
     // `#${ROOT_ID}.is-visible` (NOT .fud-bf-card.is-visible), so we
     // have to add the class to the root element (the imported div with
@@ -3644,6 +3777,7 @@ export function registerPlayerActionCardHandler(channel) {
 
     _mirrorCleanup = () => {
       try { wrapper.removeEventListener("click", onClick); } catch {}
+      try { mirrorTipCleanup?.(); } catch {}
     };
 
     log(`action-card mirror rendered (owner=${isOwner ? "yes" : "observer"})`);
