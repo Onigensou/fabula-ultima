@@ -1,12 +1,5 @@
 // ============================================================================
 // Opportunity Effect — Advantage
-//
-// Effect: The next Check performed by the actor or an ally receives a +4 bonus.
-//
-// Implementation: applies a charged AE (charges=1, chargeKey="opportunityAdvantage")
-// to the actor's world record. The CheckRoller pipeline step registered in
-// opportunity-action-hook.js consumes the charge before dice are rolled and
-// injects +4 into payload.check.modifier.parts.
 // ============================================================================
 (() => {
   const TAG       = "[ONI][OpportunityEffect:Advantage]";
@@ -14,13 +7,18 @@
 
   Hooks.once("ready", () => {
     window["oni.OppEffectRegistry"]?.register("advantage", async (ctx) => {
+      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+
       const { resolveActor } = window["oni.OppEffectUtils"] ?? {};
-      if (!resolveActor) { console.error(TAG, "OppEffectUtils not loaded."); return; }
+      if (!resolveActor) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
 
+      console.debug(TAG, "[step 1] resolving actor from UUID:", ctx.actorUuid);
       const actor = await resolveActor(ctx.actorUuid);
-      if (!actor) { console.warn(TAG, "Could not resolve actor", ctx.actorUuid); return; }
+      console.debug(TAG, "[step 1] resolved actor:", actor ? `${actor.name} (id=${actor.id})` : "NULL");
+      if (!actor) { console.warn(TAG, "[exit] could not resolve actor"); return; }
 
-      await actor.createEmbeddedDocuments("ActiveEffect", [{
+      console.debug(TAG, "[step 2] creating Advantage AE (charges=1) on actor...");
+      const created = await actor.createEmbeddedDocuments("ActiveEffect", [{
         name:  "Advantage",
         label: "Advantage",
         icon:  "icons/magic/control/debuff-arrows-up-gold.webp",
@@ -31,7 +29,9 @@
             chargeKey:  "opportunityAdvantage",
           },
         },
-      }]).catch(e => console.error(TAG, "AE creation failed:", e));
+      }]).catch(e => { console.error(TAG, "[step 2] AE creation failed:", e); return null; });
+
+      console.debug(TAG, "[done] AE created:", created ? created.map(e => e.id) : "FAILED");
     });
   });
 })();

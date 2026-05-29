@@ -1,11 +1,5 @@
 // ============================================================================
 // Opportunity Effect — Lost Item
-//
-// Effect: An item is destroyed, lost, stolen, or left behind.
-//
-// Implementation: GM picks a target token (any creature on the scene), then
-// picks one of their items from a dropdown. After confirmation the item is
-// deleted from the actor's inventory.
 // ============================================================================
 (() => {
   const TAG = "[ONI][OpportunityEffect:LostItem]";
@@ -15,30 +9,39 @@
 
   Hooks.once("ready", () => {
     window["oni.OppEffectRegistry"]?.register("lost_item", async (ctx) => {
+      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+
       const { pickToken, pickItem } = window["oni.OppEffectUtils"] ?? {};
-      if (!pickToken || !pickItem) { console.error(TAG, "OppEffectUtils not loaded."); return; }
+      if (!pickToken || !pickItem) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
 
-      // Step 1: pick whose item is lost (any token on scene)
+      console.debug(TAG, "[step 1] opening target picker...");
       const token = await pickToken({ title: "Lost Item — Choose Actor", sourceActorUuid: ctx.actorUuid });
-      if (!token) return;
+      console.debug(TAG, "[step 1] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
+      if (!token) { console.debug(TAG, "[exit] target picker cancelled"); return; }
 
-      const actor = token.actor;
+      const actor     = token.actor;
+      const itemList  = Array.from(actor.items ?? []);
+      console.debug(TAG, "[step 2] actor items:", itemList.map(i => `${i.name} (id=${i.id})`));
 
-      // Step 2: pick which item
+      console.debug(TAG, "[step 2] opening item picker...");
       const item = await pickItem(actor);
-      if (!item) return;
+      console.debug(TAG, "[step 2] item picked:", item ? `${item.name} (id=${item.id})` : "NULL");
+      if (!item) { console.debug(TAG, "[exit] item picker cancelled"); return; }
 
-      // Step 3: confirm before deleting
+      console.debug(TAG, "[step 3] showing confirm dialog...");
       const confirmed = await Dialog.confirm({
         title:   "Lost Item — Confirm",
         content: `<p>Remove <strong>${esc(item.name)}</strong> from <strong>${esc(actor.name)}</strong>?</p>`,
         yes:     () => true,
         no:      () => false,
       }).catch(() => false);
-      if (!confirmed) return;
+      console.debug(TAG, "[step 3] confirmed:", confirmed);
+      if (!confirmed) { console.debug(TAG, "[exit] deletion not confirmed"); return; }
 
+      console.debug(TAG, "[step 4] deleting item...");
       await item.delete()
-        .catch(e => console.error(TAG, "Item deletion failed:", e));
+        .catch(e => console.error(TAG, "[step 4] item.delete() failed:", e));
+      console.debug(TAG, "[done] item deleted");
     });
   });
 })();

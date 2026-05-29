@@ -74,6 +74,7 @@
     sourceActorUuid = null,
   } = {}) {
     const targeting = globalThis.FUCompanion?.api?.JRPGTargeting;
+    console.debug(TAG, "[pickToken] entry", { title, skillTarget, sourceActorUuid, usingTargetingAPI: !!targeting });
 
     if (targeting) {
       // Build explicit allowed list so we can exclude the source actor's tokens
@@ -82,32 +83,43 @@
         const srcDoc   = await fromUuid(sourceActorUuid).catch(() => null);
         const srcActor = srcDoc?.actor ?? (srcDoc?.documentName === "Actor" ? srcDoc : null);
         const srcId    = srcActor?.id ?? null;
+        console.debug(TAG, "[pickToken] source actor resolved", { srcId, srcName: srcActor?.name });
         const allowed  = (canvas?.tokens?.placeables ?? [])
           .filter(t => t.actor && (!srcId || t.actor.id !== srcId))
           .map(t => t.document?.uuid)
           .filter(Boolean);
         if (allowed.length) allowedTokenUuids = allowed;
+        console.debug(TAG, "[pickToken] allowed token UUIDs", allowedTokenUuids ?? "(all)");
       }
 
+      console.debug(TAG, "[pickToken] calling requestTargeting...");
       const result = await targeting.requestTargeting({
         skillTarget,
         sourceActorUuid: sourceActorUuid ?? null,
         ...(allowedTokenUuids ? { allowedTargetTokenUuids: allowedTokenUuids } : {}),
         uiTitleText: title,
         userId: game.user.id,
-      }).catch(e => { console.error(TAG, "requestTargeting error:", e); return null; });
+      }).catch(e => { console.error(TAG, "[pickToken] requestTargeting error:", e); return null; });
 
-      if (!result?.confirmed || !result.tokens?.length) return null;
+      console.debug(TAG, "[pickToken] requestTargeting result", { confirmed: result?.confirmed, cancelled: result?.cancelled, tokenCount: result?.tokens?.length, tokens: result?.tokens });
+
+      if (!result?.confirmed || !result.tokens?.length) {
+        console.debug(TAG, "[pickToken] → null (cancelled or no tokens)");
+        return null;
+      }
 
       // result.tokens contains plain info objects — resolve back to PlaceableToken
       const info  = result.tokens[0];
+      console.debug(TAG, "[pickToken] resolving PlaceableToken from info", info);
       const found = (canvas?.tokens?.placeables ?? []).find(t =>
         t.document?.uuid === info.tokenUuid || t.id === info.tokenId
       );
+      console.debug(TAG, "[pickToken] → PlaceableToken", found ? found.name : "NOT FOUND");
       return found ?? null;
     }
 
     // ── Fallback: Dialog <select> ──────────────────────────────────────────────
+    console.debug(TAG, "[pickToken] targeting API unavailable — using Dialog fallback");
     const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
 
     // Resolve source actor ID for exclusion
@@ -123,12 +135,16 @@
       if (excludeActorId && t.actor.id === excludeActorId) return false;
       return true;
     });
+    console.debug(TAG, "[pickToken] fallback token list", tokens.map(t => t.name));
 
     if (!tokens.length) {
       ui.notifications?.warn("[Opportunity] No valid tokens on scene.");
       return null;
     }
-    if (tokens.length === 1) return tokens[0];
+    if (tokens.length === 1) {
+      console.debug(TAG, "[pickToken] → single token auto-selected:", tokens[0].name);
+      return tokens[0];
+    }
 
     return new Promise(resolve => {
       const opts = tokens.map((t, i) =>
