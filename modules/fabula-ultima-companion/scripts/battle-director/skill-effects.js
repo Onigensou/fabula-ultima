@@ -522,11 +522,125 @@ async function promptPassiveOptin(itemName, reactorActor, description) {
   });
 }
 
+// Pre-resolve passive candidates — same matcher as firePassiveTriggers
+// but DOES NOT execute the effects. Returns the metadata an action card
+// needs to render reaction pills before Confirm:
+//   { carrierKind, carrierUuid, carrierName, rowKey, mode, ref, refDescription }
+// Used by COMPUTE-phase Spell handler to surface ask-mode passives as
+// pills on the action card BEFORE the player confirms (so the player can
+// opt in / opt out, and the resolve picks up their decision).
+//
+// Mode tri-state:
+//   "on"  → caller treats as auto-accepted (no pill, applied on resolve)
+//   "ask" → render pill; pending player decision
+//   "off" → auto-rejected (no pill, not applied)
+export async function findPassiveCandidates({ casterActor, trigger, payload }) {
+  if (!casterActor || !trigger) return [];
+  const out = [];
+  for (const item of casterActor.items?.contents ?? []) {
+    const rc = item.system?.props?.reaction_config_table;
+    if (!rc || typeof rc !== "object") continue;
+    for (const key of Object.keys(rc)) {
+      const row = rc[key];
+      if (!row || row.$deleted) continue;
+      if (row.reaction_isPassive !== true) continue;
+      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (!(await shouldReactionPassiveFire(row, item, casterActor, payload))) continue;
+      out.push({
+        carrierKind: "item",
+        carrierUuid: item.uuid,
+        carrierName: item.name,
+        carrierImg:  item.img,
+        carrierDescription: item.system?.props?.description ?? "",
+        rowKey: key,
+        mode: resolveReactionPassiveMode(row),
+        ref: String(row.reaction_effect_ref ?? "").trim(),
+      });
+    }
+  }
+  for (const ae of casterActor.effects?.contents ?? []) {
+    if (ae.disabled) continue;
+    const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
+    if (!cfg || typeof cfg !== "object") continue;
+    const rc = cfg.reaction_config_table;
+    if (!rc || typeof rc !== "object") continue;
+    for (const key of Object.keys(rc)) {
+      const row = rc[key];
+      if (!row || row.$deleted) continue;
+      if (row.reaction_isPassive !== true) continue;
+      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (!(await shouldReactionPassiveFire(row, ae, casterActor, payload))) continue;
+      out.push({
+        carrierKind: "ae",
+        carrierUuid: ae.uuid,
+        carrierName: ae.name,
+        carrierImg:  ae.icon ?? ae.img,
+        carrierDescription: ae.description ?? "",
+        rowKey: key,
+        mode: resolveReactionPassiveMode(row),
+        ref: String(row.reaction_effect_ref ?? "").trim(),
+      });
+    }
+  }
+  return out;
+}
+
+// Fire a single pre-evaluated candidate, given the same payload that
+// findPassiveCandidates was called with. Used by the resolve path to
+// apply pre-accepted candidates. Mirrors the dispatch in
+// firePassiveTriggers' main loop, minus the matcher/mode gating
+// (caller has already done both).
+export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload }) {
+  if (!candidate?.ref) return { ok: false, reason: "no-ref" };
+  const { makeChainContext } = await import("./skill-targeting.js");
+  const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
+    ?? casterActor?.getActiveTokens?.()?.[0]?.document ?? null;
+  let runtimeEffectTable;
+  let firePoints;
+  let skillForCtx;
+  let carrier;
+  if (candidate.carrierKind === "item") {
+    carrier = await fromUuid(candidate.carrierUuid);
+    if (!carrier) return { ok: false, reason: "carrier-gone" };
+    const { getRuntimeSkillView } = await import("./skill-recipes.js");
+    const view = getRuntimeSkillView(carrier);
+    runtimeEffectTable = view.effect_table;
+    firePoints = view.fire_points;
+    skillForCtx = carrier;
+  } else {
+    carrier = await fromUuid(candidate.carrierUuid);
+    if (!carrier) return { ok: false, reason: "carrier-gone" };
+    const cfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
+    runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
+    firePoints = null;
+    skillForCtx = null;
+  }
+  const ctx = makeChainContext({
+    reactorActor: casterActor,
+    reactorToken,
+    skill: skillForCtx,
+    dCombat: director?.dCombat ?? null,
+    payload,
+    firePoints,
+    runtimeEffectTable,
+    isPassive: true,
+  });
+  const r = await applyEffectByLabel(candidate.ref, ctx);
+  return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied };
+}
+
 // Walk every reaction_config_table row on the reactor's items, fire any
 // passive rows matching `trigger`. Replaces the old passive_trigger-field
 // dispatcher.
-export async function firePassiveTriggers({ director, casterActor, trigger, payload }) {
+export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
   if (!casterActor || !trigger) return { fired: [] };
+  // skipEvaluated: [{ carrierUuid, rowKey }] entries the pre-resolve
+  // dispatcher already handled. We skip them here so the post-resolve
+  // pass doesn't re-fire the same candidate.
+  const skipSet = new Set(
+    (Array.isArray(skipEvaluated) ? skipEvaluated : [])
+      .map((e) => `${e?.rowKey ?? ""}:${e?.carrierUuid ?? ""}`)
+  );
 
   // ── Collect candidates from BOTH items and AEs ───────────────────────
   //
@@ -549,6 +663,7 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       if (!row || row.$deleted) continue;
       if (row.reaction_isPassive !== true) continue;
       if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (skipSet.has(`${key}:${item.uuid}`)) continue;
       candidates.push({
         carrierKind: "item",
         carrier: item,
@@ -569,6 +684,7 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       if (!row || row.$deleted) continue;
       if (row.reaction_isPassive !== true) continue;
       if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (skipSet.has(`${key}:${ae.uuid}`)) continue;
       candidates.push({
         carrierKind: "ae",
         carrier: ae,

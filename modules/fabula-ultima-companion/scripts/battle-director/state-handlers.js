@@ -32,6 +32,19 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
+
+// findPassiveCandidates + firePreAcceptedCandidate are dynamically
+// imported (with one-shot cache-bust on first call) so this module
+// loads cleanly against module caches that pre-date these exports.
+// Without this, a fresh state-handlers (e.g. harness cache-bust) would
+// fail to load whenever skill-effects.js was already in the boot-time
+// cache without the new symbols.
+let _seExtraModule = null;
+async function getSkillEffectsExtras() {
+  if (_seExtraModule) return _seExtraModule;
+  _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
+  return _seExtraModule;
+}
 import { getRuntimeSkillView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -375,30 +388,50 @@ async function resolveSkillAction(director, ar, opts = {}) {
   const targetNames = (ar.targets ?? []).map((t) => t.name).join(", ") || "no target";
   ui.notifications?.info(`${ar.attacker?.name ?? "?"} cast ${ar.skillName} on ${targetNames}.`);
 
-  // 6. Passive triggers — fire any reaction_config_table rows on the
-  //    caster's items whose `reaction_trigger` matches
-  //    `creature_completes_spell` and `reaction_isPassive: true`.
-  //    Examples: Spiritist's Healing Power (post-spell SL×BOND_COUNT heal)
-  //    and Support Magic (post-spell bond-bonus on a chosen ally's Check).
-  //
-  //    Spell-only: non-Spell actions don't fire this trigger. Other
-  //    triggers (creature_deals_damage etc.) fire from their own hook
-  //    sites elsewhere.
+  // 6. Pre-resolve accepted passives — fire any pill-accepted passives
+  //    the CONFIRM step stamped on the actionResult (Healing Power /
+  //    Support Magic / future "during action card" reactions). These
+  //    were evaluated BEFORE the player clicked Confirm so they
+  //    manipulate the action's effective result. The post-resolve
+  //    `creature_completes_spell` dispatch below skips any candidate
+  //    already evaluated here to avoid double-fire.
+  const payloadForPassives = {
+    spellUuid: skill.uuid,
+    spellName: skill.name,
+    targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+    hitTargetTokenUuids: Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid),
+    sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+    sourceActorUuid: ar.attackerActorRef,
+    actionIntent: ar.actionIntent,
+  };
+  const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
+  if (accepted.length) {
+    const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+    for (const cand of accepted) {
+      try {
+        await firePreAcceptedCandidate({
+          director, casterActor, candidate: cand, payload: payloadForPassives,
+        });
+      } catch (e) { warn(`Skill resolve: prePassive "${cand?.carrierName}" threw`, e); }
+    }
+  }
+
+  // 7. Post-resolve creature_completes_spell dispatch (legacy fallback
+  //    + any candidates that weren't evaluated pre-resolve — e.g. an
+  //    "off"-mode passive that the pre-eval correctly auto-rejected but
+  //    that a player wants to keep available if they flip the mode mid-
+  //    session). We pass `skipEvaluated` so firePassiveTriggers can
+  //    suppress candidates already handled. Spell-only: non-Spell
+  //    actions don't fire this trigger.
   if (String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell") {
     try {
+      const evaluated = Array.isArray(ar.evaluatedPrePassives) ? ar.evaluatedPrePassives : [];
       await firePassiveTriggers({
         director,
         casterActor,
         trigger: "creature_completes_spell",
-        payload: {
-          spellUuid: skill.uuid,
-          spellName: skill.name,
-          targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
-          hitTargetTokenUuids: Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid),
-          sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
-          sourceActorUuid: ar.attackerActorRef,
-          actionIntent: ar.actionIntent,
-        },
+        payload: payloadForPassives,
+        skipEvaluated: evaluated,
       });
     } catch (e) { warn("Skill resolve: firePassiveTriggers threw", e); }
   }
@@ -2523,6 +2556,43 @@ const Confirm = {
       }).catch((e) => warn("CONFIRM: saveDirectorState failed", e));
     }
 
+    // Pre-resolve passive evaluation — "during action card" reactions
+    // that manipulate the active action's values (Healing Power,
+    // Support Magic, etc.). Each candidate gets a pill on the action
+    // card so the player can opt in/out BEFORE Confirm. The decisions
+    // are stashed in actionResult.acceptedPrePassives, and RESOLVE
+    // applies them via firePreAcceptedCandidate. The post-resolve
+    // `creature_completes_spell` dispatcher at line ~387 then skips
+    // any candidate already evaluated here (no double-fire).
+    //
+    // Currently scoped to Spell-type actions whose trigger matches
+    // `creature_completes_spell` (the only canonically pre-resolve
+    // trigger in the system today). The classification should grow to
+    // a trigger-phase registry as more pre-resolve triggers land
+    // (caster_short_on_mp is already pre-resolve via the cost gate;
+    // start_of_turn etc. are standalone, no card).
+    let prePassives = [];
+    if (ar.kind === "Skill" && ar.skillType?.toLowerCase() === "spell" && attackerActor) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        prePassives = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_completes_spell",
+          payload: {
+            spellUuid: ar.skillUuid ?? null,
+            spellName: ar.skillName ?? null,
+            targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+            hitTargetTokenUuids: Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid),
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            sourceActorUuid: ar.attackerActorRef,
+            actionIntent: ar.actionIntent,
+          },
+        });
+      } catch (e) {
+        warn("CONFIRM: findPassiveCandidates threw", e);
+      }
+    }
+
     const result = await postActionCard({
       director,
       kind: ar.kind,
@@ -2537,6 +2607,7 @@ const Confirm = {
         attackMode: ar.attackMode,
         passIndex: ar.passIndex,
         totalPasses: ar.totalPasses,
+        prePassives,
         // Guard-specific:
         coverTarget: ar.coverTarget,
         // Study-specific:
@@ -2590,6 +2661,22 @@ const Confirm = {
       director.ctx.actionResult = freezeActionResult({
         ...director.ctx.actionResult,
         itemSelection: result.itemSelection,
+      });
+    }
+    // Pre-resolve passive decisions — only "apply" entries are stamped
+    // so RESOLVE can fire them via firePreAcceptedCandidate. The
+    // post-resolve creature_completes_spell dispatcher reads the same
+    // list to skip already-evaluated candidates (avoid double-fire).
+    if (Array.isArray(result.reactionDecisions) && result.reactionDecisions.length) {
+      const applied = result.reactionDecisions.filter((d) => d?.decision === "apply");
+      const evaluated = result.reactionDecisions.map((d) => ({
+        carrierUuid: d.carrierUuid,
+        rowKey: d.rowKey,
+      }));
+      director.ctx.actionResult = freezeActionResult({
+        ...director.ctx.actionResult,
+        acceptedPrePassives: applied,
+        evaluatedPrePassives: evaluated,
       });
     }
     // Drop the survival-flag pendingAction the moment the card resolves

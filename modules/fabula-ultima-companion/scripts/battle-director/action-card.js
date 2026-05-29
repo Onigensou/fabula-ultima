@@ -504,6 +504,104 @@ function ensureStyles() {
     }
     .fud-bf-card .fud-bf-target-row .t-affinity .affinity-icon { margin-right: 3px; font-size: 9.5px; }
 
+    /* Pre-resolve reaction pill row (Healing Power / Support Magic /
+       future "during action card" passives). Sits BETWEEN the body and
+       the Confirm/Cancel buttons; locks Confirm while any ask pill is
+       undecided. */
+    .fud-bf-card .fud-bf-reactions-row {
+      display: flex; flex-direction: column; gap: 5px;
+      margin: 8px 0 4px;
+      padding: 6px 8px 7px;
+      background: linear-gradient(180deg, rgba(120, 80, 200, 0.10), rgba(120, 80, 200, 0.04));
+      border: 1px solid rgba(120, 80, 200, 0.45);
+      border-radius: 8px;
+    }
+    .fud-bf-card .fud-bf-reactions-label {
+      font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px;
+      text-transform: uppercase; color: #4a2f87;
+      padding: 0 2px;
+    }
+    .fud-bf-card .fud-bf-reactions-list {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .fud-bf-card .fud-bf-reaction-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 6px;
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 6px;
+      border: 1px solid rgba(120, 80, 200, 0.25);
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-resolved {
+      opacity: 0.55;
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-applied {
+      background: rgba(140, 220, 130, 0.30);
+      border-color: rgba(60, 140, 60, 0.55);
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-skipped {
+      background: rgba(220, 220, 220, 0.40);
+      border-color: rgba(140, 140, 140, 0.45);
+    }
+    .fud-bf-card .fud-bf-reaction-icon {
+      width: 18px; height: 18px;
+      flex: 0 0 auto;
+      border-radius: 4px;
+      object-fit: cover;
+      font-size: 14px; line-height: 18px; text-align: center;
+    }
+    .fud-bf-card .fud-bf-reaction-name {
+      flex: 1 1 auto;
+      font-size: 11px; font-weight: 700;
+      color: #2c1c5c;
+    }
+    .fud-bf-card .fud-bf-reaction-status {
+      flex: 0 0 auto;
+      font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+      color: #4a2f87; opacity: 0.75;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(120, 80, 200, 0.15);
+    }
+    .fud-bf-card .fud-bf-reaction-actions {
+      display: flex; gap: 4px;
+      flex: 0 0 auto;
+    }
+    .fud-bf-card .fud-btn-reaction {
+      flex: 0 0 auto;
+      padding: 3px 9px;
+      font-size: 9.5px;
+      border-radius: 5px;
+      border-width: 1.5px;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    }
+    .fud-bf-card .fud-btn-reaction-apply {
+      background: linear-gradient(180deg, #c5e8c5, #9fce9f);
+      color: #1a3a1a;
+      border-color: #5a8a5a;
+    }
+    .fud-bf-card .fud-btn-reaction-skip {
+      background: linear-gradient(180deg, #e5d6c5, #c9b294);
+      color: #3a2818;
+      border-color: #8a7560;
+    }
+    /* Lock Confirm while any ask-mode pill is still pending. The data
+       attribute holds the count; CSS only needs to know "is there one". */
+    .fud-bf-card[data-fud-reactions-pending] .fud-btn-confirm {
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.4);
+    }
+    .fud-bf-card[data-fud-reactions-pending]::after {
+      content: "⏳ Resolve reactions first";
+      display: block;
+      margin-top: 6px;
+      font-size: 10px; font-style: italic; font-weight: 700;
+      color: #4a2f87;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
     /* Buttons row */
     .fud-bf-card .fud-bf-btn-row {
       display: flex; align-items: center; gap: 6px;
@@ -2401,6 +2499,48 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
   return `<div class="fud-bf-subtitle">${wrapped.join(`<span class="dot">•</span>`)}</div>`;
 }
 
+// Pre-resolve reaction pill row. Each entry shape:
+//   { carrierUuid, carrierName, carrierImg, mode: "on"|"ask"|"off", rowKey, ref }
+// "off" entries are not rendered (auto-rejected upstream); "on" entries
+// render as an auto-applied chip (no buttons); "ask" entries render with
+// Apply/Skip buttons. The row carries data-fud-reactions-pending=<count>
+// on the card root so CSS can disable Confirm while any ask remains.
+function buildReactionPillRow(prePassives) {
+  const visible = prePassives.filter((p) => p?.mode !== "off");
+  if (!visible.length) return "";
+  const pillsHtml = visible.map((p) => {
+    const safeName = escapeHtml(p.carrierName ?? "Reaction");
+    const safeKey  = escapeHtml(String(p.rowKey ?? ""));
+    const safeCarrier = escapeHtml(String(p.carrierUuid ?? ""));
+    const iconHtml = p.carrierImg
+      ? `<img class="fud-bf-reaction-icon" src="${escapeHtml(p.carrierImg)}" alt="" />`
+      : `<span class="fud-bf-reaction-icon" aria-hidden="true">⚡</span>`;
+    if (p.mode === "on") {
+      return `
+        <div class="fud-bf-reaction-pill is-auto" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}">
+          ${iconHtml}
+          <span class="fud-bf-reaction-name">${safeName}</span>
+          <span class="fud-bf-reaction-status">Auto-applied</span>
+        </div>`;
+    }
+    return `
+      <div class="fud-bf-reaction-pill is-ask" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}" data-fud-reaction-pending="1">
+        ${iconHtml}
+        <span class="fud-bf-reaction-name">${safeName}</span>
+        <div class="fud-bf-reaction-actions">
+          <div class="fud-btn fud-btn-reaction fud-btn-reaction-apply" data-fud-reaction-action="apply" role="button" tabindex="0">Apply</div>
+          <div class="fud-btn fud-btn-reaction fud-btn-reaction-skip" data-fud-reaction-action="skip" role="button" tabindex="0">Skip</div>
+        </div>
+      </div>`;
+  }).join("");
+  return `
+    <div class="fud-bf-reactions-row">
+      <div class="fud-bf-reactions-label">Reactions</div>
+      <div class="fud-bf-reactions-list">${pillsHtml}</div>
+    </div>
+  `;
+}
+
 function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
@@ -2606,10 +2746,20 @@ export async function postActionCard({ director, kind, payload }) {
     };
   }
 
+  // Pre-resolve reaction pills (Healing Power / Support Magic /
+  // future "during action card" passives). Each ask-mode candidate gets
+  // a pill row with Apply/Skip buttons; on-mode is auto-accepted and
+  // shown as a chip without buttons; off-mode is skipped (no pill).
+  // Confirm is locked while any ask pill is undecided.
+  const prePassives = Array.isArray(payload?.prePassives) ? payload.prePassives : [];
+  const askPassives = prePassives.filter((p) => p?.mode === "ask");
+  const reactionRowHtml = prePassives.length ? buildReactionPillRow(prePassives) : "";
+  const initialPending = askPassives.length;
+
   const root = document.createElement("div");
   root.id = ROOT_ID;
   root.innerHTML = `
-    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}">
+    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
       ${card.portraits ?? ""}
       <div class="fud-bf-header">
         <div class="fud-bf-title-row">
@@ -2619,6 +2769,7 @@ export async function postActionCard({ director, kind, payload }) {
         ${card.subtitle ?? ""}
       </div>
       ${card.body}
+      ${reactionRowHtml}
       ${card.buttons}
     </div>
   `;
@@ -2713,9 +2864,70 @@ export async function postActionCard({ director, kind, payload }) {
       try { hideDescTip(); } catch {}
 
       // Pass any caller-supplied button data (e.g. status pick on Hinder)
-      // back to Confirm. Currently used for `statusValue`.
-      resolve({ confirmed: outcome === "confirm", ...extras });
+      // back to Confirm. Currently used for `statusValue`. Also tack on
+      // reaction-pill decisions so resolve can apply pre-accepted passives.
+      resolve({
+        confirmed: outcome === "confirm",
+        reactionDecisions: snapshotReactionDecisions(),
+        ...extras,
+      });
     };
+
+    // Reaction-pill decision tracking. Each ask-mode pill starts
+    // undecided. Click "Apply" / "Skip" → record + visually mark the
+    // pill resolved + decrement the pending counter on .fud-bf-card.
+    // When counter hits 0, the data attribute is removed and Confirm
+    // unlocks (CSS handles the visual).
+    //
+    // `on`-mode pills are auto-accepted at start; `off`-mode pills are
+    // auto-rejected and not rendered. Both decisions are recorded
+    // immediately so the resolve path sees the full picture.
+    const reactionDecisionMap = new Map(); // rowKey:carrierUuid → "apply"|"skip"
+    for (const p of prePassives) {
+      const key = `${p.rowKey}:${p.carrierUuid}`;
+      if (p.mode === "on")  reactionDecisionMap.set(key, "apply");
+      if (p.mode === "off") reactionDecisionMap.set(key, "skip");
+    }
+    function snapshotReactionDecisions() {
+      const out = [];
+      for (const p of prePassives) {
+        const key = `${p.rowKey}:${p.carrierUuid}`;
+        const decision = reactionDecisionMap.get(key) ?? "skip";
+        out.push({
+          carrierUuid: p.carrierUuid,
+          carrierName: p.carrierName,
+          rowKey: p.rowKey,
+          mode: p.mode,
+          ref: p.ref,
+          decision,
+        });
+      }
+      return out;
+    }
+    function recordPillDecision(rowKey, carrierUuid, decision) {
+      const cardEl = root.querySelector(".fud-bf-card");
+      const pillEl = root.querySelector(
+        `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
+      );
+      if (!pillEl) return;
+      if (pillEl.dataset.fudReactionPending !== "1") return;
+      reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
+      pillEl.dataset.fudReactionPending = "0";
+      pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
+      // Replace the Apply/Skip buttons with a status chip showing the
+      // player's choice. Keeps the visual record on the card.
+      const actions = pillEl.querySelector(".fud-bf-reaction-actions");
+      if (actions) {
+        actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
+      }
+      // Decrement the card-level pending count; remove attribute at 0.
+      const current = Number(cardEl?.dataset?.fudReactionsPending ?? 0);
+      const next = Math.max(0, current - 1);
+      if (cardEl) {
+        if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
+        else delete cardEl.dataset.fudReactionsPending;
+      }
+    }
 
     // Player-driven confirm/cancel via IntentChannel. The acting actor's
     // owner sees their own copy of the card; clicking Confirm/Cancel
@@ -2763,6 +2975,21 @@ export async function postActionCard({ director, kind, payload }) {
       if (lockedInvoke) {
         ev.stopPropagation();
         ui.notifications?.info("Invoke Trait / Bond arrive in Phase E.");
+        return;
+      }
+      // Reaction-pill click handling — Apply / Skip on a pre-resolve
+      // passive (Healing Power, Support Magic etc.). Updates the pill
+      // visually + decrements the card-level pending counter so Confirm
+      // unlocks when all asks are decided.
+      const reactionBtn = ev.target?.closest?.("[data-fud-reaction-action]");
+      if (reactionBtn) {
+        ev.stopPropagation();
+        const pill = reactionBtn.closest(".fud-bf-reaction-pill");
+        if (!pill) return;
+        const rowKey = pill.dataset.fudReactionKey ?? "";
+        const carrier = pill.dataset.fudReactionCarrier ?? "";
+        const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
+        recordPillDecision(rowKey, carrier, decision);
         return;
       }
       // "Open Character Sheet" (Equipment card) — fire-and-forget; the
