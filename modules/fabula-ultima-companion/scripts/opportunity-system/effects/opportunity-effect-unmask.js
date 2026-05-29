@@ -1,5 +1,10 @@
 // ============================================================================
 // Opportunity Effect — Unmask
+//
+// Flow (pre/post):
+//   pre  — target picker; probes motivation fields on the actor; if none found,
+//          opens a GM text prompt. Returns { targetName, portrait, content }.
+//   post — posts the styled unmask chat card using the pre-result data
 // ============================================================================
 (() => {
   const TAG = "[ONI][OpportunityEffect:Unmask]";
@@ -38,48 +43,57 @@
   }
 
   Hooks.once("ready", () => {
-    window["oni.OppEffectRegistry"]?.register("unmask", async (ctx) => {
-      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+    window["oni.OppEffectRegistry"]?.register("unmask", {
 
-      const { pickToken, gmTextPrompt } = window["oni.OppEffectUtils"] ?? {};
-      if (!pickToken || !gmTextPrompt) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
+      // ── Pre phase: target selection + content resolution ───────────────────
+      async pre(ctx) {
+        console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-      console.debug(TAG, "[step 1] opening target picker...");
-      const token = await pickToken({ title: "Unmask — Choose Creature", sourceActorUuid: ctx.actorUuid });
-      console.debug(TAG, "[step 1] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
-      if (!token) { console.debug(TAG, "[exit] target picker cancelled"); return; }
+        const { pickToken, gmTextPrompt } = window["oni.OppEffectUtils"] ?? {};
+        if (!pickToken || !gmTextPrompt) { console.error(TAG, "[pre] OppEffectUtils not loaded"); return null; }
 
-      const targetActor = token.actor;
-      const props       = targetActor.system?.props ?? {};
-      const portrait    = String(props.sprite_standard ?? "").trim()
-        || String(targetActor.prototypeToken?.texture?.src ?? "").trim()
-        || targetActor.img || "icons/svg/mystery-man.svg";
+        // Step 1: pick target
+        console.debug(TAG, "[pre] opening target picker...");
+        const token = await pickToken({ title: "Unmask — Choose Creature", sourceActorUuid: ctx.actorUuid });
+        console.debug(TAG, "[pre] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
+        if (!token) { console.debug(TAG, "[pre] target picker cancelled"); return null; }
 
-      // Step 2: probe motivation fields
-      console.debug(TAG, "[step 2] probing motivation fields:", MOTIVATION_FIELDS);
-      let rawContent = "";
-      for (const field of MOTIVATION_FIELDS) {
-        const val = String(props[field] ?? "").trim();
-        if (val) { rawContent = val; console.debug(TAG, "[step 2] found field:", field, "| length:", val.length); break; }
-      }
-      if (!rawContent) console.debug(TAG, "[step 2] no motivation field found — falling back to GM input");
+        const targetActor = token.actor;
+        const props       = targetActor.system?.props ?? {};
+        const portrait    = String(props.sprite_standard ?? "").trim()
+          || String(targetActor.prototypeToken?.texture?.src ?? "").trim()
+          || targetActor.img || "icons/svg/mystery-man.svg";
 
-      if (rawContent) {
-        console.debug(TAG, "[step 3] posting card from prop field...");
-        await postUnmaskCard({ actorName: targetActor.name, actorPortrait: portrait, content: rawContent });
-      } else {
-        console.debug(TAG, "[step 3] opening GM text prompt...");
-        const text = await gmTextPrompt({
-          title:       `Unmask — ${targetActor.name}`,
-          label:       `What are <strong>${esc(targetActor.name)}</strong>'s goals and motivations?`,
-          placeholder: "Describe their goals and motivations…",
-        });
-        console.debug(TAG, "[step 3] GM text result:", text ? `length=${text.length}` : "NULL");
-        if (!text) { console.debug(TAG, "[exit] GM text prompt cancelled"); return; }
-        await postUnmaskCard({ actorName: targetActor.name, actorPortrait: portrait, content: esc(text) });
-      }
+        // Step 2: probe motivation fields; fall back to GM text input if empty
+        console.debug(TAG, "[pre] probing motivation fields:", MOTIVATION_FIELDS);
+        let content = "";
+        for (const field of MOTIVATION_FIELDS) {
+          const val = String(props[field] ?? "").trim();
+          if (val) { content = val; console.debug(TAG, "[pre] found field:", field, "| length:", val.length); break; }
+        }
 
-      console.debug(TAG, "[done]");
+        if (!content) {
+          console.debug(TAG, "[pre] no motivation field found — opening GM text prompt...");
+          const text = await gmTextPrompt({
+            title:       `Unmask — ${targetActor.name}`,
+            label:       `What are <strong>${esc(targetActor.name)}</strong>'s goals and motivations?`,
+            placeholder: "Describe their goals and motivations…",
+          });
+          console.debug(TAG, "[pre] GM text result:", text ? `length=${text.length}` : "NULL");
+          if (!text) { console.debug(TAG, "[pre] GM text prompt cancelled"); return null; }
+          content = esc(text);
+        }
+
+        return { targetName: targetActor.name, portrait, content };
+      },
+
+      // ── Post phase: post the unmask card ──────────────────────────────────
+      async post(ctx, preResult) {
+        const { targetName, portrait, content } = preResult ?? {};
+        console.debug(TAG, "[post] posting unmask card for:", targetName);
+        await postUnmaskCard({ actorName: targetName, actorPortrait: portrait, content });
+        console.debug(TAG, "[done]");
+      },
     });
   });
 })();

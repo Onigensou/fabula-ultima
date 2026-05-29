@@ -1,5 +1,14 @@
 // ============================================================================
 // Opportunity Effect — Bonding
+//
+// Flow (pre/post):
+//   pre  — opens the bond editor on the owning client.
+//          For GM-owned actors: awaits the editor close before returning.
+//          For player-owned actors: dispatches via socket (fire-and-forget) and
+//          returns immediately — the player edits while the banner plays.
+//   post — no-op; all meaningful action happened in pre.
+//
+// Socket: OPP_BOND_EDIT  GM → targeted player  (bond editor opens on their screen)
 // ============================================================================
 (() => {
   const TAG       = "[ONI][OpportunityEffect:Bonding]";
@@ -9,7 +18,7 @@
   Hooks.once("ready", () => {
     const utils = window["oni.OppEffectUtils"] ?? {};
 
-    // ── Socket listener — shows bond editor on the target player's client ────────
+    // ── Socket listener — shows bond editor on the target player's client ────
     game.socket.on(SOCKET_CH, async msg => {
       if (msg?.type !== MSG_EDIT) return;
       const { actorUuid, targetUserId } = msg.payload ?? {};
@@ -28,37 +37,47 @@
       console.debug(TAG, "[socket] bond UI closed");
     });
 
-    // ── Effect handler ────────────────────────────────────────────────────────────
-    window["oni.OppEffectRegistry"]?.register("bonding", async (ctx) => {
-      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+    // ── Effect handler ───────────────────────────────────────────────────────
+    window["oni.OppEffectRegistry"]?.register("bonding", {
 
-      const { resolveActor, resolveOwnerUserId } = utils;
-      if (!resolveActor || !resolveOwnerUserId) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
+      // ── Pre phase: open bond editor (prompt phase — all user interaction) ──
+      async pre(ctx) {
+        console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-      console.debug(TAG, "[step 1] resolving actor:", ctx.actorUuid);
-      const actor = await resolveActor(ctx.actorUuid);
-      console.debug(TAG, "[step 1] actor:", actor ? `${actor.name} (id=${actor.id})` : "NULL");
-      if (!actor) { console.warn(TAG, "[exit] could not resolve actor"); return; }
+        const { resolveActor, resolveOwnerUserId } = utils;
+        if (!resolveActor || !resolveOwnerUserId) { console.error(TAG, "[pre] OppEffectUtils not loaded"); return null; }
 
-      console.debug(TAG, "[step 2] resolving owner userId for:", ctx.actorUuid);
-      const ownerUserId = resolveOwnerUserId(ctx.actorUuid);
-      const amOwner     = !ownerUserId || game.user.id === ownerUserId;
-      console.debug(TAG, "[step 2]", { ownerUserId, myUserId: game.user.id, amOwner });
+        console.debug(TAG, "[pre] resolving actor:", ctx.actorUuid);
+        const actor = await resolveActor(ctx.actorUuid);
+        console.debug(TAG, "[pre] actor:", actor ? `${actor.name} (id=${actor.id})` : "NULL");
+        if (!actor) { console.warn(TAG, "[pre] could not resolve actor"); return null; }
 
-      if (amOwner) {
-        console.debug(TAG, "[step 3] GM is owner — showing bond UI directly (awaited)");
-        const ui = window["oni.OppBondUI"];
-        console.debug(TAG, "[step 3] OppBondUI available:", !!ui);
-        await ui?.show(actor);
-        console.debug(TAG, "[done] bond UI closed");
-      } else {
-        console.debug(TAG, "[step 3] emitting OPP_BOND_EDIT to player:", ownerUserId);
-        game.socket.emit(SOCKET_CH, {
-          type:    MSG_EDIT,
-          payload: { actorUuid: ctx.actorUuid, actorName: ctx.actorName, targetUserId: ownerUserId },
-        });
-        console.debug(TAG, "[done] socket emitted — UI will open on player's client");
-      }
+        const ownerUserId = resolveOwnerUserId(ctx.actorUuid);
+        const amOwner     = !ownerUserId || game.user.id === ownerUserId;
+        console.debug(TAG, "[pre]", { ownerUserId, myUserId: game.user.id, amOwner });
+
+        if (amOwner) {
+          // GM-owned actor: open bond editor locally and await close before returning.
+          // Banner plays only after the GM finishes editing — clean sequential flow.
+          console.debug(TAG, "[pre] owner — showing bond UI directly (awaited)");
+          await window["oni.OppBondUI"]?.show(actor);
+          console.debug(TAG, "[pre] bond UI closed");
+        } else {
+          // Player-owned actor: dispatch to player via socket; return immediately.
+          // Banner plays concurrently — the player edits bonds while the banner is shown.
+          console.debug(TAG, "[pre] dispatching OPP_BOND_EDIT to player:", ownerUserId);
+          game.socket.emit(SOCKET_CH, {
+            type:    MSG_EDIT,
+            payload: { actorUuid: ctx.actorUuid, actorName: ctx.actorName, targetUserId: ownerUserId },
+          });
+          console.debug(TAG, "[pre] socket emitted — UI will open on player client");
+        }
+
+        return { bonded: true };
+      },
+
+      // ── Post phase: no-op ─────────────────────────────────────────────────
+      async post(_ctx, _preResult) {},
     });
 
     console.debug(TAG, "Bonding effect + socket listener registered.");

@@ -8,12 +8,10 @@
  *   - CheckRequester:   cr-api.js → processCheckCrits() on GM (awaited before reactions)
  *   - Check Roller:     CheckRoller pipeline step (after "render") → offer() locally
  *
- * Confirmation sequence (after player picks):
- *   1. Screen flash + confirm sound (inside dialog)
- *   2. Dramatic animation broadcast → all clients see bold text fly across screen
- *   3. Await animation duration
- *   4. Placeholder effect handler runs
- *   5. Opportunity chat card posted
+ * Two-phase flow:
+ *   PROMPT PHASE  — all user decisions (picker + effect pre handler)
+ *   RESOLUTION    — banner animation + effect post handler + chat card
+ *                   No user interaction occurs after the prompt phase.
  *
  * Socket messages (OPP_ prefix, module.fabula-ultima-companion channel):
  *   OPP_OFFER     GM → all (targetUserId filter) — send picker to a specific player
@@ -301,7 +299,7 @@
   }
 
   // ── Local dialog flow ───────────────────────────────────────────────────────
-  async function showDialogLocally({ actorName, actorUuid, offerKey }) {
+  async function showDialogLocally({ actorName, actorUuid }) {
     const cfg = getConfig();
     if (!cfg) { console.error(TAG, "OpportunityConfig not loaded"); return { cancelled: true }; }
     const dialog = getDialog();
@@ -317,15 +315,32 @@
     });
   }
 
-  // ── Apply effect + banner + chat card ──────────────────────────────────────
-  //
-  // Supports two effect handler shapes:
-  //   { pre, post } — pre runs BEFORE the banner (targeting etc.); post after.
-  //   function      — legacy; runs entirely after the banner.
-  //
-  // preResult:
-  //   undefined — pre hasn't run yet; this function will run it (GM-local flow).
-  //   object    — pre already ran on another client (socket flow); skip pre here.
+  // ── Prompt phase: picker + pre handler ─────────────────────────────────────
+  // All user decisions happen here — picker choice and any targeting/input from
+  // the effect's pre handler. Returns { optionId, preResult } on success or
+  // { cancelled: true } if the player declined or the pre handler cancelled.
+  // Shared between the local owner path and the socket OPP_OFFER handler.
+  async function runPromptPhase({ actorName, actorUuid, context = {} }) {
+    const result = await showDialogLocally({ actorName, actorUuid });
+    if (result?.cancelled || !result?.optionId) return { cancelled: true };
+
+    const handler = getEffects()?.[result.optionId];
+    if (handler?.pre) {
+      const option    = getConfig()?.OPTIONS?.find(o => o.id === result.optionId);
+      const preResult = await handler.pre({ actorUuid, actorName, optionId: result.optionId, option, context })
+        .catch(e => { console.error(TAG, "Pre phase error:", e); return null; });
+      if (preResult === null) return { cancelled: true };
+      playSound(SFX_CONFIRM, 0.8);
+      return { optionId: result.optionId, preResult };
+    }
+
+    playSound(SFX_CONFIRM, 0.8);
+    return { optionId: result.optionId, preResult: undefined };
+  }
+
+  // ── Resolution phase: banner + post handler + chat card ────────────────────
+  // No user interaction — purely resolves the result of the prompt phase.
+  // preResult: undefined if no pre handler; serialized object if pre ran.
   async function applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult }) {
     const cfg      = getConfig();
     const effects  = getEffects();
@@ -336,34 +351,21 @@
 
     const handler = effects?.[optionId];
 
-    // 1. Pre-banner phase — only runs when pre result hasn't been computed yet
-    //    (undefined means "not yet run"; an object means it was run elsewhere)
-    let resolvedPreResult = preResult;
-    if (handler?.pre && resolvedPreResult === undefined) {
-      resolvedPreResult = await handler.pre({ actorUuid, actorName, optionId, option, context })
-        .catch(e => { console.error(TAG, `Effect pre error (${optionId}):`, e); return null; });
-      if (resolvedPreResult === null) return; // pre phase was cancelled
-      playSound(SFX_CONFIRM, 0.8);
-    }
-
-    // 2. Broadcast JRPG log banner to ALL clients
+    // 1. Broadcast JRPG log banner to ALL clients
     const bannerPayload = { optionLabel: option.label, optionIcon: option.icon, color: option.color ?? "#fcd470" };
     game.socket.emit(SOCKET_CH, { type: MSG_LOG_BANNER, payload: bannerPayload });
     playLogBanner(bannerPayload);
 
-    // 3. Wait for the banner to finish
+    // 2. Wait for the banner to finish
     await new Promise(r => setTimeout(r, bannerTotalMs()));
 
-    // 4. Post-banner phase (or legacy single handler)
+    // 3. Post-banner phase
     if (handler?.post) {
-      await handler.post({ actorUuid, actorName, optionId, option, context }, resolvedPreResult)
+      await handler.post({ actorUuid, actorName, optionId, option, context }, preResult)
         .catch(e => console.error(TAG, `Effect post error (${optionId}):`, e));
-    } else if (typeof handler === "function") {
-      await handler({ actorUuid, actorName, optionId, option, context })
-        .catch(e => console.error(TAG, `Effect handler error (${optionId}):`, e));
     }
 
-    // 5. Post result chat card
+    // 4. Post result chat card
     if (chatCard?.postOpportunityCard) {
       await chatCard.postOpportunityCard({ actorUuid, actorName, optionId, option, context });
     }
@@ -386,7 +388,7 @@
     const amOwner     = !ownerUserId || game.user.id === ownerUserId;
     const amGM        = game.user?.isGM ?? false;
 
-    // Case 1: I am the owner (or GM-owned actor) — show dialog directly
+    // Case 1: I am the owner (or GM-owned actor) — run full prompt phase locally
     if (amOwner) {
       // Step 1 — stagger pause: player reads their roll result
       if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
@@ -397,49 +399,31 @@
       playDramaticAnimation(annPayload);
       await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
 
-      // Step 3 — show picker
+      // Step 3 — prompt phase: picker + pre handler (all user decisions happen here)
       const offerKey = makeOfferKey(actorUuid, actionCardId);
-      const result   = await showDialogLocally({ actorName, actorUuid, offerKey });
+      const picked   = await runPromptPhase({ actorName, actorUuid, context });
 
-      if (!result?.cancelled && result?.optionId) {
-        // Step 4 — pre phase (targeting etc.) runs here on the owner's client,
-        //          BEFORE the banner plays. Returns a serializable result object.
-        const handler = getEffects()?.[result.optionId];
-        let preResult;
-        if (handler?.pre) {
-          const option = getConfig()?.OPTIONS?.find(o => o.id === result.optionId);
-          preResult = await handler.pre({ actorUuid, actorName, optionId: result.optionId, option, context })
-            .catch(e => { console.error(TAG, "Pre phase error:", e); return null; });
-          if (preResult === null) {
-            if (!amGM) game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
-            return { cancelled: true };
-          }
-          playSound(SFX_CONFIRM, 0.8);
-        }
+      if (picked.cancelled) {
+        if (!amGM) game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
+        return { cancelled: true };
+      }
 
-        if (amGM) {
-          // preResult already set; applyAndAnnounce will skip re-running pre
-          await applyAndAnnounce({ actorUuid, actorName, optionId: result.optionId, context, preResult });
-        } else {
-          // Player: send choice + pre result to GM for banner + post + chat card
-          game.socket.emit(SOCKET_CH, {
-            type:    MSG_PICKED,
-            payload: { offerKey, actorUuid, actorName, optionId: result.optionId, context, preResult },
-          });
-        }
-      } else if (!amGM) {
+      // Step 4 — resolution phase (GM runs directly; player sends to GM via socket)
+      if (amGM) {
+        await applyAndAnnounce({ actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult });
+      } else {
         game.socket.emit(SOCKET_CH, {
-          type:    MSG_CANCELLED,
-          payload: { offerKey, actorUuid },
+          type:    MSG_PICKED,
+          payload: { offerKey, actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult },
         });
       }
 
-      return result ?? { cancelled: true };
+      return { optionId: picked.optionId };
     }
 
-    // Case 2: GM, player-owned actor — stagger + animation run GM-side first, then send offer
+    // Case 2: GM, player-owned actor — stagger + animation run GM-side, then send offer to player
     if (amGM) {
-      // Step 1 — stagger pause (GM awaits before sending offer)
+      // Step 1 — stagger pause
       if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
 
       // Step 2 — broadcast "Opportunity!" and wait; player receives it via MSG_DRAMATIC
@@ -448,14 +432,14 @@
       playDramaticAnimation(annPayload);
       await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
 
-      // Step 3 — send offer; player opens menu immediately (stagger already done)
+      // Step 3 — send offer; player runs prompt phase (picker + pre), sends back OPP_PICKED
       return new Promise(resolve => {
         const offerKey = makeOfferKey(actorUuid, actionCardId);
         _pending.set(offerKey, { resolve, actorUuid });
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
-          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, staggerMs: 0 },
+          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId },
         });
 
         // Safety timeout: give up after 120 s
@@ -500,42 +484,23 @@
     game.socket.on(SOCKET_CH, async msg => {
       if (!msg?.type?.startsWith("OPP_")) return;
 
-      // OPP_OFFER — targeted player shows picker + runs pre phase, then sends MSG_PICKED
+      // OPP_OFFER — targeted player runs full prompt phase (picker + pre), then sends MSG_PICKED
       if (msg.type === MSG_OFFER) {
-        const { offerKey, actorUuid, actorName, context, targetUserId, staggerMs: msgStagger } = msg.payload ?? {};
+        const { offerKey, actorUuid, actorName, context, targetUserId } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
 
-        // Residual stagger if any (should be 0 in normal flow; kept for edge-case overrides)
-        if ((msgStagger ?? 0) > 0) await new Promise(r => setTimeout(r, msgStagger));
+        const picked = await runPromptPhase({ actorName, actorUuid, context })
+          .catch(e => { console.error(TAG, "Socket prompt phase error:", e); return { cancelled: true }; });
 
-        const result = await showDialogLocally({ actorName, actorUuid, offerKey })
-          .catch(e => { console.error(TAG, "Socket offer dialog error:", e); return { cancelled: true }; });
-
-        if (!result?.cancelled && result?.optionId) {
-          // Run pre phase (targeting etc.) on the player's client before sending MSG_PICKED
-          const handler = getEffects()?.[result.optionId];
-          let preResult;
-          if (handler?.pre) {
-            const option = getConfig()?.OPTIONS?.find(o => o.id === result.optionId);
-            preResult = await handler.pre({ actorUuid, actorName, optionId: result.optionId, option, context })
-              .catch(e => { console.error(TAG, "MSG_OFFER pre phase error:", e); return null; });
-            if (preResult === null) {
-              game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
-              return;
-            }
-            playSound(SFX_CONFIRM, 0.8);
-          }
-
-          game.socket.emit(SOCKET_CH, {
-            type:    MSG_PICKED,
-            payload: { offerKey, actorUuid, actorName, optionId: result.optionId, context, preResult },
-          });
-        } else {
-          game.socket.emit(SOCKET_CH, {
-            type:    MSG_CANCELLED,
-            payload: { offerKey, actorUuid },
-          });
+        if (picked.cancelled) {
+          game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
+          return;
         }
+
+        game.socket.emit(SOCKET_CH, {
+          type:    MSG_PICKED,
+          payload: { offerKey, actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult },
+        });
         return;
       }
 
@@ -602,20 +567,16 @@
       playLogBanner({ optionLabel: opt.label, optionIcon: opt.icon, color: opt.color ?? "#fcd470" });
     },
 
-    // Test helper: open the picker, then run the full post-pick announcement sequence
-    testPicker(actorName = "Test", actorPortrait = "") {
-      const cfg = getConfig();
-      if (!cfg) return;
-      window["oni.OpportunityDialog"]?.showPicker({
-        actorName, actorPortrait,
-        options:    cfg.OPTIONS,
-        canDecline: true,
-      }).then(r => {
-        console.log(`${TAG} testPicker result:`, r);
-        if (!r?.cancelled && r?.optionId) {
-          applyAndAnnounce({ actorUuid: null, actorName, optionId: r.optionId, context: {} });
-        }
-      }).catch(console.error);
+    // Test helper: run the full prompt phase then resolution, same as a live offer
+    testPicker(actorName = "Test") {
+      runPromptPhase({ actorName, actorUuid: null, context: {} })
+        .then(picked => {
+          console.log(`${TAG} testPicker prompt result:`, picked);
+          if (!picked.cancelled) {
+            applyAndAnnounce({ actorUuid: null, actorName, optionId: picked.optionId, context: {}, preResult: picked.preResult });
+          }
+        })
+        .catch(console.error);
     },
   };
 

@@ -10,8 +10,10 @@
   const TAG = "[ONI][OpportunityEffect:Favor]";
 
   Hooks.once("ready", () => {
-    window["oni.OppEffectRegistry"]?.register("favor", async (ctx) => {
-      console.debug(TAG, "placeholder", ctx);
+    window["oni.OppEffectRegistry"]?.register("favor", {
+      async post(ctx) {
+        console.debug(TAG, "placeholder", ctx);
+      },
     });
   });
 })();

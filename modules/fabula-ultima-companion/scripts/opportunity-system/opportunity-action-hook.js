@@ -18,7 +18,9 @@
   // ── 1. Action Pipeline ───────────────────────────────────────────────────────
   // Tracks action card IDs that have already had an opportunity offered this session.
   // Cleared on page reload — intentional, same as reaction system's grace locks.
-  const _offeredCards = new Set();
+  const _offeredCards    = new Set();
+  // Tracks action card IDs whose opportunityAdvantage charge has already been consumed.
+  const _consumedAdvantage = new Set();
 
   Hooks.on("renderChatMessage", async (msg, html) => {
     // Must be an action card
@@ -26,19 +28,42 @@
     const card  = flags?.actionCard;
     if (!card) return;
 
-    // Must be a crit (not a fumble — fumble overrides crit per game rules)
-    const payload  = card.payload;
-    const accuracy = payload?.accuracy;
-    if (!accuracy?.isCrit || accuracy?.isFumble) return;
-
-    // Dedup — don't re-offer on re-renders (reactions update the card)
+    const payload      = card.payload;
     const actionCardId = card.actionCardId;
     if (!actionCardId) return;
-    if (_offeredCards.has(actionCardId)) return;
 
     // Only the attacker's owner processes this on their client
     const ownerUserId = payload?.meta?.ownerUserId;
     if (ownerUserId && game.user.id !== ownerUserId) return;
+
+    // ── Consume opportunityAdvantage charge on first render of this card ────
+    // The AE's changes entry (check_mod_all / attack_accuracy_mod_all) was
+    // already factored into the accuracy roll by ActionDataComputation. Consume
+    // the charge now so the AE is removed and won't apply to future actions.
+    if (!_consumedAdvantage.has(actionCardId)) {
+      _consumedAdvantage.add(actionCardId);
+      const charges    = globalThis.FUCompanion?.api?.charges;
+      const actorUuid  = payload?.meta?.attackerUuid;
+      if (charges && actorUuid) {
+        const doc   = await fromUuid(actorUuid).catch(() => null);
+        const actor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
+        if (actor) {
+          const candidates = charges.findOnActor(actor, { key: "opportunityAdvantage" }) ?? [];
+          if (candidates.length) {
+            const result = await charges.consume(candidates[0].effect, { count: 1, deleteWhenEmpty: true })
+              .catch(e => { console.error(TAG, "Action pipeline Advantage consume error:", e); return null; });
+            if (result?.ok) console.debug(TAG, "Action pipeline: Advantage charge consumed — AE removed.");
+          }
+        }
+      }
+    }
+
+    // Must be a crit (not a fumble — fumble overrides crit per game rules)
+    const accuracy = payload?.accuracy;
+    if (!accuracy?.isCrit || accuracy?.isFumble) return;
+
+    // Dedup — don't re-offer on re-renders (reactions update the card)
+    if (_offeredCards.has(actionCardId)) return;
 
     // Stamp immediately before the async dialog opens — prevents a second
     // renderChatMessage (which can fire while the dialog is awaiting) from re-triggering.
@@ -74,13 +99,13 @@
     }
 
     // ── Advantage consume step ───────────────────────────────────────────────────
-    // Runs BEFORE dice are computed. If the rolling actor has an "opportunityAdvantage"
-    // charged AE (placed by the advantage opportunity handler), consumes one charge
-    // and injects +4 into modifier.parts before the roll.
+    // Runs AFTER render. The AE's changes entry (check_mod_all +4) is already
+    // factored into the roll by the time compute reads it. This step only needs
+    // to consume the charge so the AE is deleted and won't apply to future checks.
     MANAGER.registerStep(
       {
         id:    "opportunity-advantage",
-        label: "Consume Advantage bonus if pending",
+        label: "Consume Advantage charge after roll",
         run: async (ctx) => {
           const charges = globalThis.FUCompanion?.api?.charges;
           if (!charges) return ctx;
@@ -97,22 +122,12 @@
 
           const result = await charges.consume(candidates[0].effect, { count: 1, deleteWhenEmpty: true })
             .catch(e => { console.error(TAG, "Advantage charge consume error:", e); return null; });
-          if (!result?.ok) return ctx;
+          if (result?.ok) console.debug(TAG, "Advantage charge consumed — AE removed.");
 
-          // Inject +4 into modifier parts before compute reads them
-          const p = ctx.payload;
-          p.check              = p.check              ?? {};
-          p.check.modifier     = p.check.modifier     ?? {};
-          p.check.modifier.parts = Array.isArray(p.check.modifier.parts)
-            ? p.check.modifier.parts
-            : [];
-          p.check.modifier.parts.push({ label: "Advantage", value: 4 });
-
-          console.debug(TAG, "Advantage charge consumed — +4 injected into check modifier.");
           return ctx;
         },
       },
-      { beforeId: "compute" }
+      { afterId: "render" }
     );
 
     // ── Opportunity offer step ───────────────────────────────────────────────────
@@ -144,6 +159,6 @@
       { afterId: "render" }
     );
 
-    console.debug(`${TAG} CheckRoller "opportunity-advantage" and "opportunity" steps registered.`);
+    console.debug(`${TAG} CheckRoller "opportunity-advantage" (post-render) and "opportunity" steps registered.`);
   });
 })();

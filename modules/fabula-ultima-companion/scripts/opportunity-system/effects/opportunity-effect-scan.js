@@ -1,5 +1,9 @@
 // ============================================================================
 // Opportunity Effect — Scan
+//
+// Flow (pre/post):
+//   pre  — target picker + scan-type dialog; returns { tokenId, tokenUuid, scanType }
+//   post — reads actor data from the resolved token and posts the scan chat card
 // ============================================================================
 (() => {
   const TAG = "[ONI][OpportunityEffect:Scan]";
@@ -36,65 +40,84 @@
     await ChatMessage.create({ content }).catch(e => console.error(TAG, "postScanCard failed:", e));
   }
 
+  function resolveToken({ tokenId, tokenUuid }) {
+    return (canvas?.tokens?.placeables ?? []).find(t =>
+      (tokenUuid && t.document?.uuid === tokenUuid) || t.id === tokenId
+    ) ?? null;
+  }
+
   Hooks.once("ready", () => {
-    window["oni.OppEffectRegistry"]?.register("scan", async (ctx) => {
-      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+    window["oni.OppEffectRegistry"]?.register("scan", {
 
-      const { pickToken } = window["oni.OppEffectUtils"] ?? {};
-      if (!pickToken) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
+      // ── Pre phase: target + scan-type selection ────────────────────────────
+      async pre(ctx) {
+        console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-      // Step 1: pick target
-      console.debug(TAG, "[step 1] opening target picker...");
-      const token = await pickToken({ title: "Scan — Choose Target", sourceActorUuid: ctx.actorUuid });
-      console.debug(TAG, "[step 1] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
-      if (!token) { console.debug(TAG, "[exit] target picker cancelled"); return; }
+        const { pickToken } = window["oni.OppEffectUtils"] ?? {};
+        if (!pickToken) { console.error(TAG, "[pre] OppEffectUtils not loaded"); return null; }
 
-      const targetActor = token.actor;
-      const props       = targetActor.system?.props ?? {};
-      console.debug(TAG, "[step 1] target actor:", targetActor.name, "| props keys:", Object.keys(props).filter(k => k.startsWith("affinity") || k === "traits"));
+        // Step 1: pick target
+        console.debug(TAG, "[pre] opening target picker...");
+        const token = await pickToken({ title: "Scan — Choose Target", sourceActorUuid: ctx.actorUuid });
+        console.debug(TAG, "[pre] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
+        if (!token) { console.debug(TAG, "[pre] target picker cancelled"); return null; }
 
-      const portrait = String(props.sprite_standard ?? "").trim()
-        || String(targetActor.prototypeToken?.texture?.src ?? "").trim()
-        || targetActor.img || "icons/svg/mystery-man.svg";
+        // Step 2: pick scan type
+        console.debug(TAG, "[pre] opening scan type picker...");
+        const scanType = await new Promise(resolve => {
+          new Dialog({
+            title:   `Scan — ${token.actor?.name ?? ""}`,
+            content: `<p style="margin:4px 0 8px;">What to reveal about <strong>${esc(token.actor?.name ?? "")}</strong>?</p>`,
+            buttons: {
+              vulnerability: { label: "💥 Vulnerability", callback: () => resolve("vulnerability") },
+              trait:         { label: "📜 Trait",         callback: () => resolve("trait")         },
+              cancel:        { label: "Cancel",            callback: () => resolve(null)            },
+            },
+            default: "vulnerability",
+            close:   () => resolve(null),
+          }).render(true);
+        });
+        console.debug(TAG, "[pre] scan type chosen:", scanType);
+        if (!scanType) { console.debug(TAG, "[pre] scan type picker cancelled"); return null; }
 
-      // Step 2: pick scan type
-      console.debug(TAG, "[step 2] opening scan type picker...");
-      const scanType = await new Promise(resolve => {
-        new Dialog({
-          title:   `Scan — ${targetActor.name}`,
-          content: `<p style="margin:4px 0 8px;">What to reveal about <strong>${esc(targetActor.name)}</strong>?</p>`,
-          buttons: {
-            vulnerability: { label: "💥 Vulnerability", callback: () => resolve("vulnerability") },
-            trait:         { label: "📜 Trait",         callback: () => resolve("trait")         },
-            cancel:        { label: "Cancel",            callback: () => resolve(null)            },
-          },
-          default: "vulnerability",
-          close:   () => resolve(null),
-        }).render(true);
-      });
-      console.debug(TAG, "[step 2] scan type chosen:", scanType);
-      if (!scanType) { console.debug(TAG, "[exit] scan type picker cancelled"); return; }
+        return { tokenId: token.id, tokenUuid: token.document?.uuid ?? null, scanType };
+      },
 
-      // Step 3: read data and post
-      let resultHtml;
-      if (scanType === "vulnerability") {
-        const rows = ELEMENT_NAMES.map((el, i) => {
-          const val = String(props[`affinity_${i + 1}`] ?? "").trim().toUpperCase();
-          if (!val) return null;
-          const isVu = val === "VU";
-          return `<div style="${isVu ? "font-weight:800;color:#f9a825;" : "opacity:.75;"}">${esc(el)}: ${esc(AFFINITY_LABEL[val] ?? val)}</div>`;
-        }).filter(Boolean);
-        resultHtml = rows.length ? rows.join("") : `<div style="opacity:.6;">All affinities are neutral.</div>`;
-        console.debug(TAG, "[step 3] vulnerability rows:", rows.length);
-      } else {
-        const raw = String(props.traits ?? "").trim();
-        resultHtml = raw || `<div style="opacity:.6;">No trait information available.</div>`;
-        console.debug(TAG, "[step 3] traits field length:", raw.length);
-      }
+      // ── Post phase: read actor data + post chat card ───────────────────────
+      async post(ctx, preResult) {
+        const { tokenId, tokenUuid, scanType } = preResult ?? {};
 
-      console.debug(TAG, "[step 3] posting scan card...");
-      await postScanCard({ targetName: targetActor.name, targetPortrait: portrait, scanType, resultHtml });
-      console.debug(TAG, "[done]");
+        const token = resolveToken({ tokenId, tokenUuid });
+        if (!token?.actor) { console.error(TAG, "[post] token not found on canvas", { tokenId, tokenUuid }); return; }
+
+        const targetActor = token.actor;
+        const props       = targetActor.system?.props ?? {};
+        console.debug(TAG, "[post] target actor:", targetActor.name, "| scanType:", scanType);
+
+        const portrait = String(props.sprite_standard ?? "").trim()
+          || String(targetActor.prototypeToken?.texture?.src ?? "").trim()
+          || targetActor.img || "icons/svg/mystery-man.svg";
+
+        let resultHtml;
+        if (scanType === "vulnerability") {
+          const rows = ELEMENT_NAMES.map((el, i) => {
+            const val = String(props[`affinity_${i + 1}`] ?? "").trim().toUpperCase();
+            if (!val) return null;
+            const isVu = val === "VU";
+            return `<div style="${isVu ? "font-weight:800;color:#f9a825;" : "opacity:.75;"}">${esc(el)}: ${esc(AFFINITY_LABEL[val] ?? val)}</div>`;
+          }).filter(Boolean);
+          resultHtml = rows.length ? rows.join("") : `<div style="opacity:.6;">All affinities are neutral.</div>`;
+          console.debug(TAG, "[post] vulnerability rows:", rows.length);
+        } else {
+          const raw = String(props.traits ?? "").trim();
+          resultHtml = raw || `<div style="opacity:.6;">No trait information available.</div>`;
+          console.debug(TAG, "[post] traits field length:", raw.length);
+        }
+
+        console.debug(TAG, "[post] posting scan card...");
+        await postScanCard({ targetName: targetActor.name, targetPortrait: portrait, scanType, resultHtml });
+        console.debug(TAG, "[done]");
+      },
     });
   });
 })();

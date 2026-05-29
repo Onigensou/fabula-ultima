@@ -23,20 +23,20 @@
   // ── Defaults (must mirror the `let` variables in opportunity-dialog.js) ──────
   const DEFAULTS = {
     // Wheel geometry
-    RING_NORMAL:   200,
-    RING_SELECTED: 248,
+    RING_NORMAL:   245,
+    RING_SELECTED: 280,
     WHEEL_SIZE:    645,
     PORTRAIT_IMG:  170,
     SLOT_WIDTH:    140,
     // Slot animation
     TRANSITION_MS: 260,
-    SPAWN_STAGGER:  45,
+    SPAWN_STAGGER:  50,
     // VIS table — flat keys (built into array on applyState)
-    v0s: 1.45,                         // dist-0 scale  (selected)
-    v1s: 0.90, v1o: 0.62,              // dist-1
-    v2s: 0.85, v2o: 0.45,              // dist-2
-    v3s: 0.82, v3o: 0.33,              // dist-3
-    v4s: 0.80, v4o: 0.24,              // dist-4
+    v0s: 1.73,                         // dist-0 scale  (selected)
+    v1s: 1.11, v1o: 0.97,              // dist-1
+    v2s: 0.92, v2o: 0.86,              // dist-2
+    v3s: 0.82, v3o: 0.67,              // dist-3
+    v4s: 0.80, v4o: 0.48,              // dist-4
     v5s: 0.78, v5o: 0.20,              // dist-5
     // Timing + position + size (manager)
     staggerMs:      800,
@@ -44,7 +44,7 @@
     bannerLingerMs: 2500,
     bannerExitMs:   410,
     bannerTopPx:    100,  // px from top (100 = confirmed good)
-    bannerWidthPx:    0,  // 0 = auto (content-driven)
+    bannerWidthPx:  300,  // 0 = auto (content-driven)
     bannerHeightPx:   0,  // 0 = auto
   };
 

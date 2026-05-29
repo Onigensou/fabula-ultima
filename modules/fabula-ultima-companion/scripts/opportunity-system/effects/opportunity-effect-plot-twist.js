@@ -10,8 +10,10 @@
   const TAG = "[ONI][OpportunityEffect:PlotTwist]";
 
   Hooks.once("ready", () => {
-    window["oni.OppEffectRegistry"]?.register("plot_twist", async (ctx) => {
-      console.debug(TAG, "placeholder", ctx);
+    window["oni.OppEffectRegistry"]?.register("plot_twist", {
+      async post(ctx) {
+        console.debug(TAG, "placeholder", ctx);
+      },
     });
   });
 })();

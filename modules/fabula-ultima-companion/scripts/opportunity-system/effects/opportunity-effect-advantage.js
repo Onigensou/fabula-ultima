@@ -12,10 +12,11 @@
 //
 // Implementation: GM picks an ally via the JRPG Targeting UI. A charged AE
 // (charges=1, chargeKey="opportunityAdvantage") is placed on the target.
+// The AE carries a changes entry (check_mod_all +4) so the bonus is applied
+// natively while the AE exists. The CheckRoller "opportunity-advantage" step
+// (in opportunity-action-hook.js) consumes the charge after render, deleting
+// the AE so it only applies to one check.
 // A PIXI ring animation + Up1.ogg play as visual/audio feedback.
-// The CheckRoller "opportunity-advantage" pipeline step (registered in
-// opportunity-action-hook.js) consumes the charge before compute and injects
-// +4 into payload.check.modifier.parts.
 // ============================================================================
 (() => {
   const TAG       = "[ONI][OpportunityEffect:Advantage]";
@@ -139,6 +140,10 @@
           label:       "Advantage",
           description: AE_DESC,
           icon:        AE_ICON,
+          changes: [
+            { key: "check_mod_all",    mode: 2, value: "4", priority: 20 },
+            { key: "attack_accuracy_mod_all", mode: 2, value: "4", priority: 20 },
+          ],
           flags: {
             [MODULE_ID]: {
               charges:    1,
