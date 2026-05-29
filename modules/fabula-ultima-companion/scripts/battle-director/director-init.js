@@ -351,16 +351,23 @@ function resolveParty(payload) {
 }
 
 // ─── Layout ────────────────────────────────────────────────────────────
-// Mirrors legacy Layout Engine conventions: scene 1682x788 reference, grid
-// ref 110. Party on right (base x 790-1082, y 181-356), enemies on left
-// (base x 274-336, y 197-329). Both columns get a +22 Y offset (the legacy
-// PARTY_OFFSET_Y / ENEMY_OFFSET_Y values) and enemy spacing is scaled by
-// ENEMY_SPREAD = 1.80 around the midpoint, matching legacy.
+// Scene 1682x788 reference, grid ref 110. Other scenes scale proportionally
+// via sx/sy in computeLayout.
+//
+// Party on right: base anchors (1202, 162) → (1367, 492). The diagonal
+// goes ~71%→81% across the scene width, mirroring the monster wedge on
+// the left and leaving the center column clear of the action-card overlay
+// (~320px wide, anchored to viewport center). The bottom of the column
+// also leaves room on the left of each token for the upcoming reaction
+// menu blades. User-tuned 2026-05-29 — see [[reaction-menu-on-token]].
+//
+// Enemies on left: base anchors (336, 197) → (274, 329), unchanged.
+// Spacing scaled by ENEMY_SPREAD = 1.80 around the midpoint.
 
 const PARTY_OFFSET_X = 0;
-const PARTY_OFFSET_Y = 82;   // was 22; pushed down so top of column sits clearly on the ground
+const PARTY_OFFSET_Y = 0;    // bases ARE the final positions; no offset
 const ENEMY_OFFSET_X = 0;
-const ENEMY_OFFSET_Y = 82;   // matched to party for symmetry
+const ENEMY_OFFSET_Y = 82;   // legacy enemy column drop (kept as-is)
 const ENEMY_SPREAD = 1.80;
 
 function scaleSegmentAroundMidpoint(a, b, scale) {
@@ -382,10 +389,10 @@ function computeLayout({ party, enemies, scene }) {
   const sy = sceneHeight / 788;
   const scaledPoint = (x, y) => ({ x: x * sx, y: y * sy });
 
-  // Base reference points, then apply the +Y offset that the legacy applies
-  // to shift the whole formation down a notch.
-  const partyTopBase    = scaledPoint(790,  181);
-  const partyBottomBase = scaledPoint(1082, 356);
+  // Base reference points. Party diagonal sits on the right side of the
+  // scene (action-card-clear, menu-room-clear); enemy column on the left.
+  const partyTopBase    = scaledPoint(1202, 162);
+  const partyBottomBase = scaledPoint(1367, 492);
   const enemyTopBase    = scaledPoint(336,  197);
   const enemyBottomBase = scaledPoint(274,  329);
 
