@@ -14,6 +14,7 @@
       icon: "fa-angles-up",
       color: "#4c8a4c",
       gmApproveNeeded: false,
+      hasPrePhase: true,  // targeting step runs before the banner animation
     },
     {
       id: "affliction",

@@ -3,9 +3,16 @@
 //
 // Effect: The next Check performed by the chosen ally receives a +4 bonus.
 //
+// Flow (pre/post):
+//   pre  — targeting step; runs BEFORE the banner animation so the user picks
+//          their ally while the picker UI is still the active overlay.
+//          Returns { tokenId, tokenUuid } (serializable for socket transport).
+//   post — applies the charged AE to the target and plays visual + audio FX.
+//          Receives the pre-result so it can resolve the live token/actor.
+//
 // Implementation: GM picks an ally via the JRPG Targeting UI. A charged AE
 // (charges=1, chargeKey="opportunityAdvantage") is placed on the target.
-// A PIXI ring animation plays on the token as visual feedback.
+// A PIXI ring animation + Up1.ogg play as visual/audio feedback.
 // The CheckRoller "opportunity-advantage" pipeline step (registered in
 // opportunity-action-hook.js) consumes the charge before compute and injects
 // +4 into payload.check.modifier.parts.
@@ -14,8 +21,14 @@
   const TAG       = "[ONI][OpportunityEffect:Advantage]";
   const MODULE_ID = "fabula-ultima-companion";
 
-  const AE_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/DAS.png";
-  const AE_DESC = "The next Check made by this creature receives a +4 bonus. Consumed automatically when a Check is rolled.";
+  const AE_ICON  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/DAS.png";
+  const AE_DESC  = "The next Check made by this creature receives a +4 bonus. Consumed automatically when a Check is rolled.";
+  const SFX_APPLY = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up1.ogg";
+
+  function playSound(url, vol = 0.65) {
+    try { (foundry.audio.AudioHelper ?? AudioHelper).play({ src: url, volume: vol, autoplay: true }, false); }
+    catch (_) {}
+  }
 
   // ── PIXI buff ring ────────────────────────────────────────────────────────────
   // Lightweight canvas-only animation: two concentric rings expand outward from
@@ -47,24 +60,18 @@
       elapsed += ticker.deltaMS;
       const t = Math.min(elapsed / DURATION_MS, 1);
 
-      // ease-out quad: fast start, gentle finish
       const eased = 1 - (1 - t) * (1 - t);
-      // alpha: snap to full at t=0.25 then fade out
       const alpha = t < 0.25 ? t / 0.25 : 1 - ((t - 0.25) / 0.75);
-      // ring grows from 0.55× to 1.45× base radius
       const r = baseRadius * (0.55 + eased * 0.9);
 
       gfx.clear();
 
-      // Outer ring (gold)
       gfx.lineStyle(2.5, GOLD, alpha * 0.9);
       gfx.drawCircle(0, 0, r);
 
-      // Inner ring (white, slightly smaller)
       gfx.lineStyle(1.5, WHITE, alpha * 0.4);
       gfx.drawCircle(0, 0, r * 0.72);
 
-      // Four cardinal sparks — short lines that stretch as the ring expands
       const sp = r * 0.48;
       gfx.lineStyle(1.5, GOLD, alpha * 0.65);
       gfx.moveTo(-sp, 0); gfx.lineTo(sp, 0);
@@ -80,51 +87,84 @@
     ticker.add(tick);
   }
 
-  // ── Effect handler ────────────────────────────────────────────────────────────
+  // ── Effect handler (pre/post split) ──────────────────────────────────────────
   Hooks.once("ready", () => {
-    window["oni.OppEffectRegistry"]?.register("advantage", async (ctx) => {
-      console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
+    window["oni.OppEffectRegistry"]?.register("advantage", {
 
-      const { pickToken } = window["oni.OppEffectUtils"] ?? {};
-      if (!pickToken) { console.error(TAG, "[exit] OppEffectUtils not loaded"); return; }
+      // ── Pre phase: targeting (runs BEFORE the banner) ─────────────────────
+      async pre(ctx) {
+        console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-      // Step 1: pick target ally
-      console.debug(TAG, "[step 1] opening ally target picker...");
-      const token = await pickToken({
-        title:           "Advantage — Choose Target",
-        skillTarget:     "One Ally",
-        sourceActorUuid: ctx.actorUuid,
-        includeSource:   true,   // caster can give Advantage to themselves
-      });
-      console.debug(TAG, "[step 1] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
-      if (!token) { console.debug(TAG, "[exit] target picker cancelled"); return; }
+        const { pickToken } = window["oni.OppEffectUtils"] ?? {};
+        if (!pickToken) { console.error(TAG, "[pre] OppEffectUtils not loaded"); return null; }
 
-      // Step 2: apply charged AE to the target
-      const targetActor = token.actor;
-      console.debug(TAG, "[step 2] applying Advantage AE to:", targetActor.name);
+        console.debug(TAG, "[pre] opening ally target picker...");
+        const token = await pickToken({
+          title:           "Advantage — Choose Target",
+          skillTarget:     "One Ally",
+          sourceActorUuid: ctx.actorUuid,
+          includeSource:   true,
+        });
 
-      const created = await targetActor.createEmbeddedDocuments("ActiveEffect", [{
-        name:        "Advantage",
-        label:       "Advantage",
-        description: AE_DESC,
-        icon:        AE_ICON,
-        flags: {
-          [MODULE_ID]: {
-            charges:    1,
-            chargesMax: 1,
-            chargeKey:  "opportunityAdvantage",
+        if (!token) { console.debug(TAG, "[pre] target picker cancelled"); return null; }
+        console.debug(TAG, "[pre] token picked:", `${token.name} (id=${token.id})`);
+
+        // Return serializable reference (safe for socket transport)
+        return { tokenId: token.id, tokenUuid: token.document?.uuid ?? null };
+      },
+
+      // ── Post phase: AE application + FX (runs AFTER the banner) ──────────
+      async post(ctx, preResult) {
+        const { tokenId, tokenUuid } = preResult ?? {};
+
+        // Resolve live PlaceableToken from the pre-phase reference
+        const token = (canvas?.tokens?.placeables ?? []).find(t =>
+          (tokenUuid && t.document?.uuid === tokenUuid) || t.id === tokenId
+        );
+        if (!token) { console.error(TAG, "[post] token not found on canvas", { tokenId, tokenUuid }); return; }
+
+        const targetActor = token.actor;
+        if (!targetActor) { console.error(TAG, "[post] token has no actor"); return; }
+
+        console.debug(TAG, "[post] applying Advantage AE to:", targetActor.name);
+
+        // Pre-stamp all CSB flags so _onCreateOperation skips its 4 setFlag calls,
+        // preventing 4 extra actor prepareData cycles.
+        const effectId   = foundry.utils.randomID();
+        const effectUuid = `${targetActor.uuid}.ActiveEffect.${effectId}`;
+
+        const created = await targetActor.createEmbeddedDocuments("ActiveEffect", [{
+          _id:         effectId,
+          name:        "Advantage",
+          label:       "Advantage",
+          description: AE_DESC,
+          icon:        AE_ICON,
+          flags: {
+            [MODULE_ID]: {
+              charges:    1,
+              chargesMax: 1,
+              chargeKey:  "opportunityAdvantage",
+              activeEffectManager: { optimizedCreate: true },
+              showTokenIcon: true,
+            },
+            "custom-system-builder": {
+              originalParentId: targetActor.id,
+              originalId:       effectId,
+              originalUuid:     effectUuid,
+              isFromTemplate:   false,
+            },
           },
-        },
-      }]).catch(e => { console.error(TAG, "[step 2] AE creation failed:", e); return null; });
+        }]).catch(e => { console.error(TAG, "[post] AE creation failed:", e); return null; });
 
-      console.debug(TAG, "[step 2] AE created:", created ? created.map(e => e.id) : "FAILED");
-      if (!created) return;
+        if (!created) return;
+        console.debug(TAG, "[post] AE created:", created.map(e => e.id));
 
-      // Step 3: visual feedback on the token
-      console.debug(TAG, "[step 3] playing buff FX on token:", token.name);
-      playBuffFX(token);
+        // Audio + visual feedback
+        playSound(SFX_APPLY, 0.8);
+        playBuffFX(token);
 
-      console.debug(TAG, "[done]");
+        console.debug(TAG, "[done]");
+      },
     });
   });
 })();

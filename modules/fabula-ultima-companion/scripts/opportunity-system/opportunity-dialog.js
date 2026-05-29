@@ -23,21 +23,21 @@
   const STYLE_ID = "oni-opp-styles";
 
   // `let` so the tuner can override them live at showPicker() time
-  let RING_NORMAL   = 230;  // px — radius for all non-selected slots
-  let RING_SELECTED = 265;  // px — radius for the selected slot (pushed further out)
+  let RING_NORMAL   = 245;  // px — radius for all non-selected slots
+  let RING_SELECTED = 280;  // px — radius for the selected slot (pushed further out)
   let WHEEL_SIZE    = 645;  // px — container (must fit RING_SELECTED + half-slot-width + buffer)
-  let PORTRAIT_IMG  = 175;  // px — full-sprite image area (unclipped, transparent bg)
+  let PORTRAIT_IMG  = 170;  // px — full-sprite image area (unclipped, transparent bg)
   let TRANSITION_MS = 260;  // ms — slot transition
-  let SPAWN_STAGGER = 45;   // ms — per-slot spawn delay
+  let SPAWN_STAGGER = 50;   // ms — per-slot spawn delay
   let SLOT_WIDTH    = 140;  // px — fixed slot width
 
   // Distance-based visual table (index = circular distance from selected)
   let VIS = [
-    { scale: 1.81, opacity: 1.00, zIndex: 11 },  // dist 0 — selected
-    { scale: 0.95, opacity: 0.77, zIndex:  8 },  // dist 1
-    { scale: 0.93, opacity: 0.71, zIndex:  6 },  // dist 2
-    { scale: 0.82, opacity: 0.56, zIndex:  4 },  // dist 3
-    { scale: 0.80, opacity: 0.39, zIndex:  3 },  // dist 4
+    { scale: 1.73, opacity: 1.00, zIndex: 11 },  // dist 0 — selected
+    { scale: 1.11, opacity: 0.97, zIndex:  8 },  // dist 1
+    { scale: 0.92, opacity: 0.86, zIndex:  6 },  // dist 2
+    { scale: 0.82, opacity: 0.67, zIndex:  4 },  // dist 3
+    { scale: 0.80, opacity: 0.48, zIndex:  3 },  // dist 4
     { scale: 0.78, opacity: 0.20, zIndex:  2 },  // dist 5+
   ];
 
@@ -57,10 +57,12 @@
     if (Array.isArray(T.VIS))    VIS           = T.VIS;
   }
 
-  const SFX_HOVER   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
-  const SFX_SCROLL  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav";
-  const SFX_CONFIRM = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/check_ready.wav";
-  const SFX_CANCEL  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav";
+  const SFX_HOVER          = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
+  const SFX_SCROLL         = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_1.wav";
+  const SFX_CONFIRM        = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
+  const SFX_LESSER_CONFIRM = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav";
+  const SFX_CANCEL         = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav";
+  const SFX_OPEN           = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_menu.wav";
 
   const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
 
@@ -375,6 +377,7 @@
       }
       backdrop.appendChild(footer);
       document.body.appendChild(backdrop);
+      playSound(SFX_OPEN, 0.75);
 
       refreshDesc(descEl, options[sel]);
 
@@ -436,7 +439,9 @@
         if (spendBtn.disabled) return;
         spendBtn.disabled = true;
         if (declineBtn) declineBtn.disabled = true;
-        playSound(SFX_CONFIRM, 0.8);
+        // If this option has a targeting/pre phase, play lesser confirm here;
+        // the full confirm plays after the pre phase completes (just before banner).
+        playSound(options[sel].hasPrePhase ? SFX_LESSER_CONFIRM : SFX_CONFIRM, 0.8);
         await showFlash();
         cleanup();
         resolve({ optionId: options[sel].id });

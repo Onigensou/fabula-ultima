@@ -31,15 +31,26 @@
   });
 
   // ── Registration API used by individual effect files ─────────────────────────
+  //
+  // Handlers may be either:
+  //   - async function(ctx) { ... }           legacy: runs after the banner
+  //   - { pre: async (ctx) => result,         pre  runs BEFORE the banner (targeting, etc.)
+  //       post: async (ctx, preResult) => {} } post runs AFTER the banner
+  //
+  // pre() returns a serializable plain object on success, or null to cancel.
+  // post() receives the same plain object so it can resolve live tokens/actors.
   window["oni.OppEffectRegistry"] = Object.freeze({
-    register(id, fn) {
-      if (typeof fn !== "function") {
-        console.warn(TAG, `register("${id}"): handler must be a function.`);
+    register(id, handler) {
+      const isLegacyFn = typeof handler === "function";
+      const isPhased   = handler && typeof handler === "object"
+        && (typeof handler.pre === "function" || typeof handler.post === "function");
+      if (!isLegacyFn && !isPhased) {
+        console.warn(TAG, `register("${id}"): handler must be a function or { pre, post } object.`);
         return;
       }
       if (_registry.has(id)) console.warn(TAG, `Effect "${id}" already registered — overwriting.`);
-      _registry.set(id, fn);
-      console.debug(TAG, `Registered effect: ${id}`);
+      _registry.set(id, handler);
+      console.debug(TAG, `Registered effect: ${id}`, isPhased ? "(pre/post)" : "(legacy fn)");
     },
     has(id)  { return _registry.has(id); },
     getAll() { return Array.from(_registry.entries()); },

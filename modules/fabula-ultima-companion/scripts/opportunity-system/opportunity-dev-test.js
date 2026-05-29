@@ -52,7 +52,9 @@
     return { actor: world, actorName: world.name, portrait };
   }
 
-  /** Replicate applyAndAnnounce() using only public APIs. */
+  const SFX_CONFIRM = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
+
+  /** Replicate applyAndAnnounce() using only public APIs. Mirrors manager pre/post phase logic. */
   async function applyAndAnnounce(actorUuid, actorName, optionId, context = {}) {
     const sys      = globalThis.ONI?.OpportunitySystem;
     const effects  = window["oni.OpportunityEffects"];
@@ -62,7 +64,19 @@
     const option = cfg?.OPTIONS?.find(o => o.id === optionId);
     if (!option) { console.error(TAG, "Unknown optionId:", optionId); return; }
 
-    // 1. Banner (broadcast to all via socket + play locally)
+    const handler = effects?.[optionId];
+    const ctx     = { actorUuid, actorName, optionId, option, context };
+
+    // 1. Pre-banner phase (targeting etc.) — mirrors manager applyAndAnnounce
+    let preResult;
+    if (handler?.pre) {
+      console.debug(TAG, `Running pre phase: ${optionId}`);
+      preResult = await handler.pre(ctx).catch(e => { console.error(TAG, `Pre phase error (${optionId}):`, e); return null; });
+      if (preResult === null) { console.log(TAG, "Pre phase cancelled."); return; }
+      try { (foundry.audio.AudioHelper ?? AudioHelper).play({ src: SFX_CONFIRM, volume: 0.8, autoplay: true }, false); } catch(_) {}
+    }
+
+    // 2. Banner (broadcast to all via socket + play locally)
     const bannerPayload = { optionLabel: option.label, optionIcon: option.icon, color: option.color ?? "#fcd470" };
     game.socket.emit(SOCKET_CH, { type: "OPP_LOG_BANNER", payload: bannerPayload });
     sys?.testBanner(optionId); // plays locally (socket.emit doesn't echo to sender)
@@ -70,17 +84,18 @@
     const bannerMs = (sys?.bannerEnterMs ?? 750) + (sys?.bannerLingerMs ?? 2500) + (sys?.bannerExitMs ?? 410);
     await new Promise(r => setTimeout(r, bannerMs));
 
-    // 2. Effect handler
-    const ctx     = { actorUuid, actorName, optionId, option, context };
-    const handler = effects?.[optionId];
-    if (typeof handler === "function") {
+    // 3. Post-banner phase (or legacy single handler)
+    if (handler?.post) {
+      console.debug(TAG, `Running post phase: ${optionId}`);
+      await handler.post(ctx, preResult).catch(e => console.error(TAG, `Post phase error (${optionId}):`, e));
+    } else if (typeof handler === "function") {
       console.debug(TAG, `Running effect handler: ${optionId}`);
       await handler(ctx).catch(e => console.error(TAG, `Effect handler error (${optionId}):`, e));
     } else {
       console.warn(TAG, `No handler registered for optionId: ${optionId}`);
     }
 
-    // 3. Opportunity chat card
+    // 4. Opportunity chat card
     await chatCard?.postOpportunityCard({ actorUuid, actorName, optionId, option, context })
       .catch(e => console.error(TAG, "postOpportunityCard failed:", e));
   }
