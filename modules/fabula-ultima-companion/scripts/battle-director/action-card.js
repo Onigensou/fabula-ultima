@@ -2942,9 +2942,11 @@ export async function postActionCard({ director, kind, payload }) {
     // (Map insertion order) and the new turn's await would never fire.
     let confirmAwait = null;
     let cancelAwait = null;
+    let reactionAwait = null;
     const abortPendingAwaits = () => {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
     };
     if (director?.intentChannel) {
       try {
@@ -2967,6 +2969,28 @@ export async function postActionCard({ director, kind, payload }) {
         }).catch((e) => {
           if (!resolved) warn("postActionCard: CANCEL_ACTION await failed", e?.message);
         });
+        // Reaction-pill choice loop — keep re-arming awaitIntent for
+        // REACTION_CHOICE so a player can click multiple pills. Each
+        // landing intent updates the GM-side card; loop exits when the
+        // card resolves (resolved=true) or rearm-await is aborted.
+        const armReactionAwait = () => {
+          if (resolved) return;
+          if (initialPending === 0) return;
+          reactionAwait = director.intentChannel.awaitIntent(INTENTS.REACTION_CHOICE, {
+            timeoutMs: 30 * 60 * 1000,
+          });
+          reactionAwait.then((intent) => {
+            const body = intent?.body ?? {};
+            log(`postActionCard: remote REACTION_CHOICE received (${body.rowKey ?? "?"}/${body.decision ?? "?"})`);
+            const decision = body.decision === "apply" ? "apply" : "skip";
+            recordPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), decision);
+            // Re-arm for the next pill click (or no-op if none left).
+            armReactionAwait();
+          }).catch((e) => {
+            if (!resolved) log(`postActionCard: REACTION_CHOICE await aborted (${e?.message})`);
+          });
+        };
+        armReactionAwait();
       } catch (e) { warn("postActionCard: remote intent setup threw", e); }
     }
 
@@ -3497,6 +3521,43 @@ export function registerPlayerActionCardHandler(channel) {
           }
           const confirmBtn = wrapper.querySelector(".fud-btn-confirm");
           if (confirmBtn) confirmBtn.classList.remove("is-disabled");
+          return;
+        }
+        // Reaction-pill click on the mirror — emit REACTION_CHOICE so
+        // the GM-side card updates the pill state + unlocks Confirm
+        // when all asks are decided. The pill also updates locally so
+        // the player sees the immediate visual change.
+        const reactionBtn = ev.target?.closest?.("[data-fud-reaction-action]");
+        if (reactionBtn) {
+          ev.stopPropagation();
+          const pill = reactionBtn.closest(".fud-bf-reaction-pill");
+          if (!pill) return;
+          if (pill.dataset.fudReactionPending !== "1") return;
+          const rowKey  = pill.dataset.fudReactionKey ?? "";
+          const carrier = pill.dataset.fudReactionCarrier ?? "";
+          const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
+          // Mirror-side visual update: flip the pill to its resolved
+          // state immediately so the player sees instant feedback. The
+          // GM-side card handles its own visual update via the intent
+          // listener.
+          pill.dataset.fudReactionPending = "0";
+          pill.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
+          const actions = pill.querySelector(".fud-bf-reaction-actions");
+          if (actions) {
+            actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
+          }
+          const mirrorCardEl = wrapper.querySelector(".fud-bf-card");
+          if (mirrorCardEl) {
+            const cur = Number(mirrorCardEl.dataset?.fudReactionsPending ?? 0);
+            const next = Math.max(0, cur - 1);
+            if (next > 0) mirrorCardEl.dataset.fudReactionsPending = String(next);
+            else delete mirrorCardEl.dataset.fudReactionsPending;
+          }
+          channel.emit({
+            type: INTENTS.REACTION_CHOICE,
+            body: { rowKey, carrierUuid: carrier, decision },
+            combatId: menuSpec.combatId,
+          });
           return;
         }
         // Final Confirm / Cancel button — collect extras + emit intent.
