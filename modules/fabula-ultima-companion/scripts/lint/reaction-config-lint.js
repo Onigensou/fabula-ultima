@@ -1286,6 +1286,7 @@
   // ------------------------------------------------------------------
   const SPEC_JSON_PATHS = [
     "modules/fabula-ultima-companion/docs/battle-director-spiritist-skills.json",
+    "modules/fabula-ultima-companion/docs/battle-director-rogue-skills.json",
   ];
   // Spec fields where drift is genuinely actionable. NOT included:
   // labels, costs, ranges, descriptions (intentional GM edits or
