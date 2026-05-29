@@ -44,6 +44,19 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // After a successful spell resolve (Spell type checks). Spiritual
   // Magic + Heart-of-Light style passives chain off this.
   "creature_completes_spell",
+  // Standalone phase triggers — fire outside any action card and don't
+  // manipulate an active action's values. Examples per RAW: High Speed
+  // ("at the start of a conflict, you may spend 10 MP and..."),
+  // Sentinel ("at the start of your turn..."), etc. UI: token-anchored
+  // reaction-menu blade list (legacy reaction-buttonUI pattern); user
+  // confirmed direction 2026-05-29. Dispatch from director FSM
+  // transitions — see [[reaction-menu-on-token]].
+  "conflict_start",
+  "conflict_end",
+  "round_start",
+  "round_end",
+  "turn_start",
+  "turn_end",
 ]);
 
 export const LEGACY_BRIDGED_TRIGGERS = new Set([
@@ -53,6 +66,19 @@ export const LEGACY_BRIDGED_TRIGGERS = new Set([
   "creature_recovers_hp",
   "creature_recovers_mp",
   "creature_lose_mp",
+]);
+
+// Standalone triggers — fire independent of any action card. Used by
+// the upcoming token-anchored reaction-menu UI to know when to spawn
+// blade lists vs. attach pills to a card. Membership reads from the
+// runtime registry at boot.
+export const STANDALONE_TRIGGERS = new Set([
+  "conflict_start",
+  "conflict_end",
+  "round_start",
+  "round_end",
+  "turn_start",
+  "turn_end",
 ]);
 
 export const ALL_DIRECTOR_TRIGGERS = new Set([
@@ -66,6 +92,7 @@ if (typeof globalThis !== "undefined") {
   globalThis.FUCompanion.api.directorTriggers = {
     native: DIRECTOR_NATIVE_TRIGGERS,
     legacyBridged: LEGACY_BRIDGED_TRIGGERS,
+    standalone: STANDALONE_TRIGGERS,
     all: ALL_DIRECTOR_TRIGGERS,
   };
 }
