@@ -3372,7 +3372,7 @@ const Stopped = {
     // hook (last turn's RESOLVE? a CLEANUP_AFTER state?) so the player
     // can react before tokens get wiped. Tracked in
     // [[reaction-menu-on-token]] as next-iteration work.
-    try { clearAllStandaloneMenus(); } catch (e) { warn("STOPPED: clearAllStandaloneMenus threw", e); }
+    try { await clearAllStandaloneMenus(); } catch (e) { warn("STOPPED: clearAllStandaloneMenus threw", e); }
   },
 };
 

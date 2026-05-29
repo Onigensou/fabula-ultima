@@ -85,12 +85,12 @@ function ensureBaseStyles() {
 
     .fud-react-menu .blade{
       position:relative; display:inline-flex; align-items:center; gap:9px;
-      padding:8px 14px 8px 20px;
+      padding:10px 22px 10px 22px;
       color:var(--fud-react-ink);
       font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
-      font-weight:800; letter-spacing:.30px; text-transform:uppercase; white-space:nowrap;
+      font-weight:800; letter-spacing:.32px; text-transform:uppercase; white-space:nowrap;
       user-select:none; cursor:pointer; transform-origin:left center; opacity:0;
-      font-size:12.5px;
+      font-size:13px;
       background:linear-gradient(180deg,var(--fud-react-parchment-top),var(--fud-react-parchment-bot));
       border:2px solid var(--fud-react-stroke);
       border-radius:11px;
@@ -171,10 +171,10 @@ function worldToClient(token, ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
-// Anchor left-of-token, slightly above center — mirrors the legacy
-// reaction-buttonUI convention so the menu appears on the OPPOSITE side
-// from turn-ui's right-side anchor. Two menus on the same token (turn-ui
-// + reaction) coexist without overlap.
+// Anchor right-of-token, slightly above center — mirrors turn-ui's
+// anchor so the reaction menu sits on the same side as Take Action.
+// Standalone reactions resolve before Take Action surfaces (the FSM
+// awaits dispatch), so the two menus don't visually compete.
 function worldAnchor(token) {
   if (!token || token.destroyed) return { x: 0, y: 0 };
   try {
@@ -183,7 +183,7 @@ function worldAnchor(token) {
       y: (token.y ?? 0) + (token.h ?? 100) / 2,
     };
     return {
-      x: c.x - (token.w ?? 100) * 0.55,
+      x: c.x + (token.w ?? 100) * 0.52,
       y: c.y - (token.h ?? 100) * 0.10,
     };
   } catch (_e) {
@@ -285,25 +285,24 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
     const hProbe = items[0]?.btn?.getBoundingClientRect()?.height || 18;
     const rowH = hProbe + GAP_PX;
     const totalRise = rowH * (items.length - 1);
+    // Left-align every blade at a common slotX (anchor + pad) so the
+    // stripe + icon + name form a consistent left edge across the menu,
+    // mirroring turn-ui's Octopath stack.
+    const slotX = ctr.x + BLADE_PAD_X;
     for (let i = 0; i < items.length; i++) {
-      // Position the menu to the LEFT of the anchor — blades grow leftward
-      // from the anchor pivot so they don't overlap the token sprite.
-      const w = items[i].btn.getBoundingClientRect().width || 120;
-      items[i].slotX = ctr.x - BLADE_PAD_X - w;
+      items[i].slotX = slotX;
       items[i].slotY = (ctr.y - totalRise) + i * rowH;
     }
     pivot.style.left = `${ctr.x}px`;
     pivot.style.top = `${ctr.y}px`;
-    // Header sits above the first blade.
+    // Header sits above the first blade, aligned to the same left edge.
     const first = items[0];
     if (first) {
       const itemH = hProbe;
       const headerH = header.offsetHeight || 22;
-      const headerW = header.offsetWidth || 80;
       const firstTopY = first.slotY - itemH / 2;
       const headerTopY = firstTopY - HEADER_GAP_PX - headerH;
-      const firstW = first.btn.getBoundingClientRect().width || 120;
-      header.style.left = `${ctr.x - BLADE_PAD_X - Math.max(firstW, headerW)}px`;
+      header.style.left = `${slotX}px`;
       header.style.top  = `${headerTopY}px`;
     }
   }
@@ -329,25 +328,49 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
       it.wrap.style.transform = `translate(0,-50%) rotate(${angleDeg}deg) scale(${scale})`;
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
       it.btn.style.opacity = opacity.toFixed(3);
-      if (!it.bound && p >= 1) {
-        it.btn.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          if (it.isPass) {
-            try { onPass?.(); }
-            catch (e) { warn("ReactionMenu: onPass threw", e); }
-            return;
-          }
-          // Auto-mode candidates are informational only — clicking does
-          // nothing (the decision is already recorded upstream).
-          if (it.candidate?.mode === "on") return;
-          try { onPick?.(it.candidate); }
-          catch (e) { warn("ReactionMenu: onPick threw", e); }
-        });
-        it.btn.style.pointerEvents = "auto";
-        it.bound = true;
-      }
     }
   }
+
+  // Bind click handlers eagerly — the menu must be interactable even
+  // when PIXI.Ticker.shared isn't firing. Paused-game (Foundry's
+  // pause UI) freezes the shared ticker, so the prior gate of
+  // `p >= 1` would have left blades click-dead until unpause.
+  function bindClicks() {
+    for (const it of items) {
+      if (it.bound) continue;
+      it.btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        if (it.isPass) {
+          try { onPass?.(); }
+          catch (e) { warn("ReactionMenu: onPass threw", e); }
+          return;
+        }
+        // Auto-mode candidates are informational only — clicking does
+        // nothing (the decision is already recorded upstream).
+        if (it.candidate?.mode === "on") return;
+        try { onPick?.(it.candidate); }
+        catch (e) { warn("ReactionMenu: onPick threw", e); }
+      });
+      it.btn.style.pointerEvents = "auto";
+      it.bound = true;
+    }
+  }
+
+  // Initial sync render — positions every wrap to its target slot and
+  // sets opacity to 1 / scale to 1 (skipping the entrance animation
+  // when the ticker is dormant). When the ticker IS running, its first
+  // tick will re-render with animated `t` values; the eye picks up the
+  // animation from there. This guarantees the menu is visible AND
+  // clickable on spawn even under pause.
+  computeSlots();
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    it.wrap.style.left = `${it.slotX}px`;
+    it.wrap.style.top = `${it.slotY}px`;
+    it.wrap.style.transform = `translate(0,-50%) scale(1)`;
+    it.btn.style.opacity = "1";
+  }
+  bindClicks();
 
   const ticker = PIXI.Ticker.shared;
   let tickErrCount = 0;

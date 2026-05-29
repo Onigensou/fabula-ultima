@@ -19,17 +19,24 @@
 // to the owning player via the same INTENT/socket pattern turn-ui uses.
 
 import { log, warn } from "./logger.js";
-import { ReactionMenu } from "./reaction-menu.js";
 
-// findPassiveCandidates + firePreAcceptedCandidate are dynamically
-// imported with one-shot cache-bust so a fresh module load (harness)
-// picks up live skill-effects rather than the boot-cached version
-// (same caveat as state-handlers.getSkillEffectsExtras).
+// Both skill-effects.js and reaction-menu.js are dynamically imported
+// with one-shot cache-bust so a fresh module load (harness or probe)
+// picks up the live source rather than the boot-cached version. The
+// static-import alternative bakes whichever version was loaded at boot
+// into this module, and harness cache-busts only refresh THIS module
+// — not the modules statically-imported by it.
 let _seExtraModule = null;
 async function getSkillEffectsExtras() {
   if (_seExtraModule) return _seExtraModule;
   _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
   return _seExtraModule;
+}
+let _rmModule = null;
+async function getReactionMenu() {
+  if (_rmModule) return _rmModule.ReactionMenu;
+  _rmModule = await import("./reaction-menu.js?cb=" + Date.now());
+  return _rmModule.ReactionMenu;
 }
 
 // Walk the director's combatants and return [{ actor, token }] entries
@@ -92,7 +99,20 @@ function buildStandalonePayload(director, trigger, extras) {
 
 // Dispatch a standalone trigger across every reactor with at least one
 // matching row. Spawns a per-reactor menu; clicks fire the reaction.
-// Returns the number of menus spawned (useful for logging + tests).
+//
+// BLOCKING: returns a Promise that resolves only when every spawned
+// menu has been closed (every ask resolved via blade click or the
+// reactor's Pass blade dismissed the menu). Auto-mode passives still
+// fire synchronously and don't block.
+//
+// This makes "reactions block the next FSM phase" trivial — the FSM
+// handlers (`PREP.onEnter`, `TURN_START.onEnter`, etc.) just `await`
+// dispatch before enqueueing INTERNAL_DONE, so Take Action / next
+// turn / next round can't surface until every reactor has decided.
+//
+// Result: `{ spawned, closed }` — spawned counts how many menus
+// went up; closed is the await-resolution that the caller already
+// blocked on (kept for log readability).
 //
 // `restrictTo` (optional): when present, only this reactor actor is
 // considered — used by turn_start/turn_end to fire only for the
@@ -110,6 +130,9 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
 
   const payload = buildStandalonePayload(director, trigger, extraPayload);
   let spawned = 0;
+  // Each spawned menu pushes a Promise here; Promise.all at the end
+  // blocks dispatch return until every reactor has dismissed their menu.
+  const closePromises = [];
 
   for (const { actor, token } of reactors) {
     let candidates;
@@ -149,14 +172,25 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
 
     if (!askable.length) continue;
 
+    // Lazy-resolve the menu module once per reactor before any spawn /
+    // despawn calls — the cache-bust pattern lives in getReactionMenu()
+    // so a probe / harness sees the live source.
+    const ReactionMenu = await getReactionMenu();
+
     // Render the menu — onPick fires the candidate and respawns the
     // menu with the remaining askables; onPass closes the menu.
-    let remaining = askable.slice();
+    // The whole interaction is wrapped in a single deferred Promise
+    // (`closed`) so the dispatch caller can await every reactor.
     const combatId = director?.combatId ?? director?.dCombat?.id ?? null;
+    let resolveClose;
+    const closed = new Promise((r) => { resolveClose = r; });
+    closePromises.push(closed);
 
+    let remaining = askable.slice();
     const renderMenu = () => {
       if (!remaining.length) {
         ReactionMenu.despawn({ combatId, tokenId: token.id });
+        resolveClose();
         return;
       }
       ReactionMenu.spawn({
@@ -183,6 +217,7 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
         onPass: () => {
           log(`standalone[${trigger}]: passed for ${actor.name}`);
           ReactionMenu.despawn({ combatId, tokenId: token.id });
+          resolveClose();
         },
       });
     };
@@ -190,12 +225,20 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     spawned++;
   }
 
+  if (closePromises.length) {
+    log(`dispatchStandaloneTrigger[${trigger}]: awaiting ${closePromises.length} reactor menu(s)`);
+    await Promise.all(closePromises);
+    log(`dispatchStandaloneTrigger[${trigger}]: all menus resolved`);
+  }
+
   return spawned;
 }
 
 // Clear every reaction menu spawned by the standalone dispatcher.
 // Called from FSM teardown (Stopped.onEnter) so menus don't linger
-// past combat end.
-export function clearAllStandaloneMenus() {
+// past combat end. Lazy-imports so a probe / harness sees the live
+// source (matches dispatchStandaloneTrigger's lazy pattern).
+export async function clearAllStandaloneMenus() {
+  const ReactionMenu = await getReactionMenu();
   ReactionMenu.despawnAll();
 }
