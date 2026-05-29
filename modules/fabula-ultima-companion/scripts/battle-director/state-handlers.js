@@ -622,15 +622,14 @@ const Prep = {
       description: `${result.partyTokens} party vs ${result.enemyTokens} enem${result.enemyTokens === 1 ? "y" : "ies"} — choose first turn`,
     }).catch((e) => warn("PREP: saveDirectorState failed", e));
 
-    // Standalone reaction trigger: conflict_start. Every combatant gets
-    // a chance to react before the first turn (High Speed, Sentinel,
-    // start-of-conflict buffs etc.). Per [[reaction-menu-on-token]] —
-    // spawned via the token-anchored menu, no action card.
-    try {
-      const spawned = await dispatchStandaloneTrigger({ director, trigger: "conflict_start" });
-      if (spawned) log(`PREP: conflict_start spawned ${spawned} reaction menu(s)`);
-    } catch (e) { warn("PREP: conflict_start dispatch threw", e); }
-
+    // Hand off to STANDALONE_REACTION_WINDOW for conflict_start dispatch.
+    // The new state owns the dispatch + idempotency persistence so PREP
+    // doesn't directly block on menus — clean state separation per the
+    // A+B retrospective. After standalone resolves, FSM proceeds to
+    // ROUND_START.
+    director.ctx.standaloneTrigger = "conflict_start";
+    director.ctx.standaloneAfter   = STATES.ROUND_START;
+    director.ctx.standalonePayload = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -644,16 +643,13 @@ const RoundStart = {
     director.ctx.endOfCombat = false;
     log(`ROUND_START — round ${director.dCombat?.round ?? director.combat?.round ?? "?"}`);
 
-    // Standalone reaction trigger: round_start. Per
-    // [[reaction-menu-on-token]] — every combatant gets the chance to
-    // surface a matching reaction on their token (regen, start-of-
-    // round buffs, etc.). findPassiveCandidates row filters do the
-    // who-matches gating; menus only spawn for actors with hits.
-    try {
-      const spawned = await dispatchStandaloneTrigger({ director, trigger: "round_start" });
-      if (spawned) log(`ROUND_START: spawned ${spawned} reaction menu(s)`);
-    } catch (e) { warn("ROUND_START: dispatch threw", e); }
-
+    // Hand off to STANDALONE_REACTION_WINDOW for round_start. The
+    // transition rule branches on endOfCombat: if combat is over,
+    // skip reactions and go straight to STOPPED. Otherwise, route
+    // through STANDALONE_REACTION_WINDOW which lands at TURN_START.
+    director.ctx.standaloneTrigger = "round_start";
+    director.ctx.standaloneAfter   = STATES.TURN_START;
+    director.ctx.standalonePayload = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -922,19 +918,17 @@ const TurnStart = {
       description: `${tsSide} acting — pick action`,
     }).catch((e) => warn("TURN_START: saveDirectorState failed", e));
 
-    // Standalone reaction trigger: turn_start. Per
-    // [[reaction-menu-on-token]] — dispatched across every combatant,
-    // not just the acting one, so reactions like "when ANY turn
-    // starts" surface too (Sentinel-style watchers). The row-side
-    // filter on the reaction config controls whose turn matches.
-    try {
-      const spawned = await dispatchStandaloneTrigger({
-        director, trigger: "turn_start",
-        payload: { actingActorUuid: snap?.actorUuid, actingTokenUuid: snap?.tokenUuid },
-      });
-      if (spawned) log(`TURN_START: spawned ${spawned} reaction menu(s)`);
-    } catch (e) { warn("TURN_START: dispatch threw", e); }
-
+    // Hand off to STANDALONE_REACTION_WINDOW for turn_start. Dispatched
+    // across every combatant — reactions like "when ANY turn starts"
+    // (Sentinel-style) surface too; the row-side filter controls whose
+    // turn matches. Payload carries the acting actor's uuid for those
+    // filters. After standalone resolves → DECLARE.
+    director.ctx.standaloneTrigger = "turn_start";
+    director.ctx.standaloneAfter   = STATES.DECLARE;
+    director.ctx.standalonePayload = {
+      actingActorUuid: snap?.actorUuid,
+      actingTokenUuid: snap?.tokenUuid,
+    };
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3250,25 +3244,15 @@ const Cleanup = {
 const TurnEnd = {
   async onEnter(director) {
     if (director.dCombat) {
-      // Capture the "just acted" name + round BEFORE nextTurn so the
-      // rewind label reflects whose turn ended (nextTurn clears
-      // currentCombatantId and may advance the round on a wrap).
+      // Capture the "just acted" name + round + actor BEFORE nextTurn
+      // (nextTurn clears currentCombatantId and may advance the round
+      // on a wrap). The captured actor uuid threads into the standalone
+      // reaction payload so turn_end reactions can read currentActorUuid.
       const teJustActedName = director.dCombat.current?.name
         ?? director.ctx.turnSnapshot?.name ?? "?";
       const teRoundEnded = director.dCombat.round ?? 0;
-
-      // Standalone reaction trigger: turn_end. Fires BEFORE nextTurn so
-      // dCombat.current still points at the acting actor (relevant for
-      // reactions that read currentActorUuid in their condition).
       const endingActorUuid  = director.dCombat?.current?.actorUuid ?? null;
       const endingTokenUuid  = director.dCombat?.current?.tokenUuid ?? null;
-      try {
-        const spawned = await dispatchStandaloneTrigger({
-          director, trigger: "turn_end",
-          payload: { actingActorUuid: endingActorUuid, actingTokenUuid: endingTokenUuid },
-        });
-        if (spawned) log(`TURN_END: spawned ${spawned} reaction menu(s)`);
-      } catch (e) { warn("TURN_END: dispatch threw", e); }
 
       try {
         const r = director.dCombat.nextTurn();
@@ -3304,14 +3288,33 @@ const TurnEnd = {
           : `Round ${teNewRound} · ${teNewSide} Pick Next Turn`,
         description: teDescParts.join(" · "),
       }).catch((e) => warn("TURN_END: saveDirectorState failed", e));
+
+      // Hand off to STANDALONE_REACTION_WINDOW for turn_end. The
+      // payload uses the BEFORE-nextTurn actor (the actor whose turn
+      // is ending) so end-of-turn reactions can read which turn ended.
+      // standaloneAfter branches on endOfRound (ROUND_END vs TURN_START)
+      // — the same routing the prior transition function did inline.
+      director.ctx.standaloneTrigger = "turn_end";
+      director.ctx.standaloneAfter   = director.ctx.endOfRound ? STATES.ROUND_END : STATES.TURN_START;
+      director.ctx.standalonePayload = {
+        actingActorUuid: endingActorUuid,
+        actingTokenUuid: endingTokenUuid,
+      };
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
 
     // Manual-fallback path: no dCombat, drive the Foundry combat directly.
+    // No standalone reactions in this path — manual fallback predates the
+    // declarative reaction system and isn't worth threading the new state
+    // through. The transition still routes via STANDALONE_REACTION_WINDOW
+    // (which no-ops on zero reactors) → next state.
     const combat = director.combat;
     if (!combat) {
       director.ctx.endOfCombat = true;
+      director.ctx.standaloneTrigger = "turn_end";
+      director.ctx.standaloneAfter   = STATES.STOPPED;
+      director.ctx.standalonePayload = null;
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -3321,10 +3324,16 @@ const TurnEnd = {
     } catch (e) {
       warn("TURN_END: combat.nextTurn() threw", e);
       director.ctx.endOfCombat = true;
+      director.ctx.standaloneTrigger = "turn_end";
+      director.ctx.standaloneAfter   = STATES.STOPPED;
+      director.ctx.standalonePayload = null;
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
     director.ctx.endOfRound = (combat.round !== wasRound);
+    director.ctx.standaloneTrigger = "turn_end";
+    director.ctx.standaloneAfter   = director.ctx.endOfRound ? STATES.ROUND_END : STATES.TURN_START;
+    director.ctx.standalonePayload = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3334,13 +3343,45 @@ const RoundEnd = {
   async onEnter(director) {
     log(`ROUND_END`);
 
-    // Standalone reaction trigger: round_end. Spawns per-reactor menus
-    // for matching reactions (status ticks, end-of-round cleanups).
-    try {
-      const spawned = await dispatchStandaloneTrigger({ director, trigger: "round_end" });
-      if (spawned) log(`ROUND_END: spawned ${spawned} reaction menu(s)`);
-    } catch (e) { warn("ROUND_END: dispatch threw", e); }
+    // Hand off to STANDALONE_REACTION_WINDOW for round_end. The transition
+    // rule branches on endOfCombat (combat over → STOPPED, otherwise →
+    // STANDALONE_REACTION_WINDOW → ROUND_START).
+    director.ctx.standaloneTrigger = "round_end";
+    director.ctx.standaloneAfter   = STATES.ROUND_START;
+    director.ctx.standalonePayload = null;
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
 
+// ─── STANDALONE_REACTION_WINDOW ────────────────────────────────────────
+// Inserted between FSM transitions to host standalone-trigger reactions
+// (conflict_start, round_start, turn_start, turn_end, round_end). The
+// predecessor state sets ctx.standaloneTrigger + standaloneAfter +
+// standalonePayload; this handler dispatches the trigger (blocking until
+// every reactor menu closes) and then enqueues INTERNAL_DONE so the
+// transition reader picks up standaloneAfter. ABORT/TIMEOUT during the
+// reaction phase route to ABORTED cleanly (the FSM sees them as a real
+// state, not a parked handler), and idempotency persistence inside
+// dispatch survives F5 mid-reaction.
+const StandaloneReactionWindow = {
+  async onEnter(director) {
+    const trigger = director.ctx.standaloneTrigger ?? null;
+    const after   = director.ctx.standaloneAfter ?? null;
+    const payload = director.ctx.standalonePayload ?? null;
+    if (!trigger || !after) {
+      // Defensive — should never happen in normal flow because every
+      // predecessor sets these. Log + forward so the FSM doesn't wedge.
+      warn(`STANDALONE_REACTION_WINDOW: missing trigger/after (trigger=${trigger}, after=${after}); passing through`);
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+    log(`STANDALONE_REACTION_WINDOW: ${trigger} → ${after}`);
+    try {
+      const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
+      if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
+    } catch (e) {
+      warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
+    }
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3389,6 +3430,7 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.CLEANUP]:         Cleanup,
   [STATES.TURN_END]:        TurnEnd,
   [STATES.ROUND_END]:       RoundEnd,
+  [STATES.STANDALONE_REACTION_WINDOW]: StandaloneReactionWindow,
   [STATES.ABORTED]:         Aborted,
   [STATES.STOPPED]:         Stopped,
 });

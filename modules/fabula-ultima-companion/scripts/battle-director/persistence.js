@@ -366,14 +366,27 @@ export async function clearDirectorHistoryFlag(scene) {
 // Convenience — find + clear in one call. Used by director-boot.stop()
 // without a scene reference. Clears BOTH the reload-survival state flag
 // AND the rewind history flag (a finished battle has nothing to resume
-// or rewind to).
+// or rewind to). Also clears the standalone-reaction idempotency flag
+// so the next battle's conflict_start surfaces all reactions afresh.
 export async function clearAllDirectorStateFlags() {
+  // Lazy import — standalone-reactions imports persistence indirectly
+  // via state-handlers, so a static import here would risk a cycle.
+  let clearStandaloneFiredFlag = null;
+  try {
+    const mod = await import("./standalone-reactions.js");
+    clearStandaloneFiredFlag = mod.clearStandaloneFiredFlag;
+  } catch (e) {
+    warn("clearAllDirectorStateFlags: standalone-reactions import failed", e);
+  }
   for (const scene of game.scenes ?? []) {
     if (scene.getFlag(FLAG_NS, FLAG_KEY)) {
       await clearDirectorStateFlag(scene);
     }
     if (scene.getFlag(FLAG_NS, HISTORY_KEY)) {
       await clearDirectorHistoryFlag(scene);
+    }
+    if (clearStandaloneFiredFlag) {
+      try { await clearStandaloneFiredFlag(scene); } catch (e) { warn("clearStandaloneFiredFlag threw", e); }
     }
   }
 }

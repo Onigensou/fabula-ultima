@@ -21,6 +21,16 @@ export const STATES = Object.freeze({
   CLEANUP:          "CLEANUP",
   TURN_END:         "TURN_END",
   ROUND_END:        "ROUND_END",
+  // STANDALONE_REACTION_WINDOW — a transient state inserted between
+  // FSM transitions (PREP↔ROUND_START, ROUND_START↔TURN_START, etc.) to
+  // host standalone-trigger reactions (conflict_start, round_start,
+  // turn_start, turn_end, round_end) per [[reaction-menu-on-token]].
+  // The predecessor sets ctx.standaloneTrigger + ctx.standaloneAfter
+  // before INTERNAL_DONE; this state's onEnter dispatches the trigger
+  // (blocking until all reactor menus close) and the transition reads
+  // ctx.standaloneAfter to route. F5-safe + ABORT-safe — dispatch
+  // idempotency is keyed via scene flag.
+  STANDALONE_REACTION_WINDOW: "STANDALONE_REACTION_WINDOW",
   ABORTED:          "ABORTED",
   STOPPED:          "STOPPED",
 });
@@ -52,6 +62,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.CLEANUP]:         null,
   [STATES.TURN_END]:        null,
   [STATES.ROUND_END]:       null,
+  [STATES.STANDALONE_REACTION_WINDOW]: null, // no timeout — GM may wait on multiple players resolving their reaction menus simultaneously
   [STATES.ABORTED]:         null,
   [STATES.STOPPED]:         null,
 });
@@ -83,18 +94,26 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.PREP]: {
-    INTERNAL_DONE:   { next: STATES.ROUND_START },
+    // PREP → STANDALONE_REACTION_WINDOW (conflict_start) → ROUND_START.
+    // PREP.onEnter sets ctx.standaloneTrigger="conflict_start" +
+    // ctx.standaloneAfter=ROUND_START before enqueueing INTERNAL_DONE.
+    INTERNAL_DONE:   { next: STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
     [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
   },
 
   [STATES.ROUND_START]: {
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.TURN_START },
+    // round_start reactions fire unless combat is ending. ROUND_START.onEnter
+    // sets ctx.standaloneTrigger="round_start" + ctx.standaloneAfter=TURN_START.
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
   [STATES.TURN_START]: {
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.DECLARE },
+    // turn_start reactions fire unless combat ended on auto-fail (no
+    // eligible). TURN_START.onEnter sets ctx.standaloneTrigger="turn_start"
+    // + ctx.standaloneAfter=DECLARE.
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -151,13 +170,28 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.TURN_END]: {
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfRound ? STATES.ROUND_END : STATES.TURN_START },
+    // turn_end always routes through STANDALONE_REACTION_WINDOW —
+    // end-of-turn reactions fire even on the last turn before round
+    // wrap. TURN_END.onEnter sets ctx.standaloneTrigger="turn_end" +
+    // ctx.standaloneAfter = endOfRound ? ROUND_END : TURN_START.
+    INTERNAL_DONE: { next: STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
   [STATES.ROUND_END]: {
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.ROUND_START },
+    // round_end fires unless combat ended this round. ROUND_END.onEnter
+    // sets ctx.standaloneTrigger="round_end" + ctx.standaloneAfter=ROUND_START.
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
+  },
+
+  [STATES.STANDALONE_REACTION_WINDOW]: {
+    // Routes to whatever predecessor set as ctx.standaloneAfter. The
+    // ABORTED fallback prevents wedge if the field is missing (e.g. a
+    // direct ENTER via test injection).
+    INTERNAL_DONE: { next: (ctx) => ctx.standaloneAfter ?? STATES.ABORTED },
+    [INTENTS.ABORT]: { next: STATES.ABORTED },
+    [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
   },
 
   [STATES.ABORTED]: {

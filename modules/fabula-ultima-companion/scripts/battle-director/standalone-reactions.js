@@ -20,6 +20,78 @@
 
 import { log, warn } from "./logger.js";
 
+// ── Idempotency persistence (A) ─────────────────────────────────────
+//
+// Each accept/pass/auto-fire decision is written to a scene flag so a
+// F5 mid-reaction doesn't double-fire on resume. Scope keys are
+// trigger-aware so per-round / per-turn re-dispatches don't collide:
+//
+//   conflict_start / conflict_end  → "conflict_start"
+//   round_start / round_end        → "round_start::r3"
+//   turn_start / turn_end          → "turn_start::r3::Actor.<uuid>"
+//
+// **Storage shape** — a flat array of entries, NOT a nested object
+// keyed by scope. The flat shape sidesteps Foundry's setFlag path-
+// expansion quirk: dots in property names (Actor UUIDs are "Actor.xxx")
+// would get re-interpreted as object paths on persist, mangling the
+// stored key. With a flat array each entry carries its own `scope`
+// string field so dots stay safely inside values.
+//
+//   { entries: [{ scope, reactorUuid, rowKey, carrierUuid, decision }, ...] }
+//
+// Skip set on next dispatch reads `${reactorUuid}::${rowKey}::${carrierUuid}`
+// for entries whose `scope` matches the current dispatch's scope, so any
+// prior decision (positive or negative) takes the row out of the running.
+// Cleared on combat end via persistence.clearAllDirectorStateFlags.
+
+const STANDALONE_FLAG_NS  = "fabula-ultima-companion";
+const STANDALONE_FLAG_KEY = "standaloneFired";
+
+function scopeKeyFor(trigger, payload) {
+  const round = payload?.round ?? "?";
+  if (trigger === "conflict_start" || trigger === "conflict_end") return trigger;
+  if (trigger === "round_start" || trigger === "round_end") return `${trigger}::r${round}`;
+  if (trigger === "turn_start" || trigger === "turn_end") {
+    const actingUuid = payload?.actingActorUuid ?? payload?.currentActorUuid ?? "?";
+    return `${trigger}::r${round}::${actingUuid}`;
+  }
+  return trigger;
+}
+
+function entryKey(reactorUuid, rowKey, carrierUuid) {
+  return `${reactorUuid}::${rowKey}::${carrierUuid}`;
+}
+
+function readFiredSet(scene, scopeKey) {
+  if (!scene) return new Set();
+  try {
+    const stored = scene.getFlag(STANDALONE_FLAG_NS, STANDALONE_FLAG_KEY) ?? {};
+    const entries = Array.isArray(stored.entries) ? stored.entries : [];
+    const out = new Set();
+    for (const e of entries) {
+      if (e?.scope === scopeKey) {
+        out.add(entryKey(e?.reactorUuid, e?.rowKey, e?.carrierUuid));
+      }
+    }
+    return out;
+  } catch (e) {
+    warn("standalone-reactions: readFiredSet failed", e);
+    return new Set();
+  }
+}
+
+async function appendFired(scene, scopeKey, entry) {
+  if (!scene) return;
+  try {
+    const stored = scene.getFlag(STANDALONE_FLAG_NS, STANDALONE_FLAG_KEY) ?? {};
+    const entries = Array.isArray(stored.entries) ? stored.entries.slice() : [];
+    entries.push({ scope: scopeKey, ...entry });
+    await scene.setFlag(STANDALONE_FLAG_NS, STANDALONE_FLAG_KEY, { entries });
+  } catch (e) {
+    warn("standalone-reactions: appendFired failed", e);
+  }
+}
+
 // Both skill-effects.js and reaction-menu.js are dynamically imported
 // with one-shot cache-bust so a fresh module load (harness or probe)
 // picks up the live source rather than the boot-cached version. The
@@ -129,6 +201,13 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
   if (!reactors.length) return 0;
 
   const payload = buildStandalonePayload(director, trigger, extraPayload);
+  // Idempotency (A): persist per-decision so F5 mid-reaction doesn't
+  // re-fire on resume. Scope keys are round/turn-aware so re-dispatch
+  // in a new round still surfaces the same row.
+  const scene = director?.dCombat?.scene ?? null;
+  const scope = scopeKeyFor(trigger, payload);
+  const firedSet = readFiredSet(scene, scope);
+
   let spawned = 0;
   // Each spawned menu pushes a Promise here; Promise.all at the end
   // blocks dispatch return until every reactor has dismissed their menu.
@@ -149,12 +228,23 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     }
     if (!candidates?.length) continue;
 
+    // Filter out already-handled rows (resume after F5, or a re-entry
+    // into the same standalone window). Tracked via the firedSet
+    // computed at dispatch entry.
+    const fresh = candidates.filter(
+      (c) => !firedSet.has(entryKey(actor.uuid, c.rowKey, c.carrierUuid))
+    );
+    if (fresh.length !== candidates.length) {
+      log(`standalone[${trigger}]: ${actor.name} — ${candidates.length - fresh.length} candidate(s) already handled, skipping`);
+    }
+    if (!fresh.length) continue;
+
     // Auto-fire "on"-mode passives immediately (no menu blade for them —
     // no action card to gate; just run). Ask-mode and manual rows go to
     // the menu for the player to pick.
     const autoFire = [];
     const askable = [];
-    for (const c of candidates) {
+    for (const c of fresh) {
       if (c.kind === "passive" && c.mode === "on") autoFire.push(c);
       else if (c.mode !== "off") askable.push(c);
     }
@@ -168,6 +258,12 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
       } catch (e) {
         warn(`standalone[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
       }
+      // Mark as handled regardless of fire success — a failed auto-fire
+      // shouldn't loop forever on resume.
+      await appendFired(scene, scope, {
+        reactorUuid: actor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
+        decision: "auto",
+      });
     }
 
     if (!askable.length) continue;
@@ -208,15 +304,32 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
           } catch (e) {
             warn(`standalone[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
           }
+          // Persist this decision (A) — subsequent dispatches (resume,
+          // re-entry) skip it. Awaited so the write lands before the
+          // next blade click is possible.
+          await appendFired(scene, scope, {
+            reactorUuid: actor.uuid, rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
+            decision: "fired",
+          });
           // Drop the fired entry from the remaining list and re-render.
           remaining = remaining.filter(
             (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
           );
           renderMenu();
         },
-        onPass: () => {
+        onPass: async () => {
           log(`standalone[${trigger}]: passed for ${actor.name}`);
           ReactionMenu.despawn({ combatId, tokenId: token.id });
+          // Mark every remaining row as passed so the player can't
+          // re-surface them on resume after a F5. Batched into one
+          // setFlag write by appending sequentially against the same
+          // scene flag (Foundry setFlag is idempotent on repeat keys).
+          for (const c of remaining) {
+            await appendFired(scene, scope, {
+              reactorUuid: actor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
+              decision: "passed",
+            });
+          }
           resolveClose();
         },
       });
@@ -241,4 +354,18 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
 export async function clearAllStandaloneMenus() {
   const ReactionMenu = await getReactionMenu();
   ReactionMenu.despawnAll();
+}
+
+// Clear the standaloneFired idempotency flag on a scene. Invoked via
+// persistence.clearAllDirectorStateFlags alongside directorState +
+// directorHistory so a finished battle leaves no state behind.
+export async function clearStandaloneFiredFlag(scene) {
+  if (!scene) return;
+  try {
+    if (scene.getFlag(STANDALONE_FLAG_NS, STANDALONE_FLAG_KEY)) {
+      await scene.unsetFlag(STANDALONE_FLAG_NS, STANDALONE_FLAG_KEY);
+    }
+  } catch (e) {
+    warn("standalone-reactions: clearStandaloneFiredFlag failed", e);
+  }
 }
