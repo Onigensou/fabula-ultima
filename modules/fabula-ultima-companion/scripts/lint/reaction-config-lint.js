@@ -472,7 +472,7 @@
       key: "passive_mode",
       code: "DEPRECATED_PROPS_PASSIVE_MODE",
       severity: "warning",
-      match: (v) => typeof v === "string" && ["on", "ask", "off"].includes(v.trim().toLowerCase()),
+      match: (v) => typeof v === "string" && ["on", "ask", "off", "force"].includes(v.trim().toLowerCase()),
       suggest:
         "Move mode to reaction_config_table[N].reaction_passive_mode " +
         "(the canonical home; passive-manager.js reads it via findPassiveRow()).",

@@ -92,7 +92,8 @@ They map directly to the lint + spec-guard rules below:
 
 | Concern | Canonical home | Don't author at top level |
 |---|---|---|
-| Passive on / ask / off mode | `reaction_config_table[N].reaction_passive_mode` | ~~props.passive_mode~~ |
+| Passive on / ask / off / force mode | `reaction_config_table[N].reaction_passive_mode` | ~~props.passive_mode~~ |
+| Engine-mandatory housekeeping (Protect charge refresh etc.) | reaction row with `reaction_passive_mode: "force"` — auto-fires AND stays invisible to UI (no pill, no menu blade, no Passive Manager toggle). Reserved for system mechanics the player shouldn't see as a choice. | ~~hardcoded engine flag, per-skill cleanup hook~~ |
 | "Fires when caster's spell hits an ally" | reaction row, trigger `creature_completes_spell` + `reaction_action_target: "ally"` | — |
 | "Fires after I deal damage" | reaction row, trigger `creature_deals_damage` + `reaction_source: "self"` | ~~props.post_damage_effect_ref~~ |
 | "Adds bonus to my Check" | reaction row, trigger `creature_performs_check` + effect_kind=grant | ~~props.passive_check_bonus_formula~~ |

@@ -488,11 +488,21 @@ async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
   return true;
 }
 
-// Resolve the tri-state mode (on/ask/off) for a reaction-config passive row.
-// Reads `reaction_passive_mode`, default "ask".
+// Resolve the four-state mode (on/ask/off/force) for a reaction-config
+// passive row. Reads `reaction_passive_mode`, default "ask".
+//
+// Modes (per [[force-mode-for-engine-mandatory-reactions]]):
+//   "on"    — auto-fire on match; surfaces as Auto chip / pill (player
+//             sees what fired)
+//   "ask"   — player decides (pill button / menu blade)
+//   "off"   — never fires (toggle-off for intrusive passives)
+//   "force" — auto-fires like "on" but UI-invisible — for engine
+//             housekeeping (Protect charge refresh etc.). NOT shown
+//             in pill row, NOT shown in menu, NOT shown in Passive
+//             Manager toggle list.
 function resolveReactionPassiveMode(row) {
   const explicit = String(row?.reaction_passive_mode ?? "").trim().toLowerCase();
-  if (explicit === "on" || explicit === "ask" || explicit === "off") return explicit;
+  if (explicit === "on" || explicit === "ask" || explicit === "off" || explicit === "force") return explicit;
   return "ask";
 }
 
@@ -500,7 +510,7 @@ function resolveReactionPassiveMode(row) {
 // the props directly. Kept until those paths are migrated to reaction config.
 export function resolvePassiveMode(props) {
   const explicit = String(props?.passive_mode ?? "").trim().toLowerCase();
-  if (explicit === "on" || explicit === "ask" || explicit === "off") return explicit;
+  if (explicit === "on" || explicit === "ask" || explicit === "off" || explicit === "force") return explicit;
   if (props?.passive_optional === false) return "on";
   return "ask";
 }
@@ -748,6 +758,9 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       log(`passive: ${carrierName} mode=off — skipping`);
       continue;
     }
+    // "force" mode is engine-mandatory — fires without prompt, same
+    // path as "on", just doesn't surface to UI elsewhere. Falls
+    // through to the dispatch below.
     if (mode === "ask") {
       // Harness override (Phase 2.1): see __FU_HARNESS_ACCEPT_PASSIVES__.
       const ovAccept = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
@@ -802,7 +815,9 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
       payload,
       actionTargetUuids: payload?.targetTokenUuids ?? [],
       hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
-      isPassive: mode === "on",
+      // "on" and "force" are both auto-fired without GM prompt → treat
+      // as passive for the targeting-auto-skip / prompt-bypass flow.
+      isPassive: mode === "on" || mode === "force",
       runtimeEffectTable,
       firePoints,
     });

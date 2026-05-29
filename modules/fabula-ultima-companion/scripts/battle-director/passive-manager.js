@@ -172,19 +172,23 @@ function stripHtml(html) {
   } catch { return String(html).replace(/<[^>]*>/g, "").trim(); }
 }
 
-// Return the first row in the item's reaction_config_table marked
-// `reaction_isPassive: true`, with its dict-key. Used to read/write
-// the canonical `reaction_passive_mode` field. Returns null if the
-// item has no passive reaction row (legacy skills like Vismagus that
-// still use the props-level `passive_mode` field).
+// Return the first toggleable (non-force) row in the item's
+// reaction_config_table marked `reaction_isPassive: true`, with its
+// dict-key. Used to read/write the canonical `reaction_passive_mode`
+// field. Returns null if the item has no toggleable passive row —
+// either (a) no passive rows at all (legacy props-level skills), or
+// (b) every passive row is mode="force" (engine-mandatory; not the
+// user's call). See [[force-mode-for-engine-mandatory-reactions]].
 function findPassiveRow(item) {
   const rc = item.system?.props?.reaction_config_table;
   if (!rc || typeof rc !== "object") return null;
   for (const key of Object.keys(rc)) {
     const row = rc[key];
-    if (row && !row.$deleted && row.reaction_isPassive === true) {
-      return { key, row };
-    }
+    if (!row || row.$deleted) continue;
+    if (row.reaction_isPassive !== true) continue;
+    const mode = String(row.reaction_passive_mode ?? "").trim().toLowerCase();
+    if (mode === "force") continue;  // engine-mandatory — invisible to UI
+    return { key, row };
   }
   return null;
 }
@@ -194,10 +198,14 @@ function readMode(item) {
   const passive = findPassiveRow(item);
   if (passive) {
     const m = String(passive.row.reaction_passive_mode ?? "").trim().toLowerCase();
+    // findPassiveRow already filters out "force", so we never see it
+    // here. Tri-state ask/on/off only.
     if (m === "on" || m === "ask" || m === "off") return m;
     return "ask";
   }
-  // Legacy fallback — props-level passive_mode (Vismagus etc.).
+  // Legacy fallback — props-level passive_mode (Vismagus etc.). Force
+  // is not supported on the legacy props path; force-mode lives only
+  // on the canonical reaction_config_table row.
   const m = String(item.system?.props?.passive_mode ?? "").trim().toLowerCase();
   if (m === "on" || m === "ask" || m === "off") return m;
   if (item.system?.props?.passive_optional === false) return "on";
@@ -272,9 +280,23 @@ export function showPassiveManager({ actor }) {
   despawn();
   ensureStyles();
 
-  const passives = (actor.items?.contents ?? []).filter((it) =>
-    String(it.system?.props?.skill_type ?? "").toLowerCase() === "passive"
-  ).sort((a, b) => String(a.name).localeCompare(String(b.name), game.i18n?.lang));
+  // Per [[force-mode-for-engine-mandatory-reactions]]: an item whose
+  // ONLY passive rows are mode="force" has nothing toggleable — exclude
+  // it from the manager. Items with at least one non-force passive
+  // row (or with legacy props-level passive_mode) still show.
+  // findPassiveRow already skips force rows, so a non-null return
+  // means the item has at least one toggleable row.
+  const hasLegacyPassiveProps = (it) => {
+    const m = String(it.system?.props?.passive_mode ?? "").trim().toLowerCase();
+    return m === "on" || m === "ask" || m === "off"
+      || it.system?.props?.passive_optional !== undefined;
+  };
+  const passives = (actor.items?.contents ?? []).filter((it) => {
+    if (String(it.system?.props?.skill_type ?? "").toLowerCase() !== "passive") return false;
+    // Show if there's a toggleable canonical row, OR a legacy props-
+    // level passive_mode (legacy path doesn't support force-mode).
+    return findPassiveRow(it) || hasLegacyPassiveProps(it);
+  }).sort((a, b) => String(a.name).localeCompare(String(b.name), game.i18n?.lang));
 
   const root = document.createElement("div");
   root.id = ROOT_ID;

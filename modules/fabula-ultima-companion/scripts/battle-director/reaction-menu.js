@@ -198,7 +198,10 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   // need a blade. Auto ("on")-mode candidates DO render (so the player
   // sees the menu's full reactor surface) but as a non-clickable "Auto"
   // chip; the caller is expected to have already recorded their decision.
-  const visible = (candidates ?? []).filter((c) => c?.mode !== "off");
+  // Hide "off" (auto-rejected) and "force" (engine-mandatory, no
+  // player choice — should already be auto-fired by the dispatcher
+  // before this menu spawns; this filter is defensive).
+  const visible = (candidates ?? []).filter((c) => c?.mode !== "off" && c?.mode !== "force");
 
   const root = document.createElement("div");
   root.className = "fud-react-menu";
@@ -447,7 +450,10 @@ export const ReactionMenu = {
       warn("ReactionMenu.spawn: missing token");
       return null;
     }
-    const visible = (candidates ?? []).filter((c) => c?.mode !== "off");
+    // Hide "off" (auto-rejected) and "force" (engine-mandatory, no
+  // player choice — should already be auto-fired by the dispatcher
+  // before this menu spawns; this filter is defensive).
+  const visible = (candidates ?? []).filter((c) => c?.mode !== "off" && c?.mode !== "force");
     if (!visible.length && typeof onPass !== "function") {
       // Nothing to show: every candidate is off-mode and no passthrough.
       return null;

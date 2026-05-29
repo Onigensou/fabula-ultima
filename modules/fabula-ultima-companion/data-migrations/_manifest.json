@@ -207,6 +207,10 @@
     {
       "key": "2026-05-29-sync-spiritist-passive-copies",
       "path": "data-migrations/2026-05-29-sync-spiritist-passive-copies.js"
+    },
+    {
+      "key": "2026-05-30-template-options-force-mode",
+      "path": "data-migrations/2026-05-30-template-options-force-mode.js"
     }
   ]
 }

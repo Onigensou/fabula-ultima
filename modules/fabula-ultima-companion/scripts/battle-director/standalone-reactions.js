@@ -239,13 +239,16 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     }
     if (!fresh.length) continue;
 
-    // Auto-fire "on"-mode passives immediately (no menu blade for them —
-    // no action card to gate; just run). Ask-mode and manual rows go to
-    // the menu for the player to pick.
+    // Auto-fire "on" and "force" passives immediately (no menu blade —
+    // no action card to gate; just run). Ask-mode and manual rows go
+    // to the menu for the player to pick. "force" rows differ from
+    // "on" semantically only in UI: both auto-fire here, but force is
+    // hidden from the Passive Manager toggle list as well (see
+    // [[force-mode-for-engine-mandatory-reactions]]).
     const autoFire = [];
     const askable = [];
     for (const c of fresh) {
-      if (c.kind === "passive" && c.mode === "on") autoFire.push(c);
+      if (c.kind === "passive" && (c.mode === "on" || c.mode === "force")) autoFire.push(c);
       else if (c.mode !== "off") askable.push(c);
     }
 

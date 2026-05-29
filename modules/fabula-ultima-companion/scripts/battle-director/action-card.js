@@ -2532,7 +2532,10 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // "Mode" footer chip so the player can see whether the pill is acting
 // automatically vs. waiting on their click vs. disabled.
 function buildReactionPillRow(prePassives) {
-  const visible = prePassives.filter((p) => p?.mode !== "off");
+  // Hide "off" (auto-rejected) and "force" (engine-mandatory, no
+  // player choice) rows from the visible list. "force" is recorded as
+  // auto-applied in the decision map below so RESOLVE still fires it.
+  const visible = prePassives.filter((p) => p?.mode !== "off" && p?.mode !== "force");
   if (!visible.length) return "";
   const pillsHtml = visible.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
@@ -2923,7 +2926,9 @@ export async function postActionCard({ director, kind, payload }) {
     const reactionDecisionMap = new Map(); // rowKey:carrierUuid → "apply"|"skip"
     for (const p of prePassives) {
       const key = `${p.rowKey}:${p.carrierUuid}`;
-      if (p.mode === "on")  reactionDecisionMap.set(key, "apply");
+      // "on" + "force" both auto-apply (force is engine-mandatory, on
+      // is player-set auto-apply; same effect on the decision map).
+      if (p.mode === "on" || p.mode === "force") reactionDecisionMap.set(key, "apply");
       if (p.mode === "off") reactionDecisionMap.set(key, "skip");
     }
     function snapshotReactionDecisions() {
