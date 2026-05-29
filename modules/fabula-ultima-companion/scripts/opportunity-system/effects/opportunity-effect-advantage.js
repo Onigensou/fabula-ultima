@@ -94,6 +94,7 @@
         title:           "Advantage — Choose Target",
         skillTarget:     "One Ally",
         sourceActorUuid: ctx.actorUuid,
+        includeSource:   true,   // caster can give Advantage to themselves
       });
       console.debug(TAG, "[step 1] token picked:", token ? `${token.name} (id=${token.id})` : "NULL");
       if (!token) { console.debug(TAG, "[exit] target picker cancelled"); return; }

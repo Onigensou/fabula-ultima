@@ -62,19 +62,28 @@
    *
    * API is at globalThis["__ONI_JRPG_TARGETING_API__"], installed on "setup".
    *
+   * Known issue: requestTargeting's promise can hang if the UI's animateOut()
+   * never fires .finished (seen when the user confirms before animateIn()
+   * fully settles). We work around this by racing the session promise against
+   * a store-poll: the store is written BEFORE the exit animation starts, so
+   * the poll picks up the result within ≤80 ms regardless of animation state.
+   *
    * @param {object}  opts
    * @param {string}  [opts.title]           Shown as the targeting UI header text
    * @param {string}  [opts.skillTarget]     Targeting string, e.g. "One Creature"
-   * @param {string}  [opts.sourceActorUuid] UUID of the acting actor; their tokens
-   *                                         are excluded from the valid target list
+   * @param {string}  [opts.sourceActorUuid] UUID of the acting actor
+   * @param {boolean} [opts.includeSource]   If true, source actor's own tokens
+   *                                         remain in the eligible list (allows
+   *                                         self-targeting). Default: false.
    */
   async function pickToken({
     title           = "Choose Target",
     skillTarget     = "One Creature",
     sourceActorUuid = null,
+    includeSource   = false,
   } = {}) {
     const targeting = globalThis["__ONI_JRPG_TARGETING_API__"];
-    console.debug(TAG, "[pickToken] entry", { title, skillTarget, sourceActorUuid, apiFound: !!targeting });
+    console.debug(TAG, "[pickToken] entry", { title, skillTarget, sourceActorUuid, includeSource, apiFound: !!targeting });
 
     if (!targeting) {
       console.error(TAG, "[pickToken] JRPG Targeting API not found at globalThis[\"__ONI_JRPG_TARGETING_API__\"]");
@@ -82,23 +91,26 @@
       return null;
     }
 
-    // Build explicit allowed list so we can exclude the source actor's tokens
+    // Build allowed list — optionally keep source actor's tokens in it
     let allowedTokenUuids;
     if (sourceActorUuid) {
       const srcDoc   = await fromUuid(sourceActorUuid).catch(() => null);
       const srcActor = srcDoc?.actor ?? (srcDoc?.documentName === "Actor" ? srcDoc : null);
       const srcId    = srcActor?.id ?? null;
-      console.debug(TAG, "[pickToken] source actor resolved", { srcId, srcName: srcActor?.name });
+      console.debug(TAG, "[pickToken] source actor resolved", { srcId, srcName: srcActor?.name, includeSource });
       const allowed  = (canvas?.tokens?.placeables ?? [])
-        .filter(t => t.actor && (!srcId || t.actor.id !== srcId))
+        .filter(t => t.actor && (includeSource || !srcId || t.actor.id !== srcId))
         .map(t => t.document?.uuid)
         .filter(Boolean);
       if (allowed.length) allowedTokenUuids = allowed;
       console.debug(TAG, "[pickToken] allowed token UUIDs", allowedTokenUuids ?? "(all)");
     }
 
-    console.debug(TAG, "[pickToken] calling requestTargeting...");
-    const result = await targeting.requestTargeting({
+    // Unique sessionId so the store-race can verify it's our result
+    const sessionId = `opp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
+    const sessionPromise = targeting.requestTargeting({
+      sessionId,
       skillTarget,
       sourceActorUuid: sourceActorUuid ?? null,
       ...(allowedTokenUuids ? { allowedTargetTokenUuids: allowedTokenUuids } : {}),
@@ -106,16 +118,41 @@
       userId: game.user.id,
     }).catch(e => { console.error(TAG, "[pickToken] requestTargeting error:", e); return null; });
 
-    console.debug(TAG, "[pickToken] result", { confirmed: result?.confirmed, cancelled: result?.cancelled, tokenCount: result?.tokens?.length, tokens: result?.tokens });
+    // Store-race: the store is written before animateOut starts, so we can
+    // resolve via the store even if requestTargeting's promise hangs.
+    let storeRaceCleanup = null;
+    const storeRacePromise = new Promise(resolve => {
+      const userId = game.user.id;
+      let pollId;
+      const check = () => {
+        const stored = targeting.getLastResult?.(userId);
+        if (stored?.sessionId !== sessionId) return;
+        clearInterval(pollId);
+        // Stored tokens use { uuid, id }; live tokens use { tokenUuid, tokenId }.
+        // Normalise to { tokenUuid, tokenId } so the PlaceableToken lookup below
+        // works regardless of which branch resolved.
+        const adaptedTokens = (stored.tokens ?? []).map(t => ({
+          ...t, tokenUuid: t.uuid, tokenId: t.id,
+        }));
+        console.debug(TAG, "[pickToken] store-race resolved", { sessionId, confirmed: stored.confirmed, tokenCount: adaptedTokens.length });
+        resolve({ ok: stored.confirmed, confirmed: stored.confirmed, cancelled: stored.cancelled, tokens: adaptedTokens });
+      };
+      pollId = setInterval(check, 80);
+      storeRaceCleanup = () => clearInterval(pollId);
+      setTimeout(() => { clearInterval(pollId); resolve(null); }, 30_000);
+    });
+
+    const result = await Promise.race([sessionPromise, storeRacePromise]);
+    storeRaceCleanup?.();   // stop the poll if sessionPromise won
+    console.debug(TAG, "[pickToken] result", { confirmed: result?.confirmed, cancelled: result?.cancelled, tokenCount: result?.tokens?.length });
 
     if (!result?.confirmed || !result.tokens?.length) {
-      console.debug(TAG, "[pickToken] → null (cancelled or no tokens selected)");
+      console.debug(TAG, "[pickToken] → null (cancelled or no tokens)");
       return null;
     }
 
-    // result.tokens contains plain info objects — resolve back to PlaceableToken
+    // Resolve back to a live PlaceableToken
     const info  = result.tokens[0];
-    console.debug(TAG, "[pickToken] resolving PlaceableToken from info", info);
     const found = (canvas?.tokens?.placeables ?? []).find(t =>
       t.document?.uuid === info.tokenUuid || t.id === info.tokenId
     );
