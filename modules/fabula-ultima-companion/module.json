@@ -183,6 +183,7 @@
     "scripts/opportunity-system/effects/opportunity-effect-registry.js",
     "scripts/opportunity-system/effects/opportunity-effect-advantage.js",
     "scripts/opportunity-system/effects/opportunity-effect-affliction.js",
+    "scripts/opportunity-system/effects/opportunity-effect-bonding-ui.js",
     "scripts/opportunity-system/effects/opportunity-effect-bonding.js",
     "scripts/opportunity-system/effects/opportunity-effect-custom.js",
     "scripts/opportunity-system/effects/opportunity-effect-faux-pas.js",
