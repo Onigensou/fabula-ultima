@@ -225,7 +225,8 @@
       const dieB     = singleDie ? dieA : getDieSize(actor, attrB);
       const rollA    = await rollDie(dieA);
       const rollB    = singleDie ? rollA : await rollDie(dieB);
-      const modParts = [...(modifiers ?? [])];
+      const actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, context?.checkContext ?? null) ?? [];
+      const modParts = [...actorMods, ...(modifiers ?? [])];
       const computed = computeCheck(rollA, rollB, modParts, dl, singleDie);
       results.push({
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
@@ -1060,8 +1061,24 @@
 
     for (const [uuid] of panelStates) {
       syncPanel(uuid);
+      loadActorCheckMods(uuid);
       if (canOwnerAct(uuid) && opts?.allowInvokes !== false) loadInvokeAvailability(uuid);
     }
+  }
+
+  // =========================================================================
+  // Load actor check modifiers into panel state (unconditional, all actors)
+  // =========================================================================
+  async function loadActorCheckMods(uuid) {
+    const ses = _session;
+    const st = ses?.panelStates?.get(uuid);
+    if (!st) return;
+    const actor = await resolveActor(uuid);
+    if (!actor || !_session || _session.sessionId !== ses.sessionId) return;
+    const mods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, ses.opts?.context?.checkContext ?? null) ?? [];
+    if (!mods.length) return;
+    st.modifierParts = [...mods, ...(st.modifierParts ?? [])];
+    syncPanel(uuid);
   }
 
   // =========================================================================
