@@ -1527,7 +1527,12 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     const tipBody = tipLines.join("");
     const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="${escapeHtml(r.name)}"`;
 
-    return `<div class="fud-bf-target-row"${tipAttrs}>
+    // Stable hooks for the live preview update (Phase 3 of Cheap Shot):
+    // the recompute helper finds the row by actor uuid and patches the
+    // result span's text + class when an add_damage pill toggles.
+    const rowDataAttrs =
+      ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`;
+    return `<div class="fud-bf-target-row"${rowDataAttrs}${tipAttrs}>
       <span class="t-name">${escapeHtml(r.name)}${aff ? ` ${aff}` : ""}</span>
       <span class="t-def">${defLabel}</span>
       <span class="t-result ${cls}">${label}</span>
@@ -2977,7 +2982,88 @@ export async function postActionCard({ director, kind, payload }) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
       }
+      // Phase 3: live preview update — recompute per-target damage and
+      // patch the result spans whenever an add_damage decision toggles.
+      // Fire-and-forget — serialization inside the helper prevents races.
+      try { recomputeTargetPreviews().catch(() => {}); } catch {}
     }
+
+    // Phase 3 of the Cheap Shot integration: live damage preview update.
+    // Re-runs the sender-side accumulator over currently-accepted
+    // add_damage candidates and patches each per-target row's result
+    // span to reflect the new damage value. Pill mode "on" / "force"
+    // pre-records as "apply" at card spawn, so this helper also runs
+    // once after the initial render to surface those bonuses.
+    //
+    // Serialised via a single in-flight Promise — fast clicks queue
+    // behind the previous recompute instead of racing the DOM.
+    let _previewInFlight = null;
+    async function recomputeTargetPreviews() {
+      if (_previewInFlight) { try { await _previewInFlight; } catch {} }
+      _previewInFlight = (async () => {
+        try {
+          const accepted = [];
+          for (const p of prePassives) {
+            const k = `${p.rowKey}:${p.carrierUuid}`;
+            if (reactionDecisionMap.get(k) === "apply") accepted.push(p);
+          }
+          // Lazy-import — cross-module cache-bust pattern.
+          const sk = await import("./skill-effects.js?cb=" + Date.now());
+          const sn = await import("./snapshot.js?cb=" + Date.now());
+          const bonusMap = await sk.computeSenderDamageBonuses({
+            casterActor: payload.attackerActor,
+            acceptedPrePassives: accepted,
+            dCombat: director?.dCombat,
+          });
+          const original = Array.isArray(payload.perTargetResults) ? payload.perTargetResults : [];
+          const recomputed = sk.recomputePerTargetDamages(original, bonusMap, sn.applyAffinityToDamage);
+          // Patch each row's t-result label + class.
+          for (const entry of recomputed) {
+            if (!entry?.actorUuid) continue;
+            const rowEl = root.querySelector(
+              `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(entry.actorUuid))}"]`
+            );
+            if (!rowEl) continue;
+            const resultSpan = rowEl.querySelector(".t-result");
+            if (!resultSpan) continue;
+            // Re-derive class + label, mirroring resultLabelFor /
+            // resultClsFor for the damage-row case (the only case
+            // add_damage can apply to — grant rows have no rawDamage).
+            const unit = entry.resource === "mp" ? "MP" : "dmg";
+            let label = "MISS";
+            let cls   = "miss";
+            if (entry.hit) {
+              if (typeof entry.grantAmount === "number") {
+                // Recipe-grant rows aren't damage rows — leave as-is.
+                continue;
+              }
+              if (entry.affinity === "AB") {
+                label = `HEALS ${Math.max(0, entry.damage)}`;
+                cls   = "absorb";
+              } else if (entry.affinity === "IM" || entry.damage <= 0) {
+                label = "NO EFFECT";
+                cls   = "miss";
+              } else {
+                label = `HIT — ${entry.damage} ${unit}`;
+                cls   = entry.crit ? "crit" : "hit";
+              }
+            }
+            resultSpan.className = `t-result ${cls}`;
+            resultSpan.textContent = label;
+          }
+        } catch (e) {
+          warn("action-card: recomputeTargetPreviews threw", e);
+        }
+      })();
+      await _previewInFlight;
+      _previewInFlight = null;
+    }
+
+    // Initial pass — surfaces "on" / "force" mode bonuses immediately
+    // on card spawn (they pre-record as "apply" above). Without this,
+    // the card would briefly show pre-bonus values until the first
+    // ask-mode click. Fire-and-forget.
+    try { recomputeTargetPreviews().catch(() => {}); } catch {}
 
     // Player-driven confirm/cancel via IntentChannel. The acting actor's
     // owner sees their own copy of the card; clicking Confirm/Cancel

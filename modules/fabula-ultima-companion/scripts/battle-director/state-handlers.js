@@ -2603,6 +2603,9 @@ const Confirm = {
     // (caster_short_on_mp is already pre-resolve via the cost gate;
     // start_of_turn etc. are standalone, no card).
     let prePassives = [];
+
+    // Spell-side dispatch — creature_completes_spell. Action-level (not
+    // per-target). Healing Power + Support Magic chain off this.
     if (ar.kind === "Skill" && ar.skillType?.toLowerCase() === "spell" && attackerActor) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
@@ -2621,6 +2624,87 @@ const Confirm = {
         });
       } catch (e) {
         warn("CONFIRM: findPassiveCandidates threw", e);
+      }
+    }
+
+    // Phase 3: creature_will_deal_damage — per hit target, pre-resolve
+    // base-damage modification hook. Fires for Attack-kind and damage-
+    // dealing Skill-kind (isOffensive + hasDamage). Each per-target
+    // candidate carries subjectActorUuid + payloadAtFire so Phase 2's
+    // sender-side accumulator + the action card's preview update can
+    // attribute bonuses to the right target. Used by Cheap Shot.
+    const fireWillDealDamage =
+      attackerActor &&
+      Array.isArray(ar.perTargetResults) &&
+      (ar.kind === "Attack" || (ar.kind === "Skill" && ar.hasDamage));
+    if (fireWillDealDamage) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        // Build the hit-target snapshot ONCE — same hitTargets array
+        // threads into every per-target payload so condition formulas
+        // like SINGLE_TARGET_ATTACK resolve identically across hits.
+        const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+        const hitTargetUuids = ar.perTargetResults
+          .filter((r) => r?.hit)
+          .map((r, idx) => {
+            // tokenUuid lives on perTargetResults OR ar.targets[i] — try
+            // both. The targets array index matches perTargetResults order.
+            if (r?.tokenUuid) return r.tokenUuid;
+            const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid);
+            return matchedTarget?.tokenUuid ?? null;
+          })
+          .filter(Boolean);
+
+        for (let i = 0; i < ar.perTargetResults.length; i++) {
+          const entry = ar.perTargetResults[i];
+          if (!entry?.hit) continue;  // misses never reach the damage stage
+          const subjectActorUuid = entry.actorUuid;
+          if (!subjectActorUuid) continue;
+          const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
+          const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
+
+          const payloadForTrigger = {
+            subjectActorUuid,
+            subjectTokenUuid,
+            // target/hit lists for ACTION_TARGET_COUNT / SINGLE_TARGET_ATTACK
+            targets: allTargetUuids,
+            hitTargets: hitTargetUuids,
+            // damage shape — accumulator's formula resolver reads these
+            rawDamage: entry.rawDamage,
+            damageType: ar.damageType ?? ar.damage?.element ?? null,
+            weaponType: ar.weapon?.weaponType ?? null,
+            affinity: entry.affinity,
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            sourceActorUuid: ar.attackerActorRef,
+            actionIntent: ar.actionIntent,
+            // Pass through so the targeting resolver's trigger_actor /
+            // trigger_subject keywords work.
+            targetTokenUuids: allTargetUuids,
+            hitTargetTokenUuids: hitTargetUuids,
+          };
+
+          let cands;
+          try {
+            cands = await findPassiveCandidates({
+              casterActor: attackerActor,
+              trigger: "creature_will_deal_damage",
+              payload: payloadForTrigger,
+            });
+          } catch (e) {
+            warn(`CONFIRM: will_deal_damage findPassiveCandidates threw for ${entry?.name}`, e);
+            continue;
+          }
+          for (const cand of cands ?? []) {
+            // Tag with subject + payloadAtFire — Phase 2 accumulator
+            // reads these to attribute bonuses to the right target.
+            cand.subjectActorUuid = subjectActorUuid;
+            cand.subjectTokenUuid = subjectTokenUuid;
+            cand.payloadAtFire = payloadForTrigger;
+            prePassives.push(cand);
+          }
+        }
+      } catch (e) {
+        warn("CONFIRM: will_deal_damage dispatch threw", e);
       }
     }
 
