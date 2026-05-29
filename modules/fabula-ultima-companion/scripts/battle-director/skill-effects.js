@@ -621,6 +621,12 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     skill: skillForCtx,
     dCombat: director?.dCombat ?? null,
     payload,
+    // Pass the action's target list through — `target_ref:
+    // "ally_action_targets"` (Healing Power) + `hit_action_targets`
+    // (Support Magic) resolve via these. Without them, the targeting
+    // candidate list is empty and the grant/apply_ae no-ops silently.
+    actionTargetUuids: payload?.targetTokenUuids ?? [],
+    hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
     firePoints,
     runtimeEffectTable,
     isPassive: true,

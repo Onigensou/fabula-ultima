@@ -2894,6 +2894,13 @@ export async function postActionCard({ director, kind, payload }) {
         const key = `${p.rowKey}:${p.carrierUuid}`;
         const decision = reactionDecisionMap.get(key) ?? "skip";
         out.push({
+          // carrierKind must round-trip: RESOLVE uses it to route between
+          // the item-runtime-view branch (item-bound passives like
+          // Healing Power) and the AE-flag branch (AE-bound reactions
+          // like Support Magic's check-bonus AE). Without it the
+          // dispatch silently no-ops because the wrong effect_table is
+          // looked up.
+          carrierKind: p.carrierKind,
           carrierUuid: p.carrierUuid,
           carrierName: p.carrierName,
           rowKey: p.rowKey,
