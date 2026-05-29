@@ -444,6 +444,22 @@ function subjectMatchesSource(wantSource, subjectActorUuid, reactorActor) {
   return true;
 }
 
+// Lazy + one-shot cache-bust for the skill-formulas import. The
+// runtime dispatches via dynamic-import every time it evaluates a
+// condition_formula or damage_amount; without this, the boot-time
+// cached skill-formulas wins forever and any new identifier (Phase 1
+// of Cheap Shot added SINGLE_TARGET_ATTACK + TARGET_STATUS_COUNT)
+// resolves to 0 → falsy gate → reaction silently rejected. The
+// `?cb=` query forces a fresh fetch on FIRST call; subsequent calls
+// reuse the cached promise. Pattern mirrors
+// state-handlers.getSkillEffectsExtras (skill-canon-hardening).
+let _formulaModulePromise = null;
+async function getSkillFormulas() {
+  if (_formulaModulePromise) return _formulaModulePromise;
+  _formulaModulePromise = import("./skill-formulas.js?cb=" + Date.now());
+  return _formulaModulePromise;
+}
+
 async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
   // 1. Subject-side source filter (e.g. only "self" performed the action).
   const wantSource = String(row.reaction_source ?? "").trim().toLowerCase();
@@ -477,7 +493,7 @@ async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
   // 4. Optional condition formula (resolved against the reactor).
   const condRaw = String(row.condition_formula ?? "").trim();
   if (condRaw) {
-    const { evaluateFormula, buildSkillResolver } = await import("./skill-formulas.js");
+    const { evaluateFormula, buildSkillResolver } = await getSkillFormulas();
     const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round: 0 });
     const val = evaluateFormula(condRaw, resolver, 0);
     if (!val) {
@@ -742,7 +758,7 @@ export async function computeSenderDamageBonuses({
     // Evaluate damage_amount against the candidate's payload.
     let amount = 0;
     try {
-      const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+      const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
       const resolver = buildSkillResolver({
         actor: casterActor,
         payload: cand.payloadAtFire ?? null,

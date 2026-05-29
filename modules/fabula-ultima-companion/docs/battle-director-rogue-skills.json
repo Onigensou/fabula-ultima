@@ -1,7 +1,7 @@
 {
   "_class": "Rogue",
   "_book": "Core",
-  "_status": "Batch 1 AUTHORED 2026-05-30 — Dodge / See You Later / Soul Steal materialized in Battle Director / Rogue / Skill via CreateSkillFromSpec. Soul Steal full mechanical wiring (DEX+WLP check vs MDEF + IP grant on hit via reaction_config_table + effect_table). See You Later narrative-only (per RAW). Dodge description-only skeleton — the conditional `bonus_def: SL while no shields + no martial armor` mechanical wiring needs new formula identifiers (`HAS_SHIELD`, `HAS_MARTIAL_ARMOR`) in skill-formulas.js + a self-AE with the bonus_def change; deferred. Batches 2-4 still pending per their notes.",
+  "_status": "Batch 1+2 AUTHORED 2026-05-30. Batch 1: Dodge / See You Later / Soul Steal (Soul Steal now uses on_activate_effect_ref + HIT_COUNT gate per b8ad40c/a656dc8; Dodge mechanical wiring still deferred). Batch 2: Cheap Shot AUTHORED + RAW-correct via Option C (bebdf4e/f951998/6af682c). Cheap Shot fires creature_will_deal_damage pre-resolve per hit target; SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0 gate; add_damage effect_kind adds SL + TARGET_STATUS_COUNT to base damage with affinity reapplied once over the combined total. Action card preview updates live on pill toggle. 5/5 Cheap Shot regression scenarios pass (single hit + status, no statuses, multi-target, decline, affinity stacking VU/RS). Batches 3-4 still pending.",
   "_comment": "Rogue skill+heroic-skill authoring set for the Battle Director engine. Mirrors the Spiritist spec shape: each entry carries `class: 'Rogue'` + `folder: 'Skill'` (or 'Heroic Skill') hints so CreateSkillFromSpec drops the Item into `Battle Director / Rogue / <folder>`. RAW text + icons reused from the world's existing legacy Rogue items (`💥 Skill / Class Skill / Rogue` and `💥 Skill / Heroic Skill`). CSB `system.unique` defaults to TRUE (PCs shouldn't carry duplicates).",
 
   "_batches": {
@@ -111,7 +111,7 @@
     },
     {
       "_raw": "FU Core — Passive Reaction. When you hit a creature with an attack: if the attack only targeted that creature AND they suffer 1+ statuses, you may deal extra damage equal to SL + (number of statuses on the creature).",
-      "_note": "BATCH 2 — defer authoring until trigger phase classification (during-action-card vs post-resolve) is wired. Cheap Shot is a damage-bonus reaction: fires on creature_deals_damage, condition gates on single-target attack + target has 1+ statuses. Formula `SL + STATUS_COUNT` already supported. UI: pill on attacker's action card (during-action pill row matches [[reaction-pills-on-action-card]]).",
+      "_note": "AUTHORED 2026-05-30 (Cheap Shot Option C). Fires on creature_will_deal_damage per hit target (Phase 1-3 of the Cheap Shot integration). Gate: SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0 (both ship with Phase 1). Bonus: add_damage effect_kind, base damage SL + TARGET_STATUS_COUNT, target_ref trigger_subject. Engine reapplies affinity once over (rawDamage + bonus) — VU doubles the combined total, RS halves it. UI: pre-resolve pill on the action card; card damage label live-updates on Apply.",
       "spec": {
         "name": "Cheap Shot",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Serpent%27s_Ire.png",
@@ -131,23 +131,21 @@
           "isReaction": true,
           "reaction_config_table": {
             "0": {
-              "reaction_trigger": "creature_deals_damage",
+              "reaction_trigger": "creature_will_deal_damage",
               "reaction_source": "self",
               "reaction_action_target": "enemy",
               "reaction_isPassive": true,
               "reaction_passive_mode": "ask",
               "reaction_effect_ref": "cheap_shot_bonus",
-              "condition_formula": "SINGLE_TARGET_ATTACK AND TARGET_STATUS_COUNT > 0"
+              "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0"
             }
           },
           "effect_table": {
             "0": {
               "effect_label": "cheap_shot_bonus",
-              "effect_kind": "modify_damage_taken",
-              "from_resource": "damage",
-              "to_resource": "damage",
-              "multiplier": "1",
-              "min_remaining": "SL + STATUS_COUNT"
+              "effect_kind": "add_damage",
+              "target_ref": "trigger_subject",
+              "damage_amount": "SL + TARGET_STATUS_COUNT"
             }
           }
         }

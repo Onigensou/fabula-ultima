@@ -201,8 +201,25 @@ return (async () => {
 
   // Reaction-config sanity. Warn (don't block) on typos so the author
   // can catch them. The runtime accepts unknown values silently.
+  // Trigger validity consults BOTH the legacy `oni.ReactionTriggers`
+  // registry (for legacy-bridged triggers) AND the director-native set
+  // exposed on `FUCompanion.api.directorTriggers.all` (Phase 1 of the
+  // Cheap Shot integration added creature_will_deal_damage there).
   const triggerApi = globalThis["oni.ReactionTriggers"] ?? null;
-  const KNOWN_EFFECT_KINDS = new Set(["grant", "apply_ae", "consume_charge", "redirect_target", "chain"]);
+  const directorTriggers = globalThis.FUCompanion?.api?.directorTriggers?.all ?? null;
+  const isKnownTrigger = (key) => {
+    if (directorTriggers?.has?.(key)) return true;
+    if (triggerApi?.isValidKey?.(key)) return true;
+    return false;
+  };
+  // add_damage shipped 2026-05-30 (Cheap Shot Phase 2) as a data-only
+  // effect_kind consumed by the sender-side damage accumulator.
+  // modify_damage_taken is its receiver-side sibling (Mercy).
+  const KNOWN_EFFECT_KINDS = new Set([
+    "grant", "apply_ae", "consume_charge", "redirect_target", "chain",
+    "add_damage", "modify_damage_taken", "open_action_menu",
+    "consume_resource", "targeting", "remove_tagged_ae", "substitute_cost",
+  ]);
   const KNOWN_SOURCE_VALUES = new Set(["self", "ally", "enemy", "neutral", "all", ""]);
   const KNOWN_RESOURCES = new Set(["hp", "mp", "ip", "zero_power", "zenit", "enmity"]);
   const KNOWN_DUP_MODES = new Set(["skip", "replace", "stack", "remove", "ask"]);
@@ -212,7 +229,7 @@ return (async () => {
     for (const [rowKey, row] of Object.entries(rcTable)) {
       if (!row || row.$deleted) continue;
       const trigger = (row.reaction_trigger ?? "").toString().trim();
-      if (trigger && triggerApi?.isValidKey && !triggerApi.isValidKey(trigger)) {
+      if (trigger && !isKnownTrigger(trigger)) {
         warnings.push(`reaction_config_table.${rowKey}: unknown trigger "${trigger}"`);
       }
       const src = (row.reaction_source ?? "").toString().trim();

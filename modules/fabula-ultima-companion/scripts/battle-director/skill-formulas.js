@@ -1,3 +1,9 @@
+// Re-export sentinel — bumped whenever a new identifier ships so
+// reload-aware callers can verify they have a fresh enough module.
+// Currently 2 (Phase 1 of Cheap Shot integration added SINGLE_TARGET_ATTACK
+// and TARGET_STATUS_COUNT). Not load-bearing; diagnostic only.
+export const SKILL_FORMULAS_SCHEMA = 2;
+
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
 // schema.md) is the source of truth for identifier names and grammar;
