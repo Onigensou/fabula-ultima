@@ -358,6 +358,26 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const t = payload?.targets;
         return Array.isArray(t) ? t.length : 0;
       }
+      // Boolean (1/0) alias for ACTION_TARGET_COUNT == 1 — reads cleaner
+      // in gates like Cheap Shot's "SINGLE_TARGET_ATTACK && ..." than
+      // the equality check. Returns 1 if exactly one target was selected.
+      case "SINGLE_TARGET_ATTACK": {
+        const t = payload?.targets;
+        return Array.isArray(t) && t.length === 1 ? 1 : 0;
+      }
+      // Status (debuff) count on the trigger's SUBJECT creature — the
+      // target of the action that fired the trigger. Used by per-target
+      // damage reactions like Cheap Shot's "deal +X if target is statused".
+      // Reads from payload.subjectActorUuid (the trigger payload's
+      // canonical subject identifier — populated by per-target firing
+      // sites like creature_will_deal_damage). Falls back to 0 if no
+      // subject is threaded — fail-safe for triggers without a subject.
+      case "TARGET_STATUS_COUNT": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? countStatusDebuffs(subject) : 0;
+      }
       // Count of targets that PASSED the Check (hit). For Active Skill
       // RESOLVE, chainPayload populates payload.hitTargets (see
       // state-handlers.js Skill resolve). For attack RESOLVE the same
@@ -456,6 +476,22 @@ function hasEquippedItemOfType(actor, item_type, { requireMartial = false } = {}
     return true;
   }
   return false;
+}
+
+// Sync uuid → actor lookup. Foundry V12's fromUuidSync handles top-
+// level actors (Actor.xxx) and embedded ones (Scene.x.Token.y.Actor.z).
+// Used by TARGET_STATUS_COUNT to resolve the trigger's subject during
+// formula evaluation (the formula resolver is sync, so we can't await).
+// Returns null on miss — caller folds to 0.
+function _resolveActorByUuidSync(uuid) {
+  try {
+    const doc = foundry.utils.fromUuidSync?.(uuid) ?? fromUuidSync?.(uuid);
+    if (!doc) return null;
+    // Token uuids resolve to a TokenDocument — unwrap to actor.
+    if (doc.actor) return doc.actor;
+    if (doc.documentName === "Actor") return doc;
+    return null;
+  } catch (_e) { return null; }
 }
 
 // Count active, non-disabled debuff-classified effects on the actor.

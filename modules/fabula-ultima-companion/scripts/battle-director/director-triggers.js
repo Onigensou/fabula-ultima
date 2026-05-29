@@ -44,6 +44,18 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // After a successful spell resolve (Spell type checks). Spiritual
   // Magic + Heart-of-Light style passives chain off this.
   "creature_completes_spell",
+  // Pre-resolve attack damage hook — fires per-target AFTER COMPUTE has
+  // locked rawDamage + affinity but BEFORE the action card commits the
+  // damage. Reactions matching this trigger surface as pre-resolve
+  // pills on the action card; accepted effects can modify rawDamage
+  // (via effect_kind: "add_damage" et al.), and RESOLVE recomputes
+  // post-affinity `damage` before applyDamageToTarget runs. Used by
+  // Cheap Shot's "deal extra damage when hitting a single statused
+  // target" pattern. Per the user's locked timing rule: reactions that
+  // manipulate action values fire pre-resolve (action card), not post.
+  // The post-resolve `creature_deals_damage` trigger stays for
+  // Drain-Spirit-style grants that fire after damage commits.
+  "creature_will_deal_damage",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),

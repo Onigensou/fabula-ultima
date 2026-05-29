@@ -178,7 +178,8 @@ write them in JSON regardless — they just won't be evaluated.
 | `creature_hit_by_action` | target | yes | yes | — | — |
 | `creature_critical_hit` | damage source | yes | — | — | — |
 | `creature_miss_action` | damage source | yes | — | — | — |
-| `creature_deals_damage` | damage source | yes | yes | yes | — |
+| `creature_will_deal_damage` | damage source | yes | yes | yes | pre-resolve (fires per hit target during CONFIRM, BEFORE affinity is applied; reactions can modify rawDamage via `effect_kind: "add_damage"` and RESOLVE recomputes the post-affinity value) |
+| `creature_deals_damage` | damage source | yes | yes | yes | post-resolve (fires per-target AFTER damage commits — for Drain-Spirit-style grants that react to damage already dealt) |
 | `creature_takes_damage` | target | yes | yes | yes | — |
 | `creature_takes_vulnerable_damage` | target | yes | yes | — | — |
 | `creature_takes_weak_damage` | target | yes | yes | — | — |
@@ -441,6 +442,8 @@ Identifiers (all return 0 if unresolvable):
 | `ROUND` | Current combat round number (1-indexed). 0 outside combat. Used by `condition_formula` gates like `"ROUND % 2 == 0"` (even rounds only). |
 | `ACTION_TARGET_COUNT` | `payload.targets.length` — how many tokens the triggering action targets. 0 when the payload carries no target list (lifecycle triggers). Used by gates like `"ACTION_TARGET_COUNT >= 2"` for multi-target-only reactions. |
 | `HIT_COUNT` | `payload.hitTargets.length` — how many targets passed the Check. Threaded onto chainPayload by the Skill RESOLVE path (state-handlers.js), so it's available to `on_activate_effect_ref` chains for gating "fire only on hit" effects. 0 when no roll info was threaded (no-Check skill / passive grant). Example: Soul Steal's IP grant uses `condition_formula: "HIT_COUNT > 0"` to skip on miss. |
+| `SINGLE_TARGET_ATTACK` | 1 if `payload.targets.length === 1`, else 0. Boolean alias that reads cleaner in gates than `ACTION_TARGET_COUNT == 1`. Used by Cheap Shot's "only fires on single-target attacks" gate. |
+| `TARGET_STATUS_COUNT` | Status (debuff) count on the trigger's **subject** creature (the target of the action that fired the trigger), not the reactor. Reads `payload.subjectActorUuid` — populated by per-target firing sites (e.g. `creature_will_deal_damage`). Falls back to 0 if no subject is in the payload. Used by Cheap Shot's "+1 per status on target" damage scaling. |
 | `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | 1 if the reactor has at least one equipped weapon whose `category` matches the type (case-insensitive), else 0. Used by Spiritist's Healing Power / Support Magic to gate on arcane-weapon presence. |
 | `HAS_SHIELD` | 1 if the reactor has any equipped item with `item_type === "shield"`, else 0. |
 | `HAS_MARTIAL_ARMOR` | 1 if the reactor has any equipped item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
