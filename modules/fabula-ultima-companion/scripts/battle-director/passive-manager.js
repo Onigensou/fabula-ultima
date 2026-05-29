@@ -195,35 +195,35 @@ function findPassiveRow(item) {
 
 function readMode(item) {
   // Canonical path: reaction_config_table row's reaction_passive_mode.
+  // The legacy top-level passive_mode / passive_optional fallback was
+  // dropped 2026-05-30 along with the template columns. Items with
+  // a stored ghost passive_mode value (from before the column was
+  // removed) read as "ask" — the engine default. Re-author the
+  // canonical row to fix.
   const passive = findPassiveRow(item);
-  if (passive) {
-    const m = String(passive.row.reaction_passive_mode ?? "").trim().toLowerCase();
-    // findPassiveRow already filters out "force", so we never see it
-    // here. Tri-state ask/on/off only.
-    if (m === "on" || m === "ask" || m === "off") return m;
-    return "ask";
-  }
-  // Legacy fallback — props-level passive_mode (Vismagus etc.). Force
-  // is not supported on the legacy props path; force-mode lives only
-  // on the canonical reaction_config_table row.
-  const m = String(item.system?.props?.passive_mode ?? "").trim().toLowerCase();
+  if (!passive) return "ask";
+  const m = String(passive.row.reaction_passive_mode ?? "").trim().toLowerCase();
+  // findPassiveRow already filters out "force", so we never see it
+  // here. Tri-state ask/on/off only.
   if (m === "on" || m === "ask" || m === "off") return m;
-  if (item.system?.props?.passive_optional === false) return "on";
   return "ask";
 }
 
-// Write a new mode. Mirrors readMode's resolution order — canonical
-// reaction_config_table row first, props-level fallback otherwise.
+// Write a new mode. Canonical path only — the legacy top-level
+// `passive_mode` fallback was dropped 2026-05-30 (CSB silently strips
+// writes to non-template columns anyway). Items without a canonical
+// row are filtered out of showPassiveManager, so this should never be
+// called for one.
 async function writeMode(item, next) {
   const passive = findPassiveRow(item);
-  if (passive) {
-    // Deep-merge the dict — write only the modified row, keep others.
-    const rc = foundry.utils.deepClone(item.system.props.reaction_config_table ?? {});
-    rc[passive.key] = { ...rc[passive.key], reaction_passive_mode: next };
-    await item.update({ "system.props.reaction_config_table": rc });
+  if (!passive) {
+    warn(`PassiveManager: writeMode skipped — no canonical passive row on "${item.name}"`);
     return;
   }
-  await item.update({ "system.props.passive_mode": next });
+  // Deep-merge the dict — write only the modified row, keep others.
+  const rc = foundry.utils.deepClone(item.system.props.reaction_config_table ?? {});
+  rc[passive.key] = { ...rc[passive.key], reaction_passive_mode: next };
+  await item.update({ "system.props.reaction_config_table": rc });
 }
 
 function despawn() {
@@ -282,20 +282,14 @@ export function showPassiveManager({ actor }) {
 
   // Per [[force-mode-for-engine-mandatory-reactions]]: an item whose
   // ONLY passive rows are mode="force" has nothing toggleable — exclude
-  // it from the manager. Items with at least one non-force passive
-  // row (or with legacy props-level passive_mode) still show.
-  // findPassiveRow already skips force rows, so a non-null return
-  // means the item has at least one toggleable row.
-  const hasLegacyPassiveProps = (it) => {
-    const m = String(it.system?.props?.passive_mode ?? "").trim().toLowerCase();
-    return m === "on" || m === "ask" || m === "off"
-      || it.system?.props?.passive_optional !== undefined;
-  };
+  // it from the manager. Items with at least one non-force passive row
+  // still show. findPassiveRow already skips force rows, so a non-null
+  // return means the item has at least one toggleable canonical row.
+  // The legacy top-level passive_mode / passive_optional fallback was
+  // dropped 2026-05-30 along with the template columns.
   const passives = (actor.items?.contents ?? []).filter((it) => {
     if (String(it.system?.props?.skill_type ?? "").toLowerCase() !== "passive") return false;
-    // Show if there's a toggleable canonical row, OR a legacy props-
-    // level passive_mode (legacy path doesn't support force-mode).
-    return findPassiveRow(it) || hasLegacyPassiveProps(it);
+    return !!findPassiveRow(it);
   }).sort((a, b) => String(a.name).localeCompare(String(b.name), game.i18n?.lang));
 
   const root = document.createElement("div");

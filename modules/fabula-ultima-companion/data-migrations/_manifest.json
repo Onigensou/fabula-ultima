@@ -211,6 +211,10 @@
     {
       "key": "2026-05-30-template-options-force-mode",
       "path": "data-migrations/2026-05-30-template-options-force-mode.js"
+    },
+    {
+      "key": "2026-05-30-skill-effects-panel-strip-deprecated",
+      "path": "data-migrations/2026-05-30-skill-effects-panel-strip-deprecated.js"
     }
   ]
 }

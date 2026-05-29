@@ -506,14 +506,11 @@ function resolveReactionPassiveMode(row) {
   return "ask";
 }
 
-// Legacy shim — old callers (Vismagus cost-gate etc.) read passive_mode off
-// the props directly. Kept until those paths are migrated to reaction config.
-export function resolvePassiveMode(props) {
-  const explicit = String(props?.passive_mode ?? "").trim().toLowerCase();
-  if (explicit === "on" || explicit === "ask" || explicit === "off" || explicit === "force") return explicit;
-  if (props?.passive_optional === false) return "on";
-  return "ask";
-}
+// Note: the legacy `resolvePassiveMode(props)` shim that read top-level
+// `passive_mode` / `passive_optional` was removed 2026-05-30 along with
+// the template columns. Mode lives exclusively on
+// `reaction_config_table[N].reaction_passive_mode` now; read it via
+// `resolveReactionPassiveMode` above.
 
 async function promptPassiveOptin(itemName, reactorActor, description) {
   if (!ui?.notifications) return true;
@@ -981,14 +978,14 @@ export async function fireActivationEffect(skill, ctx) {
 // see the correct payload. `damagePayload` overrides ctx.payload for
 // this fire so the formula resolver sees the per-target finalValue.
 //
-// The fire-point label is read from `ctx.firePoints` when provided
-// (recipe-merged), else from the skill's raw props.
+// The fire-point label is read from `ctx.firePoints` (recipe-merged).
+// The legacy `?? skill.system.props.post_damage_effect_ref` raw-prop
+// fallback was dropped 2026-05-30 when the top-level column was
+// removed from the template — the `drain` recipe still expands into
+// `firePoints.post_damage_effect_ref` so that path remains active for
+// recipe-authored skills.
 export async function firePostDamageEffect(skill, ctx, damagePayload) {
-  const label = String(
-    ctx?.firePoints?.post_damage_effect_ref
-    ?? skill?.system?.props?.post_damage_effect_ref
-    ?? ""
-  ).trim();
+  const label = String(ctx?.firePoints?.post_damage_effect_ref ?? "").trim();
   if (!label) return null;
   const subCtx = { ...ctx, payload: damagePayload, resolvedTargets: new Map() };
   return applyEffectByLabel(label, subCtx);
