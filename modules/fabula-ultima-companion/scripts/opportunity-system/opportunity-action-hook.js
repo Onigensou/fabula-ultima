@@ -73,6 +73,49 @@
       return;
     }
 
+    // ── Advantage consume step ───────────────────────────────────────────────────
+    // Runs BEFORE dice are computed. If the rolling actor has an "opportunityAdvantage"
+    // charged AE (placed by the advantage opportunity handler), consumes one charge
+    // and injects +4 into modifier.parts before the roll.
+    MANAGER.registerStep(
+      {
+        id:    "opportunity-advantage",
+        label: "Consume Advantage bonus if pending",
+        run: async (ctx) => {
+          const charges = globalThis.FUCompanion?.api?.charges;
+          if (!charges) return ctx;
+
+          const actorUuid = ctx.payload?.meta?.actorUuid;
+          if (!actorUuid) return ctx;
+
+          const doc   = await fromUuid(actorUuid).catch(() => null);
+          const actor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
+          if (!actor) return ctx;
+
+          const candidates = charges.findOnActor(actor, { key: "opportunityAdvantage" }) ?? [];
+          if (!candidates.length) return ctx;
+
+          const result = await charges.consume(candidates[0].effect, { count: 1, deleteWhenEmpty: true })
+            .catch(e => { console.error(TAG, "Advantage charge consume error:", e); return null; });
+          if (!result?.ok) return ctx;
+
+          // Inject +4 into modifier parts before compute reads them
+          const p = ctx.payload;
+          p.check              = p.check              ?? {};
+          p.check.modifier     = p.check.modifier     ?? {};
+          p.check.modifier.parts = Array.isArray(p.check.modifier.parts)
+            ? p.check.modifier.parts
+            : [];
+          p.check.modifier.parts.push({ label: "Advantage", value: 4 });
+
+          console.debug(TAG, "Advantage charge consumed — +4 injected into check modifier.");
+          return ctx;
+        },
+      },
+      { beforeId: "compute" }
+    );
+
+    // ── Opportunity offer step ───────────────────────────────────────────────────
     MANAGER.registerStep(
       {
         id: "opportunity",
@@ -101,6 +144,6 @@
       { afterId: "render" }
     );
 
-    console.debug(`${TAG} CheckRoller "opportunity" step registered.`);
+    console.debug(`${TAG} CheckRoller "opportunity-advantage" and "opportunity" steps registered.`);
   });
 })();
