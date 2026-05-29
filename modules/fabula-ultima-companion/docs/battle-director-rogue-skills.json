@@ -76,7 +76,7 @@
     },
     {
       "_raw": "FU Core — Active. DEX + WLP Check vs Magic Defense of one creature. On success: target is soldier → recover SL IP. Target is elite or champion → GM gives soul treasure (item worth target_level × 30, ×50 if Villain). Single-use per target. Skill bonus: +SL to the DEX+WLP Check.",
-      "_note": "Standard offensive Active check. damage_bonus + grant of IP on hit. The 'gives soul treasure' part is narrative — the GM hands the item out manually. IP grant via reaction_effect_table[grant resource=ip target=self amount=SL] fired on hit. The Skill Bonus (+SL to Check) lives on the skill prop the resolver reads (Spiritist Magic + bond bonus uses the same mechanism).",
+      "_note": "Active Check skill. IP grant wired through on_activate_effect_ref + effect_table (canonical Active fire-point per skill canon Rule 1). REJECTED: the original spec used a reaction_config_table row with trigger creature_deals_damage — Soul Steal deals no damage, so that trigger never fires. CAVEAT: on_activate_effect_ref fires from RESOLVE regardless of Check outcome (no HIT_COUNT formula identifier today). So IP grants on every Soul Steal activation, including misses — slight RAW deviation. Close the gap with HIT_COUNT in skill-formulas.js + a condition_formula 'HIT_COUNT > 0' on the grant row. The soldier-only rank gate and the elite/champion 'soul treasure' part are narrative — GM adjudicates.",
       "spec": {
         "name": "Soul Steal",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
@@ -94,16 +94,7 @@
           "type_damage": "",
           "damage_bonus": "0",
           "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. If you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target's soul treasure, an item worth an amount of zenit <strong>equal to or lower than 【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack; <em>a creature can be successfully stolen from with this Skill only once.</em></p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
-          "isReaction": true,
-          "reaction_config_table": {
-            "0": {
-              "reaction_trigger": "creature_deals_damage",
-              "reaction_source": "self",
-              "reaction_isPassive": true,
-              "reaction_passive_mode": "on",
-              "reaction_effect_ref": "soul_steal_grant_ip"
-            }
-          },
+          "on_activate_effect_ref": "soul_steal_grant_ip",
           "effect_table": {
             "0": {
               "effect_label": "soul_steal_grant_ip",
