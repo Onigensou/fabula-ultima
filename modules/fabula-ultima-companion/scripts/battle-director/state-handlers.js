@@ -32,6 +32,10 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
+// Standalone-reaction dispatcher — runs at FSM transitions for triggers
+// that aren't tied to an action card (conflict_start, turn_start, etc.).
+// Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
+import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
 // imported (with one-shot cache-bust on first call) so this module
@@ -617,6 +621,16 @@ const Prep = {
       label: `Battle Start`,
       description: `${result.partyTokens} party vs ${result.enemyTokens} enem${result.enemyTokens === 1 ? "y" : "ies"} — choose first turn`,
     }).catch((e) => warn("PREP: saveDirectorState failed", e));
+
+    // Standalone reaction trigger: conflict_start. Every combatant gets
+    // a chance to react before the first turn (High Speed, Sentinel,
+    // start-of-conflict buffs etc.). Per [[reaction-menu-on-token]] —
+    // spawned via the token-anchored menu, no action card.
+    try {
+      const spawned = await dispatchStandaloneTrigger({ director, trigger: "conflict_start" });
+      if (spawned) log(`PREP: conflict_start spawned ${spawned} reaction menu(s)`);
+    } catch (e) { warn("PREP: conflict_start dispatch threw", e); }
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -629,6 +643,17 @@ const RoundStart = {
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
     log(`ROUND_START — round ${director.dCombat?.round ?? director.combat?.round ?? "?"}`);
+
+    // Standalone reaction trigger: round_start. Per
+    // [[reaction-menu-on-token]] — every combatant gets the chance to
+    // surface a matching reaction on their token (regen, start-of-
+    // round buffs, etc.). findPassiveCandidates row filters do the
+    // who-matches gating; menus only spawn for actors with hits.
+    try {
+      const spawned = await dispatchStandaloneTrigger({ director, trigger: "round_start" });
+      if (spawned) log(`ROUND_START: spawned ${spawned} reaction menu(s)`);
+    } catch (e) { warn("ROUND_START: dispatch threw", e); }
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -897,7 +922,19 @@ const TurnStart = {
       description: `${tsSide} acting — pick action`,
     }).catch((e) => warn("TURN_START: saveDirectorState failed", e));
 
-    // No-op for triggers in v1. Pass through.
+    // Standalone reaction trigger: turn_start. Per
+    // [[reaction-menu-on-token]] — dispatched across every combatant,
+    // not just the acting one, so reactions like "when ANY turn
+    // starts" surface too (Sentinel-style watchers). The row-side
+    // filter on the reaction config controls whose turn matches.
+    try {
+      const spawned = await dispatchStandaloneTrigger({
+        director, trigger: "turn_start",
+        payload: { actingActorUuid: snap?.actorUuid, actingTokenUuid: snap?.tokenUuid },
+      });
+      if (spawned) log(`TURN_START: spawned ${spawned} reaction menu(s)`);
+    } catch (e) { warn("TURN_START: dispatch threw", e); }
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3219,6 +3256,20 @@ const TurnEnd = {
       const teJustActedName = director.dCombat.current?.name
         ?? director.ctx.turnSnapshot?.name ?? "?";
       const teRoundEnded = director.dCombat.round ?? 0;
+
+      // Standalone reaction trigger: turn_end. Fires BEFORE nextTurn so
+      // dCombat.current still points at the acting actor (relevant for
+      // reactions that read currentActorUuid in their condition).
+      const endingActorUuid  = director.dCombat?.current?.actorUuid ?? null;
+      const endingTokenUuid  = director.dCombat?.current?.tokenUuid ?? null;
+      try {
+        const spawned = await dispatchStandaloneTrigger({
+          director, trigger: "turn_end",
+          payload: { actingActorUuid: endingActorUuid, actingTokenUuid: endingTokenUuid },
+        });
+        if (spawned) log(`TURN_END: spawned ${spawned} reaction menu(s)`);
+      } catch (e) { warn("TURN_END: dispatch threw", e); }
+
       try {
         const r = director.dCombat.nextTurn();
         director.ctx.endOfRound = !!r.wrappedRound;
@@ -3282,7 +3333,14 @@ const TurnEnd = {
 const RoundEnd = {
   async onEnter(director) {
     log(`ROUND_END`);
-    // v1 just passes through. Real implementation drains round-end triggers.
+
+    // Standalone reaction trigger: round_end. Spawns per-reactor menus
+    // for matching reactions (status ticks, end-of-round cleanups).
+    try {
+      const spawned = await dispatchStandaloneTrigger({ director, trigger: "round_end" });
+      if (spawned) log(`ROUND_END: spawned ${spawned} reaction menu(s)`);
+    } catch (e) { warn("ROUND_END: dispatch threw", e); }
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3309,6 +3367,12 @@ const Stopped = {
     SkillPicker.despawn({ director });
     OptionPicker.despawnAll();
     BattlefieldActionCard.despawn({ director });
+    // Drop any reaction menus left over from earlier in the battle.
+    // conflict_end has no dispatch site yet — it needs a pre-STOPPED
+    // hook (last turn's RESOLVE? a CLEANUP_AFTER state?) so the player
+    // can react before tokens get wiped. Tracked in
+    // [[reaction-menu-on-token]] as next-iteration work.
+    try { clearAllStandaloneMenus(); } catch (e) { warn("STOPPED: clearAllStandaloneMenus threw", e); }
   },
 };
 

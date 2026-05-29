@@ -1,0 +1,201 @@
+// Standalone reaction dispatcher — fires at FSM transitions for triggers
+// that aren't tied to an action card (conflict_start / conflict_end /
+// turn_start / turn_end / round_start / round_end).
+//
+// Per [[reaction-menu-on-token]]: these are the canonical "no host card"
+// triggers. For each reactor in the active combat we ask
+// findPassiveCandidates for matching rows (BOTH passive and manual —
+// `includeManual: true`), then spawn the token-anchored reaction menu
+// over the reactor's token. A blade click fires the reaction via
+// firePreAcceptedCandidate; the Pass blade just closes the menu.
+//
+// Auto-mode passive ("on") candidates auto-fire on menu spawn rather
+// than rendering a chip the player has to acknowledge — there's no
+// "action card" to gate them behind. Ask-mode passives and ALL manual
+// rows render as clickable blades.
+//
+// This file is GM-only — the director runs only on the GM client. A
+// future iteration ([[reaction-menu-on-token]] §5) will mirror the menu
+// to the owning player via the same INTENT/socket pattern turn-ui uses.
+
+import { log, warn } from "./logger.js";
+import { ReactionMenu } from "./reaction-menu.js";
+
+// findPassiveCandidates + firePreAcceptedCandidate are dynamically
+// imported with one-shot cache-bust so a fresh module load (harness)
+// picks up live skill-effects rather than the boot-cached version
+// (same caveat as state-handlers.getSkillEffectsExtras).
+let _seExtraModule = null;
+async function getSkillEffectsExtras() {
+  if (_seExtraModule) return _seExtraModule;
+  _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
+  return _seExtraModule;
+}
+
+// Walk the director's combatants and return [{ actor, token }] entries
+// for every live reactor on the active battle. Skips combatants whose
+// actor doc went stale or token isn't on canvas (they can't host a menu).
+async function collectReactors(director) {
+  const out = [];
+  const dc = director?.dCombat;
+  if (!dc) return out;
+  const list = Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants ?? {});
+  for (const dcc of list) {
+    if (!dcc || dcc.defeated) continue;
+    let actor = dcc.actorDoc ?? null;
+    if (!actor && dcc.actorUuid) {
+      try { actor = await fromUuid(dcc.actorUuid); } catch (_) { actor = null; }
+    }
+    if (!actor) continue;
+    // Find this actor's token on the current scene. Prefer the canvas
+    // placeable so we get a PIXI Token with the .center accessor the
+    // menu uses for anchoring.
+    let token = null;
+    if (dcc.tokenId) token = canvas?.tokens?.get(dcc.tokenId) ?? null;
+    if (!token) {
+      token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
+    }
+    if (!token) continue;
+    out.push({ actor, token, combatantId: dcc.id });
+  }
+  return out;
+}
+
+// Human-readable phase label for the menu header chip. Kept short so it
+// fits on one line over the token.
+function labelForTrigger(trigger) {
+  switch (trigger) {
+    case "conflict_start": return "Start of Conflict";
+    case "conflict_end":   return "End of Conflict";
+    case "round_start":    return "Start of Round";
+    case "round_end":      return "End of Round";
+    case "turn_start":     return "Start of Turn";
+    case "turn_end":       return "End of Turn";
+    default:               return "Reaction";
+  }
+}
+
+// Default payload shape for standalone triggers. Most rows don't read
+// payload fields (the trigger key itself is the match condition), but
+// some condition formulas reference round / phase metadata, so we ship
+// what we can derive cheaply.
+function buildStandalonePayload(director, trigger, extras) {
+  return {
+    trigger,
+    round: director?.dCombat?.round ?? null,
+    currentSide: director?.dCombat?.currentSide ?? null,
+    currentActorUuid: director?.dCombat?.current?.actorUuid ?? null,
+    currentTokenUuid: director?.dCombat?.current?.tokenUuid ?? null,
+    ...(extras ?? {}),
+  };
+}
+
+// Dispatch a standalone trigger across every reactor with at least one
+// matching row. Spawns a per-reactor menu; clicks fire the reaction.
+// Returns the number of menus spawned (useful for logging + tests).
+//
+// `restrictTo` (optional): when present, only this reactor actor is
+// considered — used by turn_start/turn_end to fire only for the
+// acting combatant (everyone else's turn-start handlers don't apply).
+export async function dispatchStandaloneTrigger({ director, trigger, restrictTo = null, payload: extraPayload = null } = {}) {
+  if (!director || !trigger) return 0;
+  const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
+
+  let reactors = await collectReactors(director);
+  if (restrictTo) {
+    const wantedUuid = String(restrictTo?.uuid ?? "");
+    reactors = reactors.filter((r) => r.actor?.uuid === wantedUuid);
+  }
+  if (!reactors.length) return 0;
+
+  const payload = buildStandalonePayload(director, trigger, extraPayload);
+  let spawned = 0;
+
+  for (const { actor, token } of reactors) {
+    let candidates;
+    try {
+      candidates = await findPassiveCandidates({
+        casterActor: actor,
+        trigger,
+        payload,
+        includeManual: true,
+      });
+    } catch (e) {
+      warn(`dispatchStandaloneTrigger: findPassiveCandidates threw for ${actor?.name}`, e);
+      continue;
+    }
+    if (!candidates?.length) continue;
+
+    // Auto-fire "on"-mode passives immediately (no menu blade for them —
+    // no action card to gate; just run). Ask-mode and manual rows go to
+    // the menu for the player to pick.
+    const autoFire = [];
+    const askable = [];
+    for (const c of candidates) {
+      if (c.kind === "passive" && c.mode === "on") autoFire.push(c);
+      else if (c.mode !== "off") askable.push(c);
+    }
+
+    for (const c of autoFire) {
+      try {
+        await firePreAcceptedCandidate({
+          director, casterActor: actor, candidate: c, payload,
+        });
+        log(`standalone[${trigger}]: auto-fired "${c.carrierName}" for ${actor.name}`);
+      } catch (e) {
+        warn(`standalone[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
+      }
+    }
+
+    if (!askable.length) continue;
+
+    // Render the menu — onPick fires the candidate and respawns the
+    // menu with the remaining askables; onPass closes the menu.
+    let remaining = askable.slice();
+    const combatId = director?.combatId ?? director?.dCombat?.id ?? null;
+
+    const renderMenu = () => {
+      if (!remaining.length) {
+        ReactionMenu.despawn({ combatId, tokenId: token.id });
+        return;
+      }
+      ReactionMenu.spawn({
+        director, token,
+        candidates: remaining,
+        combatId,
+        trigger,
+        label: labelForTrigger(trigger),
+        onPick: async (cand) => {
+          try {
+            await firePreAcceptedCandidate({
+              director, casterActor: actor, candidate: cand, payload,
+            });
+            log(`standalone[${trigger}]: fired "${cand.carrierName}" for ${actor.name}`);
+          } catch (e) {
+            warn(`standalone[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
+          }
+          // Drop the fired entry from the remaining list and re-render.
+          remaining = remaining.filter(
+            (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
+          );
+          renderMenu();
+        },
+        onPass: () => {
+          log(`standalone[${trigger}]: passed for ${actor.name}`);
+          ReactionMenu.despawn({ combatId, tokenId: token.id });
+        },
+      });
+    };
+    renderMenu();
+    spawned++;
+  }
+
+  return spawned;
+}
+
+// Clear every reaction menu spawned by the standalone dispatcher.
+// Called from FSM teardown (Stopped.onEnter) so menus don't linger
+// past combat end.
+export function clearAllStandaloneMenus() {
+  ReactionMenu.despawnAll();
+}

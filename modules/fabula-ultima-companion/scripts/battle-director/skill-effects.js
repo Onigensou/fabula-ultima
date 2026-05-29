@@ -522,30 +522,62 @@ async function promptPassiveOptin(itemName, reactorActor, description) {
   });
 }
 
-// Pre-resolve passive candidates — same matcher as firePassiveTriggers
-// but DOES NOT execute the effects. Returns the metadata an action card
-// needs to render reaction pills before Confirm:
-//   { carrierKind, carrierUuid, carrierName, rowKey, mode, ref, refDescription }
-// Used by COMPUTE-phase Spell handler to surface ask-mode passives as
-// pills on the action card BEFORE the player confirms (so the player can
-// opt in / opt out, and the resolve picks up their decision).
+// Pre-resolve reaction candidates — same matcher as firePassiveTriggers
+// but DOES NOT execute the effects. Returns the metadata the action card
+// (or token-anchored reaction menu) needs to surface reaction options
+// before Confirm:
+//   { carrierKind, carrierUuid, carrierName, rowKey, mode, kind, ref,
+//     carrierImg, carrierDescription }
 //
-// Mode tri-state:
-//   "on"  → caller treats as auto-accepted (no pill, applied on resolve)
-//   "ask" → render pill; pending player decision
-//   "off" → auto-rejected (no pill, not applied)
-export async function findPassiveCandidates({ casterActor, trigger, payload }) {
+// Modes (passive only — manual reactions ignore this and always require
+// a click):
+//   "on"  → caller treats as auto-accepted (renders as Auto chip, applied
+//           on resolve)
+//   "ask" → caller renders as clickable; pending player decision
+//   "off" → caller auto-rejects (not rendered, not applied)
+//
+// Kinds:
+//   "passive" → row has reaction_isPassive === true. Dispatcher fires
+//               automatically per mode tri-state above.
+//   "manual"  → row has reaction_isPassive === false / undefined. ALWAYS
+//               requires the player to click — no mode bypass. Surfaces
+//               in the menu as an active blade; the caller is expected
+//               to treat its mode as "ask" regardless of the row value.
+//
+// Default behavior (no opts) preserves the legacy pre-resolve pill flow:
+// only passive rows are returned. Pass `includeManual: true` (used by
+// the token-anchored reaction menu for standalone trigger sites where
+// High Speed-style manual reactions also live) to surface manual rows
+// alongside passives.
+export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
+
+  function classifyRow(row) {
+    return row?.reaction_isPassive === true ? "passive" : "manual";
+  }
+  function shouldKeep(row) {
+    if (!row || row.$deleted) return false;
+    if (String(row.reaction_trigger ?? "").trim() !== trigger) return false;
+    const isPassive = row.reaction_isPassive === true;
+    if (!isPassive && !includeManual) return false;
+    return true;
+  }
+  function modeFor(row, kind) {
+    // Manual rows are always "ask" — the player has to click. Passive
+    // rows respect the configured tri-state (on/ask/off).
+    if (kind === "manual") return "ask";
+    return resolveReactionPassiveMode(row);
+  }
+
   for (const item of casterActor.items?.contents ?? []) {
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     for (const key of Object.keys(rc)) {
       const row = rc[key];
-      if (!row || row.$deleted) continue;
-      if (row.reaction_isPassive !== true) continue;
-      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (!shouldKeep(row)) continue;
       if (!(await shouldReactionPassiveFire(row, item, casterActor, payload))) continue;
+      const kind = classifyRow(row);
       out.push({
         carrierKind: "item",
         carrierUuid: item.uuid,
@@ -553,7 +585,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload }) {
         carrierImg:  item.img,
         carrierDescription: item.system?.props?.description ?? "",
         rowKey: key,
-        mode: resolveReactionPassiveMode(row),
+        kind,
+        mode: modeFor(row, kind),
         ref: String(row.reaction_effect_ref ?? "").trim(),
       });
     }
@@ -566,10 +599,9 @@ export async function findPassiveCandidates({ casterActor, trigger, payload }) {
     if (!rc || typeof rc !== "object") continue;
     for (const key of Object.keys(rc)) {
       const row = rc[key];
-      if (!row || row.$deleted) continue;
-      if (row.reaction_isPassive !== true) continue;
-      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+      if (!shouldKeep(row)) continue;
       if (!(await shouldReactionPassiveFire(row, ae, casterActor, payload))) continue;
+      const kind = classifyRow(row);
       out.push({
         carrierKind: "ae",
         carrierUuid: ae.uuid,
@@ -577,7 +609,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload }) {
         carrierImg:  ae.icon ?? ae.img,
         carrierDescription: ae.description ?? "",
         rowKey: key,
-        mode: resolveReactionPassiveMode(row),
+        kind,
+        mode: modeFor(row, kind),
         ref: String(row.reaction_effect_ref ?? "").trim(),
       });
     }
