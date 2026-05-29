@@ -99,7 +99,123 @@
     });
   }
 
-  window["oni.OppEffectUtils"] = Object.freeze({ resolveActor, pickToken });
+  // ── Resolve non-GM owner user ID for an actor UUID ───────────────────────────
+  function resolveOwnerUserId(actorUuid) {
+    if (!actorUuid) return null;
+    const shortId   = String(actorUuid).replace(/^Actor\./, "").replace(/^.*\.Actor\./, "");
+    const candidates = [];
+
+    const worldActor = game.actors?.get(shortId);
+    if (worldActor) {
+      for (const [userId, level] of Object.entries(worldActor.ownership ?? {})) {
+        if (level >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER) {
+          const user = game.users?.get(userId);
+          if (user && !user.isGM) candidates.push(userId);
+        }
+      }
+    } else {
+      for (const t of (canvas?.tokens?.placeables ?? [])) {
+        const actor = t.actor;
+        if (!actor) continue;
+        if (actor.uuid !== actorUuid && actor.id !== shortId) continue;
+        for (const [userId, level] of Object.entries(actor.ownership ?? {})) {
+          if (level >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER) {
+            const user = game.users?.get(userId);
+            if (user && !user.isGM) candidates.push(userId);
+          }
+        }
+        break;
+      }
+    }
+    return candidates[0] ?? null;
+  }
+
+  /**
+   * Show a GM-side text-input dialog with an optional textarea.
+   * Returns the trimmed string, or null if cancelled / empty.
+   *
+   * @param {object} opts
+   * @param {string}  opts.title
+   * @param {string}  [opts.label]          HTML rendered above the textarea
+   * @param {string}  [opts.placeholder]
+   * @param {boolean} [opts.multiline=true]  false → single <input type="text">
+   */
+  function gmTextPrompt({ title = "Enter Text", label = "", placeholder = "", multiline = true } = {}) {
+    return new Promise(resolve => {
+      const escAttr = s => String(s ?? "").replaceAll("&","&amp;").replaceAll('"',"&quot;");
+      const field   = multiline
+        ? `<textarea id="oni-opp-text-in" rows="3" placeholder="${escAttr(placeholder)}"
+             style="width:100%;padding:6px;resize:vertical;box-sizing:border-box;"></textarea>`
+        : `<input id="oni-opp-text-in" type="text" placeholder="${escAttr(placeholder)}"
+             style="width:100%;padding:6px;box-sizing:border-box;" />`;
+
+      new Dialog({
+        title,
+        content: `<div style="padding:4px 0 8px;">
+          ${label ? `<p style="margin:0 0 6px;">${label}</p>` : ""}
+          ${field}
+        </div>`,
+        buttons: {
+          confirm: {
+            label:    "Confirm",
+            callback: html => {
+              const val = String(html.find("#oni-opp-text-in").val() ?? "").trim();
+              resolve(val || null);
+            },
+          },
+          cancel: { label: "Cancel", callback: () => resolve(null) },
+        },
+        default: "confirm",
+        close:   () => resolve(null),
+      }).render(true);
+    });
+  }
+
+  /**
+   * Show an item-picker dialog for a given actor (GM-side).
+   * Returns the chosen Item document, or null if cancelled / no items.
+   */
+  function pickItem(actor) {
+    const items = Array.from(actor?.items ?? []).filter(i => i.name);
+    if (!items.length) {
+      ui.notifications?.warn(`[Opportunity] ${actor?.name ?? "Actor"} has no items.`);
+      return Promise.resolve(null);
+    }
+    if (items.length === 1) return Promise.resolve(items[0]);
+
+    return new Promise(resolve => {
+      const esc  = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+      const opts = items.map((it, i) =>
+        `<option value="${i}">${esc(it.name)}</option>`
+      ).join("");
+      new Dialog({
+        title:   `Lost Item — ${actor.name}`,
+        content: `<div style="padding:4px 0 8px;">
+          <select id="oni-opp-item-sel" style="width:100%;padding:4px;">${opts}</select>
+        </div>`,
+        buttons: {
+          confirm: {
+            label:    "Confirm",
+            callback: html => {
+              const idx = parseInt(html.find("#oni-opp-item-sel").val() ?? "0", 10);
+              resolve(items[Number.isFinite(idx) ? idx : 0] ?? null);
+            },
+          },
+          cancel: { label: "Cancel", callback: () => resolve(null) },
+        },
+        default: "confirm",
+        close:   () => resolve(null),
+      }).render(true);
+    });
+  }
+
+  window["oni.OppEffectUtils"] = Object.freeze({
+    resolveActor,
+    pickToken,
+    resolveOwnerUserId,
+    gmTextPrompt,
+    pickItem,
+  });
 
   console.debug(TAG, "Effect registry ready.");
 })();
