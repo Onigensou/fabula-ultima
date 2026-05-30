@@ -2,7 +2,8 @@
  * Migration: 2026-05-30-dodge-mechanical-wiring
  * ---------------------------------------------------------------------------
  * Wires the BD-tree Dodge skill (Rogue / Skill) with mechanical effect via
- * the **always-on passive AE pattern** (transfer:true on the item's AE).
+ * the **always-on passive AE pattern** (transfer:true on the item's AE
+ * with CSB's `${level}$` formula).
  *
  * RAW: "As long as you have no shields and no martial armor equipped,
  *       your Defense score is increased by 【SL】."
@@ -14,12 +15,14 @@
  *     to the bearer's derived props on every sheet derive. No
  *     reaction trigger, no apply_ae effect dispatch, no per-turn
  *     refresh — it's just there.
- *   • Change: `bonus_defense` += SL (CSB column, ADD mode).
- *   • Value is BAKED at author time as a literal integer matching
- *     the skill's current SL (default "1"). CSB's AEF formula context
- *     doesn't expose `item.level` to transfer-mode AEs, so we can't
- *     read the bearing skill's level dynamically — a level-up
- *     re-bake hook is the planned follow-up (see canon doc).
+ *   • Change: `bonus_defense` += `${level}$` (CSB column, ADD mode).
+ *     The `${level}$` formula reads the BEARING SKILL ITEM's
+ *     `system.props.level` dynamically — CSB AEF exposes the bearing
+ *     item's props at the top scope inside `${...}$` expressions.
+ *     Levelling the skill auto-updates the bonus on the next sheet
+ *     derive; no rebake hook needed. This is the same pattern the
+ *     legacy class passives use (Adrenaline: `${level * 2}$`;
+ *     Defensive Mastery, Retaliation, Wardancer, etc.: `${level}$`).
  *
  * Equipment gate. RAW says the bonus applies only when no shields /
  * martial armor are equipped. The director-side `HAS_SHIELD` /
@@ -61,35 +64,32 @@ function actorCopyIsBattleDirector(item, masterIndexByUniqueId) {
   return master ? isInBattleDirectorTree(master) : false;
 }
 
-// Bake SL into the literal value here. Default SL 1 per the spec
-// convention (`level: 1` on every new spec). When the bearer levels
-// up, a planned hook will re-bake the change.value to match.
-function aeTemplateForLevel(skillLevel) {
-  const SL = Number(skillLevel) || 1;
-  return {
-    name: "Dodge",
-    icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
-    transfer: true,
-    disabled: false,
-    duration: {},
-    flags: {
-      [FLAG_NS]: {
-        // Not a director-applied AE — it's an item-transfer AE.
-        // Doesn't need the directorPermanent / crossScene flags.
-      },
+// AE template for Dodge. The change value is a CSB formula that reads
+// the bearing skill's level dynamically — no per-level rebake needed.
+const AE_TEMPLATE = {
+  name: "Dodge",
+  icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+  transfer: true,
+  disabled: false,
+  duration: {},
+  flags: {
+    [FLAG_NS]: {
+      // Not a director-applied AE — it's an item-transfer AE.
+      // Doesn't need the directorPermanent / crossScene flags.
     },
-    system: { tags: ["buff"] },
-    statuses: ["fud-dodge"],
-    changes: [
-      // CSB column is `bonus_defense` (not `bonus_def`). CSB auto-prefixes
-      // bare keys to `system.props.<key>` per [[csb-ae-bare-key]]. mode 2
-      // = ADD. The value is the LITERAL skill level — CSB AEF doesn't
-      // expose `item.level` for transfer-mode AEs, so we bake at author
-      // time and re-bake on level-up via the planned hook.
-      { key: "bonus_defense", value: String(SL), mode: 2, priority: 20 },
-    ],
-  };
-}
+  },
+  system: { tags: ["buff"] },
+  statuses: ["fud-dodge"],
+  changes: [
+    // CSB column is `bonus_defense` (not `bonus_def`). CSB auto-prefixes
+    // bare keys to `system.props.<key>` per [[csb-ae-bare-key]]. mode 2
+    // = ADD. The `${level}$` formula reads the bearing skill item's
+    // own `system.props.level` at sheet-derive time — CSB AEF exposes
+    // the bearing item's props at the top formula scope. Same shape
+    // used by every legacy class passive that scales with SL.
+    { key: "bonus_defense", value: "${level}$", mode: 2, priority: 20 },
+  ],
+};
 
 async function patchOne(item, log, ownerLabel) {
   let touched = false;
@@ -138,31 +138,34 @@ async function patchOne(item, log, ownerLabel) {
 
   // 3. Embedded AE template — self-heal: ensure exactly one "Dodge"
   //    AE exists with the always-on shape (transfer:true, no duration,
-  //    correct value bake).
-  const skillLevel = Number(item.system?.props?.level ?? 1) || 1;
-  const wantAE = aeTemplateForLevel(skillLevel);
+  //    formula change value reads `${level}$`).
+  const wantValue = AE_TEMPLATE.changes[0].value;
   const existing = item.effects?.contents?.find((e) => e.name === "Dodge");
   if (!existing) {
-    await item.createEmbeddedDocuments("ActiveEffect", [wantAE]);
-    log(`  ${ownerLabel} / "${item.name}": added Dodge AE template (SL=${skillLevel})`);
+    await item.createEmbeddedDocuments("ActiveEffect", [AE_TEMPLATE]);
+    log(`  ${ownerLabel} / "${item.name}": added Dodge AE template (formula value)`);
     touched = true;
   } else {
+    const ch = existing.changes ?? [];
+    const hasFormulaChange = ch.some(
+      (c) => c?.key === "bonus_defense" && String(c?.value) === wantValue,
+    );
     const needsFix =
       existing.transfer !== true
       || (existing.duration?.turns ?? null) !== null
       || (existing.duration?.rounds ?? null) !== null
-      || !(existing.changes ?? []).some((c) => c?.key === "bonus_defense" && String(c?.value) === String(skillLevel))
-      || (existing.changes ?? []).some((c) => c?.key === "bonus_def")
-      || (existing.changes ?? []).some((c) => c?.key === "bonus_defense" && String(c?.value).trim().toUpperCase() === "SL");
+      || !hasFormulaChange
+      || ch.some((c) => c?.key === "bonus_def")
+      || ch.some((c) => c?.key === "bonus_defense" && String(c?.value).trim().toUpperCase() === "SL");
     if (needsFix) {
       await existing.update({
         transfer: true,
         duration: { turns: null, rounds: null, seconds: null, type: "none" },
-        changes: wantAE.changes,
-        statuses: wantAE.statuses,
-        system: wantAE.system,
+        changes: AE_TEMPLATE.changes,
+        statuses: AE_TEMPLATE.statuses,
+        system: AE_TEMPLATE.system,
       });
-      log(`  ${ownerLabel} / "${item.name}": Dodge AE normalised to transfer-mode (SL=${skillLevel})`);
+      log(`  ${ownerLabel} / "${item.name}": Dodge AE normalised to transfer-mode (formula value)`);
       touched = true;
     }
   }

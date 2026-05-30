@@ -62,11 +62,15 @@ behavior goes:
        duration: {},             // no turn / round ticking
        changes: [
          // Bare CSB column names (auto-prefixed to system.props.*).
-         // VALUES MUST BE LITERAL NUMBERS — CSB's AEF formula
-         // context does NOT expose `item.level` for transfer-mode
-         // AEs, so SL can't be read dynamically. Bake the current
-         // SL value at author / migration time.
-         { key: "bonus_defense", value: "1", mode: 2, priority: 20 },
+         // ${level}$ reads the BEARING SKILL ITEM's
+         // `system.props.level` dynamically. CSB AEF exposes the
+         // bearing item's props at the top formula scope (not under
+         // an `item.` namespace — that doesn't resolve). Levelling
+         // the skill auto-updates the bonus on the next sheet
+         // derive. Used by every legacy class passive that scales
+         // with SL (Adrenaline: `${level * 2}$`; Defensive Mastery,
+         // Retaliation, Wardancer, etc.: `${level}$`).
+         { key: "bonus_defense", value: "${level}$", mode: 2, priority: 20 },
        ],
        system: { tags: ["buff"] },   // opt-in classification
        statuses: ["fud-<slug>"],     // V12 token-icon ring needs at least one
@@ -74,13 +78,13 @@ behavior goes:
      }
      ```
 
-     **SL re-bake gap.** Because the value is baked, a player
-     levelling the skill from 1 to 3 leaves the AE granting +1
-     instead of +3. A follow-up hook on `updateItem` should detect
-     `system.props.level` changes on BD-tree skill items and
-     re-bake any embedded transfer-mode AE's change values from a
-     formula stored in flags. Not shipped yet; for now, ship at
-     SL 1 and document the gap in the skill's spec comment.
+     **Reading actor stats.** Use `${fetchFromParent('<prop>')}$`
+     for actor-side values — e.g. Prophetic Defender Style reads
+     `${fetchFromParent('ins_current')}$` to add INS to bonus_hp.
+     `fetchFromParent` reads the BEARING ACTOR's props; bare
+     identifiers like `level` resolve against the BEARING ITEM's
+     props. Combine for hybrid formulas like `${ins_current + level * 2}$`
+     (would need both — actor's INS plus 2×skill SL).
 
      **Conditional gates.** RAW rules like Dodge's "as long as you
      have no shields and no martial armor" are NOT enforced at the
@@ -145,7 +149,7 @@ They map directly to the lint + spec-guard rules below:
 | Skill level (current SL) | `system.props.level` — set to `1` in every new spec (the FU Core convention: a newly acquired skill starts at SL 1). | leaving level blank → CSB inherits the template default which may not be 1 in practice |
 | Skill max level (cap on SL) | `system.props.max_level` — RAW values per FU Core: Active Skills 1-3 typically, Passive Skills 1-5, Heroic Skills 1, narrative Fabula-Point skills 1. Always set explicitly; never rely on template defaults. | leaving max_level blank → CSB inherits the template default of `"1"` which is wrong for any skill with a real progression |
 | Heroic skill flag | `system.props.isHeroic: true` — required on Heroic Skills + Heroic Spells; gates the `Battle Director / <Class> / Heroic Skill` folder placement + suppresses SL ranking UI (Heroics are 1-shot, no SL progression). | bare `folder: "Heroic Skill"` without isHeroic — placement works but the sheet shows the SL ranker which doesn't apply |
-| Always-on passive bonus (Dodge-style) | Embedded AE on the skill item with `transfer: true`, no duration, change value as a literal baked number. Foundry/CSB auto-applies to the bearer; the bonus disappears when the skill is removed. NO `reaction_config_table`, NO `effect_table`. | ~~turn_start force-mode reaction + apply_ae~~ — wastes a trigger dispatch on something that should just BE |
+| Always-on passive bonus (Dodge-style) | Embedded AE on the skill item with `transfer: true`, no duration. Change value uses CSB formula syntax: `${level}$` reads bearing skill SL; `${fetchFromParent('<prop>')}$` reads actor props. Foundry/CSB auto-applies to the bearer; the bonus disappears when the skill is removed. NO `reaction_config_table`, NO `effect_table`. | ~~turn_start force-mode reaction + apply_ae~~ — wastes a trigger dispatch on something that should just BE. ~~literal-baked numbers~~ — loses dynamic SL scaling. |
 | Engine-mandatory housekeeping (Protect charge refresh etc.) | reaction row with `reaction_passive_mode: "force"` — auto-fires AND stays invisible to UI (no pill, no menu blade, no Passive Manager toggle). Reserved for system mechanics the player shouldn't see as a choice. | ~~hardcoded engine flag, per-skill cleanup hook~~ |
 | "Fires when caster's spell hits an ally" | reaction row, trigger `creature_completes_spell` + `reaction_action_target: "ally"` | — |
 | "Fires after I deal damage" | reaction row, trigger `creature_deals_damage` + `reaction_source: "self"` | ~~props.post_damage_effect_ref~~ |
