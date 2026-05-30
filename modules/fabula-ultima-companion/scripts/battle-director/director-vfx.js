@@ -11,6 +11,7 @@
 // preload picks it up automatically the next time `runDirectorInit` runs.
 
 import { log, warn } from "./logger.js";
+import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-sfx.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -22,6 +23,18 @@ export const DIRECTOR_STATIC_URLS = Object.freeze([
   // saves the first-Study lag.
   "modules/JB2A_DnD5e/Library/Generic/Marker/SciFi/MarkerScifiComplete001_001_GreenYellow_600x600.webm",
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg",
+
+  // Resource VFX VISUALS (impact / heal auras on a token). Only the webms
+  // belong here — this list is preloaded via Foundry's AudioHelper/texture
+  // path, and feeding it Forge `.wav` cues makes AudioHelper.preload hang on
+  // the 206 range-decode bug (which stalls the whole battle-start preload).
+  // The resource cue SOUNDS are warmed separately by director-sfx's Web Audio
+  // path (preloadDirectorSfx — a full 200 GET that dodges that bug), so they
+  // are deliberately NOT listed here.
+  "modules/JB2A_DnD5e/Library/Generic/Impact/Impact_07_Regular_Orange_400x400.webm",
+  "modules/JB2A_DnD5e/Library/2nd_Level/Misty_Step/MistyStep_01_Regular_Blue_400x400.webm",
+  "modules/JB2A_DnD5e/Library/Generic/Healing/HealingAbility_01_Green_400x400.webm",
+  "modules/JB2A_DnD5e/Library/Generic/Healing/HealingAbility_01_Blue_400x400.webm",
 ]);
 
 // Study token VFX — mirrors `playStudyVfxAndWait` from
@@ -53,9 +66,7 @@ export async function playStudyVfx({ targetTokenUuid, durationMs = 2500 } = {}) 
         .opacity(0.7)
         .scale(0.5)
       .play();
-    new Sequence()
-      .sound("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg")
-      .play();
+    broadcastSfx("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg", 0.6);
     // Brief tail beyond the FX duration so the green marker has time to
     // fade out before whatever the caller does next (encyclopedia open,
     // typically).
@@ -237,13 +248,14 @@ const BATTLE_TRANSITION_SFX_URL =
 
 export async function playBattleStartTransition({ waitMs = 900, sfxVol = 0.2 } = {}) {
   try {
-    // SFX — broadcast to all clients.
-    try {
-      const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
-      AH?.play?.({ src: BATTLE_TRANSITION_SFX_URL, volume: sfxVol, autoplay: true, loop: false }, true);
-    } catch (e) {
-      warn("battle transition SFX failed", e);
-    }
+    // Collapse the Foundry sidebar on every client so the battlefield gets the
+    // full screen for everyone as the battle scene comes up.
+    try { collapseSidebarAllClients(); } catch (e) { warn("transition: sidebar collapse threw", e); }
+
+    // SFX — Web Audio cue played on every client from its own warm cache
+    // (broadcast). Warm-decoded at boot so even the first battle's transition
+    // plays without a fetch hitch.
+    broadcastSfx(BATTLE_TRANSITION_SFX_URL, sfxVol);
 
     // Visual — Sequencer broadcasts screen-space effects to all clients.
     if (typeof Sequence !== "undefined") {
@@ -324,6 +336,173 @@ export async function playBattleBgm(payload) {
   } catch (e) {
     warn("playBattleBgm threw", e);
   }
+}
+
+// ── Resource-loss VFX (damage / drain from an outside source) ─────────────
+//
+// Director-native PORT of the legacy "AV feedback" path in apply-damage-core.js
+// (`_resolveAV` + the Sequencer `.scrollingText()` block). When a creature
+// loses HP / MP from an OUTSIDE source (an attack, a damaging skill, an MP
+// drain), we float a damage number over the hit token, play a short impact
+// effect on it, and fire an affinity-keyed sound.
+//
+// Fired from `applyDamageToTarget` (skill-effects.js) — the single write point
+// for outside-source resource loss — so Attack RESOLVE, Skill RESOLVE, and any
+// future damage source all get the feedback uniformly. Self-paid costs (skill
+// MP cost, IP spend) do NOT route through there, so they correctly stay silent.
+//
+// Sequencer effects/text at a canvas location broadcast to every client by
+// default, so the single shared GM screen and any player clients all see it.
+// Silently no-ops if Sequencer isn't installed or the token isn't on canvas —
+// this is flavor, never on the critical path.
+
+const RESOURCE_VFX_SFX = Object.freeze({
+  baseHit: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/HitSlashM.wav",
+  super:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Hit_SlashingB.wav",
+  resist:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Parry.ogg",
+  mpSpend: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Dispel%20Magic.ogg",
+});
+const IMPACT_HP_FILE = "modules/JB2A_DnD5e/Library/Generic/Impact/Impact_07_Regular_Orange_400x400.webm";
+const IMPACT_MP_FILE = "modules/JB2A_DnD5e/Library/2nd_Level/Misty_Step/MistyStep_01_Regular_Blue_400x400.webm";
+
+// Resolve a token UUID ("Scene.X.Token.Y") to the placeable on the active
+// canvas. Mirrors the lookup in playStudyVfx.
+function canvasTokenFromUuid(tokenUuid) {
+  const tokenId = String(tokenUuid ?? "").split(".Token.").pop();
+  return tokenId ? (canvas?.tokens?.get?.(tokenId) ?? null) : null;
+}
+
+// Map (resource, affinity) → { file, color, icon, sfx } for a LOSS. Mirrors
+// legacy `_resolveAV` for the damage/drain half (we only float losses here).
+function resolveLossAv(resource, affinity) {
+  if (resource === "mp") {
+    return { file: IMPACT_MP_FILE, color: "#B32EFF", icon: "🌀", sfx: RESOURCE_VFX_SFX.mpSpend };
+  }
+  // HP loss — icon + sound vary by affinity.
+  let icon = "⚔️", sfx = RESOURCE_VFX_SFX.baseHit;
+  if (affinity === "VU") { icon = "💥"; sfx = RESOURCE_VFX_SFX.super; }
+  else if (affinity === "RS") { icon = "🛡️"; sfx = RESOURCE_VFX_SFX.resist; }
+  return { file: IMPACT_HP_FILE, color: "#ffffff", icon, sfx };
+}
+
+// Float a damage/drain number over a token + impact + sound.
+//   tokenUuid : the hit token ("Scene.X.Token.Y")
+//   resource  : "hp" | "mp"
+//   amount    : the value lost (already post-clamp / post-affinity)
+//   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE" } = {}) {
+  try {
+    if (!(amount > 0)) return;
+    if (typeof Sequence === "undefined") { log("resource-loss VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("resource-loss VFX: token not on canvas, skipping"); return; }
+
+    const { file, color, icon, sfx } = resolveLossAv(resource, affinity);
+    const amountText = `${icon} ${Math.abs(amount)}`;
+    const textStyle = { fill: color, fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
+
+    new Sequence()
+      .effect()
+        .file(file)
+        .atLocation(tok)
+        .scale(0.4)
+        .duration(1000)
+      .scrollingText()
+        .atLocation(tok)
+        .text(amountText, textStyle)
+        .duration(1000)
+      .play();
+    if (sfx) broadcastSfx(sfx, 0.6);
+  } catch (e) {
+    warn("playResourceLossVfx threw", e);
+  }
+}
+
+// ── Resource-gain VFX (healing / restore, director-controlled) ────────────
+//
+// The recover counterpart to playResourceLossVfx: when the director RESTORES a
+// resource on a creature — an HP/MP heal, an AB absorb-flip, or a `grant` of
+// any resource (HP / MP / IP / Zenit / FP / ...) — we float a recover number
+// over the token with a soft heal effect + cue. Same single-screen-friendly
+// Sequencer broadcast + graceful no-op rules as the loss VFX.
+//
+// Fired from the director's healing write points (applyDamageToTarget AB-flip
+// + the `grant` effect handler in skill-effects.js), so it stays under Battle
+// Director control — losses and gains from the legacy pipeline keep their own
+// numbers, exactly as the user scoped the loss VFX.
+
+const RESOURCE_VFX_HEAL_SFX = Object.freeze({
+  heal:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Heal3.ogg",
+  mpAbsorb: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/AbsorbElement.ogg",
+  // Coin / cash cue (same asset the shop system uses for a purchase) — fits a
+  // Zenit gain better than the soft heal chime.
+  coin:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/UI_SEWorldDollar.wav",
+});
+const HEAL_HP_FILE = "modules/JB2A_DnD5e/Library/Generic/Healing/HealingAbility_01_Green_400x400.webm";
+const HEAL_MP_FILE = "modules/JB2A_DnD5e/Library/Generic/Healing/HealingAbility_01_Blue_400x400.webm";
+
+// Per-resource gain look. HP/MP carry the legacy heal webms; other resources
+// float a colored number + a soft heal cue (no aura webm — a green burst over
+// a token for gaining Zenit reads oddly). `null` file ⇒ number + sound only.
+const RESOURCE_GAIN_AV = Object.freeze({
+  hp:         { file: HEAL_HP_FILE, color: "#00FF00", icon: "❤️", sfx: RESOURCE_VFX_HEAL_SFX.heal },
+  mp:         { file: HEAL_MP_FILE, color: "#00ABFF", icon: "💧", sfx: RESOURCE_VFX_HEAL_SFX.mpAbsorb },
+  ip:         { file: null,         color: "#9be15d", icon: "🎒", sfx: RESOURCE_VFX_HEAL_SFX.heal },
+  zenit:      { file: null,         color: "#ffd700", icon: "💰", sfx: RESOURCE_VFX_HEAL_SFX.coin },
+  fp:         { file: null,         color: "#ffe066", icon: "✨", sfx: RESOURCE_VFX_HEAL_SFX.heal },
+  zero_power: { file: null,         color: "#c792ea", icon: "⚡", sfx: RESOURCE_VFX_HEAL_SFX.heal },
+  enmity:     { file: null,         color: "#ff8a65", icon: "🔥", sfx: RESOURCE_VFX_HEAL_SFX.heal },
+});
+const RESOURCE_GAIN_DEFAULT = Object.freeze({ file: null, color: "#9be15d", icon: "⬆️", sfx: RESOURCE_VFX_HEAL_SFX.heal });
+
+// Float a recover number over a token + (for HP/MP) a heal aura + cue.
+//   tokenUuid : the healed token ("Scene.X.Token.Y")
+//   resource  : "hp" | "mp" | "ip" | "zenit" | "fp" | "zero_power" | "enmity"
+//   amount    : the value restored (already clamped to what actually applied)
+export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } = {}) {
+  try {
+    if (!(amount > 0)) return;
+    if (typeof Sequence === "undefined") { log("resource-gain VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("resource-gain VFX: token not on canvas, skipping"); return; }
+
+    const av = RESOURCE_GAIN_AV[String(resource).toLowerCase()] ?? RESOURCE_GAIN_DEFAULT;
+    const amountText = `${av.icon} +${Math.abs(amount)}`;
+    const textStyle = { fill: av.color, fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
+
+    const seq = new Sequence();
+    if (av.file) {
+      seq.effect()
+        .file(av.file)
+        .atLocation(tok)
+        .scale(0.4)
+        .duration(1000);
+    }
+    seq.scrollingText()
+      .atLocation(tok)
+      .text(amountText, textStyle)
+      .duration(1000);
+    seq.play();
+    if (av.sfx) broadcastSfx(av.sfx, 0.6);
+  } catch (e) {
+    warn("playResourceGainVfx threw", e);
+  }
+}
+
+// Warm-decode every resource-VFX cue into the Web Audio buffer cache so the
+// FIRST hit / heal of a battle plays with no fetch+decode hitch. Called from
+// runDirectorInit's preload step (while the curtain is up). Fire-and-forget;
+// never throws.
+export async function preloadDirectorSfx() {
+  const urls = [
+    ...Object.values(RESOURCE_VFX_SFX),
+    ...Object.values(RESOURCE_VFX_HEAL_SFX),
+    BATTLE_TRANSITION_SFX_URL,                                              // battle-start transition sting
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg", // Study cue
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue
+  ];
+  try { await preloadSfx(urls); }
+  catch (e) { warn("preloadDirectorSfx threw", e); }
 }
 
 // Stop the battle BGM at battle end. Stops exactly the track we started

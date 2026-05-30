@@ -355,6 +355,7 @@ async function resolveSkillAction(director, ar, opts = {}) {
           affinity: r.affinity,
           resource: dmgResource,
           targetName: r.name,
+          tokenUuid: r.tokenUuid,
           logPrefix: `Skill ${ar.skillName}:`,
         });
         const finalValue = dmgRes.finalValue;
@@ -2910,6 +2911,7 @@ const Resolve = {
             affinity: r.affinity,
             resource: "hp",
             targetName: r.name,
+            tokenUuid: r.tokenUuid,
             logSuffix: passLabel,
           });
         } catch (e) {

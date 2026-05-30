@@ -25,8 +25,9 @@
 
 import { log, warn, err } from "./logger.js";
 import { buildDirectorCombat } from "./director-combat.js";
-import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm } from "./director-vfx.js";
+import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
+import { playSfx } from "./director-sfx.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -131,10 +132,27 @@ async function preloadUrls(urls, { label = "director-preload" } = {}) {
     // Pass the legacy's options shape so the API actually waits for client
     // ACKs before resolving (label / reason are used internally for logging
     // and timeout attribution). Returns { timedOut, ... }.
-    const result = await api.prepareUrlsAcrossClients(list, {
-      label,
-      reason: "director-init-preload",
+    //
+    // Hard watchdog: in the single-GM ("no players") path the cache awaits its
+    // local preloadMany with NO internal timeout, so one asset whose decode
+    // never settles (a bad audio fetch, a CDN stall) would hang here forever —
+    // and since the curtain only drops AFTER this resolves, the battle would be
+    // stuck on a black screen. Race the whole thing against a wall-clock cap so
+    // the curtain always drops; un-warmed assets just load on first use.
+    const PRELOAD_WATCHDOG_MS = 20000;
+    let watchdog;
+    const timeout = new Promise((resolve) => {
+      watchdog = setTimeout(() => resolve({ __watchdog: true }), PRELOAD_WATCHDOG_MS);
     });
+    const result = await Promise.race([
+      api.prepareUrlsAcrossClients(list, { label, reason: "director-init-preload" }),
+      timeout,
+    ]);
+    clearTimeout(watchdog);
+    if (result?.__watchdog) {
+      warn(`preload: watchdog fired after ${PRELOAD_WATCHDOG_MS}ms — proceeding without full preload`);
+      return { ok: true, urls: list.length, timedOut: true, watchdog: true };
+    }
     if (result?.timedOut) {
       warn(`preload: timed out waiting for client ACKs (proceeding anyway)`);
     } else {
@@ -474,7 +492,37 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 const PARTY_DASH_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
 
-async function playEntranceAnimation({ partyTokens, enemyTokens }) {
+const ENTRANCE_MODULE_ID = "fabula-ultima-companion";
+const ACTION_ENTRANCE = "FU_DIRECTOR_ENTRANCE_PLAY";
+let _entranceSocket = null;
+
+// Register the entrance socket on EVERY client (call once at boot). Lets the
+// GM-side director tell each client to run the run-in dash + enemy fade on its
+// OWN canvas, so players see the entrance MOTION — not just the end state.
+export function initDirectorEntrance() {
+  try {
+    if (typeof socketlib === "undefined" || !game.modules.get("socketlib")?.active) {
+      warn("director-entrance: socketlib unavailable — entrance stays GM-local");
+      return;
+    }
+    _entranceSocket = socketlib.registerModule(ENTRANCE_MODULE_ID);
+    _entranceSocket.register(ACTION_ENTRANCE, playEntranceLocal);
+    log("director-entrance: socket registered");
+  } catch (e) {
+    warn("director-entrance: init failed", e);
+  }
+}
+
+// CLIENT-SIDE entrance renderer — runs on EACH client against its own canvas.
+// Party run in from the right (eased PIXI sprite copies), then enemies fade in.
+//
+// Reveal is LOCAL (mesh alpha) on every client — players have no token-doc
+// write permission, and the GM persists the durable alpha:1 separately (see
+// playEntranceAnimation). The token docs stay at alpha 0 for the whole dash, so
+// the real tokens never flash in mid-run on any client. No-ops gracefully if
+// the tokens aren't on this client's active scene (e.g. a player who hasn't
+// followed to the battle scene yet — they get the persisted alpha later).
+async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}) {
   const FADE_MS = 600;
   const PER_TOKEN_STAGGER_MS = 90;
 
@@ -487,28 +535,23 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   // linear). This is the legacy party-dash approach.
   const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
-  function fadeIn(tokenDoc, delay) {
+  const getP = (id) => canvas?.tokens?.get?.(id) ?? null;
+
+  // Enemy local fade-in (visual only; the GM persists the doc alpha at the end).
+  function fadeIn(id, delay) {
     return new Promise(async (resolve) => {
       await wait(delay);
-      // Foundry V12 supports doc.update({alpha}, {animate: ...}) or token.fadeIn
-      // via the token placeable. The most reliable is to update the doc and
-      // tween the placeable's alpha manually for smooth interpolation.
-      const placeable = canvas?.tokens?.get?.(tokenDoc.id);
+      const placeable = getP(id);
+      if (!placeable) { resolve(); return; }
       const start = performance.now();
       function tick(now) {
         const t = Math.min(1, (now - start) / FADE_MS);
-        const a = t;
         if (placeable && !placeable.destroyed) {
-          // Set both PIXI alpha (visual) and document alpha (persisted).
-          try { placeable.alpha = a; } catch {}
-          try { if (placeable.mesh) placeable.mesh.alpha = a; } catch {}
+          try { placeable.alpha = t; } catch {}
+          try { if (placeable.mesh) placeable.mesh.alpha = t; } catch {}
         }
         if (t < 1) requestAnimationFrame(tick);
-        else {
-          // Persist the final alpha = 1 so on reload tokens stay visible.
-          tokenDoc.update({ alpha: 1 }).catch(() => {});
-          resolve();
-        }
+        else resolve();
       }
       requestAnimationFrame(tick);
     });
@@ -517,16 +560,20 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   // ── Party: run in from the right, staggered top→bottom ──
   // Animate cheap PIXI sprite copies (not the real tokens) so we get a proper
   // eased dash — Foundry's native token movement renders linear. The real
-  // tokens stay hidden (alpha 0) at their final spots and are revealed once the
-  // copies arrive, then the copies are destroyed. (Legacy party-dash approach.)
+  // tokens stay hidden (alpha 0) at their final spots and are revealed (LOCAL
+  // mesh alpha) once the copies arrive, then the copies are destroyed.
   async function dashInParty() {
-    if (!partyTokens.length) return;
-    const placeables = partyTokens.map((td) => canvas?.tokens?.get?.(td.id)).filter(Boolean);
-    const revealAll = () => canvas.scene.updateEmbeddedDocuments(
-      "Token", partyTokens.map((t) => ({ _id: t.id, alpha: 1 })), { animate: false }
-    ).catch(() => {});
-
-    if (!placeables.length) { await revealAll(); return; }
+    const placeables = partyTokenIds.map(getP).filter(Boolean);
+    const revealLocal = () => {
+      for (const id of partyTokenIds) {
+        const p = getP(id);
+        if (p && !p.destroyed) {
+          try { p.alpha = 1; } catch {}
+          try { if (p.mesh) p.mesh.alpha = 1; } catch {}
+        }
+      }
+    };
+    if (!placeables.length) { revealLocal(); return; }
 
     // World offset ≈ 60% of the viewport width (matches the approved preview),
     // in world units so the run-in starts off-screen at any zoom.
@@ -558,7 +605,7 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
       sprites.push({ spr, restX: tok.center.x, y: tok.center.y });
     }
     canvas.stage.sortChildren?.();
-    if (!sprites.length) { await revealAll(); return; }
+    if (!sprites.length) { revealLocal(); return; }
 
     // Play the (shared) battle WEBM on each copy so the characters animate
     // WHILE running in. Cheap — only the ~4 party sprites. Each copy shares the
@@ -575,11 +622,10 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
     // Top → bottom (Hina first … Zarg last).
     sprites.sort((a, b) => a.y - b.y);
 
-    // Dash SFX once, broadcast to all clients.
-    try {
-      const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
-      AH?.play?.({ src: PARTY_DASH_SFX_URL, volume: 0.85, autoplay: true, loop: false }, true);
-    } catch (e) { warn("party dash SFX failed", e); }
+    // Dash SFX — local Web Audio cue (each client plays its own from the warm
+    // cache). Replaces the old AudioHelper broadcast, which would double now
+    // that every client runs this function.
+    playSfx(PARTY_DASH_SFX_URL, 0.85);
 
     // rAF tween each copy from off-right to rest with easeOutExpo, staggered.
     const tweenX = (spr, toX, ms) => new Promise((res) => {
@@ -603,7 +649,7 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
     // animating frame; wait one painted frame, then destroy the copies — no
     // flicker, no freeze. (texture:false so the shared texture survives for the
     // real token's mesh.)
-    await revealAll();
+    revealLocal();
     await new Promise((r) => requestAnimationFrame(r));
     for (const { spr } of sprites) {
       try { canvas.stage.removeChild(spr); spr.destroy({ children: true, texture: false, baseTexture: false }); }
@@ -611,10 +657,38 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
     }
   }
 
-  // Party dashes in first, then enemies fade in (kept light + sequential so
-  // we're not moving + fading + looping every WEBM token on the same frames).
-  await dashInParty();
-  await Promise.all(enemyTokens.map((t, i) => fadeIn(t, i * PER_TOKEN_STAGGER_MS)));
+  try {
+    // Party dashes in first, then enemies fade in (kept light + sequential so
+    // we're not moving + fading + looping every WEBM token on the same frames).
+    await dashInParty();
+    await Promise.all(enemyTokenIds.map((id, i) => fadeIn(id, i * PER_TOKEN_STAGGER_MS)));
+  } catch (e) {
+    warn("playEntranceLocal threw", e);
+  }
+}
+
+// GM-side orchestration: broadcast the entrance to all OTHER clients, run it
+// locally, then persist the durable alpha:1 to the token docs (GM authority) so
+// the visible state survives reload / late join and self-corrects any client
+// that wasn't on the battle scene when the cinematic fired. The persist happens
+// only AFTER the local cinematic completes, so the doc stays at alpha 0 for the
+// duration of the dash on every client (no mid-run real-token flash).
+async function playEntranceAnimation({ partyTokens, enemyTokens }) {
+  const partyTokenIds = (partyTokens ?? []).map((t) => t.id);
+  const enemyTokenIds = (enemyTokens ?? []).map((t) => t.id);
+  const payload = { partyTokenIds, enemyTokenIds };
+
+  try { _entranceSocket?.executeForOthers?.(ACTION_ENTRANCE, payload); }
+  catch (e) { warn("entrance: broadcast failed", e); }
+
+  await playEntranceLocal(payload);
+
+  try {
+    const scene = (partyTokens?.[0] ?? enemyTokens?.[0])?.parent ?? canvas?.scene ?? null;
+    const updates = [...partyTokenIds, ...enemyTokenIds].map((id) => ({ _id: id, alpha: 1 }));
+    if (scene && updates.length) await scene.updateEmbeddedDocuments("Token", updates, { animate: false });
+  } catch (e) { warn("entrance: persist alpha failed", e); }
+
   log("Entrance animation complete");
 }
 
@@ -737,6 +811,12 @@ export async function runDirectorInit(payload) {
   if (preloadResult?.timedOut) {
     ui.notifications?.warn?.("Battle Director: asset preload timed out; some clients may see fallbacks.");
   }
+
+  // Warm-decode the director's short SFX cues (hit / heal / coin / etc.) into
+  // the Web Audio buffer cache so the FIRST one of the battle plays with no
+  // fetch+decode hitch. Fire-and-forget — purely a latency optimization, so we
+  // don't hold the curtain on it.
+  preloadDirectorSfx().catch((e) => warn("PREP: preloadDirectorSfx threw", e));
 
   // ── 8b. Start battle BGM in parallel with the curtain drop so the music
   // begins exactly as the scene reveals (cinematic). Fire-and-forget — the

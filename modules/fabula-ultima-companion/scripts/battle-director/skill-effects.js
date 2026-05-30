@@ -209,6 +209,33 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
   return result;
 }
 
+// Lazy fire-and-forget bridge to the resource-loss VFX (floating damage
+// number + impact + sound). Kept as a dynamic import so this logic module
+// doesn't statically depend on the VFX layer, and so a missing/broken VFX
+// module can never break the damage write. Never awaited — the cinematic
+// must not gate HP/MP application.
+function fireResourceLossVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playResourceLossVfx?.(opts))
+      .catch((e) => warn("fireResourceLossVfx import failed", e));
+  } catch (e) {
+    warn("fireResourceLossVfx threw", e);
+  }
+}
+
+// Gain counterpart — floats a recover number on a heal / restore. Same
+// lazy fire-and-forget contract as fireResourceLossVfx.
+function fireResourceGainVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playResourceGainVfx?.(opts))
+      .catch((e) => warn("fireResourceGainVfx import failed", e));
+  } catch (e) {
+    warn("fireResourceGainVfx threw", e);
+  }
+}
+
 // ── Damage application (shared by Attack + Skill RESOLVE) ─────────────
 //
 // The single source of truth for "apply this per-target damage result to
@@ -238,6 +265,7 @@ export async function applyDamageToTarget({
   affinity = "NE",
   resource = "hp",
   targetName = "",
+  tokenUuid = null,
   logPrefix = "",
   logSuffix = "",
 } = {}) {
@@ -253,6 +281,7 @@ export async function applyDamageToTarget({
     const newMp = Math.max(0, curMp - damage);
     await target.update({ "system.props.current_mp": newMp });
     log(`${prefix}applied ${damage} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
+    fireResourceLossVfx({ tokenUuid, resource: "mp", amount: curMp - newMp });
     return { resource: "mp", finalValue: damage, valueDirection: "loss", fired: [] };
   }
 
@@ -267,6 +296,7 @@ export async function applyDamageToTarget({
       const newHp = Math.min(maxHp, curHp + healed);
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
+      fireResourceGainVfx({ tokenUuid, resource: "hp", amount: newHp - curHp });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
     }
@@ -286,6 +316,7 @@ export async function applyDamageToTarget({
     }
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     log(`${prefix}applied ${damage} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${reactionNote}${logSuffix}`);
+    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: curHp - newHp, affinity });
     return {
       resource: "hp",
       finalValue: Math.max(0, curHp - newHp),
@@ -1223,7 +1254,15 @@ async function applyGrantEffect(row, ctx) {
       continue;
     }
     const result = await writeResourceDelta(actor, def, amount);
-    if (result.ok) applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
+    if (result.ok) {
+      applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
+      // Recover VFX on a positive grant (heal / restore). A negative grant
+      // (drain authored as a grant) is a loss; per the loss-VFX scoping
+      // decision that path stays silent, so we only float gains here.
+      if (result.applied > 0) {
+        fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied });
+      }
+    }
   }
   log(`skill-effects.grant: row "${row.effect_label}" applied ${amount} ${resource} to ${applied.length} actor(s)`);
   return { ok: true, kind: "grant", applied };

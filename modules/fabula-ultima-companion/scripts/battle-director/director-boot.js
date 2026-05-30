@@ -27,10 +27,11 @@ import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
-import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
+import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
-import { stopBattleBgm } from "./director-vfx.js";
+import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
+import { initDirectorSfx } from "./director-sfx.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -288,12 +289,22 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
-  // Clear the persistent start-of-round banner (fades out + broadcasts) so it
-  // never lingers on screen after the battle ends.
-  try { hideRoundBanner(); } catch {}
-  // Stop the battle BGM the director started (mirrors legacy battle-end). The
-  // payload's bgm name is passed as a fallback for the F5-mid-battle case.
-  try { stopBattleBgm(_instance?.payload?.battleConfig?.bgm); } catch {}
+  // The next two are TRUE-teardown cleanups (End Battle), NOT re-mount
+  // cleanups (rewind / reload). The rewind path stops the live instance only
+  // to reconstruct it a beat later via resumeFromSavedState — the conflict is
+  // still going, so the BGM must keep playing and the round indicator must
+  // stay. `cleanupTokens` is the real-end signal (true for End Battle, false
+  // for rewind — same gate the transient-AE sweep above uses). Without this,
+  // every rewind silenced the battle BGM (nothing restarts it on re-mount,
+  // since the synced playlist is normally just left alone across F5).
+  if (cleanupTokens) {
+    // Clear the persistent start-of-round banner (fades out + broadcasts) so it
+    // never lingers on screen after the battle ends.
+    try { hideRoundBanner(); } catch {}
+    // Stop the battle BGM the director started (mirrors legacy battle-end). The
+    // payload's bgm name is passed as a fallback for the F5-mid-battle case.
+    try { stopBattleBgm(_instance?.payload?.battleConfig?.bgm); } catch {}
+  }
 
   // Broadcast MENU_CLOSE to every online non-GM client so any player-side
   // mirror overlays (action-card mirror, compose-action local Octopath /
@@ -802,6 +813,26 @@ Hooks.once("ready", () => {
   // Director-native start-of-round banner — same all-clients registration.
   try { initDirectorRoundBanner(); }
   catch (e) { warn("initDirectorRoundBanner on ready threw", e); }
+
+  // Director per-client broadcast channel (SFX + sidebar collapse) — registered
+  // on every client so the GM-side director can fan cues / UI sync out to all.
+  try { initDirectorSfx(); }
+  catch (e) { warn("initDirectorSfx on ready threw", e); }
+
+  // Director entrance renderer — registered on every client so the GM can
+  // broadcast the party run-in dash + enemy fade to all screens.
+  try { initDirectorEntrance(); }
+  catch (e) { warn("initDirectorEntrance on ready threw", e); }
+
+  // Warm-decode the director's short SFX cues during idle after load. The
+  // battle-start transition fires at the very top of PREP — before the
+  // per-battle preload step — so without a boot-time warm the FIRST battle of
+  // a session would still pay its fetch+decode. decodeAudioData works on a
+  // suspended AudioContext (no user gesture needed yet), so this is safe at
+  // boot. Deferred + fire-and-forget so it never delays `ready`.
+  try {
+    setTimeout(() => { preloadDirectorSfx().catch(() => {}); }, 4000);
+  } catch (e) { warn("boot preloadDirectorSfx schedule threw", e); }
 
   // ── Director-native passive dispatcher for legacy reaction events ───
   //
