@@ -783,5 +783,23 @@ export async function rewindToHistorySnapshot(snapshotId) {
     warn("rewindToHistorySnapshot: directorState rewrite failed", e);
   }
 
+  // 5. Clear the standalone-reaction idempotency flag. Every entry in
+  //    that flag refers to a decision that landed on the post-rewind
+  //    timeline — a timeline that no longer exists. Without this clear,
+  //    re-dispatching turn_start (or any standalone trigger) for a
+  //    round/turn that was already played out filters every candidate
+  //    out as "already handled," and the player sees no reaction UI
+  //    despite the rewound state being functionally fresh. Lazy import
+  //    to avoid the same cycle clearAllDirectorStateFlags dodges.
+  try {
+    const mod = await import("./standalone-reactions.js");
+    if (mod.clearStandaloneFiredFlag) {
+      await mod.clearStandaloneFiredFlag(scene);
+      log(`rewindToHistorySnapshot: cleared standalone-fired flag on "${scene.name}"`);
+    }
+  } catch (e) {
+    warn("rewindToHistorySnapshot: clearStandaloneFiredFlag failed", e);
+  }
+
   return { ok: true, scene, dCombat, snapshot };
 }
