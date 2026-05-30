@@ -174,13 +174,37 @@
   }
 
   // ── Registry helper ─────────────────────────────────────────────────────────
+
+  // Returns true only when the entry carries an explicit "debuff" tag — rules out
+  // entries that landed in the Debuff group purely via name inference or parent-item
+  // name fallback (e.g. an AE called "Crisis" inside an item named "Debuff").
+  function hasExplicitDebuffTag(entry) {
+    return (entry.tags ?? []).some(t =>
+      String(t).toLowerCase().replace(/[\s_-]+/g, "") === "debuff"
+    );
+  }
+
+  // Secondary dedup by normalised name — catches actor-instance duplicates that
+  // slip past the registry's UUID/fingerprint dedup (each actor copy gets its own
+  // UUID, so fingerprints may differ even when the AE is logically the same).
+  function dedupeByName(entries) {
+    const seen = new Set();
+    return entries.filter(e => {
+      const key = String(e.name ?? "").trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
   async function getDebuffs() {
     const reg = globalThis.FUCompanion?.api?.activeEffectRegistry;
     if (!reg) return [];
     if (!reg._internal?.cache?.ready) {
       await reg.refresh({ scanCompendiums: false }).catch(() => {});
     }
-    return reg.getGrouped({ cloneResult: false }).Debuff ?? [];
+    const all = reg.getGrouped({ cloneResult: false }).Debuff ?? [];
+    return dedupeByName(all.filter(hasExplicitDebuffTag));
   }
 
   // ── Effect handler (pre/post split) ─────────────────────────────────────────
