@@ -28,6 +28,16 @@
         "title": "atlas-lf",
         "file": "The_Low_Fantasy_Atlas.txt",
         "phase": "shipped"
+      },
+      "bonus-ace-of-cards": {
+        "title": "bonus-ace-of-cards",
+        "file": "Fabula-Bonus-Ace-of-Cards.txt",
+        "phase": "shipped"
+      },
+      "bonus-necromancer": {
+        "title": "bonus-necromancer",
+        "file": "Fabula-Ultima-Bonus-01-Necromancer.txt",
+        "phase": "shipped"
       }
     },
     "phases": {
@@ -43,11 +53,13 @@
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
-        "Atlas class skills (HF + NF + TF + LF, 14 new classes)"
+        "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
+        "Bonus class additions (Ace of Cards + Necromancer)"
       ],
       "pending": [
         "Bonus additions (Necromancer, Halloween x2, Ace, Arcane)",
-        "Playtest patches (chronological — newest wins)"
+        "Playtest patches (chronological — newest wins)",
+        "Bonus Halloween + Arcane Whispers heroic skills + Arcanums (Phase 5.1)"
       ]
     },
     "classes_count": 15,
@@ -2548,6 +2560,120 @@
             "book": "atlas-lf",
             "section": "MONK SKILLS",
             "line": 3364
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Ace of Cards": {
+      "book": "bonus-ace-of-cards",
+      "skills": [
+        {
+          "name": "Double Or Nothing",
+          "max_sl": 1,
+          "description": "Before you perform an Accuracy Check, a Magic Check for an offensive spell (r), or a Check to advance or turn back a Clock, you may declare double or nothing. If you do and the Check triggers a critical success, double the damage dealt by that attack or spell or the filled or erased sections of that Clock, respectively; however, any other kind of success becomes a failure instead.",
+          "source": {
+            "book": "bonus-ace-of-cards",
+            "section": "ACE OF CARDS SKILLS",
+            "line": 50
+          }
+        },
+        {
+          "name": "High Or Low",
+          "max_sl": 1,
+          "description": "When you generate a critical success or a fumble, you may draw 1 card from your deck. If you do, discard 1 card from your hand.",
+          "source": {
+            "book": "bonus-ace-of-cards",
+            "section": "ACE OF CARDS SKILLS",
+            "line": 58
+          }
+        },
+        {
+          "name": "Magic Cards",
+          "max_sl": 3,
+          "description": "You gain a deck, a hand and a discard pile (see next page).\n\nDuring a conflict, you may use an action and spend up to10 + (SL × 5)Mind Points (minimum 10). If you do, resolve 1 card from your hand for every 5 MP spent this way (to a maximum of 5 cards; these cards form a set). After you resolve the effect of the set (if any), discard these cards and draw that many cards from your deck.",
+          "source": {
+            "book": "bonus-ace-of-cards",
+            "section": "ACE OF CARDS SKILLS",
+            "line": 63
+          }
+        },
+        {
+          "name": "Mulligan",
+          "max_sl": 5,
+          "description": "At the end of your turn during a conflict, you may discard up to SL cards from your hand. If you do, draw that many cards from your deck.",
+          "source": {
+            "book": "bonus-ace-of-cards",
+            "section": "ACE OF CARDS SKILLS",
+            "line": 72
+          }
+        },
+        {
+          "name": "Trap Card",
+          "max_sl": 4,
+          "description": "After an enemy you can see performs an action during a conflict, you may declare one of your deck's suits (after the action has been resolved) and put the first card on the bottom of your deck in your discard pile, face up. If that card is a joker or its suit matches the one you declared, you may immediately perform the Spell action for free, casting a spell with a total Mind Point cost equal to or lower than SL × 5(you must still pay its MP cost).",
+          "source": {
+            "book": "bonus-ace-of-cards",
+            "section": "ACE OF CARDS SKILLS",
+            "line": 77
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Necromancer": {
+      "book": "bonus-necromancer",
+      "skills": [
+        {
+          "name": "Beyond The Realms Of Death",
+          "max_sl": 5,
+          "description": "When another creature you can see loses Hit Points while in Crisis, if they are not undead, you gain 1 Grave Point.You may never have more than SL + 1 Grave Points.\n\nWhen you are reduced to 0 Hit Points, you lose all Grave Points; then, if you lost at least 1 Grave Point this way and this is the first time you are reduced to 0 HP during this scene, you do not Surrender nor Sacrifice yourself: instead, you recover an amount of HP equal to SL, multiplied by the amount of Grave Points you lost this way.",
+          "source": {
+            "book": "bonus-necromancer",
+            "section": "NECROMANCER SKILLS",
+            "line": 47
+          }
+        },
+        {
+          "name": "Children Of The Grave",
+          "max_sl": 1,
+          "description": "You can always communicate verbally with undead creatures. Once per scene, you may ask an undead a single question; they are compelled to answer truthfully.",
+          "source": {
+            "book": "bonus-necromancer",
+            "section": "NECROMANCER SKILLS",
+            "line": 57
+          }
+        },
+        {
+          "name": "Fear Is The Key",
+          "max_sl": 3,
+          "description": "After you cause one or more enemies to lose Hit Points, if you have acquired the Beyond the Realms of Death Skill and at least one of them is suffering from shaken and/or weak, you gain 1 Grave Point and recover SL × 2 Hit Points and Mind Points.",
+          "source": {
+            "book": "bonus-necromancer",
+            "section": "NECROMANCER SKILLS",
+            "line": 62
+          }
+        },
+        {
+          "name": "For Whom The Bell Tolls",
+          "max_sl": 3,
+          "description": "When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to(SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer shaken.",
+          "source": {
+            "book": "bonus-necromancer",
+            "section": "NECROMANCER SKILLS",
+            "line": 68
+          }
+        },
+        {
+          "name": "Rondo Of Nightmare",
+          "max_sl": 1,
+          "description": "When you cast an offensive spell (r) with a target of \"One creature\", you may spend 2 Grave Points to have it target all creatures you can see that are present on the scene (perform a single Magic Check and confront it with the Magic Defense of each target). If you do, all damage dealt by the spell becomes dark and its type cannot change.",
+          "source": {
+            "book": "bonus-necromancer",
+            "section": "NECROMANCER SKILLS",
+            "line": 76
           }
         }
       ],
