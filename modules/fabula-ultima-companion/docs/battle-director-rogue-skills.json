@@ -49,7 +49,7 @@
           "type_damage": "",
           "damage_bonus": "0",
           "level": 1,
-          "max_level": 5,
+          "max_level": 3,
           "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>"
         }
       }
@@ -98,7 +98,7 @@
           "type_damage": "",
           "damage_bonus": "0",
           "level": 1,
-          "max_level": 3,
+          "max_level": 5,
           "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. If you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target's soul treasure, an item worth an amount of zenit <strong>equal to or lower than 【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack; <em>a creature can be successfully stolen from with this Skill only once.</em></p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
           "on_activate_effect_ref": "soul_steal_grant_ip",
           "effect_table": {
@@ -116,7 +116,7 @@
       }
     },
     {
-      "_raw": "FU Core — Passive Reaction. When you hit a creature with an attack: if the attack only targeted that creature AND they suffer 1+ statuses, you may deal extra damage equal to SL + (number of statuses on the creature).",
+      "_raw": "FU Core — Passive Reaction. When you hit a creature with an attack: if the attack only targeted that creature AND they suffer 1+ statuses, you may deal extra damage equal to SL + (number of statuses on the creature). max SL 5 per FU Core p.203.",
       "_note": "AUTHORED 2026-05-30 (Cheap Shot Option C). Fires on creature_will_deal_damage per hit target (Phase 1-3 of the Cheap Shot integration). Gate: SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0 (both ship with Phase 1). Bonus: add_damage effect_kind, base damage SL + TARGET_STATUS_COUNT, target_ref trigger_subject. Engine reapplies affinity once over (rawDamage + bonus) — VU doubles the combined total, RS halves it. UI: pre-resolve pill on the action card; card damage label live-updates on Apply.",
       "spec": {
         "name": "Cheap Shot",
@@ -134,7 +134,7 @@
           "type_damage": "",
           "damage_bonus": "0",
           "level": 1,
-          "max_level": 3,
+          "max_level": 5,
           "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
           "isReaction": true,
           "reaction_config_table": {
