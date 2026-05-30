@@ -122,7 +122,13 @@
       const scene = canvas?.scene;
       if (!scene) return false;
 
-      const raw = scene?.flags?.[MODULE_ID]?.oniFabula?.general?.cameraFollowToken;
+      const fab = scene?.flags?.[MODULE_ID]?.oniFabula;
+      const sceneMode = fab?.general?.sceneMode ?? null;
+      if (sceneMode === "dungeon")     return false;
+      if (sceneMode === "exploration") return true;
+      if (sceneMode === "none")        return false;
+
+      const raw = fab?.general?.cameraFollowToken;
       if (typeof raw === "boolean") return raw;
       if (typeof raw === "number") return raw !== 0;
       if (typeof raw === "string") {
