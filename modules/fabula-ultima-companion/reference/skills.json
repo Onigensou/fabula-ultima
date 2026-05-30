@@ -54,12 +54,17 @@
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
         "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
-        "Bonus class additions (Ace of Cards + Necromancer)"
+        "Bonus class additions (Ace of Cards + Necromancer)",
+        "Atlas heroic skills (HF + NF + TF list-tables)",
+        "Atlas heroic skills (HF + NF + TF list-tables)",
+        "Atlas heroic skills (HF + NF + TF list-tables)",
+        "Atlas heroic skills (HF + NF + TF list-tables)"
       ],
       "pending": [
         "Bonus additions (Necromancer, Halloween x2, Ace, Arcane)",
         "Playtest patches (chronological — newest wins)",
-        "Bonus Halloween + Arcane Whispers heroic skills + Arcanums (Phase 5.1)"
+        "Bonus Halloween + Arcane Whispers heroic skills + Arcanums (Phase 5.1)",
+        "LF Atlas class-specific heroic detail sections (Phase 5.2)"
       ]
     },
     "classes_count": 15,
@@ -143,6 +148,33 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Grand Summoning",
+          "max_sl": 1,
+          "brief": "Summon Arcana as creatures.",
+          "classes": [
+            "Arcanist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Auramancer's Refraction",
+          "max_sl": 1,
+          "brief": "Improves Aura and Barrier, and punishes enemies who damage protected targets.",
+          "classes": [
+            "Arcanist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -229,6 +261,83 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Fast Rituals",
+          "max_sl": 1,
+          "brief": "Reduce the number of sections for Ritual Clocks in conflicts.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Magic Guard",
+          "max_sl": 1,
+          "brief": "Negate enemy spells while you are in Guard.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Chimeric Soul",
+          "max_sl": 1,
+          "brief": "Casting Chimerist spells grant benefits based on the Species.",
+          "classes": [
+            "Chimerist",
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fitcast",
+          "max_sl": 1,
+          "brief": "Use Might for Magic Checks, and treat weapons relying on Might as being arcane.",
+          "classes": [
+            "Chimerist",
+            "Darkblade",
+            "Esper",
+            "Fury",
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Mimeoclepsis 170",
+          "max_sl": 1,
+          "brief": "Act after Theriomorphosis.",
+          "classes": [
+            "Chimerist",
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -310,6 +419,80 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Pulverizing Strike Rising Tide",
+          "max_sl": 1,
+          "brief": "chance with songs. Breach deals damage with heavy",
+          "classes": [
+            "Darkblade",
+            "Fury",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brambleheart",
+          "max_sl": 1,
+          "brief": "Your brambles protect you and react to enemy attacks.",
+          "classes": [
+            "Darkblade",
+            "Floralist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fitcast",
+          "max_sl": 1,
+          "brief": "Use Might for Magic Checks, and treat weapons relying on Might as being arcane.",
+          "classes": [
+            "Chimerist",
+            "Darkblade",
+            "Esper",
+            "Fury",
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Dreamslice",
+          "max_sl": 1,
+          "brief": "Hawkeye creates a decoy and Pilot        grants a punishing attack.",
+          "classes": [
+            "Darkblade",
+            "Esper"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Make it or Break it",
+          "max_sl": 1,
+          "brief": "effects and spells.",
+          "classes": [
+            "Darkblade",
+            "Fury"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -395,6 +578,84 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Bimagus",
+          "max_sl": 1,
+          "brief": "Cast one spell right after another, saving MP.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "two-of",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fast Rituals",
+          "max_sl": 1,
+          "brief": "Reduce the number of sections for Ritual Clocks in conflicts.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Magic Guard",
+          "max_sl": 1,
+          "brief": "Negate enemy spells while you are in Guard.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bend Magic",
+          "max_sl": 1,
+          "brief": "React to enemy spells with your invocations.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Invoker",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Arcane Soldier",
+          "max_sl": 1,
+          "brief": "Perform a free attack against a target, then immediately cast an offensive spell against them.",
+          "classes": [
+            "Elementalist",
+            "Sharpshooter",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -638,6 +899,97 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Bimagus",
+          "max_sl": 1,
+          "brief": "Cast one spell right after another, saving MP.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "two-of",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fast Rituals",
+          "max_sl": 1,
+          "brief": "Reduce the number of sections for Ritual Clocks in conflicts.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Magic Guard",
+          "max_sl": 1,
+          "brief": "Negate enemy spells while you are in Guard.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bend Magic",
+          "max_sl": 1,
+          "brief": "React to enemy spells with your invocations.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Invoker",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Cleansing Moonlight",
+          "max_sl": 1,
+          "brief": "Your spells can remove status effects and spells from targets.",
+          "classes": [
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bullet Time",
+          "max_sl": 1,
+          "brief": "Gain several benefits from Dodge",
+          "classes": [
+            "Entropist",
+            "Rogue"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": [
@@ -865,6 +1217,83 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Pulverizing Strike Rising Tide",
+          "max_sl": 1,
+          "brief": "chance with songs. Breach deals damage with heavy",
+          "classes": [
+            "Darkblade",
+            "Fury",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ritual Seals",
+          "max_sl": 1,
+          "brief": "weapons.",
+          "classes": [
+            "Fury",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brave Bash",
+          "max_sl": 1,
+          "brief": "Use Bone Crusher to challenge foes with a shield, then deal additional damage.",
+          "classes": [
+            "Commander",
+            "Fury",
+            "Guardian",
+            "Pilot",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fitcast",
+          "max_sl": 1,
+          "brief": "Use Might for Magic Checks, and treat weapons relying on Might as being arcane.",
+          "classes": [
+            "Chimerist",
+            "Darkblade",
+            "Esper",
+            "Fury",
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Make it or Break it",
+          "max_sl": 1,
+          "brief": "effects and spells.",
+          "classes": [
+            "Darkblade",
+            "Fury"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -946,6 +1375,51 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Hoplite",
+          "max_sl": 1,
+          "brief": "Strenghten attacks when you fight with weapon and shield.",
+          "classes": [
+            "Commander",
+            "Guardian"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brave Bash",
+          "max_sl": 1,
+          "brief": "Use Bone Crusher to challenge foes with a shield, then deal additional damage.",
+          "classes": [
+            "Commander",
+            "Fury",
+            "Guardian",
+            "Pilot",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Power Nap",
+          "max_sl": 1,
+          "brief": "Take a little nap during a conflict",
+          "classes": [
+            "Guardian",
+            "Merchant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -1029,6 +1503,20 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Skillful Dosage",
+          "max_sl": 1,
+          "brief": "Delicacies, potions and spells heal",
+          "classes": [
+            "Gourmet",
+            "Loremaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -1110,6 +1598,21 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Cheer Up!",
+          "max_sl": 1,
+          "brief": "Improves My Trust in You.",
+          "classes": [
+            "Chanter",
+            "Esper",
+            "Orator"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -1193,6 +1696,65 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Blade Adept",
+          "max_sl": 1,
+          "brief": "Gain bonuses with daggers and treat them as brawling, sword, and thrown weapons.",
+          "classes": [
+            "Rogue",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ephemeral Tranquility",
+          "max_sl": 1,
+          "brief": "Improves Hallucination and Torpor, and cleanses status effects to cause HP loss.",
+          "classes": [
+            "Dancer",
+            "Esper",
+            "Rogue",
+            "Spiritist",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Silent Hunter Weaponmaster",
+          "max_sl": 1,
+          "brief": "Improve High Speed with bows, spears, and thrown weapons, and deny free attacks.",
+          "classes": [
+            "Rogue",
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bullet Time",
+          "max_sl": 1,
+          "brief": "Gain several benefits from Dodge",
+          "classes": [
+            "Entropist",
+            "Rogue"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -1274,6 +1836,89 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Arcane Mark",
+          "max_sl": 1,
+          "brief": "Improve spells' critical chance",
+          "classes": [
+            "Sharpshooter",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bullet Break",
+          "max_sl": 1,
+          "brief": "Counterattack with firearms after using Crossfire.",
+          "classes": [
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Double Arrow",
+          "max_sl": 1,
+          "brief": "Attack twice with bows.",
+          "classes": [
+            "Commander",
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Silent Hunter Weaponmaster",
+          "max_sl": 1,
+          "brief": "Improve High Speed with bows, spears, and thrown weapons, and deny free attacks.",
+          "classes": [
+            "Rogue",
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Arcane Soldier",
+          "max_sl": 1,
+          "brief": "Perform a free attack against a target, then immediately cast an offensive spell against them.",
+          "classes": [
+            "Elementalist",
+            "Sharpshooter",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Decoy Bait",
+          "max_sl": 1,
+          "brief": "and Stolen Time.",
+          "classes": [
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -1359,6 +2004,98 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Bimagus",
+          "max_sl": 1,
+          "brief": "Cast one spell right after another, saving MP.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "two-of",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fast Rituals",
+          "max_sl": 1,
+          "brief": "Reduce the number of sections for Ritual Clocks in conflicts.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Magic Guard",
+          "max_sl": 1,
+          "brief": "Negate enemy spells while you are in Guard.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Auramancer's Refraction",
+          "max_sl": 1,
+          "brief": "Improves Aura and Barrier, and punishes enemies who damage protected targets.",
+          "classes": [
+            "Arcanist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Cleansing Moonlight",
+          "max_sl": 1,
+          "brief": "Your spells can remove status effects and spells from targets.",
+          "classes": [
+            "Entropist",
+            "Spiritist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ephemeral Tranquility",
+          "max_sl": 1,
+          "brief": "Improves Hallucination and Torpor, and cleanses status effects to cause HP loss.",
+          "classes": [
+            "Dancer",
+            "Esper",
+            "Rogue",
+            "Spiritist",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -1599,6 +2336,32 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Nebulization",
+          "max_sl": 1,
+          "brief": "Your potions are strengthened by repeated use.",
+          "classes": [
+            "Tinkerer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Quantum Magicannon",
+          "max_sl": 1,
+          "brief": "Improve your magicannon and Loremaster  use it for explosive attacks.",
+          "classes": [
+            "Tinkerer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -1680,6 +2443,36 @@
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Fitcast",
+          "max_sl": 1,
+          "brief": "Use Might for Magic Checks, and treat weapons relying on Might as being arcane.",
+          "classes": [
+            "Chimerist",
+            "Darkblade",
+            "Esper",
+            "Fury",
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Side by Side",
+          "max_sl": 1,
+          "brief": "to regain your energies.",
+          "classes": [
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
           }
         }
       ],
@@ -1764,6 +2557,122 @@
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
           }
+        },
+        {
+          "name": "Blade Adept",
+          "max_sl": 1,
+          "brief": "Gain bonuses with daggers and treat them as brawling, sword, and thrown weapons.",
+          "classes": [
+            "Rogue",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fleeting Moment",
+          "max_sl": 1,
+          "brief": "Add High Roll when you Counterattack with a sword.",
+          "classes": [
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Iron Forest",
+          "max_sl": 1,
+          "brief": "Force enemies to spend MP to act after hitting with a spear.",
+          "classes": [
+            "Commander",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Pulverizing Strike Rising Tide",
+          "max_sl": 1,
+          "brief": "chance with songs. Breach deals damage with heavy",
+          "classes": [
+            "Darkblade",
+            "Fury",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ritual Seals",
+          "max_sl": 1,
+          "brief": "weapons.",
+          "classes": [
+            "Fury",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Triple Slash",
+          "max_sl": 1,
+          "brief": "attacks with thrown weapons.",
+          "classes": [
+            "Dancer",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brave Bash",
+          "max_sl": 1,
+          "brief": "Use Bone Crusher to challenge foes with a shield, then deal additional damage.",
+          "classes": [
+            "Commander",
+            "Fury",
+            "Guardian",
+            "Pilot",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Arcane Soldier",
+          "max_sl": 1,
+          "brief": "Perform a free attack against a target, then immediately cast an offensive spell against them.",
+          "classes": [
+            "Elementalist",
+            "Sharpshooter",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
         }
       ],
       "spells": []
@@ -1822,7 +2731,36 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Power Chord",
+          "max_sl": 1,
+          "brief": "Improve allies' critical success",
+          "classes": [
+            "Chanter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Cheer Up!",
+          "max_sl": 1,
+          "brief": "Improves My Trust in You.",
+          "classes": [
+            "Chanter",
+            "Esper",
+            "Orator"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Commander": {
@@ -1879,7 +2817,93 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Ceaseless Battlefield",
+          "max_sl": 1,
+          "brief": "Halve the MP cost of Commander Skills.",
+          "classes": [
+            "Commander"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Double Arrow",
+          "max_sl": 1,
+          "brief": "Attack twice with bows.",
+          "classes": [
+            "Commander",
+            "Sharpshooter"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Hoplite",
+          "max_sl": 1,
+          "brief": "Strenghten attacks when you fight with weapon and shield.",
+          "classes": [
+            "Commander",
+            "Guardian"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Iron Forest",
+          "max_sl": 1,
+          "brief": "Force enemies to spend MP to act after hitting with a spear.",
+          "classes": [
+            "Commander",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brave Bash",
+          "max_sl": 1,
+          "brief": "Use Bone Crusher to challenge foes with a shield, then deal additional damage.",
+          "classes": [
+            "Commander",
+            "Fury",
+            "Guardian",
+            "Pilot",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Wise Counsel",
+          "max_sl": 1,
+          "brief": "Your Support Checks grant extra",
+          "classes": [
+            "Commander"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Dancer": {
@@ -1936,7 +2960,65 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Paso Doble",
+          "max_sl": 1,
+          "brief": "Ignore the MP cost of Follow My Lead when you are in Crisis.",
+          "classes": [
+            "Dancer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Tabula Rasa Theme Song",
+          "max_sl": 1,
+          "brief": "Place Rituals into seals. Fury, Weaponmaster Dancer, Fury,     Perform three dances, then take a Sharpshooter       temporary break. Commander Attack twice with flails. Chanter Gain benefits for consecutive",
+          "classes": [
+            "Dancer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Triple Slash",
+          "max_sl": 1,
+          "brief": "attacks with thrown weapons.",
+          "classes": [
+            "Dancer",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ephemeral Tranquility",
+          "max_sl": 1,
+          "brief": "Improves Hallucination and Torpor, and cleanses status effects to cause HP loss.",
+          "classes": [
+            "Dancer",
+            "Esper",
+            "Rogue",
+            "Spiritist",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Symbolist": {
@@ -1993,7 +3075,81 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Arcane Mark",
+          "max_sl": 1,
+          "brief": "Improve spells' critical chance",
+          "classes": [
+            "Sharpshooter",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Clean Slate",
+          "max_sl": 1,
+          "brief": "Remove spells and status effects from creatures.",
+          "classes": [
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Spider's Web Swirling Swarm",
+          "max_sl": 1,
+          "brief": "Gain benefits for consecutive attacks with brawling weapons.",
+          "classes": [
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-hf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Bend Magic",
+          "max_sl": 1,
+          "brief": "React to enemy spells with your invocations.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Invoker",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ephemeral Tranquility",
+          "max_sl": 1,
+          "brief": "Improves Hallucination and Torpor, and cleanses status effects to cause HP loss.",
+          "classes": [
+            "Dancer",
+            "Esper",
+            "Rogue",
+            "Spiritist",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Floralist": {
@@ -2050,7 +3206,48 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Brambleheart",
+          "max_sl": 1,
+          "brief": "Your brambles protect you and react to enemy attacks.",
+          "classes": [
+            "Darkblade",
+            "Floralist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Greater Chloromancy",
+          "max_sl": 1,
+          "brief": "Increase magiseed effects and manipulate vegetation.",
+          "classes": [
+            "Floralist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Green Thumb",
+          "max_sl": 1,
+          "brief": "Quicken or delay the growth of your magiseeds.",
+          "classes": [
+            "Floralist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Gourmet": {
@@ -2107,7 +3304,48 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "All You Can Eat",
+          "max_sl": 1,
+          "brief": "Combine four ingredients into a delicacy.",
+          "classes": [
+            "Gourmet"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Skillful Dosage",
+          "max_sl": 1,
+          "brief": "Delicacies, potions and spells heal",
+          "classes": [
+            "Gourmet",
+            "Loremaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Specialty of the House",
+          "max_sl": 1,
+          "brief": "Prepare a unique delicacy with alternative effects.",
+          "classes": [
+            "Gourmet"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Invoker": {
@@ -2164,7 +3402,50 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Bend Magic",
+          "max_sl": 1,
+          "brief": "React to enemy spells with your invocations.",
+          "classes": [
+            "Elementalist",
+            "Entropist",
+            "Invoker",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Inner Wellspring",
+          "max_sl": 1,
+          "brief": "Carry an elemental wellspring of your choice within yourself.",
+          "classes": [
+            "Invoker"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Strength of",
+          "max_sl": 1,
+          "brief": "Invocations improve Attributes.",
+          "classes": [
+            "Invoker"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Merchant": {
@@ -2221,7 +3502,35 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "For a Better Future",
+          "max_sl": 1,
+          "brief": "Use Trade Points instead of Fabula Points and improve settlements with donations.",
+          "classes": [
+            "Merchant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Power Nap",
+          "max_sl": 1,
+          "brief": "Take a little nap during a conflict",
+          "classes": [
+            "Guardian",
+            "Merchant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Esper": {
@@ -2278,7 +3587,97 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Cheer Up!",
+          "max_sl": 1,
+          "brief": "Improves My Trust in You.",
+          "classes": [
+            "Chanter",
+            "Esper",
+            "Orator"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Ephemeral Tranquility",
+          "max_sl": 1,
+          "brief": "Improves Hallucination and Torpor, and cleanses status effects to cause HP loss.",
+          "classes": [
+            "Dancer",
+            "Esper",
+            "Rogue",
+            "Spiritist",
+            "Symbolist"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Fitcast",
+          "max_sl": 1,
+          "brief": "Use Might for Magic Checks, and treat weapons relying on Might as being arcane.",
+          "classes": [
+            "Chimerist",
+            "Darkblade",
+            "Esper",
+            "Fury",
+            "Wayfarer"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Brainwave Discharge",
+          "max_sl": 1,
+          "brief": "Erase your Brainwave Clock and deal damage.",
+          "classes": [
+            "Esper"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Dreamslice",
+          "max_sl": 1,
+          "brief": "Hawkeye creates a decoy and Pilot        grants a punishing attack.",
+          "classes": [
+            "Darkblade",
+            "Esper"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Psychic Field",
+          "max_sl": 1,
+          "brief": "Extend some of your psychic gifts to your allies.",
+          "classes": [
+            "Esper"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Mutant": {
@@ -2335,7 +3734,62 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Chimeric Soul",
+          "max_sl": 1,
+          "brief": "Casting Chimerist spells grant benefits based on the Species.",
+          "classes": [
+            "Chimerist",
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Dynamic Synchronization",
+          "max_sl": 1,
+          "brief": "Shadow Strike reduces MP",
+          "classes": [
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Greater Akromorphosis Greater Ecdysis",
+          "max_sl": 1,
+          "brief": "and causes action loss when using swords. Chanter, Orator Join forces with another pilot or passenger.",
+          "classes": [
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Mimeoclepsis 170",
+          "max_sl": 1,
+          "brief": "Act after Theriomorphosis.",
+          "classes": [
+            "Chimerist",
+            "Mutant"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Pilot": {
@@ -2392,7 +3846,51 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Brave Bash",
+          "max_sl": 1,
+          "brief": "Use Bone Crusher to challenge foes with a shield, then deal additional damage.",
+          "classes": [
+            "Commander",
+            "Fury",
+            "Guardian",
+            "Pilot",
+            "Weaponmaster"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-nf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Overload Burst",
+          "max_sl": 1,
+          "brief": "Hold on at 1 HP, then unleash your personal vehicle against your foes.",
+          "classes": [
+            "Pilot"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        },
+        {
+          "name": "Steel Witch",
+          "max_sl": 1,
+          "brief": "Gain benefits when you cast spells on a personal vehicle.",
+          "classes": [
+            "Pilot"
+          ],
+          "requirement": "any-listed",
+          "source": {
+            "book": "atlas-tf",
+            "section": "LIST OF NEW HEROIC SKILLS"
+          }
+        }
+      ],
       "spells": []
     },
     "Hunter": {
