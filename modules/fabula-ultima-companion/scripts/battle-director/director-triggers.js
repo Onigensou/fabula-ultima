@@ -93,6 +93,77 @@ export const STANDALONE_TRIGGERS = new Set([
   "turn_end",
 ]);
 
+// ── Phase classification — single source of truth for UI routing ────
+//
+// Locked 2026-05-30: the reaction system runs TWO co-existing UIs,
+// not one. Each trigger declares which phase it belongs to; the FSM
+// dispatch site reads this to pick the UI without per-handler
+// conditionals.
+//
+//   "pre-resolve"  — the trigger fires DURING an action card window
+//                    and can manipulate the action's values. UI:
+//                    pills on the action card. Card-level lock until
+//                    every ask-mode pill is decided. Live preview
+//                    updates as decisions toggle.
+//                    Per user rule: "If it manipulates the values in
+//                    the action, the reaction shows during the Action
+//                    Card."
+//
+//   "post-resolve" — the trigger fires AFTER the action commits. The
+//                    action is already done; the reaction's effects
+//                    are independent. UI: token-anchored reaction
+//                    menu over the reactor's token. No action-card
+//                    lock needed. Counterattack / Absorb MP / Painful
+//                    Lesson canonical examples.
+//
+//   "standalone"   — the trigger fires OUTSIDE any action — FSM phase
+//                    transitions like start-of-turn or start-of-
+//                    conflict. UI: token-anchored reaction menu. No
+//                    action card exists at all. High Speed canonical
+//                    example.
+//
+// Authoring: when adding a NEW trigger to DIRECTOR_NATIVE_TRIGGERS,
+// also add it here. The lint enforces every native trigger has a
+// declared phase (see runTemplateEngineEnums).
+export const TRIGGER_PHASE = Object.freeze({
+  // Pre-resolve — pills on the action card.
+  "caster_short_on_mp":         "pre-resolve",
+  "creature_completes_spell":   "pre-resolve",
+  "creature_will_deal_damage":  "pre-resolve",
+  // Post-resolve — token-anchored menu, fires after action commits.
+  "creature_deals_damage":      "post-resolve",
+  "creature_takes_damage":      "post-resolve",
+  // Legacy-bridged triggers — all post-resolve by RAW shape.
+  "creature_performs_check":      "post-resolve",
+  "creature_fumbles_check":       "post-resolve",
+  "creature_check_outcome_flipped": "post-resolve",
+  "creature_recovers_hp":         "post-resolve",
+  "creature_recovers_mp":         "post-resolve",
+  "creature_lose_mp":             "post-resolve",
+  // Standalone — token-anchored menu at FSM transitions.
+  "conflict_start":             "standalone",
+  "conflict_end":               "standalone",
+  "round_start":                "standalone",
+  "round_end":                  "standalone",
+  "turn_start":                 "standalone",
+  "turn_end":                   "standalone",
+});
+
+// Convenience accessors derived from TRIGGER_PHASE.
+export const PRE_RESOLVE_TRIGGERS = new Set(
+  Object.entries(TRIGGER_PHASE).filter(([, p]) => p === "pre-resolve").map(([t]) => t)
+);
+export const POST_RESOLVE_TRIGGERS = new Set(
+  Object.entries(TRIGGER_PHASE).filter(([, p]) => p === "post-resolve").map(([t]) => t)
+);
+
+// Lookup helper. Returns "pre-resolve" | "post-resolve" | "standalone"
+// | null. Default to "post-resolve" for unknown triggers so a stray
+// trigger doesn't crash the dispatch — but the lint will flag it.
+export function phaseOf(trigger) {
+  return TRIGGER_PHASE[trigger] ?? null;
+}
+
 export const ALL_DIRECTOR_TRIGGERS = new Set([
   ...DIRECTOR_NATIVE_TRIGGERS,
   ...LEGACY_BRIDGED_TRIGGERS,
@@ -105,6 +176,10 @@ if (typeof globalThis !== "undefined") {
     native: DIRECTOR_NATIVE_TRIGGERS,
     legacyBridged: LEGACY_BRIDGED_TRIGGERS,
     standalone: STANDALONE_TRIGGERS,
+    preResolve: PRE_RESOLVE_TRIGGERS,
+    postResolve: POST_RESOLVE_TRIGGERS,
+    phase: TRIGGER_PHASE,
+    phaseOf,
     all: ALL_DIRECTOR_TRIGGERS,
   };
 }

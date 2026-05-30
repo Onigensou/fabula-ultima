@@ -141,6 +141,44 @@ They map directly to the lint + spec-guard rules below:
 | #4 uses the existing charges system | Reuse means no per-skill counter props (the deprecation table forbids those) |
 | #5 uses `transfer: true` for true passives, NOT a reaction trigger | (lint rule pending — `PASSIVE_FAKE_REACTION` should flag a `turn_start` row whose only effect is `apply_ae` of a self-AE) |
 
+## Reaction UI policy (locked 2026-05-30)
+
+Two co-existing UIs, classified by **trigger phase** in
+`scripts/battle-director/director-triggers.js` (`TRIGGER_PHASE` map).
+The dispatch site reads the phase to pick the UI — no per-handler
+conditionals.
+
+| Phase | Triggers | UI |
+|---|---|---|
+| **pre-resolve** | `caster_short_on_mp`, `creature_completes_spell`, `creature_will_deal_damage` | Pills on action card (`buildReactionPillRow`) |
+| **post-resolve** | `creature_deals_damage`, `creature_takes_damage`, `creature_performs_check`, recovers HP/MP, etc. | Token-anchored menu (`ReactionMenu.spawn`) |
+| **standalone** | `conflict_start/end`, `round_start/end`, `turn_start/end` | Token-anchored menu (`ReactionMenu.spawn`) |
+
+User's locked rule (re-affirmed 2026-05-30 — co-developer
+preference):
+
+> "If it manipulates the values in the action, the reaction shows
+> during the Action Card. Some exceptions only happen after the
+> action is resolved: Counterattack, Absorb MP, Painful Lesson.
+> Another exception would be reactions that happen outside of
+> action, such as Start of Turn, End of Turn, etc."
+
+Adding a new trigger:
+
+1. Add to `DIRECTOR_NATIVE_TRIGGERS`.
+2. Add to `TRIGGER_PHASE` with `"pre-resolve" | "post-resolve" | "standalone"`.
+3. Wire the dispatch site (CONFIRM for pre-resolve, RESOLVE-tail
+   for post-resolve, FSM transition for standalone).
+4. Run a template-surgery migration to expose the trigger in the
+   CSB editor's dropdown.
+
+Both UIs route through the **same engine path**:
+`findPassiveCandidates` (matcher) → `firePreAcceptedCandidate`
+(applier). Authors don't pick the UI; the trigger's phase does.
+
+See [[reaction-pills-on-action-card]] + [[reaction-menu-on-token]]
+for engine + UI surfaces.
+
 ## Canonical homes
 
 | Concern | Canonical home | Don't author at top level |
