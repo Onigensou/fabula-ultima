@@ -25,6 +25,7 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { ReactionMenu } from "./reaction-menu.js";
 import { ReactionIndicator } from "./reaction-indicator.js";
+import { ReactionAppliedChip } from "./reaction-applied-chip.js";
 
 // Public: register the handler on a given IntentChannel. Call from
 // boot on every client (GM + players). The handler no-ops on the GM
@@ -77,6 +78,25 @@ export function registerPlayerReactionMenuHandler(channel) {
         });
       } catch (e) {
         warn("reaction-indicator MENU_OPEN handler threw", e);
+      }
+      return;
+    }
+
+    // Applied-chip branch — brief floating badge over the reactor's
+    // token confirming the reaction APPLIED. Stage 3 visibility — every
+    // active client receives this broadcast (owner + allies). Auto-
+    // dismisses; no close envelope from the GM.
+    if (menuSpec.kind === "reaction-applied") {
+      try {
+        const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-applied MENU_OPEN");
+        if (!token) return;
+        ReactionAppliedChip.spawn({
+          token,
+          label: menuSpec.label,
+          icon: menuSpec.icon,
+        });
+      } catch (e) {
+        warn("reaction-applied MENU_OPEN handler threw", e);
       }
       return;
     }
@@ -149,11 +169,12 @@ export function registerPlayerReactionMenuHandler(channel) {
     if (kind && kind !== "reaction-menu") return;
     // Player-side: dismiss every reaction menu — the GM's authoritative
     // close (e.g. after applying a candidate, after dispatch ends).
-    // Untyped close (kind=null) sweeps both menu + indicator so a
-    // director.stop or scene-change clears everything.
+    // Untyped close (kind=null) sweeps menu + indicator + applied chips
+    // so a director.stop or scene-change clears everything.
     try { ReactionMenu.despawnAll(); } catch {}
     if (!kind) {
       try { ReactionIndicator.despawnAll(); } catch {}
+      try { ReactionAppliedChip.despawnAll(); } catch {}
     }
   });
 
