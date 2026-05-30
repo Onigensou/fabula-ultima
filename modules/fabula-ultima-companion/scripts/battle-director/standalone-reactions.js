@@ -199,13 +199,29 @@ function labelForTrigger(trigger) {
 // payload fields (the trigger key itself is the match condition), but
 // some condition formulas reference round / phase metadata, so we ship
 // what we can derive cheaply.
+//
+// Subject mapping: `findPassiveCandidates` → `shouldReactionPassiveFire`
+// reads `payload.sourceActorUuid` (the subject creature) to evaluate
+// `reaction_source` filters ("self" / "ally" / "enemy"). Per the trigger
+// schema, turn_start/turn_end carry the acting combatant as their subject,
+// so we surface `actingActorUuid` → `sourceActorUuid` here. Lifecycle
+// triggers without a subject (conflict_start/end, round_start/end) leave
+// the field null — those triggers' schema entries don't expose a source
+// filter, so the matcher's "self" check fails-open via subjectMatchesSource
+// returning false (correct: a row authored with `reaction_source: "self"`
+// on conflict_start has no semantic meaning).
 function buildStandalonePayload(director, trigger, extras) {
+  const subjectTriggers = trigger === "turn_start" || trigger === "turn_end";
+  const subjectActorUuid = subjectTriggers ? (extras?.actingActorUuid ?? null) : null;
+  const subjectTokenUuid = subjectTriggers ? (extras?.actingTokenUuid ?? null) : null;
   return {
     trigger,
     round: director?.dCombat?.round ?? null,
     currentSide: director?.dCombat?.currentSide ?? null,
     currentActorUuid: director?.dCombat?.current?.actorUuid ?? null,
     currentTokenUuid: director?.dCombat?.current?.tokenUuid ?? null,
+    sourceActorUuid: subjectActorUuid,
+    sourceTokenUuid: subjectTokenUuid,
     ...(extras ?? {}),
   };
 }
