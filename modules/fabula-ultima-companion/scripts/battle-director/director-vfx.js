@@ -293,6 +293,10 @@ function getBgmNameFromPayload(payload) {
   );
 }
 
+// The battle track the director started, so battle-end can stop exactly it
+// (rather than nuking whatever the GM is playing). Cleared on stop.
+let _currentBgm = null; // { playlistId, soundId }
+
 export async function playBattleBgm(payload) {
   try {
     const name = String(getBgmNameFromPayload(payload) ?? "").trim();
@@ -311,6 +315,7 @@ export async function playBattleBgm(payload) {
       const snd = pl.sounds?.getName?.(name);
       if (snd) {
         await pl.playSound(snd);
+        _currentBgm = { playlistId: pl.id, soundId: snd.id };
         log(`battle BGM playing: ${pl.name} / ${snd.name}`);
         return;
       }
@@ -318,5 +323,31 @@ export async function playBattleBgm(payload) {
     warn(`battle BGM track not found in any playlist: "${name}"`);
   } catch (e) {
     warn("playBattleBgm threw", e);
+  }
+}
+
+// Stop the battle BGM at battle end. Stops exactly the track we started
+// (tracked in _currentBgm); `fallbackName` (the payload's bgm name) covers the
+// case where a mid-battle F5 cleared _currentBgm. Broadcasts via the playlist.
+export async function stopBattleBgm(fallbackName) {
+  try {
+    if (_currentBgm) {
+      const pl = game.playlists?.get?.(_currentBgm.playlistId);
+      const snd = pl?.sounds?.get?.(_currentBgm.soundId);
+      if (pl && snd) {
+        try { await pl.stopSound(snd); log(`battle BGM stopped: ${pl.name} / ${snd.name}`); }
+        catch (e) { warn("stopBattleBgm stopSound threw", e); }
+      }
+      _currentBgm = null;
+    }
+    const name = String(fallbackName ?? "").trim();
+    if (name) {
+      for (const pl of (game.playlists ?? [])) {
+        const snd = pl.sounds?.getName?.(name);
+        if (snd?.playing) { try { await pl.stopSound(snd); } catch {} }
+      }
+    }
+  } catch (e) {
+    warn("stopBattleBgm threw", e);
   }
 }

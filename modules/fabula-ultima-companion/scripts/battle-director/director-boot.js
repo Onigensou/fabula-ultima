@@ -30,6 +30,7 @@ import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
+import { stopBattleBgm } from "./director-vfx.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -290,6 +291,9 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   // Clear the persistent start-of-round banner (fades out + broadcasts) so it
   // never lingers on screen after the battle ends.
   try { hideRoundBanner(); } catch {}
+  // Stop the battle BGM the director started (mirrors legacy battle-end). The
+  // payload's bgm name is passed as a fallback for the F5-mid-battle case.
+  try { stopBattleBgm(_instance?.payload?.battleConfig?.bgm); } catch {}
 
   // Broadcast MENU_CLOSE to every online non-GM client so any player-side
   // mirror overlays (action-card mirror, compose-action local Octopath /
