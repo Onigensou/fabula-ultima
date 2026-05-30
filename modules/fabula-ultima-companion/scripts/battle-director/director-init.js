@@ -478,12 +478,13 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   const FADE_MS = 600;
   const PER_TOKEN_STAGGER_MS = 90;
 
-  // Party dash tuning.
-  const DASH_OFFSET_PX = 650;   // start this far right of final (legacy 650)
+  // Party run-in tuning.
   const DASH_MS = 520;          // slide duration (matches the approved preview)
   const DASH_STAGGER_MS = 120;  // per-actor offset, top→bottom ("a bit")
   // easeOutExpo — fast in, hard deceleration into the spot (chosen via the
-  // run-in test button). Foundry's token animation accepts an easing function.
+  // run-in test button). Applied via an rAF tween on PIXI sprite copies, NOT
+  // Foundry's native token movement (which ignores custom easing → renders
+  // linear). This is the legacy party-dash approach.
   const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
   function fadeIn(tokenDoc, delay) {
@@ -514,22 +515,65 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   }
 
   // ── Party: run in from the right, staggered top→bottom ──
+  // Animate cheap PIXI sprite copies (not the real tokens) so we get a proper
+  // eased dash — Foundry's native token movement renders linear. The real
+  // tokens stay hidden (alpha 0) at their final spots and are revealed once the
+  // copies arrive, then the copies are destroyed. (Legacy party-dash approach.)
   async function dashInParty() {
     if (!partyTokens.length) return;
-    // Capture each token's FINAL x (spawned at final), then stage them all off
-    // to the right (revealed) in ONE batched update — a single socket write for
-    // the whole party, not one per token.
-    const entries = partyTokens.map((t) => ({ id: t.id, doc: t, finalX: t.x, y: t.y }));
-    try {
-      await canvas.scene.updateEmbeddedDocuments(
-        "Token",
-        entries.map((e) => ({ _id: e.id, x: e.finalX + DASH_OFFSET_PX, alpha: 1 })),
-        { animate: false }
-      );
-    } catch (e) { warn("dash: stage-offset update threw", e); }
+    const placeables = partyTokens.map((td) => canvas?.tokens?.get?.(td.id)).filter(Boolean);
+    const revealAll = () => canvas.scene.updateEmbeddedDocuments(
+      "Token", partyTokens.map((t) => ({ _id: t.id, alpha: 1 })), { animate: false }
+    ).catch(() => {});
+
+    if (!placeables.length) { await revealAll(); return; }
+
+    // World offset ≈ 60% of the viewport width (matches the approved preview),
+    // in world units so the run-in starts off-screen at any zoom.
+    const scale = canvas.stage?.scale?.x || 1;
+    const screenW = canvas.app?.renderer?.screen?.width ?? 1920;
+    const worldOffset = (0.6 * screenW) / scale;
+
+    // Build a sprite copy of each party token at center + offset.
+    canvas.stage.sortableChildren = true;
+    const sprites = [];
+    for (const tok of placeables) {
+      let tex = tok.mesh?.texture;
+      if (!tex || tex === PIXI.Texture.EMPTY) {
+        try { tex = await loadTexture(tok.document?.texture?.src); } catch {}
+      }
+      if (!tex) continue;
+      const spr = new PIXI.Sprite(tex);
+      spr.anchor.set(0.5);
+      spr.zIndex = 5000; // above tokens (legacy value)
+      const w = tok.mesh?.width ?? tok.w;
+      const h = tok.mesh?.height ?? tok.h;
+      if (w) spr.width = w;
+      if (h) spr.height = h;
+      // Match the token's horizontal facing (texture scaleX sign).
+      const sx = Number(tok.document?.texture?.scaleX) || 1;
+      spr.scale.x = (sx < 0 ? -1 : 1) * Math.abs(spr.scale.x);
+      spr.position.set(tok.center.x + worldOffset, tok.center.y);
+      canvas.stage.addChild(spr);
+      sprites.push({ spr, restX: tok.center.x, y: tok.center.y });
+    }
+    canvas.stage.sortChildren?.();
+    if (!sprites.length) { await revealAll(); return; }
+
+    // Play the (shared) battle WEBM on each copy so the characters animate
+    // WHILE running in. Cheap — only the ~4 party sprites. Each copy shares the
+    // real token's mesh texture, so the instant the token is revealed it shows
+    // the identical animating frame → seamless handoff (see reveal below).
+    const playTexVideo = (tex) => {
+      try {
+        const vid = tex?.baseTexture?.resource?.source;
+        if (vid instanceof HTMLVideoElement) { vid.loop = true; vid.muted = true; vid.play?.()?.catch?.(() => {}); }
+      } catch {}
+    };
+    for (const { spr } of sprites) playTexVideo(spr.texture);
 
     // Top → bottom (Hina first … Zarg last).
-    entries.sort((a, b) => (a.y ?? 0) - (b.y ?? 0));
+    sprites.sort((a, b) => a.y - b.y);
 
     // Dash SFX once, broadcast to all clients.
     try {
@@ -537,18 +581,34 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
       AH?.play?.({ src: PARTY_DASH_SFX_URL, volume: 0.85, autoplay: true, loop: false }, true);
     } catch (e) { warn("party dash SFX failed", e); }
 
-    // Staggered slide-in via Foundry's native token animation (it broadcasts,
-    // so every client sees the run-in for free). The stagger keeps the four
-    // tokens from all starting on the same frame.
-    entries.forEach((e, i) => {
-      setTimeout(() => {
-        e.doc.update({ x: e.finalX }, { animate: true, animation: { duration: DASH_MS, easing: easeOutExpo } })
-          .catch(() => {});
-      }, i * DASH_STAGGER_MS);
+    // rAF tween each copy from off-right to rest with easeOutExpo, staggered.
+    const tweenX = (spr, toX, ms) => new Promise((res) => {
+      const fromX = spr.x;
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / ms);
+        spr.x = fromX + (toX - fromX) * easeOutExpo(t);
+        if (t < 1) requestAnimationFrame(step);
+        else res();
+      };
+      requestAnimationFrame(step);
     });
+    await Promise.all(sprites.map((s, i) => (async () => {
+      await wait(i * DASH_STAGGER_MS);
+      await tweenX(s.spr, s.restX, DASH_MS);
+    })()));
 
-    // Wait for the last token's slide to finish.
-    await wait((entries.length - 1) * DASH_STAGGER_MS + DASH_MS + 120);
+    // Reveal the real tokens at rest BEFORE removing the copies. The token
+    // shares the same (already-playing) texture, so it shows the identical
+    // animating frame; wait one painted frame, then destroy the copies — no
+    // flicker, no freeze. (texture:false so the shared texture survives for the
+    // real token's mesh.)
+    await revealAll();
+    await new Promise((r) => requestAnimationFrame(r));
+    for (const { spr } of sprites) {
+      try { canvas.stage.removeChild(spr); spr.destroy({ children: true, texture: false, baseTexture: false }); }
+      catch {}
+    }
   }
 
   // Party dashes in first, then enemies fade in (kept light + sequential so
@@ -687,9 +747,8 @@ export async function runDirectorInit(payload) {
 
   // ── 9. Drop curtain — only now, after preload ACKs are in. Tokens are
   // positioned but still alpha=0 (invisible) underneath the curtain; the
-  // entrance animation reveals them next. Battle-stance WEBM loops are
-  // deferred to step 10b (after the dash) so we never move + decode video
-  // simultaneously.
+  // entrance animation reveals them next. The party run-in animates its own
+  // (cheap, ~4) WEBM sprite copies; enemy stance loops start at step 10b.
   await dropCurtain();
 
   // Short settle delay so the curtain fade completes visually before
@@ -700,9 +759,10 @@ export async function runDirectorInit(payload) {
   // top→bottom; enemies fade in).
   await playEntranceAnimation({ partyTokens, enemyTokens });
 
-  // ── 10b. Start battle-stance WEBM/MP4 loops now that tokens are at rest —
-  // deferred from before the dash so the run-in never moves a decoding video
-  // (tokens dash showing the WEBM's static first frame, then animate in place).
+  // ── 10b. Ensure battle-stance WEBM/MP4 loops are running on every token.
+  // Idempotent: the party tokens are already animating (their shared texture
+  // was played by the run-in copies, so the reveal handed off seamlessly);
+  // this mainly kicks the enemies, which faded in on their static first frame.
   await ensureBattleStancePlaying([...partyTokens, ...enemyTokens]);
 
   // ── 11. Build the director-owned DirectorCombat (no Foundry Combat doc).
