@@ -21,6 +21,7 @@ import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.
 import { runDirectorInit } from "./director-init.js";
 import { playStudyVfx, playActionNamecard } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
+import { playRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
 import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp } from "./item-resource.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
@@ -642,7 +643,13 @@ const RoundStart = {
   async onEnter(director) {
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
-    log(`ROUND_START — round ${director.dCombat?.round ?? director.combat?.round ?? "?"}`);
+    const roundNo = director.dCombat?.round ?? director.combat?.round ?? 0;
+    log(`ROUND_START — round ${roundNo}`);
+
+    // Start-of-round cinematic banner ("ROUND N" + Critical_1 SFX). Fire-and-
+    // forget so the ~2.5s flourish overlays the next state rather than
+    // blocking the FSM. Broadcasts to all clients.
+    if (roundNo > 0) playRoundBanner({ round: roundNo });
 
     // Hand off to STANDALONE_REACTION_WINDOW for round_start. The
     // transition rule branches on endOfCombat: if combat is over,

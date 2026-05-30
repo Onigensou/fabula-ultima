@@ -28,6 +28,7 @@ import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
+import { initDirectorRoundBanner } from "./director-round-banner.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -783,6 +784,10 @@ Hooks.once("ready", () => {
   // Self-contained; no dependency on the legacy cut-in system.
   try { initDirectorCutin(); }
   catch (e) { warn("initDirectorCutin on ready threw", e); }
+
+  // Director-native start-of-round banner — same all-clients registration.
+  try { initDirectorRoundBanner(); }
+  catch (e) { warn("initDirectorRoundBanner on ready threw", e); }
 
   // ── Director-native passive dispatcher for legacy reaction events ───
   //
