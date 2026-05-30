@@ -1,7 +1,7 @@
 {
   "_class": "Spiritist",
   "_book": "Core",
-  "_status": "in-progress (Batch 1 shipped 2026-05-26/27; Batch 2 shipped 2026-05-27)",
+  "_status": "in-progress (Batch 1 shipped 2026-05-26/27; Batch 2 shipped 2026-05-27; Batch 5 — Bimagus Heroic Passive shipped 2026-05-30 as description-only narrative skill; engine double-cast pipeline pending)",
   "_comment": "Spiritist skill+spell authoring set for the Battle Director engine. Specs are RAW-accurate (cross-checked against the world's existing Spiritist Items, which the GM authored from the Core rulebook). Each spec carries `class: 'Spiritist'` + `folder: 'Skill'` hints so CreateSkillFromSpec drops the new Item into `Battle Director / Spiritist / Skill`. Icons are reused from the existing world Items per the user's 'same-name icon' policy. CSB `Make item unique` (system.unique) defaults to TRUE for all Battle Director skills — a PC shouldn't end up with two copies of the same skill. Override with `spec.unique: false` only when stacking IS intended.",
 
   "_batches": {
@@ -30,12 +30,16 @@
       "Mercy (Spell; needs reactive 'would-be-reduced-to-0' trigger)",
       "Soul Weapon (Spell; needs weapon damage-type-swap AE + free attack)"
     ],
+    "batch_5_heroic_2026-05-30": [
+      "Bimagus (Heroic Passive; once-per-turn double-spell with combined MP cap = 20 + spent MP). Narrative — engine has no double-cast pipeline today, GM adjudicates the cap + the half-cost-second-spell constraint. Author as description-only Heroic Passive so it surfaces in the picker."
+    ],
     "deferred_to_later_phases": {
       "Mercy": "Needs Phase F reaction (creature_takes_damage trigger gated by would-reduce-to-0-HP).",
       "Support Magic": "Needs passive layer — post-spell apply_ae with BOND_STRENGTH bonus on next Check.",
       "Healing Power": "Needs passive layer — post-spell heal grant (SL × BOND_COUNT).",
       "Vismagus": "Needs cost parser HP-for-MP alternative (B.2).",
-      "Ritual Spiritism": "Needs Phase I (ritual pipeline)."
+      "Ritual Spiritism": "Needs Phase I (ritual pipeline).",
+      "Bimagus": "Engine needs a double-cast pipeline (queue two Spell actions atomically, share an MP budget pool, half-cost second-spell constraint). Authored as narrative now."
     }
   },
 
