@@ -480,8 +480,11 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
 
   // Party dash tuning.
   const DASH_OFFSET_PX = 650;   // start this far right of final (legacy 650)
-  const DASH_MS = 650;          // slide duration (legacy partyRunMs)
+  const DASH_MS = 520;          // slide duration (matches the approved preview)
   const DASH_STAGGER_MS = 120;  // per-actor offset, top→bottom ("a bit")
+  // easeOutExpo — fast in, hard deceleration into the spot (chosen via the
+  // run-in test button). Foundry's token animation accepts an easing function.
+  const easeOutExpo = (t) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
   function fadeIn(tokenDoc, delay) {
     return new Promise(async (resolve) => {
@@ -539,7 +542,7 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
     // tokens from all starting on the same frame.
     entries.forEach((e, i) => {
       setTimeout(() => {
-        e.doc.update({ x: e.finalX }, { animate: true, animation: { duration: DASH_MS } })
+        e.doc.update({ x: e.finalX }, { animate: true, animation: { duration: DASH_MS, easing: easeOutExpo } })
           .catch(() => {});
       }, i * DASH_STAGGER_MS);
     });
