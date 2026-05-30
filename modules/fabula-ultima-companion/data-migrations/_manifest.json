@@ -223,6 +223,10 @@
     {
       "key": "2026-05-30-tag-standard-debuffs",
       "path": "data-migrations/2026-05-30-tag-standard-debuffs.js"
+    },
+    {
+      "key": "2026-05-30-dodge-mechanical-wiring",
+      "path": "data-migrations/2026-05-30-dodge-mechanical-wiring.js"
     }
   ]
 }
