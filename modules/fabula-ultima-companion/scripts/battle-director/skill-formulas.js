@@ -501,10 +501,20 @@ function _resolveActorByUuidSync(uuid) {
 }
 
 // Count active, non-disabled debuff-classified effects on the actor.
-// Uses the AEM `inferCategory` classifier when available (matches the
-// reaction `debuff_count` filter); falls back to counting effects whose
-// `flags.fabula-ultima-companion.category === "debuff"` for parity if
-// AEM isn't installed.
+// Three independent classifier sources, checked in order — first match wins:
+//   1. AEM `inferCategory` — preferred (heuristic + registry-aware).
+//   2. `flags.fabula-ultima-companion.category` — explicit author tag.
+//   3. `system.tags` array — opt-in classification per
+//      [[opt-in-ae-classification]]. AEs from the standard
+//      status-applying pipeline (Slow, Dazed, etc.) write
+//      `system.tags: ["debuff"]`.
+//
+// Prior bug (fixed 2026-05-30): step 3 read `eff.system?.tags?.category`
+// assuming an OBJECT, but `system.tags` is in fact an ARRAY. So even
+// when an AE was correctly tagged with ["debuff"], the lookup failed
+// silently and the count under-reported by every non-AEM-classified
+// debuff. Cheap Shot's TARGET_STATUS_COUNT gate read 0 for any target
+// whose debuffs came from the standard apply_ae path.
 function countStatusDebuffs(actor) {
   if (!actor?.effects) return 0;
   const effects = Array.from(actor.effects);
@@ -512,14 +522,16 @@ function countStatusDebuffs(actor) {
   let count = 0;
   for (const eff of effects) {
     if (eff.disabled) continue;
-    let cat = null;
-    try { cat = aem?.inferCategory?.(eff); } catch {}
-    if (!cat) {
-      cat = eff.flags?.["fabula-ultima-companion"]?.category
-         ?? eff.system?.tags?.category
-         ?? null;
-    }
-    if (String(cat ?? "").toLowerCase() === "debuff") count++;
+    // 1. AEM classifier.
+    let aemCat = null;
+    try { aemCat = aem?.inferCategory?.(eff); } catch {}
+    if (String(aemCat ?? "").toLowerCase() === "debuff") { count++; continue; }
+    // 2. Explicit flag.
+    const flagCat = eff.flags?.["fabula-ultima-companion"]?.category;
+    if (String(flagCat ?? "").toLowerCase() === "debuff") { count++; continue; }
+    // 3. system.tags array contains "debuff".
+    const tags = eff.system?.tags;
+    if (Array.isArray(tags) && tags.includes("debuff")) { count++; continue; }
   }
   return count;
 }
