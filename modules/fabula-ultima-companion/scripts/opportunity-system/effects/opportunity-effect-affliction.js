@@ -203,8 +203,13 @@
     if (!reg._internal?.cache?.ready) {
       await reg.refresh({ scanCompendiums: false }).catch(() => {});
     }
-    const all = reg.getGrouped({ cloneResult: false }).Debuff ?? [];
-    return dedupeByName(all.filter(hasExplicitDebuffTag));
+    // Source exclusively from CONFIG.statusEffects — the same list the native
+    // Foundry token status HUD uses — then require an explicit "debuff" tag.
+    // This excludes manually-created world/actor AEs and near-duplicate entries
+    // (Suppress vs Suppressed, etc.) that have no authoritative status entry.
+    const all = reg.getAll({ cloneResult: false })
+      .filter(e => e.sourceType === "config-status-effect" && hasExplicitDebuffTag(e));
+    return dedupeByName(all);
   }
 
   // ── Effect handler (pre/post split) ─────────────────────────────────────────
