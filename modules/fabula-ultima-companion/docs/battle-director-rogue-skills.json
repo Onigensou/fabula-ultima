@@ -48,6 +48,8 @@
           "skill_range": "-",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 5,
           "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>"
         }
       }
@@ -70,6 +72,8 @@
           "skill_range": "Any",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 1,
           "description": "<p>You may use an action and spend <strong>1 Fabula Point</strong> to vanish from the current scene, reappearing whenever you want during a <strong>different</strong> scene in which another Player Character is present. Describe how you escaped and miraculously got here!</p>"
         }
       }
@@ -93,6 +97,8 @@
           "skill_range": "Range",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 3,
           "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. If you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target's soul treasure, an item worth an amount of zenit <strong>equal to or lower than 【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack; <em>a creature can be successfully stolen from with this Skill only once.</em></p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
           "on_activate_effect_ref": "soul_steal_grant_ip",
           "effect_table": {
@@ -127,6 +133,8 @@
           "skill_range": "-",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 3,
           "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
           "isReaction": true,
           "reaction_config_table": {
@@ -169,6 +177,8 @@
           "skill_range": "Any",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 3,
           "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul>",
           "isReaction": true,
           "reaction_config_table": {
@@ -236,6 +246,9 @@
           "skill_range": "-",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 1,
+          "isHeroic": true,
           "description": "<p>When you use the <strong>【Soul Steal】</strong> Skill, you may target any number of creatures at the same time (you perform a single Check and compare it to the Magic Defense of each creature you are attempting to steal from).</p>"
         }
       }
@@ -258,6 +271,9 @@
           "skill_range": "Any",
           "type_damage": "",
           "damage_bonus": "0",
+          "level": 1,
+          "max_level": 1,
+          "isHeroic": true,
           "description": "<p>When you hit one or more creatures with an attack, you may spend <strong>1 Fabula Point.</strong> If you do, each of those creatures will be unable to perform any action that requires them to be able to see you until the start of your next turn.</p>",
           "isReaction": true,
           "reaction_config_table": {

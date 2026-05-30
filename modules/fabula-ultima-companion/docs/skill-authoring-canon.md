@@ -93,6 +93,9 @@ They map directly to the lint + spec-guard rules below:
 | Concern | Canonical home | Don't author at top level |
 |---|---|---|
 | Passive on / ask / off / force mode | `reaction_config_table[N].reaction_passive_mode` | ~~props.passive_mode~~ |
+| Skill level (current SL) | `system.props.level` — set to `1` in every new spec (the FU Core convention: a newly acquired skill starts at SL 1). | leaving level blank → CSB inherits the template default which may not be 1 in practice |
+| Skill max level (cap on SL) | `system.props.max_level` — RAW values per FU Core: Active Skills 1-3 typically, Passive Skills 1-5, Heroic Skills 1, narrative Fabula-Point skills 1. Always set explicitly; never rely on template defaults. | leaving max_level blank → CSB inherits the template default of `"1"` which is wrong for any skill with a real progression |
+| Heroic skill flag | `system.props.isHeroic: true` — required on Heroic Skills + Heroic Spells; gates the `Battle Director / <Class> / Heroic Skill` folder placement + suppresses SL ranking UI (Heroics are 1-shot, no SL progression). | bare `folder: "Heroic Skill"` without isHeroic — placement works but the sheet shows the SL ranker which doesn't apply |
 | Engine-mandatory housekeeping (Protect charge refresh etc.) | reaction row with `reaction_passive_mode: "force"` — auto-fires AND stays invisible to UI (no pill, no menu blade, no Passive Manager toggle). Reserved for system mechanics the player shouldn't see as a choice. | ~~hardcoded engine flag, per-skill cleanup hook~~ |
 | "Fires when caster's spell hits an ally" | reaction row, trigger `creature_completes_spell` + `reaction_action_target: "ally"` | — |
 | "Fires after I deal damage" | reaction row, trigger `creature_deals_damage` + `reaction_source: "self"` | ~~props.post_damage_effect_ref~~ |
