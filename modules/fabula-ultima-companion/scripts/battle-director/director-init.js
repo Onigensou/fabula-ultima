@@ -465,13 +465,23 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 }
 
 // ─── Entrance animation ────────────────────────────────────────────────
-// Staggered fade-in: each token's alpha goes 0 → 1 over FADE_MS, with a
-// PER_TOKEN_STAGGER_MS delay between tokens (party first, then enemies).
+// Party "run in from the right": each player token is staged off-screen to
+// the right of its final spot, then slides into place via Foundry's token
+// animation — staggered top→bottom (Hina first … Zarg last). Ports the legacy
+// party dash (DashA SFX, ~650px offset, ~650ms run). Enemies keep the simple
+// staggered fade-in.
+
+const PARTY_DASH_SFX_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
 
 async function playEntranceAnimation({ partyTokens, enemyTokens }) {
   const FADE_MS = 600;
   const PER_TOKEN_STAGGER_MS = 90;
-  const PARTY_TO_ENEMY_GAP_MS = 250;
+
+  // Party dash tuning.
+  const DASH_OFFSET_PX = 650;   // start this far right of final (legacy 650)
+  const DASH_MS = 650;          // slide duration (legacy partyRunMs)
+  const DASH_STAGGER_MS = 120;  // per-actor offset, top→bottom ("a bit")
 
   function fadeIn(tokenDoc, delay) {
     return new Promise(async (resolve) => {
@@ -500,11 +510,48 @@ async function playEntranceAnimation({ partyTokens, enemyTokens }) {
     });
   }
 
-  const promises = [];
-  partyTokens.forEach((t, i) => promises.push(fadeIn(t, i * PER_TOKEN_STAGGER_MS)));
-  const enemyBase = partyTokens.length * PER_TOKEN_STAGGER_MS + PARTY_TO_ENEMY_GAP_MS;
-  enemyTokens.forEach((t, i) => promises.push(fadeIn(t, enemyBase + i * PER_TOKEN_STAGGER_MS)));
-  await Promise.all(promises);
+  // ── Party: run in from the right, staggered top→bottom ──
+  async function dashInParty() {
+    if (!partyTokens.length) return;
+    // Capture each token's FINAL x (spawned at final), then stage them all off
+    // to the right (revealed) in ONE batched update — a single socket write for
+    // the whole party, not one per token.
+    const entries = partyTokens.map((t) => ({ id: t.id, doc: t, finalX: t.x, y: t.y }));
+    try {
+      await canvas.scene.updateEmbeddedDocuments(
+        "Token",
+        entries.map((e) => ({ _id: e.id, x: e.finalX + DASH_OFFSET_PX, alpha: 1 })),
+        { animate: false }
+      );
+    } catch (e) { warn("dash: stage-offset update threw", e); }
+
+    // Top → bottom (Hina first … Zarg last).
+    entries.sort((a, b) => (a.y ?? 0) - (b.y ?? 0));
+
+    // Dash SFX once, broadcast to all clients.
+    try {
+      const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+      AH?.play?.({ src: PARTY_DASH_SFX_URL, volume: 0.85, autoplay: true, loop: false }, true);
+    } catch (e) { warn("party dash SFX failed", e); }
+
+    // Staggered slide-in via Foundry's native token animation (it broadcasts,
+    // so every client sees the run-in for free). The stagger keeps the four
+    // tokens from all starting on the same frame.
+    entries.forEach((e, i) => {
+      setTimeout(() => {
+        e.doc.update({ x: e.finalX }, { animate: true, animation: { duration: DASH_MS } })
+          .catch(() => {});
+      }, i * DASH_STAGGER_MS);
+    });
+
+    // Wait for the last token's slide to finish.
+    await wait((entries.length - 1) * DASH_STAGGER_MS + DASH_MS + 120);
+  }
+
+  // Party dashes in first, then enemies fade in (kept light + sequential so
+  // we're not moving + fading + looping every WEBM token on the same frames).
+  await dashInParty();
+  await Promise.all(enemyTokens.map((t, i) => fadeIn(t, i * PER_TOKEN_STAGGER_MS)));
   log("Entrance animation complete");
 }
 
@@ -628,30 +675,32 @@ export async function runDirectorInit(payload) {
     ui.notifications?.warn?.("Battle Director: asset preload timed out; some clients may see fallbacks.");
   }
 
-  // ── 8b. Kick battle-stance video playback (WEBM/MP4 token textures loop
-  // their own animation). Done BEFORE the curtain drops so the animations
-  // are visibly running the moment the user sees the tokens.
-  await ensureBattleStancePlaying([...partyTokens, ...enemyTokens]);
-
-  // ── 8c. Start battle BGM in parallel with the curtain drop so the music
+  // ── 8b. Start battle BGM in parallel with the curtain drop so the music
   // begins exactly as the scene reveals (cinematic). Fire-and-forget — the
   // playlist write broadcasts to all clients on its own; we don't block the
   // reveal on it. Ports the legacy BattleInit BGM start (plays the chosen
   // track name from whichever playlist holds it).
   playBattleBgm(payload).catch((e) => warn("PREP: playBattleBgm threw", e));
 
-  // ── 9. Drop curtain — only now, after preload ACKs are in and stance
-  // animations are kicking. Tokens are positioned but still alpha=0 so
-  // they're invisible underneath the curtain; the entrance animation will
-  // fade them in next.
+  // ── 9. Drop curtain — only now, after preload ACKs are in. Tokens are
+  // positioned but still alpha=0 (invisible) underneath the curtain; the
+  // entrance animation reveals them next. Battle-stance WEBM loops are
+  // deferred to step 10b (after the dash) so we never move + decode video
+  // simultaneously.
   await dropCurtain();
 
   // Short settle delay so the curtain fade completes visually before
   // entrance starts.
   await wait(150);
 
-  // ── 10. Entrance animation (staggered fade-in).
+  // ── 10. Entrance animation (party run-in from the right, staggered
+  // top→bottom; enemies fade in).
   await playEntranceAnimation({ partyTokens, enemyTokens });
+
+  // ── 10b. Start battle-stance WEBM/MP4 loops now that tokens are at rest —
+  // deferred from before the dash so the run-in never moves a decoding video
+  // (tokens dash showing the WEBM's static first frame, then animate in place).
+  await ensureBattleStancePlaying([...partyTokens, ...enemyTokens]);
 
   // ── 11. Build the director-owned DirectorCombat (no Foundry Combat doc).
   // dCombat is the sole authority for round/turn/current. The Foundry Combat
