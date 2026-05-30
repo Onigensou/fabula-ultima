@@ -20,6 +20,7 @@ import { log, warn } from "./logger.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
+const ACTION_HIDE = "FU_DIRECTOR_ROUND_HIDE";
 const STYLE_ID = "fu-dir-round-style";
 const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
@@ -37,6 +38,7 @@ export function initDirectorRoundBanner() {
     }
     _socket = socketlib.registerModule(MODULE_ID);
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
+    _socket.register(ACTION_HIDE, () => exitRoundBannerLocal({ animate: true }));
     log("director-round-banner: socket registered");
   } catch (e) {
     warn("director-round-banner: init failed", e);
@@ -119,25 +121,61 @@ function ensureLayer() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ── exit: fade out + clear the docked banner ──────────────────────────────
+// Used both on round change (before the next banner enters) and at battle end.
+// Function declaration → hoisted, so playRoundBannerLocal can call it above.
+async function exitRoundBannerLocal({ animate = true } = {}) {
+  try {
+    const layer = document.getElementById(LAYER_ID);
+    if (!layer || !layer.__fu || !layer.classList.contains("active")) return;
+    const { band, bg, lt, lb, tx } = layer.__fu;
+    if (animate) {
+      // Single-keyframe → fades from each element's CURRENT opacity to 0
+      // (the docked banner sits at reduced bg opacity, full text/lines).
+      await Promise.all([
+        bg.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
+        lt.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
+        lb.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
+        tx.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
+      ]);
+    }
+    for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+    layer.classList.remove("active");
+  } catch (e) {
+    warn("exitRoundBannerLocal threw", e);
+  }
+}
+
 // ── local render (runs on every client via socket) ───────────────────────
+// Enter center → hold → DOCK to middle-top and persist as a round indicator.
 async function playRoundBannerLocal(payload = {}) {
   try {
-    const { round = 0, holdMs = 1200, sfx = true, sfxVol = 0.6 } = payload;
+    const {
+      round = 0, holdMs = 800, sfx = true, sfxVol = 0.6,
+      dockTopPct = 9, dockScale = 0.4, dockBgOpacity = 0.3,
+    } = payload;
     const layer = ensureLayer();
     const { band, bg, lt, lb, tx } = layer.__fu;
+
+    // If a prior round's banner is still docked at the top, fade it out first
+    // so the new one enters from center cleanly (no jump back from the top).
+    if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
+
     for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
 
     tx.textContent = `ROUND ${round}`;
     layer.classList.add("active");
     if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
 
-    // Reset to start state.
+    // Reset to centered start state.
+    band.style.top = "50%";
+    band.style.transform = "translateY(-50%) scale(1)";
     bg.style.opacity = "0";
     tx.style.opacity = "0";
     lt.style.transform = "scaleX(0)";
     lb.style.transform = "scaleX(0)";
 
-    // Band fades in; accent lines sweep open from center.
+    // Enter: band fades in, accent lines sweep open, text rises in.
     bg.animate([{ opacity: 0, transform: "scaleY(.55)" }, { opacity: 1, transform: "scaleY(1)" }],
       { duration: 240, easing: "ease-out", fill: "forwards" });
     await Promise.all([
@@ -146,22 +184,23 @@ async function playRoundBannerLocal(payload = {}) {
       lb.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
         { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
     ]);
-    // Text rises + fades in.
     await tx.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "translateY(0)" }],
       { duration: 300, easing: "ease-out", fill: "forwards" }).finished;
 
     await sleep(holdMs);
 
-    // Everything fades out.
-    await Promise.all([
-      bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-in", fill: "forwards" }).finished,
-      lt.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "forwards" }).finished,
-      lb.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "forwards" }).finished,
-      tx.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-12px)" }],
-        { duration: 320, easing: "ease-in", fill: "forwards" }).finished,
-    ]);
-
-    layer.classList.remove("active");
+    // Dock: shrink + glide to middle-top, then STAY (persistent indicator).
+    band.animate(
+      [
+        { top: "50%", transform: "translateY(-50%) scale(1)" },
+        { top: `${dockTopPct}%`, transform: `translateY(-50%) scale(${dockScale})` },
+      ],
+      { duration: 520, easing: "cubic-bezier(.5,0,.2,1)", fill: "forwards" }
+    );
+    bg.animate([{ opacity: 1 }, { opacity: dockBgOpacity }],
+      { duration: 520, easing: "ease-in-out", fill: "forwards" });
+    // Note: NO layer.classList.remove — the banner persists until the next
+    // round (exited above) or battle end (hideRoundBanner).
   } catch (e) {
     warn("playRoundBannerLocal threw", e);
   }
@@ -178,5 +217,18 @@ export function playRoundBanner({ round = 0 } = {}) {
     catch (e) { warn("director-round-banner: broadcast failed", e); }
   } catch (e) {
     warn("playRoundBanner threw", e);
+  }
+}
+
+// ── public: clear the docked banner at battle end ─────────────────────────
+// Fade out + remove on THIS client and broadcast the same to all others, so
+// the persistent round indicator never lingers after the director stops.
+export function hideRoundBanner() {
+  try {
+    exitRoundBannerLocal({ animate: true });
+    try { _socket?.executeForOthers?.(ACTION_HIDE); }
+    catch (e) { warn("director-round-banner: hide broadcast failed", e); }
+  } catch (e) {
+    warn("hideRoundBanner threw", e);
   }
 }

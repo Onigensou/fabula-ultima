@@ -29,7 +29,7 @@ import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
-import { initDirectorRoundBanner } from "./director-round-banner.js";
+import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -287,6 +287,9 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
+  // Clear the persistent start-of-round banner (fades out + broadcasts) so it
+  // never lingers on screen after the battle ends.
+  try { hideRoundBanner(); } catch {}
 
   // Broadcast MENU_CLOSE to every online non-GM client so any player-side
   // mirror overlays (action-card mirror, compose-action local Octopath /
