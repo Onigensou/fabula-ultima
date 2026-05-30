@@ -25,7 +25,6 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { ReactionMenu } from "./reaction-menu.js";
 import { ReactionIndicator } from "./reaction-indicator.js";
-import { ReactionAppliedChip } from "./reaction-applied-chip.js";
 
 // Public: register the handler on a given IntentChannel. Call from
 // boot on every client (GM + players). The handler no-ops on the GM
@@ -66,9 +65,14 @@ export function registerPlayerReactionMenuHandler(channel) {
 
     // Indicator branch — dimmed dashed pill rendered to non-owner
     // allies. Stage 2 visibility (Rule 1). No interaction.
-    if (menuSpec.kind === "reaction-indicator") {
+    //
+    // Two indicator surfaces share this branch:
+    //   - "reaction-indicator"    — someone's reaction window is open.
+    //   - "turn-action-indicator" — someone is composing their turn.
+    // Both render the same dimmed pill; only the label differs.
+    if (menuSpec.kind === "reaction-indicator" || menuSpec.kind === "turn-action-indicator") {
       try {
-        const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-indicator MENU_OPEN");
+        const token = await resolveCanvasToken(menuSpec.tokenUuid, `${menuSpec.kind} MENU_OPEN`);
         if (!token) return;
         ReactionIndicator.spawn({
           token,
@@ -77,26 +81,7 @@ export function registerPlayerReactionMenuHandler(channel) {
           trigger: menuSpec.trigger,
         });
       } catch (e) {
-        warn("reaction-indicator MENU_OPEN handler threw", e);
-      }
-      return;
-    }
-
-    // Applied-chip branch — brief floating badge over the reactor's
-    // token confirming the reaction APPLIED. Stage 3 visibility — every
-    // active client receives this broadcast (owner + allies). Auto-
-    // dismisses; no close envelope from the GM.
-    if (menuSpec.kind === "reaction-applied") {
-      try {
-        const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-applied MENU_OPEN");
-        if (!token) return;
-        ReactionAppliedChip.spawn({
-          token,
-          label: menuSpec.label,
-          icon: menuSpec.icon,
-        });
-      } catch (e) {
-        warn("reaction-applied MENU_OPEN handler threw", e);
+        warn(`${menuSpec.kind} MENU_OPEN handler threw`, e);
       }
       return;
     }
@@ -154,8 +139,8 @@ export function registerPlayerReactionMenuHandler(channel) {
   const offClose = channel.onMenuClose((payload) => {
     if (game.user?.isGM) return;
     const kind = payload?.kind;
-    if (kind === "reaction-indicator") {
-      // Per-reactor close when the GM carries a tokenUuid; otherwise
+    if (kind === "reaction-indicator" || kind === "turn-action-indicator") {
+      // Per-actor close when the GM carries a tokenUuid; otherwise
       // sweep all indicators (defensive — e.g. forced teardown).
       const tokenUuid = payload?.data?.tokenUuid;
       const combatId  = payload?.data?.combatId ?? null;
@@ -169,12 +154,11 @@ export function registerPlayerReactionMenuHandler(channel) {
     if (kind && kind !== "reaction-menu") return;
     // Player-side: dismiss every reaction menu — the GM's authoritative
     // close (e.g. after applying a candidate, after dispatch ends).
-    // Untyped close (kind=null) sweeps menu + indicator + applied chips
-    // so a director.stop or scene-change clears everything.
+    // Untyped close (kind=null) sweeps menu + indicator so a
+    // director.stop or scene-change clears everything.
     try { ReactionMenu.despawnAll(); } catch {}
     if (!kind) {
       try { ReactionIndicator.despawnAll(); } catch {}
-      try { ReactionAppliedChip.despawnAll(); } catch {}
     }
   });
 

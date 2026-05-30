@@ -28,7 +28,6 @@
 
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
-import { ReactionAppliedChip } from "./reaction-applied-chip.js";
 
 // ── Idempotency persistence (A) ─────────────────────────────────────
 //
@@ -309,51 +308,11 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
       else if (c.mode !== "off") askable.push(c);
     }
 
-    // Stage-3 applied chip: visible to every client (GM + all players).
-    // Skips "force" mode per [[force-mode-for-engine-mandatory-reactions]]
-    // — engine-mandatory reactions stay UI-invisible. Sender is also the
-    // GM client itself; we spawn locally + broadcast in parallel so the
-    // GM sees the same chip the players see.
-    const combatIdForChip = director?.combatId ?? director?.dCombat?.id ?? null;
-    const channelForChip = director?.intentChannel ?? null;
-    const allActivePlayers = (game.users?.contents ?? [])
-      .filter((u) => !u.isGM && u.active)
-      .map((u) => u.id);
-    function announceApplied(candidate, anchorToken) {
-      if (!candidate || candidate.mode === "force") return;
-      const tokenUuid = anchorToken?.document?.uuid ?? anchorToken?.uuid ?? null;
-      const spec = {
-        kind: "reaction-applied",
-        combatId: combatIdForChip,
-        tokenUuid,
-        label: candidate.carrierName ?? "Reaction",
-        icon: candidate.carrierImg ?? null,
-      };
-      try {
-        if (anchorToken) {
-          ReactionAppliedChip.spawn({
-            token: anchorToken,
-            label: spec.label,
-            icon: spec.icon,
-          });
-        }
-      } catch (e) { warn("standalone: ReactionAppliedChip.spawn threw", e); }
-      if (channelForChip) {
-        for (const uid of allActivePlayers) {
-          try {
-            channelForChip.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
-          } catch (e) { warn("standalone: broadcastMenuOpen(applied) threw", e); }
-        }
-      }
-    }
-
     for (const c of autoFire) {
-      let fired = false;
       try {
         await firePreAcceptedCandidate({
           director, casterActor: actor, candidate: c, payload,
         });
-        fired = true;
         log(`standalone[${trigger}]: auto-fired "${c.carrierName}" for ${actor.name}`);
       } catch (e) {
         warn(`standalone[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
@@ -364,7 +323,6 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
         reactorUuid: actor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
         decision: "auto",
       });
-      if (fired) announceApplied(c, token);
     }
 
     if (!askable.length) continue;
@@ -472,12 +430,10 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     // REACTION_CHOICE intent. Returns true if the menu should keep
     // running (more remaining), false if it should close.
     async function processDecision(cand) {
-      let fired = false;
       try {
         await firePreAcceptedCandidate({
           director, casterActor: actor, candidate: cand, payload,
         });
-        fired = true;
         log(`standalone[${trigger}]: fired "${cand.carrierName}" for ${actor.name}`);
       } catch (e) {
         warn(`standalone[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
@@ -486,7 +442,6 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
         reactorUuid: actor.uuid, rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
         decision: "fired",
       });
-      if (fired) announceApplied(cand, token);
       remaining = remaining.filter(
         (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
       );

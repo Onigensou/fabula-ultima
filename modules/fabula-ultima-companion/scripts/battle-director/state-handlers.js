@@ -1075,6 +1075,55 @@ const Declare = {
       }
     }
 
+    // Mirror of [[reaction-architecture]] Rule 1 stage 2 for turn-action
+    // composition: every active player who is NOT the action owner sees a
+    // dimmed "Hina taking action…" indicator over the acting token while
+    // composeAction is open. Reuses the reaction-indicator MENU_OPEN
+    // surface ("turn-action-indicator" kind) which the player-side handler
+    // in reaction-menu-player.js renders via ReactionIndicator.spawn.
+    // Owner-tracked turn (no human owner — NPC) sends to every active
+    // player so the table still sees what the GM is composing.
+    const turnActionIndicatorRecipients = (game.users?.contents ?? [])
+      .filter((u) => !u.isGM && u.active && u.id !== ownerUserId)
+      .map((u) => u.id);
+    const turnActorName = ownerUserId
+      ? `${game.users.get(ownerUserId)?.name ?? "Player"} taking action…`
+      : `${snap?.name ?? "Combatant"} taking action…`;
+    const turnActionIndicatorSpec = {
+      kind: "turn-action-indicator",
+      combatId: director.combatId,
+      tokenUuid: token.document.uuid,
+      actorUuid: snap.actorUuid,
+      label: turnActorName,
+      trigger: "turn-action",
+    };
+    function broadcastTurnActionIndicatorOpen() {
+      if (!director.intentChannel) return;
+      for (const uid of turnActionIndicatorRecipients) {
+        try {
+          director.intentChannel.broadcastMenuOpen({
+            targetUserId: uid,
+            menuSpec: turnActionIndicatorSpec,
+          });
+        } catch (e) { warn("DECLARE: broadcastMenuOpen(turn-action-indicator) threw", e); }
+      }
+    }
+    function broadcastTurnActionIndicatorClose() {
+      if (!director.intentChannel) return;
+      for (const uid of turnActionIndicatorRecipients) {
+        try {
+          director.intentChannel.broadcastMenuClose({
+            targetUserId: uid,
+            kind: "turn-action-indicator",
+            reason: "compose-resolved",
+            data: { tokenUuid: token.document.uuid, combatId: director.combatId },
+          });
+        } catch (e) { warn("DECLARE: broadcastMenuClose(turn-action-indicator) threw", e); }
+      }
+    }
+    broadcastTurnActionIndicatorOpen();
+    director.ctx._closeTurnActionIndicator = broadcastTurnActionIndicatorClose;
+
     // Race. If only GM is running (no remote), the remote side is a
     // never-resolving Promise so localCompose alone determines the
     // winner.
@@ -1203,6 +1252,9 @@ const Declare = {
       } catch (e) { warn("DECLARE.onExit: broadcastMenuClose threw", e); }
       director.ctx._activeRemoteMenu = null;
     }
+    // Tear down the turn-action ally indicator (set up at onEnter).
+    try { director.ctx._closeTurnActionIndicator?.(); } catch {}
+    director.ctx._closeTurnActionIndicator = null;
   },
 
   async onAbort(director, { reason } = {}) {
@@ -1219,6 +1271,8 @@ const Declare = {
       } catch (e) { warn("DECLARE.onAbort: broadcastMenuClose threw", e); }
       director.ctx._activeRemoteMenu = null;
     }
+    try { director.ctx._closeTurnActionIndicator?.(); } catch {}
+    director.ctx._closeTurnActionIndicator = null;
   },
 };
 
