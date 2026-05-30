@@ -32,6 +32,14 @@ Hooks.once("ready", () => {
       offsetBottomPx: 390,
       sizePx: 60,
       zIndex: 81,
+      // The panel + confirm modal must lay ABOVE the Battle Director action
+      // card (z-index 95) so they're never hidden behind it — same intent as
+      // the action card sitting above the battlefield. The corner BUTTON stays
+      // at the floating-GM-button family z (81); only the openable surfaces are
+      // raised. Kept below the round banner (z 100000) and the card's hover
+      // tooltip so those still win.
+      panelZIndex: 200,
+      modalZIndex: 210,
       iconText: "⏪",
       tipLabel: "Rewind Battle Director",
     };
@@ -146,7 +154,7 @@ Hooks.once("ready", () => {
         "  border: 1px solid rgba(255, 200, 100, 0.32);",
         "  border-radius: 10px;",
         "  box-shadow: 0 20px 48px rgba(0,0,0,0.55);",
-        "  z-index: " + (CFG.zIndex + 1) + ";",
+        "  z-index: " + CFG.panelZIndex + ";",
         "  pointer-events: auto;",
         "  display: flex;",
         "  flex-direction: column;",
@@ -247,7 +255,7 @@ Hooks.once("ready", () => {
         "  position: fixed;",
         "  inset: 0;",
         "  background: rgba(0,0,0,0.55);",
-        "  z-index: " + (CFG.zIndex + 10) + ";",
+        "  z-index: " + CFG.modalZIndex + ";",
         "  display: grid;",
         "  place-items: center;",
         "  pointer-events: auto;",

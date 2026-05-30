@@ -31,7 +31,7 @@ import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance } f
 import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
-import { initDirectorSfx } from "./director-sfx.js";
+import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -785,7 +785,7 @@ Hooks.once("ready", () => {
       // up yet (future kinds). Lets us tell during testing that the
       // broadcast arrived even before the UI exists.
       getIntentChannel().onMenuOpen((menuSpec) => {
-        const wired = new Set(["compose-action", "action-card", "turn-picker", "reaction-menu", "reaction-indicator", "reaction-applied"]);
+        const wired = new Set(["compose-action", "action-card", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator"]);
         if (!wired.has(menuSpec?.kind)) {
           log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
         }
@@ -879,9 +879,46 @@ Hooks.once("ready", () => {
       try {
         const found = findSavedDirectorState();
         if (found) {
-          resumeFromSavedState(found).catch((e) => {
-            warn("Auto-resume threw", e);
-          });
+          // Reloading back INTO an active battle — collapse the Foundry sidebar
+          // locally so the battlefield gets the full screen again, matching the
+          // battle-start transition.
+          //
+          // Timing: collapse AFTER resumeFromSavedState settles the scene/canvas
+          // (+ one frame). At ready+setTimeout(0) the sidebar is still being
+          // rendered/expanded by Foundry's own init, so an early collapse() gets
+          // clobbered — which is why it stuck at battle-start (post-click) but
+          // not on reload. Local-only: this client reloaded; other clients are
+          // untouched. Done here (not inside resumeFromSavedState) because that
+          // path is shared with rewind, which shouldn't re-collapse mid-battle.
+          // Collapse the Foundry sidebar locally now we're reloading into an
+          // active battle. Event-driven via Foundry's own `renderSidebar` hook
+          // (its real "the sidebar drew" signal) instead of polling on width:
+          // on reload the sidebar isn't laid out when `ready` fires, and the
+          // app re-renders a few times during startup — those re-draws are what
+          // reverted an early one-shot collapse. So we collapse after each
+          // render until it sticks, then unhook. One immediate attempt covers
+          // the case where it already rendered before this ran. We read
+          // collapsed-state from `ui.sidebar.expanded` when available (falling
+          // back to width only if that property is absent). Local + GM-only;
+          // ui.sidebar.collapse() is collapse-only so repeats are harmless.
+          {
+            const isCollapsed = () => {
+              if (typeof ui.sidebar?.expanded === "boolean") return !ui.sidebar.expanded;
+              const el = document.getElementById("sidebar");
+              return !!el && el.offsetWidth > 0 && el.offsetWidth < 100;
+            };
+            const collapseUntilStuck = () => {
+              if (isCollapsed()) { Hooks.off("renderSidebar", collapseUntilStuck); return; }
+              try { collapseSidebarLocal(); }
+              catch (e) { warn("Auto-resume: sidebar collapse threw", e); }
+            };
+            Hooks.on("renderSidebar", collapseUntilStuck);
+            requestAnimationFrame(collapseUntilStuck); // already-rendered case
+            // Safety: stop listening once startup has settled.
+            setTimeout(() => Hooks.off("renderSidebar", collapseUntilStuck), 15000);
+          }
+
+          resumeFromSavedState(found).catch((e) => warn("Auto-resume threw", e));
         }
       } catch (e) {
         warn("Auto-resume detection threw", e);

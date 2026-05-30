@@ -125,7 +125,7 @@ export function broadcastSfx(url, vol = 0.6) {
 
 // ── Sidebar collapse (UI sync) ────────────────────────────────────────────
 
-function collapseSidebarLocal() {
+export function collapseSidebarLocal() {
   try { ui.sidebar?.collapse?.(); }
   catch (e) { warn("collapseSidebarLocal threw", e); }
 }
