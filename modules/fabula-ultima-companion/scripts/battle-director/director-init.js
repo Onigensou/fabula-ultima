@@ -26,6 +26,7 @@
 import { log, warn, err } from "./logger.js";
 import { buildDirectorCombat } from "./director-combat.js";
 import { DIRECTOR_STATIC_URLS } from "./director-vfx.js";
+import { preloadDirectorCutins } from "./director-cutin.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -637,6 +638,14 @@ export async function runDirectorInit(payload) {
     enemyTokens,
     payload,
   });
+
+  // ── 12. Preload critical-hit cut-in art across clients. The director has
+  // no Foundry Combat doc, so the legacy cutin-receiver `combatStart`
+  // preloader never fires — we rebuild the trigger director-side here.
+  // Fire-and-forget: the first crit is at least a turn away, so clients have
+  // ample time to cache before playback. See director-vfx.js for rationale.
+  preloadDirectorCutins({ tokens: [...partyTokens, ...enemyTokens] })
+    .catch((e) => warn("PREP: preloadDirectorCutins threw", e));
 
   return {
     dCombat,

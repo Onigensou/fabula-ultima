@@ -19,7 +19,8 @@ import { postActionCard, BattlefieldActionCard } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
-import { playStudyVfx } from "./director-vfx.js";
+import { playStudyVfx, playActionNamecard } from "./director-vfx.js";
+import { playCritCutin } from "./director-cutin.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
 import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp } from "./item-resource.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
@@ -2585,6 +2586,18 @@ const Confirm = {
           },
         },
       }).catch((e) => warn("CONFIRM: saveDirectorState failed", e));
+
+      // Action namecard — JRPG title banner for the freshly-posted action.
+      // Fire-and-forget so the ~2s banner plays alongside the action card
+      // rather than blocking the FSM. Only on the first pass: a multi-pass
+      // action (e.g. double attack) re-enters CONFIRM per pass, and we want
+      // one banner per declared action, not one per pass. Lives inside this
+      // `else` (the fresh-post path) so an F5-resume into CONFIRM
+      // (_resumedFromPendingAction) does NOT re-fire a banner that already
+      // played pre-reload. See director-vfx.js for the port rationale.
+      if ((ar.passIndex ?? 1) <= 1) {
+        playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
+      }
     }
 
     // Pre-resolve passive evaluation — "during action card" reactions
@@ -2861,6 +2874,14 @@ const Resolve = {
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
+
+    // Critical-hit cut-in for the attacker. Fire-and-forget so the cinematic
+    // (~2s slide-in) plays alongside damage application rather than blocking
+    // the FSM. No-ops unless ar.roll.isCrit; cutinBroadcast self-debounces, so
+    // multi-pass/multi-target resolves won't stack duplicate cut-ins. The
+    // strict cache-only renderer skips silently if the attacker has no
+    // cut_in_critical art preloaded.
+    playCritCutin(ar);
 
     if (ar.kind === "Attack") {
       // Single-pass damage application. Multi-pass two-weapon attacks
