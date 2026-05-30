@@ -428,9 +428,40 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "HAS_SHIELD":          return hasEquippedItemOfType(actor, "shield") ? 1 : 0;
       case "HAS_MARTIAL_ARMOR":   return hasEquippedItemOfType(actor, "armor", { requireMartial: true }) ? 1 : 0;
       default:
+        // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
+        // a skill named <NAME>?". Returns 1 / 0. The tokenizer
+        // doesn't support string literals, so the skill name is
+        // baked into the identifier: spaces become underscores,
+        // case is uppercased. Examples:
+        //   HAS_SKILL_PILLAGE      → "Pillage"
+        //   HAS_SKILL_SOUL_STEAL   → "Soul Steal"
+        //   HAS_SKILL_SEE_YOU_LATER → "See You Later"
+        // Used by Pillage to gate Soul Steal's multi-target option,
+        // and by any other cross-skill requirement check.
+        if (name.startsWith("HAS_SKILL_")) {
+          const needle = name
+            .slice("HAS_SKILL_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return hasNamedSkill(actor, needle) ? 1 : 0;
+        }
         return null;  // unknown → fold to 0 in evalNode
     }
   };
+}
+
+// Does this actor own an item whose name matches `wantedLower`
+// (case-insensitive)? Skill / spell / heroic items all live on
+// actor.items; the cross-skill `HAS_SKILL_<NAME>` identifier uses
+// this to gate behavior on the bearer's loadout.
+function hasNamedSkill(actor, wantedLower) {
+  if (!actor) return false;
+  const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  for (const item of items) {
+    if (String(item?.name ?? "").trim().toLowerCase() === wantedLower) return true;
+  }
+  return false;
 }
 
 // ── Identifier resolvers (kept private; surfaced through buildSkillResolver) ──

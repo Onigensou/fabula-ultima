@@ -447,6 +447,7 @@ Identifiers (all return 0 if unresolvable):
 | `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | 1 if the reactor has at least one equipped weapon whose `category` matches the type (case-insensitive), else 0. Used by Spiritist's Healing Power / Support Magic to gate on arcane-weapon presence. |
 | `HAS_SHIELD` | 1 if the reactor has any equipped item with `item_type === "shield"`, else 0. |
 | `HAS_MARTIAL_ARMOR` | 1 if the reactor has any equipped item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
+| `HAS_SKILL_<NAME>` | 1 if the reactor owns a skill item whose `name` matches `<NAME>` (case-insensitive), else 0. The skill name is baked into the identifier: spaces become underscores, case is uppercased. Examples: `HAS_SKILL_PILLAGE` (Pillage), `HAS_SKILL_SOUL_STEAL` (Soul Steal), `HAS_SKILL_HEART_OF_DARKNESS` (Heart of Darkness). Used for cross-skill requirement gates (Pillage modifies Soul Steal; Fleeting Moment modifies Counterattack; etc.). The tokenizer doesn't support string literals, so the dynamic-identifier shape is the workaround. |
 
 Per-target semantics: damage triggers fire once per affected target, so a
 grant that uses `DAMAGE_DEALT` also fires once per target — cumulatively
