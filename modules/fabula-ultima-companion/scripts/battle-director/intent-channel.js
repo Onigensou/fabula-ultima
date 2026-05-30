@@ -329,12 +329,13 @@ export class IntentChannel {
   // GM-side cancel, director stopped mid-prompt). Also uncaches any
   // recent MENU_OPEN broadcast of the same kind so PLAYER_HELLO doesn't
   // replay it.
-  broadcastMenuClose({ targetUserId, kind = null, reason = null } = {}) {
+  broadcastMenuClose({ targetUserId, kind = null, reason = null, data = null } = {}) {
     if (!game.user?.isGM) return;
     this._emitRaw("MENU_CLOSE", {
       targetUserId,
       kind,
       reason,
+      data,
     });
     // Uncache: targetUserId === null means broadcast to ALL active
     // players (used by director-boot.js stop() sweep). In that case

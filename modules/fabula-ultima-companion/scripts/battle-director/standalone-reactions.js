@@ -73,6 +73,20 @@ function resolveReactorOwnerUserId(actor) {
   return candidates[0].id;
 }
 
+// Every active non-GM user EXCEPT the reactor's owner. These clients
+// get the dimmed ally indicator (Rule 1 stage 2) so they know someone
+// is deciding without seeing the candidate list.
+function resolveAllyIndicatorRecipients(ownerUserId) {
+  return (game.users?.contents ?? [])
+    .filter((u) => !u.isGM && u.active && u.id !== ownerUserId)
+    .map((u) => u.id);
+}
+
+function userDisplayName(userId) {
+  const u = game.users?.get(userId);
+  return u?.name ?? "Player";
+}
+
 function scopeKeyFor(trigger, payload) {
   const round = payload?.round ?? "?";
   if (trigger === "conflict_start" || trigger === "conflict_end") return trigger;
@@ -319,19 +333,51 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
     // processDecision() below + are racing each other.
     const ownerUserId = resolveReactorOwnerUserId(actor);
     const channel = director?.intentChannel ?? null;
+    // Non-owner active players get the dimmed ally indicator (Rule 1
+    // stage 2). NPC reactors have no owner so the indicator goes to
+    // every active player.
+    const indicatorRecipients = resolveAllyIndicatorRecipients(ownerUserId);
+    const ownerLabel = ownerUserId
+      ? `${userDisplayName(ownerUserId)} reacting…`
+      : `${actor.name ?? "Reactor"} reacting…`;
 
-    // GM-side menu close that ALSO dismisses the player-side mirror.
+    // GM-side menu close that ALSO dismisses the player-side mirror +
+    // every ally indicator we broadcast.
     function closeMenusEverywhere() {
       ReactionMenu.despawn({ combatId, tokenId: token.id });
-      if (ownerUserId && channel) {
-        try {
-          channel.broadcastMenuClose({
-            targetUserId: ownerUserId,
-            kind: "reaction-menu",
-            reason: "fired-or-passed",
-          });
-        } catch (e) { warn("standalone: broadcastMenuClose threw", e); }
+      if (channel) {
+        if (ownerUserId) {
+          try {
+            channel.broadcastMenuClose({
+              targetUserId: ownerUserId,
+              kind: "reaction-menu",
+              reason: "fired-or-passed",
+            });
+          } catch (e) { warn("standalone: broadcastMenuClose(menu) threw", e); }
+        }
+        const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
+        for (const uid of indicatorRecipients) {
+          try {
+            channel.broadcastMenuClose({
+              targetUserId: uid,
+              kind: "reaction-indicator",
+              reason: "fired-or-passed",
+              data: { tokenUuid: indicatorTokenUuid, combatId },
+            });
+          } catch (e) { warn("standalone: broadcastMenuClose(indicator) threw", e); }
+        }
       }
+    }
+
+    function buildIndicatorSpec() {
+      return {
+        kind: "reaction-indicator",
+        combatId,
+        tokenUuid: token.document?.uuid ?? token.uuid ?? null,
+        reactorActorUuid: actor.uuid,
+        label: ownerLabel,
+        trigger,
+      };
     }
 
     // Build the menu spec payload broadcast to the player. Includes
@@ -430,6 +476,19 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
             menuSpec: buildPlayerMenuSpec(),
           });
         } catch (e) { warn("standalone: broadcastMenuOpen threw", e); }
+      }
+      // Stage-2 ally indicator: dimmed dashed pill rendered to every
+      // active non-owner player so they know someone is reacting
+      // without leaking the candidate list. Broadcast once per render
+      // iteration so a late-joining client still receives it via the
+      // PLAYER_HELLO replay cache. See [[reaction-architecture]] Rule 1.
+      if (channel && indicatorRecipients.length) {
+        const spec = buildIndicatorSpec();
+        for (const uid of indicatorRecipients) {
+          try {
+            channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
+          } catch (e) { warn("standalone: broadcastMenuOpen(indicator) threw", e); }
+        }
       }
       // Arm the remote awaitIntent BEFORE spawning the local menu so
       // a near-instant player click isn't dropped.

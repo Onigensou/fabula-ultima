@@ -9,12 +9,13 @@
 // `registerPlayerTurnUiHandler` — player observes the broadcast,
 // renders locally, emits an intent on pick.
 //
-// Visibility (Rule 1 from [[reaction-architecture]]): the GM-side
-// dispatcher (`standalone-reactions.js`) broadcasts MENU_OPEN ONLY
-// to the reactor's owner. Non-owners receive no broadcast and see
-// no menu — they'll get a stage-2 ally-indicator broadcast in a
-// follow-up slice. Stage-3 broadcast (applied chip visible to all)
-// is also a follow-up.
+// Visibility (Rule 1 from [[reaction-architecture]]):
+//   - The reactor's OWNER receives `kind: "reaction-menu"` and gets
+//     the actionable menu (this handler's primary path).
+//   - Every OTHER active player receives `kind: "reaction-indicator"`
+//     and gets a dimmed dashed pill ("Alice reacting…") over the
+//     reactor's token — Stage 2 visibility. No interaction.
+//   - Stage 3 (applied chip visible to all) is a follow-up slice.
 //
 // Ordering (Rule 2): clicks race the GM-local menu via the existing
 // `awaitIntent` / Promise-race pattern. First click wins; the loser's
@@ -23,6 +24,7 @@
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { ReactionMenu } from "./reaction-menu.js";
+import { ReactionIndicator } from "./reaction-indicator.js";
 
 // Public: register the handler on a given IntentChannel. Call from
 // boot on every client (GM + players). The handler no-ops on the GM
@@ -32,31 +34,57 @@ import { ReactionMenu } from "./reaction-menu.js";
 export function registerPlayerReactionMenuHandler(channel) {
   if (!channel) return () => {};
 
+  // Resolve a token doc → on-canvas PIXI Token. Switches the local view
+  // to the token's scene if necessary so the anchor coordinates resolve.
+  // Returns null if the token can't be located or placed.
+  async function resolveCanvasToken(tokenUuid, contextLabel) {
+    const tokenDoc = await fromUuid(tokenUuid);
+    if (!tokenDoc) {
+      warn(`${contextLabel}: token not found ${tokenUuid}`);
+      return null;
+    }
+    const tokenScene = tokenDoc.parent;
+    if (tokenScene && tokenScene.id !== canvas?.scene?.id) {
+      log(`${contextLabel}: switching player view to ${tokenScene.name}`);
+      try { await tokenScene.view(); } catch (e) { warn("scene.view threw", e); }
+    }
+    const token = tokenDoc.object ?? canvas?.tokens?.get(tokenDoc.id);
+    if (!token) {
+      warn(`${contextLabel}: token not on canvas ${tokenUuid}`);
+      return null;
+    }
+    return token;
+  }
+
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
-    if (!menuSpec || menuSpec.kind !== "reaction-menu") return;
+    if (!menuSpec) return;
     // GM-side spawns directly via the dispatcher's local path; the
     // broadcast is for non-GM players only. Skipping here prevents
-    // the GM from getting a duplicate menu.
+    // the GM from getting a duplicate menu / indicator.
     if (game.user?.isGM) return;
+
+    // Indicator branch — dimmed dashed pill rendered to non-owner
+    // allies. Stage 2 visibility (Rule 1). No interaction.
+    if (menuSpec.kind === "reaction-indicator") {
+      try {
+        const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-indicator MENU_OPEN");
+        if (!token) return;
+        ReactionIndicator.spawn({
+          token,
+          combatId: menuSpec.combatId,
+          label: menuSpec.label,
+          trigger: menuSpec.trigger,
+        });
+      } catch (e) {
+        warn("reaction-indicator MENU_OPEN handler threw", e);
+      }
+      return;
+    }
+
+    if (menuSpec.kind !== "reaction-menu") return;
     try {
-      const tokenDoc = await fromUuid(menuSpec.tokenUuid);
-      if (!tokenDoc) {
-        warn(`reaction-menu MENU_OPEN: token not found ${menuSpec.tokenUuid}`);
-        return;
-      }
-      // Make sure the player is viewing the combat scene so the canvas
-      // anchor resolves. Same trick as turn-ui — scene.view() switches
-      // the local viewport without affecting other clients.
-      const tokenScene = tokenDoc.parent;
-      if (tokenScene && tokenScene.id !== canvas?.scene?.id) {
-        log(`reaction-menu MENU_OPEN: switching player view to ${tokenScene.name}`);
-        try { await tokenScene.view(); } catch (e) { warn("scene.view threw", e); }
-      }
-      const token = tokenDoc.object ?? canvas?.tokens?.get(tokenDoc.id);
-      if (!token) {
-        warn(`reaction-menu MENU_OPEN: token not on canvas ${menuSpec.tokenUuid}`);
-        return;
-      }
+      const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-menu MENU_OPEN");
+      if (!token) return;
 
       ReactionMenu.spawn({
         director: null,  // player-side has no director ref; not used by the menu module
@@ -104,13 +132,29 @@ export function registerPlayerReactionMenuHandler(channel) {
   });
 
   const offClose = channel.onMenuClose((payload) => {
-    if (payload?.kind && payload.kind !== "reaction-menu") return;
     if (game.user?.isGM) return;
+    const kind = payload?.kind;
+    if (kind === "reaction-indicator") {
+      // Per-reactor close when the GM carries a tokenUuid; otherwise
+      // sweep all indicators (defensive — e.g. forced teardown).
+      const tokenUuid = payload?.data?.tokenUuid;
+      const combatId  = payload?.data?.combatId ?? null;
+      if (tokenUuid) {
+        try { ReactionIndicator.despawn({ combatId, tokenUuid }); } catch {}
+      } else {
+        try { ReactionIndicator.despawnAll(); } catch {}
+      }
+      return;
+    }
+    if (kind && kind !== "reaction-menu") return;
     // Player-side: dismiss every reaction menu — the GM's authoritative
     // close (e.g. after applying a candidate, after dispatch ends).
-    // Per-token despawn is a future refinement; the common case has
-    // one reaction menu open at a time per player.
+    // Untyped close (kind=null) sweeps both menu + indicator so a
+    // director.stop or scene-change clears everything.
     try { ReactionMenu.despawnAll(); } catch {}
+    if (!kind) {
+      try { ReactionIndicator.despawnAll(); } catch {}
+    }
   });
 
   return () => {

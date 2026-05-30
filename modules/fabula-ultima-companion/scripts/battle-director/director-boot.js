@@ -770,7 +770,7 @@ Hooks.once("ready", () => {
       // up yet (future kinds). Lets us tell during testing that the
       // broadcast arrived even before the UI exists.
       getIntentChannel().onMenuOpen((menuSpec) => {
-        const wired = new Set(["compose-action", "action-card", "turn-picker", "reaction-menu"]);
+        const wired = new Set(["compose-action", "action-card", "turn-picker", "reaction-menu", "reaction-indicator"]);
         if (!wired.has(menuSpec?.kind)) {
           log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
         }
