@@ -12,10 +12,15 @@
     },
     "phases": {
       "shipped": [
-        "Core class skills (15 × 5)"
+        "Core class skills (15 × 5)",
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core heroic skills (universal + class-bound, brief)"
       ],
       "pending": [
-        "Core heroic skills",
         "Core spells (class spell lists)",
         "Atlas additions (High/Natural/Techno/Low Fantasy)",
         "Bonus additions (Necromancer, Halloween x2, Ace, Arcane)",
@@ -80,7 +85,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Arcane Echoes",
+          "max_sl": 1,
+          "brief": "Arcana help you influence Clocks.",
+          "classes": [
+            "Arcanist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Revelation",
+          "max_sl": 1,
+          "brief": "Bind a previously unknown Arcanum, and improve dismiss effects.",
+          "classes": [
+            "Arcanist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Chimerist": {
@@ -137,7 +167,35 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Chimeric Mastery",
+          "max_sl": 1,
+          "brief": "Learn spells from new Species and increase spell limit.",
+          "classes": [
+            "Chimerist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Powerful Spell",
+          "max_sl": 1,
+          "brief": "Deal extra damage with spells.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Darkblade": {
@@ -194,7 +252,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Adversity",
+          "max_sl": 1,
+          "brief": "Status effects make you stronger.",
+          "classes": [
+            "Darkblade"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Heartbreaker",
+          "max_sl": 1,
+          "brief": "Sacrifice HP for massive damage.",
+          "classes": [
+            "Darkblade"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Elementalist": {
@@ -251,7 +334,35 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Powerful Spell",
+          "max_sl": 1,
+          "brief": "Deal extra damage with spells.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Volcano",
+          "max_sl": 1,
+          "brief": "Learn the Volcano spell.",
+          "classes": [
+            "Elementalist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Entropist": {
@@ -308,7 +419,35 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Comet",
+          "max_sl": 1,
+          "brief": "Learn the Comet spell.",
+          "classes": [
+            "Entropist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Powerful Spell",
+          "max_sl": 1,
+          "brief": "Deal extra damage with spells.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Fury": {
@@ -365,7 +504,33 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Monkey Grip",
+          "max_sl": 1,
+          "brief": "Equip some two-handed weapons in a single-hand slot.",
+          "classes": [
+            "Fury"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Powerful Strike",
+          "max_sl": 1,
+          "brief": "Deal extra damage in melee.",
+          "classes": [
+            "Fury",
+            "Weaponmaster"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Guardian": {
@@ -422,7 +587,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Rampart",
+          "max_sl": 1,
+          "brief": "Resist damage and status effects during the first round.",
+          "classes": [
+            "Guardian"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Unbreakable",
+          "max_sl": 1,
+          "brief": "Survive a fatal hit once per scene.",
+          "classes": [
+            "Guardian"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Loremaster": {
@@ -479,7 +669,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Mathemagic",
+          "max_sl": 1,
+          "brief": "Extend single-target spells.",
+          "classes": [
+            "Loremaster"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Predictable!",
+          "max_sl": 1,
+          "brief": "Force an enemy to spend MP to perform specific actions.",
+          "classes": [
+            "Loremaster"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Orator": {
@@ -536,7 +751,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Disarming Rhetoric",
+          "max_sl": 1,
+          "brief": "Persuade enemies to retreat.",
+          "classes": [
+            "Orator"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Repetition",
+          "max_sl": 1,
+          "brief": "Condemn or Encourage twice.",
+          "classes": [
+            "Orator"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Rogue": {
@@ -593,7 +833,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Pillage",
+          "max_sl": 1,
+          "brief": "Steal from multiple creatures.",
+          "classes": [
+            "Rogue"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Vanish",
+          "max_sl": 1,
+          "brief": "Disappear after an attack.",
+          "classes": [
+            "Rogue"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Sharpshooter": {
@@ -650,7 +915,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Perfect Aim",
+          "max_sl": 1,
+          "brief": "Choose two options when using Warning Shot.",
+          "classes": [
+            "Sharpshooter"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Powerful Shot",
+          "max_sl": 1,
+          "brief": "Deal extra damage at range.",
+          "classes": [
+            "Sharpshooter"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Spiritist": {
@@ -707,7 +997,35 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Hope",
+          "max_sl": 1,
+          "brief": "Learn the Hope spell.",
+          "classes": [
+            "Spiritist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Powerful Spell",
+          "max_sl": 1,
+          "brief": "Deal extra damage with spells.",
+          "classes": [
+            "Chimerist",
+            "Elementalist",
+            "Entropist",
+            "Spiritist"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Tinkerer": {
@@ -764,7 +1082,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Deep Pockets",
+          "max_sl": 1,
+          "brief": "Reduce Inventory Point costs.",
+          "classes": [
+            "Tinkerer"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Upgrade",
+          "max_sl": 1,
+          "brief": "Modify equipment abilities.",
+          "classes": [
+            "Tinkerer"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Wayfarer": {
@@ -821,7 +1164,32 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Heroic Companion",
+          "max_sl": 1,
+          "brief": "Your Companion grows stronger.",
+          "classes": [
+            "Wayfarer"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Status Immunity",
+          "max_sl": 1,
+          "brief": "Ignore a status effect.",
+          "classes": [
+            "Wayfarer"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     },
     "Weaponmaster": {
@@ -878,9 +1246,81 @@
           }
         }
       ],
-      "heroic": [],
+      "heroic": [
+        {
+          "name": "Powerful Strike",
+          "max_sl": 1,
+          "brief": "Deal extra damage in melee.",
+          "classes": [
+            "Fury",
+            "Weaponmaster"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        },
+        {
+          "name": "Tempest Strike",
+          "max_sl": 1,
+          "brief": "Concentrate multi attacks on a single target.",
+          "classes": [
+            "Weaponmaster"
+          ],
+          "source": {
+            "book": "core",
+            "section": "LIST OF HEROIC SKILLS — Class-bound"
+          }
+        }
+      ],
       "spells": []
     }
   },
-  "universal_heroic": []
+  "universal_heroic": [
+    {
+      "name": "Ambidextrous",
+      "max_sl": 1,
+      "brief": "Fight with two weapons of different categories.",
+      "source": {
+        "book": "core",
+        "section": "LIST OF HEROIC SKILLS — Universal"
+      }
+    },
+    {
+      "name": "Extra HP",
+      "max_sl": 1,
+      "brief": "Increase your maximum Hit Points.",
+      "source": {
+        "book": "core",
+        "section": "LIST OF HEROIC SKILLS — Universal"
+      }
+    },
+    {
+      "name": "Extra IP",
+      "max_sl": 1,
+      "brief": "Increase your maximum Inventory Points.",
+      "source": {
+        "book": "core",
+        "section": "LIST OF HEROIC SKILLS — Universal"
+      }
+    },
+    {
+      "name": "Extra MP",
+      "max_sl": 1,
+      "brief": "Increase your maximum Mind Points.",
+      "source": {
+        "book": "core",
+        "section": "LIST OF HEROIC SKILLS — Universal"
+      }
+    },
+    {
+      "name": "Extra Spells",
+      "max_sl": 1,
+      "brief": "Learn two spells from a Class of your choice.",
+      "source": {
+        "book": "core",
+        "section": "LIST OF HEROIC SKILLS — Universal"
+      }
+    }
+  ]
 }
