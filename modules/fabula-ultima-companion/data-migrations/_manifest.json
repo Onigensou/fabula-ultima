@@ -219,6 +219,10 @@
     {
       "key": "2026-05-30-template-options-will-deal-damage",
       "path": "data-migrations/2026-05-30-template-options-will-deal-damage.js"
+    },
+    {
+      "key": "2026-05-30-tag-standard-debuffs",
+      "path": "data-migrations/2026-05-30-tag-standard-debuffs.js"
     }
   ]
 }
