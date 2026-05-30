@@ -179,6 +179,88 @@ Both UIs route through the **same engine path**:
 See [[reaction-pills-on-action-card]] + [[reaction-menu-on-token]]
 for engine + UI surfaces.
 
+## Reaction architecture (locked 2026-05-30)
+
+Three contracts the reaction system honors. Forward-compatible with
+the shipped pill + menu UIs. Full details + shape catalog in
+[[reaction-architecture]].
+
+### Rule 1 — Visibility ladder
+
+Reactions move through four visibility stages. The privacy boundary
+is only at stage 2.
+
+| Stage | GM | Owner | Other clients |
+|---|---|---|---|
+| 1. Candidates enumerated | sees all | (no render) | (no render) |
+| 2. Decision pending | actionable | **own** actionable | opaque `Player X reacting…` |
+| 3. Decision applied | applied chip | applied chip | applied chip — same content |
+| 4. Effect resolves | doc updates broadcast naturally | same | same |
+
+Every candidate carries `reactorActorUuid` + `reactorTokenUuid` so
+per-client filtering is `cand.reactorActorUuid in myOwnedActors || iAmGM`.
+The opaque stage-2 indicator pattern is proven by the legacy
+[[reaction-party-visibility]] broadcast.
+
+### Rule 2 — Ordering: first-to-click wins, FIFO
+
+FU canon has no fixed reaction order between simultaneous reactors.
+Engine adopts the simplest playable rule: **first owner to click
+processes first**.
+
+- Decisions process in **arrival order** as `REACTION_CHOICE` intents
+  hit the GM client. No "wait for all" barrier.
+- After **each** applied decision, **all remaining pending pills /
+  blades re-gate** against fresh state. A `condition_formula` that
+  evaluated true at offer time may now evaluate false; that pill
+  collapses to "no longer applicable" instead of firing on stale
+  state.
+- Each pill formula (`damage_amount`, `grant_amount`, etc.)
+  re-evaluates against current parent state on every render — when
+  another pill applies, when a child card pops back, on initial
+  render. The Cheap Shot `recomputeTargetPreviews()` pattern is the
+  template.
+- Within ONE reactor's matches at a trigger, [[reaction-dispatch-order]]
+  still holds: passives first, manuals after. Across reactors, click
+  order wins.
+
+### Rule 3 — Stacking: child cards on top of suspended parents
+
+A reaction may spawn a new action card (Counterattack, Retaliation,
+hypothetical Cross-Counter). The new card **stacks visually on top**
+of the parent — it does not replace.
+
+- `director.ctx.actionStack: ActionResult[]` replaces the single
+  `director.ctx.actionResult`. Last entry is active; everything
+  beneath is suspended.
+- Parent stays mounted at its original DOM position. Gains
+  `is-suspended` class → backdrop dim + pointer-events:none on pill
+  row + Confirm button.
+- Child renders at higher z-index. Functionally identical to a
+  top-level card — own pill row, own lock, own Confirm.
+- `postActionCard` is re-entrant; the Promise it returns stacks
+  naturally via async / await.
+- When child resolves: pop the stack, child DOM tears down, parent's
+  is-suspended class removed, `recomputeTargetPreviews()` fires
+  (state may have changed), pending pills re-gate.
+- Nesting depth is **open-ended**. The architecture must not assume
+  depth ≤ 2.
+
+### Reaction shape catalog (which skills spawn cards)
+
+| Skill | Phase | Spawns child card? |
+|---|---|---|
+| Counterattack (Weaponmaster) | post-resolve | Yes — free attack child |
+| Retaliation (Guardian) | post-resolve | Yes — free attack child |
+| Painful Lesson (Darkblade) | post-resolve | No — direct damage write |
+| Cross-Counter (playtest / homebrew) | pre-resolve | Yes — nested interrupt |
+| High Speed (Rogue) | standalone | Yes (free attack option) — but at FSM transition, not nested mid-action |
+| Heart of Darkness (Darkblade) | post-resolve on Crisis | No — applies AE |
+
+Today's BD-tree skills are mostly the simple shapes. The action-stack
+machinery doesn't need to ship until the first truly-nested case
+lands (likely Counterattack first, then Cross-Counter much later).
+
 ## Canonical homes
 
 | Concern | Canonical home | Don't author at top level |
