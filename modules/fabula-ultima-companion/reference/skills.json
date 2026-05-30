@@ -8,6 +8,26 @@
         "title": "Fabula Ultima Core Rulebook",
         "file": "Fabula_Ultima_TTJRPG.pdf",
         "phase": "shipped"
+      },
+      "atlas-hf": {
+        "title": "atlas-hf",
+        "file": "Fabula_Ultima_Atlas_High_Fantasy.txt",
+        "phase": "shipped"
+      },
+      "atlas-nf": {
+        "title": "atlas-nf",
+        "file": "Fabula_Ultima_-_Natural_Fantasy_Atlas_v1.0.txt",
+        "phase": "shipped"
+      },
+      "atlas-tf": {
+        "title": "atlas-tf",
+        "file": "Fabula_Ultima_-_Techno_Fantasy_Atlas_v1.01.txt",
+        "phase": "shipped"
+      },
+      "atlas-lf": {
+        "title": "atlas-lf",
+        "file": "The_Low_Fantasy_Atlas.txt",
+        "phase": "shipped"
       }
     },
     "phases": {
@@ -19,10 +39,13 @@
         "Core heroic skills (universal + class-bound, brief)",
         "Core heroic skills (universal + class-bound, brief)",
         "Core heroic skills (universal + class-bound, brief)",
-        "Core spells (Elementalist + Entropist + Spiritist tables)"
+        "Core spells (Elementalist + Entropist + Spiritist tables)",
+        "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
+        "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
+        "Atlas class skills (HF + NF + TF + LF, 14 new classes)",
+        "Atlas class skills (HF + NF + TF + LF, 14 new classes)"
       ],
       "pending": [
-        "Atlas additions (High/Natural/Techno/Low Fantasy)",
         "Bonus additions (Necromancer, Halloween x2, Ace, Arcane)",
         "Playtest patches (chronological — newest wins)"
       ]
@@ -1731,6 +1754,804 @@
           }
         }
       ],
+      "spells": []
+    },
+    "Chanter": {
+      "book": "atlas-hf",
+      "skills": [
+        {
+          "name": "Magichant",
+          "max_sl": 10,
+          "description": "On your turn during a conflict scene, you may use an action and spend a variable amount of MP to weave voice and music into a magical effect known as a verse.\n\nYou may only sing one verse per turn, even if you have access to multiple actions; the full rules for verses can be found starting on the next page. When you first acquire this Skill, you learn all three volumes, plus one key and one                 PROTAGONISTS tone (see next page). Whenever you acquire this Skill again, you may learn one key or one tone (your choice).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "CHANTER SKILLS",
+            "line": 5766
+          }
+        },
+        {
+          "name": "Resonance",
+          "max_sl": 3,
+          "description": "After you affect one or more enemies with a verse, if you have an arcane weapon equipped, you may choose one option: until the start of your next turn, your allies deal SL extra damage to those enemies; or until the start of your next turn, you recover SLMind Points every time one of those enemies suffers damage (if the same source deals damage to two or more of those enemies at the same time, you recover SLMP for each damaged enemy).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "CHANTER SKILLS",
+            "line": 5778
+          }
+        },
+        {
+          "name": "Siren's Song",
+          "max_sl": 1,
+          "description": "You gain the ability to perform Rituals of the Ritualism discipline; additionally, you may use Ritualism to create hearing-based illusions.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "CHANTER SKILLS",
+            "line": 5787
+          }
+        },
+        {
+          "name": "Sound Barrier",
+          "max_sl": 5,
+          "description": "After you sing a verse with medium or high volume, all physical damage you suffer until the start of your next turn is reduced by SL(applied before Affinities).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "CHANTER SKILLS",
+            "line": 5792
+          }
+        },
+        {
+          "name": "Vibrato",
+          "max_sl": 1,
+          "description": "After you sing a verse with low or medium volume, you may perform a free attack with a weapon you have equipped; treat your High Roll (HR) as 0 when calculating damage dealt by this attack.\n\nSarunphat Pisutvimol (Order #40585649)",
+          "source": {
+            "book": "atlas-hf",
+            "section": "CHANTER SKILLS",
+            "line": 5797
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Commander": {
+      "book": "atlas-hf",
+      "skills": [
+        {
+          "name": "Bishop's Edict",
+          "max_sl": 5,
+          "description": "During a conflict, you may use an action and spend 10 Mind Points to choose one option: all MP costs are doubled; or all sources of damage deal SL × 3 extra damage. The chosen effect lasts until the start of your next turn.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "COMMANDER SKILLS",
+            "line": 5938
+          }
+        },
+        {
+          "name": "Charging Cavalry",
+          "max_sl": 5,
+          "description": "During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. That ally may immediately perform a free attack with a weapon they have equipped (or with a basic attack if they are an NPC).They gain a bonus equal to SL 3 to the Accuracy Check, but treat their High Roll (HR) as 0 when calculating damage.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "COMMANDER SKILLS",
+            "line": 5944
+          }
+        },
+        {
+          "name": "Crushing Chariot",
+          "max_sl": 1,
+          "description": "After you use Bishop's Edict, Charging Cavalry or King's Castle, you may choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "COMMANDER SKILLS",
+            "line": 5951
+          }
+        },
+        {
+          "name": "King's Castle",
+          "max_sl": 4,
+          "description": "During a conflict, you may use an action and spend 10 Mind Points to choose one option: no creature can recover Hit Points or Mind Points; or all effects that restore Mind Points restore SL × 5 additional Mind Points. The chosen effect lasts until the start of your next turn.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "COMMANDER SKILLS",
+            "line": 5957
+          }
+        },
+        {
+          "name": "Queen's Gambit",
+          "max_sl": 6,
+          "description": "During a conflict, you may use an action to perform a free attack with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, choose one option: one ally who is able to hear you recovers5 + (SL × 5)Hit Points; or you may immediately use a Skill you acquired among Bishop's Edict, Charging Cavalry or King's Castle for free (spending the appropriate MP).\n\nSarunphat Pisutvimol (Order #40585649)",
+          "source": {
+            "book": "atlas-hf",
+            "section": "COMMANDER SKILLS",
+            "line": 5964
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Dancer": {
+      "book": "atlas-hf",
+      "skills": [
+        {
+          "name": "Dance",
+          "max_sl": 10,
+          "description": "Each time you take this Skill, you learn a dance (see next page).\n\nOn your turn during a conflict scene, if you have no martial armor equipped, you may         3 CHAPTERPROTAGONISTS spend 10 Mind Points to perform a dance you have learned. This doesn't require an action, but it can only be done before or after an action, and only once per turn. If you       143 already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.\n\nSome dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "DANCER SKILLS",
+            "line": 6021
+          }
+        },
+        {
+          "name": "Follow My Lead",
+          "max_sl": 1,
+          "description": "When you perform a dance with a duration of \"Until the start of your next turn\", you may spend 10 additional Mind Points. If you do, choose one ally you can see towards whom you have a Bond of affection: apply the benefits of the dance to that ally as well as yourself (the benefits still last until the start of your next turn).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "DANCER SKILLS",
+            "line": 6034
+          }
+        },
+        {
+          "name": "Frenetic Footwork",
+          "max_sl": 2,
+          "description": "After you perform a dance with a duration of \"Until the start of your next turn\", you gain a bonus equal to SL × 2 to all Opposed Checks that rely on acrobatics, coordination or speed until the start of your next turn.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "DANCER SKILLS",
+            "line": 6041
+          }
+        },
+        {
+          "name": "Quick-change",
+          "max_sl": 1,
+          "description": "After you perform a dance, you may perform the Equipment action for free.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "DANCER SKILLS",
+            "line": 6047
+          }
+        },
+        {
+          "name": "Wardancer",
+          "max_sl": 5,
+          "description": "After you perform a dance, your attacks with brawling, dagger, flail and thrown weapons deal SL extra damage until the start of your next turn. If you have an arcane weapon equipped, offensive spells (r) you cast also deal SL extra damage until the start of your next turn.\n\nSarunphat Pisutvimol (Order #40585649)",
+          "source": {
+            "book": "atlas-hf",
+            "section": "DANCER SKILLS",
+            "line": 6050
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Symbolist": {
+      "book": "atlas-hf",
+      "skills": [
+        {
+          "name": "Magic Symbols",
+          "max_sl": 3,
+          "description": "If an ally bears one of your symbols, that ally may perform the Spell action and destroy that symbol to cast a single spell among those you know, as long as it has a total Mind Point cost equal to or lower than SL × 10(that ally must still pay the MP cost).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "SYMBOLIST SKILLS",
+            "line": 6196
+          }
+        },
+        {
+          "name": "Mirage",
+          "max_sl": 1,
+          "description": "You gain the ability to perform Rituals of the Ritualism discipline; additionally, you may use Ritualism to create sight-based illusions.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "SYMBOLIST SKILLS",
+            "line": 6202
+          }
+        },
+        {
+          "name": "Personal Touch",
+          "max_sl": 5,
+          "description": "When a creature you can see that is bearing one of your symbols suffers damage or recovers Hit Points and/or Mind Points, you may have that creature suffer SL extra damage or recover SL additional Hit Points and/or Mind Points, respectively).",
+          "source": {
+            "book": "atlas-hf",
+            "section": "SYMBOLIST SKILLS",
+            "line": 6207
+          }
+        },
+        {
+          "name": "Symbolic Connection",
+          "max_sl": 1,
+          "description": "You always know the exact direction in which to find any creature bearing one of your symbols, as long as that creature is within 2 travel days of your position.",
+          "source": {
+            "book": "atlas-hf",
+            "section": "SYMBOLIST SKILLS",
+            "line": 6213
+          }
+        },
+        {
+          "name": "Symbolism",
+          "max_sl": 5,
+          "description": "Each time you acquire this Skill, you learn two symbols (see next page).\n\nYou may have up to SL + 1 symbols active at the same time; if you create more while at your limit, you must first choose and destroy some of your previous symbols.\n\nYou may perform the Inventory action and spend 2 Inventory Points to create a symbol you have learned and choose one option: apply that symbol to yourself; or apply that symbol to an ally you can see; or perform a free attack with a weapon you have equipped. This attack deals no damage, but you apply a copy of the chosen symbol to each enemy hit by the attack (each copy counts as a separate symbol towards your limit or SL + 1 active symbols).\n\nSarunphat Pisutvimol (Order #40585649)",
+          "source": {
+            "book": "atlas-hf",
+            "section": "SYMBOLIST SKILLS",
+            "line": 6218
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Floralist": {
+      "book": "atlas-nf",
+      "skills": [
+        {
+          "name": "Battle Gardening",
+          "max_sl": 3,
+          "description": "After you plant a magiseed through the Chloromancy Skill (not when using Graft), you        3 CHAPTERPROTAGONISTS may choose one option: perform a free attack with an equipped weapon; or perform the Spell action for free, casting a spell with a total Mind Point cost equal to or lower      139 than5 + (SL × 5)(you must still pay its MP cost). Treat the High Roll (HR) of your Accuracy Check or Magic Check as being equal to 0 when determining damage dealt by this attack or spell.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "FLORALIST SKILLS",
+            "line": 5895
+          }
+        },
+        {
+          "name": "Chloromancy",
+          "max_sl": 10,
+          "description": "Each time you acquire this Skill, you discover a new type of magiseed from the list found in the next pages.\n\nDuring a conflict, if there are no magiseeds in your garden, you may use an action and spend 20 Mind Points to plant a magiseed of a type you have discovered. The rules for the garden and for magiseed growth can be found in the next pages.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "FLORALIST SKILLS",
+            "line": 5904
+          }
+        },
+        {
+          "name": "Graft",
+          "max_sl": 1,
+          "description": "As long as there is a magiseed in your garden and 1 or more sections of your Growth Clock are filled, you may use an action to remove that magiseed from your garden: if you do, plant a different magiseed among those you have discovered (keep the current filled sections of your Growth Clock unchanged).",
+          "source": {
+            "book": "atlas-nf",
+            "section": "FLORALIST SKILLS",
+            "line": 5913
+          }
+        },
+        {
+          "name": "Tree Of Life",
+          "max_sl": 5,
+          "description": "When you remove a magiseed from your garden, you may choose one creature you can see: if that creature is in Crisis, they recover 5 + (SL × 5)Hit Points.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "FLORALIST SKILLS",
+            "line": 5920
+          }
+        },
+        {
+          "name": "Verdant Sway",
+          "max_sl": 1,
+          "description": "You gain the ability to perform Rituals of the Ritualism discipline; additionally, you may use Ritualism to create, animate, and/or control vegetation, pollen, spores, and toxins (but you cannot create nor control plant-Species NPCs this way).\n\nSarunphat Pisutvimol (Order #47273285)",
+          "source": {
+            "book": "atlas-nf",
+            "section": "FLORALIST SKILLS",
+            "line": 5925
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Gourmet": {
+      "book": "atlas-nf",
+      "skills": [
+        {
+          "name": "Cooking",
+          "max_sl": 5,
+          "description": "When you rest inside a settlement, you gain SL ingredients (see next page).                3 CHAPTERPROTAGONISTS\n\nYou may use an action and combine 2 or 3 ingredients to prepare a delicacy (see next        149 page) and choose one option: you apply its effects to yourself or an ally you can see; or you perform a free attack with a weapon you have equipped. This attack deals no damage, but you apply the delicacy's effects to each enemy hit by the attack.\n\nYou may carry up to 10 +SL × 5 ingredients, and they will never spoil until you use them; if you take this Skill during character creation, you begin play with ten ingredients with random tastes.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "GOURMET SKILLS",
+            "line": 6351
+          }
+        },
+        {
+          "name": "Knife And Fork",
+          "max_sl": 1,
+          "description": "When you perform the free attack granted by the Cooking Skill, if you combined no more than 2 ingredients, you may have the attack deal damage as normal. If you do, you treat your High Roll (HR) as 0 when calculating damage dealt by this attack.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "GOURMET SKILLS",
+            "line": 6364
+          }
+        },
+        {
+          "name": "Made With Love",
+          "max_sl": 3,
+          "description": "When you use the Cooking Skill and choose to apply the effects of the delicacy to yourself or an ally you can see, you may spend up to SL × 10MP. For every 10 MP you spend this way, apply the delicacy's effects to an additional ally you can see.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "GOURMET SKILLS",
+            "line": 6370
+          }
+        },
+        {
+          "name": "Salt And Pepper",
+          "max_sl": 1,
+          "description": "When you prepare a delicacy, you may spend 2 Inventory Points: if you do, change the taste of one ingredient to a different taste of your choice.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "GOURMET SKILLS",
+            "line": 6376
+          }
+        },
+        {
+          "name": "Traveling Cook",
+          "max_sl": 3,
+          "description": "After each travel roll, if you acquired the Cooking Skill, you gain SL × 2 ingredients.\n\nSarunphat Pisutvimol (Order #47273285)",
+          "source": {
+            "book": "atlas-nf",
+            "section": "GOURMET SKILLS",
+            "line": 6381
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Invoker": {
+      "book": "atlas-nf",
+      "skills": [
+        {
+          "name": "Elemental Harmony",
+          "max_sl": 2,
+          "description": "You may verbally communicate with creatures of the elemental Species.\n\nWhen you restore a creature's Hit Points with an invocation or spell, if an elemental is      155 present on the scene, the restored amount is increased by SL × 5.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "INVOKER SKILLS",
+            "line": 6606
+          }
+        },
+        {
+          "name": "Invocation",
+          "max_sl": 3,
+          "description": "You may use an action and spend 5 Mind Points to perform an invocation, drawing energy from one of the wellsprings present on the scene (see next page).Your SL in this Skill determines which invocations you have access to.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "INVOKER SKILLS",
+            "line": 6613
+          }
+        },
+        {
+          "name": "Linked Invocation",
+          "max_sl": 3,
+          "description": "When you perform an invocation, you may spend up to SL × 10 additional Mind Points. For every 10 Mind Points you spend this way, the invocation may target an additional creature you can see.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "INVOKER SKILLS",
+            "line": 6619
+          }
+        },
+        {
+          "name": "Ripples",
+          "max_sl": 5,
+          "description": "After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your \"hex\" invocations, you may perform a free attack with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to SL to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all \"hex\" invocations present on its target end immediately after the attack has been resolved.\n\nIf two or more enemies trigger this Skill at the same time, you can perform a free attack against each of them, in whatever order you prefer.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "INVOKER SKILLS",
+            "line": 6625
+          }
+        },
+        {
+          "name": "Wellspring Expansion",
+          "max_sl": 5,
+          "description": "As long as you have a weapon belonging to the arcane, bow, brawling, flail, sword, or thrown Category equipped, your \"blast\" invocations deal SL extra damage, and the extra damage granted by your \"hex\" invocations is increased by SL.\n\nSarunphat Pisutvimol (Order #47273285)",
+          "source": {
+            "book": "atlas-nf",
+            "section": "INVOKER SKILLS",
+            "line": 6637
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Merchant": {
+      "book": "atlas-nf",
+      "skills": [
+        {
+          "name": "Expiration Date",
+          "max_sl": 3,
+          "description": "When a potion or delicacy (see page 151) you created that does not deal damage causes one or more creatures to recover Hit Points, you may instead have it deal poison damage equal tohalf your level + (SL × 10)to each of those creatures. This damage's type             159 cannot change, and it is halved if you are dealing damage to two or more creatures.\n\nI'VE HEARD OF IT!                                          (�3)                                     PROTAGONISTS\n\nWhen you or an ally who is able to hear and understand you perform a Check to examine a creature, item, or location, you may spend 1 Trade Point to grant a bonus equal to SL × 2 to the Result of that Check.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "MERCHANT SKILLS",
+            "line": 6779
+          }
+        },
+        {
+          "name": "Private Stock",
+          "max_sl": 3,
+          "description": "When you or another Player Character spend SL + 2 or fewer Inventory Points, you may spend 1 Trade Point to ignore that cost.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "MERCHANT SKILLS",
+            "line": 6792
+          }
+        },
+        {
+          "name": "Real Treasure",
+          "max_sl": 3,
+          "description": "Once per session, when you help an NPC or community defeat greed and corruption, improve their quality of life, or coexist with other creatures, if you have acquired the Winds of Trade Skill, you gain SL + 1 Trade Points.",
+          "source": {
+            "book": "atlas-nf",
+            "section": "MERCHANT SKILLS",
+            "line": 6797
+          }
+        },
+        {
+          "name": "Winds Of Trade",
+          "max_sl": 3,
+          "description": "After you rest in an area where commerce is possible, you gain SL + 1 Trade Points. You may never have more than SL + 3 Trade Points; if you acquire this Skill during character creation, you begin play with 2 Trade Points.\n\nDuring a non-conflict scene, you may spend 2 Trade Points to choose one option: you create a material or rare item approved by the Game Master whose value in zenit is equal to or lower thanyour level, multiplied by 30; or you create an NPC that lives nearby and explain their occupation as well as how you met them, then the Game Master tells you what they require in exchange for their services.\n\nSarunphat Pisutvimol (Order #47273285)",
+          "source": {
+            "book": "atlas-nf",
+            "section": "MERCHANT SKILLS",
+            "line": 6803
+          }
+        },
+        {
+          "name": "All You Can Eat",
+          "max_sl": 1,
+          "description": "Requirements: you must have mastered the Gourmet Class.\n\nOnce per scene when you use the Cooking Skill, you may combine four ingredients into a delicacy (thus ignoring the normal limit of three ingredients). Other than that, the delicacy follows the normal rules.\n\nSarunphat Pisutvimol (Order #47273285)",
+          "source": {
+            "book": "atlas-nf",
+            "section": "MERCHANT SKILLS",
+            "line": 6901
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Esper": {
+      "book": "atlas-tf",
+      "skills": [
+        {
+          "name": "Cognitive Focus",
+          "max_sl": 5,
+          "description": "At the start of your turn during a conflict, you may choose one ally who is able to hear    3 CHAPTERPROTAGONISTS you or one enemy you can see that is suffering from dazed, enraged, and/or shaken. Until the start of your next turn, the chosen creature becomes your focus.                     151\n\nYou gain a bonus equal to SL to Checks you perform to examine your focus, as well as to your Accuracy Checks and Magic Checks for attacks and offensive spells (r) that include your focus among the targets. When you cause your focus to recover Hit Points and/or Mind Points, they recover SL × 2 additional HP and/or MP, respectively.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "ESPER SKILLS",
+            "line": 6447
+          }
+        },
+        {
+          "name": "Hypercognition",
+          "max_sl": 5,
+          "description": "The total MP cost of your spells and verses (see High Fantasy Atlas, page 138) that include your focus among their targets is reduced by SL, or by SL × 2 if your focus is the only target (to a minimum cost of 0 Mind Points).",
+          "source": {
+            "book": "atlas-tf",
+            "section": "ESPER SKILLS",
+            "line": 6458
+          }
+        },
+        {
+          "name": "Navigator",
+          "max_sl": 1,
+          "description": "You can communicate telepathically with any conscious ally within 1 travel day of you; you are able to hear each other for the sake of Skills and effects.\n\nYou gain the ability to perform Rituals of the Ritualism discipline. Additionally, you may use Ritualism to transport creatures in and out of the soul network, and to gain information and track entities while inside the soul network.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "ESPER SKILLS",
+            "line": 6464
+          }
+        },
+        {
+          "name": "Psychic Gifts",
+          "max_sl": 5,
+          "description": "Each time you take this Skill, you gain a gift. The rules for gifts and for the Brainwave Clock can be found on the next page.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "ESPER SKILLS",
+            "line": 6473
+          }
+        },
+        {
+          "name": "Psychokinesis",
+          "max_sl": 1,
+          "description": "When you perform an Accuracy Check, you may replace one of the Attribute dice with Willpower (such as DEX + WLPfor a shortbow). Additionally, your melee attacks with weapons belonging to the arcane or sword Categories may target flying creatures.\n\nSarunphat Pisutvimol (Order #44130720)",
+          "source": {
+            "book": "atlas-tf",
+            "section": "ESPER SKILLS",
+            "line": 6478
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Mutant": {
+      "book": "atlas-tf",
+      "skills": [
+        {
+          "name": "Akromorphosis",
+          "max_sl": 3,
+          "description": "Your unarmed strikes deal 6 + (SL × 2)extra damage, and you gain a bonus equal to SL to your Accuracy Checks with them.\n\nAt the start of your turn during a conflict, you may choose a weapon Category other       3 CHAPTERPROTAGONISTS than brawling. If you do, your unarmed strikes now belong to the chosen Category. If you choose bow, firearm or thrown, they become ranged weapons instead of melee. If           155 you choose dagger or sword, they cannot be used with Triple Slash (see High Fantasy Atlas, page 161). These changes last until the start of your next turn.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "MUTANT SKILLS",
+            "line": 6621
+          }
+        },
+        {
+          "name": "Biophagy",
+          "max_sl": 4,
+          "description": "After one of your attacks or offensive spells (r) causes one or more enemies to lose Hit Points, if you are in Crisis, you may recover SL × 5 Hit Points.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "MUTANT SKILLS",
+            "line": 6632
+          }
+        },
+        {
+          "name": "Ecdysis",
+          "max_sl": 1,
+          "description": "After you lose Hit Points due to damage, if that damage had a type other than physical, you may spend 10 Hit Points to gain Resistance to that damage type until you use this Skill again. You cannot use this Skill if doing so would reduce you to 0 HP.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "MUTANT SKILLS",
+            "line": 6637
+          }
+        },
+        {
+          "name": "Genoclepsis",
+          "max_sl": 2,
+          "description": "When you deal damage to one or more NPCs, you learn their Species and the GM chooses SL therioforms appropriate to those NPCs (see next page): if you have acquired the Theriomorphosis Skill, you may immediately pay its HP cost and use it to manifest those therioforms (even if they are not among those you have learned).",
+          "source": {
+            "book": "atlas-tf",
+            "section": "MUTANT SKILLS",
+            "line": 6643
+          }
+        },
+        {
+          "name": "Theriomorphosis",
+          "max_sl": 6,
+          "description": "Each time you acquire this Skill, you learn a therioform (see next page).\n\nYou may use an action and spend one third of your current Hit Points (rounded down) to manifest the effects of up to two therioforms from those you have learned. The details of this transformation are explained on the next page.\n\nSarunphat Pisutvimol (Order #44130720)",
+          "source": {
+            "book": "atlas-tf",
+            "section": "MUTANT SKILLS",
+            "line": 6650
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Pilot": {
+      "book": "atlas-tf",
+      "skills": [
+        {
+          "name": "Compression Tech",
+          "max_sl": 1,
+          "description": "As long as there is no one aboard your personal vehicle, you may have it safely disappear       159 from the game world at any time. What magic or technology allows it?\n\nIf your personal vehicle is not present in the game world and you are in a space big enough to contain it, you may perform the Inventory action and spend 2 Inventory Points to have the vehicle appear near you, and enter it for free.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "PILOT SKILLS",
+            "line": 6804
+          }
+        },
+        {
+          "name": "Flexible Configuration",
+          "max_sl": 4,
+          "description": "When you perform the Equipment or Guard action while driving your personal vehicle, you may choose up to SL of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "PILOT SKILLS",
+            "line": 6813
+          }
+        },
+        {
+          "name": "Heart In The Engine",
+          "max_sl": 3,
+          "description": "At the start of your turn during a conflict, if you are driving your personal vehicle, you may spend 10 Mind Points. If you do, choose one option: the next time you deal damage during this turn,deal SL × 2 extra damage; or,the next time you suffer damage before the start of your next turn, that damage is reduced by SL × 2(applied before damage Affinities); or, you recover from either the slow or weak status effects (your choice).",
+          "source": {
+            "book": "atlas-tf",
+            "section": "PILOT SKILLS",
+            "line": 6819
+          }
+        },
+        {
+          "name": "Personal Vehicle",
+          "max_sl": 5,
+          "description": "When you acquire this Skill, you gain a personal vehicle with a frame of your choice and three different modules of your choice (see next page).\n\nWhenever you acquire this Skill again, you acquire two additional modules of your choice.",
+          "source": {
+            "book": "atlas-tf",
+            "section": "PILOT SKILLS",
+            "line": 6827
+          }
+        },
+        {
+          "name": "Strong Grip",
+          "max_sl": 1,
+          "description": "When you perform an Accuracy Check with a weapon module, you may replace one of the Attributes with Might (such as MIG + WLPfor an arcane module).\n\nSarunphat Pisutvimol (Order #44130720)",
+          "source": {
+            "book": "atlas-tf",
+            "section": "PILOT SKILLS",
+            "line": 6834
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Hunter": {
+      "book": "atlas-lf",
+      "skills": [
+        {
+          "name": "Lock-on",
+          "max_sl": 1,
+          "description": "You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a +2 bonus to associated Checks. If all performed Checks against the target during this time are successful, the target also suffers weak. If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "HUNTER SKILLS",
+            "line": 2856
+          }
+        },
+        {
+          "name": "Set Trap",
+          "max_sl": 5,
+          "description": "You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn two traps from each corresponding Skill Level (SL) (see next page).",
+          "source": {
+            "book": "atlas-lf",
+            "section": "HUNTER SKILLS",
+            "line": 2866
+          }
+        },
+        {
+          "name": "Track",
+          "max_sl": 5,
+          "description": "You may spend 10 MP to track prey that is not currently in the scene and         PROTAGONISTS whose leads can be followed through conventional, hunter-related means. The target must perform an Opposed  WLP (Willpower) + INS (Insight) Check against you, and you gain a bonus equal to SL on this Check. If the tracking is successful, you arrive at the prey's location. If a conflict begins, your first Accuracy Check gains a bonus of  SL  against the prey. If successful, it deals an additional HR (High Roll) + 15 damage. This ability ends if you are reduced to 0 HP, attack the prey, choose to track another target, or by Game Master ruling.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "HUNTER SKILLS",
+            "line": 2872
+          }
+        },
+        {
+          "name": "Vital Strike",
+          "max_sl": 1,
+          "description": "After a successful Accuracy Check, you may spend 10 MP. The targeted creature suffers extra damage equal to your Dexterity die size. If the creature is already in Crisis, or would enter Crisis with your attack, it also suffers 5 additional damage.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "HUNTER SKILLS",
+            "line": 2884
+          }
+        },
+        {
+          "name": "Wild Reflexes",
+          "max_sl": 5,
+          "description": "When you perform the Guard action, if you choose not to provide cover to         89 another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your Defense equal to  SL . Additionally, if an enemy misses you with an attack during this time, you may perform a free attack against them. Treat your HR as 0 when calculating damage for this counterattack.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "HUNTER SKILLS",
+            "line": 2891
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Illusionist": {
+      "book": "atlas-lf",
+      "skills": [
+        {
+          "name": "Illusionist Magic",
+          "max_sl": 10,
+          "description": "Each time you acquire this Skill, learn one Illusionist spell. Offensive (o) Illusionist spells and Phantasm use INS + WLP for their Checks.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "ILLUSIONIST SKILLS",
+            "line": 3081
+          }
+        },
+        {
+          "name": "Phantasmal Echo",
+          "max_sl": 5,
+          "description": "After any of your Phantasms is shattered, you recover SL + 2 MP.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "ILLUSIONIST SKILLS",
+            "line": 3086
+          }
+        },
+        {
+          "name": "Phantasmal Recovery",
+          "max_sl": 5,
+          "description": "Shatter one of your Phantasms to recover  SL x 5 HP . Shattering a Phantasm this way will not trigger the Phantasmal Echo Skill.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "ILLUSIONIST SKILLS",
+            "line": 3090
+          }
+        },
+        {
+          "name": "Phantasmal Recycling",
+          "max_sl": 1,
+          "description": "When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the Phantasmal Echo skill. You cannot use this skill to create a Phantasm.\n\nRITUAL ILLUSIONISM                                                        95\n\nYou may perform Rituals whose effects fall within the Illusionism discipline. Illusionism Rituals use INS + WLP for the Magic Check.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "ILLUSIONIST SKILLS",
+            "line": 3095
+          }
+        },
+        {
+          "name": "Phantasms",
+          "max_sl": 1,
+          "description": "Phantasms follow a set of special rules.\n\n� Phantasms are entities of pure energy, capable of taking on various sizes and forms -- even becoming exact replicas of you!\n\n� They do not talk or have a mind of their own, and are not capable of reason or logic.\n\n� They only follow simple one-clause commands and cannot abstract meaning or extrapolate from them. For example, if you ask a Phantasm to grab some milk, it knows where the milk is because you do. It also knows that you are feeling thirsty -- because you know it too. However, it won't understand that milk can quench thirst, nor will it know to pour the milk into a glass; these thought processes are too complex for Phantasms. So, it would just bring you the whole bottle of milk, with a deadpan look.\n\n� Phantasms share your base Attributes and Defenses, have no MP, and their Phantasmal Vitality (PV) is equal to your base Insight die size plus your level. They have Immunity to all status effects.\n\n� They have no Initiative score. Phantasms do not get a turn during conflicts, but on your turn, you can perform an action to command one or more Phantasms, depending on the wording of the spell. Phantasms always target Magical Defense.\n\n� You may create a Phantasm and command it in the same action. After this first command -- which directly follows its creation -- on your next turn, it requires a whole action to be commanded again. Therefore, you cannot command Phantasm 1 and then proceed to create Phantasm 2 in the same action.\n\n� Unless stated otherwise, you can have up to 3 Phantasms active at the same time. Attempts to cast more Phantasms beyond 3 will fail.\n\n� Your Phantasms shatter if they fall to 0 PV, if you fall to 0 HP, or if you leave the scene. You can also shatter them through skills, spells, or at will.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "ILLUSIONIST SKILLS",
+            "line": 3106
+          }
+        }
+      ],
+      "heroic": [],
+      "spells": []
+    },
+    "Monk": {
+      "book": "atlas-lf",
+      "skills": [
+        {
+          "name": "Clarity",
+          "max_sl": 3,
+          "description": "For each pair of active Resolve Soul Beads you possess, choose one of these cumulative benefits: � Immunity to a chosen status effect. � Your attacks or spells of a chosen damage type ignore Resistances. � You gain Resistance to a chosen damage type. The number of bonuses you can have active at any given moment is equal to SL. You cannot select the same benefit more than once.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "MONK SKILLS",
+            "line": 3327
+          }
+        },
+        {
+          "name": "Resonant Clarity",
+          "max_sl": 3,
+          "description": "Your unwavering resolve and mental clarity radiate outward, reaching your companions. For each  SL , you can share one of your active benefits from the Clarity Skill, up to three creatures.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "MONK SKILLS",
+            "line": 3337
+          }
+        },
+        {
+          "name": "Soul Renewal",
+          "max_sl": 1,
+          "description": "Choose up to three creatures. As an action, release your Soul Beads towards them, spending 2 MP per Bead. Each delivered Bead restores 10 HP or MP, at your discretion. At level 20, the regeneration increases to 12 HP/MP per Bead, and at level 40, to 15 HP/MP per Bead. Each Bead released in this way is destroyed.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "MONK SKILLS",
+            "line": 3343
+          }
+        },
+        {
+          "name": "Spirit Shot",
+          "max_sl": 2,
+          "description": "As an action, choose any number of Soul Beads to release in a ranged attack against enemies, spending 2 MP per Bead. Perform a  DEX + WLP Check. On a hit, each target loses  SL x 4  HP or MP per Bead, based on your choice. This damage ignores Resistances.\n\nBeads targeting HP affect the target's Defense, while those targeting MP\n\naffect their Magic Defense. Each Bead is destroyed after release, whether it\n\nhits or not.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "MONK SKILLS",
+            "line": 3351
+          }
+        },
+        {
+          "name": "Spiritual Fortress",
+          "max_sl": 3,
+          "description": "102  As a reaction, release any number of Soul Beads to reduce incoming damage to you or up to three creatures by  SL x 2 , before applying any damage Affinities. Each Bead destroyed this way costs 2 MP.",
+          "source": {
+            "book": "atlas-lf",
+            "section": "MONK SKILLS",
+            "line": 3364
+          }
+        }
+      ],
+      "heroic": [],
       "spells": []
     }
   },
