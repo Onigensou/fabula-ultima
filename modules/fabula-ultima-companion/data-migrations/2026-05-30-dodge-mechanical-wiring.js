@@ -1,34 +1,39 @@
 /**
  * Migration: 2026-05-30-dodge-mechanical-wiring
  * ---------------------------------------------------------------------------
- * Wires the BD-tree Dodge skill (Rogue / Skill) with mechanical effect.
+ * Wires the BD-tree Dodge skill (Rogue / Skill) with mechanical effect via
+ * the **always-on passive AE pattern** (transfer:true on the item's AE).
  *
  * RAW: "As long as you have no shields and no martial armor equipped,
  *       your Defense score is increased by 【SL】."
  *
- * Mechanics chosen — turn_start refresh pattern (same shape as Protect's
- * charge refresh, see [[force-mode-for-engine-mandatory-reactions]]):
+ * Mechanics chosen — true-passive AE pattern (user-canonical 2026-05-30):
  *
- *   • reaction row at trigger `turn_start`, `passive_mode: "force"`,
- *     condition_formula `!HAS_SHIELD && !HAS_MARTIAL_ARMOR`.
- *   • Force mode = engine-mandatory, UI-invisible — the player doesn't
- *     see a pill or menu for this; it just fires.
- *   • Effect row dispatches `apply_ae` of a self-AE named "Dodge"
- *     carrying a `bonus_def: SL` change. SL is baked at apply-time.
- *   • AE duration: 1 turn (so it expires and refreshes each round).
- *   • Duplicate mode `replace_per_caster` keeps a single instance.
+ *   • AE lives on the skill item with `transfer: true`. When the
+ *     skill item is on an actor, CSB auto-applies the AE's changes
+ *     to the bearer's derived props on every sheet derive. No
+ *     reaction trigger, no apply_ae effect dispatch, no per-turn
+ *     refresh — it's just there.
+ *   • Change: `bonus_defense` += SL (CSB column, ADD mode).
+ *   • Value is BAKED at author time as a literal integer matching
+ *     the skill's current SL (default "1"). CSB's AEF formula context
+ *     doesn't expose `item.level` to transfer-mode AEs, so we can't
+ *     read the bearing skill's level dynamically — a level-up
+ *     re-bake hook is the planned follow-up (see canon doc).
  *
- * Limitation. Gate is re-evaluated at turn_start only. Equipping a
- * shield mid-turn does NOT remove the bonus until the next turn_start.
- * For a fully continuous gate we'd need CSB AEF's native formula
- * bridge to read HAS_SHIELD / HAS_MARTIAL_ARMOR at sheet-derive time
- * — those are director-side identifiers, not exposed via
- * `fetchFromParent`. Acceptable simplification for now; iterate when
- * mid-turn re-equip becomes a real workflow.
+ * Equipment gate. RAW says the bonus applies only when no shields /
+ * martial armor are equipped. The director-side `HAS_SHIELD` /
+ * `HAS_MARTIAL_ARMOR` formulas don't bridge to CSB AEF, so we
+ * intentionally do NOT enforce the gate at the engine level. The
+ * player honours the rule by not equipping shield/armor when they
+ * want the bonus — same UX as the rest of the FU equipment-gated
+ * passives. Future canon iteration: extend the conditional AE gate
+ * (`aeWhen` / `aeStatusWhen`) with `aeEquippedWhen("shield", ...)`.
  *
- * Idempotent — re-runs no-op when the reaction row + AE already exist
- * on the BD master AND every actor copy. Scoped to BD tree only;
- * legacy `💥 Skill / Class Skill / Rogue` Dodge untouched.
+ * Idempotent — re-runs reset the AE shape via the `-=` deletion
+ * sentinel so previous reaction-config-based versions of this
+ * migration get cleaned out. Earlier wiring (reaction_config_table
+ * row + effect_table apply_ae) is purged.
  */
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -36,8 +41,9 @@ const BD_ROOT_NAME = "Battle Director";
 
 export const key = "2026-05-30-dodge-mechanical-wiring";
 export const description =
-  "Wire BD-tree Dodge skill with turn_start force-mode reaction + " +
-  "self-AE applying bonus_def: SL gated by !HAS_SHIELD && !HAS_MARTIAL_ARMOR.";
+  "Wire BD-tree Dodge skill with always-on passive AE pattern — " +
+  "transfer:true AE on item granting bonus_defense += SL. Equipment " +
+  "gate is player-honour, not engine-enforced.";
 
 function isInBattleDirectorTree(item) {
   let f = item?.folder;
@@ -55,89 +61,42 @@ function actorCopyIsBattleDirector(item, masterIndexByUniqueId) {
   return master ? isInBattleDirectorTree(master) : false;
 }
 
-const REACTION_ROW = {
-  reaction_trigger: "turn_start",
-  // No reaction_source filter — turn_start is a standalone phase
-  // trigger with no `sourceActorUuid` in the payload, so a "self"
-  // filter would never match. The standalone dispatcher already
-  // restricts turn_start to the acting combatant
-  // (`restrictTo: currentActor`), so Dodge only fires when its bearer's
-  // own turn starts.
-  reaction_isPassive: true,
-  reaction_passive_mode: "force",
-  reaction_effect_ref: "dodge_apply_bonus",
-  condition_formula: "!HAS_SHIELD && !HAS_MARTIAL_ARMOR",
-};
-
-const EFFECT_TABLE = {
-  // target_ref: "self" is a reserved word — RESERVED_REFS in
-  // skill-targeting.js expands it to `{ candidate_source: "self" }`
-  // inline, so we don't need a separate targeting row.
-  "0": {
-    effect_label: "dodge_apply_bonus",
-    effect_kind: "apply_ae",
-    target_ref: "self",
-    ae_template_ref: "Dodge",
-    ae_duplicate_mode: "replace_per_caster",
-  },
-};
-
-const AE_TEMPLATE = {
-  name: "Dodge",
-  icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
-  duration: { turns: 1 },
-  flags: {
-    [FLAG_NS]: {
-      directorPermanent: false,
-      crossScene: false,
+// Bake SL into the literal value here. Default SL 1 per the spec
+// convention (`level: 1` on every new spec). When the bearer levels
+// up, a planned hook will re-bake the change.value to match.
+function aeTemplateForLevel(skillLevel) {
+  const SL = Number(skillLevel) || 1;
+  return {
+    name: "Dodge",
+    icon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+    transfer: true,
+    disabled: false,
+    duration: {},
+    flags: {
+      [FLAG_NS]: {
+        // Not a director-applied AE — it's an item-transfer AE.
+        // Doesn't need the directorPermanent / crossScene flags.
+      },
     },
-  },
-  system: { tags: ["buff"] },
-  statuses: ["fud-dodge"],
-  changes: [
-    // CSB column is `bonus_defense` (not `bonus_def`). CSB auto-prefixes
-    // bare keys to `system.props.<key>` per [[csb-ae-bare-key]]. SL is
-    // a director formula identifier baked at apply time via
-    // applyEffectRow's bake pass — `value: "SL"` is rewritten to a
-    // literal integer (level value) before the change persists on the
-    // target's AE document.
-    { key: "bonus_defense", value: "SL", mode: 2, priority: 20 },
-  ],
-};
-
-function hasReactionRow(item) {
-  const tbl = item?.system?.props?.reaction_config_table ?? {};
-  for (const row of Object.values(tbl)) {
-    if (row?.reaction_effect_ref === "dodge_apply_bonus") return true;
-  }
-  return false;
-}
-
-function hasEffectRows(item) {
-  const tbl = item?.system?.props?.effect_table ?? {};
-  for (const row of Object.values(tbl)) {
-    if (row?.effect_label === "dodge_apply_bonus"
-      && row?.effect_kind === "apply_ae"
-      && row?.target_ref === "self") return true;
-  }
-  return false;
-}
-
-function hasAeTemplate(item) {
-  for (const ae of item.effects?.contents ?? []) {
-    if (ae.name === "Dodge") return true;
-  }
-  return false;
+    system: { tags: ["buff"] },
+    statuses: ["fud-dodge"],
+    changes: [
+      // CSB column is `bonus_defense` (not `bonus_def`). CSB auto-prefixes
+      // bare keys to `system.props.<key>` per [[csb-ae-bare-key]]. mode 2
+      // = ADD. The value is the LITERAL skill level — CSB AEF doesn't
+      // expose `item.level` for transfer-mode AEs, so we bake at author
+      // time and re-bake on level-up via the planned hook.
+      { key: "bonus_defense", value: String(SL), mode: 2, priority: 20 },
+    ],
+  };
 }
 
 async function patchOne(item, log, ownerLabel) {
   let touched = false;
 
-  // 1. Reaction row — self-heal: rebuild the table from scratch with
-  // the canonical Dodge row, preserving any unrelated rows. Foundry's
-  // update() deep-merges so a stale `reaction_source: "self"` from an
-  // earlier migration version would otherwise survive; the delete-then-
-  // set pattern (same as the effect_table fix) clears the slot.
+  // 1. Strip any stale reaction_config_table — the earlier turn_start
+  //    refresh pattern lived in this table; the always-on pattern
+  //    doesn't need it. Preserve any unrelated rows.
   {
     const current = item.system?.props?.reaction_config_table ?? {};
     const preserved = {};
@@ -146,29 +105,20 @@ async function patchOne(item, log, ownerLabel) {
       if (row?.reaction_effect_ref === "dodge_apply_bonus") continue;
       preserved[String(idx++)] = row;
     }
-    const want = { ...preserved, [String(idx)]: REACTION_ROW };
-    if (JSON.stringify(current) !== JSON.stringify(want)) {
+    if (JSON.stringify(current) !== JSON.stringify(preserved)) {
       await item.update({ "system.props.-=reaction_config_table": null });
-      await item.update({
-        "system.props.reaction_config_table": want,
-        "system.props.isReaction": true,
-      });
-      log(`  ${ownerLabel} / "${item.name}": reaction_config_table normalised`);
+      const updates = { "system.props.reaction_config_table": preserved };
+      // If no reaction rows remain after the strip, clear isReaction.
+      if (Object.keys(preserved).length === 0) {
+        updates["system.props.isReaction"] = false;
+      }
+      await item.update(updates);
+      log(`  ${ownerLabel} / "${item.name}": reaction_config_table stripped`);
       touched = true;
     }
   }
 
-  // 2. Effect table — self-heal: replace the whole table with the
-  // canonical shape so previous bad rows (`dodge_target_self`,
-  // `target_ref: "dodge_target_self"`) get cleaned out. The labels we
-  // own ("dodge_apply_bonus", optionally "dodge_target_self") are
-  // dropped; any unrelated rows are preserved.
-  //
-  // Foundry's update() deep-merges by default — `item.update({ "...table": next })`
-  // would MERGE next per-key onto the existing table, leaving stale
-  // fields and unused row keys behind. We work around this by first
-  // deleting the table with the `-=` sentinel, THEN writing the new
-  // table in a second update. Two calls, but a clean replace.
+  // 2. Strip any stale effect_table — same reasoning.
   {
     const current = item.system?.props?.effect_table ?? {};
     const ownedLabels = new Set(["dodge_apply_bonus", "dodge_target_self"]);
@@ -178,33 +128,41 @@ async function patchOne(item, log, ownerLabel) {
       if (ownedLabels.has(String(row?.effect_label ?? ""))) continue;
       preserved[String(idx++)] = row;
     }
-    const want = { ...preserved };
-    for (const row of Object.values(EFFECT_TABLE)) {
-      want[String(idx++)] = row;
-    }
-    if (JSON.stringify(current) !== JSON.stringify(want)) {
+    if (JSON.stringify(current) !== JSON.stringify(preserved)) {
       await item.update({ "system.props.-=effect_table": null });
-      await item.update({ "system.props.effect_table": want });
-      log(`  ${ownerLabel} / "${item.name}": effect_table normalised`);
+      await item.update({ "system.props.effect_table": preserved });
+      log(`  ${ownerLabel} / "${item.name}": effect_table stripped`);
       touched = true;
     }
   }
 
-  // 3. AE template — self-heal: ensure the `Dodge` AE exists AND its
-  // change uses `bonus_defense` (not the earlier `bonus_def` typo).
+  // 3. Embedded AE template — self-heal: ensure exactly one "Dodge"
+  //    AE exists with the always-on shape (transfer:true, no duration,
+  //    correct value bake).
+  const skillLevel = Number(item.system?.props?.level ?? 1) || 1;
+  const wantAE = aeTemplateForLevel(skillLevel);
   const existing = item.effects?.contents?.find((e) => e.name === "Dodge");
   if (!existing) {
-    await item.createEmbeddedDocuments("ActiveEffect", [AE_TEMPLATE]);
-    log(`  ${ownerLabel} / "${item.name}": added Dodge AE template`);
+    await item.createEmbeddedDocuments("ActiveEffect", [wantAE]);
+    log(`  ${ownerLabel} / "${item.name}": added Dodge AE template (SL=${skillLevel})`);
     touched = true;
   } else {
-    const ch = existing.changes ?? [];
-    const wantKey = "bonus_defense";
-    const needsFix = !ch.some((c) => c?.key === wantKey)
-      || ch.some((c) => c?.key === "bonus_def");
+    const needsFix =
+      existing.transfer !== true
+      || (existing.duration?.turns ?? null) !== null
+      || (existing.duration?.rounds ?? null) !== null
+      || !(existing.changes ?? []).some((c) => c?.key === "bonus_defense" && String(c?.value) === String(skillLevel))
+      || (existing.changes ?? []).some((c) => c?.key === "bonus_def")
+      || (existing.changes ?? []).some((c) => c?.key === "bonus_defense" && String(c?.value).trim().toUpperCase() === "SL");
     if (needsFix) {
-      await existing.update({ changes: AE_TEMPLATE.changes });
-      log(`  ${ownerLabel} / "${item.name}": Dodge AE changes normalised`);
+      await existing.update({
+        transfer: true,
+        duration: { turns: null, rounds: null, seconds: null, type: "none" },
+        changes: wantAE.changes,
+        statuses: wantAE.statuses,
+        system: wantAE.system,
+      });
+      log(`  ${ownerLabel} / "${item.name}": Dodge AE normalised to transfer-mode (SL=${skillLevel})`);
       touched = true;
     }
   }
@@ -224,7 +182,6 @@ export async function migrate(game, log) {
   let skipped = 0;
   let nonBd = 0;
 
-  // World masters.
   for (const item of game.items?.contents ?? []) {
     if (item.name !== "Dodge") continue;
     if (!isInBattleDirectorTree(item)) { nonBd += 1; continue; }
@@ -233,7 +190,6 @@ export async function migrate(game, log) {
     else skipped += 1;
   }
 
-  // Actor copies.
   for (const actor of game.actors?.contents ?? []) {
     for (const item of actor.items?.contents ?? []) {
       if (item.name !== "Dodge") continue;

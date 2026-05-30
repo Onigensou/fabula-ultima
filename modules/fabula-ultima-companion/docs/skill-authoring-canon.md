@@ -45,6 +45,54 @@ behavior goes:
      ticker (see `[[ae-default-3-turn-duration]]`) or set explicit
      `duration.rounds`.
 
+5. **A *true* passive — always-on while the skill is owned, no
+   trigger, no chargeable count, no duration?**
+   → Embed an AE on the skill item with `transfer: true` and no
+     duration. CSB / Foundry V12 auto-applies the AE's changes to
+     the bearer on every sheet derive. **No reaction_config_table,
+     no effect_table, no apply_ae dispatch.** Examples: Dodge's
+     `bonus_defense +=` SL bonus; any "while you have this skill
+     equipped, X" rule. Canon shape:
+
+     ```js
+     {
+       name: "<Skill Name>",
+       transfer: true,           // ← the key bit
+       disabled: false,
+       duration: {},             // no turn / round ticking
+       changes: [
+         // Bare CSB column names (auto-prefixed to system.props.*).
+         // VALUES MUST BE LITERAL NUMBERS — CSB's AEF formula
+         // context does NOT expose `item.level` for transfer-mode
+         // AEs, so SL can't be read dynamically. Bake the current
+         // SL value at author / migration time.
+         { key: "bonus_defense", value: "1", mode: 2, priority: 20 },
+       ],
+       system: { tags: ["buff"] },   // opt-in classification
+       statuses: ["fud-<slug>"],     // V12 token-icon ring needs at least one
+       flags: { ... },               // no directorPermanent — not director-applied
+     }
+     ```
+
+     **SL re-bake gap.** Because the value is baked, a player
+     levelling the skill from 1 to 3 leaves the AE granting +1
+     instead of +3. A follow-up hook on `updateItem` should detect
+     `system.props.level` changes on BD-tree skill items and
+     re-bake any embedded transfer-mode AE's change values from a
+     formula stored in flags. Not shipped yet; for now, ship at
+     SL 1 and document the gap in the skill's spec comment.
+
+     **Conditional gates.** RAW rules like Dodge's "as long as you
+     have no shields and no martial armor" are NOT enforced at the
+     engine level — the director's `HAS_SHIELD` / `HAS_MARTIAL_ARMOR`
+     formulas don't bridge to CSB AEF, and `aeWhen` /
+     `aeStatusWhen` (the existing conditional-change-gate helpers)
+     only gate on actor status effects, not equipment. For now,
+     these gates are **player-honour** — the player simply doesn't
+     equip the disallowed gear when they want the bonus. Future
+     work: extend the conditional gate with `aeEquippedWhen("shield",
+     ...)`.
+
 ### Proposed rule 5 — scope by folder, not by name
 
 When migrating named items, **scope the migration to the
@@ -77,7 +125,7 @@ function actorCopyIsBattleDirector(item, masterIndexByUniqueId) {
 
 (More rules may be added as new patterns surface.)
 
-## Why the 4 rules matter
+## Why the 5 rules matter
 
 They map directly to the lint + spec-guard rules below:
 
@@ -87,6 +135,7 @@ They map directly to the lint + spec-guard rules below:
 | #2 requires reaction_config_table for external activations | Engine canon lint flags hardcoded name / flag checks in director source |
 | #3 puts behavior on the AE, not the skill | `REACTION_FLAG_MISSING` catches AEs with reactionConfig under skills lacking `isReaction:true` |
 | #4 uses the existing charges system | Reuse means no per-skill counter props (the deprecation table forbids those) |
+| #5 uses `transfer: true` for true passives, NOT a reaction trigger | (lint rule pending — `PASSIVE_FAKE_REACTION` should flag a `turn_start` row whose only effect is `apply_ae` of a self-AE) |
 
 ## Canonical homes
 
@@ -96,6 +145,7 @@ They map directly to the lint + spec-guard rules below:
 | Skill level (current SL) | `system.props.level` — set to `1` in every new spec (the FU Core convention: a newly acquired skill starts at SL 1). | leaving level blank → CSB inherits the template default which may not be 1 in practice |
 | Skill max level (cap on SL) | `system.props.max_level` — RAW values per FU Core: Active Skills 1-3 typically, Passive Skills 1-5, Heroic Skills 1, narrative Fabula-Point skills 1. Always set explicitly; never rely on template defaults. | leaving max_level blank → CSB inherits the template default of `"1"` which is wrong for any skill with a real progression |
 | Heroic skill flag | `system.props.isHeroic: true` — required on Heroic Skills + Heroic Spells; gates the `Battle Director / <Class> / Heroic Skill` folder placement + suppresses SL ranking UI (Heroics are 1-shot, no SL progression). | bare `folder: "Heroic Skill"` without isHeroic — placement works but the sheet shows the SL ranker which doesn't apply |
+| Always-on passive bonus (Dodge-style) | Embedded AE on the skill item with `transfer: true`, no duration, change value as a literal baked number. Foundry/CSB auto-applies to the bearer; the bonus disappears when the skill is removed. NO `reaction_config_table`, NO `effect_table`. | ~~turn_start force-mode reaction + apply_ae~~ — wastes a trigger dispatch on something that should just BE |
 | Engine-mandatory housekeeping (Protect charge refresh etc.) | reaction row with `reaction_passive_mode: "force"` — auto-fires AND stays invisible to UI (no pill, no menu blade, no Passive Manager toggle). Reserved for system mechanics the player shouldn't see as a choice. | ~~hardcoded engine flag, per-skill cleanup hook~~ |
 | "Fires when caster's spell hits an ally" | reaction row, trigger `creature_completes_spell` + `reaction_action_target: "ally"` | — |
 | "Fires after I deal damage" | reaction row, trigger `creature_deals_damage` + `reaction_source: "self"` | ~~props.post_damage_effect_ref~~ |
