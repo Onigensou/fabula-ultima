@@ -433,6 +433,17 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
     if (!actor) { warn(`spawn: actor ${item.actorUuid} not found`); continue; }
     const proto = actor.prototypeToken;
     const td = proto?.toObject?.() ?? {};
+    // Battle-ready sprite swap: if the actor declares a `sprite_battle`
+    // (an animated _Battler loop, e.g. the PCs Hina/Keren/Blanche/Zarg),
+    // spawn the battle token with that texture instead of the normal
+    // prototype sprite. These tokens are director-spawned and despawned at
+    // battle end (cleanupDirectorSpawnedTokens), so the "revert to normal"
+    // is automatic — the overworld token keeps its standard sprite. The WEBM
+    // is kicked to loop by ensureBattleStancePlaying below.
+    const battleSprite = String(actor.system?.props?.sprite_battle ?? "").trim();
+    if (battleSprite) {
+      td.texture = { ...(td.texture ?? {}), src: battleSprite };
+    }
     const width = (td.width ?? 1);
     const height = (td.height ?? 1);
     const gridSize = scene.grid?.size ?? 100;
