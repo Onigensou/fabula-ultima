@@ -22,6 +22,7 @@ import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
 import { TurnPicker, registerPlayerTurnPickerHandler } from "./turn-picker.js";
+import { registerPlayerReactionMenuHandler } from "./reaction-menu-player.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
@@ -756,11 +757,17 @@ Hooks.once("ready", () => {
       // eligible combatants so they can pick which of their PCs acts
       // next on the current side.
       registerPlayerTurnPickerHandler(getIntentChannel());
+      // Reaction menu — when the GM dispatches a standalone reaction
+      // (conflict_start, turn_start, etc.) for this player's owned
+      // reactor, spawn the token-anchored menu locally + emit
+      // REACTION_CHOICE back to the GM on click. See
+      // [[reaction-menu-on-token]] §5 + [[reaction-architecture]] Rule 1.
+      registerPlayerReactionMenuHandler(getIntentChannel());
       // Catch-all observer for any other surface kinds we haven't wired
       // up yet (future kinds). Lets us tell during testing that the
       // broadcast arrived even before the UI exists.
       getIntentChannel().onMenuOpen((menuSpec) => {
-        const wired = new Set(["compose-action", "action-card", "turn-picker"]);
+        const wired = new Set(["compose-action", "action-card", "turn-picker", "reaction-menu"]);
         if (!wired.has(menuSpec?.kind)) {
           log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
         }

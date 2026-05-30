@@ -32,8 +32,21 @@ export const INTENTS = Object.freeze({
   CONFIRM_ACTION:  "CONFIRM_ACTION",
   CANCEL_ACTION:   "CANCEL_ACTION",
 
-  // External — sent by Reaction menus (stubbed in v1)
-  REACTION_CHOICE: "REACTION_CHOICE",   // body: { reactorActorId, choice: rowKey | null }
+  // External — sent by Reaction UIs (pill on action card OR token-
+  // anchored menu) when a player owner clicks Apply / Skip / Pass /
+  // a specific reaction blade. Two body shapes share this intent type:
+  //
+  //   Pre-resolve pill click (action-card.js):
+  //     { rowKey, carrierUuid, decision: "apply" | "skip" }
+  //   Standalone / post-resolve menu click (standalone-reactions.js,
+  //   reaction-menu-player.js):
+  //     { reactorActorUuid, rowKey, carrierUuid, decision: "apply" | "pass" }
+  //
+  // The optional `reactorActorUuid` lets multi-reactor dispatch route
+  // a player's click back to the correct GM-side awaitIntent. Older
+  // handlers that ignore the field still work — the pill flow has
+  // historically been single-reactor (caster = reactor).
+  REACTION_CHOICE: "REACTION_CHOICE",
 
   // Universal escape hatch
   ABORT:           "ABORT",
