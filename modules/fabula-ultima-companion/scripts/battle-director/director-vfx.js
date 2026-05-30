@@ -217,3 +217,106 @@ export async function playActionNamecard(ar, { broadcast = true } = {}) {
     warn("playActionNamecard threw", e);
   }
 }
+
+// ── Battle-start "broken screen" transition ──────────────────────────────
+//
+// Director-native PORT of the legacy "BattleInit — Battle Transition" macro:
+// a full-screen orange ground-crack (the "broken screen") + a transition SFX
+// played on the CURRENT (source) scene right before the director raises the
+// curtain and swaps to the battle scene.
+//
+// Both halves broadcast to every client by design:
+//   - Sequencer screen-space effects fan out to all connected clients.
+//   - AudioHelper.play(data, true) broadcasts the SFX over Foundry's socket.
+// Players are still on the source scene at this point (the swap happens a
+// beat later in PREP), so everyone sees/hears the transition together.
+
+const BATTLE_TRANSITION_FX_FILE = "jb2a.impact.ground_crack.orange";
+const BATTLE_TRANSITION_SFX_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Random_Battle.mp3";
+
+export async function playBattleStartTransition({ waitMs = 900, sfxVol = 0.2 } = {}) {
+  try {
+    // SFX — broadcast to all clients.
+    try {
+      const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+      AH?.play?.({ src: BATTLE_TRANSITION_SFX_URL, volume: sfxVol, autoplay: true, loop: false }, true);
+    } catch (e) {
+      warn("battle transition SFX failed", e);
+    }
+
+    // Visual — Sequencer broadcasts screen-space effects to all clients.
+    if (typeof Sequence !== "undefined") {
+      try {
+        const w = canvas?.app?.renderer?.width ?? window.innerWidth ?? 1000;
+        const h = canvas?.app?.renderer?.height ?? window.innerHeight ?? 700;
+        new Sequence()
+          .effect()
+            .file(BATTLE_TRANSITION_FX_FILE)
+            .atLocation({ x: Math.floor(w / 2), y: Math.floor(h / 2) })
+            .scale(7)
+            .screenSpaceAboveUI()
+          .play();
+      } catch (e) {
+        warn("battle transition FX failed", e);
+      }
+    } else {
+      log("battle transition: Sequencer not loaded, visual skipped");
+    }
+
+    // Hold so the crack is visible on the source scene before the curtain
+    // raises + the scene swaps (matches legacy FX_DELAY_MS_BEFORE_SCENE).
+    if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+  } catch (e) {
+    warn("playBattleStartTransition threw", e);
+  }
+}
+
+// ── Battle BGM ───────────────────────────────────────────────────────────
+//
+// Director-native PORT of the legacy BGM start ("BattleInit — Preload Assets"):
+// resolve the chosen track NAME from the payload, stop any currently-playing
+// playlist sounds, then play the named track from whichever playlist holds it.
+// Foundry playlist sounds are globally synchronized, so every client hears it —
+// no manual broadcast needed.
+
+function getBgmNameFromPayload(payload) {
+  return (
+    payload?.battleConfig?.bgm ??
+    payload?.battleConfig?.battleBGM ??
+    payload?.bgm ??
+    payload?.battleBGM ??
+    payload?.music?.bgm ??
+    payload?.music?.battleBGM ??
+    payload?.chosenBgm ??
+    ""
+  );
+}
+
+export async function playBattleBgm(payload) {
+  try {
+    const name = String(getBgmNameFromPayload(payload) ?? "").trim();
+    if (!name) {
+      log("battle BGM: no track name in payload — skipping");
+      return;
+    }
+    // Stop currently-playing playlist sounds so the new BGM doesn't layer.
+    await Promise.allSettled(
+      (game.playlists ?? [])
+        .filter((pl) => pl.playing?.length)
+        .map((pl) => pl.stopAll())
+    );
+    // Find the named sound across every playlist and play it (broadcasts).
+    for (const pl of game.playlists) {
+      const snd = pl.sounds?.getName?.(name);
+      if (snd) {
+        await pl.playSound(snd);
+        log(`battle BGM playing: ${pl.name} / ${snd.name}`);
+        return;
+      }
+    }
+    warn(`battle BGM track not found in any playlist: "${name}"`);
+  } catch (e) {
+    warn("playBattleBgm threw", e);
+  }
+}

@@ -25,7 +25,7 @@
 
 import { log, warn, err } from "./logger.js";
 import { buildDirectorCombat } from "./director-combat.js";
-import { DIRECTOR_STATIC_URLS } from "./director-vfx.js";
+import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -534,6 +534,13 @@ export async function runDirectorInit(payload) {
   // If you call runDirectorInit directly outside the FSM (rare), call
   // LegacySuppressor.suppress() yourself first.
 
+  // ── 1b. Battle-start "broken screen" transition — orange ground-crack FX +
+  // SFX on the CURRENT (source) scene, before the curtain raises and we swap
+  // to the battle scene. Ports the legacy "BattleInit — Battle Transition"
+  // cinematic; broadcasts to all clients. Awaited so the crack is visible
+  // before the curtain goes black.
+  await playBattleStartTransition({ waitMs: 900 });
+
   // ── 2. Raise curtain — black screen for the entire prep phase.
   await raiseCurtain();
 
@@ -614,6 +621,13 @@ export async function runDirectorInit(payload) {
   // their own animation). Done BEFORE the curtain drops so the animations
   // are visibly running the moment the user sees the tokens.
   await ensureBattleStancePlaying([...partyTokens, ...enemyTokens]);
+
+  // ── 8c. Start battle BGM in parallel with the curtain drop so the music
+  // begins exactly as the scene reveals (cinematic). Fire-and-forget — the
+  // playlist write broadcasts to all clients on its own; we don't block the
+  // reveal on it. Ports the legacy BattleInit BGM start (plays the chosen
+  // track name from whichever playlist holds it).
+  playBattleBgm(payload).catch((e) => warn("PREP: playBattleBgm threw", e));
 
   // ── 9. Drop curtain — only now, after preload ACKs are in and stance
   // animations are kicking. Tokens are positioned but still alpha=0 so
