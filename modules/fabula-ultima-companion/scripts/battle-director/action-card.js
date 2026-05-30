@@ -29,6 +29,7 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
+import { ReactionAppliedChip } from "./reaction-applied-chip.js";
 
 // Resolve which active non-GM user owns the actor at `actorUuid`.
 // Returns userId or null. Used to gate which player's mirror card
@@ -2936,6 +2937,59 @@ export async function postActionCard({ director, kind, payload }) {
       if (p.mode === "on" || p.mode === "force") reactionDecisionMap.set(key, "apply");
       if (p.mode === "off") reactionDecisionMap.set(key, "skip");
     }
+
+    // Stage-3 applied chip ([[reaction-architecture]] Rule 1 stage 3):
+    // visible to every client (GM + all players) so the table sees
+    // which reaction fired without parsing chat logs. Skips "force"
+    // mode per [[force-mode-for-engine-mandatory-reactions]] —
+    // engine-mandatory reactions stay UI-invisible by design.
+    //
+    // Reactor in pre-resolve = action's caster, so the chip anchors
+    // over the caster's token. Same envelope shape as the standalone
+    // path (kind: "reaction-applied"), reused on the player side by
+    // reaction-menu-player.js's MENU_OPEN handler.
+    const allActivePlayersForApplied = (game.users?.contents ?? [])
+      .filter((u) => !u.isGM && u.active)
+      .map((u) => u.id);
+    const reactorTokenUuidForApplied = payload?.attacker?.tokenUuid ?? null;
+    function announceAppliedReaction(p) {
+      if (!p || p.mode === "force") return;
+      const spec = {
+        kind: "reaction-applied",
+        combatId: director?.combatId ?? null,
+        tokenUuid: reactorTokenUuidForApplied,
+        label: p.carrierName ?? "Reaction",
+        icon: p.carrierImg ?? null,
+      };
+      try {
+        const token = reactorTokenUuidForApplied
+          ? canvas?.tokens?.placeables?.find(
+              (t) => t.document?.uuid === reactorTokenUuidForApplied
+            )
+          : null;
+        if (token) {
+          ReactionAppliedChip.spawn({
+            token,
+            label: spec.label,
+            icon: spec.icon,
+          });
+        }
+      } catch (e) { warn("action-card: ReactionAppliedChip.spawn threw", e); }
+      const channel = director?.intentChannel ?? null;
+      if (channel) {
+        for (const uid of allActivePlayersForApplied) {
+          try {
+            channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
+          } catch (e) { warn("action-card: broadcastMenuOpen(applied) threw", e); }
+        }
+      }
+    }
+    // Fire the chip for "on"-mode auto-applied pills now that the
+    // decision map is seeded. Skip "force" (silent) + "off" (didn't
+    // apply) + "ask" (chip fires when player records the decision).
+    for (const p of prePassives) {
+      if (p.mode === "on") announceAppliedReaction(p);
+    }
     function snapshotReactionDecisions() {
       const out = [];
       for (const p of prePassives) {
@@ -2991,6 +3045,16 @@ export async function postActionCard({ director, kind, payload }) {
       if (cardEl) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
+      }
+      // Stage-3 applied chip broadcast — only on apply. Non-owners
+      // currently see the action-card mirror frozen at initial render
+      // (no rebroadcast on pill state change), so the chip is the only
+      // feedback they get when a reaction actually fires.
+      if (decision === "apply") {
+        const prePassive = prePassives.find(
+          (p) => p.rowKey === rowKey && p.carrierUuid === carrierUuid
+        );
+        if (prePassive) announceAppliedReaction(prePassive);
       }
       // Phase 3: live preview update — recompute per-target damage and
       // patch the result spans whenever an add_damage decision toggles.
