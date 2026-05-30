@@ -18,10 +18,10 @@
         "Core heroic skills (universal + class-bound, brief)",
         "Core heroic skills (universal + class-bound, brief)",
         "Core heroic skills (universal + class-bound, brief)",
-        "Core heroic skills (universal + class-bound, brief)"
+        "Core heroic skills (universal + class-bound, brief)",
+        "Core spells (Elementalist + Entropist + Spiritist tables)"
       ],
       "pending": [
-        "Core spells (class spell lists)",
         "Atlas additions (High/Natural/Techno/Low Fantasy)",
         "Bonus additions (Necromancer, Halloween x2, Ace, Arcane)",
         "Playtest patches (chronological — newest wins)"
@@ -363,7 +363,164 @@
           }
         }
       ],
-      "spells": []
+      "spells": [
+        {
+          "name": "Elemental Shroud",
+          "is_offensive": false,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Scene",
+          "description": "You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: air, bolt, earth, fire or ice. Until this spell ends, each target gains Resistance against the chosen damage type.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7566
+          }
+        },
+        {
+          "name": "Elemental Weapon",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "One weapon",
+          "duration": "Scene",
+          "description": "You imbue a weapon with elemental energy. Choose a damage type: air, bolt, earth, fire, or ice. Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a free attack with it as part of the same action.\n\nThis spell can only be cast on a weapon equipped by a willing creature.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7572
+          }
+        },
+        {
+          "name": "Flare",
+          "is_offensive": true,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You channel a single ray of fire towards your foe, its temperature so high that it will pierce through most defenses. The target suffers HR + 25 fire damage.\n\nDamage dealt by this spell ignores Resistances.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7581
+          }
+        },
+        {
+          "name": "Fulgur",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers HR + 15 bolt damage.\n\nOpportunity: Each target hit by this spell suffers dazed.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7588
+          }
+        },
+        {
+          "name": "Glacies",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You coat your foes under a thick layer of frost. Each target hit by this spell suffers HR + 15 ice damage.\n\nOpportunity: Each target hit by this spell suffers slow.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7595
+          }
+        },
+        {
+          "name": "Iceberg",
+          "is_offensive": true,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers HR + 25 ice damage.\n\nDamage dealt by this spell ignores Resistances.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7602
+          }
+        },
+        {
+          "name": "Ignis",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You unleash a searing barrage against your foes, conjuring flames out of thin air. Each target hit by this spell suffers HR + 15 fire damage.\n\nOpportunity: Each target hit by this spell suffers shaken.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7618
+          }
+        },
+        {
+          "name": "Soaring Strike",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "Self",
+          "duration": "Instantaneous",
+          "description": "The wind carries your strikes across the battlefield. You may immediately perform a free attack with a melee weapon you have equipped. This attack may target creatures that can only be targeted by ranged attacks.\n\nIf you used a weapon belonging to the brawling or spear Category for this attack, it deals 5 extra damage.\n\nIf you hit a flying target with this attack, you may force them to land immediately.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7625
+          }
+        },
+        {
+          "name": "Terra",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "Spires of jagged rock erupt from the ground beneath your foes, closing around them. Each target hit by this spell suffers HR + 15 earth damage.This spell cannot target creatures who are flying, floating, falling, or otherwise in mid-air.\n\nOpportunity: Each target hit by this spell performs one fewer action on their next turn (to a minimum of 0 actions).",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7636
+          }
+        },
+        {
+          "name": "Thunderbolt",
+          "is_offensive": true,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You send lightning striking at your foe. The target suffers HR + 25 bolt damage. Damage dealt by this spell ignores Resistances.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7645
+          }
+        },
+        {
+          "name": "Ventus",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You summon the power of winds against your enemy. Each target hit by this spell suffers HR + 15 air damage.\n\nOpportunity: Each flying target hit by this spell is forced to land immediately.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7650
+          }
+        },
+        {
+          "name": "Vortex",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "Self",
+          "duration": "Scene",
+          "description": "A roaring gale surrounds you, blowing away arrows and bullets. Until this spell ends, you gain a +2 bonus to your Defense against ranged attacks.",
+          "source": {
+            "book": "core",
+            "section": "ELEMENTALIST SPELLS",
+            "line": 7657
+          }
+        }
+      ]
     },
     "Entropist": {
       "book": "core",
@@ -448,7 +605,151 @@
           }
         }
       ],
-      "spells": []
+      "spells": [
+        {
+          "name": "Acceleration",
+          "is_offensive": false,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Scene",
+          "description": "You bend the fabric of time. Until this spell ends, the target gains the ability to perform a single additional action during each of their turns. Once the target has performed a total of two additional actions granted by this spell, this spell ends.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7748
+          }
+        },
+        {
+          "name": "Anomaly",
+          "is_offensive": true,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Scene",
+          "description": "You alter the very nature of your target. Until this spell ends, if the target would suffer damage of a type they Absorb or are Immune to, they are instead treated as if they were Vulnerable to that damage type. Once that happens, this spell ends.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7754
+          }
+        },
+        {
+          "name": "Dark Weapon",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "One equipped weapon",
+          "duration": "Scene",
+          "description": "You imbue a weapon with dark energy. Until this spell ends, all damage dealt by the weapon becomes of the dark type. If you have that weapon equipped while you cast this spell, you may perform a free attack with it as part of the same action.\n\nThis spell can only be cast on a weapon equipped by a willing creature.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7760
+          }
+        },
+        {
+          "name": "Dispel",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a duration of Scene, they are no longer affected by any of those spells instead.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7768
+          }
+        },
+        {
+          "name": "Divination",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "Self",
+          "duration": "Scene",
+          "description": "You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a fumble nor a critical success, you may force that creature to reroll both dice. Once you have forced two rerolls this way, this spell ends.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7774
+          }
+        },
+        {
+          "name": "Drain Spirit",
+          "is_offensive": true,
+          "mp": "5",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You consume a creature's psyche. The target loses HR + 15 Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7780
+          }
+        },
+        {
+          "name": "Drain Vigor",
+          "is_offensive": true,
+          "mp": "10",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "W  You steal another creature's life force. The target suffers HR + 15 dark damage. Then, you recover an amount of Hit Points equal to half the Hit Points loss they 192   suffered (if the loss was reduced to 0 in some way, you recover none).\n\nGamble                                    up to 20  Special             Instantaneous\n\nYou summon a vortex of chaotic energy. Roll your current Willpower die once for every 10 Mind Points spent while casting this spell, then keep the single die you prefer: the number on that die determines the effects of this spell.\n\n1 You lose half of your current Hit Points and half of your current Mind Points.\n\n2-3 Each creature present on the scene, including yourself, suffers poisoned.\n\n4-6 Each creature present on the scene, including yourself, suffers slow.\n\n7-8 Choose up to three creatures you can see: each of them recovers 50 Hit Points and also recovers from all status effects.\n\n9+ Choose any number of creatures you can see: each of them suffers 30 damage.The damage type is determined randomly by rolling a d6: 1. air 2. bolt 3. dark 4. earth 5. fire 6. poison",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7786
+          }
+        },
+        {
+          "name": "Mirror",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "One creature",
+          "duration": "Scene",
+          "description": "You twist the laws of magic. Until this spell ends, if an offensive (r) spell is cast on the target, the creature who cast that offensive spell will be targeted in their stead (any other targets of the offensive spell will be targeted as normal). Once that happens, this spell ends.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7816
+          }
+        },
+        {
+          "name": "Omega",
+          "is_offensive": true,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You invoke doom on your foe, turning strength into frailty. The target loses an amount of Hit Points equal to20 + half the target's level.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7823
+          }
+        },
+        {
+          "name": "Stop",
+          "is_offensive": true,
+          "mp": "10",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn (to a minimum of 0 actions).",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7828
+          }
+        },
+        {
+          "name": "Umbra",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "A storm of dark energy turns matter into ash. Each target hit by this spell suffers     W HR + 15 dark damage.\n\nOpportunity: Each target hit by this spell suffers weak.",
+          "source": {
+            "book": "core",
+            "section": "ENTROPIST SPELLS",
+            "line": 7833
+          }
+        }
+      ]
     },
     "Fury": {
       "book": "core",
@@ -1026,7 +1327,164 @@
           }
         }
       ],
-      "spells": []
+      "spells": [
+        {
+          "name": "Aura",
+          "is_offensive": false,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Scene",
+          "description": "You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their Magic Defense as being equal to 12 against any effects that target it (they are still free to use their normal Defense score if higher than 12).",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8378
+          }
+        },
+        {
+          "name": "Awaken",
+          "is_offensive": false,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Scene",
+          "description": "You allow a creature to focus their vital energy into accomplishing what they previously could not. Choose one Attribute: Dexterity, Insight, Might, or Willpower. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher (up to a maximum of d12).",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8385
+          }
+        },
+        {
+          "name": "Barrier",
+          "is_offensive": false,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Scene",
+          "description": "You project your soul outside your body and weave it into a barrier to protect the targets from attacks. Until this spell ends, each target may treat their Defense as being equal to 12 against any effects that target it (they are still free to use their normal Defense score if higher than 12).",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8392
+          }
+        },
+        {
+          "name": "Cleanse",
+          "is_offensive": false,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You strengthen and purify the soul energy coursing through your companions. Each target recovers from all status effects.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8399
+          }
+        },
+        {
+          "name": "Enrage",
+          "is_offensive": true,
+          "mp": "10",
+          "target": "One creature",
+          "duration": "Instantaneous",
+          "description": "You cause a creature to lose any semblance of temper and act brazenly. The target suffers enraged and cannot perform the Guard or Spell actions during their next turn.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8404
+          }
+        },
+        {
+          "name": "Hallucination",
+          "is_offensive": true,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You alter the senses of your enemies, causing them to experience bizarre or frightening hallucinations. Choose dazed or shaken: you inflict the chosen status effect on each target hit by this spell.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8409
+          }
+        },
+        {
+          "name": "Heal",
+          "is_offensive": false,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You invigorate your companions, soothing their pain and healing their fatigue. Each target recovers 40 Hit Points. This amount increases to 50 Hit Points if you are level 20 or higher, or to 60 Hit Points if you are level 40 or higher.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8424
+          }
+        },
+        {
+          "name": "Lux",
+          "is_offensive": true,
+          "mp": "10 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You focus your inner energy into a barrage of blinding soul rays. Each target hit by this spell suffers HR + 15 light damage.\n\nOpportunity: Each target hit by this spell suffers dazed.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8430
+          }
+        },
+        {
+          "name": "Mercy",
+          "is_offensive": false,
+          "mp": "20",
+          "target": "One creature",
+          "duration": "Scene",
+          "description": "You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left standing with exactly 1 Hit Point. Once that happens, this spell ends.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8437
+          }
+        },
+        {
+          "name": "Reinforce",
+          "is_offensive": false,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Scene",
+          "description": "You protect the targets from attacks that would corrupt their body and spirit. Choose dazed, enraged, poisoned, shaken, slow, or weak. Until this spell ends, each target becomes immune to the chosen status effect.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8443
+          }
+        },
+        {
+          "name": "Soul Weapon",
+          "is_offensive": false,
+          "mp": "10",
+          "target": "One equipped weapon",
+          "duration": "Scene",
+          "description": "You imbue a weapon with the cleansing energy of your spirit. Until this spell ends, all damage dealt by the weapon becomes of the light type. If you have that weapon equipped while you cast this spell, you may perform a free attack with it as part of the same action.\n\nThis spell can only be cast on a weapon equipped by a willing creature.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8449
+          }
+        },
+        {
+          "name": "Torpor",
+          "is_offensive": true,
+          "mp": "5 × T",
+          "target": "Up to three creatures",
+          "duration": "Instantaneous",
+          "description": "You smother the soul energy coursing through the bodies of your foes, hindering their movements. Choose slow or weak: you inflict the chosen status effect on each target hit by this spell.",
+          "source": {
+            "book": "core",
+            "section": "SPIRITIST SPELLS",
+            "line": 8458
+          }
+        }
+      ]
     },
     "Tinkerer": {
       "book": "core",
