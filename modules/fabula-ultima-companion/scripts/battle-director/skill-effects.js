@@ -1134,6 +1134,7 @@ export async function applyEffectRow(row, ctx) {
     case "open_action_menu": return applyOpenActionMenuEffect(row, ctx);
     case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
+    case "consume_resource": return applyConsumeResourceEffect(row, ctx);
     // add_damage is data-only — read by `computeSenderDamageBonuses`
     // which walks acceptedPrePassives BEFORE the standard fire loop and
     // accumulates per-target base-damage bonuses. By the time
@@ -1144,7 +1145,6 @@ export async function applyEffectRow(row, ctx) {
     case "add_damage":
       return { ok: true, kind, applied: [], reason: "data-only" };
     // B.2+:
-    case "consume_resource":
     case "redirect_target":
       warn(`skill-effects: effect_kind "${kind}" not implemented in B.1; skipping row "${row.effect_label}"`);
       return { ok: true, kind, applied: [], reason: "not-implemented" };
@@ -1285,6 +1285,69 @@ async function applyGrantEffect(row, ctx) {
   }
   log(`skill-effects.grant: row "${row.effect_label}" applied ${amount} ${resource} to ${applied.length} actor(s)`);
   return { ok: true, kind: "grant", applied };
+}
+
+// ── consume_resource ───────────────────────────────────────────────────
+//
+// Spend a fixed amount of a resource (mp/hp/ip) on the target(s). Mirrors
+// the legacy reaction-grant.js semantics: the cost is debited at chain
+// fire time, BEFORE the next chain step. On insufficient funds, the
+// chain aborts (`on_empty: "abort"` default — only "abort" is supported
+// in this shipping; other behaviors deferred).
+//
+// Row fields:
+//   consume_resource | grant_resource — "mp" | "hp" | "ip" (latter alias
+//                                       for legacy compatibility)
+//   consume_amount   | grant_amount   — formula string (SL, CHAR_LEVEL, ...)
+//   target_ref                        — defaults to "self" if omitted
+//   on_empty                          — "abort" (default) | "warn" | "skip"
+//
+// Used by High Speed (spend 10 MP for a free action), Stolen Time
+// (variable cost), and any other "spend X to fire next step" pattern.
+async function applyConsumeResourceEffect(row, ctx) {
+  const resource = String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase();
+  const def = RESOURCE_PROPS[resource];
+  if (!def) {
+    warn(`skill-effects.consume_resource: unknown resource "${resource}" on row "${row.effect_label}"`);
+    return { ok: false, kind: "consume_resource", reason: "unknown-resource", abort: true };
+  }
+  const targetRef = row.target_ref || "self";
+  const targetResult = await resolveTargetRef(targetRef, ctx);
+  if (!targetResult.ok || !targetResult.tokens.length) {
+    return { ok: false, kind: "consume_resource", reason: "no-targets", abort: true };
+  }
+  const resolver = buildSkillResolver({
+    actor: ctx.reactorActor,
+    payload: ctx.payload,
+    skill: ctx.skill,
+    round: ctx.dCombat?.round ?? 0,
+  });
+  const amount = evaluateFormula(row.consume_amount ?? row.grant_amount, resolver, 0);
+  if (amount <= 0) {
+    log(`skill-effects.consume_resource: amount evaluated to ${amount} (row "${row.effect_label}"); no debit`);
+    return { ok: true, kind: "consume_resource", applied: [], reason: "zero-amount" };
+  }
+  const onEmpty = String(row.on_empty ?? "abort").toLowerCase();
+  const applied = [];
+  for (const token of targetResult.tokens) {
+    const actor = token.actor;
+    if (!actor) continue;
+    const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
+    if (cur < amount) {
+      log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${amount}; ${onEmpty}`);
+      if (onEmpty === "abort") {
+        return { ok: false, kind: "consume_resource", reason: "insufficient", abort: true };
+      }
+      // Other behaviors (skip / warn) would continue here — kept minimal for ship.
+      continue;
+    }
+    const result = await writeResourceDelta(actor, def, -amount);
+    if (result.ok) {
+      applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
+    }
+  }
+  log(`skill-effects.consume_resource: row "${row.effect_label}" debited ${amount} ${resource} from ${applied.length} actor(s)`);
+  return { ok: true, kind: "consume_resource", applied };
 }
 
 async function writeResourceDelta(actor, resourceDef, delta) {
@@ -1702,6 +1765,43 @@ function parseEffectRefList(raw) {
 // Passive paths (`ctx.isPassive === true`) auto-pick the first option
 // — passives must never prompt mid-resolution.
 async function applyOpenActionMenuEffect(row, ctx) {
+  // Free-action mode (legacy reaction-grant.js parity). When `free_mode`
+  // is true, the row does NOT show an inline picker; instead it
+  // registers a free-action grant on the reactor and spawns a mini-turn
+  // via composeAction restricted to `allowed_types`. Used by High Speed,
+  // Acceleration, Painful Lesson, Stolen Time, etc.
+  if (row.free_mode === true) {
+    const { freeActions } = await import("./free-actions.js");
+    const reactor = ctx.reactorActor;
+    if (!reactor) {
+      warn(`skill-effects.open_action_menu free_mode: no reactorActor on ctx`);
+      return { ok: false, kind: "open_action_menu", reason: "no-reactor" };
+    }
+    const allowedRaw = String(row.allowed_types ?? "").trim();
+    const enabledLabels = allowedRaw
+      ? allowedRaw.split(/[,\n]/).map(s => s.trim()).filter(Boolean)
+      : [];
+    const resolver = buildSkillResolver({
+      actor: reactor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    });
+    const checkBonus  = Math.max(0, evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0);
+    const damageBonus = Math.max(0, evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0);
+    const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
+    freeActions.set(reactor.id, {
+      enabledLabels, checkBonus, damageBonus,
+      sourceLabel,
+      sourceItemUuid: ctx.skill?.uuid ?? null,
+    });
+    log(`open_action_menu free_mode: registered "${sourceLabel}" grant for ${reactor.name} (enabled: ${enabledLabels.join(", ") || "any"}, +${checkBonus} check / +${damageBonus} dmg)`);
+    // The grant lives until consumed. composeAction inspects the registry
+    // at Octopath-spawn time and (a) filters buttons to `enabledLabels`,
+    // (b) injects `checkBonus` / `damageBonus` into the action bundle so
+    // the COMPUTE roll picks them up, and (c) clears the grant after
+    // the action commits — letting the player's regular turn-budget
+    // action run after. See [[free-actions]].
+    return { ok: true, kind: "open_action_menu", freeMode: true, applied: [{ actor: reactor.uuid, grant: { enabledLabels, checkBonus, damageBonus, sourceLabel } }] };
+  }
+
   // Resolve options. Prefer refs (CSB-friendly) over inline.
   const refs = parseEffectRefList(row.menu_option_refs);
   let options = [];

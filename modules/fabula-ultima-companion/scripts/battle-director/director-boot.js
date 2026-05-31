@@ -738,10 +738,28 @@ Hooks.once("ready", () => {
           .map((u) => ({ id: u.id, name: u.name }));
       },
     },
+    // Free-action grant registry — singleton, accessed by:
+    //   - skill-effects' open_action_menu free_mode (writer)
+    //   - composeAction (reader; filters Octopath; injects checkBonus on
+    //     pick; clears grant after action commits)
+    // See [[free-actions]] for the grant shape + lifecycle.
+    freeActions: (() => {
+      try {
+        // Dynamic import — keeps the boot graph linear (no circular import
+        // through state-handlers). Module is self-contained; one-time load.
+        return require?.("./free-actions.js")?.freeActions ?? null;
+      } catch { return null; }
+    })(),
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
   };
+  // Async-load freeActions onto the api surface (require isn't available
+  // in ESM; the eager-loaded value above is a stub fallback). The async
+  // path is the real wire.
+  import("./free-actions.js").then((m) => {
+    exp.battleDirector.freeActions = m.freeActions;
+  }).catch((e) => warn("director-boot: free-actions import failed", e));
   log("Battle Director API registered at FUCompanion.api.experimental.battleDirector");
 
   // Install the IntentChannel singleton on EVERY client (not just GM).
