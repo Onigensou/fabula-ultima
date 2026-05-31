@@ -598,6 +598,91 @@ async function promptPassiveOptin(itemName, reactorActor, description) {
 //               in the menu as an active blade; the caller is expected
 //               to treat its mode as "ask" regardless of the row value.
 //
+// Classify a reaction row as "action-creating" or "state-only" by
+// walking its effect chain from `reaction_effect_ref` through any
+// `chain` / `open_action_menu` references. An action-creating reaction
+// is one whose acceptance would spawn a player-driven action — a free
+// action (open_action_menu free_mode) OR (future) a post-resolve card
+// like Counterattack. State-only reactions resolve immediately
+// (apply_ae, grant, modify_damage_taken, etc.).
+//
+// Used by the multi-reactor dispatch orchestrator: action-creating
+// reactions are EXCLUSIVE (one runs at a time, others' pills show
+// "<actor> Acting" until re-gate); state-only reactions are
+// CONCURRENT (fire freely).
+//
+// Effect_kinds that mark a row as action-creating:
+//   - `open_action_menu` with `free_mode: true` → enqueues free action
+//   - (future) `spawn_action_card` / `post_resolve_card` etc.
+//
+// Returns `true` if any reachable effect in the chain is action-creating.
+export function isActionCreatingReaction(item, reactionRow) {
+  if (!item || !reactionRow) return false;
+  const startRef = String(reactionRow.reaction_effect_ref ?? "").trim();
+  if (!startRef) return false;
+
+  // Build a lookup of effect rows by label from item's effect_table.
+  const table = item.system?.props?.effect_table ?? {};
+  const byLabel = new Map();
+  for (const r of Object.values(table)) {
+    if (!r || r.$deleted) continue;
+    const label = String(r.effect_label ?? "").trim();
+    if (label) byLabel.set(label, r);
+  }
+  // Also walk inline `menu_options` arrays for open_action_menu rows;
+  // each option carries its own effect_kind which could be action-
+  // creating.
+  function rowIsActionCreating(row) {
+    if (!row) return false;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    // open_action_menu with free_mode → enqueues free action via FREE_ACTION_WINDOW
+    if (kind === "open_action_menu" && row.free_mode === true) return true;
+    // Future post-resolve card spawns wire here. Add new effect_kinds
+    // to this list as they ship.
+    // if (kind === "spawn_action_card") return true;
+    return false;
+  }
+
+  const seen = new Set();
+  const queue = [startRef];
+  while (queue.length) {
+    const label = queue.shift();
+    if (seen.has(label)) continue;
+    seen.add(label);
+    const row = byLabel.get(label);
+    if (!row) continue;
+    if (rowIsActionCreating(row)) return true;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    // Chain: walk every step.
+    if (kind === "chain") {
+      const steps = String(row.chain_steps ?? "").split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+      for (const s of steps) queue.push(s);
+      continue;
+    }
+    // open_action_menu (non-free_mode): walk both refs form + inline.
+    if (kind === "open_action_menu") {
+      const refs = String(row.menu_option_refs ?? "").split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+      for (const ref of refs) queue.push(ref);
+      const opts = row.menu_options;
+      const inline = Array.isArray(opts) ? opts
+        : (opts && typeof opts === "object" ? Object.values(opts) : []);
+      for (const opt of inline) {
+        if (opt && typeof opt === "object" && rowIsActionCreating(opt)) return true;
+      }
+    }
+  }
+  return false;
+}
+
+// AE-borne reactions (carrier is an AE, not an Item). Same walker,
+// reads from the AE's flags.fabula-ultima-companion.reactionConfig.
+export function isActionCreatingReactionForAE(ae, reactionRow) {
+  if (!ae || !reactionRow) return false;
+  const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
+  const fakeItem = { system: { props: { effect_table: cfg?.effect_table ?? {} } } };
+  return isActionCreatingReaction(fakeItem, reactionRow);
+}
+
 // Default behavior (no opts) preserves the legacy pre-resolve pill flow:
 // only passive rows are returned. Pass `includeManual: true` (used by
 // the token-anchored reaction menu for standalone trigger sites where
