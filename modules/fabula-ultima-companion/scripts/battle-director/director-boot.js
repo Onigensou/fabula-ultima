@@ -521,6 +521,18 @@ async function resumeFromSavedState({ scene, state }) {
     }
   } else if (dCombat.currentTurnResolved) {
     resumeAt = STATES.TURN_END;
+  } else if ((dCombat.round ?? 0) === 0) {
+    // "Battle Start" rewind / cold resume — conflict_start hasn't
+    // completed yet (round still 0 means we landed on the snapshot
+    // PREP.onEnter saves AFTER building dCombat but BEFORE handing off
+    // to STANDALONE_REACTION_WINDOW). Re-enter the same handoff so
+    // conflict_start reactions (High Speed pill, future Sentinel, etc.)
+    // re-fire — the standaloneFired flag was cleared by the rewind
+    // pipeline, so dispatchStandaloneTrigger sees fresh candidates.
+    director.ctx.standaloneTrigger = "conflict_start";
+    director.ctx.standaloneAfter   = STATES.ROUND_START;
+    director.ctx.standalonePayload = null;
+    resumeAt = STATES.STANDALONE_REACTION_WINDOW;
   } else {
     resumeAt = STATES.TURN_START;
   }
