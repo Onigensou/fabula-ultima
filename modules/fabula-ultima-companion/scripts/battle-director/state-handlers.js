@@ -3628,17 +3628,25 @@ const RoundEnd = {
 // dispatch survives F5 mid-reaction.
 const StandaloneReactionWindow = {
   async onEnter(director) {
-    const trigger = director.ctx.standaloneTrigger ?? null;
-    const after   = director.ctx.standaloneAfter ?? null;
-    const payload = director.ctx.standalonePayload ?? null;
-    if (!trigger || !after) {
-      // Defensive — should never happen in normal flow because every
-      // predecessor sets these. Log + forward so the FSM doesn't wedge.
-      warn(`STANDALONE_REACTION_WINDOW: missing trigger/after (trigger=${trigger}, after=${after}); passing through`);
+    const ctx = director.ctx;
+    const trigger = ctx.standaloneTrigger ?? null;
+    const payload = ctx.standalonePayload ?? null;
+
+    // Track the original "after" target across the SRW↔FAW loop. First
+    // entry captures it; subsequent re-entries (after a FREE_ACTION_WINDOW
+    // drain) reuse the cached value. Cleaned up on exit so the next
+    // standalone trigger starts fresh.
+    if (ctx._srwFinalTarget === undefined) {
+      ctx._srwFinalTarget = ctx.standaloneAfter ?? null;
+    }
+    const finalTarget = ctx._srwFinalTarget;
+    if (!trigger || !finalTarget) {
+      warn(`STANDALONE_REACTION_WINDOW: missing trigger/finalTarget (trigger=${trigger}, final=${finalTarget}); passing through`);
+      delete ctx._srwFinalTarget;
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
-    log(`STANDALONE_REACTION_WINDOW: ${trigger} → ${after}`);
+    log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget})`);
     try {
       const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
       if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
@@ -3646,19 +3654,30 @@ const StandaloneReactionWindow = {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }
     // If any reaction enqueued a free-action grant (open_action_menu
-    // free_mode), detour through FREE_ACTION_WINDOW before continuing to
-    // the original `after`. Stashing the target lets the window restore
-    // the flow once the queue drains.
+    // free_mode), detour through FREE_ACTION_WINDOW + loop BACK to SRW
+    // so deferred reactors (peers stopped by the action-creating commit)
+    // get re-dispatched after the action plays out. The standaloneFired
+    // scene flag tracks who already decided so re-dispatch only spawns
+    // menus for un-decided reactors. Loop terminates when the queue is
+    // empty AND dispatch produces no new reactor menus → SRW routes to
+    // _srwFinalTarget.
     try {
       const { freeActionQueue } = await import("./free-action-queue.js");
       if (!freeActionQueue.isEmpty()) {
-        log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW`);
-        director.ctx._postFreeActionTarget = director.ctx.standaloneAfter;
-        director.ctx.standaloneAfter = STATES.FREE_ACTION_WINDOW;
+        log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW → loop back to SRW`);
+        ctx.standaloneAfter = STATES.FREE_ACTION_WINDOW;
+        ctx._postFreeActionTarget = STATES.STANDALONE_REACTION_WINDOW;
+        director.enqueue({ type: INTENTS.INTERNAL_DONE });
+        return;
       }
     } catch (e) {
       warn("STANDALONE_REACTION_WINDOW: free-action queue check threw", e);
     }
+    // No pending actions — all reactors decided (or none matched). Exit.
+    log(`STANDALONE_REACTION_WINDOW: ${trigger} loop complete → ${finalTarget}`);
+    ctx.standaloneAfter = finalTarget;
+    delete ctx._srwFinalTarget;
+    delete ctx._postFreeActionTarget;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };

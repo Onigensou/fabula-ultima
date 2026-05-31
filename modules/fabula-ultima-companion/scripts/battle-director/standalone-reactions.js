@@ -56,6 +56,25 @@ import { INTENTS } from "./intents.js";
 const STANDALONE_FLAG_NS  = "fabula-ultima-companion";
 const STANDALONE_FLAG_KEY = "standaloneFired";
 
+// ── Multi-reactor dispatch coordinator ──────────────────────────────────
+//
+// Cross-menu signalling for the serial-with-blocking model: when ANY
+// reactor's menu commits an action-creating reaction (one whose chain
+// queues a free action or spawns a follow-up card — see
+// isActionCreatingReaction in skill-effects.js), other reactors'
+// menus must close and become "deferred" so the player can SEE the
+// action play out before committing their own reaction.
+//
+// After the action completes, STANDALONE_REACTION_WINDOW re-enters
+// itself (via the _postFreeActionTarget chain) and re-dispatches for
+// the deferred reactors with re-gated conditions.
+//
+// Coordinator is a plain EventTarget. dispatchReactionMenu registers
+// a "stop-others" listener on entry; on commit-emit, every other
+// dispatchReactionMenu's listener fires and the menu closes itself.
+// The acting reactor's listener is no-op (filters by source uuid).
+const _dispatchCoordinator = new EventTarget();
+
 // Find the active non-GM user who owns this reactor actor (FU PCs
 // typically have a single human owner). Returns the user id, or null
 // if the reactor has no human owner online (NPC or owner-offline).
@@ -270,8 +289,9 @@ export async function dispatchReactionMenu({
   if (!director || !reactor || !token || !trigger) {
     return { cancelled: false, fired: [] };
   }
-  const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
+  const { findPassiveCandidates, firePreAcceptedCandidate, isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
   const fired = [];
+  let deferredByPeer = false;  // set if another reactor's action-creating commit forces us to close
 
   // Idempotency filter — drop already-handled rows when scope+scene set.
   const firedSet = (scope && scene) ? readFiredSet(scene, scope) : new Set();
@@ -408,6 +428,35 @@ export async function dispatchReactionMenu({
   }
 
   async function processDecision(cand) {
+    // Classify BEFORE firing the chain — if action-creating, signal
+    // peers to close their menus so the player can see the action
+    // play out before they commit. The classifier reads the carrier
+    // doc's reaction_config_table[rowKey] + walks its effect chain.
+    let isActionCreating = false;
+    try {
+      const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+      if (carrier) {
+        const cfg = cand.carrierKind === "ae"
+          ? (carrier?.flags?.["fabula-ultima-companion"]?.reactionConfig?.reaction_config_table)
+          : (carrier?.system?.props?.reaction_config_table);
+        const reactionRow = cfg?.[cand.rowKey] ?? null;
+        if (reactionRow) {
+          isActionCreating = cand.carrierKind === "ae"
+            ? isActionCreatingReactionForAE(carrier, reactionRow)
+            : isActionCreatingReaction(carrier, reactionRow);
+        }
+      }
+    } catch (e) {
+      warn(`reaction[${trigger}]: action-creating classification threw`, e);
+    }
+    if (isActionCreating) {
+      log(`reaction[${trigger}]: ${reactor.name} → action-creating commit "${cand.carrierName}", signalling peers to defer`);
+      try {
+        _dispatchCoordinator.dispatchEvent(new CustomEvent("stop-others", {
+          detail: { sourceReactorUuid: reactor.uuid, actorName: reactor.name ?? "Someone", trigger, carrierName: cand.carrierName },
+        }));
+      } catch (e) { warn(`reaction[${trigger}]: stop-others dispatch threw`, e); }
+    }
     try {
       await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: cand, payload,
@@ -539,9 +588,29 @@ export async function dispatchReactionMenu({
     }
   };
 
-  renderMenu();
-  await closed;
-  return { cancelled, fired };
+  // Cross-reactor stop signal — another reactor's menu just committed an
+  // action-creating reaction. Close my menu cleanly and return as
+  // "deferred" so the orchestrator knows I haven't decided yet.
+  // Source filter: ignore my own emit so the acting reactor doesn't
+  // close itself.
+  const stopHandler = (ev) => {
+    const sourceUuid = ev?.detail?.sourceReactorUuid ?? null;
+    if (sourceUuid && sourceUuid === reactor.uuid) return;
+    if (deferredByPeer) return;
+    deferredByPeer = true;
+    log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${ev?.detail?.actorName ?? "?"}" took action-creating)`);
+    try { closeMenusEverywhere(); } catch {}
+    try { resolveClose(); } catch {}
+  };
+  _dispatchCoordinator.addEventListener("stop-others", stopHandler);
+
+  try {
+    renderMenu();
+    await closed;
+  } finally {
+    _dispatchCoordinator.removeEventListener("stop-others", stopHandler);
+  }
+  return { cancelled, fired, deferred: deferredByPeer };
 }
 
 // Dispatch a standalone trigger across every live reactor. Each reactor's
