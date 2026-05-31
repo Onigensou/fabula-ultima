@@ -138,6 +138,26 @@ export function registerPlayerReactionMenuHandler(channel) {
     }
   });
 
+  // In-place patch for an already-open reaction menu. Refreshes the
+  // disabled-blade overlay (peer-acting / unaffordable labels) WITHOUT
+  // tearing down the menu. ReactionMenu.updateDisabledLabels returns
+  // false silently when there's no instance for this token (lagged
+  // client missed the prior MENU_OPEN — we just drop the patch; the
+  // next MENU_OPEN will carry the fresh disabledLabels baked in).
+  const offPatch = channel.onMenuPatch((patch) => {
+    if (game.user?.isGM) return;
+    if (!patch || patch.kind !== "reaction-menu-disabled") return;
+    try {
+      ReactionMenu.updateDisabledLabels({
+        combatId: patch.combatId,
+        tokenId: patch.tokenId,
+        disabledLabels: patch.disabledLabels ?? {},
+      });
+    } catch (e) {
+      warn("reaction-menu MENU_PATCH handler threw", e);
+    }
+  });
+
   const offClose = channel.onMenuClose((payload) => {
     if (game.user?.isGM) return;
     const kind = payload?.kind;
@@ -166,6 +186,7 @@ export function registerPlayerReactionMenuHandler(channel) {
 
   return () => {
     try { offOpen?.(); } catch {}
+    try { offPatch?.(); } catch {}
     try { offClose?.(); } catch {}
   };
 }

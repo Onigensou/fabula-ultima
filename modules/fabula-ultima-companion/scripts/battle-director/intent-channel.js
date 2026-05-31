@@ -34,6 +34,7 @@ export class IntentChannel {
     this._pendingAwaits = new Map();
     // Subscribers
     this._menuOpenHandlers = new Set();
+    this._menuPatchHandlers = new Set();
     this._menuCloseHandlers = new Set();
     this._pongHandlers = new Set();
     // GM-side cache of recently-broadcast MENU_OPEN payloads, keyed by
@@ -77,6 +78,7 @@ export class IntentChannel {
     switch (data.event) {
       case "INTENT":        return this._onIntent(data);
       case "MENU_OPEN":     return this._onMenuOpen(data);
+      case "MENU_PATCH":    return this._onMenuPatch(data);
       case "MENU_CLOSE":    return this._onMenuClose(data);
       case "PING":          return this._onPing(data);
       case "PONG":          return this._onPong(data);
@@ -159,6 +161,19 @@ export class IntentChannel {
     log(`menu_open received: kind=${payload.menuSpec?.kind ?? "?"}`);
     for (const h of this._menuOpenHandlers) {
       try { h(payload.menuSpec, payload); } catch (e) { warn("onMenuOpen handler threw", e); }
+    }
+  }
+
+  // In-place patch of an already-open menu. Player handler is expected to
+  // mutate DOM rather than spawn a new menu — avoids the jarring redraw
+  // of a despawn+spawn cycle (the load-bearing requirement for the
+  // multi-reactor flow).
+  _onMenuPatch(data) {
+    const payload = data.payload ?? {};
+    if (payload.targetUserId !== game.user?.id) return;
+    log(`menu_patch received: kind=${payload.patch?.kind ?? "?"}`);
+    for (const h of this._menuPatchHandlers) {
+      try { h(payload.patch, payload); } catch (e) { warn("onMenuPatch handler threw", e); }
     }
   }
 
@@ -366,6 +381,34 @@ export class IntentChannel {
   onMenuOpen(handler) {
     this._menuOpenHandlers.add(handler);
     return () => this._menuOpenHandlers.delete(handler);
+  }
+
+  // Player-side: register a handler for incoming MENU_PATCH events.
+  // Patch handlers are expected to mutate an already-open menu in place
+  // (e.g. update disabled blade labels) — they do NOT spawn a new menu.
+  // Returns an unregister function.
+  onMenuPatch(handler) {
+    this._menuPatchHandlers.add(handler);
+    return () => this._menuPatchHandlers.delete(handler);
+  }
+
+  // GM-side: send an in-place patch to a player's open menu (e.g.
+  // refresh disabled blade labels after a peer commits an action-
+  // creating reaction). Best-effort: if the player's client lags or
+  // hasn't received the prior MENU_OPEN yet, the patch is dropped on
+  // their end (no spawn). The GM's authoritative state is the source
+  // of truth — see the stale-click safeguard in
+  // dispatchReactionMenu.processDecision for the recovery path.
+  //
+  // NOT cached for PLAYER_HELLO replay — only the latest MENU_OPEN
+  // spec is replayed on resume. Patches are session-only.
+  broadcastMenuPatch({ targetUserId, patch } = {}) {
+    if (!game.user?.isGM) return;
+    this._emitRaw("MENU_PATCH", {
+      requestId: foundry.utils?.randomID?.() ?? `bd-${Date.now()}`,
+      targetUserId,
+      patch,
+    });
   }
 
   // Player-side: register a handler for incoming MENU_CLOSE events.

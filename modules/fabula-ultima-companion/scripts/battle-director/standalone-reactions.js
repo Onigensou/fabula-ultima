@@ -298,11 +298,17 @@ export async function dispatchReactionMenu({
 
   let candidates;
   try {
+    // includeUnavailable: surface reactions that fail their condition
+    // formula or affordability check as disabled blades with badges
+    // ("Not enough MP" / "Conditions not met") rather than dropping
+    // them silently. The MP-bug class (player clicks, nothing happens,
+    // no feedback) is what we're guarding against.
     candidates = await findPassiveCandidates({
       casterActor: reactor,
       trigger,
       payload,
       includeManual,
+      includeUnavailable: true,
     });
   } catch (e) {
     warn(`reaction[${trigger}]: findPassiveCandidates threw for ${reactor?.name}`, e);
@@ -318,11 +324,15 @@ export async function dispatchReactionMenu({
   }
   if (!fresh.length) return { cancelled: false, fired: [] };
 
-  // Auto-fire "on" + "force" passives silently.
+  // Auto-fire "on" + "force" passives silently — but ONLY when they're
+  // currently available. An auto passive that can't pay its cost falls
+  // through to the askable list with its unavailableReason badge so
+  // the player sees WHY it didn't fire (rather than silently no-op).
   const autoFire = [];
   const askable = [];
   for (const c of fresh) {
-    if (c.kind === "passive" && (c.mode === "on" || c.mode === "force")) autoFire.push(c);
+    const isAutoMode = c.kind === "passive" && (c.mode === "on" || c.mode === "force");
+    if (isAutoMode && c.available) autoFire.push(c);
     else if (c.mode !== "off") askable.push(c);
   }
   for (const c of autoFire) {
@@ -358,12 +368,28 @@ export async function dispatchReactionMenu({
 
   let remaining = askable.slice();
   let cancelled = false;
-  // Per-blade disable map — keyed by `${carrierUuid}::${rowKey}`,
-  // value is the label shown on the blade (e.g. "Hina Acting").
-  // Populated by stopHandler when a peer commits an action-creating
-  // reaction; consumed by renderMenu → ReactionMenu.spawn + the
-  // player-side MENU_OPEN spec.
-  let disabledLabels = {};
+  // Two-source disabled-blade overlay:
+  //   - costBadges:  intrinsic per-reactor unavailability surfaced by
+  //                  findPassiveCandidates' affordability walker /
+  //                  condition_formula evaluator. Built ONCE here from
+  //                  the candidate's `unavailableReason`; never mutated
+  //                  thereafter. Re-derived from scratch only on SRW
+  //                  re-entry (which calls findPassiveCandidates again).
+  //   - peerBadges:  session-local "{Actor} Acting" overlay added by
+  //                  stopHandler when a peer commits an action-creating
+  //                  reaction. Cleared on SRW re-entry. Wins over
+  //                  costBadges for the same key.
+  // Merged via mergedDisabledLabels() at spawn time and patch time.
+  const costBadges = {};
+  for (const c of askable) {
+    if (!c.available && c.unavailableReason) {
+      costBadges[`${c.carrierUuid}::${c.rowKey}`] = c.unavailableReason;
+    }
+  }
+  let peerBadges = {};
+  function mergedDisabledLabels() {
+    return { ...costBadges, ...peerBadges };
+  }
 
   const ownerUserId = resolveReactorOwnerUserId(reactor);
   const channel = director?.intentChannel ?? null;
@@ -430,11 +456,31 @@ export async function dispatchReactionMenu({
       trigger,
       label: menuLabel,
       passLabel,
-      disabledLabels,
+      disabledLabels: mergedDisabledLabels(),
     };
   }
 
   async function processDecision(cand) {
+    // GM-side authoritative stale-click safeguard. If a player click
+    // arrives for a blade that's currently disabled (peer-acting badge
+    // OR cost-walker badge), reject it before firing the chain. Two
+    // scenarios this catches:
+    //   1) Player click raced a MENU_PATCH — their client hadn't
+    //      received the latest disabledLabels yet, so the blade still
+    //      looked clickable on their end.
+    //   2) Same as #1 but for cost-walker badges that became active
+    //      between the initial MENU_OPEN and re-evaluation.
+    // The acting reactor's own emit is filtered out at stopHandler
+    // entry, so this never blocks the click that TRIGGERED the stop.
+    {
+      const key = `${cand.carrierUuid}::${cand.rowKey}`;
+      const badge = peerBadges[key] ?? costBadges[key] ?? null;
+      if (badge) {
+        log(`reaction[${trigger}]: REJECT stale click on "${cand.carrierName}" (currently disabled: "${badge}")`);
+        try { ui.notifications?.info(`${cand.carrierName}: ${badge}`); } catch {}
+        return remaining.length > 0;  // keep menu open
+      }
+    }
     // Classify BEFORE firing the chain — if action-creating, signal
     // peers to close their menus so the player can see the action
     // play out before they commit. The classifier reads the carrier
@@ -573,7 +619,7 @@ export async function dispatchReactionMenu({
       trigger,
       label: menuLabel,
       passLabel,
-      disabledLabels,
+      disabledLabels: mergedDisabledLabels(),
       onPick: async (cand) => {
         if (localPickFired) return;
         localPickFired = true;
@@ -625,12 +671,15 @@ export async function dispatchReactionMenu({
   // Cross-reactor stop signal — another reactor committed an
   // action-creating reaction. Mark action-creating blades on MY menu
   // as disabled with "{Actor} Acting" overlay; state-only blades stay
-  // clickable. Re-render in place so the blade stays visible but
-  // unavailable — the player knows the reaction is "there but waiting".
-  // If EVERY blade ends up disabled and no clickable options remain,
-  // the menu closes (deferred until SRW re-entry).
+  // clickable. If EVERY remaining blade ends up disabled (cost OR
+  // peer-acting), the menu closes (deferred until SRW re-entry).
+  //
+  // Update path: in-place DOM mutation via ReactionMenu.updateDisabledLabels
+  // (GM-side) + broadcastMenuPatch (player-side). NO despawn+respawn —
+  // the entrance-animation replay was the jarring redraw we're avoiding.
+  //
   // Source filter: ignore my own emit so the acting reactor doesn't
-  // re-render itself.
+  // re-update itself.
   const stopHandler = async (ev) => {
     const sourceUuid = ev?.detail?.sourceReactorUuid ?? null;
     if (sourceUuid && sourceUuid === reactor.uuid) return;
@@ -640,6 +689,10 @@ export async function dispatchReactionMenu({
     let anyClickable = false;
     let blockedCount = 0;
     for (const cand of remaining) {
+      const key = `${cand.carrierUuid}::${cand.rowKey}`;
+      // Already disabled by cost — peer-acting doesn't add new info;
+      // the user already sees "Not enough MP". Skip.
+      if (costBadges[key]) continue;
       let isAC = false;
       try {
         const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
@@ -656,30 +709,52 @@ export async function dispatchReactionMenu({
         }
       } catch (e) { warn(`reaction[${trigger}]: classify on stop threw`, e); }
       if (isAC) {
-        disabledLabels[`${cand.carrierUuid}::${cand.rowKey}`] = blockLabel;
+        peerBadges[key] = blockLabel;
         blockedCount++;
       } else {
         anyClickable = true;
       }
     }
-    if (!anyClickable) {
+    // anyClickable means: at least one remaining blade is NOT in
+    // costBadges AND NOT just-marked in peerBadges. If all remaining
+    // blades are now disabled by EITHER source, defer this reactor.
+    const allDisabled = remaining.every((c) => {
+      const k = `${c.carrierUuid}::${c.rowKey}`;
+      return costBadges[k] || peerBadges[k];
+    });
+    if (allDisabled) {
       deferredByPeer = true;
-      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${actorName}" acting; all ${blockedCount} blade(s) blocked)`);
+      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${actorName}" acting; all blades blocked)`);
       try { closeMenusEverywhere(); } catch {}
       try { resolveClose(); } catch {}
     } else {
       log(`reaction[${trigger}]: ${reactor.name} ${blockedCount} blade(s) blocked by "${actorName}"; state-only blades remain clickable`);
-      // Defensive: despawn the GM-side menu + broadcast a close to the
-      // owner BEFORE re-rendering with the new disabled labels.
-      try { ReactionMenu.despawn({ combatId, tokenId: token.id }); } catch {}
+      // In-place update path — no respawn, no entrance-animation replay.
+      // GM-side: directly mutate the open menu's DOM.
+      try {
+        ReactionMenu.updateDisabledLabels({
+          combatId, tokenId: token.id,
+          disabledLabels: mergedDisabledLabels(),
+        });
+      } catch (e) { warn(`reaction[${trigger}]: GM-side updateDisabledLabels threw`, e); }
+      // Player-side: send a MENU_PATCH; their handler applies the same
+      // in-place mutation. Best-effort — lag-resilient. The GM is
+      // authoritative; a stale-click safeguard in processDecision
+      // handles the case where a player click sneaks through before
+      // their patch arrives.
       if (channel && ownerUserId) {
         try {
-          channel.broadcastMenuClose({
-            targetUserId: ownerUserId, kind: "reaction-menu", reason: "peer-acting-rerender",
+          channel.broadcastMenuPatch({
+            targetUserId: ownerUserId,
+            patch: {
+              kind: "reaction-menu-disabled",
+              combatId,
+              tokenId: token.id,
+              disabledLabels: mergedDisabledLabels(),
+            },
           });
-        } catch (e) { warn(`reaction[${trigger}]: pre-rerender close broadcast threw`, e); }
+        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch threw`, e); }
       }
-      try { renderMenu(); } catch (e) { warn(`reaction[${trigger}]: re-render on stop threw`, e); }
     }
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);

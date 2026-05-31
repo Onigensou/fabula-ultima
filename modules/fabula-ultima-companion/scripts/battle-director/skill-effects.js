@@ -491,7 +491,11 @@ async function getSkillFormulas() {
   return _formulaModulePromise;
 }
 
-async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
+// Hard-gate match filters (source / action_target / action_intent).
+// Returns false if the row doesn't apply to this trigger AT ALL — caller
+// drops the row from consideration. condition_formula is intentionally
+// NOT evaluated here; see evaluateConditionFormula below.
+async function passesMatchFilters(row, item, reactorActor, payload) {
   // 1. Subject-side source filter (e.g. only "self" performed the action).
   const wantSource = String(row.reaction_source ?? "").trim().toLowerCase();
   const subjectActorUuid = payload?.sourceActorUuid ?? null;
@@ -520,19 +524,126 @@ async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
       return false;
     }
   }
+  return true;
+}
 
-  // 4. Optional condition formula (resolved against the reactor).
+// Soft-gate condition formula. Returns `{ ok, raw, value }`:
+//   - ok=true  → formula is empty OR evaluates truthy. Row is available.
+//   - ok=false → formula evaluated falsy. Row exists for the trigger
+//                (matched the hard gates) but is not currently usable —
+//                surfaces as a disabled blade with badge.
+async function evaluateConditionFormula(row, reactorActor, payload, item) {
   const condRaw = String(row.condition_formula ?? "").trim();
-  if (condRaw) {
-    const { evaluateFormula, buildSkillResolver } = await getSkillFormulas();
-    const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round: 0 });
-    const val = evaluateFormula(condRaw, resolver, 0);
-    if (!val) {
-      log(`passive ${item.name}: condition_formula="${condRaw}" → ${val} (falsy)`);
-      return false;
+  if (!condRaw) return { ok: true, raw: "", value: null };
+  const { evaluateFormula, buildSkillResolver } = await getSkillFormulas();
+  const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round: 0 });
+  const val = evaluateFormula(condRaw, resolver, 0);
+  if (!val) log(`passive ${item?.name ?? "?"}: condition_formula="${condRaw}" → ${val} (falsy)`);
+  return { ok: !!val, raw: condRaw, value: val };
+}
+
+// Combined helper preserved for callers that want the legacy "matched
+// AND condition passed" boolean (firePassiveTriggers, etc.). Pre-resolve
+// callers (findPassiveCandidates) split the two phases for badge surfacing.
+async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
+  if (!(await passesMatchFilters(row, item, reactorActor, payload))) return false;
+  const cond = await evaluateConditionFormula(row, reactorActor, payload, item);
+  return cond.ok;
+}
+
+// ── Auto-affordability walker ─────────────────────────────────────────
+//
+// Statically walk an effect chain from `startLabel` and tally the
+// resources it would debit on the reactor if fired. NO side effects, NO
+// document writes, NO async I/O — safe to call inline from
+// findPassiveCandidates' hot path.
+//
+// Used by the standalone reaction dispatcher to surface unaffordable
+// reactions as disabled blades with "Not enough MP/HP/IP" badges instead
+// of silently filtering them out. The MP-bug class (player clicks a
+// reaction that has no MP, nothing happens, no feedback) is the bug
+// this exists to prevent.
+//
+// Walks: `chain` (every step), `consume_resource` (tally). Does NOT walk
+// into `open_action_menu` options (player choice — each option's cost
+// is checked when picked). Other effect_kinds (grant, apply_ae,
+// consume_charge, etc.) don't debit reactor resources, so they're a no-op.
+//
+// Inputs:
+//   effectTable — { [key]: row } from skill.system.props.effect_table OR
+//                 an AE's reactionConfig.effect_table.
+//   startLabel  — effect_label of the chain's entry row.
+//   actor       — the reactor whose pools are checked.
+//   skill       — optional carrier (skill item) for the formula resolver.
+//                 Pass when available so SL / CHAR_LEVEL / HAS_SKILL_*
+//                 evaluate against the right skill context.
+//
+// Returns:
+//   { ok, debit, sufficient, shortfalls, badge }
+//   - ok          : chain was walkable (start row found).
+//   - debit       : Record<resource, totalAmount> after walking.
+//   - sufficient  : actor.current >= debit for every resource.
+//   - shortfalls  : [{ resource, required, current }] for failures.
+//   - badge       : "Not enough MP/HP" style label, or null when ok.
+export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
+  const out = { ok: false, debit: {}, sufficient: true, shortfalls: [], badge: null };
+  if (!effectTable || typeof effectTable !== "object" || !startLabel || !actor) return out;
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable)) {
+    if (!r || r.$deleted) continue;
+    const lbl = String(r.effect_label ?? "").trim();
+    if (lbl) byLabel.set(lbl, r);
+  }
+  if (!byLabel.has(startLabel)) return out;
+
+  const resolver = buildSkillResolver({ actor, payload: {}, skill, round: 0 });
+  const seen = new Set();
+  const debit = {};
+
+  function walk(label) {
+    if (!label || seen.has(label)) return;
+    seen.add(label);
+    const row = byLabel.get(label);
+    if (!row) return;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    if (kind === "consume_resource") {
+      const resource = String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase();
+      const def = RESOURCE_PROPS[resource];
+      if (!def) return;
+      const amountRaw = row.consume_amount ?? row.grant_amount;
+      const amount = Number(evaluateFormula(amountRaw, resolver, 0)) || 0;
+      if (amount > 0) debit[resource] = (debit[resource] ?? 0) + amount;
+      return;
+    }
+    if (kind === "chain") {
+      const steps = String(row.chain_steps ?? "")
+        .split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+      for (const s of steps) walk(s);
+      return;
+    }
+    // open_action_menu options are player choices — affordability of
+    // each option is checked when chosen, not aggregated up here.
+    // grant / apply_ae / consume_charge / remove_tagged_ae / etc.: not
+    // a resource cost on the reactor; no-op.
+  }
+  walk(startLabel);
+
+  out.ok = true;
+  out.debit = debit;
+  for (const [resource, required] of Object.entries(debit)) {
+    const def = RESOURCE_PROPS[resource];
+    if (!def) continue;
+    const current = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
+    if (current < required) {
+      out.shortfalls.push({ resource, required, current });
+      out.sufficient = false;
     }
   }
-  return true;
+  if (!out.sufficient) {
+    const names = out.shortfalls.map((s) => s.resource.toUpperCase()).join("/");
+    out.badge = `Not enough ${names}`;
+  }
+  return out;
 }
 
 // Resolve the four-state mode (on/ask/off/force) for a reaction-config
@@ -688,7 +799,22 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 // the token-anchored reaction menu for standalone trigger sites where
 // High Speed-style manual reactions also live) to surface manual rows
 // alongside passives.
-export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false }) {
+//
+// `includeUnavailable` (default false) controls whether reactions that
+// pass the hard match gates BUT fail their condition_formula or chain
+// affordability check are returned. Default behavior (legacy) drops them
+// for callers that just want "what can fire right now" — Cheap Shot
+// pre-passive aggregator, etc. The standalone-reaction dispatcher opts
+// in with `includeUnavailable: true` so it can surface them as disabled
+// blades with badges ("Not enough MP" / "Conditions not met") rather
+// than silently filtering them — the player gets visible feedback for
+// WHY the reaction isn't usable.
+//
+// Each returned candidate carries:
+//   { ..., available: boolean, unavailableReason: string|null }
+// `available: false` candidates are still in the array; the caller
+// decides how to render them.
+export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
 
@@ -709,13 +835,36 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     return resolveReactionPassiveMode(row);
   }
 
+  // Evaluate availability for a row that already passed the hard match
+  // gates. Returns { available, unavailableReason }.
+  //
+  // Cost-walker wins over condition_formula failure when both indicate
+  // unavailable — the cost badge is more specific. condition_formula
+  // failure that ISN'T a cost issue falls back to "Conditions not met".
+  async function evaluateAvailability(row, effectTable, refLabel, carrierForFormula) {
+    const cost = analyzeChainCost(effectTable, refLabel, casterActor, carrierForFormula);
+    if (cost.ok && !cost.sufficient) {
+      return { available: false, unavailableReason: cost.badge };
+    }
+    const cond = await evaluateConditionFormula(row, casterActor, payload, carrierForFormula);
+    if (!cond.ok) {
+      return { available: false, unavailableReason: "Conditions not met" };
+    }
+    return { available: true, unavailableReason: null };
+  }
+
   for (const item of casterActor.items?.contents ?? []) {
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
+    const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
       if (!shouldKeep(row)) continue;
-      if (!(await shouldReactionPassiveFire(row, item, casterActor, payload))) continue;
+      if (!(await passesMatchFilters(row, item, casterActor, payload))) continue;
+      const refLabel = String(row.reaction_effect_ref ?? "").trim();
+      const { available, unavailableReason } =
+        await evaluateAvailability(row, effectTable, refLabel, item);
+      if (!includeUnavailable && !available) continue;
       const kind = classifyRow(row);
       out.push({
         carrierKind: "item",
@@ -726,7 +875,9 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         rowKey: key,
         kind,
         mode: modeFor(row, kind),
-        ref: String(row.reaction_effect_ref ?? "").trim(),
+        ref: refLabel,
+        available,
+        unavailableReason,
       });
     }
   }
@@ -736,10 +887,16 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     if (!cfg || typeof cfg !== "object") continue;
     const rc = cfg.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
+    const effectTable = cfg.effect_table ?? {};
+    const fakeItem = { name: ae.name, system: { props: { effect_table: effectTable } } };
     for (const key of Object.keys(rc)) {
       const row = rc[key];
       if (!shouldKeep(row)) continue;
-      if (!(await shouldReactionPassiveFire(row, ae, casterActor, payload))) continue;
+      if (!(await passesMatchFilters(row, ae, casterActor, payload))) continue;
+      const refLabel = String(row.reaction_effect_ref ?? "").trim();
+      const { available, unavailableReason } =
+        await evaluateAvailability(row, effectTable, refLabel, fakeItem);
+      if (!includeUnavailable && !available) continue;
       const kind = classifyRow(row);
       out.push({
         carrierKind: "ae",
@@ -750,7 +907,9 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         rowKey: key,
         kind,
         mode: modeFor(row, kind),
-        ref: String(row.reaction_effect_ref ?? "").trim(),
+        ref: refLabel,
+        available,
+        unavailableReason,
       });
     }
   }

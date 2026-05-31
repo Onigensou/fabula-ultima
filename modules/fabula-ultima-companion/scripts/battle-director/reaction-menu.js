@@ -235,12 +235,15 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   // tStart, bound }.
   const items = [];
 
-  // Pre-compute disable lookup. Keyed by `${carrierUuid}::${rowKey}`.
-  const _disabledMap = (disabledLabels && typeof disabledLabels === "object")
+  // Live disable lookup — keyed by `${carrierUuid}::${rowKey}`. Mutable
+  // so updateDisabledLabels() can swap entries in-place without tearing
+  // down + respawning the menu (jarring re-render is the load-bearing
+  // UX bug we're avoiding here).
+  let _disabledMap = (disabledLabels && typeof disabledLabels === "object")
     ? new Map(Object.entries(disabledLabels))
-    : null;
+    : new Map();
   function disabledLabelFor(candidate) {
-    if (!candidate || !_disabledMap) return null;
+    if (!candidate) return null;
     const key = `${candidate.carrierUuid}::${candidate.rowKey}`;
     return _disabledMap.get(key) ?? null;
   }
@@ -363,10 +366,13 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   // when PIXI.Ticker.shared isn't firing. Paused-game (Foundry's
   // pause UI) freezes the shared ticker, so the prior gate of
   // `p >= 1` would have left blades click-dead until unpause.
+  //
+  // The disabled check is re-evaluated AT CLICK TIME (not at bind time)
+  // so updateDisabledLabels() can change a blade's availability without
+  // re-binding. Cursor styling follows the live state.
   function bindClicks() {
     for (const it of items) {
       if (it.bound) continue;
-      const isBlocked = !it.isPass && !!disabledLabelFor(it.candidate);
       it.btn.addEventListener("click", (ev) => {
         ev.stopPropagation();
         if (it.isPass) {
@@ -377,18 +383,49 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
         // Auto-mode candidates are informational only — clicking does
         // nothing (the decision is already recorded upstream).
         if (it.candidate?.mode === "on") return;
-        // Blocked (peer-acting / used) blades don't fire — the visual
-        // chip + greyscale signals "unavailable".
-        if (isBlocked) return;
+        // Live disabled check — reads _disabledMap at click time so
+        // peer-acting / used / unaffordable blades reject clicks even
+        // after the disable map mutates.
+        if (disabledLabelFor(it.candidate)) return;
         try { onPick?.(it.candidate); }
         catch (e) { warn("ReactionMenu: onPick threw", e); }
       });
-      // Pointer-events stay on so the dwell-tooltip can still surface,
-      // but `isBlocked` short-circuits the click handler. Cursor reads
-      // as the standard arrow rather than the click affordance.
       it.btn.style.pointerEvents = "auto";
-      if (isBlocked) it.btn.style.cursor = "default";
       it.bound = true;
+    }
+  }
+
+  // In-place blade DOM mutation. Toggles `.is-disabled` and the
+  // `.auto-tag` chip text to match the live disabled state. NEVER
+  // re-spawns the menu — the entrance-animation replay would be jarring
+  // to the user (the load-bearing requirement here).
+  //
+  // Called from updateDisabledLabels(map) on the returned record.
+  // Caller mutates _disabledMap first, then calls this to sync DOM.
+  function refreshBladesInPlace() {
+    for (const it of items) {
+      if (it.isPass || !it.candidate) continue;
+      const isAuto = it.candidate.mode === "on";
+      if (isAuto) continue;  // auto chip is permanent; no live toggle
+      const lbl = disabledLabelFor(it.candidate);
+      const hadDisabled = it.btn.classList.contains("is-disabled");
+      const tagEl = it.btn.querySelector(".auto-tag");
+      if (lbl) {
+        if (!hadDisabled) it.btn.classList.add("is-disabled");
+        if (tagEl) {
+          if (tagEl.textContent !== lbl) tagEl.textContent = lbl;
+        } else {
+          const span = document.createElement("span");
+          span.className = "auto-tag";
+          span.textContent = lbl;
+          it.btn.appendChild(span);
+        }
+        it.btn.style.cursor = "default";
+      } else {
+        if (hadDisabled) it.btn.classList.remove("is-disabled");
+        if (tagEl) tagEl.remove();
+        it.btn.style.cursor = "";
+      }
     }
   }
 
@@ -464,7 +501,18 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
     }
   }
 
-  return { cleanup, root };
+  // Live-update the disabled overlay map. Callers pass the new full map
+  // (Record<carrierUuid::rowKey, label> | null/empty for "no blocks").
+  // DOM is mutated in place; entrance animation is NOT replayed.
+  function updateDisabledLabels(next) {
+    _disabledMap = (next && typeof next === "object")
+      ? new Map(Object.entries(next))
+      : new Map();
+    try { refreshBladesInPlace(); }
+    catch (e) { warn("ReactionMenu.updateDisabledLabels: refresh threw", e); }
+  }
+
+  return { cleanup, updateDisabledLabels, root };
 }
 
 // Tiny HTML helpers. Local copies so this module has no cross-module
@@ -530,5 +578,20 @@ export const ReactionMenu = {
       try { rec.cleanup(); } catch {}
     }
     _instances.clear();
+  },
+
+  // In-place update of the disabled-blade overlay for an already-spawned
+  // menu. Returns true if a menu was found + updated, false if no such
+  // instance is open (caller can ignore or fallback). Doesn't re-spawn,
+  // doesn't replay the entrance animation. Used by the multi-reactor
+  // dispatcher to mark blades unavailable WITHOUT the jarring redraw of
+  // a full despawn+spawn cycle.
+  updateDisabledLabels({ combatId, tokenId, disabledLabels } = {}) {
+    const key = makeKey(combatId, tokenId);
+    const rec = _instances.get(key);
+    if (!rec || typeof rec.updateDisabledLabels !== "function") return false;
+    try { rec.updateDisabledLabels(disabledLabels); }
+    catch (e) { warn("ReactionMenu.updateDisabledLabels: instance threw", e); return false; }
+    return true;
   },
 };
