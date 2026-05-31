@@ -192,7 +192,12 @@ function worldAnchor(token) {
   }
 }
 
-function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPass, label, trigger, passLabel }) {
+// disabledLabels: Record<string, string> — keyed by `${carrierUuid}::${rowKey}`,
+// value is the label text shown on a disabled blade (e.g. "Hina Acting").
+// Blades whose key matches render greyed-out with the label overlay and
+// reject clicks. Used by the multi-reactor dispatcher to mark
+// action-creating reactions as unavailable while a peer is mid-action.
+function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPass, label, trigger, passLabel, disabledLabels = null }) {
   ensureBaseStyles();
 
   // Filter out "off"-mode candidates — they're auto-rejected and don't
@@ -230,6 +235,16 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   // tStart, bound }.
   const items = [];
 
+  // Pre-compute disable lookup. Keyed by `${carrierUuid}::${rowKey}`.
+  const _disabledMap = (disabledLabels && typeof disabledLabels === "object")
+    ? new Map(Object.entries(disabledLabels))
+    : null;
+  function disabledLabelFor(candidate) {
+    if (!candidate || !_disabledMap) return null;
+    const key = `${candidate.carrierUuid}::${candidate.rowKey}`;
+    return _disabledMap.get(key) ?? null;
+  }
+
   function makeBlade({ candidate, isPass }) {
     const wrap = document.createElement("div");
     wrap.className = "item";
@@ -245,7 +260,11 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
         : "";
       const isAuto = candidate?.mode === "on";
       if (isAuto) btn.classList.add("is-auto");
-      const tag = isAuto ? `<span class="auto-tag">Auto</span>` : "";
+      const disabledLbl = disabledLabelFor(candidate);
+      if (disabledLbl) btn.classList.add("is-disabled");
+      const tag = isAuto
+        ? `<span class="auto-tag">Auto</span>`
+        : (disabledLbl ? `<span class="auto-tag">${escapeHtml(disabledLbl)}</span>` : "");
       btn.innerHTML = `${iconHtml}<span class="label">${escapeHtml(safeName)}</span>${tag}`;
       // Dwell-tooltip — same surface as the action card's pill row.
       // The shared desc-tooltip module reads data-fud-equip-desc /
@@ -347,6 +366,7 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   function bindClicks() {
     for (const it of items) {
       if (it.bound) continue;
+      const isBlocked = !it.isPass && !!disabledLabelFor(it.candidate);
       it.btn.addEventListener("click", (ev) => {
         ev.stopPropagation();
         if (it.isPass) {
@@ -357,10 +377,17 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
         // Auto-mode candidates are informational only — clicking does
         // nothing (the decision is already recorded upstream).
         if (it.candidate?.mode === "on") return;
+        // Blocked (peer-acting / used) blades don't fire — the visual
+        // chip + greyscale signals "unavailable".
+        if (isBlocked) return;
         try { onPick?.(it.candidate); }
         catch (e) { warn("ReactionMenu: onPick threw", e); }
       });
+      // Pointer-events stay on so the dwell-tooltip can still surface,
+      // but `isBlocked` short-circuits the click handler. Cursor reads
+      // as the standard arrow rather than the click affordance.
       it.btn.style.pointerEvents = "auto";
+      if (isBlocked) it.btn.style.cursor = "default";
       it.bound = true;
     }
   }
@@ -462,7 +489,7 @@ export const ReactionMenu = {
   // the same (combatId, tokenId) pair. Returns the record or null when
   // there's nothing to show (no candidates and no onPass).
   spawn(opts) {
-    const { token, candidates, onPick, onPass, combatId, director, label, trigger, passLabel } = opts ?? {};
+    const { token, candidates, onPick, onPass, combatId, director, label, trigger, passLabel, disabledLabels } = opts ?? {};
     if (!token) {
       warn("ReactionMenu.spawn: missing token");
       return null;
@@ -483,6 +510,7 @@ export const ReactionMenu = {
     const rec = spawnMenuInternal({
       director, token, combatId,
       candidates: visible, onPick, onPass, label, trigger, passLabel,
+      disabledLabels,
     });
     _instances.set(key, rec);
     log(`ReactionMenu: spawned ${visible.length} candidate(s) on ${token?.name ?? token.id} for ${trigger ?? "?"}`);

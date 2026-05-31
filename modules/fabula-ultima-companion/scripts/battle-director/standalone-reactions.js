@@ -358,6 +358,12 @@ export async function dispatchReactionMenu({
 
   let remaining = askable.slice();
   let cancelled = false;
+  // Per-blade disable map — keyed by `${carrierUuid}::${rowKey}`,
+  // value is the label shown on the blade (e.g. "Hina Acting").
+  // Populated by stopHandler when a peer commits an action-creating
+  // reaction; consumed by renderMenu → ReactionMenu.spawn + the
+  // player-side MENU_OPEN spec.
+  let disabledLabels = {};
 
   const ownerUserId = resolveReactorOwnerUserId(reactor);
   const channel = director?.intentChannel ?? null;
@@ -424,6 +430,7 @@ export async function dispatchReactionMenu({
       trigger,
       label: menuLabel,
       passLabel,
+      disabledLabels,
     };
   }
 
@@ -549,6 +556,7 @@ export async function dispatchReactionMenu({
       trigger,
       label: menuLabel,
       passLabel,
+      disabledLabels,
       onPick: async (cand) => {
         if (localPickFired) return;
         localPickFired = true;
@@ -598,20 +606,22 @@ export async function dispatchReactionMenu({
   };
 
   // Cross-reactor stop signal — another reactor committed an
-  // action-creating reaction. Filter MY remaining candidates to drop
-  // action-creating ones (they wait for re-gate), then either:
-  //   - close my menu (no state-only blades left → deferred until SRW
-  //     re-entry), OR
-  //   - re-render my menu with just state-only blades so I can still
-  //     fire AE-self / grant-style reactions while the peer's action
-  //     plays out.
+  // action-creating reaction. Mark action-creating blades on MY menu
+  // as disabled with "{Actor} Acting" overlay; state-only blades stay
+  // clickable. Re-render in place so the blade stays visible but
+  // unavailable — the player knows the reaction is "there but waiting".
+  // If EVERY blade ends up disabled and no clickable options remain,
+  // the menu closes (deferred until SRW re-entry).
   // Source filter: ignore my own emit so the acting reactor doesn't
   // re-render itself.
   const stopHandler = async (ev) => {
     const sourceUuid = ev?.detail?.sourceReactorUuid ?? null;
     if (sourceUuid && sourceUuid === reactor.uuid) return;
     if (deferredByPeer) return;
-    const stateOnly = [];
+    const actorName = ev?.detail?.actorName ?? "Someone";
+    const blockLabel = `${actorName} Acting`;
+    let anyClickable = false;
+    let blockedCount = 0;
     for (const cand of remaining) {
       let isAC = false;
       try {
@@ -628,16 +638,30 @@ export async function dispatchReactionMenu({
           }
         }
       } catch (e) { warn(`reaction[${trigger}]: classify on stop threw`, e); }
-      if (!isAC) stateOnly.push(cand);
+      if (isAC) {
+        disabledLabels[`${cand.carrierUuid}::${cand.rowKey}`] = blockLabel;
+        blockedCount++;
+      } else {
+        anyClickable = true;
+      }
     }
-    if (!stateOnly.length) {
+    if (!anyClickable) {
       deferredByPeer = true;
-      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${ev?.detail?.actorName ?? "?"}" acting; no state-only blades remain)`);
+      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${actorName}" acting; all ${blockedCount} blade(s) blocked)`);
       try { closeMenusEverywhere(); } catch {}
       try { resolveClose(); } catch {}
     } else {
-      log(`reaction[${trigger}]: ${reactor.name} keeping ${stateOnly.length} state-only blade(s) (peer "${ev?.detail?.actorName ?? "?"}" acting); ${remaining.length - stateOnly.length} action-creating filtered out`);
-      remaining = stateOnly;
+      log(`reaction[${trigger}]: ${reactor.name} ${blockedCount} blade(s) blocked by "${actorName}"; state-only blades remain clickable`);
+      // Defensive: despawn the GM-side menu + broadcast a close to the
+      // owner BEFORE re-rendering with the new disabled labels.
+      try { ReactionMenu.despawn({ combatId, tokenId: token.id }); } catch {}
+      if (channel && ownerUserId) {
+        try {
+          channel.broadcastMenuClose({
+            targetUserId: ownerUserId, kind: "reaction-menu", reason: "peer-acting-rerender",
+          });
+        } catch (e) { warn(`reaction[${trigger}]: pre-rerender close broadcast threw`, e); }
+      }
       try { renderMenu(); } catch (e) { warn(`reaction[${trigger}]: re-render on stop threw`, e); }
     }
   };
