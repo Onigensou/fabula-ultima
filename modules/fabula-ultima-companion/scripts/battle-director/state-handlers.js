@@ -1661,20 +1661,76 @@ const Target = {
           mpNeeded:        Number(costMap.get?.("mp") ?? costMap.mp ?? 0) || 0,
           curHp:           Number(attackerActor.system?.props?.current_hp ?? 0) || 0,
         };
-        let reactionResult = { fired: [] };
+        // Use the token-anchored ReactionMenu (same surface as standalone
+        // reactions) instead of the legacy promptPassiveOptin Dialog.
+        // Auto-fire "on"/"force" passives silently; for "ask" candidates
+        // spawn a menu over the caster's token with the candidate as a
+        // blade and a CANCEL button (not "Pass" / "Skip" — declining
+        // means the player can't afford the spell, so the right action
+        // is to return them to the action picker).
+        const seModule = await import("./skill-effects.js?cb=" + Date.now());
+        let candidates = [];
         try {
-          reactionResult = await firePassiveTriggers({
-            director,
+          candidates = await seModule.findPassiveCandidates({
             casterActor: attackerActor,
             trigger: "caster_short_on_mp",
             payload: reactionPayload,
           });
-        } catch (e) { warn("caster_short_on_mp reaction threw", e); }
-        if (reactionResult.fired?.some((f) => f.kind === "substitute_cost" && f.ok)) {
-          // The effect mutated costMap in place — re-check the gate.
-          gate = checkAffordable(attackerActor, costMap);
-          vismagusHpPaid = !!reactionPayload.vismagusHpPaid;
+        } catch (e) { warn("caster_short_on_mp findPassiveCandidates threw", e); }
+        const autoFire = candidates.filter((c) => c.kind === "passive" && (c.mode === "on" || c.mode === "force"));
+        const askable  = candidates.filter((c) => c.mode === "ask");
+        for (const cand of autoFire) {
+          try {
+            await seModule.firePreAcceptedCandidate({
+              director, casterActor: attackerActor, candidate: cand, payload: reactionPayload,
+            });
+          } catch (e) { warn(`caster_short_on_mp auto-fire threw for ${cand.carrierName}`, e); }
         }
+        // Re-check gate after auto-fires.
+        gate = checkAffordable(attackerActor, costMap);
+        if (!gate.ok && askable.length) {
+          const rmModule = await import("./reaction-menu.js?cb=" + Date.now());
+          const ReactionMenu = rmModule.ReactionMenu;
+          const casterToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === attackerActor.uuid)
+            ?? null;
+          if (!casterToken) {
+            warn("caster_short_on_mp: caster token not on canvas — falling back to legacy gate-fail");
+          } else {
+            // Block on the menu via a single deferred promise. The user
+            // either picks a blade (fire the substitute, re-check gate
+            // and proceed if affordable) or clicks Cancel (TARGET_BACK).
+            const decision = await new Promise((resolve) => {
+              ReactionMenu.spawn({
+                director,
+                token: casterToken,
+                combatId: director.combatId,
+                candidates: askable,
+                trigger: "caster_short_on_mp",
+                label: `Can't afford ${skill.name}`,
+                passLabel: "Cancel",
+                onPick: async (cand) => {
+                  try {
+                    await seModule.firePreAcceptedCandidate({
+                      director, casterActor: attackerActor, candidate: cand, payload: reactionPayload,
+                    });
+                  } catch (e) { warn(`caster_short_on_mp fire threw for ${cand.carrierName}`, e); }
+                  ReactionMenu.despawn({ combatId: director.combatId, tokenId: casterToken.id });
+                  resolve({ cancelled: false });
+                },
+                onPass: () => {
+                  ReactionMenu.despawn({ combatId: director.combatId, tokenId: casterToken.id });
+                  resolve({ cancelled: true });
+                },
+              });
+            });
+            if (decision.cancelled) {
+              director.enqueue({ type: INTENTS.TARGET_BACK });
+              return;
+            }
+            gate = checkAffordable(attackerActor, costMap);
+          }
+        }
+        vismagusHpPaid = !!reactionPayload.vismagusHpPaid;
       }
       if (!gate.ok) {
         const missing = gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ");

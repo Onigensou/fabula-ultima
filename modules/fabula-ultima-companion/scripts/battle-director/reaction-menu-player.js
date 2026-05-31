@@ -98,6 +98,7 @@ export function registerPlayerReactionMenuHandler(channel) {
         candidates: menuSpec.candidates,
         trigger: menuSpec.trigger,
         label: menuSpec.label,
+        passLabel: menuSpec.passLabel,
         onPick: (cand) => {
           // Emit REACTION_CHOICE back to the GM. The GM-side awaitIntent
           // in standalone-reactions.js picks this up + applies the

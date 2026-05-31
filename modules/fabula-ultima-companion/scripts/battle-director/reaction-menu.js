@@ -191,7 +191,7 @@ function worldAnchor(token) {
   }
 }
 
-function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPass, label, trigger }) {
+function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPass, label, trigger, passLabel }) {
   ensureBaseStyles();
 
   // Filter out "off"-mode candidates — they're auto-rejected and don't
@@ -236,7 +236,7 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
     btn.className = "blade";
     if (isPass) {
       btn.classList.add("is-pass");
-      btn.innerHTML = `<span class="label">Pass</span>`;
+      btn.innerHTML = `<span class="label">${escapeHtml(passLabel ?? "Pass")}</span>`;
     } else {
       const safeName = String(candidate?.carrierName ?? "Reaction");
       const iconHtml = candidate?.carrierImg
@@ -445,7 +445,7 @@ export const ReactionMenu = {
   // the same (combatId, tokenId) pair. Returns the record or null when
   // there's nothing to show (no candidates and no onPass).
   spawn(opts) {
-    const { token, candidates, onPick, onPass, combatId, director, label, trigger } = opts ?? {};
+    const { token, candidates, onPick, onPass, combatId, director, label, trigger, passLabel } = opts ?? {};
     if (!token) {
       warn("ReactionMenu.spawn: missing token");
       return null;
@@ -465,7 +465,7 @@ export const ReactionMenu = {
 
     const rec = spawnMenuInternal({
       director, token, combatId,
-      candidates: visible, onPick, onPass, label, trigger,
+      candidates: visible, onPick, onPass, label, trigger, passLabel,
     });
     _instances.set(key, rec);
     log(`ReactionMenu: spawned ${visible.length} candidate(s) on ${token?.name ?? token.id} for ${trigger ?? "?"}`);
