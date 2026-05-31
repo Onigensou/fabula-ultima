@@ -47,6 +47,7 @@
 // Re-spawning on the same key replaces the prior instance cleanly.
 
 import { log, warn } from "./logger.js";
+import { ensureDescTooltipStyles, attachDescTooltip, hideDescTooltip } from "./desc-tooltip.js";
 
 const STYLE_ID = "fud-reaction-menu-style";
 
@@ -246,15 +247,20 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
       if (isAuto) btn.classList.add("is-auto");
       const tag = isAuto ? `<span class="auto-tag">Auto</span>` : "";
       btn.innerHTML = `${iconHtml}<span class="label">${escapeHtml(safeName)}</span>${tag}`;
-      // Native title tooltip — quick + works without dwell handlers. The
-      // pill flow's dwell tooltip can be wired in later if needed.
-      const tip = [];
-      if (candidate?.kind === "manual") tip.push("Manual reaction");
-      if (candidate?.mode === "ask") tip.push("Asks you to confirm");
-      if (candidate?.mode === "on") tip.push("Auto-applies");
-      const descPlain = stripHtml(candidate?.carrierDescription ?? "");
-      if (descPlain) tip.push(descPlain);
-      btn.title = tip.join("\n\n");
+      // Dwell-tooltip — same surface as the action card's pill row.
+      // The shared desc-tooltip module reads data-fud-equip-desc /
+      // data-fud-equip-desc-name on hover. Includes a "Mode" footer
+      // chip so the player sees auto/ask dispatch behavior.
+      const modeLabel =
+        candidate?.mode === "on"     ? "Auto-apply (On)" :
+        candidate?.mode === "force"  ? "Engine-forced"   :
+        candidate?.kind === "manual" ? "Manual reaction" :
+                                       "Asks (You choose)";
+      const descBody =
+        (candidate?.carrierDescription ?? "") +
+        `<div class="fud-bf-reaction-tip-foot">Mode: ${escapeHtml(modeLabel)}</div>`;
+      btn.dataset.fudEquipDesc     = descBody;
+      btn.dataset.fudEquipDescName = safeName;
     }
     btn.style.pointerEvents = "none";
     wrap.appendChild(btn);
@@ -412,7 +418,18 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
 
   requestAnimationFrame(() => { header.style.opacity = "1"; });
 
+  // Dwell-tooltip (shared with the action card's reaction pills, equipment
+  // options, item rows, etc.). Bind to the menu root; the shared module's
+  // singleton tooltip surfaces on hover of any blade carrying
+  // data-fud-equip-desc. `isAlive` guards against a tooltip popping up
+  // after the menu closes mid-dwell (user clicked away).
+  let menuAlive = true;
+  const detachTooltip = attachDescTooltip(root, { isAlive: () => menuAlive });
+
   function cleanup() {
+    menuAlive = false;
+    try { detachTooltip?.(); } catch {}
+    try { hideDescTooltip(); } catch {}
     try { ticker.remove(tickFn); } catch {}
     try { root.remove(); } catch {}
     for (const fn of manualHookCleanups) {
