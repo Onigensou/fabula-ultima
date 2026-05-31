@@ -35,6 +35,7 @@ import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
+import { clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
 import {
   findSavedDirectorState,
@@ -289,6 +290,14 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
+  // Defensive standalone-menu cleanup. STOPPED.onEnter already calls
+  // clearAllStandaloneMenus, but on the rewind path the FSM transition
+  // may be mid-await (dispatchStandaloneTrigger blocked on a player's
+  // pending pick) and the onEnter chain doesn't reach the menu cleanup
+  // before this point. Running it here too is idempotent — the menu's
+  // _instances map dedupes — and guarantees no stranded menu DOM across
+  // rewind / End Battle.
+  try { await clearAllStandaloneMenus(); } catch (e) { warn("stop: clearAllStandaloneMenus threw", e); }
   // The next two are TRUE-teardown cleanups (End Battle), NOT re-mount
   // cleanups (rewind / reload). The rewind path stops the live instance only
   // to reconstruct it a beat later via resumeFromSavedState — the conflict is

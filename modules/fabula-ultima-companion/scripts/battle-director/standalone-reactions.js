@@ -587,13 +587,19 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
   return spawned;
 }
 
-// Clear every reaction menu spawned by the standalone dispatcher.
-// Called from FSM teardown (Stopped.onEnter) so menus don't linger
-// past combat end. Lazy-imports so a probe / harness sees the live
-// source (matches dispatchStandaloneTrigger's lazy pattern).
+// Clear every reaction menu + indicator spawned by the standalone
+// dispatcher. Called from FSM teardown (Stopped.onEnter) so menus
+// don't linger past combat end, AND from director-boot's stop() so
+// rewind tears down menus even when the FSM transition can't fully
+// unwind (mid-await dispatch). Lazy-imports so a probe / harness sees
+// the live source (matches dispatchStandaloneTrigger's lazy pattern).
 export async function clearAllStandaloneMenus() {
   const ReactionMenu = await getReactionMenu();
-  ReactionMenu.despawnAll();
+  try { ReactionMenu.despawnAll(); } catch {}
+  try {
+    const ri = await import("./reaction-indicator.js?cb=" + Date.now());
+    ri.ReactionIndicator.despawnAll();
+  } catch (e) { warn("clearAllStandaloneMenus: indicator despawn threw", e); }
 }
 
 // Clear the standaloneFired idempotency flag on a scene. Invoked via
