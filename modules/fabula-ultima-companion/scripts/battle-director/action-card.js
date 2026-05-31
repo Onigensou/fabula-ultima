@@ -245,8 +245,8 @@ function ensureStyles() {
     /* Sprites behind the front one are darkened toward black per depth — the
        brightness is applied inline in JS (deeper = blacker). Horizontal
        position + the left-side mirror are also set inline (the centring
-       translate and the flip share the `transform`, so they must compose in
-       one rule). */
+       translate and the flip share the transform property, so they must
+       compose in one rule). */
 
     .fud-bf-card .fud-bf-header {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
@@ -1724,10 +1724,10 @@ function buildPortraitsHTML({ attacker, perTargetResults }) {
   const layout = pickPortraitLayout({ attacker, perTargetResults });
   const slots = { left: "", right: "" };
   if (layout.attackerSlots?.length && (layout.attackerSide === "left" || layout.attackerSide === "right")) {
-    slots[layout.attackerSide] = portraitSpritesHTML(layout.attackerSlots);
+    slots[layout.attackerSide] = portraitSpritesHTML(layout.attackerSlots, layout.attackerSide);
   }
   if (layout.targetSlots?.length && (layout.targetSide === "left" || layout.targetSide === "right")) {
-    slots[layout.targetSide] = portraitSpritesHTML(layout.targetSlots);
+    slots[layout.targetSide] = portraitSpritesHTML(layout.targetSlots, layout.targetSide);
   }
   return slots;
 }
