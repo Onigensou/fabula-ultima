@@ -521,14 +521,16 @@ async function resumeFromSavedState({ scene, state }) {
     }
   } else if (dCombat.currentTurnResolved) {
     resumeAt = STATES.TURN_END;
-  } else if ((dCombat.round ?? 0) === 0) {
+  } else if ((dCombat.round ?? 0) === 1 && dCombat.currentCombatantId == null) {
     // "Battle Start" rewind / cold resume — conflict_start hasn't
-    // completed yet (round still 0 means we landed on the snapshot
-    // PREP.onEnter saves AFTER building dCombat but BEFORE handing off
-    // to STANDALONE_REACTION_WINDOW). Re-enter the same handoff so
-    // conflict_start reactions (High Speed pill, future Sentinel, etc.)
-    // re-fire — the standaloneFired flag was cleared by the rewind
-    // pipeline, so dispatchStandaloneTrigger sees fresh candidates.
+    // completed yet (round=1 + no combatant picked is the unique
+    // shape of the PREP.onEnter save site, which runs AFTER building
+    // dCombat but BEFORE the conflict_start standalone handoff).
+    // Re-enter the same handoff so conflict_start reactions (High
+    // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
+    // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
+    // sees fresh candidates. For F5 mid-conflict_start the flag was
+    // NOT cleared so only un-decided reactors re-spawn menus.
     director.ctx.standaloneTrigger = "conflict_start";
     director.ctx.standaloneAfter   = STATES.ROUND_START;
     director.ctx.standalonePayload = null;
