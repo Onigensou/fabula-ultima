@@ -31,6 +31,16 @@ export const STATES = Object.freeze({
   // ctx.standaloneAfter to route. F5-safe + ABORT-safe — dispatch
   // idempotency is keyed via scene flag.
   STANDALONE_REACTION_WINDOW: "STANDALONE_REACTION_WINDOW",
+  // FREE_ACTION_WINDOW — drains the free-action queue (populated by
+  // open_action_menu free_mode in reaction chains). Each entry runs
+  // through the full DECLARE → TARGET → COMPUTE → CONFIRM → RESOLVE
+  // pipeline with the reactor's turn snapshot swapped in + the
+  // freeActions singleton holding the bonus to apply at COMPUTE. After
+  // the action's RESOLVE/REACTION_WINDOW, the transition table routes
+  // back here (via ctx.freeActionMode) to drain the next request OR
+  // restore the original flow target (ctx._postFreeActionTarget).
+  // See [[free-actions]].
+  FREE_ACTION_WINDOW: "FREE_ACTION_WINDOW",
   ABORTED:          "ABORTED",
   STOPPED:          "STOPPED",
 });
@@ -63,6 +73,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.TURN_END]:        null,
   [STATES.ROUND_END]:       null,
   [STATES.STANDALONE_REACTION_WINDOW]: null, // no timeout — GM may wait on multiple players resolving their reaction menus simultaneously
+  [STATES.FREE_ACTION_WINDOW]: null,         // owns full compose+commit; same reasoning as the per-action input states
   [STATES.ABORTED]:         null,
   [STATES.STOPPED]:         null,
 });
@@ -120,7 +131,12 @@ export const TRANSITIONS = Object.freeze({
   [STATES.DECLARE]: {
     [INTENTS.DECLARE_COMMAND]: { next: STATES.TARGET },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
-    [INTENTS.TIMEOUT]: { next: STATES.TURN_END },
+    // Compose cancel (Esc from Octopath). For a free action, the
+    // request was popped on entry; cancelling forfeits it — route
+    // back to FREE_ACTION_WINDOW so the next request drains or the
+    // post-target restores. For a regular turn, fall through to
+    // TURN_END.
+    [INTENTS.TIMEOUT]: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.TURN_END },
   },
 
   [STATES.TARGET]: {
@@ -148,8 +164,11 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.REACTION_WINDOW]: {
-    INTERNAL_DONE: { next: STATES.CLEANUP },
-    [INTENTS.TIMEOUT]: { next: STATES.CLEANUP },
+    // Free-action mode: skip CLEANUP/TURN_END (which would advance the
+    // real combatant's turn). Re-enter FREE_ACTION_WINDOW so the queue
+    // drains its next request or restores the original flow target.
+    INTERNAL_DONE: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
+    [INTENTS.TIMEOUT]: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -188,10 +207,27 @@ export const TRANSITIONS = Object.freeze({
   [STATES.STANDALONE_REACTION_WINDOW]: {
     // Routes to whatever predecessor set as ctx.standaloneAfter. The
     // ABORTED fallback prevents wedge if the field is missing (e.g. a
-    // direct ENTER via test injection).
+    // direct ENTER via test injection). The window handler may have
+    // re-pointed ctx.standaloneAfter at FREE_ACTION_WINDOW if any
+    // reactions registered a free-action grant — see
+    // StandaloneReactionWindow.onEnter.
     INTERNAL_DONE: { next: (ctx) => ctx.standaloneAfter ?? STATES.ABORTED },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
     [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
+  },
+
+  [STATES.FREE_ACTION_WINDOW]: {
+    // Routing fork:
+    //   DECLARE         — onEnter set ctx._freeActionPopped (= popped a
+    //                     fresh request + swapped turnSnapshot); the
+    //                     player composes + commits the free action.
+    //   _postTarget     — queue drained; restore the original flow
+    //                     target the original standaloneAfter pointed at
+    //                     before we redirected through here.
+    INTERNAL_DONE: { next: (ctx) => ctx._freeActionPopped
+      ? STATES.DECLARE
+      : (ctx._postFreeActionTarget ?? STATES.TURN_START) },
+    [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
   [STATES.ABORTED]: {

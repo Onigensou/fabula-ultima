@@ -1771,7 +1771,7 @@ async function applyOpenActionMenuEffect(row, ctx) {
   // via composeAction restricted to `allowed_types`. Used by High Speed,
   // Acceleration, Painful Lesson, Stolen Time, etc.
   if (row.free_mode === true) {
-    const { freeActions } = await import("./free-actions.js");
+    const { freeActionQueue } = await import("./free-action-queue.js");
     const reactor = ctx.reactorActor;
     if (!reactor) {
       warn(`skill-effects.open_action_menu free_mode: no reactorActor on ctx`);
@@ -1787,19 +1787,23 @@ async function applyOpenActionMenuEffect(row, ctx) {
     const checkBonus  = Math.max(0, evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0);
     const damageBonus = Math.max(0, evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0);
     const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
-    freeActions.set(reactor.id, {
+    freeActionQueue.enqueue({
+      reactorActorId:   reactor.id,
+      reactorActorUuid: reactor.uuid,
+      reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
       enabledLabels, checkBonus, damageBonus,
       sourceLabel,
       sourceItemUuid: ctx.skill?.uuid ?? null,
+      maxMpCost:             null,    // future: row.max_mp_cost
+      lockedTargetTokenUuid: null,    // future: Painful Lesson
     });
-    log(`open_action_menu free_mode: registered "${sourceLabel}" grant for ${reactor.name} (enabled: ${enabledLabels.join(", ") || "any"}, +${checkBonus} check / +${damageBonus} dmg)`);
-    // The grant lives until consumed. composeAction inspects the registry
-    // at Octopath-spawn time and (a) filters buttons to `enabledLabels`,
-    // (b) injects `checkBonus` / `damageBonus` into the action bundle so
-    // the COMPUTE roll picks them up, and (c) clears the grant after
-    // the action commits — letting the player's regular turn-budget
-    // action run after. See [[free-actions]].
-    return { ok: true, kind: "open_action_menu", freeMode: true, applied: [{ actor: reactor.uuid, grant: { enabledLabels, checkBonus, damageBonus, sourceLabel } }] };
+    log(`open_action_menu free_mode: enqueued "${sourceLabel}" request for ${reactor.name} (enabled: ${enabledLabels.join(", ") || "any"}, +${checkBonus} check / +${damageBonus} dmg)`);
+    // The queue persists in-memory until drained. FREE_ACTION_WINDOW
+    // pops one request at a time, swaps in the reactor's turn snapshot,
+    // sets the `freeActions` singleton from the request, and routes to
+    // DECLARE so the player composes + commits the free action with
+    // bonuses applied. See [[free-actions]].
+    return { ok: true, kind: "open_action_menu", freeMode: true, queued: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus }] };
   }
 
   // Resolve options. Prefer refs (CSB-friendly) over inline.

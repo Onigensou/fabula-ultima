@@ -3639,6 +3639,122 @@ const StandaloneReactionWindow = {
     } catch (e) {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }
+    // If any reaction enqueued a free-action grant (open_action_menu
+    // free_mode), detour through FREE_ACTION_WINDOW before continuing to
+    // the original `after`. Stashing the target lets the window restore
+    // the flow once the queue drains.
+    try {
+      const { freeActionQueue } = await import("./free-action-queue.js");
+      if (!freeActionQueue.isEmpty()) {
+        log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW`);
+        director.ctx._postFreeActionTarget = director.ctx.standaloneAfter;
+        director.ctx.standaloneAfter = STATES.FREE_ACTION_WINDOW;
+      }
+    } catch (e) {
+      warn("STANDALONE_REACTION_WINDOW: free-action queue check threw", e);
+    }
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
+
+// ─── FREE_ACTION_WINDOW ─────────────────────────────────────────────────
+// Drains the FreeActionQueue produced by reaction chains' free_mode
+// effect. Each request runs through the full DECLARE → ... → RESOLVE
+// pipeline with the reactor's turn snapshot temporarily swapped in.
+//
+// onEnter has two modes, distinguished by `ctx._freeActionPopped`:
+//   - Not popped yet: dequeue if available. If queue is empty → exit
+//     to ctx._postFreeActionTarget. If non-empty → swap snapshot,
+//     install the freeActions singleton, set ctx._freeActionPopped,
+//     and route to DECLARE.
+//   - Already popped (re-entering after RESOLVE/REACTION_WINDOW):
+//     restore the swapped snapshot, clear flags, then loop back to
+//     the dequeue path so the next request (or exit) is handled.
+//
+// See [[free-actions]] for the queue contract + design intent.
+const FreeActionWindow = {
+  async onEnter(director) {
+    const ctx = director.ctx;
+    const { freeActionQueue } = await import("./free-action-queue.js");
+    const { freeActions } = await import("./free-actions.js");
+
+    // Re-entry after a completed free action — tear down the swap.
+    if (ctx._freeActionPopped) {
+      log(`FREE_ACTION_WINDOW: free action complete (${ctx._freeActionPopped.sourceLabel ?? "?"}) — restoring snapshot`);
+      if (ctx._savedTurnSnapshot !== undefined) {
+        ctx.turnSnapshot = ctx._savedTurnSnapshot;
+      }
+      if (ctx._savedActionResult !== undefined) {
+        ctx.actionResult = ctx._savedActionResult;
+      }
+      delete ctx._savedTurnSnapshot;
+      delete ctx._savedActionResult;
+      const reactorId = ctx._freeActionPopped?.reactorActorId;
+      if (reactorId) freeActions.clear(reactorId);
+      delete ctx._freeActionPopped;
+      delete ctx.freeActionMode;
+    }
+
+    // Drain the next request, or exit.
+    if (freeActionQueue.isEmpty()) {
+      log(`FREE_ACTION_WINDOW: queue empty — routing to ${ctx._postFreeActionTarget ?? "TURN_START"}`);
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+
+    const req = freeActionQueue.dequeue();
+    if (!req) {
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+
+    // Resolve the reactor's token + actor.
+    const reactorActor = await fromUuid(req.reactorActorUuid).catch(() => null);
+    const reactorTokenDoc = req.reactorTokenUuid
+      ? await fromUuid(req.reactorTokenUuid).catch(() => null)
+      : null;
+    if (!reactorActor || !reactorTokenDoc) {
+      warn(`FREE_ACTION_WINDOW: reactor lookup failed (actor=${!!reactorActor}, token=${!!reactorTokenDoc}); skipping request "${req.sourceLabel}"`);
+      // Re-enter to drain next or exit. Same state, but without _freeActionPopped → falls through to dequeue path.
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      ctx._freeActionPopped = null;
+      return;
+    }
+
+    // Install the freeActions singleton from the request — COMPUTE reads
+    // this to bake checkBonus / damageBonus into the action's roll and
+    // composeAction reads `enabledLabels` to filter the Octopath.
+    freeActions.set(req.reactorActorId, {
+      enabledLabels:    req.enabledLabels,
+      checkBonus:       req.checkBonus,
+      damageBonus:      req.damageBonus,
+      sourceLabel:      req.sourceLabel,
+      sourceItemUuid:   req.sourceItemUuid,
+    });
+
+    // Build a turn snapshot for the reactor and stash the current one.
+    // The reactor may not be the dCombat.current — that's fine; the
+    // pipeline reads turnSnapshot, not dCombat.current, for player input.
+    ctx._savedTurnSnapshot = ctx.turnSnapshot;
+    ctx._savedActionResult = ctx.actionResult;
+    try {
+      // Find the reactor's combatant entry for snapshotDirectorCombatant.
+      const combatant = director.dCombat?.combatants?.find?.((c) => c.actorUuid === req.reactorActorUuid);
+      if (combatant) {
+        ctx.turnSnapshot = snapshotDirectorCombatant(combatant);
+      } else {
+        // Reactor isn't in dCombat (e.g. summon mid-battle). Fall back
+        // to snapshotCombatant from the token.
+        ctx.turnSnapshot = snapshotCombatant({ actor: reactorActor, tokenDoc: reactorTokenDoc });
+      }
+    } catch (e) {
+      warn("FREE_ACTION_WINDOW: snapshot threw", e);
+      ctx.turnSnapshot = ctx._savedTurnSnapshot;
+    }
+    ctx.actionResult = null;
+    ctx.freeActionMode = req;
+    ctx._freeActionPopped = req;
+    log(`FREE_ACTION_WINDOW: starting free action "${req.sourceLabel}" for ${reactorActor.name} (${req.enabledLabels.join(", ") || "any"})`);
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3688,6 +3804,7 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.TURN_END]:        TurnEnd,
   [STATES.ROUND_END]:       RoundEnd,
   [STATES.STANDALONE_REACTION_WINDOW]: StandaloneReactionWindow,
+  [STATES.FREE_ACTION_WINDOW]: FreeActionWindow,
   [STATES.ABORTED]:         Aborted,
   [STATES.STOPPED]:         Stopped,
 });
