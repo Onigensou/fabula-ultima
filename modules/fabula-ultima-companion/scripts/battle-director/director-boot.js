@@ -387,7 +387,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
 // (we deliberately cleared currentCombatantId during reconstruction so
 // the GM gets one re-pick — handy if the reload was triggered because
 // they made a wrong declaration).
-async function resumeFromSavedState({ scene, state, suppressNextHistoryPush = false }) {
+async function resumeFromSavedState({ scene, state }) {
   log(`Director resume: found saved state on scene "${scene.name}" (round ${state.dCombat?.round ?? "?"})`);
 
   // Refuse to clobber a live director (shouldn't happen at `ready`-time
@@ -459,14 +459,9 @@ async function resumeFromSavedState({ scene, state, suppressNextHistoryPush = fa
   // resumeFromSavedState is a harmless safety re-tick.
   try { Hooks.callAll("fu-director-started", director); } catch (e) { warn("fu-director-started hook threw on resume (early)", e); }
 
-  // Rewind-path opt-in: suppress the history push from the FIRST save
-  // fired by the resumed state's onEnter. Without this, every rewind to
-  // a snapshot adds another duplicate entry at that snapshot — rewinding
-  // 3× to "Round 2 · Hina Turn Start" would leave 3 identical rows in
-  // the rewind list. Read-and-clear in `saveDirectorState`.
-  if (suppressNextHistoryPush) {
-    director.ctx._suppressNextHistoryPush = true;
-  }
+  // History-push dedup lives in pushToHistory now — no per-resume flag
+  // needed. Same-fingerprint entries (rewind to "Hina · Turn Start" →
+  // TURN_START re-saves same) collapse to one in the rewind list.
 
   // Branch on what the survival flag is pointing at:
   //   - pendingAction set (F5 happened with an Action Card on-screen) →
@@ -684,15 +679,15 @@ async function rewindTo(snapshotId) {
   // it as-is (it reads dCombat / sourceSceneId / payload from `state`,
   // ignoring the extra `actors` / `label` / `description` / `id`).
   //
-  // `suppressNextHistoryPush: true` tells the first save fired by the
-  // resumed state's onEnter (TURN_START / TURN_END / CONFIRM) to skip
-  // the history push — otherwise rewinding to a snapshot adds a
-  // duplicate entry at that snapshot every time, so 3× rewinds to the
-  // same point pile up 3 identical rows in the rewind list.
+  // History-push dedup (in persistence.pushToHistory) handles the
+  // "rewinding to a snapshot duplicates itself" case via fingerprint
+  // match against the latest existing entry — replaces the prior
+  // suppressNextHistoryPush flag which was over-aggressive (it ate
+  // any first-save-after-rewind, including legitimate ones like a
+  // fresh "Hina · Turn Start" entry after rewinding to "Battle Start").
   const mountResult = await resumeFromSavedState({
     scene: result.scene,
     state: result.snapshot,
-    suppressNextHistoryPush: true,
   });
   if (!mountResult) {
     ui.notifications?.error("Rewind: director mount failed after restore.");

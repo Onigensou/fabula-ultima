@@ -119,18 +119,13 @@ export async function saveDirectorState(director, opts = {}) {
     log("persistence.save: dCombat ended, skipping");
     return;
   }
-  // One-shot history-push suppression. The rewind path sets this on
-  // ctx via resumeFromSavedState({ suppressNextHistoryPush: true }) so
-  // the first save fired by the rewound TURN_START / TURN_END /
-  // CONFIRM handler doesn't add a duplicate entry at the snapshot we
-  // just landed on. Read-and-clear so it only affects the very next
-  // save; subsequent saves push to history normally. directorState is
-  // still written (reload survival shouldn't break).
-  if (director?.ctx?._suppressNextHistoryPush) {
-    delete director.ctx._suppressNextHistoryPush;
-    opts = { ...opts, skipHistory: true };
-    log("persistence.save: skipHistory forced by one-shot suppressNextHistoryPush flag");
-  }
+  // History-push deduplication lives in pushToHistory (fingerprint
+  // match against latest entry). The older `_suppressNextHistoryPush`
+  // one-shot flag was removed — it suppressed the FIRST save after
+  // any rewind regardless of whether the snapshot it would generate
+  // matched the rewind target, losing entries like a fresh
+  // "Round 1 · Hina · Turn Start" after rewinding to "Battle Start".
+  // Fingerprint dedup handles same-state collisions cleanly.
   // pendingAction lives at the top level of the saved state so the
   // resume path can read it without diving into dCombat. Set by
   // Confirm.onEnter (with `{actionResult, ctx}`) and cleared by every
@@ -397,10 +392,49 @@ export async function clearAllDirectorStateFlags() {
 // entries past MAX_HISTORY (50). Idempotent on failure — the rest of
 // the save still succeeded (history is a nice-to-have for the rewind
 // tool, not load-bearing for combat).
+//
+// Deduplication: if the new entry's fingerprint matches the latest
+// existing entry's fingerprint, skip the push. This replaces the
+// older one-shot `_suppressNextHistoryPush` flag — that approach
+// suppressed the FIRST save after any rewind regardless of whether
+// the rewound-to snapshot actually matched. Fingerprint covers the
+// observable rewind axes (round, side, combatant, resolution state,
+// pendingAction shape, label) so two saves that would land on the
+// same logical timeline-point collapse to one.
+//
+// Concrete cases handled:
+//   - F5 right after a save → resume re-saves the same checkpoint → dedup
+//   - Rewind to "Round 2 · Hina · Turn Start" → TURN_START re-saves same →
+//     dedup
+//   - Rewind to "Battle Start" → TURN_START saves NEW "Round 1 · Hina ·
+//     Turn Start" entry → fingerprint differs → push (the old bug:
+//     suppressed unconditionally and lost the entry)
+function historyFingerprint(entry) {
+  const dc = entry?.dCombat ?? {};
+  const pa = entry?.pendingAction ?? null;
+  return JSON.stringify([
+    String(entry?.label ?? ""),
+    Number(dc.round ?? 0),
+    String(dc.currentSide ?? ""),
+    String(dc.currentCombatantId ?? ""),
+    !!dc.currentTurnResolved,
+    String(pa?.actionResult?.attackerActorRef ?? pa?.actionResult?.attacker?.actorUuid ?? ""),
+    String(pa?.actionResult?.kind ?? ""),
+    Number(pa?.actionResult?.passIndex ?? 0),
+  ]);
+}
+
 export async function pushToHistory(scene, entry) {
   if (!scene || !entry) return;
   let current = scene.getFlag(FLAG_NS, HISTORY_KEY);
   if (!Array.isArray(current)) current = [];
+  if (current.length) {
+    const latest = current[current.length - 1];
+    if (historyFingerprint(latest) === historyFingerprint(entry)) {
+      log(`persistence.pushToHistory: dedup skip — "${entry.label}" matches latest entry`);
+      return;
+    }
+  }
   const next = [...current, entry];
   // Rolling window — oldest entries fall off the front.
   while (next.length > MAX_HISTORY) next.shift();
