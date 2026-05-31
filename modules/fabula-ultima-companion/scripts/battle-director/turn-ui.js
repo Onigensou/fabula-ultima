@@ -198,7 +198,7 @@ function worldAnchor(token) {
 //                intent over socket. Must be supplied if no director.
 //   - onPassive: () => void. Called when the Passive button is clicked.
 //                Default opens PassiveManager for the actor.
-function spawnMenu({ director, token, combatId, onPick, onPassive }) {
+function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null }) {
   ensureBaseStyles();
 
   const PAGES = LEGACY_PAGES.map((p) => ({
@@ -226,9 +226,22 @@ function spawnMenu({ director, token, combatId, onPick, onPassive }) {
   const budgetLabel = document.createElement("div");
   budgetLabel.className = "budget-label";
   const budgetMain = document.createElement("span");
-  budgetMain.textContent = "Turn Action";
+  budgetMain.textContent = budgetText ?? "Turn Action";
   budgetLabel.append(budgetMain);
   root.appendChild(budgetLabel);
+
+  // Free-action filter: when `enabledLabels` is supplied, every command
+  // NOT in the list is rendered greyed-out and its click handler is
+  // skipped (NON_ACTION_COMMANDS like "Passive" are always enabled).
+  // `null` = no filter (all enabled).
+  const enabledSet = Array.isArray(enabledLabels) && enabledLabels.length
+    ? new Set(enabledLabels.map((s) => String(s).trim()))
+    : null;
+  function isEnabledLabel(label) {
+    if (!enabledSet) return true;
+    if (NON_ACTION_COMMANDS.has(label)) return true;
+    return enabledSet.has(label);
+  }
 
   document.body.appendChild(root);
 
@@ -315,6 +328,19 @@ function spawnMenu({ director, token, combatId, onPick, onPassive }) {
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
       it.btn.style.opacity = opacity.toFixed(3);
       if (!it.bound && p >= 1) {
+        const isEnabled = isEnabledLabel(it.label);
+        if (!isEnabled) {
+          // Greyed-out: visually dimmed, no click handler, no pointer.
+          it.btn.style.opacity = "0.35";
+          it.btn.style.filter = "grayscale(0.6)";
+          it.btn.style.pointerEvents = "none";
+          it.btn.style.cursor = "not-allowed";
+          it.btn.title = enabledLabels?.length
+            ? `Disabled — free action allows: ${enabledLabels.join(", ")}`
+            : "Disabled";
+          it.bound = true;
+          continue;
+        }
         it.btn.addEventListener("click", async (ev) => {
           ev.stopPropagation();
           // Non-action commands open an overlay instead of declaring an
@@ -413,7 +439,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive }) {
 //   - Player-on-PC:     pass { token, combatId, actorUuid, onPick }
 //     where onPick emits DECLARE_COMMAND over IntentChannel.
 export const TurnUI = {
-  spawn({ director, token, combatId, actorUuid, onPick, onPassive }) {
+  spawn({ director, token, combatId, actorUuid, onPick, onPassive, enabledLabels = null, budgetText = null }) {
     if (!token) {
       warn("Turn UI spawn: no token");
       return null;
@@ -451,7 +477,7 @@ export const TurnUI = {
       } catch (e) { warn("Turn UI: Passive button failed", e); }
     });
 
-    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb });
+    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb, enabledLabels, budgetText });
     _instances.set(key, rec);
     return rec;
   },

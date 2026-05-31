@@ -32,6 +32,7 @@ import { OptionPicker } from "./option-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
+import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
@@ -2360,8 +2361,23 @@ const Compute = {
       // Single-pass roll for the weapon we just shifted from the queue.
       const dA = attacker.attributes?.[weapon.A1] ?? 8;
       const dB = attacker.attributes?.[weapon.A2] ?? 8;
-      const checkBonus = weapon.checkBonus ?? 0;
-      const damageBonus = weapon.damageBonus ?? 0;
+      let checkBonus = weapon.checkBonus ?? 0;
+      let damageBonus = weapon.damageBonus ?? 0;
+      // Free-action grant — read + consume. Adds the grant's check /
+      // damage bonus to this attack's roll. The clear-on-consume here
+      // (rather than on RESOLVE success) means a CONFIRM cancel still
+      // consumes the grant, matching the user's commitment-on-pick
+      // model: once they posted the action card, the free action was
+      // used. Use case driver: High Speed's "perform a free attack with
+      // +SL bonus". See [[free-actions]].
+      const attackerActorIdForGrant = attacker?.actorId ?? null;
+      const attackGrant = attackerActorIdForGrant ? freeActions.get(attackerActorIdForGrant) : null;
+      if (attackGrant) {
+        checkBonus += Number(attackGrant.checkBonus) || 0;
+        damageBonus += Number(attackGrant.damageBonus) || 0;
+        log(`Attack COMPUTE: applied ${attackGrant.sourceLabel} grant (+${attackGrant.checkBonus ?? 0} check / +${attackGrant.damageBonus ?? 0} dmg)`);
+        freeActions.clear(attackerActorIdForGrant);
+      }
 
       // V12+: Roll#evaluate is always async; the legacy `{async: true}`
       // option emits a compat warning. Just await the roll directly.
@@ -2466,6 +2482,10 @@ const Compute = {
           finalIfHit: effectiveHr + damageBonus,
         },
         perTargetResults,
+        // Free-action grant audit — when High Speed (or any other grant
+        // source) bakes a bonus into this attack, stamp the source label
+        // + bonus amounts on the ar for card display + rewind history.
+        ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0 } } : {}),
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
@@ -2493,11 +2513,23 @@ const Compute = {
       const dB = attacker.attributes?.[A2] ?? 8;
       const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
 
+      // Free-action grant — add checkBonus to Hinder's roll if a grant
+      // is pending and the player elected Hinder. damageBonus n/a (no
+      // damage stage for Hinder). Same consume-on-pick semantics as
+      // Attack.
+      const hinderActorIdForGrant = attacker?.actorId ?? null;
+      const hinderGrant = hinderActorIdForGrant ? freeActions.get(hinderActorIdForGrant) : null;
+      const hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
+      if (hinderGrant) {
+        log(`Hinder COMPUTE: applied ${hinderGrant.sourceLabel} grant (+${hinderGrant.checkBonus ?? 0} check)`);
+        freeActions.clear(hinderActorIdForGrant);
+      }
+
       const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
       const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
       const rA = dice[0] ?? 0;
       const rB = dice[1] ?? 0;
-      const total = (rA + rB) | 0;
+      const total = (rA + rB + hinderCheckBonus) | 0;
       const hr = Math.max(rA, rB);
       const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
       const isCrit = (rA === rB) && !isFumble && rA >= 6;
@@ -2512,7 +2544,7 @@ const Compute = {
         targets: [targetSnap],
         roll: {
           A1, A2,
-          dA, dB, rA, rB, checkBonus: 0, total, hr,
+          dA, dB, rA, rB, checkBonus: hinderCheckBonus, total, hr,
           isCrit, isFumble,
           opportunities: isCrit && !isFumble,
         },
@@ -2521,6 +2553,7 @@ const Compute = {
         // statusValue is filled in by the card click (one of dazed /
         // shaken / slow / weak) before RESOLVE runs. See Confirm.onEnter.
         statusValue: null,
+        ...(hinderGrant ? { freeActionGrant: { sourceLabel: hinderGrant.sourceLabel, checkBonus: hinderGrant.checkBonus ?? 0, damageBonus: 0 } } : {}),
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;

@@ -41,6 +41,7 @@ import { pickSkill } from "./skill-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
+import { freeActions } from "./free-actions.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -111,8 +112,17 @@ export async function composeAction({
   // Octopath so the player can pick a different command. External cancel
   // (race lost, MENU_CLOSE from GM) exits the loop entirely.
   while (!externallyCancelled) {
+    // Free-action grant filter — when this actor has a pending grant
+    // (e.g. from High Speed's conflict_start chain), the Octopath shows
+    // only `enabledLabels` and the budget reads "<Skill> Free Action".
+    // The grant is the source of truth: state-handlers' COMPUTE reads
+    // it directly to apply checkBonus/damageBonus; RESOLVE clears it.
+    const actorIdForGrant = snap?.actorId ?? (actorUuid ? String(actorUuid).split(".").pop() : null);
+    const grant = actorIdForGrant ? freeActions.get(actorIdForGrant) : null;
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
+      enabledLabels: grant?.enabledLabels ?? null,
+      budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
     });
     if (externallyCancelled || command === null) break;
 
@@ -172,7 +182,7 @@ export async function composeAction({
 
 // Spawn TurnUI, return a Promise that resolves with the command label
 // or null if cancelled. Cleans up the Octopath in either path.
-function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel }) {
+function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null }) {
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
@@ -185,6 +195,8 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
     TurnUI.spawn({
       director, token, combatId, actorUuid,
       onPick: (command) => finish(command),
+      enabledLabels,
+      budgetText,
       // Passive button intentionally uses TurnUI's default — opens
       // PassiveManager locally without entering the compose chain. The
       // Octopath stays open (TurnUI.spawn doesn't auto-close on Passive
