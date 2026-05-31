@@ -475,6 +475,15 @@ export async function dispatchReactionMenu({
     remaining = remaining.filter(
       (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
     );
+    // Action-creating commits end this reactor's pre-action decision —
+    // the player committed to running their free action / spawned card.
+    // Closing the menu now (rather than re-rendering with leftover
+    // reactions) unblocks SRW so FREE_ACTION_WINDOW can drain the queue
+    // and the action plays out. The reactor's un-fired reactions come
+    // back on SRW re-entry post-action — standaloneFired only marked
+    // the fired one, so the others re-emerge in the next dispatch with
+    // freshly re-gated conditions.
+    if (isActionCreating) return false;
     return remaining.length > 0;
   }
 
@@ -588,19 +597,49 @@ export async function dispatchReactionMenu({
     }
   };
 
-  // Cross-reactor stop signal — another reactor's menu just committed an
-  // action-creating reaction. Close my menu cleanly and return as
-  // "deferred" so the orchestrator knows I haven't decided yet.
+  // Cross-reactor stop signal — another reactor committed an
+  // action-creating reaction. Filter MY remaining candidates to drop
+  // action-creating ones (they wait for re-gate), then either:
+  //   - close my menu (no state-only blades left → deferred until SRW
+  //     re-entry), OR
+  //   - re-render my menu with just state-only blades so I can still
+  //     fire AE-self / grant-style reactions while the peer's action
+  //     plays out.
   // Source filter: ignore my own emit so the acting reactor doesn't
-  // close itself.
-  const stopHandler = (ev) => {
+  // re-render itself.
+  const stopHandler = async (ev) => {
     const sourceUuid = ev?.detail?.sourceReactorUuid ?? null;
     if (sourceUuid && sourceUuid === reactor.uuid) return;
     if (deferredByPeer) return;
-    deferredByPeer = true;
-    log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${ev?.detail?.actorName ?? "?"}" took action-creating)`);
-    try { closeMenusEverywhere(); } catch {}
-    try { resolveClose(); } catch {}
+    const stateOnly = [];
+    for (const cand of remaining) {
+      let isAC = false;
+      try {
+        const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+        if (carrier) {
+          const cfg = cand.carrierKind === "ae"
+            ? carrier?.flags?.["fabula-ultima-companion"]?.reactionConfig?.reaction_config_table
+            : carrier?.system?.props?.reaction_config_table;
+          const reactionRow = cfg?.[cand.rowKey] ?? null;
+          if (reactionRow) {
+            isAC = cand.carrierKind === "ae"
+              ? isActionCreatingReactionForAE(carrier, reactionRow)
+              : isActionCreatingReaction(carrier, reactionRow);
+          }
+        }
+      } catch (e) { warn(`reaction[${trigger}]: classify on stop threw`, e); }
+      if (!isAC) stateOnly.push(cand);
+    }
+    if (!stateOnly.length) {
+      deferredByPeer = true;
+      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${ev?.detail?.actorName ?? "?"}" acting; no state-only blades remain)`);
+      try { closeMenusEverywhere(); } catch {}
+      try { resolveClose(); } catch {}
+    } else {
+      log(`reaction[${trigger}]: ${reactor.name} keeping ${stateOnly.length} state-only blade(s) (peer "${ev?.detail?.actorName ?? "?"}" acting); ${remaining.length - stateOnly.length} action-creating filtered out`);
+      remaining = stateOnly;
+      try { renderMenu(); } catch (e) { warn(`reaction[${trigger}]: re-render on stop threw`, e); }
+    }
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);
 
