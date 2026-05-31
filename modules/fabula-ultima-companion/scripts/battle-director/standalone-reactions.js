@@ -225,30 +225,334 @@ function buildStandalonePayload(director, trigger, extras) {
   };
 }
 
-// Dispatch a standalone trigger across every reactor with at least one
-// matching row. Spawns a per-reactor menu; clicks fire the reaction.
+// Generic reaction-menu dispatcher for a SINGLE reactor.
 //
-// BLOCKING: returns a Promise that resolves only when every spawned
-// menu has been closed (every ask resolved via blade click or the
-// reactor's Pass blade dismissed the menu). Auto-mode passives still
-// fire synchronously and don't block.
+// Handles the full multi-client flow:
+//   - findPassiveCandidates (matcher gates the row's filters/formula)
+//   - Auto-fire "on"/"force" passives silently (no menu surface).
+//   - For ask-mode candidates: spawn ReactionMenu over the reactor's
+//     token, broadcast the same menu to the reactor's player owner,
+//     broadcast a dimmed indicator to non-owner active players, race
+//     local-vs-remote click via Promise.race + awaitIntent.
+//   - On blade pick → firePreAcceptedCandidate, re-render with remaining
+//     candidates (if any) or close.
+//   - On Pass/Cancel → close, mark all remaining as passed (in scope
+//     idempotency if scope+scene supplied).
 //
-// This makes "reactions block the next FSM phase" trivial — the FSM
-// handlers (`PREP.onEnter`, `TURN_START.onEnter`, etc.) just `await`
-// dispatch before enqueueing INTERNAL_DONE, so Take Action / next
-// turn / next round can't surface until every reactor has decided.
+// Returns `{ cancelled, fired }`:
+//   - `cancelled: true`  → user clicked Pass/Cancel without firing
+//                          anything (including auto-fires). The caller
+//                          should treat this as "the reactor declined."
+//   - `cancelled: false` → at least one reaction fired (auto-fire OR
+//                          ask-mode pick). The caller proceeds.
+//   - `fired` is the array of candidate objects that actually applied.
 //
-// Result: `{ spawned, closed }` — spawned counts how many menus
-// went up; closed is the await-resolution that the caller already
-// blocked on (kept for log readability).
+// Idempotency persistence (optional): pass `scope` (string) + `scene`
+// (SceneDocument) to record decisions in the scene's standaloneFired
+// flag — used by standalone triggers so F5 mid-reaction doesn't double-
+// fire on resume. Synchronous callers (Vismagus in TARGET) omit both.
+//
+// `passLabel` (optional): bottom-button text. Defaults to "Pass" for
+// standalone triggers; Vismagus passes "Cancel" because declining =
+// can't afford the spell, so we return the player to the action picker.
+export async function dispatchReactionMenu({
+  director,
+  reactor,
+  token,
+  trigger,
+  payload,
+  label = null,
+  passLabel = "Pass",
+  includeManual = true,
+  scope = null,
+  scene = null,
+} = {}) {
+  if (!director || !reactor || !token || !trigger) {
+    return { cancelled: false, fired: [] };
+  }
+  const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
+  const fired = [];
+
+  // Idempotency filter — drop already-handled rows when scope+scene set.
+  const firedSet = (scope && scene) ? readFiredSet(scene, scope) : new Set();
+
+  let candidates;
+  try {
+    candidates = await findPassiveCandidates({
+      casterActor: reactor,
+      trigger,
+      payload,
+      includeManual,
+    });
+  } catch (e) {
+    warn(`reaction[${trigger}]: findPassiveCandidates threw for ${reactor?.name}`, e);
+    return { cancelled: false, fired: [] };
+  }
+  if (!candidates?.length) return { cancelled: false, fired: [] };
+
+  const fresh = candidates.filter(
+    (c) => !firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid))
+  );
+  if (fresh.length !== candidates.length) {
+    log(`reaction[${trigger}]: ${reactor.name} — ${candidates.length - fresh.length} candidate(s) already handled, skipping`);
+  }
+  if (!fresh.length) return { cancelled: false, fired: [] };
+
+  // Auto-fire "on" + "force" passives silently.
+  const autoFire = [];
+  const askable = [];
+  for (const c of fresh) {
+    if (c.kind === "passive" && (c.mode === "on" || c.mode === "force")) autoFire.push(c);
+    else if (c.mode !== "off") askable.push(c);
+  }
+  for (const c of autoFire) {
+    try {
+      await firePreAcceptedCandidate({
+        director, casterActor: reactor, candidate: c, payload,
+      });
+      fired.push(c);
+      log(`reaction[${trigger}]: auto-fired "${c.carrierName}" for ${reactor.name}`);
+    } catch (e) {
+      warn(`reaction[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
+    }
+    if (scope && scene) {
+      await appendFired(scene, scope, {
+        reactorUuid: reactor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
+        decision: "auto",
+      });
+    }
+  }
+
+  if (!askable.length) {
+    // Nothing left to interact with. cancelled stays false — auto-fires
+    // (if any) already counted as "fired"; with zero auto-fires the
+    // caller sees `{ cancelled: false, fired: [] }` and proceeds.
+    return { cancelled: false, fired };
+  }
+
+  // Spawn the interactive menu.
+  const ReactionMenu = await getReactionMenu();
+  const combatId = director?.combatId ?? director?.dCombat?.id ?? null;
+  let resolveClose;
+  const closed = new Promise((r) => { resolveClose = r; });
+
+  let remaining = askable.slice();
+  let cancelled = false;
+
+  const ownerUserId = resolveReactorOwnerUserId(reactor);
+  const channel = director?.intentChannel ?? null;
+  const indicatorRecipients = resolveAllyIndicatorRecipients(ownerUserId);
+  const ownerLabel = ownerUserId
+    ? `${userDisplayName(ownerUserId)} reacting…`
+    : `${reactor.name ?? "Reactor"} reacting…`;
+  const menuLabel = label ?? labelForTrigger(trigger);
+
+  function closeMenusEverywhere() {
+    ReactionMenu.despawn({ combatId, tokenId: token.id });
+    if (channel) {
+      if (ownerUserId) {
+        try {
+          channel.broadcastMenuClose({
+            targetUserId: ownerUserId,
+            kind: "reaction-menu",
+            reason: "fired-or-passed",
+          });
+        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu) threw`, e); }
+      }
+      const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
+      for (const uid of indicatorRecipients) {
+        try {
+          channel.broadcastMenuClose({
+            targetUserId: uid,
+            kind: "reaction-indicator",
+            reason: "fired-or-passed",
+            data: { tokenUuid: indicatorTokenUuid, combatId },
+          });
+        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(indicator) threw`, e); }
+      }
+    }
+  }
+
+  function buildIndicatorSpec() {
+    return {
+      kind: "reaction-indicator",
+      combatId,
+      tokenUuid: token.document?.uuid ?? token.uuid ?? null,
+      reactorActorUuid: reactor.uuid,
+      label: ownerLabel,
+      trigger,
+    };
+  }
+
+  function buildPlayerMenuSpec() {
+    const serialised = remaining.map((c) => ({
+      rowKey: c.rowKey,
+      carrierUuid: c.carrierUuid,
+      carrierName: c.carrierName,
+      carrierImg: c.carrierImg,
+      carrierDescription: c.carrierDescription,
+      mode: c.mode,
+      kind: c.kind,
+      ref: c.ref,
+    }));
+    return {
+      kind: "reaction-menu",
+      combatId,
+      tokenUuid: token.document?.uuid ?? token.uuid ?? null,
+      reactorActorUuid: reactor.uuid,
+      candidates: serialised,
+      trigger,
+      label: menuLabel,
+      passLabel,
+    };
+  }
+
+  async function processDecision(cand) {
+    try {
+      await firePreAcceptedCandidate({
+        director, casterActor: reactor, candidate: cand, payload,
+      });
+      fired.push(cand);
+      log(`reaction[${trigger}]: fired "${cand.carrierName}" for ${reactor.name}`);
+    } catch (e) {
+      warn(`reaction[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
+    }
+    if (scope && scene) {
+      await appendFired(scene, scope, {
+        reactorUuid: reactor.uuid, rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
+        decision: "fired",
+      });
+    }
+    remaining = remaining.filter(
+      (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
+    );
+    return remaining.length > 0;
+  }
+
+  async function processPass() {
+    log(`reaction[${trigger}]: passed for ${reactor.name}`);
+    if (scope && scene) {
+      for (const c of remaining) {
+        await appendFired(scene, scope, {
+          reactorUuid: reactor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
+          decision: "passed",
+        });
+      }
+    }
+    // cancelled = true only when NOTHING fired (no auto-fires AND no
+    // ask-pick before this pass). Auto-fires set fired[] in the outer
+    // loop above; if any landed, cancelled stays false.
+    cancelled = fired.length === 0;
+    remaining = [];
+  }
+
+  function armRemoteAwait() {
+    if (!ownerUserId || !channel) return null;
+    try {
+      return channel.awaitIntent(INTENTS.REACTION_CHOICE, {
+        fromUserId: ownerUserId,
+        timeoutMs: 30 * 60 * 1000,
+      });
+    } catch (e) {
+      warn(`reaction[${trigger}]: awaitIntent threw`, e);
+      return null;
+    }
+  }
+
+  const renderMenu = () => {
+    if (!remaining.length) {
+      closeMenusEverywhere();
+      resolveClose();
+      return;
+    }
+    if (ownerUserId && channel) {
+      try {
+        channel.broadcastMenuOpen({
+          targetUserId: ownerUserId,
+          menuSpec: buildPlayerMenuSpec(),
+        });
+      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen threw`, e); }
+    }
+    if (channel && indicatorRecipients.length) {
+      const spec = buildIndicatorSpec();
+      for (const uid of indicatorRecipients) {
+        try {
+          channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
+        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(indicator) threw`, e); }
+      }
+    }
+    const remoteAwait = armRemoteAwait();
+    let localPickFired = false;
+
+    ReactionMenu.spawn({
+      director, token,
+      candidates: remaining,
+      combatId,
+      trigger,
+      label: menuLabel,
+      passLabel,
+      onPick: async (cand) => {
+        if (localPickFired) return;
+        localPickFired = true;
+        try { remoteAwait?.abort?.("local-won"); } catch {}
+        const keepGoing = await processDecision(cand);
+        if (keepGoing) renderMenu();
+        else { closeMenusEverywhere(); resolveClose(); }
+      },
+      onPass: async () => {
+        if (localPickFired) return;
+        localPickFired = true;
+        try { remoteAwait?.abort?.("local-won"); } catch {}
+        await processPass();
+        closeMenusEverywhere();
+        resolveClose();
+      },
+    });
+
+    if (remoteAwait) {
+      remoteAwait.then(async (intent) => {
+        if (localPickFired) return;
+        localPickFired = true;
+        const body = intent?.body ?? {};
+        if (body.decision === "pass") {
+          await processPass();
+          closeMenusEverywhere();
+          resolveClose();
+          return;
+        }
+        const cand = remaining.find(
+          (c) => c.rowKey === body.rowKey && c.carrierUuid === body.carrierUuid
+        );
+        if (!cand) {
+          warn(`reaction[${trigger}]: remote REACTION_CHOICE rowKey ${body.rowKey} not found in remaining`);
+          localPickFired = false;
+          return;
+        }
+        const keepGoing = await processDecision(cand);
+        if (keepGoing) renderMenu();
+        else { closeMenusEverywhere(); resolveClose(); }
+      }).catch((e) => {
+        if (!String(e?.message ?? e).includes("local-won")) {
+          warn(`reaction[${trigger}]: awaitIntent rejected`, e);
+        }
+      });
+    }
+  };
+
+  renderMenu();
+  await closed;
+  return { cancelled, fired };
+}
+
+// Dispatch a standalone trigger across every live reactor. Each reactor's
+// menu fires concurrently; the Promise resolves only when ALL reactors
+// have resolved their menu (block-the-FSM semantics).
 //
 // `restrictTo` (optional): when present, only this reactor actor is
 // considered — used by turn_start/turn_end to fire only for the
-// acting combatant (everyone else's turn-start handlers don't apply).
+// acting combatant.
 export async function dispatchStandaloneTrigger({ director, trigger, restrictTo = null, payload: extraPayload = null } = {}) {
   if (!director || !trigger) return 0;
-  const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
-
   let reactors = await collectReactors(director);
   if (restrictTo) {
     const wantedUuid = String(restrictTo?.uuid ?? "");
@@ -257,334 +561,31 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
   if (!reactors.length) return 0;
 
   const payload = buildStandalonePayload(director, trigger, extraPayload);
-  // Idempotency (A): persist per-decision so F5 mid-reaction doesn't
-  // re-fire on resume. Scope keys are round/turn-aware so re-dispatch
-  // in a new round still surfaces the same row.
   const scene = director?.dCombat?.scene ?? null;
   const scope = scopeKeyFor(trigger, payload);
-  const firedSet = readFiredSet(scene, scope);
+  const triggerLabel = labelForTrigger(trigger);
 
-  let spawned = 0;
-  // Each spawned menu pushes a Promise here; Promise.all at the end
-  // blocks dispatch return until every reactor has dismissed their menu.
-  const closePromises = [];
-
-  for (const { actor, token } of reactors) {
-    let candidates;
-    try {
-      candidates = await findPassiveCandidates({
-        casterActor: actor,
-        trigger,
-        payload,
-        includeManual: true,
-      });
-    } catch (e) {
-      warn(`dispatchStandaloneTrigger: findPassiveCandidates threw for ${actor?.name}`, e);
-      continue;
-    }
-    if (!candidates?.length) continue;
-
-    // Filter out already-handled rows (resume after F5, or a re-entry
-    // into the same standalone window). Tracked via the firedSet
-    // computed at dispatch entry.
-    const fresh = candidates.filter(
-      (c) => !firedSet.has(entryKey(actor.uuid, c.rowKey, c.carrierUuid))
-    );
-    if (fresh.length !== candidates.length) {
-      log(`standalone[${trigger}]: ${actor.name} — ${candidates.length - fresh.length} candidate(s) already handled, skipping`);
-    }
-    if (!fresh.length) continue;
-
-    // Auto-fire "on" and "force" passives immediately (no menu blade —
-    // no action card to gate; just run). Ask-mode and manual rows go
-    // to the menu for the player to pick. "force" rows differ from
-    // "on" semantically only in UI: both auto-fire here, but force is
-    // hidden from the Passive Manager toggle list as well (see
-    // [[force-mode-for-engine-mandatory-reactions]]).
-    const autoFire = [];
-    const askable = [];
-    for (const c of fresh) {
-      if (c.kind === "passive" && (c.mode === "on" || c.mode === "force")) autoFire.push(c);
-      else if (c.mode !== "off") askable.push(c);
-    }
-
-    for (const c of autoFire) {
-      try {
-        await firePreAcceptedCandidate({
-          director, casterActor: actor, candidate: c, payload,
-        });
-        log(`standalone[${trigger}]: auto-fired "${c.carrierName}" for ${actor.name}`);
-      } catch (e) {
-        warn(`standalone[${trigger}]: auto-fire threw for ${c.carrierName}`, e);
-      }
-      // Mark as handled regardless of fire success — a failed auto-fire
-      // shouldn't loop forever on resume.
-      await appendFired(scene, scope, {
-        reactorUuid: actor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
-        decision: "auto",
-      });
-    }
-
-    if (!askable.length) continue;
-
-    // Lazy-resolve the menu module once per reactor before any spawn /
-    // despawn calls — the cache-bust pattern lives in getReactionMenu()
-    // so a probe / harness sees the live source.
-    const ReactionMenu = await getReactionMenu();
-
-    // Render the menu — onPick fires the candidate and respawns the
-    // menu with the remaining askables; onPass closes the menu.
-    // The whole interaction is wrapped in a single deferred Promise
-    // (`closed`) so the dispatch caller can await every reactor.
-    const combatId = director?.combatId ?? director?.dCombat?.id ?? null;
-    let resolveClose;
-    const closed = new Promise((r) => { resolveClose = r; });
-    closePromises.push(closed);
-
-    let remaining = askable.slice();
-
-    // Resolve the reactor's online player owner. When present, mirror
-    // the menu to their client via MENU_OPEN broadcast. The GM still
-    // renders locally; both click paths funnel into the same
-    // processDecision() below + are racing each other.
-    const ownerUserId = resolveReactorOwnerUserId(actor);
-    const channel = director?.intentChannel ?? null;
-    // Non-owner active players get the dimmed ally indicator (Rule 1
-    // stage 2). NPC reactors have no owner so the indicator goes to
-    // every active player.
-    const indicatorRecipients = resolveAllyIndicatorRecipients(ownerUserId);
-    const ownerLabel = ownerUserId
-      ? `${userDisplayName(ownerUserId)} reacting…`
-      : `${actor.name ?? "Reactor"} reacting…`;
-
-    // GM-side menu close that ALSO dismisses the player-side mirror +
-    // every ally indicator we broadcast.
-    function closeMenusEverywhere() {
-      ReactionMenu.despawn({ combatId, tokenId: token.id });
-      if (channel) {
-        if (ownerUserId) {
-          try {
-            channel.broadcastMenuClose({
-              targetUserId: ownerUserId,
-              kind: "reaction-menu",
-              reason: "fired-or-passed",
-            });
-          } catch (e) { warn("standalone: broadcastMenuClose(menu) threw", e); }
-        }
-        const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
-        for (const uid of indicatorRecipients) {
-          try {
-            channel.broadcastMenuClose({
-              targetUserId: uid,
-              kind: "reaction-indicator",
-              reason: "fired-or-passed",
-              data: { tokenUuid: indicatorTokenUuid, combatId },
-            });
-          } catch (e) { warn("standalone: broadcastMenuClose(indicator) threw", e); }
-        }
-      }
-    }
-
-    function buildIndicatorSpec() {
-      return {
-        kind: "reaction-indicator",
-        combatId,
-        tokenUuid: token.document?.uuid ?? token.uuid ?? null,
-        reactorActorUuid: actor.uuid,
-        label: ownerLabel,
-        trigger,
-      };
-    }
-
-    // Build the menu spec payload broadcast to the player. Includes
-    // everything the player-side reaction-menu-player.js handler needs
-    // to render locally (token uuid, candidates, label) + the
-    // reactorActorUuid so the player-side click can tag its
-    // REACTION_CHOICE intent for routing back here.
-    function buildPlayerMenuSpec() {
-      // Serialize candidates minimally — pull only the fields the menu
-      // module uses to render blades + the click handler. Avoids
-      // round-tripping large nested objects through the socket.
-      const serialised = remaining.map((c) => ({
-        rowKey: c.rowKey,
-        carrierUuid: c.carrierUuid,
-        carrierName: c.carrierName,
-        carrierImg: c.carrierImg,
-        carrierDescription: c.carrierDescription,
-        mode: c.mode,
-        kind: c.kind,
-        ref: c.ref,
-      }));
-      return {
-        kind: "reaction-menu",
-        combatId,
-        tokenUuid: token.document?.uuid ?? token.uuid ?? null,
-        reactorActorUuid: actor.uuid,
-        candidates: serialised,
-        trigger,
-        label: labelForTrigger(trigger),
-      };
-    }
-
-    // Apply a candidate decision — shared by local onPick + remote
-    // REACTION_CHOICE intent. Returns true if the menu should keep
-    // running (more remaining), false if it should close.
-    async function processDecision(cand) {
-      try {
-        await firePreAcceptedCandidate({
-          director, casterActor: actor, candidate: cand, payload,
-        });
-        log(`standalone[${trigger}]: fired "${cand.carrierName}" for ${actor.name}`);
-      } catch (e) {
-        warn(`standalone[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
-      }
-      await appendFired(scene, scope, {
-        reactorUuid: actor.uuid, rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
-        decision: "fired",
-      });
-      remaining = remaining.filter(
-        (r) => !(r.rowKey === cand.rowKey && r.carrierUuid === cand.carrierUuid)
-      );
-      return remaining.length > 0;
-    }
-
-    async function processPass() {
-      log(`standalone[${trigger}]: passed for ${actor.name}`);
-      for (const c of remaining) {
-        await appendFired(scene, scope, {
-          reactorUuid: actor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
-          decision: "passed",
-        });
-      }
-      remaining = [];
-    }
-
-    // Re-arm the awaitIntent each iteration of the menu render loop —
-    // the IntentChannel's awaitIntent is one-shot. Without this, the
-    // first remote pick resolves but the second player click on the
-    // refreshed menu wouldn't be heard.
-    function armRemoteAwait() {
-      if (!ownerUserId || !channel) return null;
-      try {
-        return channel.awaitIntent(INTENTS.REACTION_CHOICE, {
-          fromUserId: ownerUserId,
-          timeoutMs: 30 * 60 * 1000,  // 30 min — practically forever
-        });
-      } catch (e) {
-        warn(`standalone[${trigger}]: awaitIntent threw`, e);
-        return null;
-      }
-    }
-
-    const renderMenu = () => {
-      if (!remaining.length) {
-        closeMenusEverywhere();
-        resolveClose();
-        return;
-      }
-      // Broadcast the current remaining set to the player. Re-broadcasts
-      // on every render so the player always sees the same set the GM
-      // sees.
-      if (ownerUserId && channel) {
-        try {
-          channel.broadcastMenuOpen({
-            targetUserId: ownerUserId,
-            menuSpec: buildPlayerMenuSpec(),
-          });
-        } catch (e) { warn("standalone: broadcastMenuOpen threw", e); }
-      }
-      // Stage-2 ally indicator: dimmed dashed pill rendered to every
-      // active non-owner player so they know someone is reacting
-      // without leaking the candidate list. Broadcast once per render
-      // iteration so a late-joining client still receives it via the
-      // PLAYER_HELLO replay cache. See [[reaction-architecture]] Rule 1.
-      if (channel && indicatorRecipients.length) {
-        const spec = buildIndicatorSpec();
-        for (const uid of indicatorRecipients) {
-          try {
-            channel.broadcastMenuOpen({ targetUserId: uid, menuSpec: spec });
-          } catch (e) { warn("standalone: broadcastMenuOpen(indicator) threw", e); }
-        }
-      }
-      // Arm the remote awaitIntent BEFORE spawning the local menu so
-      // a near-instant player click isn't dropped.
-      const remoteAwait = armRemoteAwait();
-      let localPickFired = false;
-
-      ReactionMenu.spawn({
-        director, token,
-        candidates: remaining,
-        combatId,
-        trigger,
-        label: labelForTrigger(trigger),
-        onPick: async (cand) => {
-          if (localPickFired) return;
-          localPickFired = true;
-          // Abort the racing remote await so it doesn't linger and
-          // resolve a stale intent on the next menu iteration.
-          try { remoteAwait?.abort?.("local-won"); } catch {}
-          const keepGoing = await processDecision(cand);
-          if (keepGoing) renderMenu();
-          else { closeMenusEverywhere(); resolveClose(); }
-        },
-        onPass: async () => {
-          if (localPickFired) return;
-          localPickFired = true;
-          try { remoteAwait?.abort?.("local-won"); } catch {}
-          await processPass();
-          closeMenusEverywhere();
-          resolveClose();
-        },
-      });
-
-      // Handle remote pick. If the player clicks first, this race-
-      // path fires; we cancel the GM-local menu via closeMenusEverywhere
-      // (which also closes the mirror it would re-broadcast).
-      if (remoteAwait) {
-        remoteAwait.then(async (intent) => {
-          if (localPickFired) return;
-          localPickFired = true;
-          const body = intent?.body ?? {};
-          if (body.decision === "pass") {
-            await processPass();
-            closeMenusEverywhere();
-            resolveClose();
-            return;
-          }
-          // Look up the candidate by rowKey + carrierUuid against the
-          // current remaining set. The remote intent CARRIES these but
-          // the candidate object itself stays on the GM side.
-          const cand = remaining.find(
-            (c) => c.rowKey === body.rowKey && c.carrierUuid === body.carrierUuid
-          );
-          if (!cand) {
-            warn(`standalone[${trigger}]: remote REACTION_CHOICE rowKey ${body.rowKey} not found in remaining`);
-            // Re-arm and continue — the menu didn't actually fire.
-            localPickFired = false;
-            return;
-          }
-          const keepGoing = await processDecision(cand);
-          if (keepGoing) renderMenu();
-          else { closeMenusEverywhere(); resolveClose(); }
-        }).catch((e) => {
-          // Aborted by local-won path — expected, no warning.
-          if (!String(e?.message ?? e).includes("local-won")) {
-            warn(`standalone[${trigger}]: awaitIntent rejected`, e);
-          }
-        });
-      }
-    };
-    renderMenu();
-    spawned++;
-  }
-
-  if (closePromises.length) {
-    log(`dispatchStandaloneTrigger[${trigger}]: awaiting ${closePromises.length} reactor menu(s)`);
-    await Promise.all(closePromises);
-    log(`dispatchStandaloneTrigger[${trigger}]: all menus resolved`);
-  }
-
-  return spawned;
+  const dispatches = reactors.map(({ actor, token }) =>
+    dispatchReactionMenu({
+      director,
+      reactor: actor,
+      token,
+      trigger,
+      payload,
+      label: triggerLabel,
+      passLabel: "Pass",
+      includeManual: true,
+      scope,
+      scene,
+    }).catch((e) => {
+      warn(`dispatchStandaloneTrigger[${trigger}]: reactor ${actor?.name} threw`, e);
+      return { cancelled: true, fired: [] };
+    })
+  );
+  const results = await Promise.all(dispatches);
+  const involved = results.filter((r) => r.fired.length || !r.cancelled).length;
+  log(`dispatchStandaloneTrigger[${trigger}]: ${results.length} reactor(s) processed`);
+  return involved;
 }
 
 // Clear every reaction menu + indicator spawned by the standalone
