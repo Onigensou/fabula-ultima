@@ -315,7 +315,6 @@ async function resolveSkillAction(director, ar, opts = {}) {
     const r = await fireActivationEffect(skill, ctx);
     if (r?.abort) {
       log(`Skill resolve: on_activate aborted chain — skipping damage + post_damage`);
-      ui.notifications?.info(`${ar.attacker?.name ?? "Caster"} began ${ar.skillName} but it was interrupted.`);
       return;
     }
   } catch (e) { warn("Skill resolve: fireActivationEffect threw", e); }
@@ -390,10 +389,6 @@ async function resolveSkillAction(director, ar, opts = {}) {
       }
     }
   }
-
-  // 5. Toast — director never posts to chat for action confirmation.
-  const targetNames = (ar.targets ?? []).map((t) => t.name).join(", ") || "no target";
-  ui.notifications?.info(`${ar.attacker?.name ?? "?"} cast ${ar.skillName} on ${targetNames}.`);
 
   // 6. Pre-resolve accepted passives — fire any pill-accepted passives
   //    the CONFIRM step stamped on the actionResult (Healing Power /
@@ -1679,12 +1674,6 @@ const Target = {
           // The effect mutated costMap in place — re-check the gate.
           gate = checkAffordable(attackerActor, costMap);
           vismagusHpPaid = !!reactionPayload.vismagusHpPaid;
-          ui.notifications?.info(
-            `${attackerActor.name}: ${reactionResult.fired.find((f) => f.kind === "substitute_cost").fromAmount} ` +
-            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").fromResource} → ` +
-            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").toAmount} ` +
-            `${reactionResult.fired.find((f) => f.kind === "substitute_cost").toResource} for ${skill.name}.`
-          );
         }
       }
       if (!gate.ok) {
@@ -3119,14 +3108,7 @@ const Resolve = {
             const result = await applyEquipmentSwap(targetActor, selections);
             if (result?.skipped) {
               log(`Equipment: no changes for ${ar.attacker?.name ?? "?"}`);
-              ui.notifications?.info(`${ar.attacker?.name ?? "Combatant"}: no equipment changes.`);
             } else {
-              // Toast summary: 1-line per change. Foundry truncates long
-              // notifications gracefully so don't worry about wrapping.
-              const summary = (result?.changes ?? []).map((c) =>
-                `${c.icon} ${c.slot}: ${c.fromName} → ${c.toName}`
-              ).join("  •  ");
-              ui.notifications?.info(`${ar.attacker?.name ?? "Combatant"} swapped equipment — ${summary}`);
               log(`Equipment swap committed for ${ar.attacker?.name ?? "?"}: ${result.changes.length} change(s)`);
             }
           }
@@ -3159,12 +3141,6 @@ const Resolve = {
             } else {
               const r = await consumeOne(targetActor, liveItem);
               if (r?.ok) {
-                const qtyNote = r.skipped
-                  ? ` [unique]`
-                  : (r.deleted ? ` [last one consumed]` : ` [now x${r.after}]`);
-                ui.notifications?.info(
-                  `${ar.attacker?.name ?? "Combatant"} used ${cand.name}${qtyNote}`
-                );
                 log(`Item used: ${cand.name} by ${ar.attacker?.name ?? "?"} (deleted=${!!r.deleted}, after=${r.after})`);
                 // Phase B.1 D.5 closure — fire the item's linked
                 // active skill(s) via the director-native skill pipeline.
@@ -3197,9 +3173,6 @@ const Resolve = {
               const cost = Number(sel.cost ?? cand.ipCost ?? 0) || 0;
               const r = await spendIp(targetActor, cost);
               if (r?.ok) {
-                ui.notifications?.info(
-                  `${ar.attacker?.name ?? "Combatant"} crafted ${cand.name} (−${cost} IP, ${r.after}/${(ar.ip?.max ?? "?")} left)`
-                );
                 log(`Item created: ${cand.name} by ${ar.attacker?.name ?? "?"} (-${cost} IP)`);
                 // D.5 closure — crafted items can also carry an active
                 // skill (the recipe casts the item's effect on creation
@@ -3289,7 +3262,6 @@ const Resolve = {
               };
               const [eff] = await targetActor.createEmbeddedDocuments("ActiveEffect", [aeData]);
               log(`Hinder: ${status.name} applied to ${ar.target.name} (effect ${eff?.id ?? "?"})`);
-              ui.notifications?.info(`${ar.target.name} is now ${status.name}.`);
             }
           } catch (e) {
             warn("RESOLVE Hinder: failed to apply status AE", e);
@@ -3323,7 +3295,6 @@ const Resolve = {
               recordedUuid = uuid;
               if (result?.changed) {
                 log(`Study: encyclopedia updated for ${ar.target?.name ?? uuid} — ${result.previousBest} → ${result.newBest}`);
-                ui.notifications?.info(`Encyclopedia updated: ${ar.target?.name ?? "target"} (${result.previousBest} → ${result.newBest})`);
               } else {
                 log(`Study: no improvement for ${ar.target?.name ?? uuid} (roll ${ar.roll.total}, best ${result?.previousBest ?? "?"})`);
               }

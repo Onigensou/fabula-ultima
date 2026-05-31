@@ -1875,7 +1875,6 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
 
     if (!matches.length) {
       log(`skill-effects.remove_tagged_ae: ${actor.name} has no "${filterTag}" AE; skipping target`);
-      ui.notifications?.info(`${actor.name} has no ${filterTag} to remove.`);
       continue;
     }
 

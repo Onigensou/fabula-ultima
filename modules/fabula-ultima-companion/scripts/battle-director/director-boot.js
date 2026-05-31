@@ -375,7 +375,6 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   }
   // Notify UI surfaces that the director has stopped so they can refresh state.
   try { Hooks.callAll("fu-director-stopped", { reason }); } catch (e) { warn("fu-director-stopped hook threw", e); }
-  ui.notifications?.info("Battle Director stopped.");
 }
 
 // Resume an in-progress combat from a persisted scene flag. Returns the
@@ -531,15 +530,6 @@ async function resumeFromSavedState({ scene, state }) {
     warn(`resume: transitionTo(${resumeAt}) threw`, e);
   }
 
-  const toastSuffix = resumedFromCard
-    ? ` (resuming Action Card — ${state.pendingAction.actionResult?.kind ?? "?"})`
-    : (dCombat.currentTurnResolved
-      ? ` (turn was already resolved — advancing)`
-      : `, ${dCombat.currentSide} acting`);
-  ui.notifications?.info(
-    `Battle Director resumed — round ${dCombat.round}${toastSuffix}`
-  );
-
   try { Hooks.callAll("fu-director-started", director); } catch (e) { warn("fu-director-started hook threw on resume", e); }
   return director;
 }
@@ -694,9 +684,6 @@ async function rewindTo(snapshotId) {
     return { ok: false, error: "mount failed" };
   }
 
-  // resumeFromSavedState's own toast (round / acting side) already
-  // surfaced; add a confirmation noting the rewind target.
-  ui.notifications?.info(`Rewound to: ${result.snapshot.label || "earlier checkpoint"}`);
   return { ok: true, snapshot: result.snapshot };
 }
 
