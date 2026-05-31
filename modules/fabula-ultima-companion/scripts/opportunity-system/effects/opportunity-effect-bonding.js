@@ -53,10 +53,8 @@
     const cy       = (token.y ?? 0) + th / 2;
 
     const colorHex    = polarity === "negative" ? HEART_PURPLE : HEART_PINK;
-    const DURATION_MS = 1400;
-    const COUNT       = 5;
-    const SPREAD      = tw * 0.55;
-    const RISE        = th * 1.1;
+    const DURATION_MS = 1600;
+    const RISE        = th * 1.2;
 
     const container = new PIXI.Container();
     container.position.set(cx, cy - th * 0.25);
@@ -64,52 +62,41 @@
 
     const { ticker } = canvas.app;
 
-    function spawnHeart() {
-      if (!container.parent) return; // safety: container may have been cleaned up
+    const style = new PIXI.TextStyle({
+      fontSize:           60,
+      fill:               colorHex,
+      dropShadow:         true,
+      dropShadowColor:    "#000000",
+      dropShadowBlur:     4,
+      dropShadowAlpha:    0.5,
+      dropShadowDistance: 2,
+    });
+    const text = new PIXI.Text("♥", style);
+    text.anchor.set(0.5, 0.5);
+    text.x = 0;
+    text.y = 0;
+    container.addChild(text);
 
-      const offsetX  = (Math.random() - 0.5) * SPREAD;
-      const fontSize = 18 + Math.floor(Math.random() * 12);
-      const style    = new PIXI.TextStyle({
-        fontSize,
-        fill:               colorHex,
-        dropShadow:         true,
-        dropShadowColor:    "#000000",
-        dropShadowBlur:     2,
-        dropShadowAlpha:    0.4,
-        dropShadowDistance: 1,
-      });
-      const text = new PIXI.Text("♥", style);
-      text.anchor.set(0.5, 0.5);
-      text.x = offsetX;
-      text.y = 0;
-      container.addChild(text);
-
-      let elapsed = 0;
-      function tick() {
-        elapsed += ticker.deltaMS;
-        const t     = Math.min(elapsed / DURATION_MS, 1);
-        text.y      = -t * RISE;
-        text.alpha  = t < 0.25 ? 1 : 1 - ((t - 0.25) / 0.75);
-        text.scale.set(1 + t * 0.15);
-        if (t >= 1) {
-          ticker.remove(tick);
-          text.destroy();
-        }
+    let elapsed = 0;
+    function tick() {
+      elapsed += ticker.deltaMS;
+      const t    = Math.min(elapsed / DURATION_MS, 1);
+      text.y     = -t * RISE;
+      text.alpha = t < 0.2 ? 1 : 1 - ((t - 0.2) / 0.8);
+      if (t >= 1) {
+        ticker.remove(tick);
+        text.destroy();
       }
-      ticker.add(tick);
     }
+    ticker.add(tick);
 
-    for (let i = 0; i < COUNT; i++) {
-      setTimeout(spawnHeart, i * 200);
-    }
-
-    // Safety cleanup after all hearts are done
+    // Safety cleanup
     setTimeout(() => {
       if (container.parent) {
         container.parent.removeChild(container);
         container.destroy({ children: true });
       }
-    }, DURATION_MS + COUNT * 200 + 300);
+    }, DURATION_MS + 300);
   }
 
   // ── Bond result banner ─────────────────────────────────────────────────────

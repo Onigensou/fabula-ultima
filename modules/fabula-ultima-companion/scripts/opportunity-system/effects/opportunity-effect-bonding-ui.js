@@ -233,9 +233,12 @@
       </div>`;
 
     if (isNew) {
-      // New bond: full editing, no gate restriction on emotions
+      // New bond: name/rel editable; emotions still subject to the one-emotion gate
       ["em-1", "em-2", "em-3"].forEach(cls => {
-        el.querySelector(`.${cls}`)?.addEventListener("change", () => {
+        const sel = el.querySelector(`.${cls}`);
+        if (!sel) return;
+        sel.addEventListener("change", () => {
+          _applyGate(bond.idx, cls, sel);
           _updateHearts(el);
           el.classList.add("modified");
         });
