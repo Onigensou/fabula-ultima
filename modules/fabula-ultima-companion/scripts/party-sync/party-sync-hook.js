@@ -12,27 +12,20 @@
   const _synced = new Set();
 
   // ── Portrait normalization ────────────────────────────────────────────────
-  // CSB wraps each field in a container carrying a data-key attribute.
-  // member_sprite_1..4 are the portrait image fields.
+  // CSB renders each image field inside a div whose CSS class includes the
+  // field key (e.g. "member_sprite_1"). The container column is 613px wide
+  // with no height constraint, so images must be sized on the <img> itself.
+  // CSB already sets width:150px on slot 1 — we apply the same to all slots
+  // so every portrait renders at the same width with proportional height.
   function normalizePortraits(el) {
-    // Primary: CSB data-key attribute on the field wrapper
-    let imgs = el.querySelectorAll('[data-key^="member_sprite_"] img');
-
-    // Fallback A: some CSB versions use data-field instead
-    if (!imgs.length) imgs = el.querySelectorAll('[data-field^="member_sprite_"] img');
-
-    // Fallback B: match by URL — portrait images live under /Portrait/ or end in _Portrait
-    if (!imgs.length) {
-      imgs = [...el.querySelectorAll("img")].filter(
-        img => /\/Portrait\//i.test(img.src) || /_Portrait/i.test(img.src)
-      );
-    }
-
-    for (const img of imgs) {
+    for (let i = 1; i <= 4; i++) {
+      const container = el.querySelector(`.member_sprite_${i}`);
+      const img = container?.querySelector("img");
+      if (!img) continue;
       Object.assign(img.style, {
+        width:     "150px",
+        height:    "auto",
         objectFit: "contain",
-        width:     "100%",
-        height:    "100%",
       });
     }
   }
