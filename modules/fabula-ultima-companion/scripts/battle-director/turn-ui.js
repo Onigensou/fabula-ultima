@@ -201,10 +201,30 @@ function worldAnchor(token) {
 function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null }) {
   ensureBaseStyles();
 
-  const PAGES = LEGACY_PAGES.map((p) => ({
-    name: p.name,
-    items: p.items.map((s) => ({ label: s })),
-  }));
+  // Free-action mode (enabledLabels supplied): collapse the multi-page
+  // Octopath into ONE curated page containing only the allowed commands
+  // + Passive (always-allowed; opens the manager overlay without
+  // consuming the action) + Cancel (forfeit the grant per the locked
+  // cancel-pops-request rule). The pager UI is hidden since there's
+  // only one page.
+  const filterMode = Array.isArray(enabledLabels) && enabledLabels.length > 0;
+  const PAGES = filterMode
+    ? (() => {
+        const allowed = new Set(enabledLabels.map((s) => String(s).trim()));
+        const flat = LEGACY_PAGES.flatMap((p) => p.items);
+        const filtered = flat.filter((label) => allowed.has(label));
+        // Stable order: matched in their declared sequence, then Passive, then Cancel.
+        const items = [
+          ...filtered.map((label) => ({ label })),
+          { label: "Passive" },
+          { label: "Cancel" },
+        ];
+        return [{ name: "Free Action", items }];
+      })()
+    : LEGACY_PAGES.map((p) => ({
+        name: p.name,
+        items: p.items.map((s) => ({ label: s })),
+      }));
   let pageIndex = 0;
 
   const root = document.createElement("div");
@@ -222,6 +242,14 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   const rightA = document.createElement("div"); rightA.className = "arrow"; rightA.textContent = "▶";
   pager.append(leftA, title, rightA);
   root.appendChild(pager);
+  // Hide pager arrows when there's only one page (filterMode). Title
+  // stays as the "Free Action" label.
+  if (PAGES.length <= 1) {
+    leftA.style.visibility = "hidden";
+    rightA.style.visibility = "hidden";
+    leftA.style.pointerEvents = "none";
+    rightA.style.pointerEvents = "none";
+  }
 
   const budgetLabel = document.createElement("div");
   budgetLabel.className = "budget-label";
@@ -230,18 +258,24 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   budgetLabel.append(budgetMain);
   root.appendChild(budgetLabel);
 
-  // Free-action filter: when `enabledLabels` is supplied, every command
-  // NOT in the list is rendered greyed-out and its click handler is
-  // skipped (NON_ACTION_COMMANDS like "Passive" are always enabled).
-  // `null` = no filter (all enabled).
+  // Free-action filter: filterMode pre-filters PAGES to only include
+  // allowed commands + Passive + Cancel, so every rendered button is
+  // by-construction enabled. isEnabledLabel returns true uniformly in
+  // filterMode; the legacy grey-out path (when enabledLabels was
+  // supplied without filterMode) remains for backwards compatibility
+  // but is no longer reached by composeAction.
   const enabledSet = Array.isArray(enabledLabels) && enabledLabels.length
     ? new Set(enabledLabels.map((s) => String(s).trim()))
     : null;
   function isEnabledLabel(label) {
+    if (filterMode) return true;
     if (!enabledSet) return true;
     if (NON_ACTION_COMMANDS.has(label)) return true;
     return enabledSet.has(label);
   }
+
+  // Hide the pager arrows when there's only one page (filterMode).
+  // The page title "Free Action" remains as a label.
 
   document.body.appendChild(root);
 
@@ -351,6 +385,16 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
         }
         it.btn.addEventListener("click", async (ev) => {
           ev.stopPropagation();
+          // Cancel button (free-action mode) — resolve the picker with
+          // null so the host's cancelSentinel-equivalent path runs.
+          // composeAction treats `command === null` as cancellation and
+          // DECLARE.TIMEOUT then routes to FREE_ACTION_WINDOW (per the
+          // cancel-pops-request rule).
+          if (it.label === "Cancel") {
+            try { onPick?.(null); }
+            catch (e) { warn("Turn UI: onPick(null) threw", e); }
+            return;
+          }
           // Non-action commands open an overlay instead of declaring an
           // action — they don't consume the turn. Currently: "Passive".
           if (NON_ACTION_COMMANDS.has(it.label)) {
