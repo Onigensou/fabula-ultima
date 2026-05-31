@@ -1702,6 +1702,16 @@ const Target = {
         return;
       }
 
+      // Display cost — defaults to the CSB raw cost string ("10 MP").
+      // When Vismagus (or any future substitute_cost reaction) fired,
+      // rewrite it to surface the resource that ACTUALLY got paid so
+      // the action card subtitle reflects reality ("20 HP · Vismagus").
+      let displayCost = String(skill.system?.props?.cost ?? "");
+      if (vismagusHpPaid) {
+        const hpPaid = Number(costMap.get?.("hp") ?? costMap.hp ?? 0) || 0;
+        if (hpPaid > 0) displayCost = `${hpPaid} HP · Vismagus`;
+      }
+
       // 4) Build actionResult. We deliberately do NOT freeze the live
       //    skill doc (circular item.parent refs blow the freeze walk);
       //    only uuids + scalar fields. RESOLVE re-fetches via fromUuid.
@@ -1725,7 +1735,7 @@ const Target = {
         descriptionHtml: String(skill.system?.props?.description ?? ""),
         targets,
         costSerialized: serializeCostMap(costMap),
-        rawCost: String(skill.system?.props?.cost ?? ""),
+        rawCost: displayCost,
         actionIntent: intent,
         // Vismagus alt-cost flag — resolveSkillAction reads this and
         // suppresses self-heal when the spell would heal the caster
@@ -2219,6 +2229,14 @@ const Compute = {
               const tActor = await fromUuid(e.actorUuid).catch(() => null);
               const cur = Number(tActor?.system?.props?.[grantResource === "mp" ? "current_mp" : "current_hp"] ?? 0) || 0;
               const max = Number(tActor?.system?.props?.[grantResource === "mp" ? "max_mp" : "max_hp"] ?? 0) || 0;
+              // Vismagus self-heal suppression: RAW Spiritist p.182 —
+              // "you instead recover no HP" when the caster paid HP for
+              // a healing spell. Mirrors RESOLVE's `continue` skip
+              // (state-handlers.js:343) at the display layer so the
+              // card doesn't lie about heal landing on the caster.
+              const isCasterSelf = e.actorUuid === ar.attackerActorRef;
+              const vismagusSuppress =
+                !!ar.vismagusHpPaid && isCasterSelf && grantResource === "hp";
               perTargetResults.push({
                 tokenUuid: e.tokenUuid,
                 actorUuid: e.actorUuid,
@@ -2228,12 +2246,13 @@ const Compute = {
                 defense: 0,
                 hit: true,
                 crit: false,
-                grantAmount,
+                grantAmount: vismagusSuppress ? 0 : grantAmount,
                 grantResource,
                 resourceCur: cur,
                 resourceMax: max,
                 affinity: "NE",
                 studied: true,
+                vismagusSuppressed: vismagusSuppress || undefined,
               });
             }
             // Damage-shaped object so the card's existing damage preview

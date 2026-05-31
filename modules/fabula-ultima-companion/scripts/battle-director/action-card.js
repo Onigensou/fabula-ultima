@@ -208,30 +208,32 @@ function ensureStyles() {
       box-shadow: none !important;
     }
 
-    /* Corner sprites — FULL token art (no circular mask / head crop),
-       bottom-aligned, anchored by DISPOSITION (player/friendly → right,
-       enemy/hostile → left). Exception: when caster + target share a side
-       (heal-on-ally, enemy-buffs-enemy), the target slot flips to the
-       OPPOSITE side so the two read as distinct.
+    /* Header sprites — FULL token art (no circular mask / head crop), placed
+       INLINE in the header flanking the action name:  [left] Name [right].
+       Sides are anchored by DISPOSITION (player/friendly → right, enemy →
+       left); when caster + target share a side the target flips to the
+       opposite slot so the two read as distinct.
 
-       Multi-target: each sprite is offset a bit horizontally (offset set
-       per-sprite in JS), fanning inward from the corner, with all bottoms
-       aligned — a stacked/fanned look. Height is reduced from the native
-       sprite so it isn't too big.
+       Multi-target (receiving side): sprites overlap heavily with a small
+       per-sprite offset (set in JS), all bottoms aligned. The TOP of the stack
+       is the RIGHTMOST sprite, on top in full colour; each sprite behind it
+       steps LEFT and is tinted darker toward black (deeper = blacker; the
+       per-depth brightness is set inline in JS).
+
+       Left-side sprites are mirrored (sprites are authored left-facing) so
+       they face toward the centre.
 
        ── Tunables ──────────────────────────────────────────────────────
-         height below  → sprite height (overall size)
-         STEP in portraitStackHTML → horizontal offset between stacked sprites
-         header padding (.fud-bf-header) → clearance kept for the title    */
-    .fud-bf-card .fud-bf-portrait-stack {
-      position: absolute;
-      top: 6px;
-      height: 64px;            /* reduced full-sprite height — tune to taste */
-      z-index: 4;
-      pointer-events: none;
+         .fud-bf-portrait-slot height → sprite height
+         .fud-bf-portrait-slot width  → per-side footprint (title centring)
+         STEP in portraitSpritesHTML  → overlap (smaller = more overlap)   */
+    .fud-bf-card .fud-bf-portrait-slot {
+      position: relative;
+      flex: 0 0 auto;
+      width: 50px;             /* footprint; stacks overflow inward over the gap */
+      height: 56px;            /* sprite height — tune to taste */
     }
-    .fud-bf-card .fud-bf-portrait-stack.left  { left: 6px; }
-    .fud-bf-card .fud-bf-portrait-stack.right { right: 6px; }
+    .fud-bf-card .fud-bf-portrait-slot:empty { width: 0; }
     .fud-bf-card .fud-bf-portrait-sprite {
       position: absolute;
       bottom: 0;               /* align every stacked sprite on its bottom edge */
@@ -240,15 +242,21 @@ function ensureStyles() {
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
     }
+    /* Sprites behind the front one are darkened toward black per depth — the
+       brightness is applied inline in JS (deeper = blacker). Horizontal
+       position + the left-side mirror are also set inline (the centring
+       translate and the flip share the `transform`, so they must compose in
+       one rule). */
 
     .fud-bf-card .fud-bf-header {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      padding: 2px 72px 7px;   /* horizontal padding leaves room for the corner sprites */
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      padding: 4px 8px 7px;
       border-bottom: 2px solid var(--fud-stroke, #5a6a85);
       margin-bottom: 8px;
     }
     .fud-bf-card .fud-bf-title-row {
-      display: inline-flex; align-items: center; gap: 7px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      flex: 1 1 auto;          /* take the middle; keep the name centred */
       min-height: 28px;
     }
     .fud-bf-card .fud-bf-title-icon {
@@ -267,6 +275,10 @@ function ensureStyles() {
       color: #6b3e1e;
       text-align: center;
       opacity: 0.92;
+      /* Lives BELOW the header divider (header = sprites + name only). Sprites
+         no longer cross the divider, so the subtitle uses the full width. */
+      padding: 0 8px;
+      margin: 0 0 8px;
     }
     .fud-bf-card .fud-bf-subtitle .dot {
       margin: 0 6px;
@@ -1399,6 +1411,11 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
   // Recipe-grant rows (Heal, MP restore, future shield) — show what
   // the target will recover. `grantResource` picks the unit/verb.
   if (typeof r.grantAmount === "number") {
+    // Vismagus self-heal suppression — the caster paid HP for this
+    // spell so they recover none of the HP it would otherwise grant.
+    // Render an explicit "no heal" label so the card doesn't show a
+    // green number that contradicts what actually happens.
+    if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
     const amt = Math.max(0, r.grantAmount);
     if (r.grantResource === "mp")     return `RESTORED ${amt} MP`;
     if (r.grantResource === "shield") return `SHIELDED ${amt}`;
@@ -1418,6 +1435,7 @@ function resultClsFor(r) {
   if (!r.hit) return "miss";
   if (r.crit) return "crit";
   if (typeof r.grantAmount === "number") {
+    if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -1656,27 +1674,39 @@ function pickPortraitLayout({ attacker, perTargetResults }) {
   };
 }
 
-// Render N full-sprite portraits stacked in a corner. Each sprite keeps its
-// native aspect ratio (height-constrained, width auto) — no circular mask, no
-// head crop. For multiple targets they overlap with a fixed horizontal offset,
-// fanning INWARD from the corner (left side → rightward, right side → leftward),
-// with all bottoms aligned (bottom:0 in CSS). The first slot sits at the corner
-// on top; later ones peek out behind it toward the card centre.
+// Render N full-sprite portraits for ONE header slot (the wrapping
+// `.fud-bf-portrait-slot` div lives in the header template). Each sprite keeps
+// its native aspect ratio (height-constrained, width auto) — no mask / crop.
+//
+// Layout: the group is MIDDLE-anchored — centred on the slot's horizontal
+// centre (left:50% + translateX(-50%)) and bottom-aligned (CSS bottom:0).
+// Sprites are separated by a few px (STEP): the front (i=0) sits to the right
+// on top in full colour; each deeper sprite steps left, sits behind, and is
+// darkened toward black (deeper = blacker). Left-side sprites are mirrored to
+// face the centre; that flip composes with the centring translate in one
+// inline `transform`.
 //
 // Token battle sprites are animated .webm after the sprite swap, so video
 // sources render in a <video> (autoplay/loop/muted); static art uses <img>.
-function portraitStackHTML(slots, side) {
+function portraitSpritesHTML(slots, side) {
   if (!slots?.length) return "";
-  const STEP = 16;                       // px horizontal offset between stacked sprites
-  const edge = side === "right" ? "right" : "left";
-  const sprites = slots.map((slot, i) => {
+  const STEP = 8;                        // px offset between stacked sprites (a few px apart)
+  const DROP = "drop-shadow(0 2px 4px rgba(0,0,0,0.30))";
+  const flip = side === "left" ? " scaleX(-1)" : "";  // left-side sprites face centre
+  const mid = (slots.length - 1) / 2;
+  return slots.map((slot, i) => {
     const url = safeImgUrl(slot.img);
     if (!url) return "";                 // skip sprites whose token image is missing
     const safe = escapeHtml(url);
     const name = escapeHtml(slot.name ?? "");
-    // Corner sprite (i=0) at offset 0 on top; each later one steps inward and
-    // sits behind the previous.
-    const style = `${edge}: ${i * STEP}px; z-index: ${100 - i};`;
+    // Front (i=0): full colour, base CSS drop-shadow. Behind: darken toward
+    // black, progressively deeper.
+    const filter = i === 0
+      ? ""
+      : ` filter: brightness(${Math.max(0.2, 0.65 - (i - 1) * 0.2).toFixed(2)}) ${DROP};`;
+    // Offset from the slot centre: front (i=0) to the right, deeper ones left.
+    const dx = (mid - i) * STEP;
+    const style = `left: 50%; transform: translateX(calc(-50% + ${dx.toFixed(1)}px))${flip}; z-index: ${100 - i};${filter}`;
     if (isVideoUrl(url)) {
       return `<video class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
                      autoplay loop muted playsinline disablepictureinpicture
@@ -1685,13 +1715,21 @@ function portraitStackHTML(slots, side) {
     return `<img class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
                  title="${name}" alt="${name}">`;
   }).join("");
-  if (!sprites) return "";
-  return `<div class="fud-bf-portrait-stack ${side}">${sprites}</div>`;
 }
 
+// Build the two header sprite slots ({ left, right }) for an action. Attacker
+// and target land on opposite sides (by disposition), so one populates `left`
+// and the other `right`; a side with no sprite stays "".
 function buildPortraitsHTML({ attacker, perTargetResults }) {
   const layout = pickPortraitLayout({ attacker, perTargetResults });
-  return `${portraitStackHTML(layout.attackerSlots, layout.attackerSide)}${portraitStackHTML(layout.targetSlots, layout.targetSide)}`;
+  const slots = { left: "", right: "" };
+  if (layout.attackerSlots?.length && (layout.attackerSide === "left" || layout.attackerSide === "right")) {
+    slots[layout.attackerSide] = portraitSpritesHTML(layout.attackerSlots);
+  }
+  if (layout.targetSlots?.length && (layout.targetSide === "left" || layout.targetSide === "right")) {
+    slots[layout.targetSide] = portraitSpritesHTML(layout.targetSlots);
+  }
+  return slots;
 }
 
 function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetResults, attackMode, passIndex, totalPasses }) {
@@ -2809,14 +2847,15 @@ export async function postActionCard({ director, kind, payload }) {
   root.id = ROOT_ID;
   root.innerHTML = `
     <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
-      ${card.portraits ?? ""}
       <div class="fud-bf-header">
+        <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
         <div class="fud-bf-title-row">
           ${card.titleIcon ?? ""}
           <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
         </div>
-        ${card.subtitle ?? ""}
+        <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
       </div>
+      ${card.subtitle ?? ""}
       ${card.body}
       ${reactionRowHtml}
       ${card.buttons}
