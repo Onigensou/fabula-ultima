@@ -124,6 +124,13 @@ function safeImgUrl(raw) {
   return s;
 }
 
+// True if the URL is a video source (token battle sprites are animated .webm
+// after the battle-ready sprite swap). Those must render in a <video>, not an
+// <img>/background-image, which silently fail on video files.
+function isVideoUrl(url) {
+  return /\.(webm|mp4|m4v|ogv|ogg)(\?|#|$)/i.test(String(url ?? ""));
+}
+
 // Defensive builder wrapper: any section that throws falls back to ""
 // instead of taking down the whole card. Single missing fields shouldn't
 // abort the action.
@@ -201,47 +208,42 @@ function ensureStyles() {
       box-shadow: none !important;
     }
 
-    /* Corner portraits — absolute so they don't expand the layout.
-       Sides are anchored by DISPOSITION, not by who's acting:
-         player/friendly → right
-         enemy/hostile  → left
-       Exception: when caster + target share a side (heal-on-ally,
-       enemy-buffs-enemy), the target slot flips to the OPPOSITE side so
-       the two portraits read as distinct rather than overlapping.
+    /* Corner sprites — FULL token art (no circular mask / head crop),
+       bottom-aligned, anchored by DISPOSITION (player/friendly → right,
+       enemy/hostile → left). Exception: when caster + target share a side
+       (heal-on-ally, enemy-buffs-enemy), the target slot flips to the
+       OPPOSITE side so the two read as distinct.
 
-       Multi-target: portraits render as a grid inside the 48x48 anchor
-       box. 1 target → full size. 2 → 2-up. 3-4 → 2×2. 5-9 → 3×3. The
-       cells share the same head-crop background-image trick used by the
-       single-portrait original (zoom 1.8x, focus on the upper third). */
-    .fud-bf-card .fud-bf-portrait-grid {
+       Multi-target: each sprite is offset a bit horizontally (offset set
+       per-sprite in JS), fanning inward from the corner, with all bottoms
+       aligned — a stacked/fanned look. Height is reduced from the native
+       sprite so it isn't too big.
+
+       ── Tunables ──────────────────────────────────────────────────────
+         height below  → sprite height (overall size)
+         STEP in portraitStackHTML → horizontal offset between stacked sprites
+         header padding (.fud-bf-header) → clearance kept for the title    */
+    .fud-bf-card .fud-bf-portrait-stack {
       position: absolute;
-      top: 8px;
-      width: 48px; height: 48px;
+      top: 6px;
+      height: 64px;            /* reduced full-sprite height — tune to taste */
       z-index: 4;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2px;
-      /* Center cells on both axes — odd counts (3, 5, 7) get their
-         incomplete last row centered instead of left-aligned. */
-      justify-content: center;
-      align-content: center;
       pointer-events: none;
     }
-    .fud-bf-card .fud-bf-portrait-grid.left  { left: 8px; }
-    .fud-bf-card .fud-bf-portrait-grid.right { right: 8px; }
-    .fud-bf-card .fud-bf-portrait-cell {
-      flex: 0 0 auto;
-      border-radius: 50%;
-      background-size: 180%;
-      background-position: center 18%;
-      background-repeat: no-repeat;
-      background-color: rgba(0, 0, 0, 0.05);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.40);
+    .fud-bf-card .fud-bf-portrait-stack.left  { left: 6px; }
+    .fud-bf-card .fud-bf-portrait-stack.right { right: 6px; }
+    .fud-bf-card .fud-bf-portrait-sprite {
+      position: absolute;
+      bottom: 0;               /* align every stacked sprite on its bottom edge */
+      height: 100%;
+      width: auto;             /* full sprite — keep aspect ratio, no crop */
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
     }
 
     .fud-bf-card .fud-bf-header {
       display: flex; flex-direction: column; align-items: center; gap: 4px;
-      padding: 2px 60px 7px;   /* horizontal padding leaves room for portraits */
+      padding: 2px 72px 7px;   /* horizontal padding leaves room for the corner sprites */
       border-bottom: 2px solid var(--fud-stroke, #5a6a85);
       margin-bottom: 8px;
     }
@@ -1654,41 +1656,42 @@ function pickPortraitLayout({ attacker, perTargetResults }) {
   };
 }
 
-// Render N portraits into a flex-wrapped grid inside the 48×48 anchor
-// box. Cell size scales with count so the cells stay close to square:
-//   1   → 48×48 (no wrap)
-//   2   → ~23×23, side by side
-//   3-4 → ~23×23, 2 per row (3rd centers in row 2)
-//   5-9 → ~14×14, 3 per row (overflow centers on last row)
-//   10+ → smaller cells, 4 per row
-// `justify-content: center` + `align-content: center` (set in CSS) means
-// odd counts whose last row is incomplete render that row centered
-// instead of jammed against one side.
-function portraitGridHTML(slots, side) {
+// Render N full-sprite portraits stacked in a corner. Each sprite keeps its
+// native aspect ratio (height-constrained, width auto) — no circular mask, no
+// head crop. For multiple targets they overlap with a fixed horizontal offset,
+// fanning INWARD from the corner (left side → rightward, right side → leftward),
+// with all bottoms aligned (bottom:0 in CSS). The first slot sits at the corner
+// on top; later ones peek out behind it toward the card centre.
+//
+// Token battle sprites are animated .webm after the sprite swap, so video
+// sources render in a <video> (autoplay/loop/muted); static art uses <img>.
+function portraitStackHTML(slots, side) {
   if (!slots?.length) return "";
-  const n = slots.length;
-  const BOX = 48;
-  const GAP = 2;
-  const colsPerRow = Math.max(1, Math.ceil(Math.sqrt(n)));
-  // Reserve gap between cells; if N=1 no gap reservation.
-  const cellSize = Math.floor((BOX - GAP * (colsPerRow - 1)) / colsPerRow);
-  const cells = slots.map((slot) => {
+  const STEP = 16;                       // px horizontal offset between stacked sprites
+  const edge = side === "right" ? "right" : "left";
+  const sprites = slots.map((slot, i) => {
     const url = safeImgUrl(slot.img);
-    if (!url) return "";  // skip cells whose token image is missing
+    if (!url) return "";                 // skip sprites whose token image is missing
+    const safe = escapeHtml(url);
     const name = escapeHtml(slot.name ?? "");
-    return `<div class="fud-bf-portrait-cell"
-                 style="background-image: url('${escapeHtml(url)}'); width: ${cellSize}px; height: ${cellSize}px;"
-                 title="${name}"
-                 aria-label="${name}"
-                 role="img"></div>`;
+    // Corner sprite (i=0) at offset 0 on top; each later one steps inward and
+    // sits behind the previous.
+    const style = `${edge}: ${i * STEP}px; z-index: ${100 - i};`;
+    if (isVideoUrl(url)) {
+      return `<video class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
+                     autoplay loop muted playsinline disablepictureinpicture
+                     title="${name}" aria-label="${name}"></video>`;
+    }
+    return `<img class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
+                 title="${name}" alt="${name}">`;
   }).join("");
-  if (!cells) return "";
-  return `<div class="fud-bf-portrait-grid ${side}">${cells}</div>`;
+  if (!sprites) return "";
+  return `<div class="fud-bf-portrait-stack ${side}">${sprites}</div>`;
 }
 
 function buildPortraitsHTML({ attacker, perTargetResults }) {
   const layout = pickPortraitLayout({ attacker, perTargetResults });
-  return `${portraitGridHTML(layout.attackerSlots, layout.attackerSide)}${portraitGridHTML(layout.targetSlots, layout.targetSide)}`;
+  return `${portraitStackHTML(layout.attackerSlots, layout.attackerSide)}${portraitStackHTML(layout.targetSlots, layout.targetSide)}`;
 }
 
 function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetResults, attackMode, passIndex, totalPasses }) {
@@ -2993,6 +2996,26 @@ export async function postActionCard({ director, kind, payload }) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
       }
+      // Broadcast pill state change to every mirror so observers see the
+      // decision flip from "Waiting…" to "Applied"/"Skipped" in real time.
+      // Without this, non-owners stay frozen on the initial card render
+      // until MENU_CLOSE wipes everything.
+      try {
+        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+        for (const u of onlinePlayers) {
+          director?.intentChannel?.broadcastMenuOpen({
+            targetUserId: u.id,
+            menuSpec: {
+              kind: "action-card-pill-update",
+              combatId: director.combatId,
+              rowKey,
+              carrierUuid,
+              decision,
+              pendingCount: next,
+            },
+          });
+        }
+      } catch (e) { warn("recordPillDecision: pill-update broadcast threw", e); }
       // Phase 3: live preview update — recompute per-target damage and
       // patch the result spans whenever an add_damage decision toggles.
       // Fire-and-forget — serialization inside the helper prevents races.
@@ -3506,6 +3529,37 @@ function cleanupMirror() {
 }
 
 export function registerPlayerActionCardHandler(channel) {
+  // Lightweight patch handler for pill state changes broadcast from
+  // recordPillDecision (GM side). Applies the same DOM transformation
+  // — pending → resolved + status chip — to the local mirror so the
+  // observer sees Applied/Skipped flip in real time instead of staying
+  // frozen on initial render.
+  const offPillUpdate = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-pill-update") return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper) return;
+    const cardEl = wrapper.querySelector(".fud-bf-card");
+    const pillEl = wrapper.querySelector(
+      `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(menuSpec.rowKey ?? ""))}"][data-fud-reaction-carrier="${CSS.escape(String(menuSpec.carrierUuid ?? ""))}"]`
+    );
+    if (!pillEl) return;
+    const decision = menuSpec.decision === "apply" ? "apply" : "skip";
+    pillEl.dataset.fudReactionPending = "0";
+    pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
+    // Replace whatever's in the actions slot ("Waiting for…" chip on
+    // non-owner mirror; Apply/Skip buttons on owner mirror that
+    // somehow missed the local click) with the final status chip.
+    const actions = pillEl.querySelector(".fud-bf-reaction-actions, .fud-bf-reaction-status.is-waiting");
+    if (actions) {
+      actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
+    }
+    if (cardEl) {
+      const next = Math.max(0, Number(menuSpec.pendingCount ?? 0));
+      if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
+      else delete cardEl.dataset.fudReactionsPending;
+    }
+  });
+
   const offOpen = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card") return;
     if (!menuSpec.html) {
@@ -3549,6 +3603,21 @@ export function registerPlayerActionCardHandler(channel) {
       banner.style.cssText = "position:absolute; top:8px; left:50%; transform:translateX(-50%); padding:4px 10px; border-radius:6px; background:rgba(0,0,0,0.55); color:#fff; font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; pointer-events:none; z-index:10;";
       banner.textContent = "Observing";
       card.appendChild(banner);
+
+      // Hide reaction Apply/Skip buttons on non-owner mirror — they're
+      // not actionable from this client, so they shouldn't look like
+      // they are. Replace each pending pill's button row with a
+      // "Waiting for [Owner]…" status chip. Already-resolved pills
+      // (post-decision) carry .is-resolved + a status chip from the
+      // GM-side recordPillDecision DOM patch — leave those alone.
+      const ownerName = game.users.get(menuSpec.ownerUserId)?.name ?? "Player";
+      for (const pill of wrapper.querySelectorAll(".fud-bf-reaction-pill.is-ask")) {
+        if (pill.dataset.fudReactionPending !== "1") continue;
+        const actions = pill.querySelector(".fud-bf-reaction-actions");
+        if (actions) {
+          actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
+        }
+      }
     }
 
     // Click logic — replicates the GM-side onClick for interactive card
@@ -3890,5 +3959,5 @@ export function registerPlayerActionCardHandler(channel) {
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} };
 }
