@@ -2959,13 +2959,17 @@ export async function postActionCard({ director, kind, payload }) {
           mode: p.mode,
           ref: p.ref,
           decision,
-          // Per-target dispatch tags (added by state-handlers' CONFIRM
-          // creature_will_deal_damage loop). The sender-side accumulator
-          // — computeSenderDamageBonuses — reads these to attribute
-          // base-damage bonuses to the right per-target row. Omitting
-          // them turns add_damage decisions into silent no-ops at
-          // RESOLVE time. Pass-through is harmless for non-add_damage
+          // Per-action dispatch tags (added by state-handlers' CONFIRM
+          // creature_will_deal_damage aggregation). The sender-side
+          // accumulator — computeSenderDamageBonuses — reads these to
+          // distribute base-damage bonuses across every qualifying
+          // target. Modern aggregated shape uses `appliesToTargetUuids`;
+          // older per-target dispatches set `subjectActorUuid` as a
+          // single value. Pass both through so the accumulator can
+          // accept either; pass-through is harmless for non-add_damage
           // decisions (the accumulator filters by effect_kind anyway).
+          appliesToTargetUuids: Array.isArray(p.appliesToTargetUuids) ? p.appliesToTargetUuids : null,
+          appliesToTokenUuids:  Array.isArray(p.appliesToTokenUuids)  ? p.appliesToTokenUuids  : null,
           subjectActorUuid: p.subjectActorUuid ?? null,
           subjectTokenUuid: p.subjectTokenUuid ?? null,
           payloadAtFire: p.payloadAtFire ?? null,

@@ -2702,12 +2702,20 @@ const Confirm = {
       }
     }
 
-    // Phase 3: creature_will_deal_damage — per hit target, pre-resolve
-    // base-damage modification hook. Fires for Attack-kind and damage-
-    // dealing Skill-kind (isOffensive + hasDamage). Each per-target
-    // candidate carries subjectActorUuid + payloadAtFire so Phase 2's
-    // sender-side accumulator + the action card's preview update can
-    // attribute bonuses to the right target. Used by Cheap Shot.
+    // Phase 3: creature_will_deal_damage — single-fire-per-action,
+    // pre-resolve base-damage modification hook. Fires for Attack-kind
+    // and damage-dealing Skill-kind (isOffensive + hasDamage).
+    //
+    // RAW rule (per playtest 2026-05-31): a single action triggers a
+    // reaction at most ONCE, even if it hits N targets. The reaction's
+    // EFFECT can vary per-target (e.g. Cheap Shot's +5 damage only on
+    // targets with ≥2 statuses), but the OFFER is once. We evaluate the
+    // row's gates per-target during matching (filters can be per-target
+    // — damage_type, condition_formula referencing TARGET_STATUS_COUNT,
+    // etc.) and AGGREGATE the candidates by (rowKey, carrierUuid). Each
+    // aggregated candidate carries `appliesToTargetUuids` listing every
+    // target for which the row matched; the sender-side accumulator
+    // iterates that list on apply.
     const fireWillDealDamage =
       attackerActor &&
       Array.isArray(ar.perTargetResults) &&
@@ -2715,21 +2723,20 @@ const Confirm = {
     if (fireWillDealDamage) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
-        // Build the hit-target snapshot ONCE — same hitTargets array
-        // threads into every per-target payload so condition formulas
-        // like SINGLE_TARGET_ATTACK resolve identically across hits.
         const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
         const hitTargetUuids = ar.perTargetResults
           .filter((r) => r?.hit)
-          .map((r, idx) => {
-            // tokenUuid lives on perTargetResults OR ar.targets[i] — try
-            // both. The targets array index matches perTargetResults order.
+          .map((r) => {
             if (r?.tokenUuid) return r.tokenUuid;
             const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid);
             return matchedTarget?.tokenUuid ?? null;
           })
           .filter(Boolean);
 
+        // Aggregate per (rowKey, carrierUuid). Per-target matchers may
+        // accept the row for some targets and reject for others — the
+        // pill surfaces if ANY target matched.
+        const byKey = new Map();
         for (let i = 0; i < ar.perTargetResults.length; i++) {
           const entry = ar.perTargetResults[i];
           if (!entry?.hit) continue;  // misses never reach the damage stage
@@ -2741,10 +2748,8 @@ const Confirm = {
           const payloadForTrigger = {
             subjectActorUuid,
             subjectTokenUuid,
-            // target/hit lists for ACTION_TARGET_COUNT / SINGLE_TARGET_ATTACK
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
-            // damage shape — accumulator's formula resolver reads these
             rawDamage: entry.rawDamage,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
             weaponType: ar.weapon?.weaponType ?? null,
@@ -2752,8 +2757,6 @@ const Confirm = {
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             sourceActorUuid: ar.attackerActorRef,
             actionIntent: ar.actionIntent,
-            // Pass through so the targeting resolver's trigger_actor /
-            // trigger_subject keywords work.
             targetTokenUuids: allTargetUuids,
             hitTargetTokenUuids: hitTargetUuids,
           };
@@ -2770,13 +2773,29 @@ const Confirm = {
             continue;
           }
           for (const cand of cands ?? []) {
-            // Tag with subject + payloadAtFire — Phase 2 accumulator
-            // reads these to attribute bonuses to the right target.
-            cand.subjectActorUuid = subjectActorUuid;
-            cand.subjectTokenUuid = subjectTokenUuid;
-            cand.payloadAtFire = payloadForTrigger;
-            prePassives.push(cand);
+            const key = `${cand.rowKey}::${cand.carrierUuid}`;
+            let agg = byKey.get(key);
+            if (!agg) {
+              // First match — keep this candidate as the aggregate.
+              // payloadAtFire references the FIRST matching target's
+              // payload; action-level fields (damageType, hitTargets,
+              // damage_amount formula context) are identical across
+              // targets, so first-target is a safe reference for the
+              // accumulator's formula resolver.
+              agg = {
+                ...cand,
+                appliesToTargetUuids: [],
+                appliesToTokenUuids: [],
+                payloadAtFire: payloadForTrigger,
+              };
+              byKey.set(key, agg);
+            }
+            agg.appliesToTargetUuids.push(subjectActorUuid);
+            if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
           }
+        }
+        for (const cand of byKey.values()) {
+          prePassives.push(cand);
         }
       } catch (e) {
         warn("CONFIRM: will_deal_damage dispatch threw", e);

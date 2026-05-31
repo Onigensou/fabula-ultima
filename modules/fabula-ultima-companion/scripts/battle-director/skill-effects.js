@@ -783,8 +783,24 @@ export async function computeSenderDamageBonuses({
     if (!effRow) continue;
     if (String(effRow.effect_kind ?? "").toLowerCase() !== "add_damage") continue;
 
-    const subjectActorUuid = String(cand.subjectActorUuid ?? cand.payloadAtFire?.subjectActorUuid ?? "").trim();
-    if (!subjectActorUuid) continue;
+    // Targets that receive this candidate's bonus.
+    //
+    // Modern shape (post 2026-05-31): `appliesToTargetUuids` carries
+    // every hit target for which the row's gates matched. RAW: one
+    // reaction decision per action, effect applies per qualifying target.
+    //
+    // Legacy shape: a single `subjectActorUuid` from a pre-refactor
+    // per-target candidate. Kept for any in-flight or persisted snapshots
+    // that pre-date the aggregation refactor. New dispatches always go
+    // through the modern path.
+    let subjectUuids;
+    if (Array.isArray(cand.appliesToTargetUuids) && cand.appliesToTargetUuids.length) {
+      subjectUuids = cand.appliesToTargetUuids;
+    } else {
+      const single = String(cand.subjectActorUuid ?? cand.payloadAtFire?.subjectActorUuid ?? "").trim();
+      if (!single) continue;
+      subjectUuids = [single];
+    }
 
     // Evaluate damage_amount against the candidate's payload.
     let amount = 0;
@@ -802,8 +818,11 @@ export async function computeSenderDamageBonuses({
       amount = 0;
     }
     amount = Math.max(0, Math.floor(amount));
+    if (amount <= 0) continue;
 
-    out.set(subjectActorUuid, (out.get(subjectActorUuid) ?? 0) + amount);
+    for (const uuid of subjectUuids) {
+      out.set(uuid, (out.get(uuid) ?? 0) + amount);
+    }
   }
   return out;
 }
