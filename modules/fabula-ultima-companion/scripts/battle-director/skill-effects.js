@@ -804,7 +804,7 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     isPassive: true,
   });
   const r = await applyEffectByLabel(candidate.ref, ctx);
-  return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied };
+  return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied, reason: r?.reason ?? null, abort: !!r?.abort };
 }
 
 // Phase 2: sender-side damage accumulator for pre-resolve add_damage

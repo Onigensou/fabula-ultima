@@ -464,19 +464,35 @@ export async function dispatchReactionMenu({
         }));
       } catch (e) { warn(`reaction[${trigger}]: stop-others dispatch threw`, e); }
     }
+    // Fire the chain + capture its result. If it aborts (consume_resource
+    // insufficient, condition_formula failure on a nested row, etc.) we
+    // record the decision as "aborted" rather than "fired" so the
+    // reaction stays clickable on SRW re-entry (the player didn't get
+    // their action). The action-creating peer-defer is NOT undone — by
+    // the time we know the chain failed, peers have already stopped,
+    // and re-emitting "resume" would race with their pending stop UI.
+    // A cleaner reversal is future work; for now, the safer behavior is
+    // to let peers see SRW re-enter (the queue is empty so SRW exits if
+    // nothing else fired, or re-dispatches if there's more to do).
+    let chainResult = null;
     try {
-      await firePreAcceptedCandidate({
+      chainResult = await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: cand, payload,
       });
-      fired.push(cand);
-      log(`reaction[${trigger}]: fired "${cand.carrierName}" for ${reactor.name}`);
+      if (chainResult?.ok) {
+        fired.push(cand);
+        log(`reaction[${trigger}]: fired "${cand.carrierName}" for ${reactor.name}`);
+      } else {
+        log(`reaction[${trigger}]: chain ABORTED for "${cand.carrierName}" (${chainResult?.reason ?? "?"}) — not marking fired`);
+        ui.notifications?.warn(`${cand.carrierName} could not fire: ${chainResult?.reason ?? "chain aborted"}`);
+      }
     } catch (e) {
       warn(`reaction[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
     }
     if (scope && scene) {
       await appendFired(scene, scope, {
         reactorUuid: reactor.uuid, rowKey: cand.rowKey, carrierUuid: cand.carrierUuid,
-        decision: "fired",
+        decision: chainResult?.ok ? "fired" : "aborted",
       });
     }
     remaining = remaining.filter(
@@ -490,7 +506,8 @@ export async function dispatchReactionMenu({
     // back on SRW re-entry post-action — standaloneFired only marked
     // the fired one, so the others re-emerge in the next dispatch with
     // freshly re-gated conditions.
-    if (isActionCreating) return false;
+    if (isActionCreating && chainResult?.ok) return false;
+    // Chain aborted — don't close, let the player try another reaction.
     return remaining.length > 0;
   }
 
