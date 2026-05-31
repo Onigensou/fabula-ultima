@@ -39,6 +39,8 @@ import { requestTargeting } from "./target-picker.js";
 import { pickWeaponMode } from "./weapon-mode-picker.js";
 import { pickSkill } from "./skill-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { buildSkillResolver } from "./skill-formulas.js";
+import { extractTargetCountFromText } from "./state-handlers.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -520,11 +522,18 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
       return { cancelled: true, reason: "no targets" };
     }
 
-    // Mode + count from text. Same heuristics as GM-side, minus the
-    // formula resolver (player can't evaluate SL/HR identifiers
-    // without the full resolver). For player-compose, formulas fall
-    // through to count=1 — GM-side TARGET re-resolves with full
-    // resolver if needed.
+    // Mode + count from text. Same resolver the GM uses — identifiers
+    // that need only `actor` + `skill` (SL, CHAR_LEVEL, HAS_SKILL_<NAME>,
+    // BOND_*) evaluate correctly player-side; payload-dependent ones
+    // (HR, HIT_COUNT, etc.) fold to 0 since no payload exists yet.
+    // Enables cross-skill gates like Soul Steal × Pillage:
+    //   skill_target: "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures".
+    const targetCountResolver = buildSkillResolver({
+      actor,
+      payload: null,
+      skill,
+      round: director.dCombat?.round ?? 0,
+    });
     let mode = "exact";
     let count = 1;
     if (/\ball\b/i.test(skillTargetText)) {
@@ -532,9 +541,9 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
       count = targetList.length;
     } else if (/up\s+to/i.test(skillTargetText)) {
       mode = "up_to";
-      count = parsePlainTargetCount(skillTargetText, true);
+      count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
     } else {
-      count = parsePlainTargetCount(skillTargetText, false);
+      count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
     }
 
     if (mode === "all") {
@@ -567,28 +576,6 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
       targetUuids,
     },
   };
-}
-
-// Lightweight target-count parser. Handles word forms (one/two/three),
-// integer literals, and "up to N" / "N X" patterns. Formula expressions
-// (e.g. "up to SL creatures") fall through to count=1 — the GM-side
-// TARGET re-resolves with the full resolver including SL/HR.
-function parsePlainTargetCount(text, isUpTo) {
-  if (!text) return 1;
-  let expr = isUpTo
-    ? String(text).replace(/^.*?up\s+to\s+/i, "")
-    : String(text);
-  expr = expr.replace(/\s+(creatures?|enemies|enemy|allies|ally|targets?|foes?|opponents?)\b.*$/i, "").trim();
-  const wordNum = {
-    one: 1, single: 1, a: 1, an: 1,
-    two: 2, three: 3, four: 4, five: 5,
-    six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
-  };
-  const w = wordNum[expr.toLowerCase()];
-  if (w != null) return w;
-  if (!expr) return 1;
-  const n = parseInt(expr, 10);
-  return Math.max(1, isFinite(n) ? n : 1);
 }
 
 // ─── Guard ───────────────────────────────────────────────────────────

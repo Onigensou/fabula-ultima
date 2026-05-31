@@ -53,12 +53,13 @@
 // read whatever was loaded at boot.
 async function loadDeps() {
   const bust = `?harness=${Date.now()}`;
-  const [stateHandlers, states, intents, snapshot, skillIntent] = await Promise.all([
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
     import(`./snapshot.js${bust}`),
     import(`./skill-intent.js${bust}`),
+    import(`./skill-effects.js${bust}`),
   ]);
   return {
     STATE_HANDLERS: stateHandlers.STATE_HANDLERS,
@@ -69,8 +70,105 @@ async function loadDeps() {
     readAffinities: snapshot.readAffinities,
     freezeActionResult: snapshot.freezeActionResult,
     resolveAttackerWeapon: snapshot.resolveAttackerWeapon,
+    applyAffinityToDamage: snapshot.applyAffinityToDamage,
     classifyActionIntent: skillIntent.classifyActionIntent,
+    findPassiveCandidates: skillEffects.findPassiveCandidates,
+    computeSenderDamageBonuses: skillEffects.computeSenderDamageBonuses,
+    recomputePerTargetDamages: skillEffects.recomputePerTargetDamages,
   };
+}
+
+// Pre-pass simulator — runs the CONFIRM-stage `creature_will_deal_damage`
+// aggregator + `computeSenderDamageBonuses` + `recomputePerTargetDamages`
+// against the COMPUTE-stage ar. Used by both Attack and Skill simulators
+// to validate pill-accepted reactions (Cheap Shot family) without driving
+// the live action-card click flow. Returns the new frozen ar with
+// `perTargetResults` updated and `acceptedPrePassives` stamped.
+//
+// `prePassives` filter shape:
+//   - true                          → accept EVERY matching pre-passive (rare; risky if multiple match)
+//   - ["Cheap Shot", "Vanish", ...] → accept only candidates whose carrierName matches one of these
+async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, dCombat, deps }) {
+  if (!prePassives) return ar;
+  if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
+  if (!ar.hasDamage && ar.kind !== "Attack") return ar;
+  const { findPassiveCandidates, computeSenderDamageBonuses, recomputePerTargetDamages, applyAffinityToDamage, freezeActionResult } = deps;
+  const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+  const hitTargetUuids = ar.perTargetResults
+    .filter((r) => r?.hit)
+    .map((r) => r.tokenUuid ?? (ar.targets ?? []).find((t) => t?.actorUuid === r?.actorUuid)?.tokenUuid)
+    .filter(Boolean);
+  const byKey = new Map();
+  for (const entry of ar.perTargetResults) {
+    if (!entry?.hit) continue;
+    const subjectActorUuid = entry.actorUuid;
+    if (!subjectActorUuid) continue;
+    const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
+    const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
+    const payloadForTrigger = {
+      subjectActorUuid,
+      subjectTokenUuid,
+      targets: allTargetUuids,
+      hitTargets: hitTargetUuids,
+      rawDamage: entry.rawDamage,
+      damageType: ar.damageType ?? ar.damage?.element ?? null,
+      weaponType: ar.weapon?.weaponType ?? null,
+      affinity: entry.affinity,
+      sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+      sourceActorUuid: ar.attackerActorRef,
+      actionIntent: ar.actionIntent,
+      targetTokenUuids: allTargetUuids,
+      hitTargetTokenUuids: hitTargetUuids,
+    };
+    let cands;
+    try {
+      cands = await findPassiveCandidates({
+        casterActor: attackerActor,
+        trigger: "creature_will_deal_damage",
+        payload: payloadForTrigger,
+      });
+    } catch (e) {
+      console.warn(`${TAG} prePassives findPassiveCandidates threw for ${entry?.name}`, e);
+      continue;
+    }
+    for (const cand of cands ?? []) {
+      // Filter to allowed names.
+      if (prePassives !== true) {
+        const namesArr = Array.isArray(prePassives) ? prePassives : [];
+        const accepted = namesArr.some((n) => cand.carrierName?.includes(n) || n.includes(cand.carrierName ?? ""));
+        if (!accepted) continue;
+      }
+      const key = `${cand.rowKey}::${cand.carrierUuid}`;
+      let agg = byKey.get(key);
+      if (!agg) {
+        agg = { ...cand, appliesToTargetUuids: [], appliesToTokenUuids: [], payloadAtFire: payloadForTrigger };
+        byKey.set(key, agg);
+      }
+      agg.appliesToTargetUuids.push(subjectActorUuid);
+      if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
+    }
+  }
+  const applied = [...byKey.values()];
+  if (!applied.length) return ar;
+  let recomputed = ar.perTargetResults;
+  try {
+    const bonusMap = await computeSenderDamageBonuses({
+      casterActor: attackerActor,
+      acceptedPrePassives: applied,
+      dCombat,
+    });
+    if (bonusMap.size > 0) {
+      recomputed = recomputePerTargetDamages(ar.perTargetResults, bonusMap, applyAffinityToDamage);
+    }
+  } catch (e) {
+    console.warn(`${TAG} prePassives recompute threw`, e);
+  }
+  return freezeActionResult({
+    ...ar,
+    perTargetResults: recomputed,
+    acceptedPrePassives: applied,
+    evaluatedPrePassives: applied.map((c) => ({ carrierUuid: c.carrierUuid, rowKey: c.rowKey })),
+  });
 }
 
 const TAG = "[FUCompanion][DirectorTest]";
@@ -707,9 +805,26 @@ async function runDirectorSkillSimulate(args = {}) {
   const arPatch = {};
   if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
   if (args.vismagusHpPaid === true) arPatch.vismagusHpPaid = true;
-  const ar = Object.keys(arPatch).length
+  let ar = Object.keys(arPatch).length
     ? freezeActionResult({ ...compute.actionResult, ...arPatch })
     : compute.actionResult;
+
+  // Pre-pass aggregator — same as the attack simulator. Lets damage-bearing
+  // Skills validate Cheap Shot-style reactions (`creature_will_deal_damage`
+  // + `add_damage`) without driving the live action-card click flow.
+  if (args.prePassives) {
+    try {
+      const round0 = Number.isFinite(args.round) ? args.round : 1;
+      const attackerActor = await fromUuid(args.casterTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
+      if (attackerActor) {
+        ar = await applyPrePassivesToActionResult({
+          ar, attackerActor, prePassives: args.prePassives,
+          dCombat: { round: round0, currentTurnResolved: false },
+          deps,
+        });
+      }
+    } catch (e) { console.warn(`${TAG} skill prePassives threw`, e); }
+  }
 
   // Step 2 — set up a synthetic director that resolveSkillAction can
   // walk. RESOLVE's Skill path reads director.ctx.actionResult and
@@ -928,7 +1043,22 @@ async function runDirectorAttackSimulate(args = {}) {
         return compute;
       }
 
-      const ar = compute.actionResult;
+      let ar = compute.actionResult;
+      // Pre-pass aggregator — `prePassives` arg simulates CONFIRM-stage
+      // pill-accepts for `creature_will_deal_damage` reactions (Cheap Shot
+      // family). Bonus damage is baked into perTargetResults before RESOLVE.
+      if (args.prePassives) {
+        try {
+          const attackerActor = await fromUuid(args.attackerTokenUuid).then((d) => d?.actor ?? null).catch(() => null);
+          if (attackerActor) {
+            ar = await applyPrePassivesToActionResult({
+              ar, attackerActor, prePassives: args.prePassives,
+              dCombat: { round, currentTurnResolved: false },
+              deps,
+            });
+          }
+        } catch (e) { console.warn(`${TAG} attack prePassives threw`, e); }
+      }
       const synthDirector = {
         ctx: { actionResult: ar, _resumedFromPendingAction: true },
         dCombat: { round, currentTurnResolved: false },

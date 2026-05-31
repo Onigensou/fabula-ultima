@@ -457,7 +457,7 @@ async function resolveSkillAction(director, ar, opts = {}) {
 // The noun list is generous — it strips trailing keywords like
 // `creature(s) / enemy(ies) / ally/allies / target(s) / foe(s) /
 // opponent(s)` so the formula lifted out is just the math expression.
-function extractTargetCountFromText(text, { isUpTo, resolver }) {
+export function extractTargetCountFromText(text, { isUpTo, resolver }) {
   if (!text) return 1;
   let expr = isUpTo
     ? String(text).replace(/^.*?up\s+to\s+/i, "")
