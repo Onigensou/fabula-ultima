@@ -1046,6 +1046,11 @@ const Declare = {
     let remoteAwait = null;
     if (ownerUserId) {
       log(`DECLARE: broadcasting compose-action to player ${ownerUserId} (${snap.name})`);
+      // Free-action grant — the registry is GM-side memory. Plumb the
+      // grant fields into the menuSpec so the player's composeAction
+      // applies the Octopath filter + budget label without needing the
+      // local freeActions singleton populated.
+      const freeActionGrant = freeActions.get(snap.actorId) ?? null;
       try {
         director.intentChannel?.broadcastMenuOpen({
           targetUserId: ownerUserId,
@@ -1056,6 +1061,7 @@ const Declare = {
             actorUuid: snap.actorUuid,
             snap,
             eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+            freeActionGrant,
           },
         });
         // 30-minute timeout — practically forever. The race will resolve

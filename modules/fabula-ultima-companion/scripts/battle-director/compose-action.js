@@ -93,6 +93,11 @@ export async function composeAction({
   combatId,
   actorUuid = null,
   eligible = null,
+  // Explicit grant override — used by the player-side MENU_OPEN
+  // handler which receives the grant in the menuSpec (GM's freeActions
+  // singleton is not visible on the player's client). GM-side falls
+  // through to the local registry.
+  freeActionGrant = null,
 }) {
   if (!snap) return { cancelled: true, reason: "no snap" };
   if (!token) return { cancelled: true, reason: "no token" };
@@ -115,10 +120,13 @@ export async function composeAction({
     // Free-action grant filter — when this actor has a pending grant
     // (e.g. from High Speed's conflict_start chain), the Octopath shows
     // only `enabledLabels` and the budget reads "<Skill> Free Action".
-    // The grant is the source of truth: state-handlers' COMPUTE reads
-    // it directly to apply checkBonus/damageBonus; RESOLVE clears it.
+    // Explicit grant (from MENU_OPEN spec, player-side) wins over the
+    // local registry. GM-side reads the registry directly since the
+    // singleton lives on this client. State-handlers' COMPUTE reads
+    // the singleton on the GM to apply checkBonus/damageBonus.
     const actorIdForGrant = snap?.actorId ?? (actorUuid ? String(actorUuid).split(".").pop() : null);
-    const grant = actorIdForGrant ? freeActions.get(actorIdForGrant) : null;
+    const grant = freeActionGrant
+      ?? (actorIdForGrant ? freeActions.get(actorIdForGrant) : null);
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
       enabledLabels: grant?.enabledLabels ?? null,
@@ -263,6 +271,11 @@ export function registerPlayerComposeActionHandler(channel) {
         cancelSentinel: cancelToken.promise,
         combatId: menuSpec.combatId,
         actorUuid: menuSpec.actorUuid,
+        // GM stamps the active free-action grant on the menuSpec —
+        // the player's local freeActions singleton is empty (lives on
+        // GM client), so we pass it through explicitly. Drives the
+        // Octopath filter + budget label.
+        freeActionGrant: menuSpec.freeActionGrant ?? null,
       });
 
       // If the active session changed while we were composing, drop this

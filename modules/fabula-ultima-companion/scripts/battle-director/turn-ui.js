@@ -320,21 +320,29 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
       const x = ax + (it.slotX - ax) * t;
       const y = ay + (it.slotY - ay) * t;
       const angleDeg = 0 - (1 - easeOutQuint(p)) * SPIN_DEG;
-      const opacity = Math.pow(p, 0.8);
+      const animOpacity = Math.pow(p, 0.8);
       const scale = SCALE_MIN + (1 - SCALE_MIN) * easeOutQuint(p);
+      // Disabled gate — re-evaluated every tick because the per-frame
+      // opacity write below would otherwise clobber the dim style we
+      // set once at bind time. Multiplying by 0.2 keeps the blade
+      // visible during the spin-in then settles at a strongly muted
+      // value (~ 0.18 final).
+      const isEnabled = isEnabledLabel(it.label);
       it.wrap.style.left = `${x}px`;
       it.wrap.style.top = `${y}px`;
       it.wrap.style.transform = `translate(0,-50%) rotate(${angleDeg}deg) scale(${scale})`;
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
-      it.btn.style.opacity = opacity.toFixed(3);
+      it.btn.style.opacity = (isEnabled ? animOpacity : animOpacity * 0.22).toFixed(3);
+      if (!isEnabled) {
+        // Greyscale + no-pointer apply once (idempotent assignments
+        // are cheap; setting an unchanged style is a no-op in the
+        // browser's style engine).
+        it.btn.style.filter = "grayscale(0.95) brightness(0.55)";
+        it.btn.style.pointerEvents = "none";
+        it.btn.style.cursor = "not-allowed";
+      }
       if (!it.bound && p >= 1) {
-        const isEnabled = isEnabledLabel(it.label);
         if (!isEnabled) {
-          // Greyed-out: visually dimmed, no click handler, no pointer.
-          it.btn.style.opacity = "0.35";
-          it.btn.style.filter = "grayscale(0.6)";
-          it.btn.style.pointerEvents = "none";
-          it.btn.style.cursor = "not-allowed";
           it.btn.title = enabledLabels?.length
             ? `Disabled — free action allows: ${enabledLabels.join(", ")}`
             : "Disabled";
