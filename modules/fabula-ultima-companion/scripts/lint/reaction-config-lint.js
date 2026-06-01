@@ -79,6 +79,17 @@
  *     MASTER_COPY_AE_ROW_MISSING/AE_FIELD_DRIFT — same checks inside the
  *                             AE-bound reactionConfig blob
  *
+ *   Item-level canon rules (run on every item, regardless of isReaction):
+ *     COST_DOUBLE_CHARGE      Item has both a non-empty `cost` field AND a
+ *                             `consume_resource` row reachable from
+ *                             `on_activate_effect_ref`. Action card debits
+ *                             cost at CONFIRM + chain debits again =
+ *                             player charged twice silently. Skipped for
+ *                             items with isReaction:true (reactions use
+ *                             cost as display-only; chain does the actual
+ *                             debit). See skill-authoring-canon.md
+ *                             branch 1 "Cost rule — one source of truth."
+ *
  *   Informational (severity: "info") — surfaces non-failures that change
  *   how you should interpret other findings:
  *     USES_CUSTOM_SCRIPT      item has a non-empty CSB Custom Active /
@@ -523,6 +534,92 @@
     },
   ];
 
+  // ─── Cost double-charge detector ──────────────────────────────────────
+  //
+  // Skill canon rule (docs/skill-authoring-canon.md, branch 1): a skill's
+  // resource cost comes from EXACTLY ONE path:
+  //   - Legacy:        non-empty system.props.cost; action-card pipeline
+  //                    debits at CONFIRM. NO consume_resource in chain.
+  //   - Effect-config: consume_resource row(s) in on_activate chain;
+  //                    EMPTY props.cost.
+  //
+  // Mixing both double-charges the player (action card debits, then
+  // chain debits again). No engine guard exists; this lint surfaces
+  // violations at author time.
+  //
+  // Reactions (props.isReaction === true) are exempt — they never reach
+  // the action-card cost-debit phase, so `cost` is informational-only.
+  // High Speed canonical: cost="10 MP" + consume_resource in chain, OK.
+  //
+  // Walker semantics: starts at on_activate_effect_ref label, follows
+  // `chain` steps + `open_action_menu` option_refs, returns true on
+  // any consume_resource found. Mirrors analyzeChainCost in
+  // skill-effects.js (we can't import ES modules here; classic script).
+  function chainContainsConsumeResource(effectTable, startLabel) {
+    if (!effectTable || typeof effectTable !== "object" || !startLabel) return null;
+    const byLabel = new Map();
+    for (const r of Object.values(effectTable)) {
+      if (!r || r.$deleted) continue;
+      const lbl = String(r.effect_label ?? "").trim();
+      if (lbl) byLabel.set(lbl, r);
+    }
+    const seen = new Set();
+    const queue = [String(startLabel).trim()];
+    while (queue.length) {
+      const lbl = queue.shift();
+      if (!lbl || seen.has(lbl)) continue;
+      seen.add(lbl);
+      const row = byLabel.get(lbl);
+      if (!row) continue;
+      const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+      if (kind === "consume_resource") {
+        return { label: lbl, resource: row.consume_resource ?? row.grant_resource ?? "?" };
+      }
+      if (kind === "chain") {
+        const steps = String(row.chain_steps ?? "")
+          .split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+        for (const s of steps) queue.push(s);
+      } else if (kind === "open_action_menu") {
+        // Walk both refs form + inline option array. Even though options
+        // are player-pick branches (only one runs at runtime), authoring
+        // intent says cost should still come from one source — a
+        // consume_resource in ANY branch warrants flagging since the
+        // action card would have already debited before the option fires.
+        const refs = String(row.menu_option_refs ?? "")
+          .split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+        for (const ref of refs) queue.push(ref);
+      }
+    }
+    return null;
+  }
+
+  function lintCostDoubleCharge(item) {
+    const out = [];
+    const props = item?.system?.props ?? {};
+    // Reactions: cost is informational-only; skip the check.
+    if (props.isReaction === true) return out;
+    const cost = String(props.cost ?? "").trim();
+    const ref  = String(props.on_activate_effect_ref ?? "").trim();
+    if (!cost || !ref) return out;
+    const hit = chainContainsConsumeResource(props.effect_table, ref);
+    if (!hit) return out;
+    out.push({
+      severity: "error",
+      code: "COST_DOUBLE_CHARGE",
+      location: `system.props.cost & effect_table[${hit.label}]`,
+      message:
+        `Skill has both a non-empty cost field ("${cost}") AND a ` +
+        `consume_resource row ("${hit.label}" → ${hit.resource}) reachable ` +
+        `from on_activate_effect_ref ("${ref}"). The action-card pipeline ` +
+        `will debit the cost field at CONFIRM, then the chain will debit ` +
+        `${hit.resource} again — the player gets charged twice with no ` +
+        `engine guard. Pick one path: clear system.props.cost (effect-config ` +
+        `path) OR remove the consume_resource row (legacy path). See ` +
+        `skill-authoring-canon.md branch 1 "Cost rule — one source of truth."`,
+    });
+    return out;
+  }
+
   function lintCanonDeprecations(props) {
     const out = [];
     if (!props || typeof props !== "object") return out;
@@ -574,6 +671,19 @@
     // as legacy fallbacks during the transition.
     const canonIssues = lintCanonDeprecations(props);
     for (const i of canonIssues) {
+      i.owner    = ownerLabel;
+      i.itemUuid = item?.uuid ?? null;
+      i.itemName = item?.name ?? "(unnamed)";
+      out.push(i);
+    }
+
+    // ── Cost double-charge check (runs on EVERY item, skips reactions) ──
+    // Detects the canon-violation pattern: non-empty `cost` field AND a
+    // `consume_resource` row reachable from on_activate_effect_ref. The
+    // action card would debit the legacy field at CONFIRM and the chain
+    // would debit again — silent double-charge with no engine guard.
+    const costIssues = lintCostDoubleCharge(item);
+    for (const i of costIssues) {
       i.owner    = ownerLabel;
       i.itemUuid = item?.uuid ?? null;
       i.itemName = item?.name ?? "(unnamed)";
