@@ -904,7 +904,14 @@ export async function rewindToHistorySnapshot(snapshotId) {
   // 4. Update the reload-survival state flag so a subsequent F5
   //    auto-resumes to the rewound state (not the pre-rewind state).
   //    The snapshot is a superset of the directorState shape — strip
-  //    the rewind-only fields before writing.
+  //    the rewind-only fields (actors, label, description, id) before
+  //    writing. KEEP pendingAction and freeActionContext: those are
+  //    part of the directorState contract and the rewound state's
+  //    in-flight context (action card on screen, free-action queue
+  //    populated) should survive a follow-up F5 the same way a fresh
+  //    save would. Without them, an F5 immediately after rewinding to
+  //    "Attack posted" or "Free action pending" lands at TURN_START
+  //    and the rewound action card / free-action prompt is lost.
   try {
     const stateOnly = {
       schemaVersion: snapshot.schemaVersion,
@@ -912,6 +919,8 @@ export async function rewindToHistorySnapshot(snapshotId) {
       sourceSceneId: snapshot.sourceSceneId,
       payload: snapshot.payload,
       dCombat: snapshot.dCombat,
+      ...(snapshot.pendingAction ? { pendingAction: snapshot.pendingAction } : {}),
+      ...(snapshot.freeActionContext ? { freeActionContext: snapshot.freeActionContext } : {}),
     };
     await scene.setFlag(FLAG_NS, FLAG_KEY, stateOnly);
   } catch (e) {

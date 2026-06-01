@@ -3746,14 +3746,18 @@ const StandaloneReactionWindow = {
         // DECLARE. The chain's consume_resource (MP debit) already
         // committed to the actor, so no double-debit risk.
         //
-        // skipHistory=true keeps the rewind list focused on player-
-        // visible commitments (action posts, turn boundaries) and not
-        // FSM internal transitions.
+        // Surfaces in the rewind list — the player CAN rewind back to
+        // "right before they picked the free action" to redo their
+        // choice. (Initial pass was skipHistory:true; user feedback
+        // showed they want the rewind anchor.)
         try {
+          const peek = freeActionQueue.peek();
+          const reactorName = peek?.sourceLabel
+            ? `${peek.sourceLabel}`
+            : "free action";
           await saveDirectorState(director, {
-            label: `Round ${director.dCombat?.round ?? 0} · Free action pending`,
-            description: `${freeActionQueue.size()} free action(s) queued; routing to FAW`,
-            skipHistory: true,
+            label: `Round ${director.dCombat?.round ?? 0} · ${reactorName} pending`,
+            description: `${freeActionQueue.size()} free action(s) queued; awaiting player choice`,
           });
         } catch (e) {
           warn("STANDALONE_REACTION_WINDOW: pre-FAW save failed", e);
