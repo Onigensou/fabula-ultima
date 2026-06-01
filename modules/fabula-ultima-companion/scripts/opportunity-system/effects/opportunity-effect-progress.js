@@ -47,6 +47,42 @@
     clock_grave:     "Grave",
   };
 
+  // Parent panel keys in the CSB template that gate each clock field's visibility.
+  const ACTOR_CLOCK_PANEL_KEY = {
+    clock_brainwave: "blainwave_panel",
+    clock_trade:     "trade_panel",
+    clock_adoration: "adoration_panel",
+    clock_grave:     "grave_panel",
+  };
+
+  // Walk a CSB template node tree looking for a node with the given key.
+  function _findNodeByKey(node, key) {
+    if (!node || typeof node !== "object") return null;
+    if (node.key === key) return node;
+    const children = Array.isArray(node) ? node : Object.values(node);
+    for (const child of children) {
+      const hit = _findNodeByKey(child, key);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  // Returns true if the clock field's governing parent panel is visible for this actor.
+  // Reads the panel's visibilityFormula, extracts the class name from the lookup() call,
+  // and checks actor.system.props.class_list — mirroring exactly what CSB evaluates.
+  function isClockVisibleForActor(actor, clockKey, tmplSystem) {
+    const panelKey = ACTOR_CLOCK_PANEL_KEY[clockKey];
+    if (!panelKey || !tmplSystem) return true;
+    const panel = _findNodeByKey(tmplSystem, panelKey);
+    if (!panel?.visibilityFormula) return true;
+    const m = panel.visibilityFormula.match(/lookup\(\s*'class_list'\s*,\s*'class_name'\s*,\s*'class_name'\s*,\s*'([^']+)'\s*\)/);
+    if (!m) return true;  // unrecognised formula — err on the side of showing it
+    const requiredClass = m[1];
+    const table = actor.system?.props?.class_list;
+    if (!table) return false;
+    return Object.values(table).some(row => !row.$deleted && row.class_name === requiredClass);
+  }
+
   async function gatherAllClocks() {
     const clocks = [];
 
@@ -59,12 +95,23 @@
     }
 
     // Actor clocks — party members in slot order, then scene-only actors alphabetically
-    const actorIds = await getRelevantActorIds();
+    const actorIds    = await getRelevantActorIds();
+    const tmplSysCache = new Map();  // templateId → system, shared across actors
+
     for (const actorId of actorIds) {
       const actor = game.actors?.get(actorId);
       if (!actor?.system?.props) continue;
+
+      const tmplId  = actor.system?.template;
+      if (!tmplSysCache.has(tmplId)) {
+        const tmpl = game.actors?.get(tmplId);
+        tmplSysCache.set(tmplId, tmpl?.system ?? null);
+      }
+      const tmplSys = tmplSysCache.get(tmplId);
+
       for (const [key, rawVal] of Object.entries(actor.system.props)) {
         if (!(key in ACTOR_CLOCK_MAX)) continue;
+        if (!isClockVisibleForActor(actor, key, tmplSys)) continue;
         clocks.push({
           id:       `a:${actorId}:${key}`,
           name:     `${actor.name} — ${ACTOR_CLOCK_LABEL[key] ?? key}`,
@@ -238,6 +285,10 @@
         width:100%;padding:6px 8px;border-radius:6px;border:1px solid #2a4a6a;
         background:#0d1920;color:#c8d8e8;font-size:.88rem;cursor:pointer;
       }
+      #oni-prog-ovl option, #oni-prog-ovl optgroup {
+        background:#fff;color:#1a2a38;
+      }
+      #oni-prog-ovl optgroup { font-weight:700; }
       #oni-prog-ovl .delta-row {
         display:flex;align-items:center;gap:8px;margin-top:14px;
       }
@@ -663,6 +714,7 @@
             emitParticleBurst(cx, cy, isIncrease);
             await delay(300);
           }
+          await delay(700); // hold on final state before exit
         } finally {
           await destroySpotlight(spotlight);
         }
