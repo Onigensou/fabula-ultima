@@ -20,6 +20,32 @@ behavior goes:
      Either way, the activation is wired through `on_activate_effect_ref`.
      This is the ONE legitimate inhabitant of the Skill Effects panel.
 
+   **Cost rule — one source of truth, never two.** A skill's resource
+   cost MUST come from exactly one path:
+   - **Legacy path**: `system.props.cost = "10 MP"`. The action-card
+     pipeline parses this string at CONFIRM and debits the resource.
+     No `consume_resource` row anywhere in the chain reachable from
+     `on_activate_effect_ref`. Examples: Lux, Heal, Mercy, Soul Weapon,
+     all Spiritist spells today.
+   - **Effect-config path**: `consume_resource` row in the on_activate
+     chain (or a sub-chain). `system.props.cost` MUST be empty (or
+     informational-only — see below). Used when the cost is conditional,
+     formula-driven, or spread across multiple steps in a chain.
+
+   If a skill mixes both paths the player gets charged TWICE. The
+   action-card pipeline doesn't know that the chain will also debit;
+   the chain's `consume_resource` doesn't know the action card already
+   did. There's no engine-side guard today.
+
+   **Informational-only cost on reactions**: a skill with
+   `isReaction: true` (or `reaction_isPassive: true`) never reaches
+   the action-card cost-debit phase — reactions dispatch through the
+   chain instead. A `cost` field on such a skill is purely display
+   (shows on the skill description / picker tooltip). The actual debit
+   comes from `consume_resource` in the reaction's chain. High Speed
+   is the canonical example: `cost: "10 MP"` for display, `consume_resource`
+   row debits at chain-fire time.
+
 2. **Activated by an external event (not the turn menu)?**
    → Author a **reaction_config_table row** with the appropriate
      trigger (`creature_completes_spell`, `creature_deals_damage`,
