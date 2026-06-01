@@ -46,6 +46,7 @@ import {
   getHistory,
   findHistorySnapshot,
   rewindToHistorySnapshot,
+  hydrateFreeActionContext,
 } from "./persistence.js";
 // Test harness — side-effect import (registers
 // FUCompanion.api.test.runDirectorSkillCompute on the "ready" hook).
@@ -477,6 +478,19 @@ async function resumeFromSavedState({ scene, state }) {
   //   - otherwise → land at TURN_START, which auto-picks the saved
   //     combatant (currentCombatantId preserved through reconstruction)
   //     and routes to DECLARE for a fresh action.
+  // ── A2 free-action restore ──────────────────────────────────────────
+  // Rehydrate freeActions singleton + freeActionQueue + SRW/FAW ctx
+  // flags BEFORE the routing branches read ctx state. If the queue is
+  // non-empty (a peer had committed an action-creating reaction before
+  // F5), we'll route into FREE_ACTION_WINDOW after the pendingAction /
+  // currentTurnResolved / Battle Start branches don't claim the resume.
+  // See [[free-actions]] + persistence.js' captureFreeActionContext for
+  // the full saved shape.
+  const facSummary = hydrateFreeActionContext(director, state);
+  if (facSummary.restored) {
+    log(`resume: free-action context restored — queue=${facSummary.queueSize}, popped=${facSummary.hasPoppedRequest}, registry=${facSummary.registrySize}`);
+  }
+
   let resumeAt;
   let resumedFromCard = false;
   if (state.pendingAction?.actionResult) {
@@ -535,6 +549,34 @@ async function resumeFromSavedState({ scene, state }) {
     director.ctx.standaloneAfter   = STATES.ROUND_START;
     director.ctx.standalonePayload = null;
     resumeAt = STATES.STANDALONE_REACTION_WINDOW;
+  } else if (facSummary.restored && (facSummary.queueSize > 0 || facSummary.hasPoppedRequest)) {
+    // A2 — F5 hit mid-free-action.
+    //
+    // Three sub-cases:
+    //   (a) hasPoppedRequest is true → a free action was in flight
+    //       (its DECLARE / TARGET / COMPUTE pipeline) when F5 fired.
+    //       Re-entering FAW with `_freeActionPopped` set takes the
+    //       teardown branch (restores swapped turnSnapshot + clears
+    //       flags), then falls into the drain path — picks the next
+    //       request or exits to _postFreeActionTarget. The lost
+    //       free-action card itself isn't recovered (it didn't reach
+    //       CONFIRM, so pendingAction was never saved); the player
+    //       sees SRW re-fire post-drain for un-decided reactors.
+    //   (b) Queue non-empty without popped → SRW had dispatched and
+    //       the queue had buffered requests, but FAW hadn't dequeued
+    //       the next one yet. Same FAW entry — drains naturally.
+    //   (c) Both → (a) takes precedence; the teardown runs first.
+    //
+    // Either way, the existing FAW handler's two-mode entry logic
+    // resolves correctly from saved state.
+    log(`resume: routing into FREE_ACTION_WINDOW — queue=${facSummary.queueSize}, popped=${facSummary.hasPoppedRequest}`);
+    // Default `_postFreeActionTarget` to TURN_START if it wasn't
+    // persisted (shouldn't happen — captureFreeActionContext stamps it
+    // when set — but defend anyway).
+    if (director.ctx._postFreeActionTarget == null) {
+      director.ctx._postFreeActionTarget = STATES.TURN_START;
+    }
+    resumeAt = STATES.FREE_ACTION_WINDOW;
   } else {
     resumeAt = STATES.TURN_START;
   }

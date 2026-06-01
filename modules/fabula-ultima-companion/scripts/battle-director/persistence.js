@@ -42,6 +42,8 @@
 
 import { log, warn } from "./logger.js";
 import { DirectorCombat, DirectorCombatant } from "./director-combat.js";
+import { freeActions } from "./free-actions.js";
+import { freeActionQueue } from "./free-action-queue.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const FLAG_KEY = "directorState";       // single-object reload-survival flag
@@ -93,6 +95,97 @@ function consumePendingDeletions(actorUuid) {
   return arr;
 }
 
+// ── Free-action persistence (F5 mid-window survival, A2) ──────────────
+//
+// Three sources of in-memory free-action state must round-trip to scene
+// flag so a reload mid-window (player picked High Speed, then F5'd
+// before/during/after their free Attack) restores the FSM to the same
+// SRW↔FAW loop position:
+//
+//   1. `freeActions` singleton — Map<actorId, grant>. The COMPUTE
+//      handlers consume from here for checkBonus/damageBonus/enabledLabels.
+//   2. `freeActionQueue` — FIFO of pending FreeActionRequests. FAW drains.
+//   3. ctx flags wiring the SRW/FAW loop:
+//        _srwFinalTarget        — where SRW eventually exits to
+//        _postFreeActionTarget  — what FAW routes to on queue-empty
+//        _freeActionPopped      — current popped request (FAW re-entry tear-down)
+//        _savedTurnSnapshot     — original turn snapshot, swapped out by FAW
+//        _savedActionResult     — original actionResult, swapped out by FAW
+//        freeActionMode         — duplicate of _freeActionPopped (set together)
+//        standaloneAfter / standaloneTrigger / standalonePayload — SRW dispatch routing
+//
+// Capture is conditional: only emit a `freeActionContext` block when
+// something is actually in flight. Regular saves (start of round, turn
+// end, etc.) leave the field absent so the survival flag stays small.
+function captureFreeActionContext(director) {
+  const ctx = director?.ctx ?? {};
+  const reg   = freeActions.snapshot();
+  const queue = freeActionQueue.snapshot();
+  const hasRegistry = Object.keys(reg).length > 0;
+  const hasQueue    = queue.length > 0;
+  const flags = {};
+  // Truthy / non-undefined flags only — `delete ctx.X` zeroes them out
+  // between loops, so undefined means "not set."
+  if (ctx._srwFinalTarget != null)         flags._srwFinalTarget        = ctx._srwFinalTarget;
+  if (ctx._postFreeActionTarget != null)   flags._postFreeActionTarget  = ctx._postFreeActionTarget;
+  if (ctx._freeActionPopped != null)       flags._freeActionPopped      = ctx._freeActionPopped;
+  if (ctx._savedTurnSnapshot !== undefined) flags._savedTurnSnapshot    = ctx._savedTurnSnapshot;
+  if (ctx._savedActionResult !== undefined) flags._savedActionResult    = ctx._savedActionResult;
+  if (ctx.freeActionMode != null)          flags.freeActionMode         = ctx.freeActionMode;
+  if (ctx.standaloneAfter != null)         flags.standaloneAfter        = ctx.standaloneAfter;
+  if (ctx.standaloneTrigger != null)       flags.standaloneTrigger      = ctx.standaloneTrigger;
+  if (ctx.standalonePayload != null)       flags.standalonePayload      = ctx.standalonePayload;
+  const hasFlags = Object.keys(flags).length > 0;
+  if (!hasRegistry && !hasQueue && !hasFlags) return null;
+  return { registry: reg, queue, flags };
+}
+
+// Rehydrate the in-memory free-action state from a persisted
+// `freeActionContext` block. Idempotent — overwrites the singletons +
+// ctx fields with whatever was saved. Returns a small summary used by
+// the resume-routing branch in director-boot.js.
+export function hydrateFreeActionContext(director, state) {
+  const fac = state?.freeActionContext;
+  if (!fac) return { restored: false };
+  const ctx = director?.ctx ?? {};
+  try {
+    // Registry: clearAll then re-set per actor so the resulting Map
+    // matches the saved snapshot exactly (no stale entries leak through).
+    freeActions.clearAll();
+    for (const [actorId, grant] of Object.entries(fac.registry ?? {})) {
+      freeActions.set(actorId, grant);
+    }
+    // Queue: clear then re-enqueue in order so FIFO position is preserved.
+    freeActionQueue.clear();
+    for (const req of (fac.queue ?? [])) {
+      freeActionQueue.enqueue(req);
+    }
+    // Ctx flags: copy each individually so an unexpectedly-shaped blob
+    // can't clobber unrelated ctx state. Same pattern as the
+    // pendingAction.ctx restore in director-boot.js.
+    const f = fac.flags ?? {};
+    if (f._srwFinalTarget != null)        ctx._srwFinalTarget        = f._srwFinalTarget;
+    if (f._postFreeActionTarget != null)  ctx._postFreeActionTarget  = f._postFreeActionTarget;
+    if (f._freeActionPopped != null)      ctx._freeActionPopped      = f._freeActionPopped;
+    if (f._savedTurnSnapshot !== undefined) ctx._savedTurnSnapshot   = f._savedTurnSnapshot;
+    if (f._savedActionResult !== undefined) ctx._savedActionResult   = f._savedActionResult;
+    if (f.freeActionMode != null)         ctx.freeActionMode         = f.freeActionMode;
+    if (f.standaloneAfter != null)        ctx.standaloneAfter        = f.standaloneAfter;
+    if (f.standaloneTrigger != null)      ctx.standaloneTrigger      = f.standaloneTrigger;
+    if (f.standalonePayload != null)      ctx.standalonePayload      = f.standalonePayload;
+    log(`hydrateFreeActionContext: restored registry=${Object.keys(fac.registry ?? {}).length}, queue=${(fac.queue ?? []).length}, flags=${Object.keys(f).length}`);
+    return {
+      restored: true,
+      queueSize: (fac.queue ?? []).length,
+      hasPoppedRequest: f._freeActionPopped != null,
+      registrySize: Object.keys(fac.registry ?? {}).length,
+    };
+  } catch (e) {
+    warn("hydrateFreeActionContext threw", e);
+    return { restored: false, error: String(e?.message ?? e) };
+  }
+}
+
 // ── Save ────────────────────────────────────────────────────────────────
 
 // Persist the director's current dCombat snapshot to the battle scene's
@@ -136,11 +229,19 @@ export async function saveDirectorState(director, opts = {}) {
     ? null
     : (opts.pendingAction ?? null);
 
+  // Free-action context — registry + queue + FSM routing flags. Captured
+  // only when something is in flight so regular saves stay clean (no
+  // empty blob on every TURN_START). Restored on resume by
+  // hydrateFreeActionContext before any state-transition routing.
+  // See [[free-actions]] / [[free-action-queue]] for the runtime shapes.
+  const freeActionContext = captureFreeActionContext(director);
+
   const state = {
     schemaVersion: SCHEMA_VERSION,
     savedAt: Date.now(),
     sourceSceneId: dc.sourceSceneId ?? null,
     pendingAction,
+    ...(freeActionContext ? { freeActionContext } : {}),
     // Stash the original PREP payload for diagnostic purposes — RAW
     // resume doesn't re-run PREP (tokens are already on the scene) but
     // keeping the payload makes it possible to inspect what battle this
