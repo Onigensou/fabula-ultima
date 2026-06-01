@@ -121,6 +121,14 @@ function entryKey(reactorUuid, rowKey, carrierUuid) {
   return `${reactorUuid}::${rowKey}::${carrierUuid}`;
 }
 
+// Read the set of entry-keys whose decision is "fired" or "auto" — i.e.
+// the reaction actually ran. These become "Used" stamps on SRW re-entry.
+//
+// Pre-2026-06-01 the persistence layer ALSO wrote decision: "passed" /
+// "aborted" entries which were used to filter candidates out forever.
+// That model was reverted (Pass is now window-scoped; aborts re-prompt
+// the player); legacy "passed" / "aborted" entries on existing scenes
+// are ignored here so they don't surface as bogus "Used" stamps.
 function readFiredSet(scene, scopeKey) {
   if (!scene) return new Set();
   try {
@@ -128,7 +136,9 @@ function readFiredSet(scene, scopeKey) {
     const entries = Array.isArray(stored.entries) ? stored.entries : [];
     const out = new Set();
     for (const e of entries) {
-      if (e?.scope === scopeKey) {
+      if (e?.scope !== scopeKey) continue;
+      const d = String(e?.decision ?? "").toLowerCase();
+      if (d === "fired" || d === "auto") {
         out.add(entryKey(e?.reactorUuid, e?.rowKey, e?.carrierUuid));
       }
     }
@@ -291,18 +301,22 @@ export async function dispatchReactionMenu({
   }
   const { findPassiveCandidates, firePreAcceptedCandidate, isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
   const fired = [];
-  let deferredByPeer = false;  // set if another reactor's action-creating commit forces us to close
 
-  // Idempotency filter — drop already-handled rows when scope+scene set.
+  // Used-badge derivation — keep previously-fired reactions VISIBLE
+  // (stamped "Used"), don't filter them out. Pass is now window-scoped
+  // (see processPass below) — only "fired" / "auto" decisions persist
+  // in standaloneFired, and those become the Used stamps on re-entry.
+  // The set is scoped per trigger+round (see scopeKeyFor); fired-set
+  // is cleared on combat end via persistence.clearAllDirectorStateFlags.
   const firedSet = (scope && scene) ? readFiredSet(scene, scope) : new Set();
 
   let candidates;
   try {
     // includeUnavailable: surface reactions that fail their condition
     // formula or affordability check as disabled blades with badges
-    // ("Not enough MP" / "Conditions not met") rather than dropping
-    // them silently. The MP-bug class (player clicks, nothing happens,
-    // no feedback) is what we're guarding against.
+    // ("Low MP" / "Conditions not met") rather than dropping them
+    // silently. The MP-bug class (player clicks, nothing happens, no
+    // feedback) is what we're guarding against.
     candidates = await findPassiveCandidates({
       casterActor: reactor,
       trigger,
@@ -316,23 +330,31 @@ export async function dispatchReactionMenu({
   }
   if (!candidates?.length) return { cancelled: false, fired: [] };
 
-  const fresh = candidates.filter(
-    (c) => !firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid))
+  // Auto-skip ONLY when every candidate has already been used in this
+  // scope. "Used" is permanent for the scope, so there's nothing the
+  // player can do — spawning a menu of all-stamped blades just to make
+  // them click Pass is friction. Other unavailability sources (Low MP,
+  // peer-acting, condition formulas) might clear, so those still get
+  // shown stamped + the player decides via Pass.
+  const allAlreadyUsed = candidates.every((c) =>
+    firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid))
   );
-  if (fresh.length !== candidates.length) {
-    log(`reaction[${trigger}]: ${reactor.name} — ${candidates.length - fresh.length} candidate(s) already handled, skipping`);
+  if (allAlreadyUsed) {
+    log(`reaction[${trigger}]: ${reactor.name} — all candidates already used this scope, auto-skip`);
+    return { cancelled: false, fired: [] };
   }
-  if (!fresh.length) return { cancelled: false, fired: [] };
 
   // Auto-fire "on" + "force" passives silently — but ONLY when they're
-  // currently available. An auto passive that can't pay its cost falls
-  // through to the askable list with its unavailableReason badge so
-  // the player sees WHY it didn't fire (rather than silently no-op).
+  // currently available AND not already-used in this scope. An auto
+  // passive that can't pay its cost (or already fired this scope) falls
+  // through to the askable list with its badge so the player sees WHY
+  // it didn't fire (rather than silently no-op).
   const autoFire = [];
   const askable = [];
-  for (const c of fresh) {
+  for (const c of candidates) {
     const isAutoMode = c.kind === "passive" && (c.mode === "on" || c.mode === "force");
-    if (isAutoMode && c.available) autoFire.push(c);
+    const wasUsed = firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid));
+    if (isAutoMode && c.available && !wasUsed) autoFire.push(c);
     else if (c.mode !== "off") askable.push(c);
   }
   for (const c of autoFire) {
@@ -368,27 +390,39 @@ export async function dispatchReactionMenu({
 
   let remaining = askable.slice();
   let cancelled = false;
-  // Two-source disabled-blade overlay:
+  // Three-source disabled-blade overlay (merged at spawn + patch time):
   //   - costBadges:  intrinsic per-reactor unavailability surfaced by
   //                  findPassiveCandidates' affordability walker /
   //                  condition_formula evaluator. Built ONCE here from
   //                  the candidate's `unavailableReason`; never mutated
   //                  thereafter. Re-derived from scratch only on SRW
-  //                  re-entry (which calls findPassiveCandidates again).
+  //                  re-entry.
+  //   - usedBadges:  per-scope "Used" stamp for reactions already fired
+  //                  in this trigger window (read from standaloneFired
+  //                  scene flag). Built ONCE here; never mutated.
+  //                  Permanent for the scope (until combat end).
   //   - peerBadges:  session-local "{Actor} Acting" overlay added by
   //                  stopHandler when a peer commits an action-creating
-  //                  reaction. Cleared on SRW re-entry. Wins over
-  //                  costBadges for the same key.
-  // Merged via mergedDisabledLabels() at spawn time and patch time.
+  //                  reaction. Cleared on SRW re-entry.
+  //
+  // Priority: peer > used > cost (most-current state wins). Peer is
+  // transient ("right now they're acting"); used is permanent for
+  // scope; cost is intrinsic-but-recoverable.
   const costBadges = {};
   for (const c of askable) {
     if (!c.available && c.unavailableReason) {
       costBadges[`${c.carrierUuid}::${c.rowKey}`] = c.unavailableReason;
     }
   }
+  const usedBadges = {};
+  for (const c of askable) {
+    if (firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid))) {
+      usedBadges[`${c.carrierUuid}::${c.rowKey}`] = "Used";
+    }
+  }
   let peerBadges = {};
   function mergedDisabledLabels() {
-    return { ...costBadges, ...peerBadges };
+    return { ...costBadges, ...usedBadges, ...peerBadges };
   }
 
   const ownerUserId = resolveReactorOwnerUserId(reactor);
@@ -474,7 +508,8 @@ export async function dispatchReactionMenu({
     // entry, so this never blocks the click that TRIGGERED the stop.
     {
       const key = `${cand.carrierUuid}::${cand.rowKey}`;
-      const badge = peerBadges[key] ?? costBadges[key] ?? null;
+      // Priority matches mergedDisabledLabels: peer > used > cost.
+      const badge = peerBadges[key] ?? usedBadges[key] ?? costBadges[key] ?? null;
       if (badge) {
         log(`reaction[${trigger}]: REJECT stale click on "${cand.carrierName}" (currently disabled: "${badge}")`);
         try { ui.notifications?.info(`${cand.carrierName}: ${badge}`); } catch {}
@@ -559,17 +594,13 @@ export async function dispatchReactionMenu({
 
   async function processPass() {
     log(`reaction[${trigger}]: passed for ${reactor.name}`);
-    if (scope && scene) {
-      for (const c of remaining) {
-        await appendFired(scene, scope, {
-          reactorUuid: reactor.uuid, rowKey: c.rowKey, carrierUuid: c.carrierUuid,
-          decision: "passed",
-        });
-      }
-    }
-    // cancelled = true only when NOTHING fired (no auto-fires AND no
-    // ask-pick before this pass). Auto-fires set fired[] in the outer
-    // loop above; if any landed, cancelled stays false.
+    // Pass is WINDOW-SCOPED — don't write standaloneFired entries.
+    // On SRW re-entry the reactor's menu re-spawns with the same
+    // candidates (any that fired in this scope show stamped "Used"
+    // via the usedBadges map). The legacy behavior wrote
+    // decision: "passed" for every remaining candidate which filtered
+    // them out forever — that was wrong: Pass should mean "save it
+    // for later, ask me again next round", not "never offer again".
     cancelled = fired.length === 0;
     remaining = [];
   }
@@ -669,30 +700,32 @@ export async function dispatchReactionMenu({
   };
 
   // Cross-reactor stop signal — another reactor committed an
-  // action-creating reaction. Mark action-creating blades on MY menu
-  // as disabled with "{Actor} Acting" overlay; state-only blades stay
-  // clickable. If EVERY remaining blade ends up disabled (cost OR
-  // peer-acting), the menu closes (deferred until SRW re-entry).
+  // action-creating reaction. Stamp action-creating blades on MY menu
+  // with "{Actor} Acting"; state-only blades + Pass stay clickable.
+  // The menu NEVER auto-closes here — even if every blade ends up
+  // stamped, the player chooses to Pass manually so the model is
+  // legible ("I see what's happening; I'm explicitly bowing out").
+  // Pass is window-scoped (see processPass) so passing now doesn't
+  // prevent the reactor from getting a fresh menu on SRW re-entry.
   //
   // Update path: in-place DOM mutation via ReactionMenu.updateDisabledLabels
   // (GM-side) + broadcastMenuPatch (player-side). NO despawn+respawn —
   // the entrance-animation replay was the jarring redraw we're avoiding.
   //
   // Source filter: ignore my own emit so the acting reactor doesn't
-  // re-update itself.
+  // re-stamp itself.
   const stopHandler = async (ev) => {
     const sourceUuid = ev?.detail?.sourceReactorUuid ?? null;
     if (sourceUuid && sourceUuid === reactor.uuid) return;
-    if (deferredByPeer) return;
     const actorName = ev?.detail?.actorName ?? "Someone";
     const blockLabel = `${actorName} Acting`;
-    let anyClickable = false;
     let blockedCount = 0;
     for (const cand of remaining) {
       const key = `${cand.carrierUuid}::${cand.rowKey}`;
-      // Already disabled by cost — peer-acting doesn't add new info;
-      // the user already sees "Not enough MP". Skip.
-      if (costBadges[key]) continue;
+      // Already-stamped sources win (per merge priority: peer > used >
+      // cost). If cost or used already covers this blade, peer-acting
+      // adds no new info. Skip — keeps the existing stamp text.
+      if (costBadges[key] || usedBadges[key]) continue;
       let isAC = false;
       try {
         const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
@@ -711,50 +744,32 @@ export async function dispatchReactionMenu({
       if (isAC) {
         peerBadges[key] = blockLabel;
         blockedCount++;
-      } else {
-        anyClickable = true;
       }
     }
-    // anyClickable means: at least one remaining blade is NOT in
-    // costBadges AND NOT just-marked in peerBadges. If all remaining
-    // blades are now disabled by EITHER source, defer this reactor.
-    const allDisabled = remaining.every((c) => {
-      const k = `${c.carrierUuid}::${c.rowKey}`;
-      return costBadges[k] || peerBadges[k];
-    });
-    if (allDisabled) {
-      deferredByPeer = true;
-      log(`reaction[${trigger}]: ${reactor.name} deferred (peer "${actorName}" acting; all blades blocked)`);
-      try { closeMenusEverywhere(); } catch {}
-      try { resolveClose(); } catch {}
-    } else {
-      log(`reaction[${trigger}]: ${reactor.name} ${blockedCount} blade(s) blocked by "${actorName}"; state-only blades remain clickable`);
-      // In-place update path — no respawn, no entrance-animation replay.
-      // GM-side: directly mutate the open menu's DOM.
+    log(`reaction[${trigger}]: ${reactor.name} ${blockedCount} blade(s) blocked by "${actorName}"`);
+    // GM-side: directly mutate the open menu's DOM (zero-churn).
+    try {
+      ReactionMenu.updateDisabledLabels({
+        combatId, tokenId: token.id,
+        disabledLabels: mergedDisabledLabels(),
+      });
+    } catch (e) { warn(`reaction[${trigger}]: GM-side updateDisabledLabels threw`, e); }
+    // Player-side: send MENU_PATCH; their handler applies the same
+    // in-place mutation. Best-effort — lag-resilient. The GM is
+    // authoritative; the stale-click safeguard in processDecision
+    // handles late clicks against now-stamped blades.
+    if (channel && ownerUserId) {
       try {
-        ReactionMenu.updateDisabledLabels({
-          combatId, tokenId: token.id,
-          disabledLabels: mergedDisabledLabels(),
+        channel.broadcastMenuPatch({
+          targetUserId: ownerUserId,
+          patch: {
+            kind: "reaction-menu-disabled",
+            combatId,
+            tokenId: token.id,
+            disabledLabels: mergedDisabledLabels(),
+          },
         });
-      } catch (e) { warn(`reaction[${trigger}]: GM-side updateDisabledLabels threw`, e); }
-      // Player-side: send a MENU_PATCH; their handler applies the same
-      // in-place mutation. Best-effort — lag-resilient. The GM is
-      // authoritative; a stale-click safeguard in processDecision
-      // handles the case where a player click sneaks through before
-      // their patch arrives.
-      if (channel && ownerUserId) {
-        try {
-          channel.broadcastMenuPatch({
-            targetUserId: ownerUserId,
-            patch: {
-              kind: "reaction-menu-disabled",
-              combatId,
-              tokenId: token.id,
-              disabledLabels: mergedDisabledLabels(),
-            },
-          });
-        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch threw`, e); }
-      }
+      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch threw`, e); }
     }
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);
@@ -765,7 +780,11 @@ export async function dispatchReactionMenu({
   } finally {
     _dispatchCoordinator.removeEventListener("stop-others", stopHandler);
   }
-  return { cancelled, fired, deferred: deferredByPeer };
+  // `deferred` is gone — the auto-close-on-allDisabled branch was
+  // removed in favor of always keeping the menu open with stamped
+  // blades. Callers that read `deferred` will get undefined (truthy-
+  // false), which matches the old "not deferred" case.
+  return { cancelled, fired };
 }
 
 // Dispatch a standalone trigger across every live reactor. Each reactor's
