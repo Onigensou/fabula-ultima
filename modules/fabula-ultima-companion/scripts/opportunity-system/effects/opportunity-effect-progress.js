@@ -32,6 +32,52 @@
   const esc   = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
   const delay = ms => new Promise(r => setTimeout(r, ms));
 
+  // ── Actor clock registry ──────────────────────────────────────────────────────
+  // numberField maxVal per key, sourced from _FabU Char Template v3.fire
+  const ACTOR_CLOCK_MAX = {
+    clock_brainwave: 4,
+    clock_trade:     6,
+    clock_adoration: 5,
+    clock_grave:     6,
+  };
+  const ACTOR_CLOCK_LABEL = {
+    clock_brainwave: "Brainwave",
+    clock_trade:     "Trade",
+    clock_adoration: "Adoration",
+    clock_grave:     "Grave",
+  };
+
+  function gatherAllClocks() {
+    const clocks = [];
+
+    const db = window.clockDatabase;
+    if (db) {
+      db.forEach(c => clocks.push({
+        id: `g:${c.id}`, name: c.name, value: c.value, max: c.max,
+        source: "global", dbId: c.id,
+      }));
+    }
+
+    for (const actor of (game?.actors?.contents ?? [])) {
+      const props = actor.system?.props;
+      if (!props) continue;
+      for (const [key, rawVal] of Object.entries(props)) {
+        if (!(key in ACTOR_CLOCK_MAX)) continue;
+        clocks.push({
+          id:      `a:${actor.id}:${key}`,
+          name:    `${actor.name} — ${ACTOR_CLOCK_LABEL[key] ?? key}`,
+          value:   parseInt(rawVal) || 0,
+          max:     ACTOR_CLOCK_MAX[key],
+          source:  "actor",
+          actorId: actor.id,
+          clockKey: key,
+        });
+      }
+    }
+
+    return clocks;
+  }
+
   // ── SVG Clock ─────────────────────────────────────────────────────────────────
   function renderClockSVG(value, max, newValue = null, fill = false) {
     const display = Math.min(Math.max(max, 0), 16);
@@ -200,9 +246,23 @@
   async function showProgressOverlay(clocks) {
     ensureOverlayStyle();
     return new Promise(resolve => {
-      const opts = clocks.map((c, i) =>
-        `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
-      ).join("");
+      const globals = clocks.filter(c => c.source === "global");
+      const actors  = clocks.filter(c => c.source === "actor");
+      const hasGroups = globals.length > 0 && actors.length > 0;
+      let opts = "";
+      if (hasGroups) {
+        opts += `<optgroup label="Global Clocks">`;
+        for (const c of globals)
+          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value}/${c.max})</option>`;
+        opts += `</optgroup><optgroup label="Actor Clocks">`;
+        for (const c of actors)
+          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value}/${c.max})</option>`;
+        opts += `</optgroup>`;
+      } else {
+        opts = clocks.map((c, i) =>
+          `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
+        ).join("");
+      }
 
       const ovl = document.createElement("div");
       ovl.id = "oni-prog-ovl";
@@ -348,9 +408,11 @@
   // element at a guaranteed-high z-index. The real clock is untouched (it updates
   // once behind the dim, invisible). All animation runs on the SVG overlay.
   async function createSpotlight(clockId, currentValue, max) {
-    const escaped    = CSS.escape(clockId);
-    const entryEl    = document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
-                       document.querySelector(`[data-id="${escaped}"]`);
+    const escaped    = clockId != null ? CSS.escape(String(clockId)) : null;
+    const entryEl    = escaped
+      ? (document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
+         document.querySelector(`[data-id="${escaped}"]`))
+      : null;
     const clockInner = entryEl?.querySelector(".clock") ?? entryEl;
 
     const dim = document.createElement("div");
@@ -404,14 +466,7 @@
       async pre(ctx) {
         console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-        const db = window.clockDatabase;
-        if (!db) {
-          ui.notifications?.warn("[Opportunity] Global Progress Clocks module not active.");
-          return null;
-        }
-
-        const clocks = [];
-        db.forEach(c => clocks.push(c));
+        const clocks = gatherAllClocks();
         if (!clocks.length) {
           ui.notifications?.warn("[Opportunity] No clocks found.");
           return null;
@@ -430,24 +485,38 @@
           return null;
         }
 
-        return { clockId: clock.id, clockName: clock.name, oldValue: clock.value, newValue, max: clock.max };
+        return {
+          clockName: clock.name,
+          oldValue:  clock.value,
+          newValue,
+          max:       clock.max,
+          source:    clock.source,
+          dbId:      clock.dbId,
+          actorId:   clock.actorId,
+          clockKey:  clock.clockKey,
+        };
       },
 
       async post(ctx, preResult) {
         if (!preResult) return;
-        const { clockId, clockName, oldValue, newValue, max } = preResult;
-
-        const db = window.clockDatabase;
-        if (!db) { console.error(TAG, "[post] clockDatabase not available"); return; }
+        const { clockName, oldValue, newValue, max, source, dbId, actorId, clockKey } = preResult;
 
         const step       = newValue > oldValue ? 1 : -1;
         const isIncrease = step > 0;
 
-        // Update the real clock element once immediately — it will be hidden behind
-        // the dim while the SVG overlay plays the tick-by-tick animation.
-        db.update({ id: clockId, value: newValue });
+        // Update real data once before animation — hidden behind the dim.
+        if (source === "global") {
+          const db = window.clockDatabase;
+          if (!db) { console.error(TAG, "[post] clockDatabase not available"); return; }
+          db.update({ id: dbId, value: newValue });
+        } else {
+          const actor = game.actors?.get(actorId);
+          if (!actor) { console.error(TAG, "[post] actor not found:", actorId); return; }
+          await actor.update({ [`system.props.${clockKey}`]: String(newValue) });
+        }
 
-        const spotlight = await createSpotlight(clockId, oldValue, max);
+        // Spotlight uses global clock DOM only; actor clocks get center-screen fallback.
+        const spotlight = await createSpotlight(source === "global" ? dbId : null, oldValue, max);
         const { svgOverlay, cx, cy } = spotlight;
 
         try {
