@@ -403,6 +403,88 @@
     }
   }
 
+  // ── Token clock animation helpers ─────────────────────────────────────────────
+  function ensureTokenAnimStyle() {
+    if (document.getElementById("oni-prog-token-style")) return;
+    const s = document.createElement("style");
+    s.id = "oni-prog-token-style";
+    s.textContent = `
+      @keyframes oni-prog-token-in  { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
+      @keyframes oni-prog-token-out { from { opacity:1; transform:translateX(0);    } to { opacity:0; transform:translateX(-60px); } }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function getTokenScreenPos(actorId) {
+    if (!canvas?.tokens?.placeables) return null;
+    const token = canvas.tokens.placeables.find(t => t.visible && t.actor?.id === actorId)
+               ?? canvas.tokens.placeables.find(t => t.actor?.id === actorId);
+    if (!token) return null;
+    const { a: scale, tx, ty } = canvas.stage.worldTransform;
+    const center = token.center;
+    return {
+      screenX: center.x * scale + tx,
+      screenY: center.y * scale + ty,
+      tokenW:  token.w * scale,
+      tokenH:  token.h * scale,
+    };
+  }
+
+  async function createTokenSpotlight(actorId, currentValue, max) {
+    ensureTokenAnimStyle();
+    const pos = getTokenScreenPos(actorId);
+
+    const dim = document.createElement("div");
+    dim.style.cssText = `position:fixed;inset:0;z-index:100020;
+      background:rgba(0,0,0,0);pointer-events:none;
+      transition:background 250ms ease-out;`;
+    document.body.appendChild(dim);
+
+    let glowRing   = null;
+    let svgOverlay = null;
+    let cx = window.innerWidth  / 2;
+    let cy = window.innerHeight / 2;
+
+    if (pos) {
+      cx = pos.screenX;
+      cy = pos.screenY;
+      const svgSize = Math.max(80, Math.min(140, pos.tokenW));
+      const pad = 10;
+
+      glowRing = document.createElement("div");
+      glowRing.style.cssText = `
+        position:fixed;
+        left:${pos.screenX - pos.tokenW / 2 - pad}px;
+        top:${pos.screenY  - pos.tokenH / 2 - pad}px;
+        width:${pos.tokenW + pad * 2}px; height:${pos.tokenH + pad * 2}px;
+        border-radius:50%;
+        border:3px solid rgba(255,220,80,.9);
+        box-shadow:0 0 20px rgba(255,200,50,.65), inset 0 0 14px rgba(255,200,50,.2);
+        z-index:100021;pointer-events:none;
+        opacity:0;transition:opacity 250ms ease-out;
+      `;
+      document.body.appendChild(glowRing);
+
+      svgOverlay = document.createElement("div");
+      svgOverlay.style.cssText = `
+        position:fixed;
+        left:${cx - svgSize / 2}px; top:${cy - svgSize / 2}px;
+        width:${svgSize}px; height:${svgSize}px;
+        z-index:100022;pointer-events:none;
+        animation:oni-prog-token-in 280ms ease-out forwards;
+      `;
+      svgOverlay.innerHTML = renderClockSVG(currentValue, max, null, true);
+      document.body.appendChild(svgOverlay);
+    }
+
+    void dim.offsetWidth;
+    dim.style.background = "rgba(0,0,0,.5)";
+    if (glowRing) { void glowRing.offsetWidth; glowRing.style.opacity = "1"; }
+    await delay(290);
+
+    return { dim, svgOverlay, glowRing, cx, cy, slideOut: true };
+  }
+
   // ── Spotlight dim ─────────────────────────────────────────────────────────────
   // Strategy: full-screen dim + an SVG overlay clone positioned over the real clock
   // element at a guaranteed-high z-index. The real clock is untouched (it updates
@@ -446,17 +528,29 @@
     dim.style.background = "rgba(0,0,0,.55)";
     await delay(260);
 
-    return { dim, svgOverlay, cx, cy };
+    return { dim, svgOverlay, cx, cy, glowRing: null, slideOut: false };
   }
 
-  async function destroySpotlight({ dim, svgOverlay }) {
+  async function destroySpotlight({ dim, svgOverlay, glowRing = null, slideOut = false }) {
     if (!dim) return;
-    dim.style.transition  = "background 200ms ease-in";
-    dim.style.background  = "rgba(0,0,0,0)";
-    if (svgOverlay) svgOverlay.style.opacity = "0";
-    await delay(210);
+    dim.style.transition = "background 200ms ease-in";
+    dim.style.background = "rgba(0,0,0,0)";
+    if (svgOverlay) {
+      if (slideOut) {
+        svgOverlay.style.animation = "oni-prog-token-out 260ms ease-in forwards";
+      } else {
+        svgOverlay.style.transition = "opacity 200ms ease-in";
+        svgOverlay.style.opacity    = "0";
+      }
+    }
+    if (glowRing) {
+      glowRing.style.transition = "opacity 260ms ease-in";
+      glowRing.style.opacity    = "0";
+    }
+    await delay(slideOut ? 270 : 210);
     dim.remove();
     svgOverlay?.remove();
+    glowRing?.remove();
   }
 
   // ── Effect registration ───────────────────────────────────────────────────────
@@ -515,8 +609,9 @@
           await actor.update({ [`system.props.${clockKey}`]: String(newValue) });
         }
 
-        // Spotlight uses global clock DOM only; actor clocks get center-screen fallback.
-        const spotlight = await createSpotlight(source === "global" ? dbId : null, oldValue, max);
+        const spotlight = source === "global"
+          ? await createSpotlight(dbId, oldValue, max)
+          : await createTokenSpotlight(actorId, oldValue, max);
         const { svgOverlay, cx, cy } = spotlight;
 
         try {
