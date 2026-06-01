@@ -19,7 +19,7 @@ import { postActionCard, BattlefieldActionCard } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
-import { playStudyVfx, playActionNamecard } from "./director-vfx.js";
+import { playStudyVfx, playActionNamecard, playMissVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
@@ -333,7 +333,7 @@ async function resolveSkillAction(director, ar, opts = {}) {
   const hits = (ar.perTargetResults ?? []);
   if (ar.hasDamage && hits.length) {
     for (const r of hits) {
-      if (!r.hit) continue;
+      if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -3037,7 +3037,7 @@ const Resolve = {
       // resolves on its own card.
       const passLabel = ar.totalPasses > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
       for (const r of (ar.perTargetResults ?? [])) {
-        if (!r.hit) continue;
+        if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
         try {
           const actor = await fromUuid(r.actorUuid);
           if (!actor) { warn("RESOLVE: actor not found", r.actorUuid); continue; }

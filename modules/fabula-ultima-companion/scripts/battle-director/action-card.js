@@ -208,45 +208,62 @@ function ensureStyles() {
       box-shadow: none !important;
     }
 
-    /* Header sprites — FULL token art (no circular mask / head crop), placed
-       INLINE in the header flanking the action name:  [left] Name [right].
-       Sides are anchored by DISPOSITION (player/friendly → right, enemy →
-       left); when caster + target share a side the target flips to the
-       opposite slot so the two read as distinct.
+    /* Header sprites — flank the action name:  [left] Name [right]. Sides are
+       anchored by DISPOSITION (player/friendly → right, enemy → left); a
+       same-side caster+target flips the target to the opposite slot.
 
-       Multi-target (receiving side): sprites overlap heavily with a small
-       per-sprite offset (set in JS), all bottoms aligned. The TOP of the stack
-       is the RIGHTMOST sprite, on top in full colour; each sprite behind it
-       steps LEFT and is tinted darker toward black (deeper = blacker; the
-       per-depth brightness is set inline in JS).
-
-       Left-side sprites are mirrored (sprites are authored left-facing) so
-       they face toward the centre.
-
-       ── Tunables ──────────────────────────────────────────────────────
-         .fud-bf-portrait-slot height → sprite height
-         .fud-bf-portrait-slot width  → per-side footprint (title centring)
-         STEP in portraitSpritesHTML  → overlap (smaller = more overlap)   */
+       SINGLE target/attacker → FULL token art (bottom-aligned, mirrored toward
+       the centre on the left side). MULTIPLE targets → a compact MASKED
+       circular grid (head-biased crop), the look from before the full-sprite
+       experiment. Both paths use <img>/<video> so animated .webm tokens render
+       (background-image would silently fail on video). */
     .fud-bf-card .fud-bf-portrait-slot {
-      position: relative;
+      display: flex;
+      align-items: flex-end;        /* full sprite sits on the bottom line */
+      justify-content: center;
       flex: 0 0 auto;
-      width: 50px;             /* footprint; stacks overflow inward over the gap */
-      height: 56px;            /* sprite height — tune to taste */
+      height: 56px;
+      min-width: 50px;              /* keep the title roughly centred */
     }
-    .fud-bf-card .fud-bf-portrait-slot:empty { width: 0; }
+    .fud-bf-card .fud-bf-portrait-slot:empty { min-width: 0; width: 0; }
+
+    /* Single full sprite */
     .fud-bf-card .fud-bf-portrait-sprite {
-      position: absolute;
-      bottom: 0;               /* align every stacked sprite on its bottom edge */
-      height: 100%;
-      width: auto;             /* full sprite — keep aspect ratio, no crop */
+      height: 56px; width: auto;    /* full sprite — keep aspect ratio, no crop */
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
     }
-    /* Sprites behind the front one are darkened toward black per depth — the
-       brightness is applied inline in JS (deeper = blacker). Horizontal
-       position + the left-side mirror are also set inline (the centring
-       translate and the flip share the transform property, so they must
-       compose in one rule). */
+    .fud-bf-card .fud-bf-portrait-slot.left .fud-bf-portrait-sprite {
+      transform: scaleX(-1);        /* sprites are left-facing; mirror to face centre */
+    }
+
+    /* Multi-target masked circular grid (cell size scales with count) */
+    .fud-bf-card .fud-bf-portrait-grid {
+      display: flex; flex-wrap: wrap; gap: 2px;
+      width: 48px; height: 48px;
+      align-self: center;           /* centre the grid in the slot */
+      justify-content: center; align-content: center;
+    }
+    .fud-bf-card .fud-bf-portrait-cell {
+      flex: 0 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.40);
+    }
+    .fud-bf-card .fud-bf-portrait-cell img,
+    .fud-bf-card .fud-bf-portrait-cell video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 22%;  /* bias toward the head */
+      display: block;
+    }
+    /* Left-side grid cells mirror to face the centre (same as full sprites;
+       cells are authored left-facing). */
+    .fud-bf-card .fud-bf-portrait-slot.left .fud-bf-portrait-cell img,
+    .fud-bf-card .fud-bf-portrait-slot.left .fud-bf-portrait-cell video {
+      transform: scaleX(-1);
+    }
 
     .fud-bf-card .fud-bf-header {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
@@ -1674,60 +1691,61 @@ function pickPortraitLayout({ attacker, perTargetResults }) {
   };
 }
 
-// Render N full-sprite portraits for ONE header slot (the wrapping
-// `.fud-bf-portrait-slot` div lives in the header template). Each sprite keeps
-// its native aspect ratio (height-constrained, width auto) — no mask / crop.
-//
-// Layout: the group is MIDDLE-anchored — centred on the slot's horizontal
-// centre (left:50% + translateX(-50%)) and bottom-aligned (CSS bottom:0).
-// Sprites are separated by a few px (STEP): the front (i=0) sits to the right
-// on top in full colour; each deeper sprite steps left, sits behind, and is
-// darkened toward black (deeper = blacker). Left-side sprites are mirrored to
-// face the centre; that flip composes with the centring translate in one
-// inline `transform`.
-//
-// Token battle sprites are animated .webm after the sprite swap, so video
-// sources render in a <video> (autoplay/loop/muted); static art uses <img>.
-function portraitSpritesHTML(slots, side) {
-  if (!slots?.length) return "";
-  const STEP = 8;                        // px offset between stacked sprites (a few px apart)
-  const DROP = "drop-shadow(0 2px 4px rgba(0,0,0,0.30))";
-  const flip = side === "left" ? " scaleX(-1)" : "";  // left-side sprites face centre
-  const mid = (slots.length - 1) / 2;
-  return slots.map((slot, i) => {
+// ONE full token sprite for a single-target / attacker side. Full art (no
+// mask), kept at its native aspect ratio. Centred + bottom-aligned by the slot
+// CSS; the left-side mirror (face centre) is applied via the slot's `.left`
+// class. Animated .webm tokens render in a <video>; static art in an <img>.
+function fullSpriteHTML(slot) {
+  const url = safeImgUrl(slot?.img);
+  if (!url) return "";
+  const safe = escapeHtml(url);
+  const name = escapeHtml(slot.name ?? "");
+  if (isVideoUrl(url)) {
+    return `<video class="fud-bf-portrait-sprite" src="${safe}"
+                   autoplay loop muted playsinline disablepictureinpicture
+                   title="${name}" aria-label="${name}"></video>`;
+  }
+  return `<img class="fud-bf-portrait-sprite" src="${safe}" title="${name}" alt="${name}">`;
+}
+
+// MULTIPLE targets → the compact masked circular grid (the look from before the
+// full-sprite experiment): 1→full, 2→2-up, 3-4→2×2, 5-9→3×3, cells scaled to
+// stay ~square. Uses <img>/<video> + CSS circular crop (border-radius +
+// object-fit:cover) so animated .webm tokens render — the old version used
+// background-image, which silently failed on video.
+function maskedGridHTML(slots) {
+  const valid = (slots ?? []).filter((s) => safeImgUrl(s?.img));
+  if (!valid.length) return "";
+  const n = valid.length;
+  const BOX = 48, GAP = 2;
+  const cols = Math.max(1, Math.ceil(Math.sqrt(n)));
+  const cell = Math.floor((BOX - GAP * (cols - 1)) / cols);
+  const cells = valid.map((slot) => {
     const url = safeImgUrl(slot.img);
-    if (!url) return "";                 // skip sprites whose token image is missing
     const safe = escapeHtml(url);
     const name = escapeHtml(slot.name ?? "");
-    // Front (i=0): full colour, base CSS drop-shadow. Behind: darken toward
-    // black, progressively deeper.
-    const filter = i === 0
-      ? ""
-      : ` filter: brightness(${Math.max(0.2, 0.65 - (i - 1) * 0.2).toFixed(2)}) ${DROP};`;
-    // Offset from the slot centre: front (i=0) to the right, deeper ones left.
-    const dx = (mid - i) * STEP;
-    const style = `left: 50%; transform: translateX(calc(-50% + ${dx.toFixed(1)}px))${flip}; z-index: ${100 - i};${filter}`;
-    if (isVideoUrl(url)) {
-      return `<video class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
-                     autoplay loop muted playsinline disablepictureinpicture
-                     title="${name}" aria-label="${name}"></video>`;
-    }
-    return `<img class="fud-bf-portrait-sprite" src="${safe}" style="${style}"
-                 title="${name}" alt="${name}">`;
+    const media = isVideoUrl(url)
+      ? `<video src="${safe}" autoplay loop muted playsinline disablepictureinpicture></video>`
+      : `<img src="${safe}" alt="${name}">`;
+    return `<div class="fud-bf-portrait-cell" style="width:${cell}px; height:${cell}px;"
+                 title="${name}" aria-label="${name}" role="img">${media}</div>`;
   }).join("");
+  return `<div class="fud-bf-portrait-grid">${cells}</div>`;
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
 // and target land on opposite sides (by disposition), so one populates `left`
-// and the other `right`; a side with no sprite stays "".
+// and the other `right`; a side with no sprite stays "". A side with a single
+// sprite renders the full sprite; multiple targets render the masked grid.
 function buildPortraitsHTML({ attacker, perTargetResults }) {
   const layout = pickPortraitLayout({ attacker, perTargetResults });
   const slots = { left: "", right: "" };
+  const render = (arr) => (arr.length === 1 ? fullSpriteHTML(arr[0]) : maskedGridHTML(arr));
   if (layout.attackerSlots?.length && (layout.attackerSide === "left" || layout.attackerSide === "right")) {
-    slots[layout.attackerSide] = portraitSpritesHTML(layout.attackerSlots, layout.attackerSide);
+    slots[layout.attackerSide] = render(layout.attackerSlots);
   }
   if (layout.targetSlots?.length && (layout.targetSide === "left" || layout.targetSide === "right")) {
-    slots[layout.targetSide] = portraitSpritesHTML(layout.targetSlots, layout.targetSide);
+    slots[layout.targetSide] = render(layout.targetSlots);
   }
   return slots;
 }
@@ -3641,11 +3659,16 @@ export function registerPlayerActionCardHandler(channel) {
       // event guard below. The class is purely informational; the real
       // gate is the event listener.
       card.classList.add("is-readonly-mirror");
-      // Add a subtle banner so the observer knows they can't act.
-      const banner = document.createElement("div");
-      banner.style.cssText = "position:absolute; top:8px; left:50%; transform:translateX(-50%); padding:4px 10px; border-radius:6px; background:rgba(0,0,0,0.55); color:#fff; font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; pointer-events:none; z-index:10;";
-      banner.textContent = "Observing";
-      card.appendChild(banner);
+      // No "Observing" banner — non-owners may soon have a role to play
+      // (reaction skills etc.), so we don't pre-label the card as passive.
+
+      // Hide the action buttons (Confirm / Cancel / Invoke / status grid)
+      // entirely for non-owner observers — they can't act, so the buttons
+      // shouldn't show at all. The acting owner (interactive branch) and the
+      // GM (renders its own card, never this mirror) keep theirs.
+      for (const row of wrapper.querySelectorAll(".fud-bf-btn-row")) {
+        row.style.display = "none";
+      }
 
       // Hide reaction Apply/Skip buttons on non-owner mirror — they're
       // not actionable from this client, so they shouldn't look like

@@ -489,6 +489,43 @@ export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } =
   }
 }
 
+// ── Miss / Dodge VFX (attack or spell whiffs) ─────────────────────────────
+//
+// Director-native PORT of the legacy "Miss" macro's FX/SFX block
+// (macros/Action Pipeline/Miss.js): a short "miss" flourish on the target
+// token + a whiff sound. Fired per missed target from Attack RESOLVE and
+// Skill RESOLVE (the `if (!r.hit) continue;` branch). The legacy macro also
+// logged + posted a damage card; the director owns those elsewhere, so this
+// port is the cinematic half only.
+//
+// Same Sequencer-broadcasts-to-all-clients + graceful no-op rules as the
+// resource VFX above.
+
+const MISS_FX_FILE = "jb2a.ui.miss";
+const MISS_SFX_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Miss.ogg";
+
+// Float a "miss" flourish over a token + whiff sound.
+//   tokenUuid : the token that dodged / was missed ("Scene.X.Token.Y")
+export function playMissVfx({ tokenUuid } = {}) {
+  try {
+    if (typeof Sequence === "undefined") { log("miss VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("miss VFX: token not on canvas, skipping"); return; }
+
+    new Sequence()
+      .effect()
+        .file(MISS_FX_FILE)
+        .attachTo(tok)
+        .scaleToObject(1.0)
+        .opacity(0.9)
+        .duration(1200)
+      .play();
+    broadcastSfx(MISS_SFX_URL, 0.4);
+  } catch (e) {
+    warn("playMissVfx threw", e);
+  }
+}
+
 // Warm-decode every resource-VFX cue into the Web Audio buffer cache so the
 // FIRST hit / heal of a battle plays with no fetch+decode hitch. Called from
 // runDirectorInit's preload step (while the curtain is up). Fire-and-forget;
@@ -497,6 +534,7 @@ export async function preloadDirectorSfx() {
   const urls = [
     ...Object.values(RESOURCE_VFX_SFX),
     ...Object.values(RESOURCE_VFX_HEAL_SFX),
+    MISS_SFX_URL,                                                          // attack/spell whiff cue
     BATTLE_TRANSITION_SFX_URL,                                              // battle-start transition sting
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg", // Study cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue

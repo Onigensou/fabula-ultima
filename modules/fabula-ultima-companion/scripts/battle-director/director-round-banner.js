@@ -21,6 +21,7 @@ import { log, warn } from "./logger.js";
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
 const ACTION_HIDE = "FU_DIRECTOR_ROUND_HIDE";
+const ACTION_BATTLE_START = "FU_DIRECTOR_BATTLE_START_PLAY";
 const STYLE_ID = "fu-dir-round-style";
 const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
@@ -39,6 +40,7 @@ export function initDirectorRoundBanner() {
     _socket = socketlib.registerModule(MODULE_ID);
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
     _socket.register(ACTION_HIDE, () => exitRoundBannerLocal({ animate: true }));
+    _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
     log("director-round-banner: socket registered");
   } catch (e) {
     warn("director-round-banner: init failed", e);
@@ -146,6 +148,48 @@ async function exitRoundBannerLocal({ animate = true } = {}) {
   }
 }
 
+// ── shared enter sequence ─────────────────────────────────────────────────
+// Reset to centered start state, then play the entrance: band fades in,
+// accent lines sweep open from the center, text rises in. Resolves once the
+// text is fully in. Both the round banner (→ dock) and the battle-start
+// banner (→ exit) build on this. Returns the layer's element refs.
+async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
+  const layer = ensureLayer();
+  const { band, bg, lt, lb, tx } = layer.__fu;
+
+  // If a prior banner is still on screen (docked round indicator), fade it
+  // out first so the new one enters from center cleanly (no jump from top).
+  if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
+
+  for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+
+  tx.textContent = text;
+  layer.classList.add("active");
+  if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
+
+  // Reset to centered start state.
+  band.style.top = "50%";
+  band.style.transform = "translateY(-50%) scale(1)";
+  bg.style.opacity = "0";
+  tx.style.opacity = "0";
+  lt.style.transform = "scaleX(0)";
+  lb.style.transform = "scaleX(0)";
+
+  // Enter: band fades in, accent lines sweep open, text rises in.
+  bg.animate([{ opacity: 0, transform: "scaleY(.55)" }, { opacity: 1, transform: "scaleY(1)" }],
+    { duration: 240, easing: "ease-out", fill: "forwards" });
+  await Promise.all([
+    lt.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
+    lb.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
+  ]);
+  await tx.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "translateY(0)" }],
+    { duration: 300, easing: "ease-out", fill: "forwards" }).finished;
+
+  return layer.__fu;
+}
+
 // ── local render (runs on every client via socket) ───────────────────────
 // Enter center → hold → DOCK to middle-top and persist as a round indicator.
 async function playRoundBannerLocal(payload = {}) {
@@ -154,38 +198,8 @@ async function playRoundBannerLocal(payload = {}) {
       round = 0, holdMs = 800, sfx = true, sfxVol = 0.6,
       dockTopPct = 9, dockScale = 0.4, dockBgOpacity = 0.3,
     } = payload;
-    const layer = ensureLayer();
-    const { band, bg, lt, lb, tx } = layer.__fu;
 
-    // If a prior round's banner is still docked at the top, fade it out first
-    // so the new one enters from center cleanly (no jump back from the top).
-    if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
-
-    for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
-
-    tx.textContent = `ROUND ${round}`;
-    layer.classList.add("active");
-    if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
-
-    // Reset to centered start state.
-    band.style.top = "50%";
-    band.style.transform = "translateY(-50%) scale(1)";
-    bg.style.opacity = "0";
-    tx.style.opacity = "0";
-    lt.style.transform = "scaleX(0)";
-    lb.style.transform = "scaleX(0)";
-
-    // Enter: band fades in, accent lines sweep open, text rises in.
-    bg.animate([{ opacity: 0, transform: "scaleY(.55)" }, { opacity: 1, transform: "scaleY(1)" }],
-      { duration: 240, easing: "ease-out", fill: "forwards" });
-    await Promise.all([
-      lt.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-        { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
-      lb.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-        { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
-    ]);
-    await tx.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "translateY(0)" }],
-      { duration: 300, easing: "ease-out", fill: "forwards" }).finished;
+    const { band, bg } = await enterBannerLocal({ text: `ROUND ${round}`, sfx, sfxVol });
 
     await sleep(holdMs);
 
@@ -206,6 +220,21 @@ async function playRoundBannerLocal(payload = {}) {
   }
 }
 
+// ── local render: battle-start flash ──────────────────────────────────────
+// Same entrance as the round banner, but on hold-end it EXITS (fades out)
+// right away instead of docking to the top. Awaited by the GM so the battle
+// process kicks off only after the flash has cleared the screen.
+async function playBattleStartBannerLocal(payload = {}) {
+  try {
+    const { text = "BATTLE START", holdMs = 900, sfx = true, sfxVol = 0.6 } = payload;
+    await enterBannerLocal({ text, sfx, sfxVol });
+    await sleep(holdMs);
+    await exitRoundBannerLocal({ animate: true });
+  } catch (e) {
+    warn("playBattleStartBannerLocal threw", e);
+  }
+}
+
 // ── public: fire from ROUND_START ─────────────────────────────────────────
 // Render on THIS (GM) client + broadcast to all OTHERS. Fire-and-forget so the
 // FSM is not blocked by the ~2.5s cinematic.
@@ -217,6 +246,21 @@ export function playRoundBanner({ round = 0 } = {}) {
     catch (e) { warn("director-round-banner: broadcast failed", e); }
   } catch (e) {
     warn("playRoundBanner threw", e);
+  }
+}
+
+// ── public: battle-start flash (fire at the start of battle) ──────────────
+// Broadcast to all OTHER clients, then play + AWAIT locally. Unlike
+// playRoundBanner this is awaited by the caller (runDirectorInit) so the
+// battle process only begins once the flash has entered, held, and exited.
+export async function playBattleStartBanner({ text = "BATTLE START", holdMs = 900 } = {}) {
+  try {
+    const payload = { text, holdMs };
+    try { _socket?.executeForOthers?.(ACTION_BATTLE_START, payload); }
+    catch (e) { warn("director-round-banner: battle-start broadcast failed", e); }
+    await playBattleStartBannerLocal(payload);
+  } catch (e) {
+    warn("playBattleStartBanner threw", e);
   }
 }
 

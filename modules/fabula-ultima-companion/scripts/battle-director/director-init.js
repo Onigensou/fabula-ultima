@@ -28,6 +28,7 @@ import { buildDirectorCombat } from "./director-combat.js";
 import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
+import { playBattleStartBanner } from "./director-round-banner.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -462,6 +463,14 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
     if (battleSprite) {
       td.texture = { ...(td.texture ?? {}), src: battleSprite };
     }
+    // Facing: sprites are authored left-facing. The party spawns on the RIGHT
+    // (left-facing = toward the enemies, correct), but enemies spawn on the
+    // LEFT, where left-facing points them AWAY from the party. Mirror enemy
+    // tokens horizontally so they face toward the centre / the party.
+    if (disposition === -1) {
+      const baseSx = Math.abs(Number(td.texture?.scaleX) || 1) || 1;
+      td.texture = { ...(td.texture ?? {}), scaleX: -baseSx };
+    }
     const width = (td.width ?? 1);
     const height = (td.height ?? 1);
     const gridSize = scene.grid?.size ?? 100;
@@ -844,6 +853,13 @@ export async function runDirectorInit(payload) {
   // was played by the run-in copies, so the reveal handed off seamlessly);
   // this mainly kicks the enemies, which faded in on their static first frame.
   await ensureBattleStancePlaying([...partyTokens, ...enemyTokens]);
+
+  // ── 10c. "BATTLE START" flash. Same cinematic as the per-round banner but
+  // it exits (fades out) right away instead of docking to the top. Awaited
+  // so the battle process (dCombat build → FSM → ROUND 1 banner → turns)
+  // only begins once the flash has cleared the screen. Broadcasts to all
+  // clients on its own socket channel.
+  await playBattleStartBanner({ text: "BATTLE START" });
 
   // ── 11. Build the director-owned DirectorCombat (no Foundry Combat doc).
   // dCombat is the sole authority for round/turn/current. The Foundry Combat
