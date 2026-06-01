@@ -24,6 +24,8 @@
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",
     "scripts/db-resolver.js",
+    "scripts/party-sync/party-sync-core.js",
+    "scripts/party-sync/party-sync-hook.js",
     "scripts/auto-crisis-detection.js",
     "scripts/richtext-script-converter-api.js",
     "scripts/battle-log/battlelog-clear.js",

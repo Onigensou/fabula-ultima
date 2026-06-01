@@ -3,15 +3,214 @@
 // Requires: Global Progress Clocks (global-progress-clocks)
 //
 // Flow (pre/post):
-//   pre  — clock picker + delta dialog; returns { clockId, clockName, oldValue, newValue, max }
-//   post — applies the clock update and posts the result chat card
+//   pre  — DOM overlay: clock picker + delta + SVG preview
+//          returns { clockId, clockName, oldValue, newValue, max }
+//   post — spotlight dim, sequential ticks with particles, chat card
 // ============================================================================
 (() => {
   const TAG = "[ONI][OpportunityEffect:Progress]";
 
-  const esc = s => String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  // ── Sounds ──────────────────────────────────────────────────────────────────
+  const SFX_UI_OPEN  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Equip1.ogg";
+  const SFX_CURSOR   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
+  const SFX_TICK_INC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SFX_TINK.wav";
+  const SFX_TICK_DEC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/collision_1.wav";
+  const SFX_CONFIRM  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
+  const SFX_CANCEL   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav";
 
+  function playSound(url, vol = 0.7) {
+    try { (foundry.audio.AudioHelper ?? AudioHelper).play({ src: url, volume: vol, autoplay: true, loop: false }, false); }
+    catch (_) { try { const a = new Audio(url); a.volume = vol; a.play().catch(() => {}); } catch {} }
+  }
+
+  // Always creates a fresh Audio node — bypasses AudioHelper deduplication for rapid sequential plays.
+  function playTickSound(url, vol = 0.7) {
+    try { const a = new Audio(url); a.volume = vol; a.play().catch(() => {}); } catch {}
+  }
+
+  // ── Utilities ────────────────────────────────────────────────────────────────
+  const esc   = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  // ── Actor clock registry ──────────────────────────────────────────────────────
+  // numberField maxVal per key, sourced from _FabU Char Template v3.fire
+  const ACTOR_CLOCK_MAX = {
+    clock_brainwave: 4,
+    clock_trade:     6,
+    clock_adoration: 5,
+    clock_grave:     6,
+  };
+  const ACTOR_CLOCK_LABEL = {
+    clock_brainwave: "Brainwave",
+    clock_trade:     "Trade",
+    clock_adoration: "Adoration",
+    clock_grave:     "Grave",
+  };
+
+  // Parent panel keys in the CSB template that gate each clock field's visibility.
+  const ACTOR_CLOCK_PANEL_KEY = {
+    clock_brainwave: "blainwave_panel",
+    clock_trade:     "trade_panel",
+    clock_adoration: "adoration_panel",
+    clock_grave:     "grave_panel",
+  };
+
+  // Walk a CSB template node tree looking for a node with the given key.
+  function _findNodeByKey(node, key) {
+    if (!node || typeof node !== "object") return null;
+    if (node.key === key) return node;
+    const children = Array.isArray(node) ? node : Object.values(node);
+    for (const child of children) {
+      const hit = _findNodeByKey(child, key);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  // Returns true if the clock field's governing parent panel is visible for this actor.
+  // Reads the panel's visibilityFormula, extracts the class name from the lookup() call,
+  // and checks actor.system.props.class_list — mirroring exactly what CSB evaluates.
+  function isClockVisibleForActor(actor, clockKey, tmplSystem) {
+    const panelKey = ACTOR_CLOCK_PANEL_KEY[clockKey];
+    if (!panelKey || !tmplSystem) return true;
+    const panel = _findNodeByKey(tmplSystem, panelKey);
+    if (!panel?.visibilityFormula) return true;
+    const m = panel.visibilityFormula.match(/lookup\(\s*'class_list'\s*,\s*'class_name'\s*,\s*'class_name'\s*,\s*'([^']+)'\s*\)/);
+    if (!m) return true;  // unrecognised formula — err on the side of showing it
+    const requiredClass = m[1];
+    const table = actor.system?.props?.class_list;
+    if (!table) return false;
+    return Object.values(table).some(row => !row.$deleted && row.class_name === requiredClass);
+  }
+
+  async function gatherAllClocks() {
+    const clocks = [];
+
+    const db = window.clockDatabase;
+    if (db) {
+      db.forEach(c => clocks.push({
+        id: `g:${c.id}`, name: c.name, value: c.value, max: c.max,
+        source: "global", dbId: c.id,
+      }));
+    }
+
+    // Actor clocks — party members in slot order, then scene-only actors alphabetically
+    const actorIds    = await getRelevantActorIds();
+    const tmplSysCache = new Map();  // templateId → system, shared across actors
+
+    for (const actorId of actorIds) {
+      const actor = game.actors?.get(actorId);
+      if (!actor?.system?.props) continue;
+
+      const tmplId  = actor.system?.template;
+      if (!tmplSysCache.has(tmplId)) {
+        const tmpl = game.actors?.get(tmplId);
+        tmplSysCache.set(tmplId, tmpl?.system ?? null);
+      }
+      const tmplSys = tmplSysCache.get(tmplId);
+
+      for (const [key, rawVal] of Object.entries(actor.system.props)) {
+        if (!(key in ACTOR_CLOCK_MAX)) continue;
+        if (!isClockVisibleForActor(actor, key, tmplSys)) continue;
+        clocks.push({
+          id:       `a:${actorId}:${key}`,
+          name:     `${actor.name} — ${ACTOR_CLOCK_LABEL[key] ?? key}`,
+          value:    parseInt(rawVal) || 0,
+          max:      ACTOR_CLOCK_MAX[key],
+          source:   "actor",
+          actorId,
+          clockKey:  key,
+          actorName: actor.name,
+        });
+      }
+    }
+
+    return clocks;
+  }
+
+  async function getRelevantActorIds() {
+    const ordered = [];
+    const seen    = new Set();
+
+    // Party members from db_resolver — in slot order (1–4)
+    try {
+      const result = await window.FUCompanion?.api?.getCurrentGameDb?.();
+      const props  = result?.db?.system?.props;
+      if (props) {
+        for (let i = 1; i <= 4; i++) {
+          const ref = props[`member_id_${i}`];
+          if (!ref) continue;
+          const id = ref.startsWith("Actor.") ? ref.slice(6) : ref;
+          if (id && !seen.has(id)) { seen.add(id); ordered.push(id); }
+        }
+      }
+    } catch {}
+
+    // Actors with tokens on the active scene — alphabetical, deduped
+    const sceneActors = (canvas?.tokens?.placeables ?? [])
+      .map(t => t.actor)
+      .filter(a => a?.id && !seen.has(a.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    for (const a of sceneActors) { seen.add(a.id); ordered.push(a.id); }
+
+    return ordered;
+  }
+
+  // ── SVG Clock ─────────────────────────────────────────────────────────────────
+  function renderClockSVG(value, max, newValue = null, fill = false) {
+    const display = Math.min(Math.max(max, 0), 16);
+    if (display === 0) return "";
+
+    const cx = 60, cy = 60, outerR = 52, innerR = 20;
+
+    function sectorFill(i) {
+      const wasFilled    = i < value;
+      const willBeFilled = newValue !== null ? i < newValue : wasFilled;
+      if (newValue !== null) {
+        if (!wasFilled && willBeFilled) return "#7ec87a";
+        if (wasFilled && !willBeFilled) return "#e08080";
+        if (willBeFilled)               return "#f9a825";
+        return "#2a2a3a";
+      }
+      return wasFilled ? "#f9a825" : "#2a2a3a";
+    }
+
+    const svgAttrs = fill
+      ? `style="display:block;width:100%;height:100%;" viewBox="0 0 120 120"`
+      : `width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;"`;
+
+    if (display === 1) {
+      return `<svg ${svgAttrs}>
+        <circle cx="${cx}" cy="${cy}" r="${outerR}" fill="${sectorFill(0)}" stroke="#0d141a" stroke-width="1.5"/>
+        <circle cx="${cx}" cy="${cy}" r="${innerR}"  fill="#0d141a"/>
+      </svg>`;
+    }
+
+    const GAP_RAD = (display > 8 ? 1.5 : 2.5) * Math.PI / 180;
+    const TWO_PI  = Math.PI * 2;
+    const f       = n => n.toFixed(2);
+    let paths = "";
+
+    for (let i = 0; i < display; i++) {
+      const sa  = (i / display) * TWO_PI - Math.PI / 2 + GAP_RAD / 2;
+      const ea  = ((i + 1) / display) * TWO_PI - Math.PI / 2 - GAP_RAD / 2;
+      const la  = (ea - sa) > Math.PI ? 1 : 0;
+      const ox1 = cx + outerR * Math.cos(sa), oy1 = cy + outerR * Math.sin(sa);
+      const ox2 = cx + outerR * Math.cos(ea), oy2 = cy + outerR * Math.sin(ea);
+      const ix1 = cx + innerR * Math.cos(sa), iy1 = cy + innerR * Math.sin(sa);
+      const ix2 = cx + innerR * Math.cos(ea), iy2 = cy + innerR * Math.sin(ea);
+      const d = `M ${f(ix1)} ${f(iy1)} L ${f(ox1)} ${f(oy1)} A ${outerR} ${outerR} 0 ${la} 1 ${f(ox2)} ${f(oy2)} L ${f(ix2)} ${f(iy2)} A ${innerR} ${innerR} 0 ${la} 0 ${f(ix1)} ${f(iy1)} Z`;
+      paths += `<path d="${d}" fill="${sectorFill(i)}" stroke="#0d141a" stroke-width="1.5"/>`;
+    }
+
+    const overflow = max > display
+      ? `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="9" fill="#666" font-family="Signika,sans-serif">+${max - display}</text>`
+      : "";
+
+    return `<svg ${svgAttrs}>${paths}${overflow}</svg>`;
+  }
+
+  // ── Dot renderer (chat card only) ─────────────────────────────────────────────
   function renderDots(value, max, newValue = null) {
     const display = Math.min(max, 16);
     let out = "";
@@ -33,6 +232,7 @@
     return out;
   }
 
+  // ── Chat card ─────────────────────────────────────────────────────────────────
   async function postProgressCard({ actorName, clockName, oldValue, newValue, max }) {
     const filled  = newValue > oldValue;
     const accent  = filled ? "#2a6a8a" : "#8a3a2a";
@@ -54,139 +254,479 @@
     await ChatMessage.create({ content }).catch(e => console.error(TAG, "postProgressCard failed:", e));
   }
 
+  // ── DOM Overlay UI ────────────────────────────────────────────────────────────
+  function ensureOverlayStyle() {
+    if (document.getElementById("oni-prog-ovl-style")) return;
+    const s = document.createElement("style");
+    s.id = "oni-prog-ovl-style";
+    s.textContent = `
+      @keyframes oni-prog-in  { from { opacity:0; transform:scale(.95) } to { opacity:1; transform:scale(1) } }
+      @keyframes oni-prog-out { from { opacity:1; transform:scale(1)   } to { opacity:0; transform:scale(.95) } }
+      #oni-prog-ovl {
+        position:fixed;inset:0;z-index:100025;
+        display:flex;align-items:center;justify-content:center;
+        background:rgba(4,2,10,.82);
+        font-family:'Signika','Noto Sans',system-ui,sans-serif;
+      }
+      #oni-prog-ovl .oni-card {
+        background:linear-gradient(160deg,#0c1117 0%,#0f1e2a 100%);
+        border:1.5px solid #2a4a6a;border-radius:14px;
+        padding:22px 24px;min-width:300px;max-width:380px;width:90vw;
+        animation:oni-prog-in 220ms ease-out forwards;
+        box-shadow:0 8px 40px rgba(0,0,0,.7);color:#c8d8e8;
+      }
+      #oni-prog-ovl .oni-card.closing { animation:oni-prog-out 160ms ease-in forwards; }
+      #oni-prog-ovl h3 {
+        margin:0 0 16px;font-size:.9rem;text-transform:uppercase;
+        letter-spacing:.08em;opacity:.55;font-weight:600;
+      }
+      #oni-prog-ovl label { font-size:.8rem;opacity:.65;display:block;margin-bottom:4px; }
+      #oni-prog-ovl select {
+        width:100%;padding:6px 8px;border-radius:6px;border:1px solid #2a4a6a;
+        background:#0d1920;color:#c8d8e8;font-size:.88rem;cursor:pointer;
+      }
+      #oni-prog-ovl option, #oni-prog-ovl optgroup {
+        background:#fff;color:#1a2a38;
+      }
+      #oni-prog-ovl optgroup { font-weight:700; }
+      #oni-prog-ovl .delta-row {
+        display:flex;align-items:center;gap:8px;margin-top:14px;
+      }
+      #oni-prog-ovl .delta-lbl { font-size:.8rem;opacity:.65;white-space:nowrap;margin:0; }
+      #oni-prog-ovl .delta-btn {
+        width:34px;height:34px;border-radius:6px;border:1px solid #2a4a6a;
+        background:#0d1920;color:#c8d8e8;font-size:1.2rem;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;flex-shrink:0;
+        transition:background 100ms,border-color 100ms;
+      }
+      #oni-prog-ovl .delta-btn:hover { background:#1a3040;border-color:#4a8ab0; }
+      #oni-prog-ovl .delta-input {
+        flex:1;text-align:center;padding:6px;border-radius:6px;
+        border:1px solid #2a4a6a;background:#0d1920;color:#c8d8e8;font-size:1rem;
+      }
+      #oni-prog-ovl .preview { margin:16px 0 2px;min-height:128px;text-align:center; }
+      #oni-prog-ovl .hint { font-size:.74rem;opacity:.45;text-align:center;margin-top:6px; }
+      #oni-prog-ovl .btn-row { display:flex;gap:10px;margin-top:18px; }
+      #oni-prog-ovl .oni-btn {
+        flex:1;padding:9px 14px;border-radius:7px;border:none;
+        font-size:.88rem;font-family:inherit;cursor:pointer;
+        transition:background 120ms,transform 80ms;
+      }
+      #oni-prog-ovl .oni-btn:active { transform:scale(.97); }
+      #oni-prog-ovl .oni-btn-cancel {
+        background:#1a2a38;color:#c8d8e8;border:1px solid #2a4a6a;
+      }
+      #oni-prog-ovl .oni-btn-cancel:hover { background:#243242; }
+      #oni-prog-ovl .oni-btn-confirm {
+        background:linear-gradient(135deg,#1a5a8a,#2a7ab0);color:#fff;
+      }
+      #oni-prog-ovl .oni-btn-confirm:hover { background:linear-gradient(135deg,#2a6a9a,#3a8ac0); }
+    `;
+    document.head.appendChild(s);
+  }
+
+  async function showProgressOverlay(clocks) {
+    ensureOverlayStyle();
+    return new Promise(resolve => {
+      // Build optgroups: global clocks first, then per-actor groups (preserving order)
+      const globals   = clocks.filter(c => c.source === "global");
+      const actorMap  = new Map();
+      for (const c of clocks.filter(c => c.source === "actor")) {
+        if (!actorMap.has(c.actorId)) actorMap.set(c.actorId, { name: c.actorName, entries: [] });
+        actorMap.get(c.actorId).entries.push(c);
+      }
+
+      let opts = "";
+      if (globals.length) {
+        opts += `<optgroup label="⏱ Global Clocks">`;
+        for (const c of globals)
+          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value} / ${c.max})</option>`;
+        opts += `</optgroup>`;
+      }
+      for (const [, grp] of actorMap) {
+        opts += `<optgroup label="◈ ${esc(grp.name)}">`;
+        for (const c of grp.entries) {
+          const lbl = ACTOR_CLOCK_LABEL[c.clockKey] ?? c.clockKey;
+          opts += `<option value="${clocks.indexOf(c)}">${esc(lbl)}  ${c.value} / ${c.max}</option>`;
+        }
+        opts += `</optgroup>`;
+      }
+      if (!opts) opts = `<option value="0" disabled>No clocks available</option>`;
+
+      const ovl = document.createElement("div");
+      ovl.id = "oni-prog-ovl";
+      ovl.innerHTML = `
+        <div class="oni-card">
+          <h3><i class="fas fa-clock" style="margin-right:6px;opacity:.7;"></i>Progress — Choose Clock</h3>
+          <div>
+            <label>Clock</label>
+            <select id="oni-prog-clock">${opts}</select>
+          </div>
+          <div class="delta-row">
+            <label class="delta-lbl">Sections (+/−)</label>
+            <button class="delta-btn" id="oni-prog-minus">−</button>
+            <input  class="delta-input" id="oni-prog-delta" type="number" min="-2" max="2" value="1"/>
+            <button class="delta-btn" id="oni-prog-plus">+</button>
+          </div>
+          <div class="preview" id="oni-prog-preview"></div>
+          <div class="hint">Preview above &nbsp;·&nbsp; max ±2 sections</div>
+          <div class="btn-row">
+            <button class="oni-btn oni-btn-cancel"  id="oni-prog-cancel">Cancel</button>
+            <button class="oni-btn oni-btn-confirm" id="oni-prog-confirm">Confirm</button>
+          </div>
+        </div>`;
+      document.body.appendChild(ovl);
+      playSound(SFX_UI_OPEN, 0.7);
+
+      let closed = false;
+
+      function getState() {
+        const idx   = parseInt(document.getElementById("oni-prog-clock")?.value ?? "0", 10);
+        const raw   = parseInt(document.getElementById("oni-prog-delta")?.value  ?? "0", 10);
+        const clock = clocks[Number.isFinite(idx) ? idx : 0];
+        const delta = Math.max(-2, Math.min(2, Number.isFinite(raw) ? raw : 0));
+        const nv    = clock ? Math.max(0, Math.min(clock.max, clock.value + delta)) : 0;
+        return { clock, delta, newValue: nv };
+      }
+
+      function updatePreview() {
+        const { clock, newValue } = getState();
+        const el = document.getElementById("oni-prog-preview");
+        if (!el || !clock) return;
+        el.innerHTML = `
+          ${renderClockSVG(clock.value, clock.max, newValue)}
+          <div style="font-size:.78rem;opacity:.5;margin-top:6px;">
+            ${clock.value} → ${newValue} / ${clock.max}
+            ${newValue === clock.value ? " <em>(no change)</em>" : ""}
+          </div>`;
+      }
+
+      function dismiss(result) {
+        if (closed) return;
+        closed = true;
+        const card = ovl.querySelector(".oni-card");
+        if (card) card.classList.add("closing");
+        ovl.style.cssText += ";transition:opacity 180ms ease-in;opacity:0;";
+        setTimeout(() => { ovl.remove(); resolve(result); }, 190);
+      }
+
+      document.getElementById("oni-prog-clock").addEventListener("change", () => {
+        playSound(SFX_UI_OPEN, 0.55);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-minus").addEventListener("click", () => {
+        const el = document.getElementById("oni-prog-delta");
+        el.value = Math.max(-2, parseInt(el.value ?? "0", 10) - 1);
+        playSound(SFX_CURSOR, 0.65);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-plus").addEventListener("click", () => {
+        const el = document.getElementById("oni-prog-delta");
+        el.value = Math.min(2, parseInt(el.value ?? "0", 10) + 1);
+        playSound(SFX_CURSOR, 0.65);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-delta").addEventListener("input", () => {
+        const el = document.getElementById("oni-prog-delta");
+        const v  = parseInt(el.value, 10);
+        if (Number.isFinite(v)) el.value = Math.max(-2, Math.min(2, v));
+        updatePreview();
+      });
+      document.getElementById("oni-prog-confirm").addEventListener("click", () => {
+        const { clock, delta } = getState();
+        playSound(SFX_CONFIRM, 0.8);
+        dismiss({ clock, delta });
+      });
+      document.getElementById("oni-prog-cancel").addEventListener("click", () => {
+        playSound(SFX_CANCEL, 0.65);
+        dismiss(null);
+      });
+
+      function onKey(e) {
+        if (e.key === "Enter")  document.getElementById("oni-prog-confirm")?.click();
+        if (e.key === "Escape") document.getElementById("oni-prog-cancel")?.click();
+      }
+      document.addEventListener("keydown", onKey);
+
+      const mo = new MutationObserver(() => {
+        if (!document.getElementById("oni-prog-ovl")) {
+          document.removeEventListener("keydown", onKey);
+          mo.disconnect();
+        }
+      });
+      mo.observe(document.body, { childList: true });
+
+      updatePreview();
+    });
+  }
+
+  // ── Particle burst ────────────────────────────────────────────────────────────
+  function emitParticleBurst(cx, cy, isIncrease) {
+    if (cx == null || cy == null) return;
+    const color = isIncrease ? "#7ec87a" : "#e08080";
+
+    for (let i = 0; i < 6; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 28 + Math.random() * 28;
+      const tx    = Math.cos(angle) * dist;
+      const ty    = Math.sin(angle) * dist;
+
+      const p = document.createElement("div");
+      p.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;
+        width:7px;height:7px;border-radius:50%;background:${color};
+        pointer-events:none;z-index:100022;opacity:1;`;
+      document.body.appendChild(p);
+
+      const start = performance.now();
+      const dur   = 320;
+      const step  = now => {
+        const t     = Math.min((now - start) / dur, 1);
+        const easeT = 1 - (1 - t) * (1 - t);
+        p.style.left    = `${cx + tx * easeT}px`;
+        p.style.top     = `${cy + ty * easeT}px`;
+        p.style.opacity = String(1 - t);
+        if (t < 1) requestAnimationFrame(step);
+        else p.remove();
+      };
+      requestAnimationFrame(step);
+    }
+  }
+
+  // ── Token clock animation helpers ─────────────────────────────────────────────
+  function ensureTokenAnimStyle() {
+    if (document.getElementById("oni-prog-token-style")) return;
+    const s = document.createElement("style");
+    s.id = "oni-prog-token-style";
+    s.textContent = `
+      @keyframes oni-prog-token-in  { from { opacity:0; transform:translateX(-60px); } to { opacity:1; transform:translateX(0); } }
+      @keyframes oni-prog-token-out { from { opacity:1; transform:translateX(0);     } to { opacity:0; transform:translateX(60px); } }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function getTokenScreenPos(actorId) {
+    if (!canvas?.tokens?.placeables) return null;
+    const token = canvas.tokens.placeables.find(t => t.visible && t.actor?.id === actorId)
+               ?? canvas.tokens.placeables.find(t => t.actor?.id === actorId);
+    if (!token) return null;
+    const { a: scale, tx, ty } = canvas.stage.worldTransform;
+    const center = token.center;
+    return {
+      screenX: center.x * scale + tx,
+      screenY: center.y * scale + ty,
+      tokenW:  token.w * scale,
+      tokenH:  token.h * scale,
+    };
+  }
+
+  async function createTokenSpotlight(actorId, currentValue, max) {
+    ensureTokenAnimStyle();
+    const pos = getTokenScreenPos(actorId);
+
+    const dim = document.createElement("div");
+    dim.style.cssText = `position:fixed;inset:0;z-index:100020;
+      background:rgba(0,0,0,0);pointer-events:none;
+      transition:background 250ms ease-out;`;
+    document.body.appendChild(dim);
+
+    let glowRing   = null;
+    let svgOverlay = null;
+    let cx = window.innerWidth  / 2;
+    let cy = window.innerHeight / 2;
+
+    if (pos) {
+      // Glow ring around token
+      const pad = 8;
+      glowRing = document.createElement("div");
+      glowRing.style.cssText = `
+        position:fixed;
+        left:${pos.screenX - pos.tokenW / 2 - pad}px;
+        top:${pos.screenY  - pos.tokenH / 2 - pad}px;
+        width:${pos.tokenW + pad * 2}px; height:${pos.tokenH + pad * 2}px;
+        border-radius:50%;
+        border:3px solid rgba(255,220,80,.9);
+        box-shadow:0 0 20px rgba(255,200,50,.65), inset 0 0 14px rgba(255,200,50,.2);
+        z-index:100021;pointer-events:none;
+        opacity:0;transition:opacity 250ms ease-out;
+      `;
+      document.body.appendChild(glowRing);
+
+      // SVG clock — smaller, positioned above the token's head
+      const svgSize = Math.max(52, Math.min(80, pos.tokenW * 0.65));
+      const svgLeft = pos.screenX - svgSize / 2;
+      const svgTop  = pos.screenY - pos.tokenH / 2 - svgSize - 6;
+      cx = svgLeft + svgSize / 2;
+      cy = svgTop  + svgSize / 2;
+
+      svgOverlay = document.createElement("div");
+      svgOverlay.style.cssText = `
+        position:fixed;
+        left:${svgLeft}px; top:${svgTop}px;
+        width:${svgSize}px; height:${svgSize}px;
+        z-index:100022;pointer-events:none;
+        animation:oni-prog-token-in 280ms ease-out forwards;
+      `;
+      svgOverlay.innerHTML = renderClockSVG(currentValue, max, null, true);
+      document.body.appendChild(svgOverlay);
+    }
+
+    void dim.offsetWidth;
+    dim.style.background = "rgba(0,0,0,.5)";
+    if (glowRing) { void glowRing.offsetWidth; glowRing.style.opacity = "1"; }
+    await delay(290);
+
+    return { dim, svgOverlay, glowRing, cx, cy, slideOut: true };
+  }
+
+  // ── Spotlight dim ─────────────────────────────────────────────────────────────
+  // Strategy: full-screen dim + an SVG overlay clone positioned over the real clock
+  // element at a guaranteed-high z-index. The real clock is untouched (it updates
+  // once behind the dim, invisible). All animation runs on the SVG overlay.
+  async function createSpotlight(clockId, currentValue, max) {
+    const escaped    = clockId != null ? CSS.escape(String(clockId)) : null;
+    const entryEl    = escaped
+      ? (document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
+         document.querySelector(`[data-id="${escaped}"]`))
+      : null;
+    const clockInner = entryEl?.querySelector(".clock") ?? entryEl;
+
+    const dim = document.createElement("div");
+    dim.style.cssText = `position:fixed;inset:0;z-index:100020;
+      background:rgba(0,0,0,0);pointer-events:none;
+      transition:background 250ms ease-out;`;
+    document.body.appendChild(dim);
+
+    let svgOverlay = null;
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+
+    if (clockInner) {
+      const rect = clockInner.getBoundingClientRect();
+      cx = rect.left + rect.width  / 2;
+      cy = rect.top  + rect.height / 2;
+
+      svgOverlay = document.createElement("div");
+      svgOverlay.style.cssText = `
+        position:fixed;
+        left:${rect.left}px; top:${rect.top}px;
+        width:${rect.width}px; height:${rect.height}px;
+        z-index:100021; pointer-events:none;
+        transition:opacity 200ms ease-in;
+      `;
+      svgOverlay.innerHTML = renderClockSVG(currentValue, max, null, true);
+      document.body.appendChild(svgOverlay);
+    }
+
+    void dim.offsetWidth;
+    dim.style.background = "rgba(0,0,0,.55)";
+    await delay(260);
+
+    return { dim, svgOverlay, cx, cy, glowRing: null, slideOut: false };
+  }
+
+  async function destroySpotlight({ dim, svgOverlay, glowRing = null, slideOut = false }) {
+    if (!dim) return;
+    dim.style.transition = "background 200ms ease-in";
+    dim.style.background = "rgba(0,0,0,0)";
+    if (svgOverlay) {
+      if (slideOut) {
+        svgOverlay.style.animation = "oni-prog-token-out 260ms ease-in forwards";
+      } else {
+        svgOverlay.style.transition = "opacity 200ms ease-in";
+        svgOverlay.style.opacity    = "0";
+      }
+    }
+    if (glowRing) {
+      glowRing.style.transition = "opacity 260ms ease-in";
+      glowRing.style.opacity    = "0";
+    }
+    await delay(slideOut ? 270 : 210);
+    dim.remove();
+    svgOverlay?.remove();
+    glowRing?.remove();
+  }
+
+  // ── Effect registration ───────────────────────────────────────────────────────
   Hooks.once("ready", () => {
+    // Pre-load tick sounds into the browser HTTP cache so the first animation
+    // plays both ticks correctly (without pre-loading, the second Audio element
+    // created within the 300ms loop window hits a partial download and is silently
+    // rejected by the .catch in playTickSound).
+    [SFX_TICK_INC, SFX_TICK_DEC].forEach(url => {
+      try { const a = new Audio(url); a.preload = "auto"; a.load(); } catch {}
+    });
+
     window["oni.OppEffectRegistry"]?.register("progress", {
 
-      // ── Pre phase: clock + delta selection ────────────────────────────────
       async pre(ctx) {
         console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-        const db = window.clockDatabase;
-        console.debug(TAG, "[pre] window.clockDatabase:", db ? "FOUND" : "NOT FOUND");
-        if (!db) {
-          ui.notifications?.warn("[Opportunity] Global Progress Clocks module not active.");
-          console.warn(TAG, "[pre] window.clockDatabase missing");
-          return null;
-        }
-
-        const clocks = [];
-        db.forEach(c => clocks.push(c));
-        console.debug(TAG, "[pre] clocks found:", clocks.map(c => `${c.name} (${c.value}/${c.max})`));
+        const clocks = await gatherAllClocks();
         if (!clocks.length) {
           ui.notifications?.warn("[Opportunity] No clocks found.");
-          console.warn(TAG, "[pre] no clocks");
           return null;
         }
 
-        console.debug(TAG, "[pre] opening clock picker dialog...");
-        const result = await new Promise(resolve => {
-          const opts = clocks.map((c, i) =>
-            `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
-          ).join("");
-
-          const dlg = new Dialog({
-            title:   "Progress — Choose Clock",
-            content: `<div style="display:flex;flex-direction:column;gap:8px;padding:4px 0 4px;">
-              <div>
-                <label style="font-size:.82rem;opacity:.7;display:block;margin-bottom:3px;">Clock</label>
-                <select id="oni-prog-clock" style="width:100%;padding:4px;">${opts}</select>
-              </div>
-              <div>
-                <label style="font-size:.82rem;opacity:.7;display:block;margin-bottom:3px;">
-                  Sections to fill (+) or erase (−) &nbsp;<em style="opacity:.55;">(max ±2)</em>
-                </label>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <button id="oni-prog-minus" style="width:32px;font-size:1.1rem;line-height:1;padding:4px;">−</button>
-                  <input id="oni-prog-delta" type="number" min="-2" max="2" value="1"
-                    style="flex:1;text-align:center;padding:4px;font-size:1rem;" />
-                  <button id="oni-prog-plus" style="width:32px;font-size:1.1rem;line-height:1;padding:4px;">+</button>
-                </div>
-              </div>
-              <div id="oni-prog-preview"
-                style="background:rgba(255,255,255,.05);border-radius:6px;padding:8px 10px;min-height:38px;"></div>
-            </div>`,
-            buttons: {
-              confirm: {
-                label:    "Confirm",
-                callback: html => {
-                  const idx   = parseInt(html.find("#oni-prog-clock").val() ?? "0", 10);
-                  const delta = parseInt(html.find("#oni-prog-delta").val() ?? "0", 10);
-                  resolve({
-                    clock: clocks[Number.isFinite(idx) ? idx : 0],
-                    delta: Math.max(-2, Math.min(2, Number.isFinite(delta) ? delta : 0)),
-                  });
-                },
-              },
-              cancel: { label: "Cancel", callback: () => resolve(null) },
-            },
-            default: "confirm",
-            close:   () => resolve(null),
-            render: html => {
-              function updatePreview() {
-                const idx   = parseInt(html.find("#oni-prog-clock").val() ?? "0", 10);
-                const delta = parseInt(html.find("#oni-prog-delta").val() ?? "0", 10);
-                const clock = clocks[Number.isFinite(idx) ? idx : 0];
-                if (!clock) return;
-                const safeDelta = Math.max(-2, Math.min(2, Number.isFinite(delta) ? delta : 0));
-                const newValue  = Math.max(0, Math.min(clock.max, clock.value + safeDelta));
-                html.find("#oni-prog-preview").html(`
-                  <div style="margin-bottom:4px;">${renderDots(clock.value, clock.max, newValue)}</div>
-                  <div style="font-size:.78rem;opacity:.65;">
-                    ${clock.value} → ${newValue} / ${clock.max}
-                    ${newValue === clock.value ? ' <em>(no change)</em>' : ""}
-                  </div>`);
-              }
-              html.find("#oni-prog-delta").on("input", () => {
-                const el = html.find("#oni-prog-delta");
-                const v  = parseInt(el.val(), 10);
-                if (Number.isFinite(v)) el.val(Math.max(-2, Math.min(2, v)));
-                updatePreview();
-              });
-              html.find("#oni-prog-clock").on("change", updatePreview);
-              html.find("#oni-prog-minus").on("click", () => {
-                const el = html.find("#oni-prog-delta");
-                el.val(Math.max(-2, parseInt(el.val() ?? "0", 10) - 1));
-                updatePreview();
-              });
-              html.find("#oni-prog-plus").on("click", () => {
-                const el = html.find("#oni-prog-delta");
-                el.val(Math.min(2, parseInt(el.val() ?? "0", 10) + 1));
-                updatePreview();
-              });
-              updatePreview();
-            },
-          });
-          dlg.render(true);
-        });
-
-        console.debug(TAG, "[pre] dialog result:", result ? { clockName: result.clock?.name, delta: result.delta } : "NULL");
-        if (!result) { console.debug(TAG, "[pre] dialog cancelled"); return null; }
+        const result = await showProgressOverlay(clocks);
+        console.debug(TAG, "[pre] result:", result ? { clockName: result.clock?.name, delta: result.delta } : "NULL");
+        if (!result) return null;
 
         const { clock, delta } = result;
-        if (delta === 0) { console.debug(TAG, "[pre] delta is 0, no change"); return null; }
+        if (delta === 0) return null;
 
         const newValue = Math.max(0, Math.min(clock.max, clock.value + delta));
         if (newValue === clock.value) {
           ui.notifications?.info(`[Opportunity] "${clock.name}" is already at its limit.`);
-          console.debug(TAG, "[pre] clock already at limit");
           return null;
         }
 
-        return { clockId: clock.id, clockName: clock.name, oldValue: clock.value, newValue, max: clock.max };
+        return {
+          clockName: clock.name,
+          oldValue:  clock.value,
+          newValue,
+          max:       clock.max,
+          source:    clock.source,
+          dbId:      clock.dbId,
+          actorId:   clock.actorId,
+          clockKey:  clock.clockKey,
+        };
       },
 
-      // ── Post phase: apply clock update + post result card ──────────────────
       async post(ctx, preResult) {
-        const { clockId, clockName, oldValue, newValue, max } = preResult ?? {};
+        if (!preResult) return;
+        const { clockName, oldValue, newValue, max, source, dbId, actorId, clockKey } = preResult;
 
-        const db = window.clockDatabase;
-        if (!db) { console.error(TAG, "[post] clockDatabase not available"); return; }
+        const step       = newValue > oldValue ? 1 : -1;
+        const isIncrease = step > 0;
 
-        console.debug(TAG, "[post] updating clock:", clockName, "|", oldValue, "→", newValue);
-        await db.update({ id: clockId, value: newValue })
-          .catch(e => console.error(TAG, "[post] clockDatabase.update failed:", e));
+        // Update real data once before animation — hidden behind the dim.
+        if (source === "global") {
+          const db = window.clockDatabase;
+          if (!db) { console.error(TAG, "[post] clockDatabase not available"); return; }
+          db.update({ id: dbId, value: newValue });
+        } else {
+          const actor = game.actors?.get(actorId);
+          if (!actor) { console.error(TAG, "[post] actor not found:", actorId); return; }
+          await actor.update({ [`system.props.${clockKey}`]: String(newValue) });
+        }
 
-        console.debug(TAG, "[post] posting result card...");
+        const spotlight = source === "global"
+          ? await createSpotlight(dbId, oldValue, max)
+          : await createTokenSpotlight(actorId, oldValue, max);
+        const { svgOverlay, cx, cy } = spotlight;
+
+        try {
+          for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
+            if (svgOverlay) svgOverlay.innerHTML = renderClockSVG(v, max, null, true);
+            playTickSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
+            emitParticleBurst(cx, cy, isIncrease);
+            await delay(300);
+          }
+          await delay(700); // hold on final state before exit
+        } finally {
+          await destroySpotlight(spotlight);
+        }
+
         await postProgressCard({ actorName: ctx.actorName, clockName, oldValue, newValue, max });
         console.debug(TAG, "[done]");
       },
