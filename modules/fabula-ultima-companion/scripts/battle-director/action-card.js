@@ -479,23 +479,31 @@ function ensureStyles() {
       margin-top: 14px;
     }
     .fud-bf-card .fud-bf-dmg-row {
-      display: grid; grid-template-columns: 1fr auto;
-      align-items: center; gap: 8px;
+      /* The bare number is the centred anchor; the +HR pill and element
+         label are absolutely positioned off it, so neither add-on shifts
+         the number away from dead-centre. */
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
       padding: 2px 2px;
+      min-height: 30px;
     }
     .fud-bf-card .fud-bf-dmg-number {
+      position: relative;
       font-size: 30px; font-weight: 900; font-style: italic;
-      line-height: 1;
+      line-height: 1; text-align: center;
     }
     .fud-bf-card .fud-bf-dmg-number .hr-pill {
-      margin-left: 8px;
+      /* hang immediately to the right of the centred number */
+      position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+      margin-left: 8px; white-space: nowrap;
       font-size: 10.5px; font-weight: 800; font-style: normal;
       padding: 2px 6px; border-radius: 999px;
       border: 1px solid #cfa057;
       color: #8a4b22; background: #f7ecd9;
-      vertical-align: 6px;
     }
     .fud-bf-card .fud-bf-dmg-element {
+      /* pinned to the row's right edge, clear of the centred number */
+      position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
       font-size: 14px; font-weight: 900;
       text-align: right;
     }
@@ -1241,7 +1249,7 @@ function buildAttackerHTML({ attacker, targets }) {
 
 function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDefenseIcon = false, legendOverride = null }) {
   if (!roll) return "";
-  const { A1, A2, dA, dB, rA, rB, total, hr, checkBonus, isCrit, isFumble, opportunities } = roll;
+  const { A1, A2, dA, dB, rA, rB, total, hr, checkBonus, checkBonusParts, isCrit, isFumble, opportunities } = roll;
   const accCls = isFumble ? "is-fumble" : isCrit ? "is-crit" : "";
 
   const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span> <span class="die-result">${rA}</span></span>`;
@@ -1277,10 +1285,30 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
   // infrastructure as equipment-option descriptions (data-fud-equip-desc).
   const cbVal = Number(checkBonus) || 0;
   const cbStr = cbVal === 0 ? "—" : (cbVal >= 0 ? `+${cbVal}` : `${cbVal}`);
+
+  // Per-source breakdown of where the check bonus came from. The roll
+  // object's `checkBonusParts` is set by each COMPUTE handler when
+  // multiple contributors stack (weapon + free-action grant + skill
+  // bonus + future AE-driven bonuses). Renders as a nested list under
+  // the total. Falls back to just the total when parts are absent
+  // (legacy rolls without the breakdown).
+  const parts = Array.isArray(checkBonusParts)
+    ? checkBonusParts.filter((p) => p && Number(p.amount) !== 0)
+    : [];
+  const breakdownHTML = parts.length
+    ? `<ul style="margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;">`
+      + parts.map((p) => {
+          const a = Number(p.amount) || 0;
+          const sign = a >= 0 ? "+" : "−";
+          return `<li><b>${escapeHtml(String(p.source ?? "Unknown"))}:</b> ${sign}${Math.abs(a)}</li>`;
+        }).join("")
+      + `</ul>`
+    : "";
+
   const tipBody = [
     `<p><b>${escapeHtml(A1)}:</b> 1d${dA} → <b>${rA}</b></p>`,
     `<p><b>${escapeHtml(A2)}:</b> 1d${dB} → <b>${rB}</b></p>`,
-    `<p><b>Check Bonus:</b> ${cbStr}</p>`,
+    `<p style="margin-bottom:0;"><b>Check Bonus:</b> ${cbStr}</p>${breakdownHTML}`,
     `<p style="margin-top:6px;"><b>Total:</b> ${rA} + ${rB}${cbVal !== 0 ? ` ${cbVal >= 0 ? "+" : "-"} ${Math.abs(cbVal)}` : ""} = <b>${total}</b></p>`,
     `<p><b>HR (High Roll):</b> max(${rA}, ${rB}) = <b>${hr ?? Math.max(rA, rB)}</b></p>`,
     isCrit ? `<p style="color:#b40000;"><b>Critical!</b> Both dice matched (≥6) — auto-hit, Opportunity granted.</p>` : "",

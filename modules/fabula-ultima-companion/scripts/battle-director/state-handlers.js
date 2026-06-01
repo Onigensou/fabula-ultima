@@ -2061,6 +2061,18 @@ const Compute = {
         const dA = attacker.attributes?.[A1] ?? 8;
         const dB = attacker.attributes?.[A2] ?? 8;
         const checkBonus = ar.checkBonus | 0;
+        // Per-source breakdown for the Check tooltip. Skills/Spells get
+        // their bonus from `skill.system.props.check_bonus` only — no
+        // free-action grant consumer here today (see
+        // [[free-action-grant-bonus-consumers]]). When the consumer
+        // ships, append the grant entry the same way Attack/Hinder do.
+        const checkBonusParts = [];
+        if (checkBonus !== 0) {
+          checkBonusParts.push({
+            source: ar.skillName || "Skill",
+            amount: checkBonus,
+          });
+        }
         const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
         const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
         const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
@@ -2070,7 +2082,7 @@ const Compute = {
         const hr = Math.max(rA, rB);
         const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
         const isCrit = (rA === rB) && !isFumble && rA >= 6;
-        roll = { A1, A2, dA, dB, rA, rB, checkBonus, total, hr, isCrit, isFumble, opportunities: isCrit && !isFumble };
+        roll = { A1, A2, dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr, isCrit, isFumble, opportunities: isCrit && !isFumble };
       }
 
       // Spells compare vs the target's Magic Defense (MDEF), other
@@ -2369,6 +2381,17 @@ const Compute = {
       const dB = attacker.attributes?.[weapon.A2] ?? 8;
       let checkBonus = weapon.checkBonus ?? 0;
       let damageBonus = weapon.damageBonus ?? 0;
+      // Per-source breakdown — surfaced in the action-card Check tooltip
+      // so the player sees WHERE each +N came from. Weapon contribution
+      // is `weapon.checkBonus` which already aggregates the actor's
+      // bonus_accuracy_check / attack_accuracy_mod_* AEs via CSB's
+      // derived stat (so a future per-AE breakdown would need to walk
+      // the actor's AE list — out of scope here; we surface "Weapon"
+      // as the umbrella).
+      const checkBonusParts = [];
+      if (Number(weapon.checkBonus) !== 0) {
+        checkBonusParts.push({ source: weapon.name || "Weapon", amount: Number(weapon.checkBonus) || 0 });
+      }
       // Free-action grant — read + consume. Adds the grant's check /
       // damage bonus to this attack's roll. The clear-on-consume here
       // (rather than on RESOLVE success) means a CONFIRM cancel still
@@ -2379,8 +2402,16 @@ const Compute = {
       const attackerActorIdForGrant = attacker?.actorId ?? null;
       const attackGrant = attackerActorIdForGrant ? freeActions.get(attackerActorIdForGrant) : null;
       if (attackGrant) {
-        checkBonus += Number(attackGrant.checkBonus) || 0;
-        damageBonus += Number(attackGrant.damageBonus) || 0;
+        const grantCb = Number(attackGrant.checkBonus) || 0;
+        const grantDb = Number(attackGrant.damageBonus) || 0;
+        checkBonus += grantCb;
+        damageBonus += grantDb;
+        if (grantCb !== 0) {
+          checkBonusParts.push({
+            source: attackGrant.sourceLabel || "Free Action",
+            amount: grantCb,
+          });
+        }
         log(`Attack COMPUTE: applied ${attackGrant.sourceLabel} grant (+${attackGrant.checkBonus ?? 0} check / +${attackGrant.damageBonus ?? 0} dmg)`);
         freeActions.clear(attackerActorIdForGrant);
       }
@@ -2470,7 +2501,7 @@ const Compute = {
         targets: targetSnapshots,
         roll: {
           A1: weapon.A1, A2: weapon.A2,
-          dA, dB, rA, rB, checkBonus, total, hr,
+          dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr,
           isCrit, isFumble,
           // Crit generates Opportunities (RAW Core p.68). Visual only here;
           // mechanical handling is GM-narrated for v1.
@@ -2526,6 +2557,13 @@ const Compute = {
       const hinderActorIdForGrant = attacker?.actorId ?? null;
       const hinderGrant = hinderActorIdForGrant ? freeActions.get(hinderActorIdForGrant) : null;
       const hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
+      const hinderCheckBonusParts = [];
+      if (hinderGrant && hinderCheckBonus !== 0) {
+        hinderCheckBonusParts.push({
+          source: hinderGrant.sourceLabel || "Free Action",
+          amount: hinderCheckBonus,
+        });
+      }
       if (hinderGrant) {
         log(`Hinder COMPUTE: applied ${hinderGrant.sourceLabel} grant (+${hinderGrant.checkBonus ?? 0} check)`);
         freeActions.clear(hinderActorIdForGrant);
@@ -2550,7 +2588,7 @@ const Compute = {
         targets: [targetSnap],
         roll: {
           A1, A2,
-          dA, dB, rA, rB, checkBonus: hinderCheckBonus, total, hr,
+          dA, dB, rA, rB, checkBonus: hinderCheckBonus, checkBonusParts: hinderCheckBonusParts, total, hr,
           isCrit, isFumble,
           opportunities: isCrit && !isFumble,
         },
