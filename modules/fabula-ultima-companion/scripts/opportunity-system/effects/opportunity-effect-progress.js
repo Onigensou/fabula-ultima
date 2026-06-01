@@ -33,7 +33,7 @@
   const delay = ms => new Promise(r => setTimeout(r, ms));
 
   // ── SVG Clock ─────────────────────────────────────────────────────────────────
-  function renderClockSVG(value, max, newValue = null) {
+  function renderClockSVG(value, max, newValue = null, fill = false) {
     const display = Math.min(Math.max(max, 0), 16);
     if (display === 0) return "";
 
@@ -51,8 +51,12 @@
       return wasFilled ? "#f9a825" : "#2a2a3a";
     }
 
+    const svgAttrs = fill
+      ? `style="display:block;width:100%;height:100%;" viewBox="0 0 120 120"`
+      : `width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;"`;
+
     if (display === 1) {
-      return `<svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;">
+      return `<svg ${svgAttrs}>
         <circle cx="${cx}" cy="${cy}" r="${outerR}" fill="${sectorFill(0)}" stroke="#0d141a" stroke-width="1.5"/>
         <circle cx="${cx}" cy="${cy}" r="${innerR}"  fill="#0d141a"/>
       </svg>`;
@@ -79,7 +83,7 @@
       ? `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="9" fill="#666" font-family="Signika,sans-serif">+${max - display}</text>`
       : "";
 
-    return `<svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;">${paths}${overflow}</svg>`;
+    return `<svg ${svgAttrs}>${paths}${overflow}</svg>`;
   }
 
   // ── Dot renderer (chat card only) ─────────────────────────────────────────────
@@ -308,11 +312,8 @@
   }
 
   // ── Particle burst ────────────────────────────────────────────────────────────
-  function emitParticleBurst(clockEl, isIncrease) {
-    if (!clockEl) return;
-    const rect  = clockEl.getBoundingClientRect();
-    const cx    = rect.left + rect.width  / 2;
-    const cy    = rect.top  + rect.height / 2;
+  function emitParticleBurst(cx, cy, isIncrease) {
+    if (cx == null || cy == null) return;
     const color = isIncrease ? "#7ec87a" : "#e08080";
 
     for (let i = 0; i < 6; i++) {
@@ -343,16 +344,14 @@
   }
 
   // ── Spotlight dim ─────────────────────────────────────────────────────────────
-  // Strategy: full-screen dim at z-index 100020, clock panel raised to 100021 so it
-  // punches through. Particles at 100022 sit above both.
-  async function createSpotlight(clockId) {
-    const escaped = CSS.escape(clockId);
-    const clockEl =
-      document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
-      document.querySelector(`[data-id="${escaped}"]`);
-    const panelEl =
-      document.getElementById("clock-panel") ??
-      document.querySelector(".clock-panel");
+  // Strategy: full-screen dim + an SVG overlay clone positioned over the real clock
+  // element at a guaranteed-high z-index. The real clock is untouched (it updates
+  // once behind the dim, invisible). All animation runs on the SVG overlay.
+  async function createSpotlight(clockId, currentValue, max) {
+    const escaped    = CSS.escape(clockId);
+    const entryEl    = document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
+                       document.querySelector(`[data-id="${escaped}"]`);
+    const clockInner = entryEl?.querySelector(".clock") ?? entryEl;
 
     const dim = document.createElement("div");
     dim.style.cssText = `position:fixed;inset:0;z-index:100020;
@@ -360,23 +359,42 @@
       transition:background 250ms ease-out;`;
     document.body.appendChild(dim);
 
-    const origPanelZ = panelEl?.style.zIndex ?? "";
-    if (panelEl) panelEl.style.zIndex = "100021";
+    let svgOverlay = null;
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+
+    if (clockInner) {
+      const rect = clockInner.getBoundingClientRect();
+      cx = rect.left + rect.width  / 2;
+      cy = rect.top  + rect.height / 2;
+
+      svgOverlay = document.createElement("div");
+      svgOverlay.style.cssText = `
+        position:fixed;
+        left:${rect.left}px; top:${rect.top}px;
+        width:${rect.width}px; height:${rect.height}px;
+        z-index:100021; pointer-events:none;
+        transition:opacity 200ms ease-in;
+      `;
+      svgOverlay.innerHTML = renderClockSVG(currentValue, max, null, true);
+      document.body.appendChild(svgOverlay);
+    }
 
     void dim.offsetWidth;
     dim.style.background = "rgba(0,0,0,.55)";
     await delay(260);
 
-    return { dim, clockEl, panelEl, origPanelZ };
+    return { dim, svgOverlay, cx, cy };
   }
 
-  async function destroySpotlight({ dim, panelEl, origPanelZ }) {
+  async function destroySpotlight({ dim, svgOverlay }) {
     if (!dim) return;
-    dim.style.transition = "background 200ms ease-in";
-    dim.style.background = "rgba(0,0,0,0)";
+    dim.style.transition  = "background 200ms ease-in";
+    dim.style.background  = "rgba(0,0,0,0)";
+    if (svgOverlay) svgOverlay.style.opacity = "0";
     await delay(210);
     dim.remove();
-    if (panelEl) panelEl.style.zIndex = origPanelZ;
+    svgOverlay?.remove();
   }
 
   // ── Effect registration ───────────────────────────────────────────────────────
@@ -425,14 +443,18 @@
         const step       = newValue > oldValue ? 1 : -1;
         const isIncrease = step > 0;
 
-        const spotlight = await createSpotlight(clockId);
-        const { clockEl } = spotlight;
+        // Update the real clock element once immediately — it will be hidden behind
+        // the dim while the SVG overlay plays the tick-by-tick animation.
+        db.update({ id: clockId, value: newValue });
+
+        const spotlight = await createSpotlight(clockId, oldValue, max);
+        const { svgOverlay, cx, cy } = spotlight;
 
         try {
           for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
-            db.update({ id: clockId, value: v });
+            if (svgOverlay) svgOverlay.innerHTML = renderClockSVG(v, max, null, true);
             playTickSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
-            emitParticleBurst(clockEl, isIncrease);
+            emitParticleBurst(cx, cy, isIncrease);
             await delay(300);
           }
         } finally {
