@@ -3,15 +3,81 @@
 // Requires: Global Progress Clocks (global-progress-clocks)
 //
 // Flow (pre/post):
-//   pre  — clock picker + delta dialog; returns { clockId, clockName, oldValue, newValue, max }
-//   post — applies the clock update and posts the result chat card
+//   pre  — DOM overlay: clock picker + delta + SVG preview
+//          returns { clockId, clockName, oldValue, newValue, max }
+//   post — spotlight dim, sequential ticks with particles, chat card
 // ============================================================================
 (() => {
   const TAG = "[ONI][OpportunityEffect:Progress]";
 
-  const esc = s => String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  // ── Sounds ──────────────────────────────────────────────────────────────────
+  const SFX_UI_OPEN  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Equip1.ogg";
+  const SFX_REEL     = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/fastReel.wav";
+  const SFX_TICK_INC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SFX_TINK.wav";
+  const SFX_TICK_DEC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/collision_1.wav";
+  const SFX_CONFIRM  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
+  const SFX_CANCEL   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav";
 
+  function playSound(url, vol = 0.7) {
+    try { (foundry.audio.AudioHelper ?? AudioHelper).play({ src: url, volume: vol, autoplay: true, loop: false }, false); }
+    catch (_) { try { const a = new Audio(url); a.volume = vol; a.play().catch(() => {}); } catch {} }
+  }
+
+  // ── Utilities ────────────────────────────────────────────────────────────────
+  const esc   = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  // ── SVG Clock ─────────────────────────────────────────────────────────────────
+  function renderClockSVG(value, max, newValue = null) {
+    const display = Math.min(Math.max(max, 0), 16);
+    if (display === 0) return "";
+
+    const cx = 60, cy = 60, outerR = 52, innerR = 20;
+
+    function sectorFill(i) {
+      const wasFilled    = i < value;
+      const willBeFilled = newValue !== null ? i < newValue : wasFilled;
+      if (newValue !== null) {
+        if (!wasFilled && willBeFilled) return "#7ec87a";
+        if (wasFilled && !willBeFilled) return "#e08080";
+        if (willBeFilled)               return "#f9a825";
+        return "#2a2a3a";
+      }
+      return wasFilled ? "#f9a825" : "#2a2a3a";
+    }
+
+    if (display === 1) {
+      return `<svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;">
+        <circle cx="${cx}" cy="${cy}" r="${outerR}" fill="${sectorFill(0)}" stroke="#0d141a" stroke-width="1.5"/>
+        <circle cx="${cx}" cy="${cy}" r="${innerR}"  fill="#0d141a"/>
+      </svg>`;
+    }
+
+    const GAP_RAD = (display > 8 ? 1.5 : 2.5) * Math.PI / 180;
+    const TWO_PI  = Math.PI * 2;
+    const f       = n => n.toFixed(2);
+    let paths = "";
+
+    for (let i = 0; i < display; i++) {
+      const sa  = (i / display) * TWO_PI - Math.PI / 2 + GAP_RAD / 2;
+      const ea  = ((i + 1) / display) * TWO_PI - Math.PI / 2 - GAP_RAD / 2;
+      const la  = (ea - sa) > Math.PI ? 1 : 0;
+      const ox1 = cx + outerR * Math.cos(sa), oy1 = cy + outerR * Math.sin(sa);
+      const ox2 = cx + outerR * Math.cos(ea), oy2 = cy + outerR * Math.sin(ea);
+      const ix1 = cx + innerR * Math.cos(sa), iy1 = cy + innerR * Math.sin(sa);
+      const ix2 = cx + innerR * Math.cos(ea), iy2 = cy + innerR * Math.sin(ea);
+      const d = `M ${f(ix1)} ${f(iy1)} L ${f(ox1)} ${f(oy1)} A ${outerR} ${outerR} 0 ${la} 1 ${f(ox2)} ${f(oy2)} L ${f(ix2)} ${f(iy2)} A ${innerR} ${innerR} 0 ${la} 0 ${f(ix1)} ${f(iy1)} Z`;
+      paths += `<path d="${d}" fill="${sectorFill(i)}" stroke="#0d141a" stroke-width="1.5"/>`;
+    }
+
+    const overflow = max > display
+      ? `<text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="9" fill="#666" font-family="Signika,sans-serif">+${max - display}</text>`
+      : "";
+
+    return `<svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:0 auto;">${paths}${overflow}</svg>`;
+  }
+
+  // ── Dot renderer (chat card only) ─────────────────────────────────────────────
   function renderDots(value, max, newValue = null) {
     const display = Math.min(max, 16);
     let out = "";
@@ -33,6 +99,7 @@
     return out;
   }
 
+  // ── Chat card ─────────────────────────────────────────────────────────────────
   async function postProgressCard({ actorName, clockName, oldValue, newValue, max }) {
     const filled  = newValue > oldValue;
     const accent  = filled ? "#2a6a8a" : "#8a3a2a";
@@ -54,139 +121,310 @@
     await ChatMessage.create({ content }).catch(e => console.error(TAG, "postProgressCard failed:", e));
   }
 
+  // ── DOM Overlay UI ────────────────────────────────────────────────────────────
+  function ensureOverlayStyle() {
+    if (document.getElementById("oni-prog-ovl-style")) return;
+    const s = document.createElement("style");
+    s.id = "oni-prog-ovl-style";
+    s.textContent = `
+      @keyframes oni-prog-in  { from { opacity:0; transform:scale(.95) } to { opacity:1; transform:scale(1) } }
+      @keyframes oni-prog-out { from { opacity:1; transform:scale(1)   } to { opacity:0; transform:scale(.95) } }
+      #oni-prog-ovl {
+        position:fixed;inset:0;z-index:100025;
+        display:flex;align-items:center;justify-content:center;
+        background:rgba(4,2,10,.82);
+        font-family:'Signika','Noto Sans',system-ui,sans-serif;
+      }
+      #oni-prog-ovl .oni-card {
+        background:linear-gradient(160deg,#0c1117 0%,#0f1e2a 100%);
+        border:1.5px solid #2a4a6a;border-radius:14px;
+        padding:22px 24px;min-width:300px;max-width:380px;width:90vw;
+        animation:oni-prog-in 220ms ease-out forwards;
+        box-shadow:0 8px 40px rgba(0,0,0,.7);color:#c8d8e8;
+      }
+      #oni-prog-ovl .oni-card.closing { animation:oni-prog-out 160ms ease-in forwards; }
+      #oni-prog-ovl h3 {
+        margin:0 0 16px;font-size:.9rem;text-transform:uppercase;
+        letter-spacing:.08em;opacity:.55;font-weight:600;
+      }
+      #oni-prog-ovl label { font-size:.8rem;opacity:.65;display:block;margin-bottom:4px; }
+      #oni-prog-ovl select {
+        width:100%;padding:6px 8px;border-radius:6px;border:1px solid #2a4a6a;
+        background:#0d1920;color:#c8d8e8;font-size:.88rem;cursor:pointer;
+      }
+      #oni-prog-ovl .delta-row {
+        display:flex;align-items:center;gap:8px;margin-top:14px;
+      }
+      #oni-prog-ovl .delta-lbl { font-size:.8rem;opacity:.65;white-space:nowrap;margin:0; }
+      #oni-prog-ovl .delta-btn {
+        width:34px;height:34px;border-radius:6px;border:1px solid #2a4a6a;
+        background:#0d1920;color:#c8d8e8;font-size:1.2rem;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;flex-shrink:0;
+        transition:background 100ms,border-color 100ms;
+      }
+      #oni-prog-ovl .delta-btn:hover { background:#1a3040;border-color:#4a8ab0; }
+      #oni-prog-ovl .delta-input {
+        flex:1;text-align:center;padding:6px;border-radius:6px;
+        border:1px solid #2a4a6a;background:#0d1920;color:#c8d8e8;font-size:1rem;
+      }
+      #oni-prog-ovl .preview { margin:16px 0 2px;min-height:128px;text-align:center; }
+      #oni-prog-ovl .hint { font-size:.74rem;opacity:.45;text-align:center;margin-top:6px; }
+      #oni-prog-ovl .btn-row { display:flex;gap:10px;margin-top:18px; }
+      #oni-prog-ovl .oni-btn {
+        flex:1;padding:9px 14px;border-radius:7px;border:none;
+        font-size:.88rem;font-family:inherit;cursor:pointer;
+        transition:background 120ms,transform 80ms;
+      }
+      #oni-prog-ovl .oni-btn:active { transform:scale(.97); }
+      #oni-prog-ovl .oni-btn-cancel {
+        background:#1a2a38;color:#c8d8e8;border:1px solid #2a4a6a;
+      }
+      #oni-prog-ovl .oni-btn-cancel:hover { background:#243242; }
+      #oni-prog-ovl .oni-btn-confirm {
+        background:linear-gradient(135deg,#1a5a8a,#2a7ab0);color:#fff;
+      }
+      #oni-prog-ovl .oni-btn-confirm:hover { background:linear-gradient(135deg,#2a6a9a,#3a8ac0); }
+    `;
+    document.head.appendChild(s);
+  }
+
+  async function showProgressOverlay(clocks) {
+    ensureOverlayStyle();
+    return new Promise(resolve => {
+      const opts = clocks.map((c, i) =>
+        `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
+      ).join("");
+
+      const ovl = document.createElement("div");
+      ovl.id = "oni-prog-ovl";
+      ovl.innerHTML = `
+        <div class="oni-card">
+          <h3><i class="fas fa-clock" style="margin-right:6px;opacity:.7;"></i>Progress — Choose Clock</h3>
+          <div>
+            <label>Clock</label>
+            <select id="oni-prog-clock">${opts}</select>
+          </div>
+          <div class="delta-row">
+            <label class="delta-lbl">Sections (+/−)</label>
+            <button class="delta-btn" id="oni-prog-minus">−</button>
+            <input  class="delta-input" id="oni-prog-delta" type="number" min="-2" max="2" value="1"/>
+            <button class="delta-btn" id="oni-prog-plus">+</button>
+          </div>
+          <div class="preview" id="oni-prog-preview"></div>
+          <div class="hint">Preview above &nbsp;·&nbsp; max ±2 sections</div>
+          <div class="btn-row">
+            <button class="oni-btn oni-btn-cancel"  id="oni-prog-cancel">Cancel</button>
+            <button class="oni-btn oni-btn-confirm" id="oni-prog-confirm">Confirm</button>
+          </div>
+        </div>`;
+      document.body.appendChild(ovl);
+      playSound(SFX_UI_OPEN, 0.7);
+
+      let closed = false;
+
+      function getState() {
+        const idx   = parseInt(document.getElementById("oni-prog-clock")?.value ?? "0", 10);
+        const raw   = parseInt(document.getElementById("oni-prog-delta")?.value  ?? "0", 10);
+        const clock = clocks[Number.isFinite(idx) ? idx : 0];
+        const delta = Math.max(-2, Math.min(2, Number.isFinite(raw) ? raw : 0));
+        const nv    = clock ? Math.max(0, Math.min(clock.max, clock.value + delta)) : 0;
+        return { clock, delta, newValue: nv };
+      }
+
+      function updatePreview() {
+        const { clock, newValue } = getState();
+        const el = document.getElementById("oni-prog-preview");
+        if (!el || !clock) return;
+        el.innerHTML = `
+          ${renderClockSVG(clock.value, clock.max, newValue)}
+          <div style="font-size:.78rem;opacity:.5;margin-top:6px;">
+            ${clock.value} → ${newValue} / ${clock.max}
+            ${newValue === clock.value ? " <em>(no change)</em>" : ""}
+          </div>`;
+      }
+
+      function dismiss(result) {
+        if (closed) return;
+        closed = true;
+        const card = ovl.querySelector(".oni-card");
+        if (card) card.classList.add("closing");
+        ovl.style.cssText += ";transition:opacity 180ms ease-in;opacity:0;";
+        setTimeout(() => { ovl.remove(); resolve(result); }, 190);
+      }
+
+      document.getElementById("oni-prog-clock").addEventListener("change", () => {
+        playSound(SFX_UI_OPEN, 0.55);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-minus").addEventListener("click", () => {
+        const el = document.getElementById("oni-prog-delta");
+        el.value = Math.max(-2, parseInt(el.value ?? "0", 10) - 1);
+        playSound(SFX_REEL, 0.65);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-plus").addEventListener("click", () => {
+        const el = document.getElementById("oni-prog-delta");
+        el.value = Math.min(2, parseInt(el.value ?? "0", 10) + 1);
+        playSound(SFX_REEL, 0.65);
+        updatePreview();
+      });
+      document.getElementById("oni-prog-delta").addEventListener("input", () => {
+        const el = document.getElementById("oni-prog-delta");
+        const v  = parseInt(el.value, 10);
+        if (Number.isFinite(v)) el.value = Math.max(-2, Math.min(2, v));
+        updatePreview();
+      });
+      document.getElementById("oni-prog-confirm").addEventListener("click", () => {
+        const { clock, delta } = getState();
+        playSound(SFX_CONFIRM, 0.8);
+        dismiss({ clock, delta });
+      });
+      document.getElementById("oni-prog-cancel").addEventListener("click", () => {
+        playSound(SFX_CANCEL, 0.65);
+        dismiss(null);
+      });
+
+      function onKey(e) {
+        if (e.key === "Enter")  document.getElementById("oni-prog-confirm")?.click();
+        if (e.key === "Escape") document.getElementById("oni-prog-cancel")?.click();
+      }
+      document.addEventListener("keydown", onKey);
+
+      const mo = new MutationObserver(() => {
+        if (!document.getElementById("oni-prog-ovl")) {
+          document.removeEventListener("keydown", onKey);
+          mo.disconnect();
+        }
+      });
+      mo.observe(document.body, { childList: true });
+
+      updatePreview();
+    });
+  }
+
+  // ── Particle burst ────────────────────────────────────────────────────────────
+  function emitParticleBurst(clockEl, isIncrease) {
+    if (!clockEl) return;
+    const rect  = clockEl.getBoundingClientRect();
+    const cx    = rect.left + rect.width  / 2;
+    const cy    = rect.top  + rect.height / 2;
+    const color = isIncrease ? "#7ec87a" : "#e08080";
+
+    for (let i = 0; i < 6; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 28 + Math.random() * 28;
+      const tx    = Math.cos(angle) * dist;
+      const ty    = Math.sin(angle) * dist;
+
+      const p = document.createElement("div");
+      p.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;
+        width:7px;height:7px;border-radius:50%;background:${color};
+        pointer-events:none;z-index:100010;opacity:1;`;
+      document.body.appendChild(p);
+
+      const start = performance.now();
+      const dur   = 320;
+      const step  = now => {
+        const t     = Math.min((now - start) / dur, 1);
+        const easeT = 1 - (1 - t) * (1 - t);
+        p.style.left    = `${cx + tx * easeT}px`;
+        p.style.top     = `${cy + ty * easeT}px`;
+        p.style.opacity = String(1 - t);
+        if (t < 1) requestAnimationFrame(step);
+        else p.remove();
+      };
+      requestAnimationFrame(step);
+    }
+  }
+
+  // ── Spotlight dim ─────────────────────────────────────────────────────────────
+  async function createSpotlight(clockId) {
+    const clockEl = document.querySelector(`#clock-panel .clock-entry[data-id="${CSS.escape(clockId)}"]`);
+    if (!clockEl) return { spot: null, clockEl: null };
+
+    const rect = clockEl.getBoundingClientRect();
+    const PAD  = 12;
+    const spot = document.createElement("div");
+    spot.style.cssText = `
+      position:fixed;
+      left:${rect.left  - PAD}px; top:${rect.top    - PAD}px;
+      width:${rect.width  + PAD * 2}px; height:${rect.height + PAD * 2}px;
+      box-shadow:0 0 0 10000px rgba(0,0,0,0);
+      border-radius:8px;z-index:99998;pointer-events:none;
+      transition:box-shadow 250ms ease-out;
+    `;
+    document.body.appendChild(spot);
+    void spot.offsetWidth;
+    spot.style.boxShadow = "0 0 0 10000px rgba(0,0,0,.55)";
+    await delay(260);
+    return { spot, clockEl };
+  }
+
+  async function destroySpotlight(spot) {
+    if (!spot) return;
+    spot.style.transition = "box-shadow 200ms ease-in";
+    spot.style.boxShadow  = "0 0 0 10000px rgba(0,0,0,0)";
+    await delay(210);
+    spot.remove();
+  }
+
+  // ── Effect registration ───────────────────────────────────────────────────────
   Hooks.once("ready", () => {
     window["oni.OppEffectRegistry"]?.register("progress", {
 
-      // ── Pre phase: clock + delta selection ────────────────────────────────
       async pre(ctx) {
         console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
         const db = window.clockDatabase;
-        console.debug(TAG, "[pre] window.clockDatabase:", db ? "FOUND" : "NOT FOUND");
         if (!db) {
           ui.notifications?.warn("[Opportunity] Global Progress Clocks module not active.");
-          console.warn(TAG, "[pre] window.clockDatabase missing");
           return null;
         }
 
         const clocks = [];
         db.forEach(c => clocks.push(c));
-        console.debug(TAG, "[pre] clocks found:", clocks.map(c => `${c.name} (${c.value}/${c.max})`));
         if (!clocks.length) {
           ui.notifications?.warn("[Opportunity] No clocks found.");
-          console.warn(TAG, "[pre] no clocks");
           return null;
         }
 
-        console.debug(TAG, "[pre] opening clock picker dialog...");
-        const result = await new Promise(resolve => {
-          const opts = clocks.map((c, i) =>
-            `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
-          ).join("");
-
-          const dlg = new Dialog({
-            title:   "Progress — Choose Clock",
-            content: `<div style="display:flex;flex-direction:column;gap:8px;padding:4px 0 4px;">
-              <div>
-                <label style="font-size:.82rem;opacity:.7;display:block;margin-bottom:3px;">Clock</label>
-                <select id="oni-prog-clock" style="width:100%;padding:4px;">${opts}</select>
-              </div>
-              <div>
-                <label style="font-size:.82rem;opacity:.7;display:block;margin-bottom:3px;">
-                  Sections to fill (+) or erase (−) &nbsp;<em style="opacity:.55;">(max ±2)</em>
-                </label>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <button id="oni-prog-minus" style="width:32px;font-size:1.1rem;line-height:1;padding:4px;">−</button>
-                  <input id="oni-prog-delta" type="number" min="-2" max="2" value="1"
-                    style="flex:1;text-align:center;padding:4px;font-size:1rem;" />
-                  <button id="oni-prog-plus" style="width:32px;font-size:1.1rem;line-height:1;padding:4px;">+</button>
-                </div>
-              </div>
-              <div id="oni-prog-preview"
-                style="background:rgba(255,255,255,.05);border-radius:6px;padding:8px 10px;min-height:38px;"></div>
-            </div>`,
-            buttons: {
-              confirm: {
-                label:    "Confirm",
-                callback: html => {
-                  const idx   = parseInt(html.find("#oni-prog-clock").val() ?? "0", 10);
-                  const delta = parseInt(html.find("#oni-prog-delta").val() ?? "0", 10);
-                  resolve({
-                    clock: clocks[Number.isFinite(idx) ? idx : 0],
-                    delta: Math.max(-2, Math.min(2, Number.isFinite(delta) ? delta : 0)),
-                  });
-                },
-              },
-              cancel: { label: "Cancel", callback: () => resolve(null) },
-            },
-            default: "confirm",
-            close:   () => resolve(null),
-            render: html => {
-              function updatePreview() {
-                const idx   = parseInt(html.find("#oni-prog-clock").val() ?? "0", 10);
-                const delta = parseInt(html.find("#oni-prog-delta").val() ?? "0", 10);
-                const clock = clocks[Number.isFinite(idx) ? idx : 0];
-                if (!clock) return;
-                const safeDelta = Math.max(-2, Math.min(2, Number.isFinite(delta) ? delta : 0));
-                const newValue  = Math.max(0, Math.min(clock.max, clock.value + safeDelta));
-                html.find("#oni-prog-preview").html(`
-                  <div style="margin-bottom:4px;">${renderDots(clock.value, clock.max, newValue)}</div>
-                  <div style="font-size:.78rem;opacity:.65;">
-                    ${clock.value} → ${newValue} / ${clock.max}
-                    ${newValue === clock.value ? ' <em>(no change)</em>' : ""}
-                  </div>`);
-              }
-              html.find("#oni-prog-delta").on("input", () => {
-                const el = html.find("#oni-prog-delta");
-                const v  = parseInt(el.val(), 10);
-                if (Number.isFinite(v)) el.val(Math.max(-2, Math.min(2, v)));
-                updatePreview();
-              });
-              html.find("#oni-prog-clock").on("change", updatePreview);
-              html.find("#oni-prog-minus").on("click", () => {
-                const el = html.find("#oni-prog-delta");
-                el.val(Math.max(-2, parseInt(el.val() ?? "0", 10) - 1));
-                updatePreview();
-              });
-              html.find("#oni-prog-plus").on("click", () => {
-                const el = html.find("#oni-prog-delta");
-                el.val(Math.min(2, parseInt(el.val() ?? "0", 10) + 1));
-                updatePreview();
-              });
-              updatePreview();
-            },
-          });
-          dlg.render(true);
-        });
-
-        console.debug(TAG, "[pre] dialog result:", result ? { clockName: result.clock?.name, delta: result.delta } : "NULL");
-        if (!result) { console.debug(TAG, "[pre] dialog cancelled"); return null; }
+        const result = await showProgressOverlay(clocks);
+        console.debug(TAG, "[pre] result:", result ? { clockName: result.clock?.name, delta: result.delta } : "NULL");
+        if (!result) return null;
 
         const { clock, delta } = result;
-        if (delta === 0) { console.debug(TAG, "[pre] delta is 0, no change"); return null; }
+        if (delta === 0) return null;
 
         const newValue = Math.max(0, Math.min(clock.max, clock.value + delta));
         if (newValue === clock.value) {
           ui.notifications?.info(`[Opportunity] "${clock.name}" is already at its limit.`);
-          console.debug(TAG, "[pre] clock already at limit");
           return null;
         }
 
         return { clockId: clock.id, clockName: clock.name, oldValue: clock.value, newValue, max: clock.max };
       },
 
-      // ── Post phase: apply clock update + post result card ──────────────────
       async post(ctx, preResult) {
-        const { clockId, clockName, oldValue, newValue, max } = preResult ?? {};
+        if (!preResult) return;
+        const { clockId, clockName, oldValue, newValue, max } = preResult;
 
         const db = window.clockDatabase;
         if (!db) { console.error(TAG, "[post] clockDatabase not available"); return; }
 
-        console.debug(TAG, "[post] updating clock:", clockName, "|", oldValue, "→", newValue);
-        await db.update({ id: clockId, value: newValue })
-          .catch(e => console.error(TAG, "[post] clockDatabase.update failed:", e));
+        const step       = newValue > oldValue ? 1 : -1;
+        const isIncrease = step > 0;
 
-        console.debug(TAG, "[post] posting result card...");
+        const { spot, clockEl } = await createSpotlight(clockId);
+
+        for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
+          await db.update({ id: clockId, value: v })
+            .catch(e => console.error(TAG, "[post] update failed:", e));
+          playSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
+          emitParticleBurst(clockEl, isIncrease);
+          await delay(200);
+        }
+
+        await destroySpotlight(spot);
         await postProgressCard({ actorName: ctx.actorName, clockName, oldValue, newValue, max });
         console.debug(TAG, "[done]");
       },
