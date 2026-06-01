@@ -147,6 +147,25 @@ function ensureBaseStyles() {
       white-space: nowrap;
       z-index: 1;
     }
+    /* Stamp-impact animation — fires only on transitions from
+       clickable → disabled IN-PLACE (peer commits an action-creating
+       reaction while the menu is open). Initial-spawn stamps don't
+       play this; refreshBladesInPlace gates the class application.
+       Keyframes simulate a physical stamp: large + over-rotated + clear
+       on entry → squashes past the resting size → tiny bounce up →
+       settles at the static rotation/scale. End state matches the
+       static is-disabled::after rule so removing is-stamping
+       after the animation creates a seamless visual join. */
+    @keyframes fud-stamp-impact {
+      0%   { transform: translate(-50%, -50%) rotate(-26deg) scale(2.8); opacity: 0; }
+      35%  { opacity: 1; }
+      55%  { transform: translate(-50%, -50%) rotate(-4deg)  scale(0.86); opacity: 1; }
+      75%  { transform: translate(-50%, -50%) rotate(-10deg) scale(1.10); }
+      100% { transform: translate(-50%, -50%) rotate(-8deg)  scale(1.00); opacity: 1; }
+    }
+    .fud-react-menu .blade.is-disabled.is-stamping::after{
+      animation: fud-stamp-impact 280ms cubic-bezier(0.22, 0.7, 0.3, 1.05) both;
+    }
     .fud-react-menu .blade.is-pass{
       filter:saturate(0.55) brightness(0.96);
       font-size:11.5px;
@@ -456,13 +475,32 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
       const lbl = disabledLabelFor(it.candidate);
       const hadDisabled = it.btn.classList.contains("is-disabled");
       if (lbl) {
-        if (!hadDisabled) it.btn.classList.add("is-disabled");
         const cur = it.btn.getAttribute("data-disabled-reason");
         if (cur !== lbl) it.btn.setAttribute("data-disabled-reason", lbl);
+        if (!hadDisabled) {
+          it.btn.classList.add("is-disabled");
+          // Stamp-impact animation — only on the transition from
+          // clickable → disabled. Re-running the keyframes reliably
+          // requires the class to be off, a reflow, then on again
+          // (resets the animation engine even when nothing else
+          // changed). setTimeout cleanup so the class doesn't
+          // accumulate; safer than animationend (no listener leak
+          // if the menu closes mid-animation).
+          try { it.btn.classList.remove("is-stamping"); } catch {}
+          void it.btn.offsetWidth;  // force layout reflow to restart animation
+          it.btn.classList.add("is-stamping");
+          if (it._stampTimer) { try { clearTimeout(it._stampTimer); } catch {} }
+          it._stampTimer = setTimeout(() => {
+            try { it.btn.classList.remove("is-stamping"); } catch {}
+            it._stampTimer = null;
+          }, 320);
+        }
         it.btn.style.cursor = "default";
       } else {
         if (hadDisabled) it.btn.classList.remove("is-disabled");
+        if (it.btn.classList.contains("is-stamping")) it.btn.classList.remove("is-stamping");
         if (it.btn.hasAttribute("data-disabled-reason")) it.btn.removeAttribute("data-disabled-reason");
+        if (it._stampTimer) { try { clearTimeout(it._stampTimer); } catch {} it._stampTimer = null; }
         it.btn.style.cursor = "";
       }
     }
@@ -534,6 +572,9 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
     try { detachTooltip?.(); } catch {}
     try { hideDescTooltip(); } catch {}
     try { ticker.remove(tickFn); } catch {}
+    for (const it of items) {
+      if (it._stampTimer) { try { clearTimeout(it._stampTimer); } catch {} it._stampTimer = null; }
+    }
     try { root.remove(); } catch {}
     for (const fn of manualHookCleanups) {
       try { fn(); } catch {}
