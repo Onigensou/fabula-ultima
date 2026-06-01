@@ -305,12 +305,26 @@ export async function saveDirectorState(director, opts = {}) {
   if (opts.skipHistory) return;
   try {
     const actors = await snapshotCombatantActors(dc);
+    // Snapshot standaloneFired entries at save time so a rewind can
+    // restore EXACTLY the reaction decisions that existed when the
+    // save was taken. Previously the rewind path cleared the flag
+    // wholesale — that wiped decisions made BEFORE the save (e.g.
+    // Hina clicked HS, save fires, then rewind → Hina's "fired"
+    // entry vanishes → HS re-spawns on SRW re-entry, even though
+    // she'd already committed to it in the rewound timeline).
+    let standaloneFired = null;
+    try {
+      standaloneFired = dc.scene.getFlag(FLAG_NS, "standaloneFired") ?? null;
+    } catch (e) {
+      warn("persistence.save: standaloneFired snapshot failed", e);
+    }
     const entry = {
       ...state,
       id: foundry.utils?.randomID?.() ?? `hist-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       label: String(opts.label ?? ""),
       description: String(opts.description ?? ""),
       actors,
+      ...(standaloneFired ? { standaloneFired } : {}),
     };
     await pushToHistory(dc.scene, entry);
   } catch (e) {
@@ -927,22 +941,35 @@ export async function rewindToHistorySnapshot(snapshotId) {
     warn("rewindToHistorySnapshot: directorState rewrite failed", e);
   }
 
-  // 5. Clear the standalone-reaction idempotency flag. Every entry in
-  //    that flag refers to a decision that landed on the post-rewind
-  //    timeline — a timeline that no longer exists. Without this clear,
-  //    re-dispatching turn_start (or any standalone trigger) for a
-  //    round/turn that was already played out filters every candidate
-  //    out as "already handled," and the player sees no reaction UI
-  //    despite the rewound state being functionally fresh. Lazy import
-  //    to avoid the same cycle clearAllDirectorStateFlags dodges.
+  // 5. Restore the standalone-reaction idempotency flag from the
+  //    snapshot. The original implementation cleared this flag
+  //    wholesale on rewind — the rationale was "every entry refers to
+  //    a decision that landed on the post-rewind timeline." That's
+  //    wrong: decisions made BEFORE the save (Hina clicking HS, save
+  //    fires) are part of the rewind target's state, not the
+  //    post-rewind timeline. Wiping them caused HS to re-spawn on
+  //    SRW re-entry after the rewound free action ran through.
+  //
+  //    Snapshots written post-this-commit carry `snapshot.standaloneFired`
+  //    (saveDirectorState captures the live flag value). Restore it
+  //    verbatim. Older snapshots lack the field — fall back to the
+  //    legacy clear-all behavior so they still resume coherently
+  //    (with the same misfire the user just reported, but at least
+  //    not broken).
   try {
-    const mod = await import("./standalone-reactions.js");
-    if (mod.clearStandaloneFiredFlag) {
-      await mod.clearStandaloneFiredFlag(scene);
-      log(`rewindToHistorySnapshot: cleared standalone-fired flag on "${scene.name}"`);
+    if (snapshot.standaloneFired) {
+      await scene.setFlag(FLAG_NS, "standaloneFired", snapshot.standaloneFired);
+      const n = Array.isArray(snapshot.standaloneFired.entries) ? snapshot.standaloneFired.entries.length : 0;
+      log(`rewindToHistorySnapshot: restored standalone-fired flag on "${scene.name}" (${n} entries)`);
+    } else {
+      const mod = await import("./standalone-reactions.js");
+      if (mod.clearStandaloneFiredFlag) {
+        await mod.clearStandaloneFiredFlag(scene);
+        log(`rewindToHistorySnapshot: legacy snapshot — cleared standalone-fired flag on "${scene.name}"`);
+      }
     }
   } catch (e) {
-    warn("rewindToHistorySnapshot: clearStandaloneFiredFlag failed", e);
+    warn("rewindToHistorySnapshot: standalone-fired restore failed", e);
   }
 
   return { ok: true, scene, dCombat, snapshot };
