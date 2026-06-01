@@ -13,6 +13,24 @@
  * - If the condition is true, the real value is applied.
  * - If the condition is false, the change value becomes the actor's source/base value for that key.
  *
+ * Recognized helpers:
+ *   aeWhen(status_or_crisis, value)        — status effect on bearer (Crisis is special)
+ *   aeUuidWhen(effect_uuid, value)         — specific effect by uuid
+ *   aeStatusWhen(status_id, value)         — specific status id
+ *   aeEquippedWhen(types, value)           — fires if ANY of comma-separated types are equipped
+ *   aeNotEquippedWhen(types, value)        — fires if NONE of comma-separated types are equipped
+ *                                            (gear-restricted passives: Dodge etc.)
+ *
+ * Equipment type tokens (for aeEquippedWhen / aeNotEquippedWhen):
+ *   shield         → item.props.item_type === "shield"
+ *   armor          → item.props.item_type === "armor"
+ *   martial_armor  → item.props.item_type === "armor" AND props.isMartial truthy
+ *   weapon         → item.props.item_type === "weapon"
+ *
+ * Example for Dodge ("As long as you have no shields and no martial armor equipped,
+ * Defense += SL"):
+ *   { key: "bonus_defense", value: 'aeNotEquippedWhen("shield,martial_armor", "${level}$")', mode: 2 }
+ *
  * Why V6:
  * - Patching ActiveEffect.apply is the path that actually affects CSB's final applied value.
  * - Returning null can break CustomActor recalculation.
@@ -28,7 +46,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.3.0-affinity-false-fallback-na-2026-05-05";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -229,7 +247,40 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen)\s*\(/i.test(value);
+  }
+
+  // Does the actor have any equipped item matching the requested type
+  // tokens? Token grammar mirrors the director-side `HAS_SHIELD` /
+  // `HAS_MARTIAL_ARMOR` formulas in skill-formulas.js so authoring stays
+  // consistent across the two layers:
+  //
+  //   "shield"         → item_type === "shield"
+  //   "armor"          → item_type === "armor"
+  //   "martial_armor"  → item_type === "armor" AND props.isMartial truthy
+  //   "weapon"         → item_type === "weapon"
+  //
+  // Multiple tokens may be comma-separated; the function returns true
+  // on the FIRST equipped match. Unknown tokens silently miss (no
+  // throw — keeps a stale formula from breaking the entire AE chain).
+  function hasAnyItemTypeEquipped(actor, typeListStr) {
+    if (!actor?.items?.contents) return false;
+    const wanted = String(typeListStr ?? "")
+      .split(/[,;]/g).map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (!wanted.length) return false;
+    for (const it of actor.items.contents) {
+      if (!it.system?.isEquipped) continue;
+      const p = it.system?.props ?? {};
+      const itemType = String(p.item_type ?? "").trim().toLowerCase();
+      const isMartial = !!p.isMartial;
+      for (const tok of wanted) {
+        if (tok === "shield" && itemType === "shield") return true;
+        if (tok === "armor"  && itemType === "armor")  return true;
+        if (tok === "weapon" && itemType === "weapon") return true;
+        if (tok === "martial_armor" && itemType === "armor" && isMartial) return true;
+      }
+    }
+    return false;
   }
 
   function resolveActorFromEffect(effect, explicitActor = null) {
@@ -707,7 +758,7 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
     const text = String(rawValue ?? "").trim();
 
     const match = text.match(
-      /^\s*(?:\$\{\s*)?(aeWhen|aeUuidWhen|aeStatusWhen)\s*\(\s*(['"])(.*?)\2\s*,\s*(?:(['"])(.*?)\4|([^)]*?))\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen)\s*\(\s*(['"])(.*?)\2\s*,\s*(?:(['"])(.*?)\4|([^)]*?))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (!match) {
@@ -774,6 +825,13 @@ if (helperNorm === "aewhen") {
   active = hasEffectUuid(actor, parsed.query, effect);
 } else if (helperNorm === "aestatuswhen") {
   active = hasEffectStatus(actor, parsed.query, effect);
+} else if (helperNorm === "aeequippedwhen") {
+  // ANY of the listed types is equipped → active
+  active = hasAnyItemTypeEquipped(actor, parsed.query);
+} else if (helperNorm === "aenotequippedwhen") {
+  // NONE of the listed types is equipped → active
+  // Pattern: gear-restricted passives (Dodge: no shield + no martial armor).
+  active = !hasAnyItemTypeEquipped(actor, parsed.query);
 }
 
   const result = {

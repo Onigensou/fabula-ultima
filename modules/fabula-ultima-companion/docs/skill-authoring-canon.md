@@ -112,16 +112,30 @@ behavior goes:
      props. Combine for hybrid formulas like `${ins_current + level * 2}$`
      (would need both — actor's INS plus 2×skill SL).
 
-     **Conditional gates.** RAW rules like Dodge's "as long as you
-     have no shields and no martial armor" are NOT enforced at the
-     engine level — the director's `HAS_SHIELD` / `HAS_MARTIAL_ARMOR`
-     formulas don't bridge to CSB AEF, and `aeWhen` /
-     `aeStatusWhen` (the existing conditional-change-gate helpers)
-     only gate on actor status effects, not equipment. For now,
-     these gates are **player-honour** — the player simply doesn't
-     equip the disallowed gear when they want the bonus. Future
-     work: extend the conditional gate with `aeEquippedWhen("shield",
-     ...)`.
+     **Conditional gates.** CSB AEF supports five gate helpers (see
+     [syntaxExtender-conditionalChangeGate.js](modules/fabula-ultima-companion/scripts/syntax-extender/syntaxExtender-conditionalChangeGate.js)
+     for the full spec):
+     - `aeWhen("Crisis" | "<status>", value)` — bearer status / Crisis state
+     - `aeUuidWhen("Item.X.ActiveEffect.Y", value)` — specific AE uuid
+     - `aeStatusWhen("<status_id>", value)` — specific status id
+     - `aeEquippedWhen("shield,armor,weapon,martial_armor", value)` —
+       fires if ANY of the comma-separated types is equipped
+     - `aeNotEquippedWhen(..., value)` — fires if NONE of them is
+
+     `aeNotEquippedWhen` is the canonical pattern for gear-restricted
+     passives. Dodge ("no shields and no martial armor"):
+     ```js
+     { key: "bonus_defense",
+       value: 'aeNotEquippedWhen("shield,martial_armor", "${level}$")',
+       mode: 2 }
+     ```
+     When the bearer equips a shield OR martial armor, the gate
+     evaluates false and the change falls back to bonus_defense's
+     base value (0 contribution from this AE). Add 2026-06-01.
+
+     Token grammar mirrors the director-side `HAS_SHIELD` /
+     `HAS_MARTIAL_ARMOR` formula identifiers in skill-formulas.js so
+     authoring stays consistent across the two layers.
 
 ### Proposed rule 5 — scope by folder, not by name
 
