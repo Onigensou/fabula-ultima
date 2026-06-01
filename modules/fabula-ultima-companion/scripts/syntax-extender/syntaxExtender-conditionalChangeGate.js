@@ -269,8 +269,12 @@
       .split(/[,;]/g).map(s => s.trim().toLowerCase()).filter(Boolean);
     if (!wanted.length) return false;
     for (const it of actor.items.contents) {
-      if (!it.system?.isEquipped) continue;
+      // CSB stores isEquipped at system.props.isEquipped (NOT
+      // system.isEquipped — that path stays undefined on CSB items).
+      // Verified live 2026-06-01 by inspecting Blanche's Ignis Shield
+      // post-update via both paths.
       const p = it.system?.props ?? {};
+      if (!p.isEquipped) continue;
       const itemType = String(p.item_type ?? "").trim().toLowerCase();
       const isMartial = !!p.isMartial;
       for (const tok of wanted) {
