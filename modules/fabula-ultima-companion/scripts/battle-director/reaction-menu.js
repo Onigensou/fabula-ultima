@@ -104,14 +104,48 @@ function ensureBaseStyles() {
       margin-left:-6px; filter:brightness(1.04);
       box-shadow:0 6px 0 var(--fud-react-shadow), 0 0 0 1px var(--fud-react-highlight) inset;
     }
-    .fud-react-menu .blade.is-auto,
-    .fud-react-menu .blade.is-disabled{
+    .fud-react-menu .blade.is-auto{
       cursor:default; filter:grayscale(0.55) brightness(0.92); opacity:0.75;
     }
-    .fud-react-menu .blade.is-auto:hover,
-    .fud-react-menu .blade.is-disabled:hover{
+    .fud-react-menu .blade.is-auto:hover{
       margin-left:0; filter:grayscale(0.55) brightness(0.92);
       box-shadow:0 4px 0 var(--fud-react-shadow), 0 0 0 1px var(--fud-react-highlight) inset;
+    }
+    /* Disabled blade: muted under-blade + red rubber-stamp overlay
+       (legacy "Used" stamp pattern from turn-ui-manager.js). The blade
+       stays readable underneath so the player can identify which
+       reaction the stamp is over. */
+    .fud-react-menu .blade.is-disabled{
+      cursor:default;
+      filter:grayscale(0.45) brightness(0.88);
+      opacity:0.78;
+      overflow:visible;
+    }
+    .fud-react-menu .blade.is-disabled:hover{
+      margin-left:0; filter:grayscale(0.45) brightness(0.88);
+      box-shadow:0 4px 0 var(--fud-react-shadow), 0 0 0 1px var(--fud-react-highlight) inset;
+    }
+    .fud-react-menu .blade.is-disabled::after{
+      content: attr(data-disabled-reason);
+      position:absolute;
+      top:50%; left:50%;
+      transform: translate(-50%, -50%) rotate(-8deg);
+      font-family:"Cinzel","Georgia",serif;
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      color: rgba(200,16,16,1);
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.7),
+        0 0 1px rgba(120,0,0,.9);
+      padding: 2px 10px;
+      border: 2px solid rgba(200,16,16,.95);
+      border-radius: 4px;
+      background: rgba(255,238,228,.55);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1;
     }
     .fud-react-menu .blade.is-pass{
       filter:saturate(0.55) brightness(0.96);
@@ -130,6 +164,9 @@ function ensureBaseStyles() {
       object-fit:cover; flex:0 0 auto;
       background:rgba(255,255,255,.4);
     }
+    /* Auto-mode chip (passive that auto-fires on match). Stays as a
+       right-edge tag — semantically different from the disabled stamp
+       and never co-occurs (auto-mode blades are non-disabled). */
     .fud-react-menu .blade .auto-tag{
       margin-left:auto; padding-left:8px;
       color:#7a4a3a; font-weight:900; letter-spacing:.5px; font-size:10px;
@@ -264,10 +301,18 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
       const isAuto = candidate?.mode === "on";
       if (isAuto) btn.classList.add("is-auto");
       const disabledLbl = disabledLabelFor(candidate);
-      if (disabledLbl) btn.classList.add("is-disabled");
-      const tag = isAuto
-        ? `<span class="auto-tag">Auto</span>`
-        : (disabledLbl ? `<span class="auto-tag">${escapeHtml(disabledLbl)}</span>` : "");
+      if (disabledLbl) {
+        btn.classList.add("is-disabled");
+        // Rubber-stamp overlay — text comes from data-disabled-reason
+        // via the ::after pseudo-element. NOT rendered as a child span
+        // so the stamp can overlay-rotate over the blade body
+        // (legacy turn-ui-manager.js "is-used" pattern).
+        btn.setAttribute("data-disabled-reason", disabledLbl);
+      }
+      // Auto-mode chip stays as a right-edge tag — never co-occurs with
+      // disabled (auto blades fire silently; the disabled stamp would
+      // never apply to one).
+      const tag = isAuto ? `<span class="auto-tag">Auto</span>` : "";
       btn.innerHTML = `${iconHtml}<span class="label">${escapeHtml(safeName)}</span>${tag}`;
       // Dwell-tooltip — same surface as the action card's pill row.
       // The shared desc-tooltip module reads data-fud-equip-desc /
@@ -395,8 +440,10 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
     }
   }
 
-  // In-place blade DOM mutation. Toggles `.is-disabled` and the
-  // `.auto-tag` chip text to match the live disabled state. NEVER
+  // In-place blade DOM mutation. Toggles `.is-disabled` class and the
+  // `data-disabled-reason` attribute — the rubber-stamp ::after
+  // pseudo-element re-reads the attr on every style recalc, so the
+  // stamp text updates without touching any child nodes. NEVER
   // re-spawns the menu — the entrance-animation replay would be jarring
   // to the user (the load-bearing requirement here).
   //
@@ -405,25 +452,17 @@ function spawnMenuInternal({ director, token, combatId, candidates, onPick, onPa
   function refreshBladesInPlace() {
     for (const it of items) {
       if (it.isPass || !it.candidate) continue;
-      const isAuto = it.candidate.mode === "on";
-      if (isAuto) continue;  // auto chip is permanent; no live toggle
+      if (it.candidate.mode === "on") continue;  // auto chip stays put
       const lbl = disabledLabelFor(it.candidate);
       const hadDisabled = it.btn.classList.contains("is-disabled");
-      const tagEl = it.btn.querySelector(".auto-tag");
       if (lbl) {
         if (!hadDisabled) it.btn.classList.add("is-disabled");
-        if (tagEl) {
-          if (tagEl.textContent !== lbl) tagEl.textContent = lbl;
-        } else {
-          const span = document.createElement("span");
-          span.className = "auto-tag";
-          span.textContent = lbl;
-          it.btn.appendChild(span);
-        }
+        const cur = it.btn.getAttribute("data-disabled-reason");
+        if (cur !== lbl) it.btn.setAttribute("data-disabled-reason", lbl);
         it.btn.style.cursor = "default";
       } else {
         if (hadDisabled) it.btn.classList.remove("is-disabled");
-        if (tagEl) tagEl.remove();
+        if (it.btn.hasAttribute("data-disabled-reason")) it.btn.removeAttribute("data-disabled-reason");
         it.btn.style.cursor = "";
       }
     }
