@@ -32,6 +32,7 @@ import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
+import { initSfxAudition } from "./sfx-audition.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -535,22 +536,17 @@ async function resumeFromSavedState({ scene, state }) {
     }
   } else if (dCombat.currentTurnResolved) {
     resumeAt = STATES.TURN_END;
-  } else if ((dCombat.round ?? 0) === 1 && dCombat.currentCombatantId == null) {
-    // "Battle Start" rewind / cold resume — conflict_start hasn't
-    // completed yet (round=1 + no combatant picked is the unique
-    // shape of the PREP.onEnter save site, which runs AFTER building
-    // dCombat but BEFORE the conflict_start standalone handoff).
-    // Re-enter the same handoff so conflict_start reactions (High
-    // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
-    // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
-    // sees fresh candidates. For F5 mid-conflict_start the flag was
-    // NOT cleared so only un-decided reactors re-spawn menus.
-    director.ctx.standaloneTrigger = "conflict_start";
-    director.ctx.standaloneAfter   = STATES.ROUND_START;
-    director.ctx.standalonePayload = null;
-    resumeAt = STATES.STANDALONE_REACTION_WINDOW;
   } else if (facSummary.restored && (facSummary.queueSize > 0 || facSummary.hasPoppedRequest)) {
-    // A2 — F5 hit mid-free-action.
+    // A2 — F5 or rewind hit mid-free-action.
+    //
+    // ORDER MATTERS: this branch must come BEFORE the Battle Start
+    // branch. The "Free action pending" save site at the SRW→FAW
+    // handoff fires while round=1 and currentCombatantId is still
+    // null (conflict_start hasn't completed its standaloneAfter exit
+    // yet) — exactly the shape Battle Start matches. Without this
+    // ordering, a rewind to "Free action pending" would re-dispatch
+    // conflict_start and the user would see the reaction menus again
+    // instead of resuming Zarg's Attack/Hinder picker.
     //
     // Three sub-cases:
     //   (a) hasPoppedRequest is true → a free action was in flight
@@ -577,6 +573,24 @@ async function resumeFromSavedState({ scene, state }) {
       director.ctx._postFreeActionTarget = STATES.TURN_START;
     }
     resumeAt = STATES.FREE_ACTION_WINDOW;
+  } else if ((dCombat.round ?? 0) === 1 && dCombat.currentCombatantId == null) {
+    // "Battle Start" rewind / cold resume — conflict_start hasn't
+    // completed yet (round=1 + no combatant picked is the unique
+    // shape of the PREP.onEnter save site, which runs AFTER building
+    // dCombat but BEFORE the conflict_start standalone handoff).
+    // Re-enter the same handoff so conflict_start reactions (High
+    // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
+    // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
+    // sees fresh candidates. For F5 mid-conflict_start the flag was
+    // NOT cleared so only un-decided reactors re-spawn menus.
+    //
+    // NB: the FAW branch above takes precedence when freeActionContext
+    // is non-empty, even at this round=1 shape. Battle Start only
+    // matches "no free action queued, conflict_start hasn't run yet."
+    director.ctx.standaloneTrigger = "conflict_start";
+    director.ctx.standaloneAfter   = STATES.ROUND_START;
+    director.ctx.standalonePayload = null;
+    resumeAt = STATES.STANDALONE_REACTION_WINDOW;
   } else {
     resumeAt = STATES.TURN_START;
   }
@@ -883,6 +897,11 @@ Hooks.once("ready", () => {
   // on every client so the GM-side director can fan cues / UI sync out to all.
   try { initDirectorSfx(); }
   catch (e) { warn("initDirectorSfx on ready threw", e); }
+
+  // SFX audition tool — floating GM button (bottom-left) to preview candidate
+  // hover / click / back UI cues before wiring them into the real menus.
+  try { initSfxAudition(); }
+  catch (e) { warn("initSfxAudition on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.
