@@ -987,6 +987,23 @@ function getBaseValueForChange(actor, change) {
   const key = String(change?.key ?? "").trim();
   if (!actor || !key) return "";
 
+  // Mode-aware identity values. The legacy source-fallback was
+  // designed for OVERRIDE-mode affinity gates (Dark Blood: when Crisis
+  // ends, affinity "RS" falls back to "NA"). For ADD/MULTIPLY-mode
+  // numeric gates like Dodge's bonus_defense ADD, the source-fallback
+  // returns the actor's STORED prop value (potentially huge from a
+  // prior cached derive) and ADDs it to the running total — a
+  // runaway. The author intent for a false ADD-mode gate is
+  // "contribute nothing," i.e. identity = 0; for MULTIPLY identity = 1.
+  // Verified live 2026-06-01: Zarg's bonus_defense climbed to 33 after
+  // equipping Bronze Shield because Dodge's ADD-mode change fell back
+  // to source (~30) instead of 0.
+  //
+  // Foundry CONST.ACTIVE_EFFECT_MODES: ADD=2, MULTIPLY=1.
+  const mode = Number(change?.mode);
+  if (mode === 2) return "0";  // ADD identity
+  if (mode === 1) return "1";  // MULTIPLY identity
+
   const pass = getActorPassData(actor);
   const sourceProps = pass?.sourceProps ?? {};
   const currentProps = pass?.currentProps ?? {};
