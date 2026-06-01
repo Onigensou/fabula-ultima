@@ -19,7 +19,7 @@ import { postActionCard, BattlefieldActionCard } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
-import { playStudyVfx, playActionNamecard, playMissVfx } from "./director-vfx.js";
+import { playStudyVfx, playActionNamecard, playMissVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
@@ -263,7 +263,17 @@ async function resolveSkillAction(director, ar, opts = {}) {
   if (!skipCost) {
     const costMap = new Map(Object.entries(ar.costSerialized ?? {}));
     if (costMap.size > 0) {
-      try { await debitCost(casterActor, costMap); }
+      try {
+        const debitRes = await debitCost(casterActor, costMap);
+        // Spend float over the caster's token, one per resource actually
+        // debited — so skill/spell casting costs animate like reaction costs.
+        if (debitRes?.ok) {
+          const payerTokenUuid = ar.attacker?.tokenUuid;
+          for (const [resource, amount] of Object.entries(debitRes.debited ?? {})) {
+            if (Number(amount) > 0) playResourceSpendVfx({ tokenUuid: payerTokenUuid, resource, amount: Number(amount) });
+          }
+        }
+      }
       catch (e) { warn("Skill resolve: debitCost threw", e); }
     }
   }
@@ -3289,6 +3299,8 @@ const Resolve = {
               const r = await spendIp(targetActor, cost);
               if (r?.ok) {
                 log(`Item created: ${cand.name} by ${ar.attacker?.name ?? "?"} (-${cost} IP)`);
+                const ipSpent = Number(r.spent ?? cost) || 0;
+                if (ipSpent > 0) playResourceSpendVfx({ tokenUuid: ar.attacker?.tokenUuid, resource: "ip", amount: ipSpent });
                 // D.5 closure — crafted items can also carry an active
                 // skill (the recipe casts the item's effect on creation
                 // in some classes, e.g. Tinkerer Magisphere "free spell").
@@ -3332,6 +3344,9 @@ const Resolve = {
       // fumble, no AE applies.
       if (!ar.success) {
         log(`Hinder failed against ${ar.target?.name ?? "?"} (roll ${ar.roll?.total ?? "?"} vs DL ${ar.dl})`);
+        // Failed opposed check — no status lands. Show the Miss flourish on
+        // the target, same as a whiffed attack/spell.
+        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
         const statusKey = String(ar.statusValue ?? "").toLowerCase();
         // Status definitions mirror HINDER_STATUSES in action-card.js.
@@ -3391,6 +3406,8 @@ const Resolve = {
       // skip the record so a fumble doesn't accidentally count.
       if (ar.roll?.isFumble) {
         log(`Study fumbled by ${ar.attacker.name} on ${ar.target?.name ?? "?"} — no record.`);
+        // Fumble = no information gained (RAW) — show the Miss flourish.
+        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
         const encApi = globalThis.FUCompanion?.api?.encyclopedia;
         if (!encApi?.recordResult) {
@@ -3419,15 +3436,25 @@ const Resolve = {
             }
           }
 
-          // Token VFX (green marker + audio cue) — mirrors the legacy
-          // encyclopedia VFX so the flavor lines up. Awaits the duration so
-          // the encyclopedia opens AFTER the marker has settled. Asset URLs
-          // are in the director's preload list, so first use during a
-          // battle is lag-free.
+          // Token VFX. A Study below the lowest reveal tier (Identity = 7)
+          // learns nothing — show the Miss flourish instead of the green
+          // "studied" marker, so a useless roll reads as a whiff. A Crit
+          // auto-promotes to full reveal regardless of total, so it's never
+          // treated as below-bar. Above the bar: the green marker, then the
+          // encyclopedia opens AFTER it settles (asset URLs are preloaded so
+          // first use during a battle is lag-free).
+          const STUDY_LOWEST_BAR = 7; // TIER_IDENTITY in encyclopedia-core.js
+          const studyTotal = Number(ar.roll?.total ?? 0) || 0;
+          const studyBelowBar = !ar.roll?.isCrit && studyTotal < STUDY_LOWEST_BAR;
           try {
-            await playStudyVfx({ targetTokenUuid: ar.target?.tokenUuid, durationMs: 2500 });
+            if (studyBelowBar) {
+              log(`Study below lowest bar (${studyTotal} < ${STUDY_LOWEST_BAR}) — Miss VFX.`);
+              playMissVfx({ tokenUuid: ar.target?.tokenUuid });
+            } else {
+              await playStudyVfx({ targetTokenUuid: ar.target?.tokenUuid, durationMs: 2500 });
+            }
           } catch (e) {
-            warn("RESOLVE Study: playStudyVfx threw", e);
+            warn("RESOLVE Study: study/miss VFX threw", e);
           }
 
           // Open the encyclopedia at the studied target's page on the GM
@@ -3705,6 +3732,32 @@ const StandaloneReactionWindow = {
         log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW → loop back to SRW`);
         ctx.standaloneAfter = STATES.FREE_ACTION_WINDOW;
         ctx._postFreeActionTarget = STATES.STANDALONE_REACTION_WINDOW;
+        // F5-survival checkpoint (A2). The save sites at PREP / TURN_START /
+        // CONFIRM / RESOLVE / TURN_END never fire between SRW's dispatch
+        // and the player picking their free action — without this explicit
+        // save, F5 mid-pipeline restores to a pre-SRW state where
+        // standaloneFired already records the click (filtering HS) AND
+        // the queue is empty (no FAW branch fires). The player's free
+        // action is then lost on resume.
+        //
+        // Saved AT THIS POINT (queue still populated, no _freeActionPopped
+        // yet) so resume's FAW branch re-runs the dequeue path cleanly
+        // — re-pops the same request, re-installs the grant, re-spawns
+        // DECLARE. The chain's consume_resource (MP debit) already
+        // committed to the actor, so no double-debit risk.
+        //
+        // skipHistory=true keeps the rewind list focused on player-
+        // visible commitments (action posts, turn boundaries) and not
+        // FSM internal transitions.
+        try {
+          await saveDirectorState(director, {
+            label: `Round ${director.dCombat?.round ?? 0} · Free action pending`,
+            description: `${freeActionQueue.size()} free action(s) queued; routing to FAW`,
+            skipHistory: true,
+          });
+        } catch (e) {
+          warn("STANDALONE_REACTION_WINDOW: pre-FAW save failed", e);
+        }
         director.enqueue({ type: INTENTS.INTERNAL_DONE });
         return;
       }
