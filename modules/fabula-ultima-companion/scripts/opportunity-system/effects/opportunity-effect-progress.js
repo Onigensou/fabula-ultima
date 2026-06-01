@@ -648,6 +648,14 @@
 
   // ── Effect registration ───────────────────────────────────────────────────────
   Hooks.once("ready", () => {
+    // Pre-load tick sounds into the browser HTTP cache so the first animation
+    // plays both ticks correctly (without pre-loading, the second Audio element
+    // created within the 300ms loop window hits a partial download and is silently
+    // rejected by the .catch in playTickSound).
+    [SFX_TICK_INC, SFX_TICK_DEC].forEach(url => {
+      try { const a = new Audio(url); a.preload = "auto"; a.load(); } catch {}
+    });
+
     window["oni.OppEffectRegistry"]?.register("progress", {
 
       async pre(ctx) {
