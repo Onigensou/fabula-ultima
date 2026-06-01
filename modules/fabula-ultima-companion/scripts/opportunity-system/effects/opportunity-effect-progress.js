@@ -23,6 +23,11 @@
     catch (_) { try { const a = new Audio(url); a.volume = vol; a.play().catch(() => {}); } catch {} }
   }
 
+  // Always creates a fresh Audio node — bypasses AudioHelper deduplication for rapid sequential plays.
+  function playTickSound(url, vol = 0.7) {
+    try { const a = new Audio(url); a.volume = vol; a.play().catch(() => {}); } catch {}
+  }
+
   // ── Utilities ────────────────────────────────────────────────────────────────
   const esc   = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
   const delay = ms => new Promise(r => setTimeout(r, ms));
@@ -319,7 +324,7 @@
       const p = document.createElement("div");
       p.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;
         width:7px;height:7px;border-radius:50%;background:${color};
-        pointer-events:none;z-index:100010;opacity:1;`;
+        pointer-events:none;z-index:100022;opacity:1;`;
       document.body.appendChild(p);
 
       const start = performance.now();
@@ -338,34 +343,40 @@
   }
 
   // ── Spotlight dim ─────────────────────────────────────────────────────────────
+  // Strategy: full-screen dim at z-index 100020, clock panel raised to 100021 so it
+  // punches through. Particles at 100022 sit above both.
   async function createSpotlight(clockId) {
-    const clockEl = document.querySelector(`#clock-panel .clock-entry[data-id="${CSS.escape(clockId)}"]`);
-    if (!clockEl) return { spot: null, clockEl: null };
+    const escaped = CSS.escape(clockId);
+    const clockEl =
+      document.querySelector(`.clock-entry[data-id="${escaped}"]`) ??
+      document.querySelector(`[data-id="${escaped}"]`);
+    const panelEl =
+      document.getElementById("clock-panel") ??
+      document.querySelector(".clock-panel");
 
-    const rect = clockEl.getBoundingClientRect();
-    const PAD  = 12;
-    const spot = document.createElement("div");
-    spot.style.cssText = `
-      position:fixed;
-      left:${rect.left  - PAD}px; top:${rect.top    - PAD}px;
-      width:${rect.width  + PAD * 2}px; height:${rect.height + PAD * 2}px;
-      box-shadow:0 0 0 10000px rgba(0,0,0,0);
-      border-radius:8px;z-index:99998;pointer-events:none;
-      transition:box-shadow 250ms ease-out;
-    `;
-    document.body.appendChild(spot);
-    void spot.offsetWidth;
-    spot.style.boxShadow = "0 0 0 10000px rgba(0,0,0,.55)";
+    const dim = document.createElement("div");
+    dim.style.cssText = `position:fixed;inset:0;z-index:100020;
+      background:rgba(0,0,0,0);pointer-events:none;
+      transition:background 250ms ease-out;`;
+    document.body.appendChild(dim);
+
+    const origPanelZ = panelEl?.style.zIndex ?? "";
+    if (panelEl) panelEl.style.zIndex = "100021";
+
+    void dim.offsetWidth;
+    dim.style.background = "rgba(0,0,0,.55)";
     await delay(260);
-    return { spot, clockEl };
+
+    return { dim, clockEl, panelEl, origPanelZ };
   }
 
-  async function destroySpotlight(spot) {
-    if (!spot) return;
-    spot.style.transition = "box-shadow 200ms ease-in";
-    spot.style.boxShadow  = "0 0 0 10000px rgba(0,0,0,0)";
+  async function destroySpotlight({ dim, panelEl, origPanelZ }) {
+    if (!dim) return;
+    dim.style.transition = "background 200ms ease-in";
+    dim.style.background = "rgba(0,0,0,0)";
     await delay(210);
-    spot.remove();
+    dim.remove();
+    if (panelEl) panelEl.style.zIndex = origPanelZ;
   }
 
   // ── Effect registration ───────────────────────────────────────────────────────
@@ -414,17 +425,18 @@
         const step       = newValue > oldValue ? 1 : -1;
         const isIncrease = step > 0;
 
-        const { spot, clockEl } = await createSpotlight(clockId);
+        const spotlight = await createSpotlight(clockId);
+        const { clockEl } = spotlight;
 
         try {
           for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
             db.update({ id: clockId, value: v });
-            playSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
+            playTickSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
             emitParticleBurst(clockEl, isIncrease);
             await delay(300);
           }
         } finally {
-          await destroySpotlight(spot);
+          await destroySpotlight(spotlight);
         }
 
         await postProgressCard({ actorName: ctx.actorName, clockName, oldValue, newValue, max });
