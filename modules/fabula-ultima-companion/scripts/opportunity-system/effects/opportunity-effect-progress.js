@@ -47,7 +47,7 @@
     clock_grave:     "Grave",
   };
 
-  function gatherAllClocks() {
+  async function gatherAllClocks() {
     const clocks = [];
 
     const db = window.clockDatabase;
@@ -58,24 +58,55 @@
       }));
     }
 
-    for (const actor of (game?.actors?.contents ?? [])) {
-      const props = actor.system?.props;
-      if (!props) continue;
-      for (const [key, rawVal] of Object.entries(props)) {
+    // Actor clocks — party members in slot order, then scene-only actors alphabetically
+    const actorIds = await getRelevantActorIds();
+    for (const actorId of actorIds) {
+      const actor = game.actors?.get(actorId);
+      if (!actor?.system?.props) continue;
+      for (const [key, rawVal] of Object.entries(actor.system.props)) {
         if (!(key in ACTOR_CLOCK_MAX)) continue;
         clocks.push({
-          id:      `a:${actor.id}:${key}`,
-          name:    `${actor.name} — ${ACTOR_CLOCK_LABEL[key] ?? key}`,
-          value:   parseInt(rawVal) || 0,
-          max:     ACTOR_CLOCK_MAX[key],
-          source:  "actor",
-          actorId: actor.id,
-          clockKey: key,
+          id:       `a:${actorId}:${key}`,
+          name:     `${actor.name} — ${ACTOR_CLOCK_LABEL[key] ?? key}`,
+          value:    parseInt(rawVal) || 0,
+          max:      ACTOR_CLOCK_MAX[key],
+          source:   "actor",
+          actorId,
+          clockKey:  key,
+          actorName: actor.name,
         });
       }
     }
 
     return clocks;
+  }
+
+  async function getRelevantActorIds() {
+    const ordered = [];
+    const seen    = new Set();
+
+    // Party members from db_resolver — in slot order (1–4)
+    try {
+      const result = await window.FUCompanion?.api?.getCurrentGameDb?.();
+      const props  = result?.db?.system?.props;
+      if (props) {
+        for (let i = 1; i <= 4; i++) {
+          const ref = props[`member_id_${i}`];
+          if (!ref) continue;
+          const id = ref.startsWith("Actor.") ? ref.slice(6) : ref;
+          if (id && !seen.has(id)) { seen.add(id); ordered.push(id); }
+        }
+      }
+    } catch {}
+
+    // Actors with tokens on the active scene — alphabetical, deduped
+    const sceneActors = (canvas?.tokens?.placeables ?? [])
+      .map(t => t.actor)
+      .filter(a => a?.id && !seen.has(a.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    for (const a of sceneActors) { seen.add(a.id); ordered.push(a.id); }
+
+    return ordered;
   }
 
   // ── SVG Clock ─────────────────────────────────────────────────────────────────
@@ -246,23 +277,30 @@
   async function showProgressOverlay(clocks) {
     ensureOverlayStyle();
     return new Promise(resolve => {
-      const globals = clocks.filter(c => c.source === "global");
-      const actors  = clocks.filter(c => c.source === "actor");
-      const hasGroups = globals.length > 0 && actors.length > 0;
-      let opts = "";
-      if (hasGroups) {
-        opts += `<optgroup label="Global Clocks">`;
-        for (const c of globals)
-          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value}/${c.max})</option>`;
-        opts += `</optgroup><optgroup label="Actor Clocks">`;
-        for (const c of actors)
-          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value}/${c.max})</option>`;
-        opts += `</optgroup>`;
-      } else {
-        opts = clocks.map((c, i) =>
-          `<option value="${i}">${esc(c.name)} (${c.value}/${c.max})</option>`
-        ).join("");
+      // Build optgroups: global clocks first, then per-actor groups (preserving order)
+      const globals   = clocks.filter(c => c.source === "global");
+      const actorMap  = new Map();
+      for (const c of clocks.filter(c => c.source === "actor")) {
+        if (!actorMap.has(c.actorId)) actorMap.set(c.actorId, { name: c.actorName, entries: [] });
+        actorMap.get(c.actorId).entries.push(c);
       }
+
+      let opts = "";
+      if (globals.length) {
+        opts += `<optgroup label="⏱ Global Clocks">`;
+        for (const c of globals)
+          opts += `<option value="${clocks.indexOf(c)}">${esc(c.name)} (${c.value} / ${c.max})</option>`;
+        opts += `</optgroup>`;
+      }
+      for (const [, grp] of actorMap) {
+        opts += `<optgroup label="◈ ${esc(grp.name)}">`;
+        for (const c of grp.entries) {
+          const lbl = ACTOR_CLOCK_LABEL[c.clockKey] ?? c.clockKey;
+          opts += `<option value="${clocks.indexOf(c)}">${esc(lbl)}  ${c.value} / ${c.max}</option>`;
+        }
+        opts += `</optgroup>`;
+      }
+      if (!opts) opts = `<option value="0" disabled>No clocks available</option>`;
 
       const ovl = document.createElement("div");
       ovl.id = "oni-prog-ovl";
@@ -409,8 +447,8 @@
     const s = document.createElement("style");
     s.id = "oni-prog-token-style";
     s.textContent = `
-      @keyframes oni-prog-token-in  { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
-      @keyframes oni-prog-token-out { from { opacity:1; transform:translateX(0);    } to { opacity:0; transform:translateX(-60px); } }
+      @keyframes oni-prog-token-in  { from { opacity:0; transform:translateX(-60px); } to { opacity:1; transform:translateX(0); } }
+      @keyframes oni-prog-token-out { from { opacity:1; transform:translateX(0);     } to { opacity:0; transform:translateX(60px); } }
     `;
     document.head.appendChild(s);
   }
@@ -446,11 +484,8 @@
     let cy = window.innerHeight / 2;
 
     if (pos) {
-      cx = pos.screenX;
-      cy = pos.screenY;
-      const svgSize = Math.max(80, Math.min(140, pos.tokenW));
-      const pad = 10;
-
+      // Glow ring around token
+      const pad = 8;
       glowRing = document.createElement("div");
       glowRing.style.cssText = `
         position:fixed;
@@ -465,10 +500,17 @@
       `;
       document.body.appendChild(glowRing);
 
+      // SVG clock — smaller, positioned above the token's head
+      const svgSize = Math.max(52, Math.min(80, pos.tokenW * 0.65));
+      const svgLeft = pos.screenX - svgSize / 2;
+      const svgTop  = pos.screenY - pos.tokenH / 2 - svgSize - 6;
+      cx = svgLeft + svgSize / 2;
+      cy = svgTop  + svgSize / 2;
+
       svgOverlay = document.createElement("div");
       svgOverlay.style.cssText = `
         position:fixed;
-        left:${cx - svgSize / 2}px; top:${cy - svgSize / 2}px;
+        left:${svgLeft}px; top:${svgTop}px;
         width:${svgSize}px; height:${svgSize}px;
         z-index:100022;pointer-events:none;
         animation:oni-prog-token-in 280ms ease-out forwards;
@@ -560,7 +602,7 @@
       async pre(ctx) {
         console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-        const clocks = gatherAllClocks();
+        const clocks = await gatherAllClocks();
         if (!clocks.length) {
           ui.notifications?.warn("[Opportunity] No clocks found.");
           return null;
