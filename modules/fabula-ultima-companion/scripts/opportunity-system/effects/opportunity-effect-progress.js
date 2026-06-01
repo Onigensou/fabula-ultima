@@ -12,7 +12,7 @@
 
   // ── Sounds ──────────────────────────────────────────────────────────────────
   const SFX_UI_OPEN  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Equip1.ogg";
-  const SFX_REEL     = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/fastReel.wav";
+  const SFX_CURSOR   = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav";
   const SFX_TICK_INC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SFX_TINK.wav";
   const SFX_TICK_DEC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/collision_1.wav";
   const SFX_CONFIRM  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/opportunity_confirmed.wav";
@@ -259,13 +259,13 @@
       document.getElementById("oni-prog-minus").addEventListener("click", () => {
         const el = document.getElementById("oni-prog-delta");
         el.value = Math.max(-2, parseInt(el.value ?? "0", 10) - 1);
-        playSound(SFX_REEL, 0.65);
+        playSound(SFX_CURSOR, 0.65);
         updatePreview();
       });
       document.getElementById("oni-prog-plus").addEventListener("click", () => {
         const el = document.getElementById("oni-prog-delta");
         el.value = Math.min(2, parseInt(el.value ?? "0", 10) + 1);
-        playSound(SFX_REEL, 0.65);
+        playSound(SFX_CURSOR, 0.65);
         updatePreview();
       });
       document.getElementById("oni-prog-delta").addEventListener("input", () => {
@@ -416,15 +416,17 @@
 
         const { spot, clockEl } = await createSpotlight(clockId);
 
-        for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
-          await db.update({ id: clockId, value: v })
-            .catch(e => console.error(TAG, "[post] update failed:", e));
-          playSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
-          emitParticleBurst(clockEl, isIncrease);
-          await delay(200);
+        try {
+          for (let v = oldValue + step; isIncrease ? v <= newValue : v >= newValue; v += step) {
+            db.update({ id: clockId, value: v });
+            playSound(isIncrease ? SFX_TICK_INC : SFX_TICK_DEC, 0.7);
+            emitParticleBurst(clockEl, isIncrease);
+            await delay(300);
+          }
+        } finally {
+          await destroySpotlight(spot);
         }
 
-        await destroySpotlight(spot);
         await postProgressCard({ actorName: ctx.actorName, clockName, oldValue, newValue, max });
         console.debug(TAG, "[done]");
       },
