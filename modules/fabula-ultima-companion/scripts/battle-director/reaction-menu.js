@@ -142,7 +142,7 @@ function ensureBaseStyles() {
       padding: 2px 10px;
       border: 2px solid rgba(200,16,16,.95);
       border-radius: 4px;
-      background: rgba(255,238,228,.55);
+      background: rgba(255,238,228,.88);
       pointer-events: none;
       white-space: nowrap;
       z-index: 1;

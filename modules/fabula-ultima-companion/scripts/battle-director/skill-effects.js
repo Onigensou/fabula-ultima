@@ -640,8 +640,13 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
     }
   }
   if (!out.sufficient) {
+    // Short two-word badge ("Low MP", "Low MP/HP") — mirrors the
+    // legacy "No Charge" pattern from turn-ui-manager.js. Rubber-stamp
+    // overlay has limited horizontal space; longer phrases like
+    // "Not enough MP" overflowed shorter blades. The "Low" semantic
+    // covers both empty-pool and partial-pool shortfalls.
     const names = out.shortfalls.map((s) => s.resource.toUpperCase()).join("/");
-    out.badge = `Not enough ${names}`;
+    out.badge = `Low ${names}`;
   }
   return out;
 }
