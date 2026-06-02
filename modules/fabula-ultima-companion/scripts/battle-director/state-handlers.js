@@ -2980,6 +2980,14 @@ const Confirm = {
       }
     }
 
+    // Critical-hit cut-in — fire it AS the action card (with the roll result)
+    // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
+    // alongside the card while the player reads the crit roll and confirms.
+    // No-ops unless ar.roll.isCrit; the renderer skips silently if the
+    // attacker has no cut_in_critical art. Per pass: each pass shows its own
+    // card + roll, so a crit on any pass still gets its cinematic.
+    playCritCutin(ar);
+
     const result = await postActionCard({
       director,
       kind: ar.kind,
@@ -3135,13 +3143,8 @@ const Resolve = {
       return;
     }
 
-    // Critical-hit cut-in for the attacker. Fire-and-forget so the cinematic
-    // (~2s slide-in) plays alongside damage application rather than blocking
-    // the FSM. No-ops unless ar.roll.isCrit; cutinBroadcast self-debounces, so
-    // multi-pass/multi-target resolves won't stack duplicate cut-ins. The
-    // strict cache-only renderer skips silently if the attacker has no
-    // cut_in_critical art preloaded.
-    playCritCutin(ar);
+    // (Critical-hit cut-in now fires in CONFIRM, as the action card with the
+    // roll result appears — see Confirm.onEnter. Not replayed here.)
 
     if (ar.kind === "Attack") {
       // Single-pass damage application. Multi-pass two-weapon attacks
