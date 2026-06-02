@@ -187,6 +187,9 @@ Register the entry in [`data-migrations/_manifest.json`](../data-migrations/_man
 - **Canon (read first):** [skill-authoring-canon.md](skill-authoring-canon.md)
 - **Design rationale:** [battle-director-design.md](battle-director-design.md)
 - **Reaction schema:** [reaction-config-schema.md](reaction-config-schema.md)
+- **Reaction architecture (3 locked contracts):** [reaction-architecture.md](reaction-architecture.md) — visibility ladder, FIFO ordering, child-card stacking
+- **Force mode rule + canonical rows:** [force-mode.md](force-mode.md) — when a passive row should be `reaction_passive_mode: "force"`
+- **Director test harness (full API):** [director-test-harness.md](director-test-harness.md) — the standard for verifying any action without launching combat
 - **Payload shape:** [action-payload-shape.md](action-payload-shape.md)
 - **Skill roadmap:** [battle-director-skill-roadmap.md](battle-director-skill-roadmap.md)
 - **Project root rules:** [/CLAUDE.md](../../../CLAUDE.md)
