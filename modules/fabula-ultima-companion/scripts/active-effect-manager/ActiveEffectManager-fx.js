@@ -205,6 +205,7 @@
 
     const hasDebuff = categories.includes("Debuff");
     const hasBuff = categories.includes("Buff");
+    const hasOther = categories.includes("Other");
 
     // Debuff wins if mixed.
     if (hasDebuff) {
@@ -218,23 +219,22 @@
       };
     }
 
-    if (hasBuff) {
+    if (hasBuff || hasOther) {
       return {
         ok: true,
-        kind: "buff",
-        color: DEFAULTS.buffColor,
+        kind: hasBuff ? "buff" : "other",
+        color: hasBuff ? DEFAULTS.buffColor : DEFAULTS.otherColor,
         soundSrc: RECOVERY_SFX,
         categories,
         rows
       };
     }
 
-    // "Other" / unclassified rows intentionally produce no FX until we
-    // design a distinct UX for them.
     return {
-      ok: false,
-      kind: "none",
-      reason: "other_category_suppressed",
+      ok: true,
+      kind: "other",
+      color: DEFAULTS.otherColor,
+      soundSrc: RECOVERY_SFX,
       categories,
       rows
     };

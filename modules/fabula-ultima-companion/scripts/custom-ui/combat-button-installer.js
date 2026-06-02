@@ -96,12 +96,6 @@ Hooks.once("ready", () => {
     const getMacroByNameOrNull = (name) => game.macros?.getName?.(name) ?? null;
 
     const getCombatStateOnActiveScene = () => {
-      // Director-mode runs WITHOUT a Foundry Combat doc, so check the
-      // director API first. If a director is running on this client, treat
-      // the button as "in combat" so it shows End-Battle.
-      const directorApi = globalThis.FUCompanion?.api?.experimental?.battleDirector;
-      if (directorApi?.isRunning?.()) return { hasCombat: true, source: "director" };
-
       const activeScene = canvas?.scene ?? null;
       const activeSceneId = activeScene?.id ?? null;
 
@@ -114,7 +108,7 @@ Hooks.once("ready", () => {
         matches.find(c => (c.combatants?.size ?? 0) > 0) ??
         null;
 
-      return { hasCombat: !!picked, source: picked ? "foundry-combat" : null };
+      return { hasCombat: !!picked };
     };
 
     const ensureStyle = () => {
@@ -313,12 +307,6 @@ Hooks.once("ready", () => {
 
       // SUPER IMPORTANT for your scene-jumping battle flow
       hook("canvasReady", refreshState);
-
-      // Director-mode has no Foundry Combat doc, so the createCombat /
-      // deleteCombat hooks don't fire when a director battle starts/ends.
-      // Listen on the director's own start/stop hooks instead.
-      hook("fu-director-started", refreshState);
-      hook("fu-director-stopped", refreshState);
 
       return btn;
     };

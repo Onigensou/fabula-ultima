@@ -591,45 +591,6 @@
     }
   } catch (e) {}
 
-  // Defense-in-depth for Battle Director reload-survival: unset any
-  // `directorState` flag left on any scene. The director's stop() path
-  // already clears this when the GM uses the End-Battle button, but a
-  // crashed/aborted stop() (or a legacy-flow BattleEnd that bypasses
-  // the Director Manager entirely) could leave a stale flag that would
-  // auto-resume a non-existent battle on the next world load.
-  // (Same defense-in-depth pattern as the canonical payload clear above
-  // — see preload-stale-payload-bug feedback.)
-  //
-  // Also clears the `directorHistory` flag (rewind tool's rolling 20-
-  // save buffer). Same rationale: a previous battle's history shouldn't
-  // appear in the next battle's rewind panel.
-  try {
-    let clearedDirectorState = 0;
-    let clearedDirectorHistory = 0;
-    for (const s of game.scenes ?? []) {
-      const stateFlag = s.getFlag("fabula-ultima-companion", "directorState");
-      if (stateFlag !== undefined) {
-        await s.unsetFlag("fabula-ultima-companion", "directorState");
-        clearedDirectorState += 1;
-      }
-      const historyFlag = s.getFlag("fabula-ultima-companion", "directorHistory");
-      if (historyFlag !== undefined) {
-        await s.unsetFlag("fabula-ultima-companion", "directorHistory");
-        clearedDirectorHistory += 1;
-      }
-    }
-    if (clearedDirectorState) {
-      log(`Cleared ${clearedDirectorState} Battle Director state flag${clearedDirectorState === 1 ? "" : "s"}.`);
-      clearedExtraCount += clearedDirectorState;
-    }
-    if (clearedDirectorHistory) {
-      log(`Cleared ${clearedDirectorHistory} Battle Director history flag${clearedDirectorHistory === 1 ? "" : "s"}.`);
-      clearedExtraCount += clearedDirectorHistory;
-    }
-  } catch (e) {
-    log("Battle Director state flag cleanup threw (non-fatal)", e);
-  }
-
   log("Cleanup summary ✅", {
     tokenCleanup,
     effectCleanup,

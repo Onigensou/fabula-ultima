@@ -79,26 +79,6 @@
     return;
   }
 
-  // ─── Battle System branch ─────────────────────────────────────────────
-  // Mirror of the BattleInit Manager's director branch. The director runs
-  // WITHOUT a Foundry Combat doc now, so detection is via the public API:
-  // if the director is running on this client, route to its own end pipeline
-  // and skip ALL the legacy BattleEnd steps below.
-  const directorApi = globalThis.FUCompanion?.api?.experimental?.battleDirector;
-  if (directorApi?.isRunning?.()) {
-    log("Detected running Battle Director — delegating to Director End Manager, skipping legacy pipeline.");
-    const m = game.macros?.getName?.("BattleEnd: Director Manager");
-    if (m) {
-      try { await m.execute(); }
-      catch (e) {
-        error("Director End Manager threw", e);
-        ui.notifications?.error?.(`BattleEnd: director branch failed — ${e?.message ?? e}`);
-      }
-      return;
-    }
-    warn("Director End Manager macro not found — falling through to legacy end (may not handle director cleanup correctly).");
-  }
-
   // -----------------------------
   // Helpers: time + payload locate
   // -----------------------------

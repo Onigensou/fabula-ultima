@@ -33,28 +33,6 @@
 //                                               //   _equippableItemTemplate.
 //
 //     folder: "FXvx1GCGhUWCMScV",               // optional — items folder id
-//                                               //   (back-compat). If `class`
-//                                               //   is set, this is read as a
-//                                               //   sub-folder NAME under the
-//                                               //   Battle Director tree
-//                                               //   instead (see below).
-//     class: "Arcanist",                        // optional — when set, the
-//                                               //   item lands in
-//                                               //   `Battle Director / <class>
-//                                               //    / <folder>` (defaults to
-//                                               //   "Skill" if folder absent).
-//                                               //   Valid folder names per
-//                                               //   class: "Skill" /
-//                                               //   "Spell" / "Heroic Skill"
-//                                               //   (+ "Arcana" for Arcanist).
-//                                               //   Convention: skills that
-//                                               //   are MAGIC SPELLS (skill_type
-//                                               //   = "Spell") go in "Spell";
-//                                               //   active + passive non-spell
-//                                               //   skills go in "Skill". Run
-//                                               //   the folder scaffold once
-//                                               //   per world to create the
-//                                               //   tree.
 //     actorUuid: null,                          // optional — if set, the new
 //                                               //   skill is created on that
 //                                               //   actor instead of in world
@@ -201,25 +179,8 @@ return (async () => {
 
   // Reaction-config sanity. Warn (don't block) on typos so the author
   // can catch them. The runtime accepts unknown values silently.
-  // Trigger validity consults BOTH the legacy `oni.ReactionTriggers`
-  // registry (for legacy-bridged triggers) AND the director-native set
-  // exposed on `FUCompanion.api.directorTriggers.all` (Phase 1 of the
-  // Cheap Shot integration added creature_will_deal_damage there).
   const triggerApi = globalThis["oni.ReactionTriggers"] ?? null;
-  const directorTriggers = globalThis.FUCompanion?.api?.directorTriggers?.all ?? null;
-  const isKnownTrigger = (key) => {
-    if (directorTriggers?.has?.(key)) return true;
-    if (triggerApi?.isValidKey?.(key)) return true;
-    return false;
-  };
-  // add_damage shipped 2026-05-30 (Cheap Shot Phase 2) as a data-only
-  // effect_kind consumed by the sender-side damage accumulator.
-  // modify_damage_taken is its receiver-side sibling (Mercy).
-  const KNOWN_EFFECT_KINDS = new Set([
-    "grant", "apply_ae", "consume_charge", "redirect_target", "chain",
-    "add_damage", "modify_damage_taken", "open_action_menu",
-    "consume_resource", "targeting", "remove_tagged_ae", "substitute_cost",
-  ]);
+  const KNOWN_EFFECT_KINDS = new Set(["grant", "apply_ae", "consume_charge", "redirect_target", "chain"]);
   const KNOWN_SOURCE_VALUES = new Set(["self", "ally", "enemy", "neutral", "all", ""]);
   const KNOWN_RESOURCES = new Set(["hp", "mp", "ip", "zero_power", "zenit", "enmity"]);
   const KNOWN_DUP_MODES = new Set(["skip", "replace", "stack", "remove", "ask"]);
@@ -229,7 +190,7 @@ return (async () => {
     for (const [rowKey, row] of Object.entries(rcTable)) {
       if (!row || row.$deleted) continue;
       const trigger = (row.reaction_trigger ?? "").toString().trim();
-      if (trigger && !isKnownTrigger(trigger)) {
+      if (trigger && triggerApi?.isValidKey && !triggerApi.isValidKey(trigger)) {
         warnings.push(`reaction_config_table.${rowKey}: unknown trigger "${trigger}"`);
       }
       const src = (row.reaction_source ?? "").toString().trim();
@@ -271,44 +232,6 @@ return (async () => {
     }
   }
 
-  // ── Canon-deprecation guard (BLOCK, not warn) ─────────────────────────
-  //
-  // The shared validator lives at
-  // `modules/fabula-ultima-companion/scripts/lint/spec-canon-guard.js`
-  // so migrations that author items via `Item.create({...})` can reuse
-  // the same rules without bypassing them. Keep the macro and the
-  // module in sync — both ultimately read from there.
-  const specProps = spec?.props ?? {};
-  let canonErrors = [];
-  try {
-    const guard = await import(
-      "/modules/fabula-ultima-companion/scripts/lint/spec-canon-guard.js"
-    );
-    const verdict = guard.validateSpecCanon({
-      props: specProps,
-      activeEffects: spec?.activeEffects,
-    });
-    canonErrors = verdict.errors ?? [];
-  } catch (e) {
-    console.error(`${TAG} spec-canon-guard load failed; failing safe`, e);
-    return {
-      ok: false,
-      reason: "canon_guard_load_failed",
-      error: String(e?.message ?? e),
-    };
-  }
-  if (canonErrors.length) {
-    console.error(`${TAG} Spec rejected (canon violations):`, canonErrors);
-    ui.notifications?.error(
-      `${TAG} Spec rejected: ${canonErrors.length} canon violation(s). See console.`
-    );
-    return {
-      ok: false,
-      reason: "canon_violation",
-      errors: canonErrors,
-    };
-  }
-
   if (warnings.length) {
     console.warn(`${TAG} Spec warnings:`, warnings);
   }
@@ -338,62 +261,10 @@ return (async () => {
     type: "equippableItem",
     system: {
       template: templateItem.id,
-      uniqueId: (spec.uniqueId ?? "").toString(),
-      // CSB "Make item unique" flag. Battle Director skills default to
-      // unique:true (a PC shouldn't carry two copies of the same skill
-      // — duplicates would double-fire reactions, double-bill costs in
-      // confused ways, etc.). Author can override with `spec.unique:
-      // false` for cases where stacking IS intended (rare).
-      unique: spec.unique ?? true
+      uniqueId: (spec.uniqueId ?? "").toString()
     }
   };
-  // Folder resolution.
-  //
-  //   • `spec.class` set → resolve `Battle Director / <class> /
-  //     <spec.folder or "Skill">` via the org tree (folders created by
-  //     the world's scaffold). Authors write
-  //     `{ class: "Arcanist", folder: "Skill" }` — no ID lookup needed.
-  //
-  //   • `spec.class` unset → `spec.folder` is treated as a literal
-  //     folder ID (back-compat with pre-tree authoring).
-  //
-  // A failed resolution warns + falls back to root (no folder). Run
-  // the scaffold once if the tree's missing.
-  if (!parent) {
-    let folderId = null;
-    if (spec.class) {
-      const subName = (spec.folder ?? spec.category ?? "Skill").toString();
-      const root = game.folders.find(f =>
-        f.type === "Item" && f.name === "Battle Director" && !(f.folder?.id ?? f.folder)
-      );
-      if (!root) {
-        warnings.push(`Battle Director root folder not found — run the folder scaffold first; item created at world root.`);
-      } else {
-        const clsFolder = game.folders.find(f =>
-          f.type === "Item" &&
-          f.name === spec.class &&
-          ((f.folder?.id ?? f.folder ?? null) === root.id)
-        );
-        if (!clsFolder) {
-          warnings.push(`Battle Director / ${spec.class} not found — run the folder scaffold for that class; item created at world root.`);
-        } else {
-          const sub = game.folders.find(f =>
-            f.type === "Item" &&
-            f.name === subName &&
-            ((f.folder?.id ?? f.folder ?? null) === clsFolder.id)
-          );
-          if (!sub) {
-            warnings.push(`Battle Director / ${spec.class} / ${subName} not found; item created at world root.`);
-          } else {
-            folderId = sub.id;
-          }
-        }
-      }
-    } else if (spec.folder) {
-      folderId = spec.folder;  // legacy: literal ID
-    }
-    if (folderId) createData.folder = folderId;
-  }
+  if (spec.folder && !parent) createData.folder = spec.folder;
 
   let newItem;
   try {

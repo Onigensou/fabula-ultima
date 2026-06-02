@@ -52,8 +52,6 @@
 /tools/*
 !/tools/safe-edit/
 !/tools/safe-edit/**
-!/tools/parse-fu-pdfs/
-!/tools/parse-fu-pdfs/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.
