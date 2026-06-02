@@ -14,6 +14,40 @@
 
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
+import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+
+// Display-time formula resolver for free-text props like skill_target.
+// Some authors embed inline expressions like
+// "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures" so the engine can extract
+// a target count at compose-time. Without resolution the player sees the
+// raw identifier soup. We pre-evaluate every `(...)` group via the
+// skill resolver and substitute the integer result.
+function resolveDisplayFormula(text, actor, skill) {
+  if (!text || !text.includes("(")) return text;
+  try {
+    const resolver = buildSkillResolver({ actor, payload: null, skill, round: 0 });
+    let lastResolvedCount = null;
+    let resolved = text.replace(/\(([^()]+)\)/g, (whole, expr) => {
+      const v = evaluateFormula(expr.trim(), resolver, null);
+      if (v == null || !Number.isFinite(v)) return whole;
+      const n = Math.floor(v);
+      lastResolvedCount = n;
+      return String(n);
+    });
+    // Polish: when a resolved count is exactly 1, "Up to 1 creatures" reads
+    // poorly. Drop the "Up to" prefix and singularize the following noun.
+    if (lastResolvedCount === 1 && /\bup\s+to\s+1\b/i.test(resolved)) {
+      resolved = resolved.replace(/\bup\s+to\s+1\b/i, "1")
+                         .replace(/\b1\s+creatures\b/i, "1 creature")
+                         .replace(/\b1\s+allies\b/i, "1 ally")
+                         .replace(/\b1\s+enemies\b/i, "1 enemy");
+    }
+    return resolved;
+  } catch (e) {
+    warn("skill-picker.resolveDisplayFormula threw", e);
+    return text;
+  }
+}
 
 const CSS_ID  = "fud-skill-picker-style";
 const ROOT_ID = "fud-skill-picker-root";
@@ -341,7 +375,7 @@ function buildCandidateFromItem(skill, actor, { source, sourceItem }) {
     skillType: String(p.skill_type ?? "").trim() || "—",
     element: String(p.type_damage ?? "").trim(),
     range: String(p.skill_range ?? "").trim(),
-    skillTarget: String(p.skill_target ?? "").trim(),
+    skillTarget: resolveDisplayFormula(String(p.skill_target ?? "").trim(), actor, skill),
     descriptionHtml: String(p.description ?? ""),
     isCheck: !!p.isCheck,
     isOffensiveSpell: !!p.isOffensiveSpell,
@@ -377,7 +411,7 @@ async function buildCandidate(uuid, actor, { source, sourceItem }) {
     skillType: String(p.skill_type ?? "").trim() || "—",
     element: String(p.type_damage ?? "").trim(),
     range: String(p.skill_range ?? "").trim(),
-    skillTarget: String(p.skill_target ?? "").trim(),
+    skillTarget: resolveDisplayFormula(String(p.skill_target ?? "").trim(), actor, skill),
     descriptionHtml: String(p.description ?? ""),
     isCheck: !!p.isCheck,
     isOffensiveSpell: !!p.isOffensiveSpell,

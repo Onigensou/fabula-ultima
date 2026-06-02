@@ -31,8 +31,6 @@
  * IDEMPOTENT — each step is gated on observable state.
  */
 
-import { log as moduleLog, warn as moduleWarn } from "../scripts/logger.js";
-
 export const key = "2026-05-28-damage-element-override-scopes";
 export const description =
   "Actor template: add override_attack/spell/all_damage_type hidden props. " +
@@ -92,7 +90,7 @@ async function rekeySoulWeaponAE(ae, contextLabel, log) {
   return true;
 }
 
-export async function migrate({ log = moduleLog, warn = moduleWarn } = {}) {
+export async function migrate(game, log) {
   // Step 1: template columns
   let templatesPatched = 0;
   for (const actor of (game.actors?.contents ?? [])) {
@@ -100,7 +98,7 @@ export async function migrate({ log = moduleLog, warn = moduleWarn } = {}) {
       const r = await patchTemplateActor(actor, log);
       if (r?.added) templatesPatched++;
     } catch (e) {
-      warn(`patchTemplateActor threw on ${actor?.name}`, e);
+      console.warn(`patchTemplateActor threw on ${actor?.name}`, e);
     }
   }
 
@@ -114,7 +112,7 @@ export async function migrate({ log = moduleLog, warn = moduleWarn } = {}) {
       if (ae.name !== SOUL_WEAPON_NAME) continue;
       try {
         if (await rekeySoulWeaponAE(ae, `world-master:${it.id}`, log)) aesRekeyed++;
-      } catch (e) { warn(`rekey master AE threw`, e); }
+      } catch (e) { console.warn(`rekey master AE threw`, e); }
     }
   }
   // 2b. Actor-borne synced item copies + live actor-AEs.
@@ -126,7 +124,7 @@ export async function migrate({ log = moduleLog, warn = moduleWarn } = {}) {
         if (ae.name !== SOUL_WEAPON_NAME) continue;
         try {
           if (await rekeySoulWeaponAE(ae, `actor-item:${actor.name}`, log)) aesRekeyed++;
-        } catch (e) { warn(`rekey actor-item AE threw`, e); }
+        } catch (e) { console.warn(`rekey actor-item AE threw`, e); }
       }
     }
     // Live actor-level AEs (applied to creatures during play).
@@ -134,10 +132,13 @@ export async function migrate({ log = moduleLog, warn = moduleWarn } = {}) {
       if (ae.name !== SOUL_WEAPON_NAME) continue;
       try {
         if (await rekeySoulWeaponAE(ae, `actor-AE:${actor.name}`, log)) aesRekeyed++;
-      } catch (e) { warn(`rekey actor AE threw`, e); }
+      } catch (e) { console.warn(`rekey actor AE threw`, e); }
     }
   }
 
   log(`damage-element-override-scopes: templates patched=${templatesPatched}, AEs rekeyed=${aesRekeyed}`);
-  return { templatesPatched, aesRekeyed };
+  return {
+    applied: true,
+    summary: `templates patched=${templatesPatched}, AEs rekeyed=${aesRekeyed}`,
+  };
 }

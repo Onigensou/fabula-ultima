@@ -29,7 +29,7 @@ const RESOURCES = {
   hp:         { prop: "current_hp",    max: "max_hp",    label: "HP" },
   mp:         { prop: "current_mp",    max: "max_mp",    label: "MP" },
   ip:         { prop: "current_ip",    max: "max_ip",    label: "IP" },
-  fp:         { prop: "fabula_points", max: null,        label: "FP" },
+  fp:         { prop: "fabula_point",  max: null,        label: "FP" },
   zenit:      { prop: "zenit",         max: null,        label: "Zenit" },
   zero_power: { prop: "zero_power",    max: null,        label: "ZP" },
   enmity:     { prop: "enmity",        max: null,        label: "Enmity" },

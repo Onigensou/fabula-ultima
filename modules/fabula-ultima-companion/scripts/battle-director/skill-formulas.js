@@ -546,6 +546,17 @@ function _resolveActorByUuidSync(uuid) {
 // silently and the count under-reported by every non-AEM-classified
 // debuff. Cheap Shot's TARGET_STATUS_COUNT gate read 0 for any target
 // whose debuffs came from the standard apply_ae path.
+// RAW FU Status Effects — the six conditions any AE can apply. Recognised
+// by their canonical Foundry status IDs so an AE with `statuses: ["weak"]`
+// (regardless of provenance — Hinder pipeline, AE Manager UI, sheet edit,
+// legacy template) counts toward TARGET_STATUS_COUNT. The opt-in
+// `system.tags: ["debuff"]` path (and AEM/flag classifiers) still apply,
+// for AEs whose status array doesn't match a RAW debuff but the author
+// wants counted (e.g. Vismagus's custom "Sluggish" debuff).
+const RAW_DEBUFF_STATUSES = new Set([
+  "weak", "dazed", "shaken", "slow", "enraged", "poisoned",
+]);
+
 function countStatusDebuffs(actor) {
   if (!actor?.effects) return 0;
   const effects = Array.from(actor.effects);
@@ -563,6 +574,20 @@ function countStatusDebuffs(actor) {
     // 3. system.tags array contains "debuff".
     const tags = eff.system?.tags;
     if (Array.isArray(tags) && tags.includes("debuff")) { count++; continue; }
+    // 4. statuses[] array contains a RAW FU debuff status ID. Catches
+    //    AEs applied by paths that didn't tag system.tags (manual sheet
+    //    placement, legacy templates, etc.) — the status ID itself is
+    //    the canonical identity of a RAW debuff, so trusting it here
+    //    keeps Cheap Shot et al. firing on standard debuffs regardless
+    //    of how the AE landed.
+    const statuses = eff.statuses;
+    if (statuses && typeof statuses[Symbol.iterator] === "function") {
+      let matched = false;
+      for (const s of statuses) {
+        if (RAW_DEBUFF_STATUSES.has(String(s).toLowerCase())) { matched = true; break; }
+      }
+      if (matched) { count++; continue; }
+    }
   }
   return count;
 }

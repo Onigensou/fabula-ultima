@@ -7,6 +7,9 @@
 //   2. Weapon attacks            → "harmful" (handled by Attack flow, not here)
 //   3. skill_type === "Attack"   → "harmful"
 //   4. isOffensiveSpell          → "harmful"
+//   4b. isOffensive              → "harmful"  (non-spell offensive Checks
+//                                  like Soul Steal — opposed Check vs
+//                                  defense without dealing damage)
 //   5. declares healing (HP/MP)  → "aid"
 //   6. has damage + !healing     → "harmful"
 //   7. skill_type === "Spell"    → "aid"
@@ -58,6 +61,14 @@ export function classifyActionIntent(skill) {
 
   // 4. Offensive spell.
   if (readBool(p.isOffensiveSpell)) return "harmful";
+
+  // 4b. Generic offensive flag — for non-spell Checks that target an
+  //     enemy's defense without dealing direct damage (Soul Steal:
+  //     DEX+WLP vs MDEF, grants caster IP on hit). Without this,
+  //     classifyActionIntent's downstream steps see "Active skill, no
+  //     damage" and classify as "aid", routing composeAction to the
+  //     ally list. Authors set isOffensive=true on such skills.
+  if (readBool(p.isOffensive)) return "harmful";
 
   // 5. Declares healing.
   const declaresHealing = HEALING_TYPES.has(damageType) || hasAidGrant(skill);

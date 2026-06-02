@@ -35,7 +35,7 @@ const RESOURCE_PROPS = {
   zero_power: { prop: "zero_power",    max: null, hardMin: 0, hardMax: 6 },
   zenit:      { prop: "zenit",         max: null        },
   enmity:     { prop: "enmity",        max: null        },
-  fp:         { prop: "fabula_points", max: null        },
+  fp:         { prop: "fabula_point",  max: null        },
 };
 
 // ── Public entry points ─────────────────────────────────────────────────
@@ -233,6 +233,19 @@ function fireResourceGainVfx(opts) {
       .catch((e) => warn("fireResourceGainVfx import failed", e));
   } catch (e) {
     warn("fireResourceGainVfx threw", e);
+  }
+}
+
+// Spend counterpart — floats a `−N` over a payer paying a self-paid cost
+// (reaction / free-action `consume_resource`). Same lazy fire-and-forget
+// contract; distinct look from the loss VFX (no impact / hit sound).
+function fireResourceSpendVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playResourceSpendVfx?.(opts))
+      .catch((e) => warn("fireResourceSpendVfx import failed", e));
+  } catch (e) {
+    warn("fireResourceSpendVfx threw", e);
   }
 }
 
@@ -935,6 +948,7 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   let firePoints;
   let skillForCtx;
   let carrier;
+  let aeReactionCfg = null;  // Captured for AE post-fire bookkeeping below.
   if (candidate.carrierKind === "item") {
     carrier = await fromUuid(candidate.carrierUuid);
     if (!carrier) return { ok: false, reason: "carrier-gone" };
@@ -946,8 +960,8 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   } else {
     carrier = await fromUuid(candidate.carrierUuid);
     if (!carrier) return { ok: false, reason: "carrier-gone" };
-    const cfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
-    runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
+    aeReactionCfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
+    runtimeEffectTable = aeReactionCfg.effect_table ?? aeReactionCfg.reaction_effect_table ?? {};
     firePoints = null;
     skillForCtx = null;
   }
@@ -961,13 +975,54 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     // "ally_action_targets"` (Healing Power) + `hit_action_targets`
     // (Support Magic) resolve via these. Without them, the targeting
     // candidate list is empty and the grant/apply_ae no-ops silently.
-    actionTargetUuids: payload?.targetTokenUuids ?? [],
-    hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
+    //
+    // Accepts both naming conventions: `targetTokenUuids`/`hitTargetTokenUuids`
+    // (legacy firePassiveTriggers payloads) and `targets`/`hitTargets`
+    // (newer creature_deals_damage payloads).
+    actionTargetUuids: payload?.targetTokenUuids ?? payload?.targets ?? [],
+    hitActionTargetUuids:
+      payload?.hitTargetTokenUuids
+      ?? payload?.hitTargets
+      ?? payload?.targetTokenUuids
+      ?? payload?.targets
+      ?? [],
     firePoints,
     runtimeEffectTable,
     isPassive: true,
   });
   const r = await applyEffectByLabel(candidate.ref, ctx);
+
+  // ── AE post-fire bookkeeping ─────────────────────────────────────────
+  // Moved here from firePassiveTriggers so EVERY dispatch path (standalone
+  // ReactionMenu, post-resolve firePassiveTriggers, pre-resolve pill accept)
+  // honors consume_self / charges semantics. Two signals supported:
+  //   - row.consume_self === true       → unconditional delete after fire
+  //   - effRow.consume_self === true    → effect-row-driven delete
+  //   - AE carries charges flag         → decrement; auto-delete at 0
+  if (candidate.carrierKind === "ae" && r?.ok && carrier) {
+    try {
+      const row = aeReactionCfg?.reaction_config_table?.[candidate.rowKey] ?? null;
+      const effRow = candidate.ref
+        ? Object.values(runtimeEffectTable ?? {}).find((er) => er?.effect_label === candidate.ref)
+        : null;
+      const consumeSelfFlag = row?.consume_self === true || effRow?.consume_self === true;
+      const chargeFlags = carrier.flags?.[FLAG_NS] ?? {};
+      const hasCharges = chargeFlags.charges != null || chargeFlags.chargesMax != null;
+      if (consumeSelfFlag) {
+        try {
+          await carrier.delete();
+          log(`firePreAcceptedCandidate: ${candidate.carrierName} consume_self → AE deleted`);
+        } catch (e) { warn("consume_self delete failed", e); }
+      } else if (hasCharges) {
+        const { consume: consumeCharge } = await import("./skill-charges.js");
+        const res = await consumeCharge(carrier, { count: 1 });
+        log(`firePreAcceptedCandidate: ${candidate.carrierName} charge consumed (remaining=${res?.remaining ?? "?"}, deleted=${!!res?.deleted})`);
+      }
+    } catch (e) {
+      warn("firePreAcceptedCandidate: AE post-fire bookkeeping threw", e);
+    }
+  }
+
   return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied, reason: r?.reason ?? null, abort: !!r?.abort };
 }
 
@@ -1115,11 +1170,71 @@ export function recomputePerTargetDamages(perTargetResults, bonusMap, applyAffin
 // Walk every reaction_config_table row on the reactor's items, fire any
 // passive rows matching `trigger`. Replaces the old passive_trigger-field
 // dispatcher.
+// Post-resolve passive trigger dispatcher.
+//
+// As of the promptPassiveOptin → ReactionMenu migration, this is a thin
+// wrapper over dispatchReactionMenu (standalone-reactions.js). The
+// candidate-iteration / Dialog-per-candidate model is gone; the token-
+// anchored ReactionMenu unifies the UI with standalone triggers
+// (conflict_start et al.) per [[reaction-menu-on-token]].
+//
+// What this still owns: locating a token for the caster (off-scene
+// safe so harness scenarios on the Training Ground scene work when the
+// GM is viewing a different scene). Everything else — candidate
+// collection, auto-fire, ask-mode menu, harness override, AE consume-
+// self / charges bookkeeping — happens downstream in dispatchReactionMenu
+// → firePreAcceptedCandidate.
 export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
   if (!casterActor || !trigger) return { fired: [] };
-  // skipEvaluated: [{ carrierUuid, rowKey }] entries the pre-resolve
-  // dispatcher already handled. We skip them here so the post-resolve
-  // pass doesn't re-fire the same candidate.
+
+  // Token resolution preference:
+  //   1. Active canvas scene — the menu anchors to the token's pixel
+  //      position via canvas.stage.toGlobal(); using a token on a
+  //      different scene yields off-viewport menu placement (Vanish
+  //      reaction menu rendered in the letterbox below the battle map).
+  //   2. game.scenes walk — fallback for harness / cross-scene runs
+  //      where the GM is viewing a scene that doesn't contain the actor.
+  let casterToken = null;
+  const activeScene = canvas?.scene ?? null;
+  if (activeScene) {
+    casterToken = activeScene.tokens?.contents?.find((t) => t.actor?.uuid === casterActor.uuid) ?? null;
+  }
+  if (!casterToken) {
+    for (const scene of game.scenes?.contents ?? []) {
+      const tok = scene.tokens?.contents?.find((t) => t.actor?.uuid === casterActor.uuid);
+      if (tok) { casterToken = tok; break; }
+    }
+  }
+  if (!casterToken) {
+    log(`firePassiveTriggers[${trigger}]: no token for ${casterActor.name}, skipping`);
+    return { fired: [] };
+  }
+
+  // Dynamic import preserves the existing cache-bust pattern this module
+  // uses for cross-module hops.
+  const mod = await import("./standalone-reactions.js?cb=" + Date.now());
+  const result = await mod.dispatchReactionMenu({
+    director,
+    reactor: casterActor,
+    token: casterToken,
+    trigger,
+    payload,
+    skipEvaluated,
+    // Post-resolve triggers only consider rows authored as `reaction_isPassive`.
+    // Manual rows are surfaced through other UI (turn-UI / action card), so
+    // explicitly opt out here to match the legacy firePassiveTriggers shape.
+    includeManual: false,
+    // No scope/scene — post-resolve trigger events are not persistent
+    // across actions. Each new event prompts fresh; firedSet stays empty.
+  });
+  return { fired: Array.isArray(result?.fired) ? result.fired : [] };
+}
+
+// ── Legacy firePassiveTriggers body — retained as a comment for diff
+//    clarity and as documentation of the previous structure. Safe to
+//    delete in a follow-up cleanup pass once the migration has soaked.
+async function _legacy_firePassiveTriggers_unused({ director, casterActor, trigger, payload, skipEvaluated }) {
+  if (!casterActor || !trigger) return { fired: [] };
   const skipSet = new Set(
     (Array.isArray(skipEvaluated) ? skipEvaluated : [])
       .map((e) => `${e?.rowKey ?? ""}:${e?.carrierUuid ?? ""}`)
@@ -1384,6 +1499,7 @@ export async function applyEffectRow(row, ctx) {
     case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     case "consume_resource": return applyConsumeResourceEffect(row, ctx);
+    case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
     // add_damage is data-only — read by `computeSenderDamageBonuses`
     // which walks acceptedPrePassives BEFORE the standard fire loop and
     // accumulates per-target base-damage bonuses. By the time
@@ -1593,6 +1709,10 @@ async function applyConsumeResourceEffect(row, ctx) {
     const result = await writeResourceDelta(actor, def, -amount);
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
+      // Spend float over the payer's token. `result.applied` is negative for
+      // a debit; the VFX shows its magnitude as `−N`.
+      const spent = Math.abs(result.applied);
+      if (spent > 0) fireResourceSpendVfx({ tokenUuid: token.uuid, resource, amount: spent });
     }
   }
   log(`skill-effects.consume_resource: row "${row.effect_label}" debited ${amount} ${resource} from ${applied.length} actor(s)`);
@@ -1712,6 +1832,41 @@ async function applyApplyAeEffect(row, ctx) {
       return bakeResolver;
     }
 
+    // String-token pre-bake. Substitutes a fixed allowlist of identifier
+    // tokens with non-numeric literal strings (e.g. the caster's actor
+    // UUID) BEFORE the numeric formula bake. Numeric values would bail
+    // the evaluateFormula path below (`!Number.isFinite(resolved)`), so
+    // string substitutions live here as a pre-step.
+    //
+    // Tokens use the same `${name}$` syntax as numeric formulas so authors
+    // get a consistent feel. Allowlist is intentionally narrow; each
+    // entry's getter returns null/empty if the source isn't resolvable
+    // (rare — apply_ae always has the caster in ctx). First consumer:
+    // Vanish's `cannot_target_uuids` AE change writes `${casterActorUuid}$`
+    // and target-picker filters read the baked UUID literal.
+    const STRING_TOKEN_GETTERS = {
+      casterActorUuid: () => ctx.reactorActor?.uuid ?? "",
+      casterTokenUuid: () => ctx.reactorToken?.uuid ?? "",
+      targetActorUuid: () => actor?.uuid ?? "",
+      targetTokenUuid: () => token?.uuid ?? "",
+    };
+    if (Array.isArray(data.changes) && data.changes.length) {
+      for (const ch of data.changes) {
+        if (typeof ch?.value !== "string") continue;
+        let v = ch.value;
+        for (const [token, get] of Object.entries(STRING_TOKEN_GETTERS)) {
+          const pat = `\${${token}}$`;
+          if (v.includes(pat)) {
+            const replacement = String(get() ?? "");
+            v = v.split(pat).join(replacement);
+          }
+        }
+        if (v !== ch.value) {
+          log(`apply_ae bake (string-token): "${ch.value}" → "${v}" (target=${actor.name})`);
+          ch.value = v;
+        }
+      }
+    }
     if (Array.isArray(data.changes) && data.changes.length) {
       for (const ch of data.changes) {
         if (typeof ch?.value !== "string") continue;
@@ -2277,6 +2432,510 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
   }
 
   return { ok: true, kind: "remove_tagged_ae", applied: removed };
+}
+
+// ── roll_loot_table ────────────────────────────────────────────────────
+//
+// Rolls a percentile loot table per target and transfers won items to
+// the caster's inventory. Backbone for Soul Steal's item-steal branch.
+//
+// Per-target data on the target actor's `system.props`:
+//   stealable_loot          — map keyed by embedded-item id; each entry:
+//                             { name, id, uuid, loot_description, roll? }
+//   steal_percentage_table  — map of dynamicTable rows:
+//                             { loot_id (name string), loot_percentage (0-100), $deleted? }
+//                             Includes an "(Empty)" loot_id meaning "no
+//                             steal this attempt"; rows roll independently.
+//
+// State tracking (rewind-safe): one hidden AE per (target, caster) pair
+// named "Soul Stolen by <CasterName>" carrying:
+//   flags.fabula-ultima-companion.soulStolenBy   — caster actorUuid
+//   flags.fabula-ultima-companion.stolenLootKeys — array of lootKeys won
+//   flags.fabula-ultima-companion.directorPermanent: true   (no tick)
+//   transfer: false, statuses: [] (hidden, no token icon)
+//
+// Two gates this AE enforces:
+//   1. Per-caster: target with an AE matching this caster's UUID =
+//      "you already soul-stole this creature" — skip further attempts.
+//   2. Per-item availability across the party: union of stolenLootKeys
+//      across ALL soulStolenBy AEs on target = items already claimed.
+//      Roll outcomes resolving to a claimed item are skipped.
+//
+// Rewind: AEs ride the [[director-rewind-tool-plan]] actor snapshot, so
+// rewinding past a Soul Steal removes the AE and the gates clear.
+//
+// Row fields (effect_table):
+//   target_ref     — which targets to roll for (typically hit_action_targets)
+//   loot_prop      — actor prop holding the stealable map (default "stealable_loot")
+//   chance_prop    — actor prop holding the percentile table (default "steal_percentage_table")
+//
+// Output: surfaces a Dialog (GM client) summarising per-target outcomes
+// in equipment-card style (hover = description + stats).
+async function applyRollLootTableEffect(row, ctx) {
+  const targetRef = row.target_ref || "hit_action_targets";
+  // Hit set — only these proceed to the roll-and-transfer path.
+  const hitResult = await resolveTargetRef(targetRef, ctx);
+  const hitTokens = (hitResult.ok ? (hitResult.tokens ?? []) : []);
+  const hitUuidSet = new Set(hitTokens.map((t) => t.uuid));
+  // Full action-target set — used so the dialog can show a "Missed"
+  // line for every creature that was attacked but failed the Check.
+  // Otherwise misses would be silent and the player can't tell whether
+  // their Soul Steal didn't drop loot (rolled, nothing won) vs didn't
+  // connect (Check missed). Resolved separately so authors don't have
+  // to change target_ref on the row.
+  const actionResult = await resolveTargetRef("action_targets", ctx);
+  const actionTokens = (actionResult.ok ? (actionResult.tokens ?? []) : []);
+  // Iterate the action targets when available (so misses surface).
+  // Fall back to hit targets when action_targets resolves empty —
+  // e.g. some chain paths build ctx without an action-target uuid list.
+  const iterTokens = actionTokens.length ? actionTokens : hitTokens;
+  if (!iterTokens.length) {
+    return { ok: true, kind: "roll_loot_table", applied: [], reason: "no-targets" };
+  }
+  const lootProp   = String(row.loot_prop ?? "stealable_loot").trim();
+  const chanceProp = String(row.chance_prop ?? "steal_percentage_table").trim();
+
+  const caster = ctx.reactorActor;
+  if (!caster) {
+    warn("skill-effects.roll_loot_table: no caster (ctx.reactorActor missing)");
+    return { ok: false, kind: "roll_loot_table", reason: "no-caster" };
+  }
+
+  // Helper: aggregate the soulStolen tracking state on a target.
+  // Returns { thisCasterAlreadyStole, claimedKeys: Set }.
+  function readStolenState(target) {
+    const thisCasterUuid = caster.uuid;
+    const claimedKeys = new Set();
+    let thisCasterAlreadyStole = false;
+    for (const ae of (target.effects?.contents ?? [])) {
+      const fns = ae.flags?.[FLAG_NS];
+      if (!fns?.soulStolenBy) continue;
+      if (fns.soulStolenBy === thisCasterUuid) thisCasterAlreadyStole = true;
+      for (const k of (fns.stolenLootKeys ?? [])) claimedKeys.add(k);
+    }
+    return { thisCasterAlreadyStole, claimedKeys };
+  }
+
+  const results = [];
+  for (const token of iterTokens) {
+    const target = token.actor;
+    if (!target) continue;
+
+    // Check-missed branch — target was attacked but the Check didn't
+    // land. No roll, no AE stamp; just surface "missed" so the player
+    // can plan a retry.
+    if (actionTokens.length && !hitUuidSet.has(token.uuid)) {
+      results.push({ targetName: target.name, missed: true, won: [] });
+      continue;
+    }
+
+    const { thisCasterAlreadyStole, claimedKeys } = readStolenState(target);
+    if (thisCasterAlreadyStole) {
+      results.push({ targetName: target.name, alreadyStolen: true, won: [] });
+      continue;
+    }
+
+    const lootMap   = target.system?.props?.[lootProp] ?? {};
+    const chanceTbl = target.system?.props?.[chanceProp] ?? {};
+    const rows = Object.values(chanceTbl).filter((r) => r && !r.$deleted);
+    if (!rows.length) {
+      results.push({ targetName: target.name, noTable: true, won: [] });
+      continue;
+    }
+
+    // Independent per-row rolls — each row gets its own d100 check.
+    // "(Empty)" + zero-pct rows are skipped silently. Items already
+    // claimed by another caster (in claimedKeys) skip too.
+    const won = [];
+    const wonKeys = [];
+    for (const rRow of rows) {
+      const pct = Number(rRow.loot_percentage) || 0;
+      if (pct <= 0) continue;
+      const roll = Math.floor(Math.random() * 100) + 1;  // 1..100
+      if (roll > pct) continue;
+      const lootName = String(rRow.loot_id ?? "").trim();
+      if (!lootName || lootName === "(Empty)") continue;
+      const entry = Object.entries(lootMap).find(
+        ([, e]) => String(e?.name ?? "").trim() === lootName
+      );
+      if (!entry) {
+        log(`roll_loot_table: ${target.name}.${chanceProp} references "${lootName}" but ${lootProp} has no entry`);
+        continue;
+      }
+      const [lootKey, lootEntry] = entry;
+      if (claimedKeys.has(lootKey)) {
+        log(`roll_loot_table: "${lootName}" already claimed on ${target.name} — skipping`);
+        continue;
+      }
+
+      // Resolve the source item — prefer world Item via
+      // system.uniqueId / compendiumSource (matches legacy Study macro's
+      // `resolveStealItemOpenUuid`). Falls back to the embedded item.
+      const sourceItem = await resolveStealSourceItem(lootEntry);
+      if (!sourceItem) {
+        log(`roll_loot_table: no source resolvable for ${lootName}; skipping transfer`);
+        continue;
+      }
+
+      // Stack consumables/materials; create fresh embedded copy for
+      // equipment. The stacking key is `system.uniqueId` — same-uniqueId
+      // items already on the caster are treated as the same stack and
+      // their item_quantity is incremented.
+      const transferred = await transferLootToCaster(caster, sourceItem);
+      if (!transferred) continue;
+
+      wonKeys.push(lootKey);
+      won.push({
+        name: lootName,
+        img: sourceItem.img ?? null,
+        desc: String(lootEntry.loot_description ?? ""),
+        sourceItem,
+        stacked: transferred.stacked,
+        rolled: roll,
+        chance: pct,
+      });
+    }
+
+    // Stamp the hidden tracker AE if anything stuck. The AE marks both
+    // "this caster has used Soul Steal on this target" AND "these
+    // specific items were claimed" so future rolls (including the
+    // SAME caster's failed-rolls retry, if any) skip claimed items.
+    // No statuses → no token icon. No changes → no game effect.
+    if (won.length) {
+      try {
+        await target.createEmbeddedDocuments("ActiveEffect", [{
+          name: `Soul Stolen by ${caster.name}`,
+          icon: caster.img ?? null,
+          transfer: false,
+          changes: [],
+          statuses: [],
+          duration: {},
+          flags: {
+            [FLAG_NS]: {
+              directorPermanent: true,
+              soulStolenBy: caster.uuid,
+              stolenLootKeys: wonKeys,
+              appliedAtRound: ctx.dCombat?.round ?? 0,
+            },
+          },
+        }]);
+      } catch (e) {
+        warn(`roll_loot_table: failed to stamp soulStolenBy AE on ${target.name}`, e);
+      }
+    }
+
+    results.push({ targetName: target.name, won, rolled: true });
+  }
+
+  // Surface the summary dialog. Blocking — RESOLVE awaits the player's
+  // OK so the action card doesn't dismiss until they've read the result.
+  try {
+    await showLootTableDialog({ casterName: caster.name, results });
+  } catch (e) {
+    warn(`roll_loot_table: dialog threw`, e);
+  }
+
+  return { ok: true, kind: "roll_loot_table", applied: results };
+}
+
+// Resolve a stealable_loot entry to its "source" Item document. Walks:
+//   (a) embedded item's compendiumSource if it points at a world Item
+//   (b) embedded item's system.uniqueId → game.items lookup
+//   (c) the embedded item itself (last resort)
+// Returns null if everything fails.
+async function resolveStealSourceItem(lootEntry) {
+  const uuid = String(lootEntry?.uuid ?? "").trim();
+  if (!uuid) return null;
+  try {
+    const embedded = await fromUuid(uuid);
+    if (!embedded || embedded.documentName !== "Item") return null;
+    const compendiumSource = String(embedded?._stats?.compendiumSource ?? "").trim();
+    if (compendiumSource.startsWith("Item.")) {
+      const fromCs = await fromUuid(compendiumSource).catch(() => null);
+      if (fromCs) return fromCs;
+    }
+    const uniqueId = String(embedded?.system?.uniqueId ?? "").trim();
+    if (uniqueId) {
+      const fromUid = game.items?.get(uniqueId) ?? null;
+      if (fromUid) return fromUid;
+    }
+    return embedded;
+  } catch (e) {
+    warn("resolveStealSourceItem threw", e);
+    return null;
+  }
+}
+
+// Transfer one source-item's contents onto the caster. Consumables and
+// materials stack on `system.uniqueId`; if the caster already has a
+// matching item, its `item_quantity` is incremented. Equipment always
+// creates a fresh embedded doc (each weapon/armor/accessory instance is
+// distinct).
+//
+// Returns `{ item, stacked: boolean }` ONLY when the operation
+// genuinely succeeded — i.e. the embedded doc exists. A preCreateItem
+// hook returning `false` causes Foundry's `createEmbeddedDocuments` to
+// resolve with an empty array (NO exception, no warning); we must
+// detect that and return null so the caller skips the AE stamp + the
+// dialog won't lie about a transfer that didn't happen.
+async function transferLootToCaster(caster, sourceItem) {
+  const itemType = String(sourceItem.system?.props?.item_type ?? "").toLowerCase();
+  const isStackable = (itemType === "consumable" || itemType === "material");
+  const sourceUniqueId = String(sourceItem.system?.uniqueId ?? "").trim();
+
+  if (isStackable && sourceUniqueId) {
+    const existing = caster.items?.contents?.find?.((i) =>
+      String(i.system?.uniqueId ?? "").trim() === sourceUniqueId
+    );
+    if (existing) {
+      const curQty = Number(existing.system?.props?.item_quantity ?? 0) || 0;
+      try {
+        await existing.update({ "system.props.item_quantity": curQty + 1 });
+        return { item: existing, stacked: true };
+      } catch (e) {
+        warn(`transferLootToCaster: increment failed on ${caster.name}.${existing.name}`, e);
+        return null;
+      }
+    }
+  }
+
+  try {
+    const data = sourceItem.toObject();
+    delete data._id;
+    // Make sure quantity starts at 1 for stackables (in case source has 0).
+    if (isStackable) {
+      const ip = data.system?.props ?? {};
+      if (!Number(ip.item_quantity)) {
+        foundry.utils.setProperty(data, "system.props.item_quantity", 1);
+      }
+    }
+    const created = await caster.createEmbeddedDocuments("Item", [data]);
+    // Silent-rejection guard — Foundry returns `[]` (not throw) when a
+    // preCreateItem hook returns false. Treat that as a transfer
+    // failure: the caller should NOT push to `won`, should NOT stamp
+    // the soulStolenBy AE, and the dialog should NOT pretend an item
+    // landed.
+    if (!Array.isArray(created) || !created.length || !created[0]) {
+      warn(`transferLootToCaster: createEmbeddedDocuments returned empty on ${caster.name} for "${sourceItem.name}" — likely a preCreateItem hook rejection`);
+      return null;
+    }
+    return { item: created[0], stacked: false };
+  } catch (e) {
+    warn(`transferLootToCaster: createEmbeddedDocuments threw on ${caster.name}`, e);
+    return null;
+  }
+}
+
+// Render the loot-roll summary dialog. Each item is presented in the
+// same visual language as the Equipment action card's option list —
+// black-bordered icon, bold name, meta line. Hovering an item surfaces
+// the shared desc-tooltip with the item's description body + a stats
+// strip (acc/dmg/def + traits) for equipment.
+async function showLootTableDialog({ casterName, results }) {
+  if (!Array.isArray(results) || !results.length) return;
+
+  // Lazy-import desc-tooltip so this module can be tree-shaken cleanly
+  // in non-UI contexts (harness, tests).
+  const { ensureDescTooltipStyles, attachDescTooltip } = await import("./desc-tooltip.js");
+  ensureDescTooltipStyles();
+  ensureLootDialogStyles();
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+
+  // Build the per-item stats strip — equipment-style chips (ACC/DMG/DEF +
+  // traits like weapon type, range, hand slots, rarity). Returns "" for
+  // non-equipment items so consumables don't surface chips they don't have.
+  function buildStatsStrip(sourceItem) {
+    if (!sourceItem) return "";
+    const p = sourceItem.system?.props ?? {};
+    const type = String(p.item_type ?? "").toLowerCase();
+    const bits = [];
+    const checkBonus = Number(p.check_bonus);
+    if (type === "weapon" && Number.isFinite(checkBonus) && checkBonus !== 0) {
+      const sign = checkBonus >= 0 ? "+" : "";
+      bits.push(`<span class="fud-bf-desc-tip-stat-acc">ACC ${sign}${checkBonus}</span>`);
+    }
+    const dmgBonus = Number(p.damage_bonus);
+    if (type === "weapon" && Number.isFinite(dmgBonus) && dmgBonus !== 0) {
+      const sign = dmgBonus >= 0 ? "+" : "";
+      bits.push(`<span class="fud-bf-desc-tip-stat-dmg">DMG ${sign}${dmgBonus}</span>`);
+    }
+    const defBonus = Number(p.item_def_bonus);
+    const mdefBonus = Number(p.item_mdef_bonus);
+    if (type === "armor" || type === "accessory") {
+      const baseDef = Number(p.item_baseDef);
+      const baseMdef = Number(p.item_baseMdef);
+      const defParts = [];
+      if (Number.isFinite(baseDef) && baseDef !== 0) defParts.push(`DEF ${baseDef >= 0 ? "+" : ""}${baseDef}`);
+      else if (Number.isFinite(defBonus) && defBonus !== 0) defParts.push(`DEF ${defBonus >= 0 ? "+" : ""}${defBonus}`);
+      if (Number.isFinite(baseMdef) && baseMdef !== 0) defParts.push(`MDEF ${baseMdef >= 0 ? "+" : ""}${baseMdef}`);
+      else if (Number.isFinite(mdefBonus) && mdefBonus !== 0) defParts.push(`MDEF ${mdefBonus >= 0 ? "+" : ""}${mdefBonus}`);
+      if (defParts.length) bits.push(`<span class="fud-bf-desc-tip-stat-def">${esc(defParts.join(" / "))}</span>`);
+    }
+    const trait = (t) => `<span class="fud-bf-desc-tip-stat-trait">${esc(t)}</span>`;
+    if (type === "weapon") {
+      const damageType = String(p.type_damage ?? "").trim();
+      if (damageType) bits.push(trait(damageType));
+      const range = String(p.weapon_range ?? "").trim();
+      if (range) bits.push(trait(range));
+      const hands = String(p.hand_slots ?? "").trim();
+      if (hands) bits.push(trait(hands));
+      if (p.isMartial) bits.push(`<span class="fud-bf-desc-tip-stat-trait is-flag">${esc("Martial")}</span>`);
+    } else if (type === "armor" || type === "accessory") {
+      bits.push(trait(type === "armor" ? "Armor" : "Accessory"));
+      if (p.isMartial) bits.push(`<span class="fud-bf-desc-tip-stat-trait is-flag">${esc("Martial")}</span>`);
+    } else if (type === "consumable") {
+      bits.push(trait("Consumable"));
+    } else if (type === "material") {
+      bits.push(trait("Material"));
+    }
+    const rarity = String(p.item_rarity ?? "").trim();
+    if (rarity && rarity !== "Common") {
+      bits.push(`<span class="fud-bf-desc-tip-stat-trait is-flag">${esc(rarity)}</span>`);
+    }
+    return bits.join("");
+  }
+
+  function renderItemRow(targetName, won) {
+    const stats = buildStatsStrip(won.sourceItem);
+    const tipBody = won.desc ? esc(won.desc) : "";
+    const descAttr = tipBody ? ` data-fud-equip-desc="${tipBody}" data-fud-equip-desc-name="${esc(won.name)}"` : "";
+    const statsAttr = stats ? ` data-fud-equip-stats="${esc(stats)}"` : "";
+    const stackedTag = won.stacked
+      ? `<span class="fud-steal-stacked-pill" title="Added to existing stack">+1</span>`
+      : "";
+    const iconStyle = won.img ? `background-image:url('${esc(won.img)}')` : "";
+    return `
+      <div class="fud-steal-option"${descAttr}${statsAttr}>
+        <div class="fud-steal-icon" style="${iconStyle}"></div>
+        <div class="fud-steal-text">
+          <div class="fud-steal-line">
+            Obtain <b>${esc(won.name)}</b> from <b>${esc(targetName)}</b>${stackedTag}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTargetBlock(r) {
+    if (r.missed) {
+      return `<div class="fud-steal-empty"><b>Missed</b> — Check failed against <b>${esc(r.targetName)}</b>.</div>`;
+    }
+    if (r.alreadyStolen) {
+      return `<div class="fud-steal-empty"><b>Already stolen</b> from <b>${esc(r.targetName)}</b>.</div>`;
+    }
+    if (r.noTable) {
+      return `<div class="fud-steal-empty"><b>No stealable items</b> on <b>${esc(r.targetName)}</b>.</div>`;
+    }
+    if (!r.won.length) {
+      return `<div class="fud-steal-empty">Stole <b>nothing</b> from <b>${esc(r.targetName)}</b>.</div>`;
+    }
+    return r.won.map((w) => renderItemRow(r.targetName, w)).join("");
+  }
+
+  const content = `
+    <div class="fud-steal-dialog">
+      <div class="fud-steal-header"><b>${esc(casterName)}</b> performs Soul Steal:</div>
+      <div class="fud-steal-body">${results.map(renderTargetBlock).join("")}</div>
+    </div>
+  `;
+
+  // Bind the desc-tooltip on the rendered Dialog element so hovering
+  // an item surfaces the equipment-style tooltip.
+  let detachTooltip = null;
+  const dialog = new Dialog({
+    title: "Soul Steal — Results",
+    content,
+    buttons: { ok: { label: "OK", callback: () => {} } },
+    default: "ok",
+    close: () => { try { detachTooltip?.(); } catch (e) { /* noop */ } },
+    render: (html) => {
+      try {
+        const root = html?.[0] ?? html;
+        if (root instanceof HTMLElement) {
+          detachTooltip = attachDescTooltip(root, { isAlive: () => true });
+        }
+      } catch (e) {
+        warn("loot-dialog: attachDescTooltip threw", e);
+      }
+    },
+  }, { width: 460, classes: ["fud-steal-dialog-window"] });
+  await new Promise((resolve) => {
+    const origClose = dialog.close.bind(dialog);
+    dialog.close = (opts) => {
+      const p = origClose(opts);
+      resolve();
+      return p;
+    };
+    dialog.render(true);
+  });
+}
+
+const LOOT_DIALOG_STYLE_ID = "fud-steal-dialog-style";
+function ensureLootDialogStyles() {
+  if (document.getElementById(LOOT_DIALOG_STYLE_ID)) return;
+  const css = document.createElement("style");
+  css.id = LOOT_DIALOG_STYLE_ID;
+  css.textContent = `
+    .fud-steal-dialog { font-family: "Signika", "Roboto", sans-serif; font-size: 13px; }
+    .fud-steal-header { margin: 4px 0 8px; font-size: 13px; }
+    .fud-steal-body { display: flex; flex-direction: column; gap: 6px; }
+    .fud-steal-option {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(122, 155, 182, 0.10);
+      transition: background 120ms ease;
+    }
+    .fud-steal-option:hover {
+      background: rgba(122, 155, 182, 0.22);
+    }
+    .fud-steal-icon {
+      width: 52px; height: 52px;
+      border-radius: 6px;
+      background-color: rgba(20, 20, 20, 0.08);
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #000;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    }
+    .fud-steal-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .fud-steal-line {
+      font-size: 13.5px;
+      line-height: 1.25;
+      color: #3a3228;
+    }
+    .fud-steal-line b { font-weight: 800; }
+    .fud-steal-roll {
+      font-size: 10.5px;
+      opacity: 0.7;
+      font-weight: 600;
+    }
+    .fud-steal-stacked-pill {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      background: rgba(42, 110, 61, 0.18);
+      color: #2a6e3d;
+      vertical-align: 1px;
+    }
+    .fud-steal-empty {
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(90, 106, 133, 0.08);
+      font-size: 12.5px;
+    }
+    .fud-steal-empty b { font-weight: 800; }
+  `;
+  document.head.appendChild(css);
 }
 
 // ── chain ──────────────────────────────────────────────────────────────

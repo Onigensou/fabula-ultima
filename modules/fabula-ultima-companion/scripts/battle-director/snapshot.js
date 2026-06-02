@@ -321,13 +321,88 @@ export function snapshotCombatant(combat) {
   }
 }
 
+// AE-driven target exclusion. Walks the chooser's active effects, collects
+// every change row whose `key === "cannot_target_uuids"`, and returns the
+// set of actor UUIDs the chooser is forbidden from targeting.
+//
+// The change row's `value` is a comma-or-newline-separated list of UUIDs
+// (typically one — Vanish writes the caster's actorUuid). We split on
+// whitespace + commas so authors can pack multiple in a single row, and
+// also merge across multiple AEs (Vanish from two casters → both UUIDs
+// excluded).
+//
+// The bake-resolver in apply_ae substitutes `${casterActorUuid}$` at apply
+// time, so by the time we read the AE here the value is already a literal
+// UUID string. Disabled AEs are skipped.
+//
+// First consumer: Vanish's "Vanished from Caster" AE. Future consumers:
+// any "you cannot see X" / "you cannot perceive X" reactive effect.
+export function getCannotTargetUuids(actor) {
+  return new Set(getCannotTargetReasons(actor).keys());
+}
+
+// Same walk as getCannotTargetUuids, but keeps the human-readable
+// reason (AE name) for each excluded UUID. Used by the target picker
+// to overlay a "WHY can't I target this?" label above the excluded
+// tokens — players need to know whether the target is dropped because
+// they're invisible, or for some other reason they should plan around.
+//
+// Returns Map<excludedActorUuid, string[]> — multiple AEs hitting the
+// same UUID concatenate their names into the list, so the picker can
+// surface all of them when relevant.
+export function getCannotTargetReasons(actor) {
+  const out = new Map();
+  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const changes = ae?.changes ?? [];
+    for (const ch of changes) {
+      if (ch?.key !== "cannot_target_uuids") continue;
+      const raw = String(ch.value ?? "").trim();
+      if (!raw) continue;
+      const reason = String(ae.name ?? "").trim() || "Cannot target";
+      for (const u of raw.split(/[\s,]+/)) {
+        const trimmed = u.trim();
+        if (!trimmed) continue;
+        const list = out.get(trimmed);
+        if (list) list.push(reason);
+        else out.set(trimmed, [reason]);
+      }
+    }
+  }
+  return out;
+}
+
 // Snapshot eligible targets read from a DirectorCombat (the no-Foundry-doc
 // path). Same returned shape as `snapshotEligibleTargets` so callers can swap
 // without changing downstream code.
 export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
+  // AE-driven exclusion — walks the attacker's AEs once and collects every
+  // `cannot_target_uuids` value plus its source-AE name (used as the
+  // "why" label in the target picker). Excluded targets are filtered out
+  // of the eligible list below AND collected separately into `excluded`,
+  // attached to the returned array so the picker can render a greyed-out
+  // overlay + reason label over each blocked token.
+  // Skips self-targeting (category === "self") since that bypass is
+  // already actor-id-based, and a self-targeted skill never honors
+  // "I can't see this actor" exclusions per RAW.
+  // The snapshot doesn't carry the live actor doc (frozen-data contract);
+  // re-resolve via combatant.actorDoc on the dCombat side or
+  // game.actors.get on the legacy side. Returns an empty map if no
+  // attacker is resolvable.
+  const attackerActorId = attackerSnapshot?.actorId ?? null;
+  const attackerActor = attackerActorId
+    ? (dCombat?.combatants?.find?.((c) => c.id === attackerSnapshot?.combatantId)?.actorDoc
+        ?? game.actors?.get?.(attackerActorId)
+        ?? null)
+    : null;
+  const exclusionReasons = (category === "self")
+    ? new Map()
+    : getCannotTargetReasons(attackerActor);
   const out = [];
+  const excluded = [];
   for (const c of combatants) {
     const token = c.tokenDoc;
     const actor = c.actorDoc;
@@ -344,6 +419,20 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       ok = c.id === attackerSnapshot?.combatantId;
     }
     if (!ok) continue;
+    if (exclusionReasons.size && exclusionReasons.has(actor.uuid)) {
+      excluded.push(Object.freeze({
+        combatantId: c.id,
+        tokenId: token.id,
+        tokenUuid: token.uuid,
+        actorId: actor.id,
+        actorUuid: actor.uuid,
+        name: actor.name,
+        tokenImg: token.texture?.src ?? token.img ?? actor.img ?? null,
+        disposition: disp,
+        reasons: Object.freeze([...exclusionReasons.get(actor.uuid)]),
+      }));
+      continue;
+    }
     out.push(Object.freeze({
       combatantId: c.id,
       tokenId: token.id,
@@ -366,6 +455,10 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       conditions: Object.freeze(readActiveConditions(actor)),
     }));
   }
+  // Attach excluded list as a property BEFORE freezing — Object.freeze
+  // applies recursively only one level, but we want the array property
+  // accessible at all (assignment would silently fail post-freeze).
+  out.excluded = Object.freeze(excluded);
   return Object.freeze(out);
 }
 
@@ -375,7 +468,20 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
 export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "any" } = {}) {
   const combatants = combat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
+  // AE-driven exclusion — same as the dCombat variant above. The legacy
+  // Foundry combat carries `combatant.actor` references; we re-resolve
+  // via game.actors as a fallback if the snapshot doesn't carry one.
+  const attackerActorId = attackerSnapshot?.actorId ?? null;
+  const attackerActor = attackerActorId
+    ? (combat?.combatants?.find?.((c) => c.id === attackerSnapshot?.combatantId)?.actor
+        ?? game.actors?.get?.(attackerActorId)
+        ?? null)
+    : null;
+  const exclusionReasons = (category === "self")
+    ? new Map()
+    : getCannotTargetReasons(attackerActor);
   const out = [];
+  const excluded = [];
   for (const c of combatants) {
     const token = c.token;
     const actor = c.actor;
@@ -392,6 +498,20 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       ok = c.id === attackerSnapshot?.combatantId;
     }
     if (!ok) continue;
+    if (exclusionReasons.size && exclusionReasons.has(actor.uuid)) {
+      excluded.push(Object.freeze({
+        combatantId: c.id,
+        tokenId: token.id,
+        tokenUuid: token.uuid,
+        actorId: actor.id,
+        actorUuid: actor.uuid,
+        name: actor.name,
+        tokenImg: token.document?.texture?.src ?? token.texture?.src ?? token.img ?? actor.img ?? null,
+        disposition: disp,
+        reasons: Object.freeze([...exclusionReasons.get(actor.uuid)]),
+      }));
+      continue;
+    }
     out.push(Object.freeze({
       combatantId: c.id,
       tokenId: token.id,
@@ -410,6 +530,7 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       conditions: Object.freeze(readActiveConditions(actor)),
     }));
   }
+  out.excluded = Object.freeze(excluded);
   return Object.freeze(out);
 }
 

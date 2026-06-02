@@ -526,8 +526,15 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   }
 
   // Step 3: classify targeting.
-  const skillTargetText = String(skill.system?.props?.skill_target ?? "").trim().toLowerCase();
-  const isSelf = !skillTargetText || /^self$/.test(skillTargetText);
+  //
+  // Preserve original case — the text contains formula identifiers like
+  // `HAS_SKILL_PILLAGE` that the resolver matches case-sensitively
+  // (`name.startsWith("HAS_SKILL_")` in skill-formulas.js). Lowercasing
+  // here would silently fold those to 0 and collapse multi-target counts
+  // (Soul Steal × Pillage → only 1 target). All category-matching regex
+  // below uses the `/i` flag so case doesn't matter for them.
+  const skillTargetText = String(skill.system?.props?.skill_target ?? "").trim();
+  const isSelf = !skillTargetText || /^self$/i.test(skillTargetText);
 
   let targetUuids = [];
   if (isSelf) {

@@ -44,11 +44,23 @@ import { log, warn } from "./logger.js";
 import { DirectorCombat, DirectorCombatant } from "./director-combat.js";
 import { freeActions } from "./free-actions.js";
 import { freeActionQueue } from "./free-action-queue.js";
+import {
+  serializeStack,
+  rehydrateStack,
+  peekTop,
+  topIsFreeAction,
+  topIsSrwDetour,
+  migrateFreeActionContextToStack,
+  stackDepth,
+} from "./continuation-stack.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const FLAG_KEY = "directorState";       // single-object reload-survival flag
 const HISTORY_KEY = "directorHistory";  // rolling-20 rewind history flag
-const SCHEMA_VERSION = 1;
+// SCHEMA_VERSION 2: replaces v1's `freeActionContext.flags` with a
+// top-level `continuationStack` array. Migration auto-synthesizes
+// equivalent frames from v1's flag bag (see hydrateContinuationState).
+const SCHEMA_VERSION = 2;
 const MAX_HISTORY = 50;
 
 // ── Item deletion tracker (rewind tool) ──────────────────────────────
@@ -95,96 +107,140 @@ function consumePendingDeletions(actorUuid) {
   return arr;
 }
 
-// ── Free-action persistence (F5 mid-window survival, A2) ──────────────
+// ── Free-action + continuation persistence (F5 mid-window survival) ───
 //
-// Three sources of in-memory free-action state must round-trip to scene
-// flag so a reload mid-window (player picked High Speed, then F5'd
-// before/during/after their free Attack) restores the FSM to the same
-// SRW↔FAW loop position:
+// Three sources of in-memory state must round-trip to the scene flag
+// so a reload mid-window (player picked High Speed, then F5'd before /
+// during / after their free Attack) restores the FSM cleanly:
 //
-//   1. `freeActions` singleton — Map<actorId, grant>. The COMPUTE
-//      handlers consume from here for checkBonus/damageBonus/enabledLabels.
-//   2. `freeActionQueue` — FIFO of pending FreeActionRequests. FAW drains.
-//   3. ctx flags wiring the SRW/FAW loop:
-//        _srwFinalTarget        — where SRW eventually exits to
-//        _postFreeActionTarget  — what FAW routes to on queue-empty
-//        _freeActionPopped      — current popped request (FAW re-entry tear-down)
-//        _savedTurnSnapshot     — original turn snapshot, swapped out by FAW
-//        _savedActionResult     — original actionResult, swapped out by FAW
-//        freeActionMode         — duplicate of _freeActionPopped (set together)
-//        standaloneAfter / standaloneTrigger / standalonePayload — SRW dispatch routing
+//   1. `freeActions` singleton — Map<actorId, grant>. COMPUTE handlers
+//      read this for checkBonus / damageBonus / enabledLabels.
+//   2. `freeActionQueue` — FIFO of pending FreeActionRequests. FAW
+//      drains.
+//   3. `continuationStack` — ordered list of suspended sub-flows
+//      (free actions, SRW detours, future mid-action interrupts).
+//      Replaces the v1 "flag bag" (`_srwFinalTarget`,
+//      `_postFreeActionTarget`, `_freeActionPopped`, `_savedTurnSnapshot`,
+//      `_savedActionResult`, `freeActionMode`, plus the destructive
+//      `standaloneAfter` mutation). Each frame captures (a) the FSM
+//      state to resume at on pop and (b) a snapshot of ctx fields the
+//      sub-flow mutates. See [[continuation-stack]].
 //
-// Capture is conditional: only emit a `freeActionContext` block when
-// something is actually in flight. Regular saves (start of round, turn
-// end, etc.) leave the field absent so the survival flag stays small.
-function captureFreeActionContext(director) {
+// Capture is conditional: only emit a block when something is in flight
+// so regular saves stay small.
+
+// Capture all three sources into a saved-state-shaped object. Returns
+// null when nothing is in flight.
+function captureRuntimeContinuation(director) {
   const ctx = director?.ctx ?? {};
   const reg   = freeActions.snapshot();
   const queue = freeActionQueue.snapshot();
-  const hasRegistry = Object.keys(reg).length > 0;
-  const hasQueue    = queue.length > 0;
-  const flags = {};
-  // Truthy / non-undefined flags only — `delete ctx.X` zeroes them out
-  // between loops, so undefined means "not set."
-  if (ctx._srwFinalTarget != null)         flags._srwFinalTarget        = ctx._srwFinalTarget;
-  if (ctx._postFreeActionTarget != null)   flags._postFreeActionTarget  = ctx._postFreeActionTarget;
-  if (ctx._freeActionPopped != null)       flags._freeActionPopped      = ctx._freeActionPopped;
-  if (ctx._savedTurnSnapshot !== undefined) flags._savedTurnSnapshot    = ctx._savedTurnSnapshot;
-  if (ctx._savedActionResult !== undefined) flags._savedActionResult    = ctx._savedActionResult;
-  if (ctx.freeActionMode != null)          flags.freeActionMode         = ctx.freeActionMode;
-  if (ctx.standaloneAfter != null)         flags.standaloneAfter        = ctx.standaloneAfter;
-  if (ctx.standaloneTrigger != null)       flags.standaloneTrigger      = ctx.standaloneTrigger;
-  if (ctx.standalonePayload != null)       flags.standalonePayload      = ctx.standalonePayload;
-  const hasFlags = Object.keys(flags).length > 0;
-  if (!hasRegistry && !hasQueue && !hasFlags) return null;
-  return { registry: reg, queue, flags };
+  const stack = serializeStack(ctx);
+  // standalone* are SRW-loop ctx fields. They're orthogonal to the
+  // stack itself (SRW reads them on entry; frame snapshots restore
+  // them on pop). Persisted at the top level rather than inside the
+  // stack so SRW's first-entry read works cleanly.
+  const standalone = {};
+  if (ctx.standaloneTrigger != null) standalone.standaloneTrigger = ctx.standaloneTrigger;
+  if (ctx.standaloneAfter != null)   standalone.standaloneAfter   = ctx.standaloneAfter;
+  if (ctx.standalonePayload != null) standalone.standalonePayload = ctx.standalonePayload;
+  const hasRegistry  = Object.keys(reg).length > 0;
+  const hasQueue     = queue.length > 0;
+  const hasStack     = stack.length > 0;
+  const hasStandalone = Object.keys(standalone).length > 0;
+  if (!hasRegistry && !hasQueue && !hasStack && !hasStandalone) return null;
+  return {
+    registry: reg,
+    queue,
+    continuationStack: stack,
+    standalone,
+  };
 }
 
-// Rehydrate the in-memory free-action state from a persisted
-// `freeActionContext` block. Idempotent — overwrites the singletons +
-// ctx fields with whatever was saved. Returns a small summary used by
-// the resume-routing branch in director-boot.js.
-export function hydrateFreeActionContext(director, state) {
-  const fac = state?.freeActionContext;
-  if (!fac) return { restored: false };
+// Rehydrate all three sources. v2 saves carry `runtimeContinuation`
+// directly; v1 saves still carry the old `freeActionContext` shape
+// and we synthesize equivalent stack frames via the migration helper.
+// Returns a summary used by the director-boot resume router.
+export function hydrateContinuationState(director, state) {
   const ctx = director?.ctx ?? {};
   try {
-    // Registry: clearAll then re-set per actor so the resulting Map
-    // matches the saved snapshot exactly (no stale entries leak through).
+    // Clear-then-restore pattern so leftover registry / queue / stack
+    // from a previous battle don't leak through. Each section is
+    // restored only if the saved blob has it; absent ones leave the
+    // in-memory state empty.
     freeActions.clearAll();
-    for (const [actorId, grant] of Object.entries(fac.registry ?? {})) {
-      freeActions.set(actorId, grant);
-    }
-    // Queue: clear then re-enqueue in order so FIFO position is preserved.
     freeActionQueue.clear();
-    for (const req of (fac.queue ?? [])) {
-      freeActionQueue.enqueue(req);
+
+    // v2 shape — runtimeContinuation block at the top level.
+    const rc = state?.runtimeContinuation;
+    if (rc) {
+      for (const [actorId, grant] of Object.entries(rc.registry ?? {})) {
+        freeActions.set(actorId, grant);
+      }
+      for (const req of (rc.queue ?? [])) {
+        freeActionQueue.enqueue(req);
+      }
+      rehydrateStack(director, rc.continuationStack ?? []);
+      const sa = rc.standalone ?? {};
+      if (sa.standaloneTrigger != null) ctx.standaloneTrigger = sa.standaloneTrigger;
+      if (sa.standaloneAfter != null)   ctx.standaloneAfter   = sa.standaloneAfter;
+      if (sa.standalonePayload != null) ctx.standalonePayload = sa.standalonePayload;
+      const summary = {
+        restored: true,
+        schemaVersion: 2,
+        queueSize: (rc.queue ?? []).length,
+        registrySize: Object.keys(rc.registry ?? {}).length,
+        stackDepth: stackDepth(ctx),
+        topReason: peekTop(ctx)?.reason ?? null,
+        topResumeAt: peekTop(ctx)?.resumeAt ?? null,
+      };
+      log(`hydrateContinuationState (v2): registry=${summary.registrySize}, queue=${summary.queueSize}, stack=${summary.stackDepth}${summary.topReason ? ` (top "${summary.topReason}" → ${summary.topResumeAt})` : ""}`);
+      return summary;
     }
-    // Ctx flags: copy each individually so an unexpectedly-shaped blob
-    // can't clobber unrelated ctx state. Same pattern as the
-    // pendingAction.ctx restore in director-boot.js.
-    const f = fac.flags ?? {};
-    if (f._srwFinalTarget != null)        ctx._srwFinalTarget        = f._srwFinalTarget;
-    if (f._postFreeActionTarget != null)  ctx._postFreeActionTarget  = f._postFreeActionTarget;
-    if (f._freeActionPopped != null)      ctx._freeActionPopped      = f._freeActionPopped;
-    if (f._savedTurnSnapshot !== undefined) ctx._savedTurnSnapshot   = f._savedTurnSnapshot;
-    if (f._savedActionResult !== undefined) ctx._savedActionResult   = f._savedActionResult;
-    if (f.freeActionMode != null)         ctx.freeActionMode         = f.freeActionMode;
-    if (f.standaloneAfter != null)        ctx.standaloneAfter        = f.standaloneAfter;
-    if (f.standaloneTrigger != null)      ctx.standaloneTrigger      = f.standaloneTrigger;
-    if (f.standalonePayload != null)      ctx.standalonePayload      = f.standalonePayload;
-    log(`hydrateFreeActionContext: restored registry=${Object.keys(fac.registry ?? {}).length}, queue=${(fac.queue ?? []).length}, flags=${Object.keys(f).length}`);
-    return {
-      restored: true,
-      queueSize: (fac.queue ?? []).length,
-      hasPoppedRequest: f._freeActionPopped != null,
-      registrySize: Object.keys(fac.registry ?? {}).length,
-    };
+
+    // v1 shape — freeActionContext with a flag bag. Migrate to stack.
+    const fac = state?.freeActionContext;
+    if (fac) {
+      for (const [actorId, grant] of Object.entries(fac.registry ?? {})) {
+        freeActions.set(actorId, grant);
+      }
+      for (const req of (fac.queue ?? [])) {
+        freeActionQueue.enqueue(req);
+      }
+      // Restore standalone* fields BEFORE migration so the synthesized
+      // frame's snapshot can correctly capture them.
+      const f = fac.flags ?? {};
+      if (f.standaloneTrigger != null) ctx.standaloneTrigger = f.standaloneTrigger;
+      if (f.standaloneAfter != null)   ctx.standaloneAfter   = f.standaloneAfter;
+      if (f.standalonePayload != null) ctx.standalonePayload = f.standalonePayload;
+      // Migration: build the stack from legacy flags.
+      const migrated = migrateFreeActionContextToStack(director, fac);
+      const summary = {
+        restored: true,
+        schemaVersion: 1,
+        migrated,
+        queueSize: (fac.queue ?? []).length,
+        registrySize: Object.keys(fac.registry ?? {}).length,
+        stackDepth: stackDepth(ctx),
+        topReason: peekTop(ctx)?.reason ?? null,
+        topResumeAt: peekTop(ctx)?.resumeAt ?? null,
+      };
+      log(`hydrateContinuationState (v1 → migrated): registry=${summary.registrySize}, queue=${summary.queueSize}, stack=${summary.stackDepth}${summary.topReason ? ` (top "${summary.topReason}" → ${summary.topResumeAt})` : ""}`);
+      return summary;
+    }
+
+    // Neither v1 nor v2 carry continuation state — clean resume.
+    rehydrateStack(director, []);
+    return { restored: false, schemaVersion: state?.schemaVersion ?? null };
   } catch (e) {
-    warn("hydrateFreeActionContext threw", e);
+    warn("hydrateContinuationState threw", e);
     return { restored: false, error: String(e?.message ?? e) };
   }
 }
+
+// Back-compat alias — director-boot.js imports under both names during
+// the rename. Once all callers update, drop the old one.
+export const hydrateFreeActionContext = hydrateContinuationState;
 
 // ── Save ────────────────────────────────────────────────────────────────
 
@@ -229,19 +285,20 @@ export async function saveDirectorState(director, opts = {}) {
     ? null
     : (opts.pendingAction ?? null);
 
-  // Free-action context — registry + queue + FSM routing flags. Captured
-  // only when something is in flight so regular saves stay clean (no
-  // empty blob on every TURN_START). Restored on resume by
-  // hydrateFreeActionContext before any state-transition routing.
-  // See [[free-actions]] / [[free-action-queue]] for the runtime shapes.
-  const freeActionContext = captureFreeActionContext(director);
+  // Runtime continuation — registry + queue + continuation stack +
+  // standalone* fields. Captured only when something is in flight so
+  // regular saves stay clean (no empty blob on every TURN_START).
+  // Restored on resume by hydrateContinuationState before any
+  // state-transition routing. See [[free-actions]] /
+  // [[free-action-queue]] / [[continuation-stack]] for the shapes.
+  const runtimeContinuation = captureRuntimeContinuation(director);
 
   const state = {
     schemaVersion: SCHEMA_VERSION,
     savedAt: Date.now(),
     sourceSceneId: dc.sourceSceneId ?? null,
     pendingAction,
-    ...(freeActionContext ? { freeActionContext } : {}),
+    ...(runtimeContinuation ? { runtimeContinuation } : {}),
     // Stash the original PREP payload for diagnostic purposes — RAW
     // resume doesn't re-run PREP (tokens are already on the scene) but
     // keeping the payload makes it possible to inspect what battle this
@@ -372,7 +429,7 @@ async function snapshotCombatantActors(dCombat) {
         current_hp:     p.current_hp,
         current_mp:     p.current_mp,
         current_ip:     p.current_ip,
-        fabula_points:  p.fabula_points,
+        fabula_point:   p.fabula_point,
         // Equipment-display fields (mirrors what applyEquipmentSwap writes
         // — kept in sync with equipment-swap.js + the CSB template).
         main_hand:           p.main_hand,
@@ -919,13 +976,12 @@ export async function rewindToHistorySnapshot(snapshotId) {
   //    auto-resumes to the rewound state (not the pre-rewind state).
   //    The snapshot is a superset of the directorState shape — strip
   //    the rewind-only fields (actors, label, description, id) before
-  //    writing. KEEP pendingAction and freeActionContext: those are
-  //    part of the directorState contract and the rewound state's
-  //    in-flight context (action card on screen, free-action queue
-  //    populated) should survive a follow-up F5 the same way a fresh
-  //    save would. Without them, an F5 immediately after rewinding to
-  //    "Attack posted" or "Free action pending" lands at TURN_START
-  //    and the rewound action card / free-action prompt is lost.
+  //    writing. KEEP pendingAction + runtimeContinuation (v2) +
+  //    freeActionContext (v1 back-compat): those are part of the
+  //    directorState contract and the rewound state's in-flight context
+  //    (action card on screen, free-action queue populated, suspended
+  //    sub-flows on the stack) should survive a follow-up F5 the same
+  //    way a fresh save would.
   try {
     const stateOnly = {
       schemaVersion: snapshot.schemaVersion,
@@ -934,6 +990,9 @@ export async function rewindToHistorySnapshot(snapshotId) {
       payload: snapshot.payload,
       dCombat: snapshot.dCombat,
       ...(snapshot.pendingAction ? { pendingAction: snapshot.pendingAction } : {}),
+      ...(snapshot.runtimeContinuation ? { runtimeContinuation: snapshot.runtimeContinuation } : {}),
+      // v1 back-compat — old history entries still carry freeActionContext.
+      // Resume path handles either shape via hydrateContinuationState.
       ...(snapshot.freeActionContext ? { freeActionContext: snapshot.freeActionContext } : {}),
     };
     await scene.setFlag(FLAG_NS, FLAG_KEY, stateOnly);

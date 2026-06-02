@@ -66,7 +66,9 @@ const STANDALONE_FLAG_KEY = "standaloneFired";
 // action play out before committing their own reaction.
 //
 // After the action completes, STANDALONE_REACTION_WINDOW re-enters
-// itself (via the _postFreeActionTarget chain) and re-dispatches for
+// itself via the continuation stack: SRW pushed an `srwDetour:*` frame
+// before routing to FAW; FAW exits to top.resumeAt = SRW after the
+// queue drains, where SRW pops its own frame and re-dispatches for
 // the deferred reactors with re-gated conditions.
 //
 // Coordinator is a plain EventTarget. dispatchReactionMenu registers
@@ -295,12 +297,40 @@ export async function dispatchReactionMenu({
   includeManual = true,
   scope = null,
   scene = null,
+  // skipEvaluated: [{ carrierUuid, rowKey }] entries the caller has
+  // already dispatched (pre-resolve pill accepts, cross-trigger relay).
+  // Used by post-resolve creature_completes_spell so a Spell that fired
+  // pre-resolve passives at CONFIRM doesn't re-prompt the same rows.
+  skipEvaluated = null,
 } = {}) {
   if (!director || !reactor || !token || !trigger) {
     return { cancelled: false, fired: [] };
   }
   const { findPassiveCandidates, firePreAcceptedCandidate, isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
   const fired = [];
+
+  const skipSet = new Set(
+    (Array.isArray(skipEvaluated) ? skipEvaluated : [])
+      .map((e) => `${e?.rowKey ?? ""}:${e?.carrierUuid ?? ""}`)
+  );
+
+  // Harness override (Phase 2.1): when `__FU_HARNESS_ACCEPT_PASSIVES__`
+  // is set, treat askable candidates as auto-accepted/declined without
+  // spawning the menu. Mirrors the legacy firePassiveTriggers behavior
+  // so existing harness scenarios (acceptPassives: true / per-skill map)
+  // keep working when dispatched through this unified menu path.
+  function harnessChoiceFor(c) {
+    const ov = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
+    if (ov === undefined || ov === null) return null;
+    if (typeof ov === "boolean") return ov;
+    if (typeof ov === "object") {
+      for (const [name, val] of Object.entries(ov)) {
+        if (String(c.carrierName ?? "").includes(name) || name.includes(String(c.carrierName ?? ""))) return !!val;
+      }
+      return null;
+    }
+    return null;
+  }
 
   // Used-badge derivation — keep previously-fired reactions VISIBLE
   // (stamped "Used"), don't filter them out. Pass is now window-scoped
@@ -328,6 +358,11 @@ export async function dispatchReactionMenu({
     warn(`reaction[${trigger}]: findPassiveCandidates threw for ${reactor?.name}`, e);
     return { cancelled: false, fired: [] };
   }
+  // Apply skipEvaluated filter — drop candidates the caller already
+  // dispatched in an earlier phase.
+  if (skipSet.size) {
+    candidates = candidates.filter((c) => !skipSet.has(`${c.rowKey}:${c.carrierUuid}`));
+  }
   if (!candidates?.length) return { cancelled: false, fired: [] };
 
   // Auto-skip ONLY when every candidate has already been used in this
@@ -351,11 +386,31 @@ export async function dispatchReactionMenu({
   // it didn't fire (rather than silently no-op).
   const autoFire = [];
   const askable = [];
+  const harnessSkipped = [];
   for (const c of candidates) {
     const isAutoMode = c.kind === "passive" && (c.mode === "on" || c.mode === "force");
     const wasUsed = firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid));
-    if (isAutoMode && c.available && !wasUsed) autoFire.push(c);
-    else if (c.mode !== "off") askable.push(c);
+    if (isAutoMode && c.available && !wasUsed) {
+      autoFire.push(c);
+      continue;
+    }
+    // Exclude from askable:
+    //   - "off" — explicit player opt-out
+    //   - "force" — engine-mandatory + UI-invisible per [[force-mode-canonical-rows]]
+    //   - wasUsed — already fired/auto'd this scope; F5 + Battle Start
+    //     re-dispatch otherwise spawns the menu with previously-decided
+    //     reactions stamped "Used", and processFire has no wasUsed gate
+    //     so clicking Use a second time would re-fire side effects.
+    if (c.mode === "off" || c.mode === "force" || wasUsed) continue;
+
+    // Harness override — auto-resolve without spawning the menu when the
+    // test harness has stamped __FU_HARNESS_ACCEPT_PASSIVES__. true →
+    // promote to autoFire; false → silently skip. null/no-match → fall
+    // through to interactive askable.
+    const harnessChoice = harnessChoiceFor(c);
+    if (harnessChoice === true && c.available) autoFire.push(c);
+    else if (harnessChoice === false) harnessSkipped.push(c);
+    else askable.push(c);
   }
   for (const c of autoFire) {
     try {

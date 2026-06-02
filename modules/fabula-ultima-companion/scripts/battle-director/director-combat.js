@@ -249,7 +249,12 @@ export class DirectorCombat {
       warn("DirectorCombat.start: no combatants");
     }
     this.started = true;
-    this.round = 1;
+    // Round 0 is the pre-combat phase (PREP + conflict_start reactions).
+    // ROUND_START.onEnter bumps to 1 when entering the first real round,
+    // and nextTurn() bumps further on wraps. The resume-routing layer
+    // uses round=0 as the unambiguous "Battle Start" signal — see
+    // director-boot.js' Battle Start branch.
+    this.round = 0;
     this.turn = 0;
     // Initialize round-1 turn counts (constructor already set them, but
     // re-sync in case combatants were appended after construction).

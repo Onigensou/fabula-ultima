@@ -33,6 +33,7 @@ import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banne
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
+import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -47,8 +48,9 @@ import {
   getHistory,
   findHistorySnapshot,
   rewindToHistorySnapshot,
-  hydrateFreeActionContext,
+  hydrateContinuationState,
 } from "./persistence.js";
+import { peekTop, topIsFreeAction, topIsSrwDetour, stackDepth } from "./continuation-stack.js";
 // Test harness — side-effect import (registers
 // FUCompanion.api.test.runDirectorSkillCompute on the "ready" hook).
 // Doesn't add behavior to the live director; lets the test bridge
@@ -464,32 +466,27 @@ async function resumeFromSavedState({ scene, state }) {
   // needed. Same-fingerprint entries (rewind to "Hina · Turn Start" →
   // TURN_START re-saves same) collapse to one in the rewind list.
 
-  // Branch on what the survival flag is pointing at:
-  //   - pendingAction set (F5 happened with an Action Card on-screen) →
-  //     restore actionResult + the ctx subset CONFIRM/RESOLVE/CLEANUP
-  //     need, prime turnSnapshot from dCombat.current, then jump
-  //     straight to CONFIRM so the same card re-spawns. The
-  //     pendingAction is cleared inside Confirm.onEnter the moment the
-  //     card's promise resolves, so this only fires on a true mid-card
-  //     reload.
-  //   - currentTurnResolved=true → land at TURN_END so the turn advances
-  //     without re-running RESOLVE (damage/AE/equipment was already
-  //     applied to actor docs before the reload; replaying would double-
-  //     apply). See state-handlers RESOLVE.onEnter for the write site.
-  //   - otherwise → land at TURN_START, which auto-picks the saved
-  //     combatant (currentCombatantId preserved through reconstruction)
-  //     and routes to DECLARE for a fresh action.
-  // ── A2 free-action restore ──────────────────────────────────────────
-  // Rehydrate freeActions singleton + freeActionQueue + SRW/FAW ctx
-  // flags BEFORE the routing branches read ctx state. If the queue is
-  // non-empty (a peer had committed an action-creating reaction before
-  // F5), we'll route into FREE_ACTION_WINDOW after the pendingAction /
-  // currentTurnResolved / Battle Start branches don't claim the resume.
-  // See [[free-actions]] + persistence.js' captureFreeActionContext for
-  // the full saved shape.
-  const facSummary = hydrateFreeActionContext(director, state);
+  // Resume routing — stack-driven.
+  //
+  // Hydrate the runtime continuation state first (freeActions registry,
+  // freeActionQueue, continuationStack, standalone* fields). All
+  // routing decisions below read from those structures.
+  //
+  // Branch priority (first match wins):
+  //   1. pendingAction set → CONFIRM (F5 mid-action-card; one-shot
+  //      orthogonal to the stack — survives any combination of frames)
+  //   2. currentTurnResolved (and no in-flight stack) → TURN_END (turn
+  //      committed pre-reload, just advance)
+  //   3. Stack non-empty → top.resumeAt (suspended sub-flow:
+  //      freeAction → FAW for teardown / drain; srwDetour → SRW for
+  //      pop + re-dispatch loop; future interrupt frames likewise)
+  //   4. round=1 + no combatant + standaloneTrigger set → SRW
+  //      (Battle Start / mid-conflict_start cold resume — the
+  //      standalone* fields were restored above, so SRW can re-dispatch)
+  //   5. Default → TURN_START (auto-picks the saved combatant)
+  const facSummary = hydrateContinuationState(director, state);
   if (facSummary.restored) {
-    log(`resume: free-action context restored — queue=${facSummary.queueSize}, popped=${facSummary.hasPoppedRequest}, registry=${facSummary.registrySize}`);
+    log(`resume: continuation state restored — queue=${facSummary.queueSize}, stack=${facSummary.stackDepth ?? 0}, top="${facSummary.topReason ?? "(none)"}"`);
   }
 
   let resumeAt;
@@ -534,59 +531,38 @@ async function resumeFromSavedState({ scene, state }) {
       warn("resume: failed to restore pendingAction — falling back to TURN_START", e);
       resumeAt = STATES.TURN_START;
     }
-  } else if (dCombat.currentTurnResolved) {
+  } else if (dCombat.currentTurnResolved && stackDepth(director.ctx) === 0) {
+    // Normal turn fully resolved pre-reload AND no suspended sub-flows.
+    // currentTurnResolved is only set when we're back at the top-level
+    // turn (the gate in RESOLVE.onEnter skips the flip for free-action
+    // pipelines), so we can route directly to TURN_END to advance.
     resumeAt = STATES.TURN_END;
-  } else if (facSummary.restored && (facSummary.queueSize > 0 || facSummary.hasPoppedRequest)) {
-    // A2 — F5 or rewind hit mid-free-action.
-    //
-    // ORDER MATTERS: this branch must come BEFORE the Battle Start
-    // branch. The "Free action pending" save site at the SRW→FAW
-    // handoff fires while round=1 and currentCombatantId is still
-    // null (conflict_start hasn't completed its standaloneAfter exit
-    // yet) — exactly the shape Battle Start matches. Without this
-    // ordering, a rewind to "Free action pending" would re-dispatch
-    // conflict_start and the user would see the reaction menus again
-    // instead of resuming Zarg's Attack/Hinder picker.
-    //
-    // Three sub-cases:
-    //   (a) hasPoppedRequest is true → a free action was in flight
-    //       (its DECLARE / TARGET / COMPUTE pipeline) when F5 fired.
-    //       Re-entering FAW with `_freeActionPopped` set takes the
-    //       teardown branch (restores swapped turnSnapshot + clears
-    //       flags), then falls into the drain path — picks the next
-    //       request or exits to _postFreeActionTarget. The lost
-    //       free-action card itself isn't recovered (it didn't reach
-    //       CONFIRM, so pendingAction was never saved); the player
-    //       sees SRW re-fire post-drain for un-decided reactors.
-    //   (b) Queue non-empty without popped → SRW had dispatched and
-    //       the queue had buffered requests, but FAW hadn't dequeued
-    //       the next one yet. Same FAW entry — drains naturally.
-    //   (c) Both → (a) takes precedence; the teardown runs first.
-    //
-    // Either way, the existing FAW handler's two-mode entry logic
-    // resolves correctly from saved state.
-    log(`resume: routing into FREE_ACTION_WINDOW — queue=${facSummary.queueSize}, popped=${facSummary.hasPoppedRequest}`);
-    // Default `_postFreeActionTarget` to TURN_START if it wasn't
-    // persisted (shouldn't happen — captureFreeActionContext stamps it
-    // when set — but defend anyway).
-    if (director.ctx._postFreeActionTarget == null) {
-      director.ctx._postFreeActionTarget = STATES.TURN_START;
-    }
-    resumeAt = STATES.FREE_ACTION_WINDOW;
-  } else if ((dCombat.round ?? 0) === 1 && dCombat.currentCombatantId == null) {
+  } else if (stackDepth(director.ctx) > 0) {
+    // Suspended sub-flow — route to the top frame's resume state. The
+    // handler at that state inspects the stack and pops as needed
+    // (FAW pops `freeAction:*` for teardown; SRW pops `srwDetour:*`
+    // and resumes its dispatch loop).
+    const top = peekTop(director.ctx);
+    resumeAt = top?.resumeAt ?? STATES.TURN_START;
+    log(`resume: routing into ${resumeAt} per top frame "${top?.reason}"`);
+  } else if ((dCombat.round ?? 0) === 0) {
     // "Battle Start" rewind / cold resume — conflict_start hasn't
-    // completed yet (round=1 + no combatant picked is the unique
-    // shape of the PREP.onEnter save site, which runs AFTER building
-    // dCombat but BEFORE the conflict_start standalone handoff).
+    // completed yet. dCombat.start() leaves round=0 as the pre-combat
+    // phase marker; ROUND_START.onEnter bumps to 1 only when entering
+    // Round 1 for real. So any saved state with round=0 is, by
+    // construction, pre-conflict_start.
+    //
+    // Earlier shape — `round=1 + currentCombatantId=null` — was
+    // ambiguous: it also matched TURN_END saves IN Round 1 (nextTurn
+    // clears combatantId between turns), and F5 there misrouted to
+    // SRW and re-fired every conflict_start reaction. Round 0 makes
+    // the discrimination unambiguous.
+    //
     // Re-enter the same handoff so conflict_start reactions (High
     // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
     // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
     // sees fresh candidates. For F5 mid-conflict_start the flag was
     // NOT cleared so only un-decided reactors re-spawn menus.
-    //
-    // NB: the FAW branch above takes precedence when freeActionContext
-    // is non-empty, even at this round=1 shape. Battle Start only
-    // matches "no free action queued, conflict_start hasn't run yet."
     director.ctx.standaloneTrigger = "conflict_start";
     director.ctx.standaloneAfter   = STATES.ROUND_START;
     director.ctx.standalonePayload = null;
@@ -902,6 +878,11 @@ Hooks.once("ready", () => {
   // hover / click / back UI cues before wiring them into the real menus.
   try { initSfxAudition(); }
   catch (e) { warn("initSfxAudition on ready threw", e); }
+
+  // Director UI sound layer — delegated hover/click cues on all interactive
+  // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
+  try { initDirectorUiSfx(); }
+  catch (e) { warn("initDirectorUiSfx on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.

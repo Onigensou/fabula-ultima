@@ -37,9 +37,11 @@ export const STATES = Object.freeze({
   // pipeline with the reactor's turn snapshot swapped in + the
   // freeActions singleton holding the bonus to apply at COMPUTE. After
   // the action's RESOLVE/REACTION_WINDOW, the transition table routes
-  // back here (via ctx.freeActionMode) to drain the next request OR
-  // restore the original flow target (ctx._postFreeActionTarget).
-  // See [[free-actions]].
+  // back here (when top of continuationStack is a `freeAction:*` frame).
+  // FAW pops the frame on re-entry, restoring turnSnapshot+actionResult,
+  // then drains the next request or exits to the frame underneath
+  // (typically an `srwDetour:*` → SRW for re-dispatch).
+  // See [[free-actions]] / [[continuation-stack]].
   FREE_ACTION_WINDOW: "FREE_ACTION_WINDOW",
   ABORTED:          "ABORTED",
   STOPPED:          "STOPPED",
@@ -94,6 +96,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
 // write any state-entry side effects atomically with the transition.
 
 import { INTENTS } from "./intents.js";
+import { topIsFreeAction, peekTop } from "./continuation-stack.js";
 
 export const TRANSITIONS = Object.freeze({
   [STATES.IDLE]: {
@@ -131,12 +134,13 @@ export const TRANSITIONS = Object.freeze({
   [STATES.DECLARE]: {
     [INTENTS.DECLARE_COMMAND]: { next: STATES.TARGET },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
-    // Compose cancel (Esc from Octopath). For a free action, the
-    // request was popped on entry; cancelling forfeits it — route
-    // back to FREE_ACTION_WINDOW so the next request drains or the
-    // post-target restores. For a regular turn, fall through to
-    // TURN_END.
-    [INTENTS.TIMEOUT]: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.TURN_END },
+    // Compose cancel (Esc from Octopath). For a free action, top of
+    // the continuation stack is a `freeAction:*` frame; cancelling
+    // forfeits the request — route back to FREE_ACTION_WINDOW so FAW
+    // pops the frame, restores the original snapshot, and drains the
+    // next request (or exits to top.resumeAt). For a regular turn,
+    // fall through to TURN_END.
+    [INTENTS.TIMEOUT]: { next: (ctx) => topIsFreeAction(ctx) ? STATES.FREE_ACTION_WINDOW : STATES.TURN_END },
   },
 
   [STATES.TARGET]: {
@@ -164,11 +168,12 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.REACTION_WINDOW]: {
-    // Free-action mode: skip CLEANUP/TURN_END (which would advance the
-    // real combatant's turn). Re-enter FREE_ACTION_WINDOW so the queue
-    // drains its next request or restores the original flow target.
-    INTERNAL_DONE: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
-    [INTENTS.TIMEOUT]: { next: (ctx) => ctx.freeActionMode ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
+    // Free-action sub-flow: top of continuation stack is a `freeAction:*`
+    // frame. Skip CLEANUP/TURN_END (which would advance the real
+    // combatant's turn). Re-enter FREE_ACTION_WINDOW so the queue
+    // drains its next request or pops back to the SRW detour frame.
+    INTERNAL_DONE: { next: (ctx) => topIsFreeAction(ctx) ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
+    [INTENTS.TIMEOUT]: { next: (ctx) => topIsFreeAction(ctx) ? STATES.FREE_ACTION_WINDOW : STATES.CLEANUP },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -217,16 +222,21 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.FREE_ACTION_WINDOW]: {
-    // Routing fork:
-    //   DECLARE         — onEnter set ctx._freeActionPopped (= popped a
-    //                     fresh request + swapped turnSnapshot); the
-    //                     player composes + commits the free action.
-    //   _postTarget     — queue drained; restore the original flow
-    //                     target the original standaloneAfter pointed at
-    //                     before we redirected through here.
-    INTERNAL_DONE: { next: (ctx) => ctx._freeActionPopped
-      ? STATES.DECLARE
-      : (ctx._postFreeActionTarget ?? STATES.TURN_START) },
+    // Routing fork — read off the continuation stack:
+    //   top is `freeAction:*` (just pushed by onEnter)  → DECLARE
+    //     The player composes + commits this free action. On
+    //     completion, RESOLVE → REACTION_WINDOW routes back here,
+    //     onEnter pops, and we re-evaluate.
+    //   top is `srwDetour:*` (SRW pushed before routing here) → SRW
+    //     Queue empty AND we have an SRW frame underneath; FAW exit
+    //     routes back to SRW which pops its own frame.
+    //   no top                                          → TURN_START
+    //     Queue empty AND no frame; fall back to the normal turn flow.
+    INTERNAL_DONE: { next: (ctx) => {
+      const top = peekTop(ctx);
+      if (top?.reason?.startsWith?.("freeAction:")) return STATES.DECLARE;
+      return top?.resumeAt ?? STATES.TURN_START;
+    } },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 

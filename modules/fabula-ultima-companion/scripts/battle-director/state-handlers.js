@@ -39,6 +39,7 @@ import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, 
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
 import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
+import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
 // imported (with one-shot cache-bust on first call) so this module
@@ -179,6 +180,7 @@ async function fireLinkedSkillFromItem({ director, casterSnap, casterActor, skil
     skillName: skill.name,
     skillImg: skill.img,
     skillType: String(skill.system?.props?.skill_type ?? ""),
+    defenseTargetType: String(skill.system?.props?.defense_target_type ?? "").toLowerCase(),
     isCheck: false,  // linked-item skills bypass the Check (auto-hit)
     rolledA1: "",
     rolledA2: "",
@@ -401,6 +403,17 @@ async function resolveSkillAction(director, ar, opts = {}) {
     }
   }
 
+  // 5b. Miss VFX for Check-only skills (no damage — e.g. Zarg's Soul Steal).
+  //     These skip the damage loop above (it's gated on ar.hasDamage), so a
+  //     failed Check would otherwise show no whiff. Fire the Miss flourish for
+  //     each non-hit target. Gated on ar.isCheck because non-check skills
+  //     auto-hit (every perTargetResults entry is hit:true) — nothing to miss.
+  if (!ar.hasDamage && ar.isCheck && hits.length) {
+    for (const r of hits) {
+      if (!r.hit) playMissVfx({ tokenUuid: r.tokenUuid });
+    }
+  }
+
   // 6. Pre-resolve accepted passives — fire any pill-accepted passives
   //    the CONFIRM step stamped on the actionResult (Healing Power /
   //    Support Magic / future "during action card" reactions). These
@@ -408,11 +421,17 @@ async function resolveSkillAction(director, ar, opts = {}) {
   //    manipulate the action's effective result. The post-resolve
   //    `creature_completes_spell` dispatch below skips any candidate
   //    already evaluated here to avoid double-fire.
+  const _hitList = Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid);
   const payloadForPassives = {
     spellUuid: skill.uuid,
     spellName: skill.name,
     targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
-    hitTargetTokenUuids: Array.isArray(ar.hitTokenUuids) ? ar.hitTokenUuids : (ar.targets ?? []).map((t) => t.tokenUuid),
+    hitTargetTokenUuids: _hitList,
+    // `hitTargets` is the canonical key that skill-targeting.js's
+    // `hit_action_targets` resolver reads — needed for reactions like
+    // Vanish that target each hit creature via target_ref.
+    hitTargets: _hitList,
+    targets: (ar.targets ?? []).map((t) => t.tokenUuid),
     sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
     sourceActorUuid: ar.attackerActorRef,
     actionIntent: ar.actionIntent,
@@ -429,25 +448,54 @@ async function resolveSkillAction(director, ar, opts = {}) {
     }
   }
 
+  // 6b. Post-damage passive trigger — `creature_deals_damage` fires once
+  //     per Skill cast with the hit-target list. Reactor is the caster;
+  //     reactions filter by `reaction_source: "self"`. Used by Vanish-
+  //     style "after dealing damage" reactions that apply AEs to each
+  //     hit creature via target_ref: "hit_action_targets". Gated on
+  //     ar.hasDamage so non-damage skills (Heal, Reinforce) don't fire it.
+  //
+  // QUEUED, not fired, so the trigger runs AFTER RESOLVE's actor-snapshot
+  // save site. Otherwise reaction-applied AEs (e.g. Vanish) land BEFORE
+  // the "After X's Action" rewind anchor, requiring two rewinds to
+  // undo them. See [[reaction-architecture]].
+  if (ar.hasDamage && hits.some((r) => r.hit)) {
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_deals_damage",
+      payload: payloadForPassives,
+    });
+  }
+
   // 7. Post-resolve creature_completes_spell dispatch (legacy fallback
   //    + any candidates that weren't evaluated pre-resolve — e.g. an
   //    "off"-mode passive that the pre-eval correctly auto-rejected but
   //    that a player wants to keep available if they flip the mode mid-
   //    session). We pass `skipEvaluated` so firePassiveTriggers can
   //    suppress candidates already handled. Spell-only: non-Spell
-  //    actions don't fire this trigger.
+  //    actions don't fire this trigger. Queued for post-save firing
+  //    same as creature_deals_damage.
   if (String(skill.system?.props?.skill_type ?? "").toLowerCase() === "spell") {
-    try {
-      const evaluated = Array.isArray(ar.evaluatedPrePassives) ? ar.evaluatedPrePassives : [];
-      await firePassiveTriggers({
-        director,
-        casterActor,
-        trigger: "creature_completes_spell",
-        payload: payloadForPassives,
-        skipEvaluated: evaluated,
-      });
-    } catch (e) { warn("Skill resolve: firePassiveTriggers threw", e); }
+    const evaluated = Array.isArray(ar.evaluatedPrePassives) ? ar.evaluatedPrePassives : [];
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_completes_spell",
+      payload: payloadForPassives,
+      skipEvaluated: evaluated,
+    });
   }
+}
+
+// Stash a passive-trigger config in ctx so RESOLVE.onEnter's tail can
+// fire it AFTER the actor-snapshot save site. Per-action queue —
+// cleared at the end of RESOLVE. Each entry is the same shape that
+// `firePassiveTriggers` accepts (minus the director arg).
+function queuePostResolveTrigger(director, config) {
+  if (!director?.ctx) return;
+  if (!Array.isArray(director.ctx._postResolveTriggers)) {
+    director.ctx._postResolveTriggers = [];
+  }
+  director.ctx._postResolveTriggers.push(config);
 }
 
 // Extract a formula-evaluable target count from a free-text
@@ -650,6 +698,13 @@ const RoundStart = {
   async onEnter(director) {
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
+    // First-round bump. dCombat.start() leaves round=0 (the pre-combat
+    // / conflict_start phase). The first ROUND_START transitions us
+    // into Round 1; subsequent ROUND_STARTs (after a wrap) see round
+    // already incremented by nextTurn() and leave it alone.
+    if (director.dCombat && (director.dCombat.round ?? 0) === 0) {
+      director.dCombat.round = 1;
+    }
     const roundNo = director.dCombat?.round ?? director.combat?.round ?? 0;
     log(`ROUND_START — round ${roundNo}`);
 
@@ -1740,6 +1795,7 @@ const Target = {
         skillName: skill.name,
         skillImg: skill.img,
         skillType: String(skill.system?.props?.skill_type ?? ""),
+        defenseTargetType: String(skill.system?.props?.defense_target_type ?? "").toLowerCase(),
         isCheck: !!skill.system?.props?.isCheck,
         rolledA1: String(skill.system?.props?.rolled_atr1 ?? "").toUpperCase(),
         rolledA2: String(skill.system?.props?.rolled_atr2 ?? "").toUpperCase(),
@@ -2095,10 +2151,19 @@ const Compute = {
         roll = { A1, A2, dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr, isCrit, isFumble, opportunities: isCrit && !isFumble };
       }
 
-      // Spells compare vs the target's Magic Defense (MDEF), other
-      // skills vs regular Defense (DEF). Mirrors the accuracy widget's
-      // Strike-vs-Magic icon choice in action-card.js.
+      // Defense selection — Spells always vs MDEF (RAW; the 111 live
+      // Spell items leave the CSB `defense_target_type` column at its
+      // template default of "def", so the column on Spells is unreliable
+      // and we ignore it there). Non-Spell skills can opt in to MDEF
+      // resolution via `defense_target_type: "mdef"` — needed for
+      // Skill-kind opposed Checks that resolve vs Magic Defense per RAW
+      // (Soul Steal / Pillage / Draconic Roar / Entangle roll vs MDEF
+      // despite being Skill-kind for cost/typing). Mirrors the accuracy
+      // widget's Strike-vs-Magic icon choice in action-card.js.
       const isSpell = String(ar.skillType ?? "").toLowerCase() === "spell";
+      const dtt = String(ar.defenseTargetType ?? "").toLowerCase();
+      const vsMDef = isSpell || dtt === "mdef";
+      const pickDefStat = (e) => vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0);
 
       // Encyclopedia studied-gate (mirrors Attack COMPUTE). A player
       // attacker shouldn't see an enemy's MDEF / damage outcome /
@@ -2139,10 +2204,8 @@ const Compute = {
         const effectiveHr = roll?.isFumble ? 0 : (roll?.hr ?? 0);
         for (const e of allTargets) {
           // Skills without isCheck always hit. Skills with isCheck resolve
-          // hit vs DEF (Skill) or MDEF (Spell).
-          const defStat = isSpell
-            ? (e.magicDefense ?? 0)
-            : (e.defense ?? 0);
+          // hit vs DEF / MDEF — see vsMDef derivation above.
+          const defStat = pickDefStat(e);
           let hit = !roll;
           if (roll) {
             if (roll.isFumble) hit = false;
@@ -2215,7 +2278,7 @@ const Compute = {
       } else {
         hitTokenUuids = [];
         for (const e of allTargets) {
-          const defStat = isSpell ? (e.magicDefense ?? 0) : (e.defense ?? 0);
+          const defStat = pickDefStat(e);
           let hit = false;
           if (roll) {
             if (roll.isFumble) hit = false;
@@ -2740,8 +2803,9 @@ const Confirm = {
       const kindLabel = ar.kind === "Skill"
         ? (ar.skillName ?? "Skill")
         : ar.kind;
+      const cnfPhase = rewindPhaseLabel(director.ctx, dc?.round);
       saveDirectorState(director, {
-        label: `Round ${dc?.round ?? 0} · ${ar.attacker?.name ?? "?"} · ${kindLabel} ${verbForKind}${passTag}`,
+        label: `${cnfPhase} · ${ar.attacker?.name ?? "?"} · ${kindLabel} ${verbForKind}${passTag}`,
         description: describeActionForRewind(ar),
         pendingAction: {
           actionResult: ar,
@@ -2948,6 +3012,7 @@ const Confirm = {
         skillName: ar.skillName,
         skillImg: ar.skillImg,
         skillType: ar.skillType,
+        defenseTargetType: ar.defenseTargetType,
         skillRange: ar.skillRange,
         skillTarget: ar.skillTarget,
         damageType: ar.damageType,
@@ -3084,6 +3149,7 @@ const Resolve = {
       // CLEANUP→COMPUTE branch in the transition table, so each pass
       // resolves on its own card.
       const passLabel = ar.totalPasses > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
+      const hitTokenUuids = [];
       for (const r of (ar.perTargetResults ?? [])) {
         if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
         try {
@@ -3101,8 +3167,41 @@ const Resolve = {
             tokenUuid: r.tokenUuid,
             logSuffix: passLabel,
           });
+          hitTokenUuids.push(r.tokenUuid);
         } catch (e) {
           err("RESOLVE: failed to apply damage", r, e);
+        }
+      }
+      // Post-damage passive trigger — fires once per Attack action with
+      // the list of hit targets so reactions like Vanish (apply AE to
+      // each hit creature) can resolve via target_ref: "hit_action_targets".
+      //
+      // QUEUED, not fired — runs after the RESOLVE save site so reaction-
+      // applied AEs (Vanish AE on the hit target) don't end up in the
+      // "After X's Action" rewind snapshot. Without queueing the user
+      // needs two rewinds to undo a Vanish that just fired.
+      if (hitTokenUuids.length) {
+        const attackerActor = await fromUuid(ar.attackerActorRef).catch(() => null);
+        if (attackerActor) {
+          const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+          queuePostResolveTrigger(director, {
+            casterActor: attackerActor,
+            trigger: "creature_deals_damage",
+            payload: {
+              // Belt + suspenders — both naming conventions present so
+              // the chain's `hit_action_targets` resolver picks the
+              // list up via either path (ctx.hitActionTargetUuids OR
+              // ctx.payload.hitTargets).
+              targets: allTargetUuids,
+              targetTokenUuids: allTargetUuids,
+              hitTargets: hitTokenUuids,
+              hitTargetTokenUuids: hitTokenUuids,
+              actionIntent: ar.actionIntent,
+              weaponUuid: ar.weapon?.uuid ?? null,
+              sourceActorUuid: ar.attackerActorRef,
+              sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            },
+          });
         }
       }
     } else if (ar.kind === "Guard") {
@@ -3349,52 +3448,85 @@ const Resolve = {
         playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
         const statusKey = String(ar.statusValue ?? "").toLowerCase();
-        // Status definitions mirror HINDER_STATUSES in action-card.js.
-        // Icons fall back to Foundry's built-in svg statuses; if a richer
-        // pack is installed those overlay automatically.
-        const STATUSES = {
-          dazed:  { name: "Dazed",  iconUrl: "icons/svg/daze.svg",     attrShort: "INS" },
-          shaken: { name: "Shaken", iconUrl: "icons/svg/terror.svg",   attrShort: "WLP" },
-          slow:   { name: "Slow",   iconUrl: "icons/svg/clockwork.svg", attrShort: "DEX" },
-          weak:   { name: "Weak",   iconUrl: "icons/svg/degen.svg",    attrShort: "MIG" },
-        };
-        const status = STATUSES[statusKey];
-        if (!status) {
+        const STATUS_NAMES = { dazed: "Dazed", shaken: "Shaken", slow: "Slow", weak: "Weak" };
+        const statusName = STATUS_NAMES[statusKey];
+        if (!statusName) {
           warn("RESOLVE Hinder: no/unknown statusValue, skipping AE", ar.statusValue);
         } else {
+          // Pull the canonical "Weak" / "Slow" / "Dazed" / "Shaken" AE
+          // data from the FUCompanion AE registry. The registry entries
+          // are the SAME effectData the legacy [Macro] Hinder + manual
+          // sheet drops apply — carrying the proper status id,
+          // `system.tags: ["debuff"]`, mechanical changes (e.g.
+          // bonus_mig -2 for Weak), and the `effectmacro.onCreate /
+          // onDelete` toggles for `system.props.isWeak` etc.
+          //
+          // We deliberately bypass `aem.applyEffects(...)` here: its
+          // duplicate detection matches by shared canonical IDs, and
+          // all four debuffs are stored as ActiveEffects on the same
+          // world Item ("Debuff", Item.XVOWOq9oUmEECGrU). That parent
+          // Item id is in every applied debuff's canonical-id set, so
+          // applying Slow with `duplicateMode: "replace"` matches the
+          // existing Weak AE on the target and replaces it. RAW Hinder
+          // allows multiple distinct statuses to coexist (Weak + Slow
+          // together is fine), so we route through the registry's
+          // effectData directly and dedupe only against same-status
+          // duplicates (name + statuses[]).
           try {
-            const targetActor = await fromUuid(ar.target?.actorUuid);
-            if (!targetActor) {
+            const aem = globalThis.FUCompanion?.api?.activeEffectManager;
+            const regApi = aem?._internal?.getRegistryApi?.();
+            const targetActor = await fromUuid(ar.target?.actorUuid).catch(() => null);
+            if (!regApi?.findByName) {
+              warn("RESOLVE Hinder: AE registry API unavailable — status not applied");
+            } else if (!targetActor) {
               warn("RESOLVE Hinder: target actor not found", ar.target?.actorUuid);
             } else {
-              const aeData = {
-                name: status.name,
-                icon: status.iconUrl,
-                origin: ar.attacker?.actorUuid ?? null,
-                flags: {
-                  core: { statusId: statusKey },
-                  "fabula-ultima-companion": {
-                    directorHinder: {
-                      sourceActorUuid: ar.attacker?.actorUuid ?? null,
-                      penalisedAttribute: status.attrShort,
-                      appliedAtRound: director.dCombat?.round ?? 0,
-                    },
-                  },
-                },
-                duration: {
-                  startRound: director.dCombat?.round ?? 0,
-                  startTurn: 0,
-                },
-                // No `changes` yet — actual −2 to opposed checks involving
-                // the penalised attribute lands when we wire Opposed Checks
-                // (Phase D.7 Objective, or earlier if Guard's +2 needs it).
-                changes: [],
-              };
-              const [eff] = await targetActor.createEmbeddedDocuments("ActiveEffect", [aeData]);
-              log(`Hinder: ${status.name} applied to ${ar.target.name} (effect ${eff?.id ?? "?"})`);
+              // Pick the world-item-effect entry (priority 100) when
+              // available — that's the full canonical AE with changes,
+              // effectmacro, etc. The fallback "config-status-effect"
+              // entry (priority 80) is a status-only stub.
+              const entries = regApi.findByName(statusName) ?? [];
+              const entry = entries.find((e) => e?.sourceType === "world-item-effect") ?? entries[0];
+              const sourceData = entry?.effectData;
+              if (!sourceData) {
+                warn(`RESOLVE Hinder: registry has no effectData for "${statusName}"`);
+              } else {
+                // Same-status dedup. Match against AEs that share the
+                // CANONICAL Foundry status id (from sourceData.statuses[0])
+                // or the literal name — distinguishes Weak from Slow even
+                // though both share a parent Item.
+                const canonicalStatuses = new Set(
+                  (Array.isArray(sourceData.statuses) ? sourceData.statuses : [])
+                    .map((s) => String(s).toLowerCase())
+                );
+                const existing = (targetActor.effects?.contents ?? []).find((eff) => {
+                  if (eff.disabled) return false;
+                  const effStatuses = eff.statuses ? Array.from(eff.statuses) : [];
+                  if (effStatuses.some((s) => canonicalStatuses.has(String(s).toLowerCase()))) return true;
+                  if (String(eff.name ?? "").toLowerCase() === statusName.toLowerCase()) return true;
+                  return false;
+                });
+                if (existing) {
+                  try { await existing.delete(); }
+                  catch (e) { warn("RESOLVE Hinder: failed to delete prior same-status AE", e); }
+                }
+                const aeData = foundry.utils.deepClone(sourceData);
+                delete aeData._id;
+                // 3-round Hinder duration override + attribution.
+                aeData.duration = { ...(aeData.duration ?? {}), rounds: 3, turns: 0 };
+                aeData.origin = ar.attacker?.actorUuid ?? aeData.origin ?? null;
+                aeData.disabled = false;
+                aeData.transfer = false;
+                try {
+                  const [eff] = await targetActor.createEmbeddedDocuments("ActiveEffect", [aeData]);
+                  log(`Hinder: ${statusName} applied to ${ar.target.name} (eff ${eff?.id ?? "?"})`);
+                } catch (e) {
+                  warn("RESOLVE Hinder: createEmbeddedDocuments threw", e);
+                }
+              }
             }
           } catch (e) {
-            warn("RESOLVE Hinder: failed to apply status AE", e);
+            warn("RESOLVE Hinder: registry-driven apply threw", e);
           }
         }
       }
@@ -3496,20 +3628,60 @@ const Resolve = {
     // reload mid-second-pass skips the rest of the turn. Trade-off: the
     // second weapon's attack is lost on resume. The opposite trade
     // (double-applying the first pass) is strictly worse.
-    if (director.dCombat) director.dCombat.currentTurnResolved = true;
+    //
+    // Free-action gate: a free action's RESOLVE must NOT mark the turn
+    // resolved. The pipeline detours REACTION_WINDOW → FAW (skipping
+    // TURN_END), so without this gate `currentTurnResolved=true` would
+    // persist after the free action completes. On the next F5/reload,
+    // the resume sees it and routes to TURN_END — which advances the
+    // turn, flipping currentSide. The previously-observed "monster
+    // side starts after my free action" and "no turn picker after
+    // rewind" symptoms both trace back here. The marker for "we're
+    // mid-free-action" is the continuation stack: top frame is a
+    // `freeAction:*` while the sub-flow is in flight.
+    if (director.dCombat && !topIsFreeAction(director.ctx)) {
+      director.dCombat.currentTurnResolved = true;
+    }
     // Label describes what the GM lands at on rewind: a checkpoint
     // AFTER this action's commit — resume routes via TURN_END → next
     // turn picker. For multi-pass attacks, distinguish the pass so
     // pass-1 vs pass-2 checkpoints are unambiguous in the list.
     const rvDc = director.dCombat;
-    const rvName = rvDc?.current?.name ?? ar?.attacker?.name ?? "?";
+    // For a free action, name the actor who actually just acted (the
+    // reactor whose snapshot was swapped in). dCombat.current still
+    // points at the original turn-owner — fall through to ar.attacker
+    // so the rewind label reads "After Hina's Action" during her HS
+    // free Attack instead of "After Wolf's Action".
+    const rvName = topIsFreeAction(director.ctx)
+      ? (ar?.attacker?.name ?? director.ctx.turnSnapshot?.name ?? "?")
+      : (rvDc?.current?.name ?? ar?.attacker?.name ?? "?");
     const rvPassTag = (ar?.totalPasses ?? 1) > 1
       ? ` (Pass ${ar.passIndex}/${ar.totalPasses})`
       : "";
-    saveDirectorState(director, {
-      label: `Round ${rvDc?.round ?? 0} · After ${rvName}'s Action${rvPassTag}`,
+    const rvPhase = rewindPhaseLabel(director.ctx, rvDc?.round);
+    await saveDirectorState(director, {
+      label: `${rvPhase} · After ${rvName}'s Action${rvPassTag}`,
       description: describeActionForRewind(ar),
     }).catch((e) => warn("RESOLVE: saveDirectorState failed", e));
+
+    // Drain any post-action passive triggers queued during the body of
+    // this RESOLVE (e.g. `creature_deals_damage` → Vanish). Firing them
+    // AFTER the save above means their AEs aren't captured in this
+    // checkpoint's actor snapshot — rewinding to "After X's Action"
+    // restores pre-reaction state, so one rewind undoes the latest
+    // Vanish (and the AE it added). Without this re-ordering the
+    // reaction-applied AE landed in the snapshot and required two
+    // rewinds to remove.
+    const queued = Array.isArray(director.ctx?._postResolveTriggers)
+      ? director.ctx._postResolveTriggers : [];
+    director.ctx._postResolveTriggers = [];
+    for (const cfg of queued) {
+      try {
+        await firePassiveTriggers({ director, ...cfg });
+      } catch (e) {
+        warn(`RESOLVE: post-save passive trigger "${cfg?.trigger}" threw`, e);
+      }
+    }
 
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
@@ -3571,6 +3743,22 @@ const Cleanup = {
 // TURN_START once `currentCombatantId` is resolved.
 const TurnEnd = {
   async onEnter(director) {
+    // Defense-in-depth guard — TURN_END must never run mid-free-action.
+    // REACTION_WINDOW + CLEANUP transitions both gate on `topIsFreeAction`
+    // (states.js) so this branch should be unreachable. If it fires,
+    // route through FAW directly so the stack can pop its frame and the
+    // sub-flow completes cleanly.
+    if (topIsFreeAction(director.ctx)) {
+      warn(
+        `TURN_END misroute guard fired — free action on stack (depth ${stackDepth(director.ctx)}, top "${peekTop(director.ctx)?.reason}"). Skipping nextTurn() and routing to FREE_ACTION_WINDOW.`,
+        { ctx_keys: Object.keys(director.ctx ?? {}).sort() }
+      );
+      // Force-transition to FAW (skipping the SRW dance). FAW.onEnter
+      // sees the free-action frame on top, pops it, and continues the
+      // drain/exit logic.
+      await director.transitionTo(STATES.FREE_ACTION_WINDOW);
+      return;
+    }
     if (director.dCombat) {
       // Capture the "just acted" name + round + actor BEFORE nextTurn
       // (nextTurn clears currentCombatantId and may advance the round
@@ -3694,24 +3882,27 @@ const RoundEnd = {
 const StandaloneReactionWindow = {
   async onEnter(director) {
     const ctx = director.ctx;
-    const trigger = ctx.standaloneTrigger ?? null;
-    const payload = ctx.standalonePayload ?? null;
 
-    // Track the original "after" target across the SRW↔FAW loop. First
-    // entry captures it; subsequent re-entries (after a FREE_ACTION_WINDOW
-    // drain) reuse the cached value. Cleaned up on exit so the next
-    // standalone trigger starts fresh.
-    if (ctx._srwFinalTarget === undefined) {
-      ctx._srwFinalTarget = ctx.standaloneAfter ?? null;
+    // Re-entry detection: top of stack is an `srwDetour:` frame we
+    // pushed on a prior entry when we detoured through FAW. Pop it
+    // now; the snapshot restores standaloneTrigger / standaloneAfter /
+    // standalonePayload to the values they had pre-detour, so the
+    // dispatch + queue-check loop below runs on the same trigger.
+    // The pop fires regardless of save/resume — the routing target
+    // (top.resumeAt = SRW) is what brought us back here.
+    if (topIsSrwDetour(ctx)) {
+      popFrame(director);
     }
-    const finalTarget = ctx._srwFinalTarget;
+
+    const trigger = ctx.standaloneTrigger ?? null;
+    const finalTarget = ctx.standaloneAfter ?? null;
+    const payload = ctx.standalonePayload ?? null;
     if (!trigger || !finalTarget) {
       warn(`STANDALONE_REACTION_WINDOW: missing trigger/finalTarget (trigger=${trigger}, final=${finalTarget}); passing through`);
-      delete ctx._srwFinalTarget;
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
-    log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget})`);
+    log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget}, depth ${stackDepth(ctx)})`);
     try {
       const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
       if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
@@ -3719,20 +3910,33 @@ const StandaloneReactionWindow = {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }
     // If any reaction enqueued a free-action grant (open_action_menu
-    // free_mode), detour through FREE_ACTION_WINDOW + loop BACK to SRW
-    // so deferred reactors (peers stopped by the action-creating commit)
-    // get re-dispatched after the action plays out. The standaloneFired
-    // scene flag tracks who already decided so re-dispatch only spawns
-    // menus for un-decided reactors. Loop terminates when the queue is
-    // empty AND dispatch produces no new reactor menus → SRW routes to
-    // _srwFinalTarget.
+    // free_mode), push a continuation frame capturing where we'll
+    // resume after the queue drains, then route to FAW. FAW's exit
+    // (queue empty + free-action frame popped) reads `top.resumeAt`
+    // and transitions back here, where the pop above restores our
+    // captured trigger/after/payload. Loop terminates when dispatch
+    // produces no new menus AND the queue is empty → SRW exits via
+    // INTERNAL_DONE → ctx.standaloneAfter (the original final target).
     try {
       const { freeActionQueue } = await import("./free-action-queue.js");
       if (!freeActionQueue.isEmpty()) {
-        log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW → loop back to SRW`);
+        log(`STANDALONE_REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW → resume here on completion`);
+        // PUSH the detour frame BEFORE mutating standaloneAfter. The
+        // snapshot captures the CURRENT (pre-mutation) standaloneAfter
+        // so the pop restores it to the original final target. Without
+        // the snapshot, the FSM would have no record of where SRW was
+        // supposed to exit to.
+        pushFrame(director, {
+          reason: `srwDetour:${trigger}`,
+          resumeAt: STATES.STANDALONE_REACTION_WINDOW,
+          fieldsToSnapshot: ["standaloneTrigger", "standaloneAfter", "standalonePayload"],
+        });
+        // Re-point standaloneAfter at FAW so the state machine's
+        // INTERNAL_DONE → standaloneAfter rule routes us through the
+        // free-action drain. The push above already captured the
+        // original; pop will restore on re-entry.
         ctx.standaloneAfter = STATES.FREE_ACTION_WINDOW;
-        ctx._postFreeActionTarget = STATES.STANDALONE_REACTION_WINDOW;
-        // F5-survival checkpoint (A2). The save sites at PREP / TURN_START /
+        // F5-survival checkpoint. The save sites at PREP / TURN_START /
         // CONFIRM / RESOLVE / TURN_END never fire between SRW's dispatch
         // and the player picking their free action — without this explicit
         // save, F5 mid-pipeline restores to a pre-SRW state where
@@ -3740,23 +3944,23 @@ const StandaloneReactionWindow = {
         // the queue is empty (no FAW branch fires). The player's free
         // action is then lost on resume.
         //
-        // Saved AT THIS POINT (queue still populated, no _freeActionPopped
-        // yet) so resume's FAW branch re-runs the dequeue path cleanly
-        // — re-pops the same request, re-installs the grant, re-spawns
-        // DECLARE. The chain's consume_resource (MP debit) already
-        // committed to the actor, so no double-debit risk.
-        //
-        // Surfaces in the rewind list — the player CAN rewind back to
-        // "right before they picked the free action" to redo their
-        // choice. (Initial pass was skipHistory:true; user feedback
-        // showed they want the rewind anchor.)
+        // Now we save WITH the detour frame on the stack, so resume
+        // sees the frame and routes to top.resumeAt = SRW (after FAW
+        // handles its own re-entry detection). Same end state as the
+        // live flow.
         try {
           const peek = freeActionQueue.peek();
           const reactorName = peek?.sourceLabel
             ? `${peek.sourceLabel}`
             : "free action";
+          // This save fires AFTER the srwDetour frame is pushed (line
+          // above), so rewindPhaseLabel walks the stack and sees the
+          // conflict_start frame — labels "Conflict Start · …" when
+          // the originating trigger was conflict_start, "Round N · …"
+          // otherwise (turn_start etc.).
+          const sawPhase = rewindPhaseLabel(director.ctx, director.dCombat?.round);
           await saveDirectorState(director, {
-            label: `Round ${director.dCombat?.round ?? 0} · ${reactorName} pending`,
+            label: `${sawPhase} · ${reactorName} pending`,
             description: `${freeActionQueue.size()} free action(s) queued; awaiting player choice`,
           });
         } catch (e) {
@@ -3768,11 +3972,10 @@ const StandaloneReactionWindow = {
     } catch (e) {
       warn("STANDALONE_REACTION_WINDOW: free-action queue check threw", e);
     }
-    // No pending actions — all reactors decided (or none matched). Exit.
+    // No pending actions — all reactors decided (or none matched). Exit
+    // to the original final target. standaloneAfter is already correct
+    // (the pop above restored it if we re-entered after a FAW drain).
     log(`STANDALONE_REACTION_WINDOW: ${trigger} loop complete → ${finalTarget}`);
-    ctx.standaloneAfter = finalTarget;
-    delete ctx._srwFinalTarget;
-    delete ctx._postFreeActionTarget;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -3782,42 +3985,48 @@ const StandaloneReactionWindow = {
 // effect. Each request runs through the full DECLARE → ... → RESOLVE
 // pipeline with the reactor's turn snapshot temporarily swapped in.
 //
-// onEnter has two modes, distinguished by `ctx._freeActionPopped`:
-//   - Not popped yet: dequeue if available. If queue is empty → exit
-//     to ctx._postFreeActionTarget. If non-empty → swap snapshot,
-//     install the freeActions singleton, set ctx._freeActionPopped,
-//     and route to DECLARE.
-//   - Already popped (re-entering after RESOLVE/REACTION_WINDOW):
-//     restore the swapped snapshot, clear flags, then loop back to
-//     the dequeue path so the next request (or exit) is handled.
+// onEnter has two modes, distinguished by what's on top of the
+// continuation stack:
+//   - Top is a `freeAction:*` frame → re-entering after RESOLVE /
+//     REACTION_WINDOW. Pop the frame (which restores the original
+//     turnSnapshot + actionResult) and clear the freeActions singleton
+//     for that reactor, then fall through to the dequeue path so the
+//     next request (or exit) is handled.
+//   - Top is anything else (srwDetour, empty) → first entry. Dequeue
+//     if available; if the queue is empty, exit to top.resumeAt (or
+//     TURN_START fallback). If non-empty, push a `freeAction:*` frame
+//     snapshotting turnSnapshot+actionResult, install the freeActions
+//     singleton, swap in the reactor's view, and route to DECLARE.
 //
-// See [[free-actions]] for the queue contract + design intent.
+// See [[free-actions]] for the queue contract + [[continuation-stack]]
+// for the frame shape.
 const FreeActionWindow = {
   async onEnter(director) {
     const ctx = director.ctx;
     const { freeActionQueue } = await import("./free-action-queue.js");
     const { freeActions } = await import("./free-actions.js");
 
-    // Re-entry after a completed free action — tear down the swap.
-    if (ctx._freeActionPopped) {
-      log(`FREE_ACTION_WINDOW: free action complete (${ctx._freeActionPopped.sourceLabel ?? "?"}) — restoring snapshot`);
-      if (ctx._savedTurnSnapshot !== undefined) {
-        ctx.turnSnapshot = ctx._savedTurnSnapshot;
-      }
-      if (ctx._savedActionResult !== undefined) {
-        ctx.actionResult = ctx._savedActionResult;
-      }
-      delete ctx._savedTurnSnapshot;
-      delete ctx._savedActionResult;
-      const reactorId = ctx._freeActionPopped?.reactorActorId;
+    // Re-entry after a completed free action — pop the frame to restore
+    // the original turnSnapshot + actionResult, and clear the freeActions
+    // singleton entry for this reactor. The frame's `extra` carries the
+    // request + reactorActorId so we can identify whom to clear.
+    if (topIsFreeAction(ctx)) {
+      const popped = popFrame(director);
+      const reactorId = popped?.extra?.reactorActorId
+        ?? popped?.extra?.request?.reactorActorId
+        ?? null;
+      log(`FREE_ACTION_WINDOW: free action complete (${popped?.reason ?? "?"}) — popped + snapshot restored`);
       if (reactorId) freeActions.clear(reactorId);
-      delete ctx._freeActionPopped;
-      delete ctx.freeActionMode;
     }
 
     // Drain the next request, or exit.
     if (freeActionQueue.isEmpty()) {
-      log(`FREE_ACTION_WINDOW: queue empty — routing to ${ctx._postFreeActionTarget ?? "TURN_START"}`);
+      // Exit target = whatever's now on top of the stack, or TURN_START
+      // when the stack is empty (e.g. queue drained at top level with
+      // no SRW detour frame underneath). The state-machine rule for
+      // FAW's INTERNAL_DONE reads this same predicate.
+      const nextTarget = peekTop(ctx)?.resumeAt ?? STATES.TURN_START;
+      log(`FREE_ACTION_WINDOW: queue empty — routing to ${nextTarget}`);
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -3835,9 +4044,10 @@ const FreeActionWindow = {
       : null;
     if (!reactorActor || !reactorTokenDoc) {
       warn(`FREE_ACTION_WINDOW: reactor lookup failed (actor=${!!reactorActor}, token=${!!reactorTokenDoc}); skipping request "${req.sourceLabel}"`);
-      // Re-enter to drain next or exit. Same state, but without _freeActionPopped → falls through to dequeue path.
+      // Re-enter to drain next or exit. No push happened, so re-entry
+      // sees no `freeAction:*` frame on top and falls through to the
+      // dequeue path again.
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      ctx._freeActionPopped = null;
       return;
     }
 
@@ -3852,13 +4062,20 @@ const FreeActionWindow = {
       sourceItemUuid:   req.sourceItemUuid,
     });
 
-    // Build a turn snapshot for the reactor and stash the current one.
-    // The reactor may not be the dCombat.current — that's fine; the
-    // pipeline reads turnSnapshot, not dCombat.current, for player input.
-    ctx._savedTurnSnapshot = ctx.turnSnapshot;
-    ctx._savedActionResult = ctx.actionResult;
+    // PUSH the free-action frame BEFORE mutating turnSnapshot+actionResult.
+    // The snapshot captures the OLD values (original turn-owner's view)
+    // so the pop on re-entry restores them. `extra` carries the request
+    // so we can read reactorActorId + sourceLabel after pop, and so
+    // diagnostic surfaces (rewind list, logs) can name the frame.
+    pushFrame(director, {
+      reason: `freeAction:${req.sourceLabel ?? "?"}`,
+      resumeAt: STATES.FREE_ACTION_WINDOW,
+      fieldsToSnapshot: ["turnSnapshot", "actionResult"],
+      extra: { request: req, reactorActorId: req.reactorActorId },
+    });
+
+    // Swap in the reactor's view. Pop will restore the originals.
     try {
-      // Find the reactor's combatant entry for snapshotDirectorCombatant.
       const combatant = director.dCombat?.combatants?.find?.((c) => c.actorUuid === req.reactorActorUuid);
       if (combatant) {
         ctx.turnSnapshot = snapshotDirectorCombatant(combatant);
@@ -3869,11 +4086,11 @@ const FreeActionWindow = {
       }
     } catch (e) {
       warn("FREE_ACTION_WINDOW: snapshot threw", e);
-      ctx.turnSnapshot = ctx._savedTurnSnapshot;
+      // Pop's snapshot still holds the pre-push value; leave turnSnapshot
+      // as-is for now (will be restored on pop).
     }
     ctx.actionResult = null;
-    ctx.freeActionMode = req;
-    ctx._freeActionPopped = req;
+
     log(`FREE_ACTION_WINDOW: starting free action "${req.sourceLabel}" for ${reactorActor.name} (${req.enabledLabels.join(", ") || "any"})`);
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },

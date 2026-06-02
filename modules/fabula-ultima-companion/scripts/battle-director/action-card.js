@@ -1452,9 +1452,9 @@ function buildAffinityTagHTML({ affinity, hit, studied }) {
 // naturally on the card. Affinity rows are still gated NE for MP
 // damage, so AB / IM never appear there in practice.
 function resultLabelFor(r, { hasDamage = true } = {}) {
-  if (!r.hit) return "MISS";
   // Recipe-grant rows (Heal, MP restore, future shield) — show what
-  // the target will recover. `grantResource` picks the unit/verb.
+  // the target will recover. `grantResource` picks the unit/verb. These
+  // always succeed (no Check), so check the grant before hit semantics.
   if (typeof r.grantAmount === "number") {
     // Vismagus self-heal suppression — the caster paid HP for this
     // spell so they recover none of the HP it would otherwise grant.
@@ -1466,10 +1466,15 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
     if (r.grantResource === "shield") return `SHIELDED ${amt}`;
     return `HEALED ${amt} HP`;
   }
-  // Status-only Checks (Torpor / Hallucination / Enrage): the skill has
-  // no damage component, so a successful Check yields a clean "HIT" —
-  // the inflicted status is the effect, not a number to display here.
-  if (!hasDamage) return "HIT";
+  // Non-damage Check (Soul Steal/Pillage, Torpor, Hallucination,
+  // Enrage, future opposed-Check skills): the Check outcome IS the
+  // effect, the mechanical payoff lands in the effect_table chain
+  // (IP grant, status apply, etc.) — not as a number on the row.
+  // Use SUCCESS/FAILED so the card doesn't read as "NO EFFECT" (which
+  // would only be correct for IM-affinity damage skills).
+  if (!hasDamage) return r.hit ? "SUCCESS" : "FAILED";
+  // Damage skill — existing HIT/MISS/AB/IM/NO-EFFECT logic.
+  if (!r.hit) return "MISS";
   const unit = r.resource === "mp" ? "MP" : "dmg";
   if (r.affinity === "AB") return `HEALS ${Math.max(0, r.damage)}`;
   if (r.affinity === "IM" || r.damage <= 0) return "NO EFFECT";
@@ -2678,10 +2683,18 @@ function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
     damageType, hasDamage, hasHealing, rawCost, targets, roll, damage,
-    perTargetResults, descriptionHtml,
+    perTargetResults, descriptionHtml, defenseTargetType,
   } = payload ?? {};
 
+  // Visual identity (title icon, subtitle, "Spell" label) — driven by
+  // skill_type. Defense resolution (DEF vs MDEF labels + Strike/Magic
+  // accuracy icon) is independent: Spells always vs MDEF (RAW); non-Spell
+  // skills opt in via `defense_target_type: "mdef"` (Soul Steal / Pillage
+  // route vs MDEF without pretending to be a Spell for naming purposes).
+  // Mirror of the COMPUTE-side derivation in state-handlers.js.
   const isSpellish = String(skillType ?? "").toLowerCase() === "spell";
+  const dtt = String(defenseTargetType ?? "").toLowerCase();
+  const vsMDef = isSpellish || dtt === "mdef";
 
   // Title icon — skill image if provided, else a themed fallback icon.
   // Uses the same `fud-bf-title-icon` class as buildAttackCard so the
@@ -2723,7 +2736,7 @@ function buildSkillCard(payload) {
         weapon: null,
         element: damage?.element ?? damageType,
         roll,
-        isSpellish,
+        isSpellish: vsMDef,
         hasDamage,
       }))
     : "";
@@ -2735,7 +2748,7 @@ function buildSkillCard(payload) {
   const accuracyHTML = roll
     ? tryBuild("skillAccuracy", () => buildAccuracyHTML({
         roll,
-        isSpellish,
+        isSpellish: vsMDef,
         hideDefenseIcon: false,
       }))
     : "";
@@ -3122,6 +3135,12 @@ export async function postActionCard({ director, kind, payload }) {
     // behind the previous recompute instead of racing the DOM.
     let _previewInFlight = null;
     async function recomputeTargetPreviews() {
+      // Non-damage skills (Soul Steal, Torpor, Hallucination, …) have no
+      // base damage for add_damage to recompute against. Skipping here
+      // also preserves the initial-render SUCCESS/FAILED labels, which
+      // the damage-row re-derive below would otherwise overwrite with
+      // "NO EFFECT" (entry.damage <= 0 branch).
+      if (!payload?.hasDamage) return;
       if (_previewInFlight) { try { await _previewInFlight; } catch {} }
       _previewInFlight = (async () => {
         try {

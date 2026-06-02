@@ -30,6 +30,47 @@ function ensureStyles() {
     }
     .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#a8c4d8; }
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
+    /* Excluded-target overlay — drawn over tokens removed from the eligible
+       pool by an AE-driven block (e.g. Vanish's cannot_target_uuids). The
+       ring is grey + thinner, sits below regular target rings, and the
+       label above the token states the reason so the player knows what
+       to do next. Pointer-events stay none so clicks pass through
+       (excluded tokens still can't be picked). */
+    .fud-target-ring-excluded{
+      position:absolute;
+      border:3px dashed rgba(120,110,100,.65);
+      border-radius:50%;
+      box-shadow:inset 0 0 12px rgba(0,0,0,.25);
+      pointer-events:none;
+      z-index:29;
+      filter:grayscale(.6);
+    }
+    .fud-target-excluded-label{
+      position:fixed;
+      transform:translate(-50%, -100%);
+      padding:3px 8px 4px;
+      background:rgba(60,50,40,.92);
+      color:#f6f1e6;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.2px;
+      border-radius:6px;
+      border:1px solid #9c8c75;
+      box-shadow:0 2px 6px rgba(0,0,0,.5);
+      white-space:nowrap;
+      pointer-events:none;
+      z-index:31;
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+      font-family:"Inter","Segoe UI",system-ui,sans-serif;
+      max-width:240px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .fud-target-excluded-label::before{
+      content:"🚫";
+      margin-right:4px;
+      font-size:10px;
+    }
     .fud-target-banner{
       position:fixed; left:50%; top:18%; transform:translate(-50%, 0);
       padding:10px 14px 10px; border-radius:14px;
@@ -219,10 +260,21 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       rec.el.style.top = `${p.y - size / 2}px`;
       rec.el.style.width = `${size}px`;
       rec.el.style.height = `${size}px`;
+      // Place the reason label centered above the token (when present).
+      if (rec.labelEl) {
+        rec.labelEl.style.left = `${p.x}px`;
+        rec.labelEl.style.top  = `${p.y - size / 2 - 4}px`;
+      }
     }
+
+    // Excluded-overlay records live in a parallel map so reposition
+    // hooks can update them on canvasPan/updateToken without confusing
+    // them with the clickable eligible-ring records.
+    const excludedOverlays = new Map();   // tokenUuid → { el, labelEl, token }
 
     function repositionAll() {
       for (const rec of rings.values()) positionRing(rec);
+      for (const rec of excludedOverlays.values()) positionRing(rec);
     }
 
     function buildRings() {
@@ -237,6 +289,32 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         positionRing(rec);
         // pointer-events on the ring itself stay none, so click goes through to
         // the token. We track clicks via a global canvas listener instead.
+      }
+      buildExcludedOverlays();
+    }
+
+    // Draw a greyed-out ring + reason label over every target dropped
+    // by an AE-driven cannot_target_uuids filter. eligible.excluded is
+    // attached by snapshotEligibleTargets[FromDCombat] — empty/missing
+    // for hand-built eligible arrays or non-AE filters.
+    function buildExcludedOverlays() {
+      const list = Array.isArray(eligible?.excluded) ? eligible.excluded : [];
+      for (const e of list) {
+        const token = canvas?.tokens?.get(e.tokenId);
+        if (!token) continue;
+        const ring = document.createElement("div");
+        ring.className = "fud-target-ring-excluded";
+        document.body.appendChild(ring);
+        const labelEl = document.createElement("div");
+        labelEl.className = "fud-target-excluded-label";
+        const reasonText = Array.isArray(e.reasons) && e.reasons.length
+          ? e.reasons.join(" · ")
+          : "Cannot target";
+        labelEl.textContent = reasonText;
+        document.body.appendChild(labelEl);
+        const rec = { el: ring, labelEl, token, tokenUuid: e.tokenUuid };
+        excludedOverlays.set(e.tokenUuid, rec);
+        positionRing(rec);
       }
     }
 
@@ -374,6 +452,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       try { banner.remove(); } catch {}
       for (const rec of rings.values()) { try { rec.el.remove(); } catch {} }
       rings.clear();
+      // Tear down the excluded overlays + their reason labels alongside.
+      for (const rec of excludedOverlays.values()) {
+        try { rec.el.remove(); } catch {}
+        try { rec.labelEl?.remove(); } catch {}
+      }
+      excludedOverlays.clear();
       // Hooks: director.hooks.off when registered there; manual Hooks.off
       // when the player-side fallback path registered them.
       if (director?.hooks?.off) {

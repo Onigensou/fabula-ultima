@@ -25,8 +25,6 @@
  * IDEMPOTENT — both parts gate on observable state. Safe to re-run.
  */
 
-import { log as moduleLog, warn as moduleWarn } from "../scripts/logger.js";
-
 export const key = "2026-05-28-passive-to-reaction-config";
 export const description =
   "Add reaction_passive_mode + reaction_action_target columns + " +
@@ -261,7 +259,7 @@ export async function migrate(game, log) {
   // Part 1 — template schema.
   for (const uuid of SKILL_TEMPLATE_UUIDS) {
     try { await migrateTemplate(uuid, log); }
-    catch (e) { moduleWarn("template migration threw for", uuid, e); }
+    catch (e) { console.warn("template migration threw for", uuid, e); }
   }
 
   // Part 2 — item data.
