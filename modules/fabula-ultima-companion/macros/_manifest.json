@@ -37,9 +37,13 @@
     { "path": "macros/Command Buttons/[Macro] Spell.js",           "name": "Spell" },
     { "path": "macros/Command Buttons/[Macro] Study.js",           "name": "Study" },
     { "path": "macros/Battle Init/[Macro] BattleInit — BattleInit Manager.js", "name": "BattleInit — BattleInit Manager" },
+    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Prompt.js",      "name": "BattleInit — Battle Prompt" },
     { "path": "macros/Battle Init/[Macro] BattleInit — Battle Transition.js",  "name": "BattleInit — Battle Transition" },
     { "path": "macros/Battle Init/[Macro] BattleInit — Preload Assets.js",     "name": "BattleInit — Preload Assets" },
     { "path": "macros/Battle Init/[Macro] BattleInit — Encounter Spawner.js",  "name": "BattleInit — Encounter Spawner" },
-    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",   "name": "BattleInit — Battle Initiator" }
+    { "path": "macros/Battle Init/[Macro] BattleInit — Battle Initiator.js",   "name": "BattleInit — Battle Initiator" },
+    { "path": "macros/Battle Init/[Macro] BattleInit — Director Manager.js",   "name": "BattleInit — Director Manager" },
+    { "path": "macros/Battle End/[Macro] [BattleEnd_ Manager].js",             "name": "[BattleEnd: Manager]" },
+    { "path": "macros/Battle End/[Macro] [BattleEnd_ Director Manager].js",    "name": "BattleEnd: Director Manager" }
   ]
 }

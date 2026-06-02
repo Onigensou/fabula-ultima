@@ -1,0 +1,240 @@
+{
+  "_comment": "Phase B.1 Skill engine acceptance set. Five (now six) skills that exercise every B.1+B.1.1 primitive end-to-end. Feed each `spec` block to the CreateSkillFromSpec macro (Authoring/CreateSkillFromSpec.js). Skills land in `Battle Director / <class> / <folder>` per the `class` + `folder` hints — run the folder-scaffold once per world before authoring. After creation, attach the returned UUID to a PC actor's `system.props.skill_active_list` so it shows up in the director's Skill picker.",
+  "_usage_inline": "Open the CreateSkillFromSpec macro from the hotbar / world macros; paste ONE skill's `spec` block into the dialog; click Create. Repeat per skill.",
+  "_usage_headless": "Via the test bridge runMacro endpoint: { kind: 'runMacro', args: { name: 'CreateSkillFromSpec', payload: { spec: {...} } } }. Returns { ok, uuid, id, name }.",
+  "_b1_coverage": [
+    "cost parser (skill-cost.js): MP / MP+IP / variable",
+    "formula resolver (skill-formulas.js): HP_DEALT, SL, HR/CRIT/FUMBLE/TOTAL (B.1.1), MP_DEALT (B.1.1)",
+    "action intent classifier (skill-intent.js): harmful vs aid",
+    "targeting + inline-ref sugar (skill-targeting.js): self / action_targets",
+    "effect dispatchers (skill-effects.js): grant + apply_ae + chain",
+    "recipes (skill-recipes.js): drain + heal_target",
+    "picker UI (skill-picker.js): cost gating + affordability + section grouping",
+    "Skill TARGET/COMPUTE/RESOLVE (state-handlers.js): roll + damage (HP and MP) + post_damage hooks + MDEF for spells (B.1.1)",
+    "action card (action-card.js): Skill kind dispatch + MP-damage labeling (B.1.1)"
+  ],
+  "_deferred_to_b2_or_later": {
+    "Agony (Darkblade)": "post-damage reaction trigger (Phase F)",
+    "Heart of Darkness (Darkblade)": "once-per-scene Crisis trigger (Phase F)",
+    "Bodyguard (Guardian)": "covered by existing Guard command",
+    "Magical Artillery (Elementalist)": "passive_check_bonus_formula layer (B.2)"
+  },
+  "_shipped_in_b1_1": {
+    "HR / CRIT / FUMBLE / TOTAL identifiers": "Resolver reads from payload.hr/.isCrit/.isFumble/.total. Threaded from ar.roll into chain ctx payload (on_activate) and damagePayload (post_damage).",
+    "MP damage routing": "type_damage: 'mp' burns current_mp instead of current_hp. NE-only affinity (no MP affinity sheet). damagePayload.valueType: 'mp' so MP_DEALT formulas resolve. Card shows MP-blue color + 'MP' element label + 'X MP' per-target unit.",
+    "Magic Defense routing for spells": "skill_type === 'Spell' compares vs e.magicDefense; non-spell skills still compare vs e.defense.",
+    "Formula-based target count": "skill_target accepts formulas after 'up to' / bare-N: 'Up to SL creatures', 'SL enemies', 'SL+1 allies' all evaluate via skill resolver (patch 1 from B.1.1 prep)."
+  },
+
+  "skills": [
+    {
+      "_test": "Acceptance #1 — basic offensive spell. Exercises: cost parser, isCheck roll, HP damage commit, fire-affinity routing. No recipe.",
+      "spec": {
+        "name": "Ignis (test)",
+        "img": "icons/magic/fire/flame-burning-creature-skeleton.webp",
+        "class": "Elementalist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": true,
+          "isCheck": true,
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "cost": "10 MP",
+          "skill_target": "One Creature",
+          "skill_range": "Ranged",
+          "damage_bonus": 15,
+          "type_damage": "fire",
+          "description": "You hurl a fireball. The target suffers HR+15 fire damage."
+        }
+      }
+    },
+    {
+      "_test": "Acceptance #2 — offensive spell with post-damage drain. Exercises: recipe `drain`, HP_DEALT formula identifier, post_damage_effect_ref hook firing per damaged target.",
+      "spec": {
+        "name": "Drain Vigor (test)",
+        "img": "icons/magic/death/skull-energy-light-purple.webp",
+        "class": "Entropist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": true,
+          "isCheck": true,
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "cost": "10 MP",
+          "skill_target": "One Creature",
+          "skill_range": "Ranged",
+          "damage_bonus": 15,
+          "type_damage": "dark",
+          "description": "You steal another creature's life force. The target suffers HR+15 dark damage. Then you recover HP equal to half the HP loss inflicted.",
+          "recipe": "drain",
+          "recipe_resource": "hp",
+          "recipe_amount": "HP_DEALT / 2",
+          "recipe_target": "self"
+        }
+      }
+    },
+    {
+      "_test": "Acceptance #3 — single-target ally heal at RAW. Exercises: ally targeting (picker), recipe `heal_target`, grant effect_kind to action_targets, action_intent inference -> 'aid' from healing type_damage, isCheck=true (rolls INS+WLP), HR identifier in recipe_amount. Was flat-15 in B.1; B.1.1 added the HR identifier to the resolver + threads the cast's roll into ctx.payload, unlocking real HR+5 recovery.",
+      "spec": {
+        "name": "Heal (test)",
+        "img": "icons/magic/life/cross-beam-green.webp",
+        "class": "Spiritist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": false,
+          "isCheck": true,
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "cost": "10 MP",
+          "skill_target": "One ally",
+          "skill_range": "Ranged",
+          "damage_bonus": 0,
+          "type_damage": "healing",
+          "description": "You restore a target's vital energy. The target recovers HR+5 HP.",
+          "recipe": "heal_target",
+          "recipe_resource": "hp",
+          "recipe_amount": "HR + 5",
+          "recipe_target": "action_targets"
+        }
+      }
+    },
+    {
+      "_test": "Acceptance #6 — MP-burn spell (added B.1.1). Exercises: MP damage routing in Skill COMPUTE/RESOLVE (damage burns current_mp instead of current_hp), NE-only affinity for MP damage, Magic Defense routing (spell hits vs MDEF not DEF), HR identifier in damage_bonus.",
+      "spec": {
+        "name": "Drain Spirit (test)",
+        "img": "icons/magic/death/skull-energy-purple.webp",
+        "class": "Entropist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": true,
+          "isCheck": true,
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "cost": "10 MP",
+          "skill_target": "One Creature",
+          "skill_range": "Ranged",
+          "damage_bonus": 15,
+          "type_damage": "mp",
+          "description": "You drain a creature's magical energy. The target loses HR+15 Mind Points."
+        }
+      }
+    },
+    {
+      "_test": "Acceptance #4 — apply_ae buff on ally. Exercises: apply_ae effect_kind, AE template lookup on the skill's own embedded effects, inline-ref sugar (target_ref: 'action_targets'). The skill carries the AE doc; the dispatcher clones it onto the target.",
+      "spec": {
+        "name": "Aura (test)",
+        "img": "icons/magic/holy/yin-yang-balance-blue-orange.webp",
+        "class": "Elementalist",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Spell",
+          "isSpell": true,
+          "isOffensiveSpell": false,
+          "isCheck": false,
+          "cost": "10 MP",
+          "skill_target": "One ally",
+          "skill_range": "Ranged",
+          "damage_bonus": 0,
+          "type_damage": "",
+          "action_intent": "aid",
+          "description": "You wrap an ally in a protective aura. The target gains Resistance to physical damage until the end of the scene.",
+          "effect_table": {
+            "0": {
+              "effect_label": "apply_aura",
+              "effect_kind": "apply_ae",
+              "ae_template_ref": "Aura: Physical Resistance",
+              "ae_duplicate_mode": "replace",
+              "target_ref": "action_targets"
+            }
+          },
+          "on_activate_effect_ref": "apply_aura"
+        },
+        "activeEffects": [
+          {
+            "name": "Aura: Physical Resistance",
+            "icon": "icons/magic/holy/yin-yang-balance-blue-orange.webp",
+            "changes": [
+              { "key": "affinity_1", "mode": 5, "value": "RS", "priority": 20 }
+            ],
+            "duration": { "rounds": null, "seconds": null },
+            "flags": {
+              "fabula-ultima-companion": {
+                "category": "buff"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "_test": "Acceptance #5 — apply_ae mark on enemy. Exercises: apply_ae effect_kind targeting an enemy (action_targets resolves to the picker-selected enemy), AE template lookup. NOTE: Lock-On's downstream effect — allies get +SL Accuracy against the marked target — requires the passive layer (B.2). For B.1 we just verify the mark AE lands on the right target.",
+      "spec": {
+        "name": "Lock-On (test)",
+        "img": "icons/skills/ranged/target-bullseye-yellow.webp",
+        "class": "Sharpshooter",
+        "folder": "Skill",
+        "props": {
+          "skill_type": "Active",
+          "isCheck": false,
+          "cost": "10 MP",
+          "skill_target": "One Creature",
+          "skill_range": "Ranged",
+          "damage_bonus": 0,
+          "type_damage": "",
+          "action_intent": "harmful",
+          "description": "You mark a creature. Until the start of your next turn, your party gains +2 to actions targeting it (B.2 will wire the bonus).",
+          "effect_table": {
+            "0": {
+              "effect_label": "apply_mark",
+              "effect_kind": "apply_ae",
+              "ae_template_ref": "Marked (Lock-On)",
+              "ae_duplicate_mode": "replace",
+              "target_ref": "action_targets"
+            }
+          },
+          "on_activate_effect_ref": "apply_mark"
+        },
+        "activeEffects": [
+          {
+            "name": "Marked (Lock-On)",
+            "icon": "icons/skills/ranged/target-bullseye-yellow.webp",
+            "changes": [],
+            "duration": { "rounds": 1, "seconds": null },
+            "flags": {
+              "fabula-ultima-companion": {
+                "category": "debuff",
+                "directorMark": {
+                  "source": "Lock-On",
+                  "appliedAtRound": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+
+  "_test_protocol": [
+    "1. Open Foundry world `fabula-ultima-2` with the director module loaded.",
+    "2. Run CreateSkillFromSpec macro for each `spec` block above. Each call returns a UUID like `Item.xxx`.",
+    "3. For each created skill UUID, edit a PC actor (e.g. Hina) and add the UUID to `system.props.skill_active_list` as an entry { uuid: <UUID>, name: <name> }. The actor sheet's Skills tab UI is the usual surface for this; alternatively use the test bridge `updateDocument` to write the props directly.",
+    "4. Start a Battle Director battle with that PC.",
+    "5. On the PC's turn, click the Skill command in TurnUI.",
+    "6. Verify the picker shows the test skills with the right cost badges.",
+    "7. Per skill:",
+    "   - Ignis: pick, target an enemy, confirm. Verify the damage applies to the enemy with fire affinity. Verify caster MP -10.",
+    "   - Drain Vigor: same as Ignis. Verify caster HP increased by half the damage dealt (post_damage hook fired correctly).",
+    "   - Heal: pick, target an ally, confirm. Verify ally HP +15 (capped to max). Verify caster MP -10. No damage commit.",
+    "   - Aura: pick, target an ally, confirm. Verify the Aura AE appears on the ally with physical Resistance.",
+    "   - Lock-On: pick, target an enemy, confirm. Verify the Marked AE appears on the enemy (no other effects yet — B.2 wires the Accuracy bonus)."
+  ]
+}

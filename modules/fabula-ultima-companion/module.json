@@ -19,6 +19,8 @@
     "scripts/_module-boot.js",
     "scripts/data-migration-runner.js",
     "scripts/lint/reaction-config-lint.js",
+    "scripts/lint/engine-canon-lint.js",
+    "scripts/lint/skill-raw-drift-lint.js",
     "scripts/shared-utils.js",
     "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",
@@ -322,7 +324,8 @@
     "scripts/title-screen/title-load-ui.js",
     "scripts/title-screen/title-quit-ui.js",
     "scripts/title-screen/title-ui.js",
-    "scripts/title-screen/title-bootstrap.js"
+    "scripts/title-screen/title-bootstrap.js",
+    "scripts/battle-director/rewind-button.js"
   ],
   "esmodules": [
     "scripts/shop-system/shopOpen-bootstrap.js",
@@ -350,7 +353,8 @@
     "scripts/refinement-system/refineOpen-ui.js",
     "scripts/refinement-system/refineOpen-backend.js",
     "scripts/refinement-system/refineWindow-app.js",
-    "scripts/refinement-system/refineOpen-bootstrap.js"
+    "scripts/refinement-system/refineOpen-bootstrap.js",
+    "scripts/battle-director/director-boot.js"
   ],
   "styles": [
     "styles/style.css",
