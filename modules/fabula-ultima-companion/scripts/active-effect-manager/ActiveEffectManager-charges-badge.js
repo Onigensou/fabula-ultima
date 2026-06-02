@@ -162,15 +162,19 @@ Hooks.once("ready", () => {
 
       const pool = collectChargedEffects(actor);
 
-      log("applyChargeBadges:", {
-        token: token.name,
-        actorEffectsTotal: (actor.effects?.contents ?? []).length,
-        temporaryEffects: (actor.temporaryEffects ?? []).length,
-        chargedCandidates: pool.length,
-        candidateSummary: pool.map(p => ({ name: p.effect.name, count: p.count, img: p.imgNorm })),
-        spriteChildren: effectsLayer.children.length,
-        childTextures: effectsLayer.children.map(c => normalizePath(extractTexturePath(c)))
-      });
+      // Debug payload is built ONLY when logging is on — these .map()s ran on
+      // every badge pass before, wasted work in the (default) DEBUG=false case.
+      if (DEBUG) {
+        log("applyChargeBadges:", {
+          token: token.name,
+          actorEffectsTotal: (actor.effects?.contents ?? []).length,
+          temporaryEffects: (actor.temporaryEffects ?? []).length,
+          chargedCandidates: pool.length,
+          candidateSummary: pool.map(p => ({ name: p.effect.name, count: p.count, img: p.imgNorm })),
+          spriteChildren: effectsLayer.children.length,
+          childTextures: effectsLayer.children.map(c => normalizePath(extractTexturePath(c)))
+        });
+      }
 
       if (!pool.length) {
         for (const child of effectsLayer.children) clearBadge(child);
@@ -195,10 +199,39 @@ Hooks.once("ready", () => {
       }
     }
 
+    // Coalesce badge refreshes into one pass per token per animation frame.
+    //
+    // applyChargeBadges is driven by SIX triggers (drawEffects wrapper,
+    // drawToken, refreshToken, and the create/update/deleteActiveEffect
+    // hooks). A single AE apply fires the drawEffects redraw + refreshToken +
+    // the create hook — so the badge work ran ~3× per token per AE, and
+    // O(tokens × AEs) when several effects change in close proximity (the
+    // reported lag). Queueing the affected tokens in a Set and flushing once
+    // on the next frame collapses all of that to a single pass per token,
+    // and dedupes overlapping tokens across multiple AE changes in the same
+    // frame. One-frame (~16ms) deferral is visually imperceptible for a
+    // numeric badge.
+    const _badgeQueue = new Set();
+    let _badgeRaf = 0;
+    function flushBadgeQueue() {
+      _badgeRaf = 0;
+      const tokens = Array.from(_badgeQueue);
+      _badgeQueue.clear();
+      for (const t of tokens) {
+        try { applyChargeBadges(t); } catch (e) { warn("badge queue flush failed.", e); }
+      }
+    }
+    function scheduleChargeBadges(token) {
+      if (!token) return;
+      _badgeQueue.add(token);
+      if (_badgeRaf) return;
+      _badgeRaf = requestAnimationFrame(flushBadgeQueue);
+    }
+
     function refreshAll() {
       const tokens = canvas?.tokens?.placeables ?? [];
       for (const token of tokens) {
-        try { applyChargeBadges(token); } catch (_e) {}
+        try { scheduleChargeBadges(token); } catch (_e) {}
       }
     }
 
@@ -241,8 +274,8 @@ Hooks.once("ready", () => {
 
       cls.prototype[method] = async function patchedDrawEffects(...args) {
         const result = await original.apply(this, args);
-        try { applyChargeBadges(this); }
-        catch (e) { warn("applyChargeBadges failed inside drawEffects wrapper.", e); }
+        try { scheduleChargeBadges(this); }
+        catch (e) { warn("scheduleChargeBadges failed inside drawEffects wrapper.", e); }
         return result;
       };
 
@@ -256,22 +289,22 @@ Hooks.once("ready", () => {
     // succeeded, so badges still appear even if Foundry's rendering API
     // shifted under us.
     Hooks.on("drawToken", (token) => {
-      try { applyChargeBadges(token); } catch (e) { warn("drawToken hook failed.", e); }
+      try { scheduleChargeBadges(token); } catch (e) { warn("drawToken hook failed.", e); }
     });
     Hooks.on("refreshToken", (token) => {
-      try { applyChargeBadges(token); } catch (e) { warn("refreshToken hook failed.", e); }
+      try { scheduleChargeBadges(token); } catch (e) { warn("refreshToken hook failed.", e); }
     });
     Hooks.on("createActiveEffect", (effect) => {
       const tokens = canvas?.tokens?.placeables?.filter(t => t.actor === effect.parent) ?? [];
-      for (const t of tokens) { try { applyChargeBadges(t); } catch (_e) {} }
+      for (const t of tokens) { try { scheduleChargeBadges(t); } catch (_e) {} }
     });
     Hooks.on("updateActiveEffect", (effect) => {
       const tokens = canvas?.tokens?.placeables?.filter(t => t.actor === effect.parent) ?? [];
-      for (const t of tokens) { try { applyChargeBadges(t); } catch (_e) {} }
+      for (const t of tokens) { try { scheduleChargeBadges(t); } catch (_e) {} }
     });
     Hooks.on("deleteActiveEffect", (effect) => {
       const tokens = canvas?.tokens?.placeables?.filter(t => t.actor === effect.parent) ?? [];
-      for (const t of tokens) { try { applyChargeBadges(t); } catch (_e) {} }
+      for (const t of tokens) { try { scheduleChargeBadges(t); } catch (_e) {} }
     });
 
     // Existing tokens were already drawn before this patch installed —
