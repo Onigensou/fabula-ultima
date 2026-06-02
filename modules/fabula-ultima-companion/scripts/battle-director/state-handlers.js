@@ -11,7 +11,7 @@
 import { log, warn, err } from "./logger.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -1990,15 +1990,12 @@ const Target = {
       ? snapshotEligibleTargetsFromDCombat(director.dCombat, director.ctx.turnSnapshot, { category: "enemy" })
       : snapshotEligibleTargets(director.combat, director.ctx.turnSnapshot, { category: "enemy" });
 
-    // RAW Core p.70 — a Covered creature "cannot be targeted by melee
-    // attacks until the start of [the guarder's] next turn". Filter them
-    // out when the current weapon's range is Melee. Ranged weapons see
-    // them normally.
+    // RAW Core p.70 — Covered creatures can't be melee-targeted. Route
+    // through `applyAttackRangeGate` so `.excluded` (Vanish overlay
+    // etc.) survives the filtering: Covered creatures join the excluded
+    // list with reason "Covered" instead of vanishing from the canvas.
     const currentWeaponForRange = director.ctx.pendingPasses?.[0];
-    const isMeleeAttack = String(currentWeaponForRange?.range ?? "").trim().toLowerCase() === "melee";
-    const eligible = isMeleeAttack
-      ? eligibleRaw.filter((e) => !(e.conditions ?? []).includes("Covered"))
-      : eligibleRaw;
+    const eligible = applyAttackRangeGate(eligibleRaw, currentWeaponForRange);
     director.ctx.eligibleTargets = eligible;
     if (eligible.length === 0) {
       // Edge case for multi-pass: if pass 1 wiped the targets, the

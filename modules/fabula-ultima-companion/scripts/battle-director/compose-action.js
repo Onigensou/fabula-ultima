@@ -43,6 +43,7 @@ import { buildSkillResolver } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
+import { applyAttackRangeGate } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -370,16 +371,14 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     return { cancelled: true, reason: "no targets" };
   }
 
-  // Determine the current weapon's range for Covered filtering. RAW
-  // Core p.70 — Covered creatures can't be targeted by melee.
+  // Apply Covered range gate via the unified helper — preserves the
+  // `.excluded` side-channel (Vanish overlay etc.). RAW Core p.70.
   const currentWeapon = (attackMode === "off" || attackMode === "two-weapon-off-first")
     ? snap.offWeapon
     : snap.weapon;
-  const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
-  const filtered = isMelee
-    ? enemies.filter((e) => !(e.conditions ?? []).includes("Covered"))
-    : enemies;
+  const filtered = applyAttackRangeGate(enemies, currentWeapon);
   if (!filtered.length) {
+    const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
       ? "All eligible enemies are Covered — pick a different action."
       : "No eligible enemy targets.");
@@ -466,14 +465,14 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
     return { cancelled: true, reason: "attack-uuid-fail" };
   }
 
-  // Range gate (Melee can't hit Covered targets, RAW Core p.70).
-  const range = String(attackItem.system?.props?.skill_range ?? "Melee").trim().toLowerCase();
-  const isMelee = range === "melee";
+  // Range gate (Melee can't hit Covered targets, RAW Core p.70). The
+  // unified helper preserves `.excluded` so AE-driven exclusions
+  // (Vanish etc.) keep rendering their overlay.
+  const range = String(attackItem.system?.props?.skill_range ?? "Melee");
   const enemies = eligible?.enemies ?? [];
-  const filtered = isMelee
-    ? enemies.filter((e) => !(e.conditions ?? []).includes("Covered"))
-    : enemies;
+  const filtered = applyAttackRangeGate(enemies, { range });
   if (!filtered.length) {
+    const isMelee = range.trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
       ? "All eligible enemies are Covered — pick a different action."
       : "No eligible enemy targets.");

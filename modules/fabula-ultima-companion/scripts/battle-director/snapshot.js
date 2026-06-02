@@ -489,6 +489,65 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
   return Object.freeze(out);
 }
 
+// Apply the Attack range gate to an eligible-targets array, preserving
+// the `excluded` side-channel that target-picker reads to render the
+// "🚫 <reason>" overlay (Vanish etc.).
+//
+// RAW Core p.70 — a Covered creature "cannot be targeted by melee
+// attacks until the start of [the guarder's] next turn." When the
+// weapon's range is Melee, Covered creatures move from the eligible
+// list into `.excluded` with reason "Covered" so they STILL render on
+// the canvas as greyed-out tokens with a labeled reason instead of
+// silently disappearing. Ranged weapons pass everything through.
+//
+// IMPORTANT: this function exists because `Array.prototype.filter()`
+// returns a fresh array WITHOUT custom properties. Inlining a
+// `.filter(e => !isCovered)` at the call site silently drops both the
+// Vanish exclusion list AND the canvas overlay. All Attack call sites
+// (PC composeAttack, NPC composeAttackNpc, TARGET re-snapshot) MUST
+// route their range gating through this helper so the excluded-overlay
+// contract holds uniformly.
+export function applyAttackRangeGate(eligible, weapon) {
+  if (!Array.isArray(eligible)) return eligible;
+  const range = String(weapon?.range ?? "").trim().toLowerCase();
+  const isMelee = range === "melee";
+  if (!isMelee) {
+    // Ranged or no weapon — nothing to filter. Return as-is so the
+    // caller can use eligible.excluded directly.
+    return eligible;
+  }
+  const out = [];
+  const newlyExcluded = [];
+  for (const e of eligible) {
+    if ((e.conditions ?? []).includes("Covered")) {
+      // Synthesize an excluded-shape entry so target-picker can render
+      // the same greyed-ring + reason-label overlay it uses for AE
+      // exclusions. Mirrors the shape from snapshotEligibleTargets*
+      // (combatantId, tokenId, tokenUuid, actorUuid, name, tokenImg,
+      // disposition, reasons[]).
+      newlyExcluded.push(Object.freeze({
+        combatantId: e.combatantId,
+        tokenId: e.tokenId,
+        tokenUuid: e.tokenUuid,
+        actorId: e.actorId,
+        actorUuid: e.actorUuid,
+        name: e.name,
+        tokenImg: e.tokenImg,
+        disposition: e.disposition,
+        reasons: Object.freeze(["Covered"]),
+      }));
+      continue;
+    }
+    out.push(e);
+  }
+  // Union with the existing AE-driven exclusions (Vanish etc.). Both
+  // groups render identically — the overlay code doesn't care WHY a
+  // token is excluded, only that it is.
+  const priorExcluded = Array.isArray(eligible.excluded) ? eligible.excluded : [];
+  out.excluded = Object.freeze([...priorExcluded, ...newlyExcluded]);
+  return out;
+}
+
 // Snapshot eligible targets for a given action category.
 // `category`: "any" | "ally" | "enemy" | "self".
 // For the prototype we keep this simple — token UUIDs + name + disposition.
