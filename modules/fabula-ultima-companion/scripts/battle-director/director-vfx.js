@@ -489,6 +489,61 @@ export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } =
   }
 }
 
+// ── Resource-spend VFX (self-paid cost: casting / reaction / free action) ─
+//
+// The cost counterpart to the loss/gain floats. When a creature PAYS a
+// resource of its own free will — a skill/spell casting cost (debitCost) or
+// a reaction / free-action cost (consume_resource) — we float a `−N` number
+// over the payer's token with a soft spend cue. Deliberately distinct from
+// the LOSS VFX: NO orange impact webm and NO "ouch" hit sound, so paying a
+// cost never reads as taking damage. Just the resource-tinted number + a
+// light magical/coin cue.
+//
+// Same Sequencer-broadcasts-to-all-clients + graceful no-op rules as the
+// other resource VFX.
+
+// Per-resource spend look. `sfx` reuses cues already in the preload set
+// (Dispel for magical spends, the coin for Zenit) so no new asset warming
+// is needed. Number only — no aura webm (a burst over a token for spending
+// IP/Zenit reads oddly).
+const RESOURCE_SPEND_AV = Object.freeze({
+  hp:         { color: "#ff5a5a", icon: "❤️", sfx: RESOURCE_VFX_SFX.mpSpend },
+  mp:         { color: "#1e6cff", icon: "🌀", sfx: RESOURCE_VFX_SFX.mpSpend },
+  ip:         { color: "#9be15d", icon: "🎒", sfx: RESOURCE_VFX_SFX.mpSpend },
+  fp:         { color: "#ffe066", icon: "✨", sfx: RESOURCE_VFX_SFX.mpSpend },
+  zenit:      { color: "#ffd700", icon: "💰", sfx: RESOURCE_VFX_HEAL_SFX.coin },
+  zero_power: { color: "#c792ea", icon: "⚡", sfx: RESOURCE_VFX_SFX.mpSpend },
+  enmity:     { color: "#ff8a65", icon: "🔥", sfx: RESOURCE_VFX_SFX.mpSpend },
+});
+const RESOURCE_SPEND_DEFAULT = Object.freeze({ color: "#cfd2da", icon: "⬇️", sfx: RESOURCE_VFX_SFX.mpSpend });
+
+// Float a `−N` spend number over the payer's token + a soft cue.
+//   tokenUuid : the payer's token ("Scene.X.Token.Y")
+//   resource  : "hp" | "mp" | "ip" | "fp" | "zenit" | "zero_power" | "enmity"
+//   amount    : the value spent (already resolved to what was actually debited)
+export function playResourceSpendVfx({ tokenUuid, resource = "mp", amount = 0 } = {}) {
+  try {
+    if (!(amount > 0)) return;
+    if (typeof Sequence === "undefined") { log("resource-spend VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("resource-spend VFX: token not on canvas, skipping"); return; }
+
+    const av = RESOURCE_SPEND_AV[String(resource).toLowerCase()] ?? RESOURCE_SPEND_DEFAULT;
+    const amountText = `${av.icon} -${Math.abs(amount)}`;
+    const textStyle = { fill: av.color, fontSize: 28, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
+
+    new Sequence()
+      .scrollingText()
+        .atLocation(tok)
+        .text(amountText, textStyle)
+        .duration(1000)
+      .play();
+    if (av.sfx) broadcastSfx(av.sfx, 0.45);
+  } catch (e) {
+    warn("playResourceSpendVfx threw", e);
+  }
+}
+
 // ── Miss / Dodge VFX (attack or spell whiffs) ─────────────────────────────
 //
 // Director-native PORT of the legacy "Miss" macro's FX/SFX block
@@ -538,6 +593,8 @@ export async function preloadDirectorSfx() {
     BATTLE_TRANSITION_SFX_URL,                                              // battle-start transition sting
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Computer.ogg", // Study cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav", // UI hover cue
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/switch_mode.wav",    // UI click cue
   ];
   try { await preloadSfx(urls); }
   catch (e) { warn("preloadDirectorSfx threw", e); }
