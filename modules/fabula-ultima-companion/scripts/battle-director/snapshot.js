@@ -348,6 +348,47 @@ export function snapshotCombatant(combat) {
   }
 }
 
+// AE-driven target self-defense. Walks a potential target's active
+// effects, collects every change row whose `key === "cannot_be_targeted_by"`,
+// and returns a list of blocks each describing what attack types the
+// target is protected from. Mirrors getCannotTargetReasons but reads
+// from the TARGET side (vs Vanish reading the attacker side).
+//
+// Each AE may declare multiple ranges in one row (comma-separated). The
+// canonical values are "melee", "ranged", "any" (for "spell" etc. add
+// later as needed). The AE's name surfaces as the picker overlay reason
+// — Cover writes "Covered", future Out-of-Sight skills would write
+// "Hidden", etc.
+//
+// Returns Array<{ aeName: string, ranges: Set<string> }> — empty when
+// no blocks apply. Caller (applyAttackRangeGate) checks whether the
+// attacker's weapon range matches any block's `ranges` set.
+export function getTargetSideBlocks(actor) {
+  const out = [];
+  const effects = actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const changes = ae?.changes ?? [];
+    const ranges = new Set();
+    for (const ch of changes) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      const raw = String(ch.value ?? "").trim().toLowerCase();
+      if (!raw) continue;
+      for (const r of raw.split(/[\s,]+/)) {
+        const trimmed = r.trim();
+        if (trimmed) ranges.add(trimmed);
+      }
+    }
+    if (ranges.size) {
+      out.push({
+        aeName: String(ae.name ?? "").trim() || "Blocked",
+        ranges,
+      });
+    }
+  }
+  return out;
+}
+
 // AE-driven target exclusion. Walks the chooser's active effects, collects
 // every change row whose `key === "cannot_target_uuids"`, and returns the
 // set of actor UUIDs the chooser is forbidden from targeting.
@@ -480,6 +521,15 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
       affinities: readAffinities(actor),
       conditions: Object.freeze(readActiveConditions(actor)),
+      // AE-driven target-side blocks (Cover, future Out-of-Sight, etc.).
+      // Each entry: { aeName, ranges: Set<string> }. applyAttackRangeGate
+      // reads this per-weapon to decide whether to move the target into
+      // `.excluded` with the AE name as the reason. Stays empty for
+      // most targets; ranges are normalized lowercase ("melee", "ranged",
+      // "any").
+      targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+      )),
     }));
   }
   // Attach excluded list as a property BEFORE freezing — Object.freeze
@@ -493,38 +543,44 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
 // the `excluded` side-channel that target-picker reads to render the
 // "🚫 <reason>" overlay (Vanish etc.).
 //
-// RAW Core p.70 — a Covered creature "cannot be targeted by melee
-// attacks until the start of [the guarder's] next turn." When the
-// weapon's range is Melee, Covered creatures move from the eligible
-// list into `.excluded` with reason "Covered" so they STILL render on
-// the canvas as greyed-out tokens with a labeled reason instead of
-// silently disappearing. Ranged weapons pass everything through.
+// The gate is data-driven via AE-config: each target may carry one or
+// more `targetingBlocks` entries (collected by getTargetSideBlocks at
+// snapshot time from `cannot_be_targeted_by` change rows). For each
+// target, if ANY block's `ranges` set contains the attacker's weapon
+// range OR `"any"`, the target moves into `.excluded` with the
+// block's AE name as the reason.
+//
+// Cover (RAW Core p.70) is the canonical example — the Covered AE
+// declares `cannot_be_targeted_by: "melee"`. Future targeting blocks
+// (Out-of-Sight, Sanctuary, Concealment, etc.) author the same change
+// row with their own scope and overlay the same way without engine
+// changes.
 //
 // IMPORTANT: this function exists because `Array.prototype.filter()`
-// returns a fresh array WITHOUT custom properties. Inlining a
-// `.filter(e => !isCovered)` at the call site silently drops both the
-// Vanish exclusion list AND the canvas overlay. All Attack call sites
-// (PC composeAttack, NPC composeAttackNpc, TARGET re-snapshot) MUST
-// route their range gating through this helper so the excluded-overlay
-// contract holds uniformly.
+// returns a fresh array WITHOUT custom properties. Inlining a filter
+// at the call site silently drops `.excluded` and the canvas overlay.
+// All Attack call sites (PC composeAttack, NPC composeAttackNpc,
+// TARGET re-snapshot) MUST route their range gating through this
+// helper so the excluded-overlay contract holds uniformly.
 export function applyAttackRangeGate(eligible, weapon) {
   if (!Array.isArray(eligible)) return eligible;
   const range = String(weapon?.range ?? "").trim().toLowerCase();
-  const isMelee = range === "melee";
-  if (!isMelee) {
-    // Ranged or no weapon — nothing to filter. Return as-is so the
-    // caller can use eligible.excluded directly.
+  if (!range) {
+    // No weapon — nothing to gate on. Return as-is.
     return eligible;
   }
   const out = [];
   const newlyExcluded = [];
   for (const e of eligible) {
-    if ((e.conditions ?? []).includes("Covered")) {
-      // Synthesize an excluded-shape entry so target-picker can render
-      // the same greyed-ring + reason-label overlay it uses for AE
-      // exclusions. Mirrors the shape from snapshotEligibleTargets*
-      // (combatantId, tokenId, tokenUuid, actorUuid, name, tokenImg,
-      // disposition, reasons[]).
+    const blocks = Array.isArray(e.targetingBlocks) ? e.targetingBlocks : [];
+    const matchingReasons = [];
+    for (const b of blocks) {
+      const blockRanges = Array.isArray(b.ranges) ? b.ranges : [];
+      if (blockRanges.includes("any") || blockRanges.includes(range)) {
+        matchingReasons.push(b.aeName);
+      }
+    }
+    if (matchingReasons.length) {
       newlyExcluded.push(Object.freeze({
         combatantId: e.combatantId,
         tokenId: e.tokenId,
@@ -534,7 +590,7 @@ export function applyAttackRangeGate(eligible, weapon) {
         name: e.name,
         tokenImg: e.tokenImg,
         disposition: e.disposition,
-        reasons: Object.freeze(["Covered"]),
+        reasons: Object.freeze([...matchingReasons]),
       }));
       continue;
     }
@@ -614,6 +670,9 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
       affinities: readAffinities(actor),
       conditions: Object.freeze(readActiveConditions(actor)),
+      targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
+        Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+      )),
     }));
   }
   out.excluded = Object.freeze(excluded);

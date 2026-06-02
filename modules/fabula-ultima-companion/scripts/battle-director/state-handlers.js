@@ -3277,7 +3277,17 @@ const Resolve = {
           startRound: round,
           startTurn: 0,
         },
-        changes: [],
+        // Cover (role="covered"): declare AE-config target-side block so
+        // `applyAttackRangeGate` excludes the covered ally from melee
+        // pickers via the same mechanism Vanish uses on the attacker
+        // side. Render reason in the picker overlay = this AE's name
+        // ("Covered"). Guarder AE (role="guard") carries no targeting
+        // block — its mechanical effects (Resistance to all damage,
+        // +2 Opposed Check) attach at COMPUTE time, not at target pick.
+        // Mode 5 = OVERRIDE (string value, not arithmetic).
+        changes: role === "covered"
+          ? [{ key: "cannot_be_targeted_by", value: "melee", mode: 5, priority: 0 }]
+          : [],
       });
 
       let guarderEffectId = null;
