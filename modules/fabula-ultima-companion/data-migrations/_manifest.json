@@ -239,6 +239,10 @@
     {
       "key": "2026-05-30-dodge-mechanical-wiring",
       "path": "data-migrations/2026-05-30-dodge-mechanical-wiring.js"
+    },
+    {
+      "key": "2026-06-03-npc-hostile-skill-intent",
+      "path": "data-migrations/2026-06-03-npc-hostile-skill-intent.js"
     }
   ]
 }

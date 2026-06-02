@@ -4,6 +4,7 @@
 // view rather than racing with live document mutations.
 
 import { warn } from "./logger.js";
+import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 
 // Element → affinity_N prop key mapping, mirroring legacy AdvanceDamage.js
 // line 278. The CSB template stores elemental affinities under numbered keys
@@ -214,6 +215,32 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
 // snapshot must NEVER fail because of a malformed weapon entry — the
 // attacker just ends up with no weapon and TARGET / COMPUTE handle that.
 function buildWeaponBundle(actor) {
+  // NPC actors have no equipped-weapon concept. They attack via Items with
+  // skill_type === "Attack" (see actor-shape.js). Return empty weapon
+  // fields + a list of the attack-item UUIDs so the compose / TARGET
+  // phases can build the NPC picker from the snapshot alone.
+  const kind = getActorKind(actor);
+  if (kind === "npc") {
+    let npcAttackItems = [];
+    try {
+      npcAttackItems = getNpcAttackItems(actor).map((it) => Object.freeze({
+        uuid: it.uuid,
+        id: it.id,
+        name: it.name,
+        img: it.img ?? null,
+      }));
+    } catch (e) {
+      warn("buildWeaponBundle: getNpcAttackItems threw", e);
+    }
+    return {
+      actorKind: "npc",
+      weapon: null,
+      offWeapon: null,
+      canTwoWeaponFight: false,
+      npcAttackItems: Object.freeze(npcAttackItems),
+    };
+  }
+
   let weapon = null;
   let offWeapon = null;
   try { weapon = resolveAttackerWeapon(actor, { which: "main" }); }
@@ -230,7 +257,7 @@ function buildWeaponBundle(actor) {
     }
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
 
-  return { weapon, offWeapon, canTwoWeaponFight };
+  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, npcAttackItems: Object.freeze([]) };
 }
 
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc

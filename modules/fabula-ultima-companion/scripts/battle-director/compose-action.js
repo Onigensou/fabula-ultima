@@ -42,6 +42,7 @@ import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
+import { getNpcAttackItems } from "./actor-shape.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -324,6 +325,13 @@ export function registerPlayerComposeActionHandler(channel) {
 // re-entering TARGET, since multi-pass logic is intertwined with
 // COMPUTE/CLEANUP).
 async function composeAttack({ director, snap, token, eligible, cancelSentinel, combatId }) {
+  // NPC branch — actor has no equipped-weapon concept; the basic attack
+  // is chosen from `snap.npcAttackItems` (items with skill_type "Attack").
+  // The "weapon-mode" picker doesn't apply: NPCs don't dual-wield in BD.
+  if (snap.actorKind === "npc") {
+    return composeAttackNpc({ director, snap, eligible, cancelSentinel });
+  }
+
   const hasMain = !!snap.weapon;
   const hasOff = !!snap.offWeapon;
   if (!hasMain && !hasOff) {
@@ -401,6 +409,129 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       command: "Attack",
       attackMode,
       targetUuids: [...result.tokenUuids],
+    },
+  };
+}
+
+// NPC Attack — NPCs have no equipped weapon. They pick from Items with
+// skill_type === "Attack" (the actor's `attack_list` itemContainer).
+// Bundle shape: { command: "Attack", attackMode: "npc",
+//                 npcAttackItemUuid, targetUuids }
+// TARGET phase builds a pseudo-weapon from the picked Item so the rest
+// of the Attack pipeline (COMPUTE / CONFIRM / RESOLVE) is unchanged.
+async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
+  const attackItems = snap.npcAttackItems ?? [];
+  if (!attackItems.length) {
+    ui.notifications?.warn(`${snap.name} has no basic Attack available.`);
+    return { cancelled: true, reason: "no npc attack" };
+  }
+
+  // Resolve actor doc — pickSkill needs it for cost / item-grant lookup.
+  // For NPCs the cost is typically "-" but the picker still wants the
+  // actor to derive resource pools.
+  let actor = null;
+  try { actor = await fromUuid(snap.actorUuid); } catch {}
+  if (!actor) {
+    ui.notifications?.warn(`Couldn't read ${snap.name}'s attacks.`);
+    return { cancelled: true, reason: "no actor" };
+  }
+
+  // One attack → skip the picker, auto-select.
+  // Multiple attacks (Bandit Wolf Fang+Claw, Berserker Heavy Axe+Grappled)
+  // → spawn the skill-picker filtered to "attack" type.
+  let pickedItemUuid = null;
+  if (attackItems.length === 1) {
+    pickedItemUuid = attackItems[0].uuid;
+  } else {
+    const pick = await raceCancel(
+      pickSkill({
+        director,
+        actor,
+        allowedSkillTypes: ["attack"],
+        titleText: `Choose ${snap.name}'s Attack`,
+        emptyMessage: `${snap.name} has no attack items.`,
+        externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    if (!pick) return { cancelled: true, reason: "npc-attack-cancelled" };
+    pickedItemUuid = pick.skillUuid;
+  }
+
+  // Resolve the attack item to read its targeting + range.
+  let attackItem = null;
+  try { attackItem = await fromUuid(pickedItemUuid); } catch {}
+  if (!attackItem) {
+    ui.notifications?.error("Picked attack could not be resolved.");
+    return { cancelled: true, reason: "attack-uuid-fail" };
+  }
+
+  // Range gate (Melee can't hit Covered targets, RAW Core p.70).
+  const range = String(attackItem.system?.props?.skill_range ?? "Melee").trim().toLowerCase();
+  const isMelee = range === "melee";
+  const enemies = eligible?.enemies ?? [];
+  const filtered = isMelee
+    ? enemies.filter((e) => !(e.conditions ?? []).includes("Covered"))
+    : enemies;
+  if (!filtered.length) {
+    ui.notifications?.warn(isMelee
+      ? "All eligible enemies are Covered — pick a different action."
+      : "No eligible enemy targets.");
+    return { cancelled: true, reason: "no eligible targets" };
+  }
+
+  // Target count. NPC attacks read the same `skill_target` text as skills
+  // ("One Creature", "Up to two creatures", "All Enemy", etc.). Reuse the
+  // skill-side resolver so identifiers like HAS_SKILL_<NAME>, BOND_COUNT,
+  // SL evaluate correctly.
+  const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
+  const targetCountResolver = buildSkillResolver({
+    actor,
+    payload: null,
+    skill: attackItem,
+    round: director.dCombat?.round ?? 0,
+  });
+  let mode = "exact";
+  let count = 1;
+  if (/\ball\b/i.test(skillTargetText)) {
+    mode = "all";
+    count = filtered.length;
+  } else if (/up\s+to/i.test(skillTargetText)) {
+    mode = "up_to";
+    count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
+  } else {
+    count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
+  }
+  count = Math.max(1, Math.min(count, filtered.length));
+
+  let targetUuids;
+  if (mode === "all") {
+    targetUuids = filtered.map((e) => e.tokenUuid);
+  } else {
+    const result = await raceCancel(
+      requestTargeting({
+        director,
+        eligible: filtered,
+        mode,
+        count,
+        titleText: `Pick ${count > 1 ? `up to ${count} targets` : "a target"} for ${snap.name}'s ${attackItem.name}`,
+        externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    if (!result || !result.ok) {
+      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+    }
+    targetUuids = [...result.tokenUuids];
+  }
+
+  return {
+    cancelled: false,
+    bundle: {
+      command: "Attack",
+      attackMode: "npc",
+      npcAttackItemUuid: pickedItemUuid,
+      targetUuids,
     },
   };
 }
@@ -546,6 +677,14 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
     // mention "ally" but are obviously beneficial). Without this,
     // Heal-type spells resolve to "enemy" since their skill_target
     // is usually "One creature" not "One ally".
+    //
+    // RAW "creature" is generic — Heal/Aura's "Up to three creatures"
+    // means allies; Steal Item's "One Creature" means enemy. We can't
+    // disambiguate from text alone. Author intent is the source of
+    // truth: hostile-but-not-damaging NPC skills (Steal *, Hinder,
+    // Provoke) carry `action_intent: "harmful"` so the classifier
+    // returns harmful and they route to enemies correctly. See the
+    // 2026-06-03 hostile-intent data migration.
     const intent = classifyActionIntent(skill);
     const wantsAlly = /ally|allies/i.test(skillTargetText) || intent === "aid";
     const targetList = wantsAlly ? (eligible?.allies ?? []) : (eligible?.enemies ?? []);

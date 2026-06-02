@@ -30,6 +30,7 @@ import { pickSkill, SkillPicker } from "./skill-picker.js";
 import { OptionPicker } from "./option-picker.js";
 // Player-driven input: client-local compose chain runner.
 import { composeAction, makeCancelToken } from "./compose-action.js";
+import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
@@ -1628,6 +1629,10 @@ const Target = {
         targetUuids = [attackerSnap.tokenUuid];
       } else {
         // Pick category. "ally" keywords + aid intent → ally; default → enemy.
+        // Hostile non-damage Active skills (NPC Steal *, Hinder, Provoke)
+        // need `action_intent: "harmful"` on the item — the classifier's
+        // step-8 "Active without damage → aid" default would otherwise
+        // route them to allies. See the 2026-06-03 migration.
         const wantsAlly = /ally|allies/i.test(skillTargetText) || intent === "aid";
         const category = wantsAlly ? "ally" : "enemy";
         const eligibleRaw = director.dCombat
@@ -1891,6 +1896,35 @@ const Target = {
       && (director.ctx.passIndex ?? 0) >= 1;
 
     if (!isMultiPassReEntry) {
+      // NPC branch — single pass, pseudo-weapon built from the chosen
+      // Attack Item (`composeAttackNpc` passed its UUID in the bundle).
+      // No weapon-mode picker (NPCs don't dual-wield in BD).
+      if (director.ctx.attackMode === "npc") {
+        const itemUuid = director.ctx._composedBundle?.npcAttackItemUuid
+          ?? director.ctx.npcAttackItemUuid
+          ?? null;
+        let item = null;
+        try { item = itemUuid ? await fromUuid(itemUuid) : null; } catch {}
+        if (!item) {
+          ui.notifications?.warn(`${attacker.name} has no usable Attack.`);
+          warn("TARGET Attack (NPC): could not resolve attack item", itemUuid);
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
+        const pseudo = buildPseudoWeaponFromNpcAttack(item);
+        if (!pseudo) {
+          ui.notifications?.warn(`${attacker.name}'s Attack is missing attribute or damage data.`);
+          warn("TARGET Attack (NPC): buildPseudoWeapon returned null", item.name);
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
+        director.ctx.weaponsUsed = [pseudo];
+        director.ctx.pendingPasses = [pseudo];
+        director.ctx.totalPasses = 1;
+        director.ctx.passIndex = 0;
+        director.ctx.npcAttackItemUuid = itemUuid;
+        log(`TARGET (Attack/NPC): pseudo-weapon "${pseudo.name}" (${pseudo.A1}/${pseudo.A2}, +${pseudo.checkBonus}/+${pseudo.damageBonus} ${pseudo.damageType})`);
+      } else {
       // First entry — weapon-mode picker + pendingPasses setup.
       // RAW Core p.69 + house policy:
       //   - Both hands equipped → picker appears (Main + Off; Two-Weapon
@@ -1945,6 +1979,7 @@ const Target = {
       director.ctx.pendingPasses = [...weaponsUsed];   // shifted by COMPUTE
       director.ctx.totalPasses = weaponsUsed.length;
       director.ctx.passIndex = 0;
+      } // end PC weapon-mode branch
     }
 
     // Both first-entry and multi-pass re-entry: re-snapshot eligible
