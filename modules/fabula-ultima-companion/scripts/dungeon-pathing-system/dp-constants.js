@@ -16,6 +16,7 @@
     DUNGEON:     "dungeon",
     CAMP:        "camp",
     TITLE:       "title",
+    CONFLICT:    "conflict",
   });
 
   DP.HOOKS = Object.freeze({

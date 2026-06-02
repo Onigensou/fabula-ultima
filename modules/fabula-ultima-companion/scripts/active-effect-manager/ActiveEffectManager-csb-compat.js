@@ -130,3 +130,56 @@
     installPatch();
   }, 500);
 })();
+
+// ============================================================================
+// Active Effect — Token Icon Visibility Toggle
+//
+// By default Foundry only shows an AE icon on its token if the effect has a
+// non-zero duration (isTemporary === true). Some effects (e.g. Advantage) have
+// no mechanical duration but still need a visible icon.
+//
+// Setting flags["fabula-ultima-companion"].showTokenIcon = true on an AE
+// forces it to be treated as temporary for the purposes of icon display,
+// without requiring a duration to be set.
+// ============================================================================
+(() => {
+  const MODULE_ID      = "fabula-ultima-companion";
+  const ICON_PATCH_KEY = "__ONI_AEM_SHOW_ICON_PATCH__";
+
+  if (globalThis[ICON_PATCH_KEY]) return;
+  globalThis[ICON_PATCH_KEY] = true;
+
+  function installIconPatch() {
+    const AEClass = CONFIG?.ActiveEffect?.documentClass ?? globalThis.ActiveEffect ?? null;
+    const proto   = AEClass?.prototype;
+    if (!proto) return false;
+    if (proto.__oniShowIconPatched) return true;
+
+    // Find isTemporary on this prototype or its parent
+    let descriptor = Object.getOwnPropertyDescriptor(proto, "isTemporary");
+    if (!descriptor?.get) {
+      descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(proto), "isTemporary");
+    }
+    if (!descriptor?.get) {
+      console.warn("[ONI][AEM:IconPatch] Could not locate isTemporary getter — patch skipped.");
+      return false;
+    }
+
+    const originalGetter = descriptor.get;
+
+    Object.defineProperty(proto, "isTemporary", {
+      get() {
+        if (this.flags?.[MODULE_ID]?.showTokenIcon) return true;
+        return originalGetter.call(this);
+      },
+      configurable: true,
+    });
+
+    proto.__oniShowIconPatched = true;
+    console.debug("[ONI][AEM:IconPatch] showTokenIcon isTemporary patch installed.");
+    return true;
+  }
+
+  installIconPatch();
+  Hooks.once("ready", () => { installIconPatch(); });
+})();

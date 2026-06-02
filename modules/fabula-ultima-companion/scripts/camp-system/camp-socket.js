@@ -109,6 +109,29 @@
           return;
         }
 
+        // ── Curse minigame (Straw Doll Hex) ──────────────────────────────
+        if (type === CAMP.MSG.CURSE_START) {
+          CAMP.CurseUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_BEGIN) {
+          CAMP.CurseUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_HIT) {
+          CAMP.CurseUI?.onHit(payload?.success, payload?.perfect);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_RESULT && payload?.tier != null) {
+          // Full result from GM — reveal phase
+          CAMP.CurseUI?.applyResult(payload.actorId, payload.score, payload.tier);
+          return;
+        }
+        if (type === CAMP.MSG.CURSE_DONE) {
+          CAMP.CurseUI?.hide();
+          return;
+        }
+
         // ── Combat Lesson minigame (GM → all, owner → GM) ────────────────
         if (type === CAMP.MSG.COMBAT_LESSON_START) {
           CAMP.CombatLessonUI?.show(payload?.actorId, payload?.allies);
@@ -283,6 +306,32 @@
           return;
         }
 
+        // ── Midnight Oil minigame (Lamp Keeper) ──────────────────────────
+        if (type === CAMP.MSG.MIDNIGHT_OIL_START) {
+          CAMP.MidnightOilUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_BEGIN) {
+          CAMP.MidnightOilUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_STATE) {
+          CAMP.MidnightOilUI?.onLampState(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_RESULT && payload?.label != null) {
+          // Full result from GM — reveal phase
+          CAMP.MidnightOilUI?.applyResult(
+            payload.actorId, payload.score,
+            payload.perfectRelights, payload.lampEverExtinguished,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.MIDNIGHT_OIL_DONE) {
+          CAMP.MidnightOilUI?.hide();
+          return;
+        }
+
         // ── Pep Talk minigame (Pop Quiz) ──────────────────────────────────
         if (type === CAMP.MSG.PEP_TALK_START) {
           CAMP.PepTalkUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
@@ -321,6 +370,97 @@
         }
         if (type === CAMP.MSG.PEP_TALK_CHOICE_REQUEST) {
           CAMP.PepTalkUI?.onChoiceRequest(payload);
+          return;
+        }
+
+        // ── Martial Practice minigame (Fruit Ninja) ──────────────────────
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_START) {
+          CAMP.MartialPracticeUI?.show(payload?.actorId, payload?.actorName);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_BEGIN) {
+          CAMP.MartialPracticeUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_SLASH) {
+          CAMP.MartialPracticeUI?.onSlash(payload);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_RESULT && payload?.multiValue != null) {
+          CAMP.MartialPracticeUI?.applyResult(payload.actorId, payload.score, payload.multiValue);
+          return;
+        }
+        if (type === CAMP.MSG.MARTIAL_PRACTICE_DONE) {
+          CAMP.MartialPracticeUI?.hide();
+          return;
+        }
+
+        // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
+        if (type === CAMP.MSG.FISHING_START) {
+          CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
+            { battleTimeout: payload?.battleTimeout ?? 0 });
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_BEGIN) {
+          CAMP.FishingUI?.spectateBegin(payload?.actorId);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_CAST) {
+          CAMP.FishingUI?.onCast(payload);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_HIT) {
+          CAMP.FishingUI?.onHit(payload);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_RESULT && payload?.round != null) {
+          // Full result from GM — round reveal
+          CAMP.FishingUI?.applyResult(payload.actorId, payload.round, payload.fishName ?? null, payload.catches ?? []);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_NEXT_ROUND) {
+          CAMP.FishingUI?.beginRound(payload?.actorId, payload?.round, payload?.totalRounds);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_DONE) {
+          CAMP.FishingUI?.hide();
+          return;
+        }
+
+        // ── Planning minigame (Pairing Quiz) ─────────────────────────────
+        if (type === CAMP.MSG.PLANNING_START) {
+          CAMP.PlanningUI?.show(payload?.actorId, payload?.actorName, payload?.allies);
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_ARENA) {
+          CAMP.PlanningUI?.showArena(
+            payload?.actorId, payload?.actorName,
+            payload?.targetActorId, payload?.targetActorName,
+            payload?.targetImg, payload?.ownerImg,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_QUESTION) {
+          CAMP.PlanningUI?.showQuestion(payload?.actorId, payload?.targetActorId, payload?.q, payload?.question);
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_REVEAL) {
+          CAMP.PlanningUI?.showReveal(
+            payload?.actorId, payload?.targetActorId,
+            payload?.q, payload?.question,
+            payload?.ownerChoice, payload?.targetChoice,
+            payload?.match, payload?.score,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_RESULT) {
+          CAMP.PlanningUI?.applyResult(
+            payload?.actorId, payload?.targetActorId, payload?.matchCount, payload?.bonus,
+          );
+          return;
+        }
+        if (type === CAMP.MSG.PLANNING_DONE) {
+          CAMP.PlanningUI?.hide();
           return;
         }
 
@@ -374,6 +514,14 @@
 
           case CAMP.MSG.DAYDREAM_PROCEED:
             CAMP.DaydreamUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.CURSE_RESULT:    // owner → GM: score submitted
+            CAMP.CurseUI?.resolveScore(payload?.actorId, payload?.score);
+            break;
+
+          case CAMP.MSG.CURSE_PROCEED:
+            CAMP.CurseUI?.resolveProceed(payload?.actorId);
             break;
 
           case CAMP.MSG.COMBAT_LESSON_TARGET:
@@ -456,6 +604,18 @@
             CAMP.GatheringUI?.resolveProceed(payload?.actorId);
             break;
 
+          case CAMP.MSG.MIDNIGHT_OIL_RESULT:   // owner → GM: score data submitted
+            CAMP.MidnightOilUI?.resolveScore(payload?.actorId, {
+              score:               payload?.score ?? 0,
+              perfectRelights:     payload?.perfectRelights ?? 0,
+              lampEverExtinguished: payload?.lampEverExtinguished ?? true,
+            });
+            break;
+
+          case CAMP.MSG.MIDNIGHT_OIL_PROCEED:
+            CAMP.MidnightOilUI?.resolveProceed(payload?.actorId);
+            break;
+
           case CAMP.MSG.PEP_TALK_TARGET:
             CAMP.PepTalkUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
             break;
@@ -487,6 +647,38 @@
             if (_ptAe) await _ptAe.delete();
             break;
           }
+
+          case CAMP.MSG.MARTIAL_PRACTICE_RESULT:   // owner → GM: score submitted
+            CAMP.MartialPracticeUI?.resolveScore(payload?.actorId, payload?.score ?? 0);
+            break;
+
+          case CAMP.MSG.MARTIAL_PRACTICE_PROCEED:
+            CAMP.MartialPracticeUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.FISHING_RESULT:   // owner → GM: round result submitted
+            CAMP.FishingUI?.resolveRound(payload?.actorId, { fishName: payload?.fishName ?? null });
+            break;
+
+          case CAMP.MSG.FISHING_PROCEED:
+            CAMP.FishingUI?.resolveProceed(payload?.actorId);
+            break;
+
+          case CAMP.MSG.PLANNING_TARGET:
+            CAMP.PlanningUI?.resolveTarget(payload?.actorId, payload?.targetActorId);
+            break;
+
+          case CAMP.MSG.PLANNING_PICK_OWNER:
+            CAMP.PlanningUI?.resolveOwnerPick(payload?.actorId, payload?.choiceIdx);
+            break;
+
+          case CAMP.MSG.PLANNING_PICK_TARGET:
+            CAMP.PlanningUI?.resolveTargetPick(payload?.targetActorId, payload?.choiceIdx);
+            break;
+
+          case CAMP.MSG.PLANNING_PROCEED:
+            CAMP.PlanningUI?.resolveProceed(payload?.actorId);
+            break;
 
           // EXPLORATION_RESULT is handled in the all-clients section above
         }

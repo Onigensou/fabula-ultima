@@ -128,6 +128,13 @@
     MAGIC_LESSON_RESULT:   "CAMP_MAGIC_LESSON_RESULT",   // GM → all (3 payload shapes: spell-pick / rolling / reveal)
     MAGIC_LESSON_PROCEED:  "CAMP_MAGIC_LESSON_PROCEED",  // owner → GM
     MAGIC_LESSON_DONE:     "CAMP_MAGIC_LESSON_DONE",     // GM → all
+    // Midnight Oil minigame (Lamp Keeper)
+    MIDNIGHT_OIL_START:   "CAMP_MIDNIGHT_OIL_START",   // GM → all
+    MIDNIGHT_OIL_BEGIN:   "CAMP_MIDNIGHT_OIL_BEGIN",   // owner → all (Click to Begin; starts spectator countdown)
+    MIDNIGHT_OIL_STATE:   "CAMP_MIDNIGHT_OIL_STATE",   // owner → all (lamp state change: bright/flickering/relighting/extinguished)
+    MIDNIGHT_OIL_RESULT:  "CAMP_MIDNIGHT_OIL_RESULT",  // owner → GM (score data) / GM → all (score + label)
+    MIDNIGHT_OIL_PROCEED: "CAMP_MIDNIGHT_OIL_PROCEED", // owner → GM
+    MIDNIGHT_OIL_DONE:    "CAMP_MIDNIGHT_OIL_DONE",    // GM → all
     // Pep Talk minigame (Pop Quiz)
     PEP_TALK_START:               "CAMP_PEP_TALK_START",               // GM → all (show ally picker)
     PEP_TALK_TARGET:              "CAMP_PEP_TALK_TARGET",               // owner → GM (ally chosen)
@@ -141,6 +148,40 @@
     PEP_TALK_DONE:                "CAMP_PEP_TALK_DONE",                 // GM → all
     PEP_TALK_CHOICE_REQUEST:      "CAMP_PEP_TALK_CHOICE_REQUEST",       // GM → target's owner (in-combat "you may" dialog)
     PEP_TALK_CHOICE_RESPONSE:     "CAMP_PEP_TALK_CHOICE_RESPONSE",      // target's owner → GM
+    // Martial Practice minigame (Fruit Ninja)
+    MARTIAL_PRACTICE_START:   "CAMP_MARTIAL_PRACTICE_START",   // GM → all clients
+    MARTIAL_PRACTICE_BEGIN:   "CAMP_MARTIAL_PRACTICE_BEGIN",   // owner → all (Click to Begin; broadcasts RNG seed)
+    MARTIAL_PRACTICE_SLASH:   "CAMP_MARTIAL_PRACTICE_SLASH",   // owner → all (slash event: { actorId, hitIds, isBomb, slashScore })
+    MARTIAL_PRACTICE_RESULT:  "CAMP_MARTIAL_PRACTICE_RESULT",  // owner → GM (score) / GM → all (score + uses)
+    MARTIAL_PRACTICE_PROCEED: "CAMP_MARTIAL_PRACTICE_PROCEED", // owner → GM
+    MARTIAL_PRACTICE_DONE:    "CAMP_MARTIAL_PRACTICE_DONE",    // GM → all
+    // Fishing minigame (Stardew-style two-phase)
+    FISHING_START:   "CAMP_FISHING_START",   // GM → all (show UI; payload: actorId, actorName)
+    FISHING_BEGIN:   "CAMP_FISHING_BEGIN",   // owner → all (Click to Begin; spectator gauge starts)
+    FISHING_CAST:    "CAMP_FISHING_CAST",    // owner → all (cast result: { actorId, strength, perfect })
+    FISHING_HIT:     "CAMP_FISHING_HIT",     // owner → all (battle heartbeat: { actorId, fishY, barY, fishHp, inZone })
+    FISHING_RESULT:  "CAMP_FISHING_RESULT",  // owner → GM (round done) / GM → all (round+fishName+round#)
+    FISHING_NEXT_ROUND: "CAMP_FISHING_NEXT_ROUND", // GM → all (start cast for round 2/3: { actorId, round, totalRounds })
+    FISHING_PROCEED: "CAMP_FISHING_PROCEED", // owner → GM
+    FISHING_DONE:    "CAMP_FISHING_DONE",    // GM → all
+    // Planning minigame (Pairing Quiz)
+    PLANNING_START:        "CAMP_PLANNING_START",        // GM → all (ally picker)
+    PLANNING_TARGET:       "CAMP_PLANNING_TARGET",       // owner → GM (ally chosen)
+    PLANNING_ARENA:        "CAMP_PLANNING_ARENA",        // GM → all (show arena frame)
+    PLANNING_QUESTION:     "CAMP_PLANNING_QUESTION",     // GM → all (show question q)
+    PLANNING_PICK_OWNER:   "CAMP_PLANNING_PICK_OWNER",   // owner → GM (hidden pick for q)
+    PLANNING_PICK_TARGET:  "CAMP_PLANNING_PICK_TARGET",  // target's owner → GM (hidden pick for q)
+    PLANNING_REVEAL:       "CAMP_PLANNING_REVEAL",       // GM → all (reveal q: both picks + match + score)
+    PLANNING_RESULT:       "CAMP_PLANNING_RESULT",       // GM → all (final matchCount + bonus)
+    PLANNING_PROCEED:      "CAMP_PLANNING_PROCEED",      // owner → GM
+    PLANNING_DONE:         "CAMP_PLANNING_DONE",         // GM → all
+    // Curse minigame (Straw Doll Hex)
+    CURSE_START:   "CAMP_CURSE_START",   // GM → all clients
+    CURSE_BEGIN:   "CAMP_CURSE_BEGIN",   // owner → all (Click to Begin; starts spectator countdown)
+    CURSE_HIT:     "CAMP_CURSE_HIT",     // owner → all (per-key press: { actorId, success, perfect })
+    CURSE_RESULT:  "CAMP_CURSE_RESULT",  // owner → GM (score) / GM → all (score + tier)
+    CURSE_PROCEED: "CAMP_CURSE_PROCEED", // owner → GM
+    CURSE_DONE:    "CAMP_CURSE_DONE",    // GM → all
   });
 
   // ---------------------------------------------------------------------------

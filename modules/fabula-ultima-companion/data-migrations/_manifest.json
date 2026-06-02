@@ -145,6 +145,18 @@
       "path": "data-migrations/2026-05-23-grant-skills-unified-targeting.js"
     },
     {
+      "key": "2026-05-26-refinement-item-template-fields",
+      "path": "data-migrations/2026-05-26-refinement-item-template-fields.js"
+    },
+    {
+      "key": "2026-05-26-refinement-panel-container-visibility",
+      "path": "data-migrations/2026-05-26-refinement-panel-container-visibility.js"
+    },
+    {
+      "key": "2026-05-26-refinement-field-visibility-formula",
+      "path": "data-migrations/2026-05-26-refinement-field-visibility-formula.js"
+    },
+    {
       "key": "2026-05-27-skill-template-batch3-columns",
       "path": "data-migrations/2026-05-27-skill-template-batch3-columns.js"
     },

@@ -26,6 +26,7 @@
   const FABULA_ROOT_KEY = "oniFabula";
   const GENERAL_KEY = "general";
   const CAMERA_FOLLOW_KEY = "cameraFollowToken";
+  const SCENE_MODE_KEY = "sceneMode";
 
   const ROOT_ID = "oni-movement-control-badge-root";
   const STYLE_ID = "oni-movement-control-badge-style";
@@ -95,8 +96,13 @@
 
   function getSceneCameraFollowEnabled(scene) {
     const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
-    const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
 
+    const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (sceneMode === "dungeon")     return false;
+    if (sceneMode === "exploration") return true;
+    if (sceneMode === "none")        return false;
+
+    const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     if (typeof raw === "boolean") return raw;
     if (typeof raw === "number") return raw !== 0;
     if (typeof raw === "string") {
