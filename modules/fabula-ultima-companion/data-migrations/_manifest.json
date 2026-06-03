@@ -243,6 +243,22 @@
     {
       "key": "2026-06-03-npc-hostile-skill-intent",
       "path": "data-migrations/2026-06-03-npc-hostile-skill-intent.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-author",
+      "path": "data-migrations/2026-06-03-guardian-b1-author.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-raw-fix",
+      "path": "data-migrations/2026-06-03-guardian-b1-raw-fix.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-fixups",
+      "path": "data-migrations/2026-06-03-guardian-b1-fixups.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-bodyguard-polish",
+      "path": "data-migrations/2026-06-03-guardian-b1-bodyguard-polish.js"
     }
   ]
 }

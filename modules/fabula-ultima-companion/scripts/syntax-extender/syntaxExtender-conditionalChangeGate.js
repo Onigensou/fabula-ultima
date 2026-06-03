@@ -20,6 +20,12 @@
  *   aeEquippedWhen(types, value)           — fires if ANY of comma-separated types are equipped
  *   aeNotEquippedWhen(types, value)        — fires if NONE of comma-separated types are equipped
  *                                            (gear-restricted passives: Dodge etc.)
+ *   aeAffinityFloor(value)                 — single-arg. ALWAYS sets a value on an
+ *                                            affinity_N key, but preserves the actor's
+ *                                            current value if it's already "IM" or "AB"
+ *                                            (so Bodyguard's RS-grant can't downgrade
+ *                                            an Immune/Absorb ally). Use with mode 5
+ *                                            (OVERRIDE) on affinity_1..affinity_9.
  *
  * Equipment type tokens (for aeEquippedWhen / aeNotEquippedWhen):
  *   shield         → item.props.item_type === "shield"
@@ -46,7 +52,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.3.0-affinity-false-fallback-na-2026-05-05";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeAffinityFloor"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -247,7 +253,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeAffinityFloor)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -761,45 +767,50 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
   function parseGateSyntax(rawValue) {
     const text = String(rawValue ?? "").trim();
 
-    const match = text.match(
+    // Two-arg helpers: (query, value).
+    const match2 = text.match(
       /^\s*(?:\$\{\s*)?(aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen)\s*\(\s*(['"])(.*?)\2\s*,\s*(?:(['"])(.*?)\4|([^)]*?))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
-    if (!match) {
-      return {
-        ok: false,
-        reason: "not_gate_syntax",
-        rawValue
-      };
+    if (match2) {
+      const helper = String(match2[1] ?? "").trim();
+      const query = String(match2[3] ?? "").trim();
+
+      const quotedValue = match2[5];
+      const unquotedValue = match2[6];
+
+      const trueValue = String(
+        quotedValue !== undefined
+          ? quotedValue
+          : unquotedValue ?? ""
+      ).trim();
+
+      if (!helper || !query) {
+        return { ok: false, reason: "missing_helper_or_query", rawValue };
+      }
+
+      return { ok: true, helper, query, trueValue, rawValue };
     }
 
-    const helper = String(match[1] ?? "").trim();
-    const query = String(match[3] ?? "").trim();
+    // Single-arg helpers: (value). The "value" doubles as the query slot —
+    // the affinity floor takes only the floor value to apply when the gate
+    // is active (i.e. current affinity isn't IM/AB).
+    const match1 = text.match(
+      /^\s*(?:\$\{\s*)?(aeAffinityFloor)\s*\(\s*(['"])(.*?)\2\s*\)\s*(?:\}\$)?\s*$/i
+    );
 
-    const quotedValue = match[5];
-    const unquotedValue = match[6];
-
-    const trueValue = String(
-      quotedValue !== undefined
-        ? quotedValue
-        : unquotedValue ?? ""
-    ).trim();
-
-    if (!helper || !query) {
-      return {
-        ok: false,
-        reason: "missing_helper_or_query",
-        rawValue
-      };
+    if (match1) {
+      const helper = String(match1[1] ?? "").trim();
+      const trueValue = String(match1[3] ?? "").trim();
+      if (!helper || !trueValue) {
+        return { ok: false, reason: "missing_helper_or_query", rawValue };
+      }
+      // For 1-arg helpers, query mirrors trueValue so downstream logging
+      // and debugging see a non-empty `query` field.
+      return { ok: true, helper, query: trueValue, trueValue, rawValue };
     }
 
-    return {
-      ok: true,
-      helper,
-      query,
-      trueValue,
-      rawValue
-    };
+    return { ok: false, reason: "not_gate_syntax", rawValue };
   }
 
 function evaluateGate(rawValue, actor, effect = null, change = null) {
@@ -819,6 +830,10 @@ function evaluateGate(rawValue, actor, effect = null, change = null) {
   const helperNorm = normalize(parsed.helper);
   const queryNorm = normalize(parsed.query);
 
+// `computedValue` may be set by a helper that handles its own value derivation
+// (e.g. aeAffinityFloor returns the preserved current value, not parsed.trueValue).
+let computedValue = null;
+
 if (helperNorm === "aewhen") {
   if (queryNorm === "crisis") {
     active = isActorInCrisis(actor, effect);
@@ -836,6 +851,18 @@ if (helperNorm === "aewhen") {
   // NONE of the listed types is equipped → active
   // Pattern: gear-restricted passives (Dodge: no shield + no martial armor).
   active = !hasAnyItemTypeEquipped(actor, parsed.query);
+} else if (helperNorm === "aeaffinityfloor") {
+  // ALWAYS apply a value on the affinity_N key being patched. Preserve the
+  // current value if it's already "IM" or "AB" (immune / absorb) so a
+  // Bodyguard-style "RS to all" grant can't downgrade an already-Immune
+  // ally. Set `active=true` so the apply path skips the fallback-to-base
+  // branch — the value we return IS the final value to write.
+  const k = String(change?.key ?? "").trim();
+  const props = actor?.system?.props ?? {};
+  const currentVal = String(props[k] ?? "NA").trim().toUpperCase();
+  const preserve = currentVal === "IM" || currentVal === "AB";
+  active = true;
+  computedValue = preserve ? currentVal : parsed.trueValue;
 }
 
   const result = {
@@ -844,7 +871,9 @@ if (helperNorm === "aewhen") {
     skipped: !active,
     helper: parsed.helper,
     query: parsed.query,
-    value: active ? parsed.trueValue : rawValue,
+    value: computedValue !== null
+      ? computedValue
+      : (active ? parsed.trueValue : rawValue),
     rawValue,
     actorName: actor?.name ?? null,
     effectName: effect?.name ?? effect?.id ?? null,

@@ -56,6 +56,17 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // The post-resolve `creature_deals_damage` trigger stays for
   // Drain-Spirit-style grants that fire after damage commits.
   "creature_will_deal_damage",
+  // Post-Guard trigger — fires once per Guard action with whether the
+  // guarder covered an ally. Bodyguard (Guardian Core RAW p.197) listens
+  // with `didCoverAlly === true` to apply RS-to-all-affinities AE to the
+  // covered ally. Future reactions: Hawkeye's `!didCoverAlly` gate, etc.
+  // Payload shape:
+  //   { guarderUuid, didCoverAlly, coveredAllyUuid, coveredAllyTokenUuid,
+  //     guarderTokenUuid, targets, targetTokenUuids }
+  // The `targets`/`targetTokenUuids` carry the covered ally's token UUID
+  // (when present) so `target_ref: "action_targets"` in the apply_ae chain
+  // resolves cleanly.
+  "creature_guards",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),
@@ -133,6 +144,7 @@ export const TRIGGER_PHASE = Object.freeze({
   // Post-resolve — token-anchored menu, fires after action commits.
   "creature_deals_damage":      "post-resolve",
   "creature_takes_damage":      "post-resolve",
+  "creature_guards":            "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",

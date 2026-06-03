@@ -3012,6 +3012,46 @@ const Confirm = {
       }
     }
 
+    // Guard-side dispatch — creature_guards. Action-level (not per-target);
+    // the guarder IS the reactor. Bodyguard's "covered ally gains RS to
+    // all damage types" rides on this. Force-mode rows surface on the
+    // card as informational "Active" pills via buildReactionPillRow.
+    //
+    // Note Guard's actionResult (DECLARE branch ~line 1402) doesn't set
+    // `attackerActorRef`, so use the resolved `attackerActor.uuid`
+    // directly — `passesMatchFilters` reads `payload.sourceActorUuid` to
+    // gate `reaction_source: "self"` rows and silently rejects on
+    // undefined. The attacker doc was already looked up upstream via the
+    // `ar.attackerActorRef ?? ar.attacker.actorUuid` fallback.
+    if (ar.kind === "Guard" && attackerActor) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const cov = ar.coverTarget;
+        const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
+        const guarderUuid = attackerActor.uuid;
+        const guardCands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_guards",
+          payload: {
+            sourceActorUuid:      guarderUuid,
+            sourceTokenUuid:      ar.attacker?.tokenUuid ?? null,
+            guarderActorUuid:     guarderUuid,
+            guarderTokenUuid:     ar.attacker?.tokenUuid ?? null,
+            didCoverAlly:         !!cov,
+            coveredAllyUuid:      cov?.actorUuid ?? null,
+            coveredAllyTokenUuid: cov?.tokenUuid ?? null,
+            targets:              coveredTokenUuids,
+            targetTokenUuids:     coveredTokenUuids,
+          },
+        });
+        for (const cand of guardCands ?? []) {
+          prePassives.push(cand);
+        }
+      } catch (e) {
+        warn("CONFIRM: creature_guards findPassiveCandidates threw", e);
+      }
+    }
+
     // Critical-hit cut-in — fire it AS the action card (with the roll result)
     // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
     // alongside the card while the player reads the crit roll and confirms.
@@ -3270,12 +3310,30 @@ const Resolve = {
               guarderActorId,
               appliedAtRound: round,
             },
+            // Wire into the global director-AE tick (homebrew rule
+            // [[ae-default-3-turn-duration]]). `tickDirectorAEsForApplier`
+            // decrements turnsRemaining at the applier's TurnStart and
+            // batch-deletes at 0 — same lifecycle as apply_ae-applied AEs.
+            // Replaces the prior dCombat.activeGuards ledger; the legacy
+            // popActiveGuardsFor loop in TURN_START stays as a no-op
+            // fallback for any pre-refactor resumed save still carrying
+            // entries.
+            directorAppliedBy: {
+              skillUuid: null,
+              reactorActorUuid: guarderActorUuid,
+              effectLabel: role === "covered" ? "guard_cover" : "guard_self",
+              appliedAtRound: round,
+              turnsRemaining: 1,             // expires at guarder's next TurnStart
+            },
           },
           core: { statusId },
         },
         duration: {
           startRound: round,
           startTurn: 0,
+          // Sheet-side display ("expires in 1 round"). Authoritative
+          // expiry is the directorAppliedBy.turnsRemaining counter above.
+          rounds: 1,
         },
         // Cover (role="covered"): declare AE-config target-side block so
         // `applyAttackRangeGate` excludes the covered ally from melee
@@ -3341,18 +3399,52 @@ const Resolve = {
         }
       }
 
-      // Register with dCombat so TURN_START / director.stop can release
-      // the AEs at the right time. Skip if dCombat absent (manual fallback
-      // path) — AEs still apply, just won't auto-remove.
-      if (director.dCombat && guarderActorId) {
-        director.dCombat.addActiveGuard({
-          guarderActorUuid: att.actorUuid,
-          guarderActorId,
-          guarderEffectId,
-          coveredActorUuid,
-          coveredEffectId,
-          appliedAtRound: round,
-        });
+      // NOTE: Guard / Cover lifecycle moved to the global director-AE
+      // tick (homebrew rule [[ae-default-3-turn-duration]]) — the AEs
+      // are stamped with `directorAppliedBy.turnsRemaining: 1` above and
+      // `tickDirectorAEsForApplier` removes them at the guarder's next
+      // TurnStart. The legacy dCombat.activeGuards ledger is no longer
+      // written for new Guard actions; the TURN_START.onEnter cleanup
+      // loop stays as a no-op safety net for any pre-refactor resumed
+      // save still carrying entries.
+
+      // Post-Guard passive trigger — fires once per Guard with the
+      // didCoverAlly bit + covered ally UUIDs. Bodyguard (Guardian
+      // Core RAW p.197) listens with `didCoverAlly === true` to grant
+      // the covered ally Resistance to all damage types via apply_ae.
+      // QUEUED, not fired — same reason as creature_deals_damage above:
+      // reaction-applied AEs end up outside the RESOLVE rewind snapshot.
+      //
+      // Canonical payload field names: `sourceActorUuid` / `sourceTokenUuid`
+      // identify the subject of the trigger (the guarder). The matcher's
+      // reaction_source="self" check reads `payload.sourceActorUuid` —
+      // so the canonical names are load-bearing, not informational.
+      // `guarderActorUuid` / `guarderTokenUuid` kept as aliases for
+      // future authoring clarity.
+      try {
+        const guarderActorForTrigger = await fromUuid(att.actorUuid).catch(() => null);
+        if (guarderActorForTrigger) {
+          const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
+          queuePostResolveTrigger(director, {
+            casterActor: guarderActorForTrigger,
+            trigger: "creature_guards",
+            payload: {
+              sourceActorUuid:     att.actorUuid,
+              sourceTokenUuid:     att.tokenUuid ?? null,
+              guarderActorUuid:    att.actorUuid,
+              guarderTokenUuid:    att.tokenUuid ?? null,
+              didCoverAlly:        !!cov,
+              coveredAllyUuid:     cov?.actorUuid ?? null,
+              coveredAllyTokenUuid: cov?.tokenUuid ?? null,
+              // Belt + suspenders for the apply_ae `target_ref: "action_targets"`
+              // resolver — empty list when the guarder didn't cover anyone.
+              targets:             coveredTokenUuids,
+              targetTokenUuids:    coveredTokenUuids,
+            },
+          });
+        }
+      } catch (e) {
+        warn("RESOLVE Guard: failed to queue creature_guards trigger", e);
       }
     } else if (ar.kind === "Equipment") {
       // Apply the swap collected from the card's per-slot dropdowns.

@@ -1837,6 +1837,11 @@ function buildGuardCard({ attacker, coverTarget }) {
     ? `<div style="margin-top:4px;">Covers <strong style="color:#3aa0ff">${escapeHtml(coverTarget.name)}</strong> — they cannot be targeted by melee attacks.</div>`
     : "";
 
+  // Reaction surface is rendered uniformly by the central card spawner
+  // (via `payload.prePassives` → `buildReactionPillRow`). State-handlers
+  // CONFIRM populates `prePassives` for Guard via findPassiveCandidates
+  // with trigger `creature_guards`. No per-card duplication needed.
+
   return {
     titleIcon: `<i class="fa-solid fa-shield-halved" style="font-size:20px; color:var(--fud-stroke,#5a6a85);"></i>`,
     titleText: "Guard",
@@ -2629,10 +2634,12 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // "Mode" footer chip so the player can see whether the pill is acting
 // automatically vs. waiting on their click vs. disabled.
 function buildReactionPillRow(prePassives) {
-  // Hide "off" (auto-rejected) and "force" (engine-mandatory, no
-  // player choice) rows from the visible list. "force" is recorded as
-  // auto-applied in the decision map below so RESOLVE still fires it.
-  const visible = prePassives.filter((p) => p?.mode !== "off" && p?.mode !== "force");
+  // Hide "off" (auto-rejected). Show "on" + "force" + "ask" — Force-mode
+  // is engine-mandatory, no player decision, but the effect is often
+  // player-meaningful (Bodyguard grants RS to all damage, etc.) so it
+  // surfaces informationally with the same "Active" label as On. RESOLVE
+  // still fires Force from the decision map regardless of UI state.
+  const visible = prePassives.filter((p) => p?.mode !== "off");
   if (!visible.length) return "";
   const pillsHtml = visible.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
@@ -2642,9 +2649,10 @@ function buildReactionPillRow(prePassives) {
       ? `<img class="fud-bf-reaction-icon" src="${escapeHtml(p.carrierImg)}" alt="" />`
       : `<span class="fud-bf-reaction-icon" aria-hidden="true">⚡</span>`;
     const modeLabel =
-      p.mode === "on"  ? "Auto-apply (On)"  :
-      p.mode === "off" ? "Disabled (Off)"   :
-                         "Asks (You choose)";
+      p.mode === "on"    ? "Active"            :
+      p.mode === "force" ? "Active"            :
+      p.mode === "off"   ? "Disabled"          :
+                           "Asks (You choose)";
     // Skill descriptions in CSB are rich HTML; trusted (local actor
     // data, not user input). Bundle a mode footer chip so the player
     // sees the dispatch behavior without leaving the card.
@@ -2653,12 +2661,12 @@ function buildReactionPillRow(prePassives) {
       `<div class="fud-bf-reaction-tip-foot">Mode: ${escapeHtml(modeLabel)}</div>`;
     const tipAttrs =
       ` data-fud-equip-desc="${escapeHtml(descBody)}" data-fud-equip-desc-name="${safeName}"`;
-    if (p.mode === "on") {
+    if (p.mode === "on" || p.mode === "force") {
       return `
         <div class="fud-bf-reaction-pill is-auto" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${tipAttrs}>
           ${iconHtml}
           <span class="fud-bf-reaction-name">${safeName}</span>
-          <span class="fud-bf-reaction-status">Auto-applied</span>
+          <span class="fud-bf-reaction-status">Active</span>
         </div>`;
     }
     return `
