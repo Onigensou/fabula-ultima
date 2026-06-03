@@ -1134,7 +1134,8 @@ function getUniversalDamageBonus(props) {
     const rA = await (new Roll(`1d${dA}`)).evaluate();
     const rB = await (new Roll(`1d${dB}`)).evaluate();
 
-    const total = (rA.total + rB.total + Number(bonus || 0));
+    const accuracyActorMod = Number(actorProps?.attack_accuracy_mod_all ?? 0);
+    const total = (rA.total + rB.total + Number(bonus || 0) + accuracyActorMod);
     const hr    = Math.max(rA.total, rB.total);
     const diff  = Math.abs(rA.total - rB.total);
 
@@ -1155,7 +1156,8 @@ function getUniversalDamageBonus(props) {
       dA, dB,
       rA: { total: rA.total, result: rA.result },
       rB: { total: rB.total, result: rB.result },
-      total, hr, isCrit, isBunny, isFumble
+      total, hr, isCrit, isBunny, isFumble,
+      checkBonus: Number(bonus || 0) + accuracyActorMod
     };
   }
 
@@ -1565,7 +1567,6 @@ accuracy: {
   autoHit   : (_isCritFinal === true && _isFumbleFinal !== true),
   A1: dataCore.rolledAtr1,
   A2: dataCore.rolledAtr2,
-  checkBonus: dataCore.checkBonus,
   hrUsed: ignoreHR ? null : accRoll?.hr
 },
       advPayload,
@@ -1918,7 +1919,6 @@ const totalFlatBonus =
             isFumble : _isFumbleFinal,
             A1: dataCore.rolledAtr1,
             A2: dataCore.rolledAtr2,
-            checkBonus: dataCore.checkBonus,
             hrUsed: ignoreHR ? null : accRoll?.hr
           }
         : null,
