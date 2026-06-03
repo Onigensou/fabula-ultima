@@ -872,6 +872,26 @@ export async function runDirectorInit(payload) {
     payload,
   });
 
+  // ── 11b. Ensure Monster Encyclopedia placeholder pages for the enemies.
+  // The encyclopedia auto-creates locked "???" pages on Foundry's
+  // `combatStart` hook — but the director runs its own combat with NO
+  // Foundry Combat doc (step 11), so that hook never fires. Without this,
+  // a monster's encyclopedia page only appears the first time it's Studied
+  // or witnessed, instead of the moment the party encounters it. We rebuild
+  // the trigger here, exactly as step 12 rebuilds the cut-in preloader.
+  // Fire-and-forget: a GM-only journal write, not on the battle-start
+  // critical path. enemyTokens are TokenDocuments carrying .uuid +
+  // .disposition (-1), which the API gates on.
+  try {
+    const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+    if (encApi?.ensurePlaceholderPagesForTokens) {
+      encApi.ensurePlaceholderPagesForTokens(enemyTokens, { label: "director-init" })
+        .catch((e) => warn("PREP: encyclopedia placeholder ensure threw", e));
+    }
+  } catch (e) {
+    warn("PREP: encyclopedia placeholder ensure failed to dispatch", e);
+  }
+
   // ── 12. Preload critical-hit cut-in art across clients. The director has
   // no Foundry Combat doc, so the legacy cutin-receiver `combatStart`
   // preloader never fires — we rebuild the trigger director-side here.

@@ -1354,6 +1354,11 @@
       // Re-sort pages by (rank, name). Called automatically after writes;
       // exposed for manual triggering / debugging.
       sortPages,
+      // Ensure placeholder pages exist for a list of hostile tokens (UUID
+      // strings or TokenDocuments). The Battle Director calls this from its
+      // init pipeline because it has no Foundry Combat doc → no `combatStart`
+      // hook. Idempotent + GM-only.
+      ensurePlaceholderPagesForTokens,
       // Action witness API — record / inspect / clear per-action reveal state.
       //
       // recordWitnessedAction({ actorUuid, itemId, actionName?, actionImg?,
@@ -1728,44 +1733,84 @@
   }
 
   /**
-   * combatStart hook handler — auto-spawn placeholder pages for every
-   * enemy combatant so the Pokédex feels populated from round 1 of every
-   * fight. GM-only; players' clients no-op (placeholders need a GM write).
+   * Core placeholder-spawner — ensure an encyclopedia page exists for every
+   * hostile (disposition -1) token in the given list. GM-only; players'
+   * clients no-op (placeholders need a GM write).
    *
-   * Idempotent: upsertPage returns the existing page if there is one,
-   * so re-entries of the same combat don't duplicate.
+   * Accepts either token UUID strings or TokenDocument-like objects (anything
+   * exposing `.uuid` + `.disposition`). This is the shared core behind both
+   * the Foundry `combatStart` hook AND the Battle Director, which runs its
+   * own FSM with NO Foundry Combat doc — so the `combatStart` hook never
+   * fires in director mode and the director must call this directly (it does,
+   * from runDirectorInit, the same way it rebuilds the cut-in preloader).
+   *
+   * Idempotent: upsertPage returns the existing page if there is one, so
+   * repeated calls (re-entry, mid-combat boot backfill) don't duplicate, and
+   * pages are keyed by prototype UUID → one page per monster TYPE.
+   *
+   * @param {Array<string|{uuid:string,disposition?:number,name?:string}>} tokens
+   * @param {{ label?: string }} [opts]  label for the console summary line.
    */
-  async function handleCombatStart(combat) {
-    if (!game.user?.isGM) return;
-    if (!combat) return;
-    const combatants = combat.combatants?.contents ?? [];
-    const enemies = combatants.filter(c => {
-      const disp = c?.token?.disposition ?? c?.token?.document?.disposition ?? null;
-      return disp === -1;
-    });
-    if (!enemies.length) return;
+  async function ensurePlaceholderPagesForTokens(tokens, { label = "ensurePages" } = {}) {
+    if (!game.user?.isGM) return [];
+    const list = Array.isArray(tokens) ? tokens : [];
+    if (!list.length) return [];
 
     const results = [];
-    for (const c of enemies) {
+    for (const entry of list) {
       try {
-        const tokenUuid = c.token?.uuid ?? null;
+        const tokenUuid = typeof entry === "string" ? entry : (entry?.uuid ?? null);
         if (!tokenUuid) continue;
+
+        // Disposition gate — only hostile NPCs get catalogued. Read from the
+        // passed object when present, else resolve the token doc.
+        let disp = (typeof entry === "string")
+          ? null
+          : (entry?.disposition ?? entry?.document?.disposition ?? null);
+        let name = (typeof entry === "string") ? null : (entry?.name ?? null);
+        if (disp === null) {
+          const td = await fromUuid(tokenUuid).catch(() => null);
+          disp = td?.disposition ?? td?.document?.disposition ?? null;
+          name = name ?? td?.name ?? null;
+        }
+        if (disp !== -1) continue;
+
         const actorUuid = await resolveActorPrototypeUuid(tokenUuid);
         if (!actorUuid) continue;
         // Skip duplicates from multiple instances of the same prototype.
         if (results.some(r => r.actorUuid === actorUuid)) continue;
         const page = await upsertPage(actorUuid);
-        if (page) results.push({ actorUuid, name: c.name });
+        if (page) results.push({ actorUuid, name: name ?? actorUuid });
       } catch (e) {
-        console.warn(`${TAG} handleCombatStart: upsert failed for ${c.name}:`, e);
+        console.warn(`${TAG} ${label}: upsert failed:`, e);
       }
     }
 
     if (results.length) {
-      console.info(`${TAG} combatStart: ensured ${results.length} placeholder page(s) for enemies.`, results.map(r => r.name));
+      console.info(`${TAG} ${label}: ensured ${results.length} placeholder page(s) for enemies.`, results.map(r => r.name));
       try { await sortPages(); }
-      catch (e) { console.warn(`${TAG} sortPages after combatStart failed:`, e); }
+      catch (e) { console.warn(`${TAG} sortPages after ${label} failed:`, e); }
     }
+    return results;
+  }
+
+  /**
+   * combatStart hook handler — delegates to the shared core. Only fires for
+   * worlds/encounters that DO use the Foundry combat tracker; the Battle
+   * Director path calls ensurePlaceholderPagesForTokens directly instead.
+   */
+  async function handleCombatStart(combat) {
+    if (!game.user?.isGM) return;
+    if (!combat) return;
+    const combatants = combat.combatants?.contents ?? [];
+    const tokens = combatants
+      .map(c => ({
+        uuid: c.token?.uuid ?? null,
+        disposition: c?.token?.disposition ?? c?.token?.document?.disposition ?? null,
+        name: c.name ?? null,
+      }))
+      .filter(t => t.uuid);
+    return ensurePlaceholderPagesForTokens(tokens, { label: "combatStart" });
   }
 
   // ───────────────────── GM Controls UI ─────────────────────

@@ -3339,6 +3339,84 @@ const Confirm = {
   },
 };
 
+// ─── Encyclopedia: NPC action witnessing ──────────────────────────────
+// Port of the legacy `oni:action:resolved` Path B (encyclopedia-core.js).
+// When a hostile NPC (disposition -1) USES an action, record it on the
+// Monster Encyclopedia page so the "???" placeholder materializes into the
+// real attack / skill / spell entry. The director took over NPC turns, so
+// those actions no longer flow through the legacy ADF hook — without this,
+// witness reveals silently stopped firing for director-run monsters.
+//
+// Fires on USE — hit OR miss — because the party witnessed the action
+// regardless of outcome. Only attacks / skills / spells are catalogued;
+// Guard / Hinder / Study / Equipment / Item aren't monster "abilities".
+//
+// recordWitnessedAction is GM-only and RESOLVE.onEnter is GM-side, so the
+// direct API call is safe. It only writes the Monster Encyclopedia journal
+// (never actor state), so ordering vs damage/AE application is irrelevant
+// and it stays out of the actor-based rewind snapshot — witness knowledge
+// is monotonic and shouldn't un-reveal on a turn rewind. The journal
+// re-render reaches players via Foundry doc sync; no chat message is posted
+// (consistent with the director's no-chat-log rule).
+async function recordNpcActionWitness(director, ar) {
+  try {
+    const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+    if (!encApi?.recordWitnessedAction || !encApi?.resolveActorPrototypeUuid) return;
+
+    // The embedded item that backs this action. Both split-pop to the
+    // monster's embedded item _id — the witnessed key the encyclopedia
+    // matches against `attack_list` / `skill_active_list` / `normal_spell_list`.
+    //
+    // NPC attacks use a frozen pseudo-weapon (buildPseudoWeaponFromNpcAttack)
+    // that exposes the source Item UUID as `npcAttackItemUuid`, NOT `uuid` —
+    // the canonical value also lives on `director.ctx.npcAttackItemUuid`
+    // (set in TARGET). Prefer those; `ar.weapon?.uuid` only exists for PC
+    // weapons, which never reach here (PCs aren't disposition -1).
+    let actionUuid = null;
+    if (ar.kind === "Attack") {
+      actionUuid = ar.weapon?.npcAttackItemUuid
+        ?? director?.ctx?.npcAttackItemUuid
+        ?? ar.weapon?.uuid
+        ?? null;
+    } else if (ar.kind === "Skill") {
+      actionUuid = ar.skillUuid ?? null; // covers spells (skillType: "spell")
+    }
+    if (!actionUuid) return;
+
+    const tokenUuid = ar.attacker?.tokenUuid ?? null;
+    if (!tokenUuid) return;
+
+    // Hostile-only — read disposition off the live token document.
+    let disposition = 0;
+    try {
+      const tokenDoc = await fromUuid(tokenUuid);
+      disposition = Number(tokenDoc?.disposition ?? tokenDoc?.document?.disposition ?? 0);
+    } catch { /* tolerate — non-hostile fall-through below */ }
+    if (disposition !== -1) return;
+
+    // Prototype UUID keys the page (stable across token instances). The
+    // embedded item _id is identical on linked + unlinked tokens because
+    // embedded ids are copied from the prototype on token creation.
+    const protoUuid = await encApi.resolveActorPrototypeUuid(tokenUuid);
+    if (!protoUuid) return;
+    const itemId = String(actionUuid).split(".").pop();
+    if (!itemId) return;
+
+    const actionName = ar.skillName ?? ar.weapon?.name ?? ar.kind;
+    const result = await encApi.recordWitnessedAction({
+      actorUuid:   protoUuid,
+      itemId,
+      actionName,
+      monsterName: ar.attacker?.name ?? "Monster",
+    });
+    if (result?.wasNew) {
+      log(`Encyclopedia: witnessed ${ar.attacker?.name ?? "?"} → ${actionName} (${itemId})`);
+    }
+  } catch (e) {
+    warn("RESOLVE: NPC action witness record failed", e);
+  }
+}
+
 // ─── RESOLVE ───────────────────────────────────────────────────────────
 // Apply damage / AE / etc. directly to live docs. GM-side, serialized by
 // dispatch lock.
@@ -3350,6 +3428,12 @@ const Resolve = {
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
+
+    // Encyclopedia witness — catalogue this action if a hostile NPC used it.
+    // Runs before the kind branches so a missed attack still counts as
+    // "seen". Idempotent + journal-only, so it's safe to await here and a
+    // no-op on later passes of a multi-pass attack.
+    await recordNpcActionWitness(director, ar);
 
     // (Critical-hit cut-in now fires in CONFIRM, as the action card with the
     // roll result appears — see Confirm.onEnter. Not replayed here.)
