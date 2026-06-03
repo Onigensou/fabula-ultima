@@ -262,6 +262,16 @@ export class DirectorCombat {
     this.currentSide = this.firstSide;
     this.currentCombatantId = null; // resolved by the first TurnStart pick
     log(`DirectorCombat started: ${this.combatants.length} combatants on ${this.scene?.name ?? "?"}, firstSide=${this.firstSide}`);
+    this._notifyTurnActions();
+  }
+
+  // Fire-and-forget notification that per-combatant turn-action counts
+  // changed (start / a turn was spent / a round reset). The turn-action
+  // tracker UI (director-round-banner.js) listens GM-side and fans the new
+  // state out to every client. Decoupled via a Foundry hook so dCombat keeps
+  // no UI dependency. Never throws into the FSM.
+  _notifyTurnActions() {
+    try { Hooks.callAll("fu-director-turnactions", this); } catch (_e) {}
   }
 
   end() {
@@ -332,6 +342,7 @@ export class DirectorCombat {
         // The director will detect side-wipe elsewhere; here we just signal.
         warn("nextTurn: round wrapped but no eligible combatants remain — ending");
         this.end();
+        this._notifyTurnActions();
         return { round: this.round, currentSide: this.currentSide, wrappedRound: true, ended: true, eligibleIds: [] };
       }
       // If firstSide has nothing eligible post-wrap (e.g. wholly defeated),
@@ -343,6 +354,7 @@ export class DirectorCombat {
     }
 
     const eligibleIds = this.eligibleOnSide(this.currentSide).map((c) => c.id);
+    this._notifyTurnActions();
     return {
       round: this.round,
       currentSide: this.currentSide,

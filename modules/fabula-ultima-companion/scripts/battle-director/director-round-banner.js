@@ -17,11 +17,13 @@
 //   ROUND_START → playRoundBanner({round}) renders locally + broadcasts.
 
 import { log, warn } from "./logger.js";
+import { registerSurface, unregisterSurface } from "./director-surfaces.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
 const ACTION_HIDE = "FU_DIRECTOR_ROUND_HIDE";
 const ACTION_BATTLE_START = "FU_DIRECTOR_BATTLE_START_PLAY";
+const ACTION_TURNACTIONS = "FU_DIRECTOR_TURNACTIONS";
 const STYLE_ID = "fu-dir-round-style";
 const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
@@ -29,6 +31,10 @@ const ROUND_SFX_URL =
 const ACCENT = "#ffd866";
 
 let _socket = null;
+// Surface-registry id for the banner overlay while it's visible (it persists
+// in the DOM via an .active class flip, which the DOM observer can't see, so
+// we register/unregister it explicitly).
+let _bannerSurfaceId = null;
 
 // ── boot: socket registration (idempotent; call once after socketlib up) ──
 export function initDirectorRoundBanner() {
@@ -39,12 +45,19 @@ export function initDirectorRoundBanner() {
     }
     _socket = socketlib.registerModule(MODULE_ID);
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
-    _socket.register(ACTION_HIDE, () => exitRoundBannerLocal({ animate: true }));
+    _socket.register(ACTION_HIDE, () => { exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
     _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
+    _socket.register(ACTION_TURNACTIONS, renderTurnActionsLocal);
     log("director-round-banner: socket registered");
   } catch (e) {
     warn("director-round-banner: init failed", e);
   }
+  // GM drives the turn-action tracker off dCombat's state-change hook (fired
+  // from director-combat.js). Registered outside the socket guard so the GM's
+  // own local render still works even if socketlib is unavailable.
+  try {
+    Hooks.on("fu-director-turnactions", (dCombat) => refreshTurnActions(dCombat));
+  } catch (e) { warn("director-round-banner: turnactions hook registration failed", e); }
 }
 
 // ── Web Audio SFX (full-file fetch → decode → play; cached per session) ───
@@ -96,6 +109,27 @@ function ensureStyle() {
   font: 900 6.2vh "Pixel Operator", system-ui, sans-serif;
   text-shadow: 0 2px 12px rgba(0,0,0,.7);
 }
+/* Turn-action tracker — creature icons flanking ROUND X (enemies left, party right). */
+#${LAYER_ID} .fu-rb-row {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 1.6vw;
+}
+#${LAYER_ID} .fu-rb-ta-group { display: flex; align-items: center; gap: 0.7vh; }
+#${LAYER_ID} .fu-rb-ta-icon {
+  position: relative; width: 7.2vh; height: 7.2vh; border-radius: 50%; overflow: hidden;
+  flex: 0 0 auto; background: #0a0a0e; border: 2px solid ${ACCENT};
+  box-shadow: 0 0 7px rgba(0,0,0,.55);
+  transition: filter .25s ease, opacity .25s ease;
+}
+#${LAYER_ID} .fu-rb-ta-icon .fu-rb-ta-media {
+  /* Token sprite masked into the circle: anchored middle-top, zoomed 2x. */
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
+  transform: scale(2); transform-origin: center top; display: block;
+}
+#${LAYER_ID} .fu-rb-ta-icon.spent {
+  /* Turn action spent this round → dim + grey out. */
+  filter: grayscale(1) brightness(.5); opacity: .42;
+  border-color: rgba(160,160,170,.45); box-shadow: none;
+}
 `.trim();
   const style = document.createElement("style");
   style.id = STYLE_ID;
@@ -112,12 +146,17 @@ function ensureLayer() {
   const band = document.createElement("div"); band.className = "fu-rb-band";
   const bg = document.createElement("div"); bg.className = "fu-rb-bg";
   const lt = document.createElement("div"); lt.className = "fu-rb-line";
+  // Middle row: [enemy icons] [ROUND N] [party icons].
+  const row = document.createElement("div"); row.className = "fu-rb-row";
+  const leftGroup = document.createElement("div"); leftGroup.className = "fu-rb-ta-group left";
   const tx = document.createElement("div"); tx.className = "fu-rb-text";
+  const rightGroup = document.createElement("div"); rightGroup.className = "fu-rb-ta-group right";
+  row.append(leftGroup, tx, rightGroup);
   const lb = document.createElement("div"); lb.className = "fu-rb-line";
-  band.append(bg, lt, tx, lb);
+  band.append(bg, lt, row, lb);
   layer.append(band);
   document.body.appendChild(layer);
-  layer.__fu = { band, bg, lt, lb, tx };
+  layer.__fu = { band, bg, lt, lb, tx, row, leftGroup, rightGroup, turnActionKey: "" };
   return layer;
 }
 
@@ -143,6 +182,7 @@ async function exitRoundBannerLocal({ animate = true } = {}) {
     }
     for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
     layer.classList.remove("active");
+    if (_bannerSurfaceId) { unregisterSurface(_bannerSurfaceId); _bannerSurfaceId = null; }
   } catch (e) {
     warn("exitRoundBannerLocal threw", e);
   }
@@ -165,6 +205,7 @@ async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
 
   tx.textContent = text;
   layer.classList.add("active");
+  if (!_bannerSurfaceId) _bannerSurfaceId = registerSurface({ kind: "round-banner" });
   if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
 
   // Reset to centered start state.
@@ -264,12 +305,115 @@ export async function playBattleStartBanner({ text = "BATTLE START", holdMs = 90
   }
 }
 
+// ── Turn-action tracker ───────────────────────────────────────────────────
+// Creature icons flanking ROUND X: enemies on the left, party on the right.
+// Each icon is the token sprite masked into a circle; when that creature has
+// spent its turn action(s) for the round it greys out + dims. Driven by the
+// `fu-director-turnactions` hook (director-combat.js fires it on start /
+// nextTurn / round reset); the GM builds a snapshot, renders locally, and
+// broadcasts to every client.
+
+function isVideoSrc(u) {
+  return /\.(webm|mp4|m4v|ogv)(\?|#|$)/i.test(String(u ?? ""));
+}
+
+function buildTurnActionIcon(c) {
+  const icon = document.createElement("div");
+  icon.className = "fu-rb-ta-icon" + (c.spent ? " spent" : "");
+  icon.dataset.cid = c.id;
+  icon.title = c.name ?? "";
+  let media;
+  if (isVideoSrc(c.img)) {
+    media = document.createElement("video");
+    media.autoplay = true; media.loop = true; media.muted = true;
+    media.playsInline = true; media.setAttribute("playsinline", "");
+  } else {
+    media = document.createElement("img");
+    media.draggable = false;
+  }
+  media.className = "fu-rb-ta-media";
+  if (c.img) media.src = c.img;
+  icon.appendChild(media);
+  return icon;
+}
+
+// Render (idempotent). Rebuilds the icon DOM only when the membership/order
+// changes (new round / combatant added or removed); otherwise just toggles
+// each icon's spent/dim state so an in-round update is a cheap class flip.
+function renderTurnActionsLocal(combatants = []) {
+  try {
+    const layer = ensureLayer();
+    const { leftGroup, rightGroup } = layer.__fu;
+    if (!leftGroup || !rightGroup) return;
+    const list = Array.isArray(combatants) ? combatants : [];
+    const key = list.map((c) => `${c.side === "enemy" ? "L" : "R"}:${c.id}`).join("|");
+    if (key !== layer.__fu.turnActionKey) {
+      leftGroup.replaceChildren();
+      rightGroup.replaceChildren();
+      for (const c of list) {
+        const grp = c.side === "enemy" ? leftGroup : rightGroup;
+        grp.appendChild(buildTurnActionIcon(c));
+      }
+      layer.__fu.turnActionKey = key;
+    } else {
+      for (const c of list) {
+        const grp = c.side === "enemy" ? leftGroup : rightGroup;
+        const sel = `.fu-rb-ta-icon[data-cid="${(window.CSS?.escape?.(c.id)) ?? c.id}"]`;
+        const icon = grp.querySelector(sel);
+        if (icon) icon.classList.toggle("spent", !!c.spent);
+      }
+    }
+  } catch (e) {
+    warn("renderTurnActionsLocal threw", e);
+  }
+}
+
+function clearTurnActionsLocal() {
+  const layer = document.getElementById(LAYER_ID);
+  if (!layer?.__fu) return;
+  layer.__fu.leftGroup?.replaceChildren();
+  layer.__fu.rightGroup?.replaceChildren();
+  layer.__fu.turnActionKey = "";
+}
+
+// GM: snapshot dCombat's combatants into the slim shape the renderer needs.
+function buildTurnActionSnapshot(dCombat) {
+  const out = [];
+  for (const c of (dCombat?.combatants ?? [])) {
+    const td = c.tokenDoc;
+    out.push({
+      id: c.id,
+      side: c.side === "enemy" ? "enemy" : "party",
+      name: c.name ?? td?.name ?? "",
+      img: td?.texture?.src ?? c.actorDoc?.img ?? null,
+      spent: !(Number(c.turnsRemaining) > 0),
+    });
+  }
+  return out;
+}
+
+// GM: build the snapshot, render locally, and broadcast to every other client.
+// Fired from the `fu-director-turnactions` hook. No-op for non-GM (the hook
+// only fires where dCombat lives, but guard anyway).
+export function refreshTurnActions(dCombat) {
+  try {
+    if (!game.user?.isGM) return;
+    const snap = buildTurnActionSnapshot(dCombat);
+    renderTurnActionsLocal(snap);
+    try { _socket?.executeForOthers?.(ACTION_TURNACTIONS, snap); }
+    catch (e) { warn("refreshTurnActions broadcast failed", e); }
+  } catch (e) {
+    warn("refreshTurnActions threw", e);
+  }
+}
+
 // ── public: clear the docked banner at battle end ─────────────────────────
 // Fade out + remove on THIS client and broadcast the same to all others, so
 // the persistent round indicator never lingers after the director stops.
 export function hideRoundBanner() {
   try {
     exitRoundBannerLocal({ animate: true });
+    clearTurnActionsLocal();
     try { _socket?.executeForOthers?.(ACTION_HIDE); }
     catch (e) { warn("director-round-banner: hide broadcast failed", e); }
   } catch (e) {

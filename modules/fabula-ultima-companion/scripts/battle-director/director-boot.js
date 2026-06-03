@@ -34,6 +34,7 @@ import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
+import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -294,6 +295,10 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
+  // Surface registry — the despawnAll calls above remove DOM (the observer
+  // unregisters each), but wipe the registry too so any explicitly-registered
+  // overlay (banner / cut-in) doesn't linger as a stale entry.
+  try { clearAllSurfaces(); } catch {}
   // Defensive standalone-menu cleanup. STOPPED.onEnter already calls
   // clearAllStandaloneMenus, but on the rewind path the FSM transition
   // may be mid-await (dispatchStandaloneTrigger blocked on a player's
@@ -796,6 +801,16 @@ Hooks.once("ready", () => {
         return require?.("./free-actions.js")?.freeActions ?? null;
       } catch { return null; }
     })(),
+    // UI surface registry — a queryable model of which director UI components
+    // are on screen on THIS client. `list()` returns every tracked surface +
+    // animation; `has(kind)` / `count(kind)` are quick checks. Subscribe to the
+    // `fu-director-surface-change` hook for push updates. See director-surfaces.js.
+    surfaces: {
+      list: (filter) => getActiveSurfaces(filter),
+      has: (kind) => hasSurface(kind),
+      count: (kind) => countSurfaces(kind),
+      clear: () => clearAllSurfaces(),
+    },
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
@@ -883,6 +898,11 @@ Hooks.once("ready", () => {
   // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
   try { initDirectorUiSfx(); }
   catch (e) { warn("initDirectorUiSfx on ready threw", e); }
+
+  // Director UI surface registry — DOM observer that tracks which director UI
+  // components are on screen, per client. Queryable via the surfaces API.
+  try { initDirectorSurfaces(); }
+  catch (e) { warn("initDirectorSurfaces on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.
