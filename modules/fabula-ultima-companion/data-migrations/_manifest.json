@@ -271,6 +271,14 @@
     {
       "key": "2026-06-03-bd-template-version-sync",
       "path": "data-migrations/2026-06-03-bd-template-version-sync.js"
+    },
+    {
+      "key": "2026-06-03-rogue-ae-descriptions",
+      "path": "data-migrations/2026-06-03-rogue-ae-descriptions.js"
+    },
+    {
+      "key": "2026-06-03-protect-ae-description",
+      "path": "data-migrations/2026-06-03-protect-ae-description.js"
     }
   ]
 }
