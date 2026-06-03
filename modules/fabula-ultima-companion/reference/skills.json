@@ -39,6 +39,12 @@
         "file": "Fabula-Ultima-Bonus-01-Necromancer.txt",
         "phase": "shipped"
       },
+      "playtest-2024-12-05": {
+        "title": "Fabula Ultima Playtest Materials (ENG) — December 5th, 2024",
+        "file": "Fabula Ultima Playtest Materials (ENG) (December 5th, 2024) (single page).pdf",
+        "phase": "shipped-manual",
+        "note": "Introduced the Rampart rework that the Jan 23, 2025 playtest carried forward unchanged."
+      },
       "playtest-2025-01-23": {
         "title": "Fabula Ultima Playtest Materials (ENG) — January 23rd, 2025",
         "file": "Fabula Ultima Playtest Materials (ENG) (January 23rd, 2025) (single page).pdf",
@@ -1401,14 +1407,32 @@
         {
           "name": "Rampart",
           "max_sl": 1,
-          "brief": "Resist damage and status effects during the first round.",
+          "brief": "Once per conflict, spend 20 MP at round start; you and every ally gain RS to all damage + status immunity until end of round.",
+          "description": "Once per conflict scene, at the beginning of a round, if you have a martial armor or a shield equipped, you may spend 20 Mind Points. If you do, you and every ally present on the scene have Resistance to all damage types and cannot suffer status effects until the end of the round (this does not let you recover from preexisting status effects).",
           "classes": [
             "Guardian"
           ],
           "source": {
             "book": "core",
             "section": "LIST OF HEROIC SKILLS — Class-bound"
-          }
+          },
+          "playtest_overrides": [
+            {
+              "date": "2024-12-05",
+              "field": "brief",
+              "from": "Resist damage and status effects during the first round.",
+              "to": "Once per conflict, spend 20 MP at round start; you and every ally gain RS to all damage + status immunity until end of round.",
+              "source": "playtest-2024-12-05"
+            },
+            {
+              "date": "2024-12-05",
+              "field": "description",
+              "from": "(Core brief only — no full description parsed)",
+              "to": "Once per conflict scene, at the beginning of a round, if you have a martial armor or a shield equipped, you may spend 20 Mind Points. If you do, you and every ally present on the scene have Resistance to all damage types and cannot suffer status effects until the end of the round (this does not let you recover from preexisting status effects).",
+              "source": "playtest-2024-12-05",
+              "rationale": "This heroic skill needed a boost to match Unbreakable."
+            }
+          ]
         },
         {
           "name": "Unbreakable",

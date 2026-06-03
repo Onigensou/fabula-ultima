@@ -83,8 +83,17 @@ const BODYGUARD_EFFECT_TABLE = {
 // the apply_ae handler clones onto the target (see [[ae-template-no-transfer]]).
 // Director default duration (3 turns / start-of-applier ticking) per
 // [[ae-default-3-turn-duration]] — no per-skill override.
+// One-sentence AE descriptions — rendered in the small token-hover
+// tooltip per the user's "keep it short" convention. Source + key effect,
+// no extra mechanic detail. The first-pass Bodyguard AE in this migration
+// has the 50% reduction shape which raw-fix later replaces; the
+// description here is overridden by raw-fix's canonical version.
+const BODYGUARD_AE_DESCRIPTION =
+  "<p><em>Bodyguard:</em> Resistance to all damage.</p>";
+
 const BODYGUARD_AE_TEMPLATE = {
   name: "Bodyguard",
+  description: BODYGUARD_AE_DESCRIPTION,
   transfer: false,
   disabled: false,
   duration: {
@@ -175,7 +184,11 @@ async function patchBodyguardItem(item, log, ownerLabel) {
 // Existing AE already encodes the mechanic
 // (damage_receiving_mod_all += SL when shield or martial armor equipped).
 // Hygiene-only patch: add statuses + system.tags + priority 20.
+const DEFENSIVE_MASTERY_AE_DESCRIPTION =
+  "<p><em>Defensive Mastery:</em> −SL damage while a shield or martial armor is equipped.</p>";
+
 const DEFENSIVE_MASTERY_AE_PATCH = {
+  description: DEFENSIVE_MASTERY_AE_DESCRIPTION,
   changes: [
     {
       key:      "damage_receiving_mod_all",
@@ -203,17 +216,20 @@ async function patchDefensiveMasteryItem(item, log, ownerLabel) {
   const wantChanges  = DEFENSIVE_MASTERY_AE_PATCH.changes;
   const wantStatuses = DEFENSIVE_MASTERY_AE_PATCH.statuses;
   const wantTags     = DEFENSIVE_MASTERY_AE_PATCH.system.tags;
+  const wantDesc     = DEFENSIVE_MASTERY_AE_PATCH.description;
   const needs =
     !deepEqual(existing.changes ?? [], wantChanges)
     || !deepEqual(Array.from(existing.statuses ?? []), wantStatuses)
-    || !deepEqual(existing.system?.tags ?? null, wantTags);
+    || !deepEqual(existing.system?.tags ?? null, wantTags)
+    || existing.description !== wantDesc;
   if (!needs) return false;
   await existing.update({
-    transfer: true,
-    changes:  wantChanges,
-    statuses: wantStatuses,
-    system:   DEFENSIVE_MASTERY_AE_PATCH.system,
-    flags:    DEFENSIVE_MASTERY_AE_PATCH.flags,
+    transfer:    true,
+    changes:     wantChanges,
+    statuses:    wantStatuses,
+    system:      DEFENSIVE_MASTERY_AE_PATCH.system,
+    flags:       DEFENSIVE_MASTERY_AE_PATCH.flags,
+    description: wantDesc,
   });
   log(`  ${ownerLabel} Defensive Mastery: AE hygiene applied`);
   return true;
@@ -222,7 +238,11 @@ async function patchDefensiveMasteryItem(item, log, ownerLabel) {
 // ── FORTRESS (hygiene) ──────────────────────────────────────────────────────
 
 // Existing AE already encodes the mechanic (max_hp += level*5). Hygiene-only.
+const FORTRESS_AE_DESCRIPTION =
+  "<p><em>Fortress:</em> Max HP +5×SL.</p>";
+
 const FORTRESS_AE_PATCH = {
+  description: FORTRESS_AE_DESCRIPTION,
   changes: [
     {
       key:      "max_hp",
@@ -250,17 +270,20 @@ async function patchFortressItem(item, log, ownerLabel) {
   const wantChanges  = FORTRESS_AE_PATCH.changes;
   const wantStatuses = FORTRESS_AE_PATCH.statuses;
   const wantTags     = FORTRESS_AE_PATCH.system.tags;
+  const wantDesc     = FORTRESS_AE_PATCH.description;
   const needs =
     !deepEqual(existing.changes ?? [], wantChanges)
     || !deepEqual(Array.from(existing.statuses ?? []), wantStatuses)
-    || !deepEqual(existing.system?.tags ?? null, wantTags);
+    || !deepEqual(existing.system?.tags ?? null, wantTags)
+    || existing.description !== wantDesc;
   if (!needs) return false;
   await existing.update({
-    transfer: true,
-    changes:  wantChanges,
-    statuses: wantStatuses,
-    system:   FORTRESS_AE_PATCH.system,
-    flags:    FORTRESS_AE_PATCH.flags,
+    transfer:    true,
+    changes:     wantChanges,
+    statuses:    wantStatuses,
+    system:      FORTRESS_AE_PATCH.system,
+    flags:       FORTRESS_AE_PATCH.flags,
+    description: wantDesc,
   });
   log(`  ${ownerLabel} Fortress: AE hygiene applied`);
   return true;

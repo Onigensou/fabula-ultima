@@ -259,6 +259,18 @@
     {
       "key": "2026-06-03-guardian-b1-bodyguard-polish",
       "path": "data-migrations/2026-06-03-guardian-b1-bodyguard-polish.js"
+    },
+    {
+      "key": "2026-06-03-condition-fields-label-type",
+      "path": "data-migrations/2026-06-03-condition-fields-label-type.js"
+    },
+    {
+      "key": "2026-06-03-guardian-rampart-author",
+      "path": "data-migrations/2026-06-03-guardian-rampart-author.js"
+    },
+    {
+      "key": "2026-06-03-bd-template-version-sync",
+      "path": "data-migrations/2026-06-03-bd-template-version-sync.js"
     }
   ]
 }

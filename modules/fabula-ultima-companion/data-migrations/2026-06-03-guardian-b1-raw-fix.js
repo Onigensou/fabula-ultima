@@ -123,8 +123,15 @@ function makeAffinityFloorChange(affinityKey) {
   };
 }
 
+// One-sentence AE description — rendered in the small token-hover tooltip.
+// Just source + key effect; IM/AB preservation and expiry detail belong in
+// the skill description, not the AE chip.
+const BODYGUARD_AE_DESCRIPTION =
+  "<p><em>Bodyguard:</em> Resistance to all damage.</p>";
+
 const BODYGUARD_AE_TEMPLATE = {
   name: "Bodyguard",
+  description: BODYGUARD_AE_DESCRIPTION,
   transfer: false,
   disabled: false,
   duration: {
@@ -198,20 +205,25 @@ async function patchBodyguardItem(item, log, ownerLabel) {
   //    damage_receiving_percentage_all change before creating fresh.
   const existing = item.effects?.contents?.find((e) => e.name === "Bodyguard");
   const wantChanges = BODYGUARD_AE_TEMPLATE.changes;
+  const wantDesc    = BODYGUARD_AE_TEMPLATE.description;
   if (!existing) {
     await item.createEmbeddedDocuments("ActiveEffect", [BODYGUARD_AE_TEMPLATE]);
     log(`  ${ownerLabel} Bodyguard: AE template created (9 affinity rows)`);
     touched = true;
-  } else if (!deepEqual(existing.changes ?? [], wantChanges)) {
+  } else if (
+    !deepEqual(existing.changes ?? [], wantChanges)
+    || existing.description !== wantDesc
+  ) {
     await existing.update({
-      transfer: BODYGUARD_AE_TEMPLATE.transfer,
-      duration: BODYGUARD_AE_TEMPLATE.duration,
-      changes:  wantChanges,
-      statuses: BODYGUARD_AE_TEMPLATE.statuses,
-      system:   BODYGUARD_AE_TEMPLATE.system,
-      flags:    BODYGUARD_AE_TEMPLATE.flags,
+      transfer:    BODYGUARD_AE_TEMPLATE.transfer,
+      duration:    BODYGUARD_AE_TEMPLATE.duration,
+      changes:     wantChanges,
+      statuses:    BODYGUARD_AE_TEMPLATE.statuses,
+      system:      BODYGUARD_AE_TEMPLATE.system,
+      flags:       BODYGUARD_AE_TEMPLATE.flags,
+      description: wantDesc,
     });
-    log(`  ${ownerLabel} Bodyguard: AE template normalised to 9 affinity rows`);
+    log(`  ${ownerLabel} Bodyguard: AE template normalised (changes + description)`);
     touched = true;
   }
 
