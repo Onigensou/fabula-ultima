@@ -21,7 +21,7 @@ import { log, warn } from "./logger.js";
 import { evaluateFormula, buildSkillResolver, isFormulaString } from "./skill-formulas.js";
 import { pickOption } from "./option-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
-import { findAndConsume } from "./skill-charges.js";
+import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
 import { readPropNum } from "./snapshot.js";
 
 const FLAG_NS = "fabula-ultima-companion";
@@ -577,29 +577,45 @@ async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
 // reaction that has no MP, nothing happens, no feedback) is the bug
 // this exists to prevent.
 //
-// Walks: `chain` (every step), `consume_resource` (tally). Does NOT walk
-// into `open_action_menu` options (player choice — each option's cost
-// is checked when picked). Other effect_kinds (grant, apply_ae,
-// consume_charge, etc.) don't debit reactor resources, so they're a no-op.
+// Walks: `chain` (every step), `consume_resource` (resource tally),
+// `consume_charge` (charge tally — only when on_empty defaults to
+// "abort"; "skip" rows are soft, no shortfall). Does NOT walk into
+// `open_action_menu` options (player choice — each option's cost is
+// checked when picked). Other effect_kinds (grant, apply_ae,
+// remove_tagged_ae, etc.) don't gate the reactor, so they're a no-op.
+//
+// consume_charge note: the walker checks the REACTOR's matching charge
+// AE regardless of the row's target_ref. The canonical pattern is
+// bearer-self charges (Protect / Rampart / Counterattack-style) where
+// reactor == target. A non-self target_ref would over-restrict the
+// blade rather than under-restrict, which is the safer failure mode.
 //
 // Inputs:
 //   effectTable — { [key]: row } from skill.system.props.effect_table OR
 //                 an AE's reactionConfig.effect_table.
 //   startLabel  — effect_label of the chain's entry row.
-//   actor       — the reactor whose pools are checked.
+//   actor       — the reactor whose pools / charges are checked.
 //   skill       — optional carrier (skill item) for the formula resolver.
 //                 Pass when available so SL / CHAR_LEVEL / HAS_SKILL_*
 //                 evaluate against the right skill context.
 //
 // Returns:
-//   { ok, debit, sufficient, shortfalls, badge }
-//   - ok          : chain was walkable (start row found).
-//   - debit       : Record<resource, totalAmount> after walking.
-//   - sufficient  : actor.current >= debit for every resource.
-//   - shortfalls  : [{ resource, required, current }] for failures.
-//   - badge       : "Not enough MP/HP" style label, or null when ok.
+//   { ok, debit, chargeDebit, sufficient, shortfalls, badge }
+//   - ok           : chain was walkable (start row found).
+//   - debit        : Record<resource, totalAmount> after walking.
+//   - chargeDebit  : Record<chargeKey, totalCount> after walking.
+//   - sufficient   : actor.current >= debit for every resource AND
+//                    actor has >= required charges for every chargeKey.
+//   - shortfalls   : [{ kind: "resource"|"charge", ... }] for failures.
+//                    Resource form: { kind:"resource", resource, required, current }.
+//                    Charge form:   { kind:"charge", chargeKey, required, current }.
+//   - badge        : "Low MP" / "No Charge" / "Low MP, No Charge" style
+//                    label, or null when ok.
 export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
-  const out = { ok: false, debit: {}, sufficient: true, shortfalls: [], badge: null };
+  const out = {
+    ok: false, debit: {}, chargeDebit: {},
+    sufficient: true, shortfalls: [], badge: null,
+  };
   if (!effectTable || typeof effectTable !== "object" || !startLabel || !actor) return out;
   const byLabel = new Map();
   for (const r of Object.values(effectTable)) {
@@ -612,6 +628,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
   const resolver = buildSkillResolver({ actor, payload: {}, skill, round: 0 });
   const seen = new Set();
   const debit = {};
+  const chargeDebit = {};
 
   function walk(label) {
     if (!label || seen.has(label)) return;
@@ -628,6 +645,18 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
       if (amount > 0) debit[resource] = (debit[resource] ?? 0) + amount;
       return;
     }
+    if (kind === "consume_charge") {
+      // on_empty: "abort" (default) → missing charge fails the chain
+      // → real gate. on_empty: "skip" → missing charge silently noops
+      // → soft, don't surface as shortfall.
+      const onEmpty = String(row.on_empty ?? "abort").trim().toLowerCase();
+      if (onEmpty !== "abort") return;
+      const chargeKey = String(row.charge_key ?? "").trim();
+      if (!chargeKey) return;
+      const count = Math.max(1, Math.floor(Number(row.count ?? 1) || 1));
+      chargeDebit[chargeKey] = (chargeDebit[chargeKey] ?? 0) + count;
+      return;
+    }
     if (kind === "chain") {
       const steps = String(row.chain_steps ?? "")
         .split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
@@ -636,30 +665,50 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
     }
     // open_action_menu options are player choices — affordability of
     // each option is checked when chosen, not aggregated up here.
-    // grant / apply_ae / consume_charge / remove_tagged_ae / etc.: not
-    // a resource cost on the reactor; no-op.
+    // grant / apply_ae / remove_tagged_ae / etc.: not a gate on the
+    // reactor; no-op.
   }
   walk(startLabel);
 
   out.ok = true;
   out.debit = debit;
+  out.chargeDebit = chargeDebit;
+
+  // Resource shortfalls.
   for (const [resource, required] of Object.entries(debit)) {
     const def = RESOURCE_PROPS[resource];
     if (!def) continue;
     const current = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
     if (current < required) {
-      out.shortfalls.push({ resource, required, current });
+      out.shortfalls.push({ kind: "resource", resource, required, current });
       out.sufficient = false;
     }
   }
+  // Charge shortfalls — sum the reactor's matching enabled charge AEs
+  // for each required key. findChargeAEsOnActor excludes disabled AEs.
+  for (const [chargeKey, required] of Object.entries(chargeDebit)) {
+    const hits = findChargeAEsOnActor(actor, { key: chargeKey });
+    const current = hits.reduce((acc, h) => acc + (Number(h.charges) || 0), 0);
+    if (current < required) {
+      out.shortfalls.push({ kind: "charge", chargeKey, required, current });
+      out.sufficient = false;
+    }
+  }
+
   if (!out.sufficient) {
-    // Short two-word badge ("Low MP", "Low MP/HP") — mirrors the
-    // legacy "No Charge" pattern from turn-ui-manager.js. Rubber-stamp
-    // overlay has limited horizontal space; longer phrases like
-    // "Not enough MP" overflowed shorter blades. The "Low" semantic
-    // covers both empty-pool and partial-pool shortfalls.
-    const names = out.shortfalls.map((s) => s.resource.toUpperCase()).join("/");
-    out.badge = `Low ${names}`;
+    // Short badge — rubber-stamp overlay has limited horizontal space.
+    // Resources: "Low MP" / "Low MP/HP" (existing convention).
+    // Charges:   "No Charge" (singular; players don't think of the
+    //            internal chargeKey, just "the skill's charge").
+    // Mixed:     "Low MP, No Charge".
+    const resShort   = out.shortfalls.filter((s) => s.kind === "resource");
+    const chargeShort = out.shortfalls.filter((s) => s.kind === "charge");
+    const parts = [];
+    if (resShort.length) {
+      parts.push("Low " + resShort.map((s) => s.resource.toUpperCase()).join("/"));
+    }
+    if (chargeShort.length) parts.push("No Charge");
+    out.badge = parts.join(", ");
   }
   return out;
 }
@@ -1416,6 +1465,47 @@ async function _legacy_firePassiveTriggers_unused({ director, casterActor, trigg
   return { fired };
 }
 
+// Sweep AEs whose `directorAppliedBy.lifetimeMode === "round_end"` —
+// removes them at the end of any round (the FSM's round_end transition
+// calls this from director-boot / state-handlers). Independent of the
+// applier-turn ticker; AEs marked with this lifetime live for at most
+// the remainder of the round they were applied in.
+//
+// First consumer: Rampart's playtest-2025 mechanic ("RS to all + cannot
+// suffer status effects until the end of the round"). The Rampart AE
+// template stamps `flags.fabula-ultima-companion.lifetimeMode = "round_end"`
+// and applyApplyAeEffect forwards it onto the cloned AE's
+// `directorAppliedBy.lifetimeMode`.
+//
+// Returns `{ swept: <number>, names: [<aeName>] }` for logging.
+export async function tickDirectorAEsAtRoundEnd() {
+  const deleteByActor = new Map();   // actorUuid -> Set<aeId>
+  const names = [];
+  for (const actor of game.actors ?? []) {
+    for (const eff of actor.effects ?? []) {
+      const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
+      if (!stamp) continue;
+      if (String(stamp.lifetimeMode ?? "").toLowerCase() !== "round_end") continue;
+      let set = deleteByActor.get(actor.uuid);
+      if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
+      set.add(eff.id);
+      names.push(eff.name);
+    }
+  }
+  let swept = 0;
+  await Promise.all(Array.from(deleteByActor.entries()).map(async ([uuid, ids]) => {
+    try {
+      const actor = await fromUuid(uuid);
+      if (!actor) return;
+      const existing = Array.from(ids).filter((id) => !!actor.effects?.get?.(id));
+      if (!existing.length) return;
+      await actor.deleteEmbeddedDocuments("ActiveEffect", existing);
+      swept += existing.length;
+    } catch (e) { warn(`tickDirectorAEsAtRoundEnd: delete failed for ${uuid}`, e); }
+  }));
+  return { swept, names };
+}
+
 // Tick down `turnsRemaining` on every AE in the world whose
 // `directorAppliedBy.reactorActorUuid` matches the given applier. Called
 // from TurnStart.onEnter when the applier's next turn begins
@@ -1509,10 +1599,14 @@ export async function applyEffectRow(row, ctx) {
     // log clean. See Phase 2/3 of the Cheap Shot integration plan.
     case "add_damage":
       return { ok: true, kind, applied: [], reason: "data-only" };
-    // B.2+:
     case "redirect_target":
-      warn(`skill-effects: effect_kind "${kind}" not implemented in B.1; skipping row "${row.effect_label}"`);
-      return { ok: true, kind, applied: [], reason: "not-implemented" };
+      // Data-only at chain-fire time. The target replacement happens in
+      // card-mutations.js at the CONFIRM write site (before RESOLVE reads
+      // ar.targets / ar.perTargetResults). Returning ok keeps the chain
+      // running so downstream cost steps (consume_charge, consume_resource)
+      // fire after the redirect is recorded as accepted —
+      // [[consume-last-in-chain]].
+      return { ok: true, kind, applied: [], reason: "applied-at-card-mutation-phase" };
     default:
       warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
       return { ok: false, kind, reason: "unknown-kind" };
@@ -1741,6 +1835,34 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 
 // ── apply_ae ───────────────────────────────────────────────────────────
 
+// Status-immunity gate. Returns true if any element of `statuses` matches
+// a `condition_<id>` prop on `actor` whose value is "IM" (immune). Used
+// by apply_ae to refuse applying a status AE to an actor that's immune
+// (Rampart's "cannot suffer status effects" mechanic + future per-actor
+// permanent immunities).
+//
+// Convention: a status id like "slow" or "dazed" maps to actor prop
+// `condition_slow` / `condition_dazed`. The CSB template carries these
+// fields as `label` type (post 2026-06-03 surgery) so AEs can write
+// "NA" / "RS" / "IM" / "AB" into them.
+//
+// Custom non-status template ids ("fud-bodyguard", "fud-aura", etc.)
+// have no matching `condition_*` prop, so the lookup returns undefined
+// and the gate doesn't trigger.
+function isTargetImmuneToStatuses(actor, statuses) {
+  if (!actor) return false;
+  if (!Array.isArray(statuses) || !statuses.length) return false;
+  const props = actor.system?.props ?? {};
+  for (const sid of statuses) {
+    const id = String(sid ?? "").trim().toLowerCase();
+    if (!id) continue;
+    const propKey = `condition_${id}`;
+    if (!(propKey in props)) continue;  // not a known status condition
+    if (String(props[propKey] ?? "").trim().toUpperCase() === "IM") return true;
+  }
+  return false;
+}
+
 async function applyApplyAeEffect(row, ctx) {
   const aeRef = String(row.ae_template_ref ?? "").trim();
   if (!aeRef) {
@@ -1779,6 +1901,18 @@ async function applyApplyAeEffect(row, ctx) {
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) continue;
+
+    // Status-immunity gate (engine-gap #4 stub — Rampart's "cannot suffer
+    // status effects" lands as `condition_<status> = "IM"` AE writes on
+    // the target). When the cloned template carries `statuses` AND the
+    // target's `condition_<id>` reads "IM", skip the entire AE for this
+    // target. The gate only fires when the prop EXISTS — non-status
+    // template ids like "fud-bodyguard" have no matching prop so they
+    // pass through.
+    if (isTargetImmuneToStatuses(actor, template.statuses)) {
+      log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<id>=IM matches a status)`);
+      continue;
+    }
 
     const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
     if (existing) {
@@ -1913,9 +2047,19 @@ async function applyApplyAeEffect(row, ctx) {
     // ticking entirely.
     const flagsNS = template.flags?.[FLAG_NS] ?? {};
     const explicit = Number(template.duration?.rounds);
+    const lifetimeMode = String(flagsNS.lifetimeMode ?? "").trim().toLowerCase();
+    // Per-AE lifecycle mode (homebrew):
+    //   - lifetimeMode === "round_end"  → expires via tickDirectorAEsAtRoundEnd
+    //     at the END of the round it was applied in (Rampart). The
+    //     applier-turn tick skips it (turnsRemaining stays null).
+    //   - directorPermanent === true    → never expires (legacy trait pattern).
+    //   - Otherwise                     → applier-turn tick decrements
+    //     turnsRemaining (default 3, override via duration.rounds).
     let turnsRemaining;
     if (flagsNS.directorPermanent === true) {
       turnsRemaining = null;  // opt-out: never expires
+    } else if (lifetimeMode === "round_end") {
+      turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
     } else if (Number.isFinite(explicit) && explicit > 0) {
       turnsRemaining = explicit;
     } else {
@@ -1927,6 +2071,7 @@ async function applyApplyAeEffect(row, ctx) {
       effectLabel: row.effect_label,
       appliedAtRound: ctx.dCombat?.round ?? 0,
       turnsRemaining,
+      ...(lifetimeMode === "round_end" ? { lifetimeMode: "round_end" } : {}),
     };
     try {
       const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);

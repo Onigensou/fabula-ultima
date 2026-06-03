@@ -437,6 +437,21 @@ export async function dispatchReactionMenu({
     return { cancelled: false, fired };
   }
 
+  // Auto-skip when EVERY askable candidate is unavailable. Mirrors the
+  // "all already used" auto-skip above: spawning a menu of pure-disabled
+  // blades just so the player can click Pass is friction. Spawn-time
+  // unavailability sources (`Low MP`, `No Charge`, `Conditions not met`)
+  // are intrinsic to the reactor's state at THIS instant and won't clear
+  // within the reaction window — there's no in-window event that can
+  // refill MP / re-arm a charge / flip a condition formula before the
+  // player decides. Peer-acting badges are session-local + set AFTER
+  // spawn, so they don't factor into the spawn decision.
+  const allUnavailable = askable.every((c) => !c.available);
+  if (allUnavailable) {
+    log(`reaction[${trigger}]: ${reactor.name} — all askable candidates unavailable, auto-skip`);
+    return { cancelled: false, fired };
+  }
+
   // Spawn the interactive menu.
   const ReactionMenu = await getReactionMenu();
   const combatId = director?.combatId ?? director?.dCombat?.id ?? null;
