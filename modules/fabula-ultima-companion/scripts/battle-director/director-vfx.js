@@ -581,6 +581,63 @@ export function playMissVfx({ tokenUuid } = {}) {
   }
 }
 
+// ── Immune VFX (attack/spell zeroed by IM affinity) ───────────────────────
+//
+// Immunity forces the damage to 0, so the loss VFX never fires (it early-returns
+// on amount<=0) and the hit would otherwise land with NO feedback at all. Float
+// a steel "IMMUNE" tag + a parry/block cue. Text-only flourish (no webm) so it's
+// robust without depending on any extra effect asset. Reuses the already-warmed
+// Parry sound. Same broadcasts-to-all-clients + graceful no-op rules.
+const IMMUNE_SFX_URL = RESOURCE_VFX_SFX.resist;
+export function playImmuneVfx({ tokenUuid } = {}) {
+  try {
+    if (typeof Sequence === "undefined") { log("immune VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("immune VFX: token not on canvas, skipping"); return; }
+    const textStyle = { fill: "#bcd2e8", fontSize: 32, fontWeight: "bold", lineJoin: "round", stroke: "#1a2230", strokeThickness: 4 };
+    new Sequence()
+      .scrollingText()
+        .atLocation(tok)
+        .text("🛡️ IMMUNE", textStyle)
+        .duration(1100)
+      .play();
+    broadcastSfx(IMMUNE_SFX_URL, 0.5);
+  } catch (e) {
+    warn("playImmuneVfx threw", e);
+  }
+}
+
+// ── Absorb VFX (AB affinity flips damage to healing) ──────────────────────
+//
+// Distinct from a plain heal so an absorb doesn't masquerade as one: a cyan
+// "ABSORB +N" over a BLUE aura + the absorb-element cue (vs the green ❤️ heal
+// that playResourceGainVfx floats). Reuses the warmed AbsorbElement sound.
+const ABSORB_FX_FILE = HEAL_MP_FILE;            // blue healing aura
+const ABSORB_SFX_URL = RESOURCE_VFX_HEAL_SFX.mpAbsorb;
+export function playAbsorbVfx({ tokenUuid, amount = 0 } = {}) {
+  try {
+    if (!(amount > 0)) return;
+    if (typeof Sequence === "undefined") { log("absorb VFX: Sequencer not loaded, skipping"); return; }
+    const tok = canvasTokenFromUuid(tokenUuid);
+    if (!tok) { log("absorb VFX: token not on canvas, skipping"); return; }
+    const textStyle = { fill: "#5ad1ff", fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
+    new Sequence()
+      .effect()
+        .file(ABSORB_FX_FILE)
+        .atLocation(tok)
+        .scale(0.4)
+        .duration(1000)
+      .scrollingText()
+        .atLocation(tok)
+        .text(`🌀 +${Math.abs(amount)}`, textStyle)
+        .duration(1000)
+      .play();
+    broadcastSfx(ABSORB_SFX_URL, 0.6);
+  } catch (e) {
+    warn("playAbsorbVfx threw", e);
+  }
+}
+
 // Warm-decode every resource-VFX cue into the Web Audio buffer cache so the
 // FIRST hit / heal of a battle plays with no fetch+decode hitch. Called from
 // runDirectorInit's preload step (while the curtain is up). Fire-and-forget;

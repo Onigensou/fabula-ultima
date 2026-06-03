@@ -13,7 +13,7 @@
 
 import { log, warn } from "./logger.js";
 import { isVideoSrc, applyIconFocusStyle, normalizeIconFocus, ICON_FOCUS_DEFAULT } from "./director-round-banner.js";
-import { registerDevTool, devToolsAnchorBottom } from "./dev-tools-menu.js";
+import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "./dev-tools-menu.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG = "iconFocus";
@@ -127,8 +127,11 @@ function openPanel() {
 
   const panel = document.createElement("div");
   panel.id = PANEL_ID;
-  // Anchor just above the Developer Tools launcher (clear of the Players list).
+  // Anchor just above the Players list and to the RIGHT of the launcher column
+  // so it never covers the dev-tools buttons (lets you re-tune another token
+  // without closing this panel first).
   try { panel.style.bottom = `${devToolsAnchorBottom()}px`; } catch (_e) {}
+  try { panel.style.left = `${devToolsAnchorLeft()}px`; } catch (_e) {}
 
   const head = document.createElement("div"); head.className = "ifc-head";
   const title = document.createElement("div"); title.className = "ifc-title";
@@ -167,6 +170,50 @@ function openPanel() {
   const rowY = mkRow("y", "Y", 0, 100, 1);
   const rowZ = mkRow("zoom", "Zoom", 1, 6, 0.05);
 
+  // Drag on the BIG preview to pan the focal point (grab-and-pan: the sprite
+  // follows the cursor). Same effect as the X/Y sliders — keeps state + both
+  // previews + the slider rows in sync. Delta is divided by zoom so higher
+  // magnification pans proportionally finer.
+  (() => {
+    let dragging = false, sx = 0, sy = 0, startX = 0, startY = 0;
+    big.style.cursor = "grab";
+    big.style.touchAction = "none";
+    big.addEventListener("pointerdown", (ev) => {
+      dragging = true; sx = ev.clientX; sy = ev.clientY; startX = state.x; startY = state.y;
+      big.style.cursor = "grabbing";
+      try { big.setPointerCapture(ev.pointerId); } catch (_e) {}
+      ev.preventDefault();
+    });
+    big.addEventListener("pointermove", (ev) => {
+      if (!dragging) return;
+      const r = big.getBoundingClientRect();
+      const z = Math.max(0.001, Number(state.zoom) || 1);
+      const dxPct = ((ev.clientX - sx) / r.width) * 100 / z;
+      const dyPct = ((ev.clientY - sy) / r.height) * 100 / z;
+      state.x = Math.min(100, Math.max(0, startX - dxPct));
+      state.y = Math.min(100, Math.max(0, startY - dyPct));
+      rowX.__sync(); rowY.__sync();
+      apply();
+    });
+    const end = (ev) => {
+      if (!dragging) return;
+      dragging = false; big.style.cursor = "grab";
+      try { big.releasePointerCapture(ev.pointerId); } catch (_e) {}
+    };
+    big.addEventListener("pointerup", end);
+    big.addEventListener("pointercancel", end);
+    // Mouse wheel over the big preview = zoom (scroll up → in, down → out).
+    // passive:false so we can preventDefault the page scroll.
+    big.addEventListener("wheel", (ev) => {
+      ev.preventDefault();
+      const step = 0.15;
+      const dir = ev.deltaY < 0 ? 1 : -1;
+      state.zoom = Math.min(6, Math.max(1, (Number(state.zoom) || 1) + dir * step));
+      rowZ.__sync();
+      apply();
+    }, { passive: false });
+  })();
+
   const btns = document.createElement("div"); btns.className = "ifc-btns";
   const reset = document.createElement("div"); reset.className = "ifc-btn reset"; reset.textContent = "Reset";
   reset.addEventListener("click", () => {
@@ -188,7 +235,7 @@ function openPanel() {
   btns.append(reset, save);
 
   const hint = document.createElement("div"); hint.className = "ifc-hint";
-  hint.textContent = "Tune during a battle to frame against the battle sprite.";
+  hint.textContent = "Drag to pan, scroll to zoom. Tune during a battle to frame the battle sprite.";
 
   panel.append(head, previews, rowX, rowY, rowZ, btns, hint);
   document.body.appendChild(panel);

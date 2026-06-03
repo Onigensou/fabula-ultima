@@ -34,6 +34,7 @@ import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
+import { initBattleStateTool } from "./battle-state-tool.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
@@ -831,6 +832,57 @@ Hooks.once("ready", () => {
       const dc = _instance?.dCombat;
       if (dc) { try { bannerRefreshTurnActions(dc); } catch (e) { warn("refreshTurnActions API threw", e); } }
     },
+    // ── Dev state controls (GM-only) ─────────────────────────────────────
+    // Manual FSM nudges for testing — drive the battle forward without playing
+    // out every turn. All operate on the live director instance; no-op (with a
+    // reason) when no battle is running. Used by the Battle State dev tool.
+    //
+    // A compact read of the current state for a tool's status line.
+    stateInfo: () => {
+      const d = _instance, dc = d?.dCombat;
+      if (!dc || !dc.started || dc.ended) return { running: false };
+      return {
+        running: true,
+        round: dc.round ?? 0,
+        currentSide: dc.currentSide === "enemy" ? "Enemies" : "Party",
+        current: dc.current?.name ?? null,
+        fsmState: d.state ?? null,
+        combatants: (dc.combatants ?? []).map((c) => ({
+          name: c.name, side: c.side, turnsRemaining: c.turnsRemaining,
+          turnsPerRound: c.turnsPerRound, defeated: !!c.isDefeatedLive?.(),
+        })),
+      };
+    },
+    // Skip the current turn — route straight through TURN_END (which advances
+    // the turn / flips side, wrapping the round only if all turns are spent).
+    forceNextTurn: async () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
+      catch (e) { warn("forceNextTurn threw", e); return { ok: false, error: String(e?.message ?? e) }; }
+    },
+    // End the current round + advance to the next: zero everyone's remaining
+    // turns so TURN_END's nextTurn() wraps the round (round++ → ROUND_START
+    // banner → next-turn picker).
+    forceNextRound: async () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      for (const c of d.dCombat.combatants) c.turnsRemaining = 0;
+      try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
+      catch (e) { warn("forceNextRound threw", e); return { ok: false, error: String(e?.message ?? e) }; }
+    },
+    // Refill every un-defeated combatant's turns for the CURRENT round (re-run
+    // a round without advancing). Updates the turn-action HUD.
+    refillRoundTurns: () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      for (const c of d.dCombat.combatants) c.turnsRemaining = c.isDefeatedLive?.() ? 0 : c.turnsPerRound;
+      try { bannerRefreshTurnActions(d.dCombat); } catch (e) { warn("refillRoundTurns refresh threw", e); }
+      return { ok: true };
+    },
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
@@ -932,6 +984,9 @@ Hooks.once("ready", () => {
   // turn-action tracker icons (frame the face, not the ears).
   try { initIconFocusTuner(); }
   catch (e) { warn("initIconFocusTuner on ready threw", e); }
+
+  try { initBattleStateTool(); }
+  catch (e) { warn("initBattleStateTool on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.

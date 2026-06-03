@@ -236,6 +236,28 @@ function fireResourceGainVfx(opts) {
   }
 }
 
+// Affinity-specific feedback. Immune (IM → 0 damage) gets no loss/gain VFX
+// otherwise, so it'd land silently; absorb (AB) gets an absorb-specific look so
+// it doesn't masquerade as a plain heal. Same lazy fire-and-forget contract.
+function fireImmuneVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playImmuneVfx?.(opts))
+      .catch((e) => warn("fireImmuneVfx import failed", e));
+  } catch (e) {
+    warn("fireImmuneVfx threw", e);
+  }
+}
+function fireAbsorbVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playAbsorbVfx?.(opts))
+      .catch((e) => warn("fireAbsorbVfx import failed", e));
+  } catch (e) {
+    warn("fireAbsorbVfx threw", e);
+  }
+}
+
 // Spend counterpart — floats a `−N` over a payer paying a self-paid cost
 // (reaction / free-action `consume_resource`). Same lazy fire-and-forget
 // contract; distinct look from the loss VFX (no impact / hit sound).
@@ -309,7 +331,7 @@ export async function applyDamageToTarget({
       const newHp = Math.min(maxHp, curHp + healed);
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
-      fireResourceGainVfx({ tokenUuid, resource: "hp", amount: newHp - curHp });
+      fireAbsorbVfx({ tokenUuid, amount: newHp - curHp });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
     }
@@ -338,6 +360,9 @@ export async function applyDamageToTarget({
     };
   }
 
+  // Immune (IM) zeroed the damage — fire the immune cue so the hit isn't silent
+  // (other 0-damage cases, e.g. a 0 roll, stay quiet).
+  if (affinity === "IM") fireImmuneVfx({ tokenUuid });
   log(`${prefix}no HP change for ${targetName} [${affinity}]${logSuffix} (damage was ${damage})`);
   return empty;
 }
