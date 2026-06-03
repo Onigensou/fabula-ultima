@@ -279,6 +279,10 @@
     {
       "key": "2026-06-03-protect-ae-description",
       "path": "data-migrations/2026-06-03-protect-ae-description.js"
+    },
+    {
+      "key": "2026-06-03-sharpshooter-b1-author",
+      "path": "data-migrations/2026-06-03-sharpshooter-b1-author.js"
     }
   ]
 }
