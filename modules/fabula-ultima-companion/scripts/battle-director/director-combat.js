@@ -188,6 +188,21 @@ export class DirectorCombat {
 
   // ── Accessors ───────────────────────────────────────────────────────
 
+  // currentCombatantId is an accessor so that ASSIGNING it (the picker does
+  // `dc.currentCombatantId = id` at turn start, and nextTurn clears it) fires
+  // the turn-action hook — that's how the tracker moves the "active turn" glow
+  // onto whoever's acting. Backed by `_currentCombatantId`; only fires on a
+  // real change once combat is live (avoids construction/reconstruct noise).
+  get currentCombatantId() { return this._currentCombatantId ?? null; }
+  set currentCombatantId(id) {
+    const next = id ?? null;
+    if (next === (this._currentCombatantId ?? null)) return;
+    this._currentCombatantId = next;
+    if (this.started && !this.ended) {
+      try { this._notifyTurnActions(); } catch (_e) {}
+    }
+  }
+
   get current() {
     if (this.ended || !this.started) return null;
     if (!this.currentCombatantId) return null;
