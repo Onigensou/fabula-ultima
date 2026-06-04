@@ -243,6 +243,46 @@
     {
       "key": "2026-06-03-npc-hostile-skill-intent",
       "path": "data-migrations/2026-06-03-npc-hostile-skill-intent.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-author",
+      "path": "data-migrations/2026-06-03-guardian-b1-author.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-raw-fix",
+      "path": "data-migrations/2026-06-03-guardian-b1-raw-fix.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-fixups",
+      "path": "data-migrations/2026-06-03-guardian-b1-fixups.js"
+    },
+    {
+      "key": "2026-06-03-guardian-b1-bodyguard-polish",
+      "path": "data-migrations/2026-06-03-guardian-b1-bodyguard-polish.js"
+    },
+    {
+      "key": "2026-06-03-condition-fields-label-type",
+      "path": "data-migrations/2026-06-03-condition-fields-label-type.js"
+    },
+    {
+      "key": "2026-06-03-guardian-rampart-author",
+      "path": "data-migrations/2026-06-03-guardian-rampart-author.js"
+    },
+    {
+      "key": "2026-06-03-bd-template-version-sync",
+      "path": "data-migrations/2026-06-03-bd-template-version-sync.js"
+    },
+    {
+      "key": "2026-06-03-rogue-ae-descriptions",
+      "path": "data-migrations/2026-06-03-rogue-ae-descriptions.js"
+    },
+    {
+      "key": "2026-06-03-protect-ae-description",
+      "path": "data-migrations/2026-06-03-protect-ae-description.js"
+    },
+    {
+      "key": "2026-06-03-sharpshooter-b1-author",
+      "path": "data-migrations/2026-06-03-sharpshooter-b1-author.js"
     }
   ]
 }

@@ -29,6 +29,7 @@
 // Scope: criticals only (per design decision).
 
 import { log, warn } from "./logger.js";
+import { registerAnimation } from "./director-surfaces.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_CUTIN_PLAY";
@@ -205,6 +206,11 @@ async function playDirectorCutinLocal(payload = {}) {
     portrait.style.opacity = "1";
     portrait.style.transform = offT;
     layer.classList.add("active");
+
+    // Track this cinematic in the director's surface registry (auto-expires
+    // after its full enter→drift→exit duration). Observability only.
+    try { registerAnimation({ kind: "crit-cutin", durationMs: slideInMs + driftMs + slideOutMs, meta: { url } }); }
+    catch (_e) {}
 
     if (sfx) playCritSfx(sfxVol);
 

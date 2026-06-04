@@ -436,6 +436,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Dodge's "while no shield and no martial armor" RAW gate.
       case "HAS_SHIELD":          return hasEquippedItemOfType(actor, "shield") ? 1 : 0;
       case "HAS_MARTIAL_ARMOR":   return hasEquippedItemOfType(actor, "armor", { requireMartial: true }) ? 1 : 0;
+      // Guard-payload identifier — 1 when the triggering Guard action
+      // covered an ally, else 0. Used by Bodyguard's `creature_guards`
+      // reaction-config row to gate the RS-to-all grant on
+      // `DID_COVER_ALLY == 1`. Read from payload.didCoverAlly (queued by
+      // state-handlers.js Guard RESOLVE).
+      case "DID_COVER_ALLY":      return payload?.didCoverAlly ? 1 : 0;
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer

@@ -35,7 +35,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -442,8 +442,21 @@ async function resolveSkillAction(director, ar, opts = {}) {
     const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
     for (const cand of accepted) {
       try {
+        // Third-party reactions (Protect on an Attack(ally) card) carry
+        // `reactorActorUuid` identifying whose chain this is. Route the
+        // firing to the reactor's actor and use the per-candidate
+        // payload snapshot taken at CONFIRM (so the matcher's subject /
+        // disposition / intent context survives across the user's Apply
+        // click). Default: action-taker (existing behavior).
+        let fireActor = casterActor;
+        let firePayload = payloadForPassives;
+        if (cand?.reactorActorUuid) {
+          const resolved = await fromUuid(cand.reactorActorUuid);
+          if (resolved) fireActor = resolved;
+          if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
+        }
         await firePreAcceptedCandidate({
-          director, casterActor, candidate: cand, payload: payloadForPassives,
+          director, casterActor: fireActor, candidate: cand, payload: firePayload,
         });
       } catch (e) { warn(`Skill resolve: prePassive "${cand?.carrierName}" threw`, e); }
     }
@@ -3068,6 +3081,151 @@ const Confirm = {
       }
     }
 
+    // Third-party scan — creature_targeted_by_action. Card-modifying
+    // reactions whose REACTOR is NOT the action-taker surface here
+    // (Protect, Cover, future Mercy-style intercepts). Each candidate
+    // carries `reactorActorUuid` + identity fields so the pill row can
+    // render with a "Blanche: Protect" prefix + side-color class, and
+    // RESOLVE-side firing routes the chain to the reactor's actor
+    // instead of the action-taker.
+    //
+    // Scope: Attack + damaging Skill kinds (the actions that have a
+    // target list someone might intercept). Guard/Study/Hinder/Item/
+    // Equipment don't fire this trigger.
+    //
+    // Iteration: for each action target T, scan every combat
+    // participant P (except the action-taker) and call findPassiveCandidates
+    // with payload.sourceActorUuid = T.actorUuid. The matcher's
+    // `reaction_source: ally/enemy/self` filter checks T's disposition
+    // vs the reactor — Protect (`source: ally`) matches when T is
+    // Blanche's ally. Dedup by (rowKey, carrierUuid, reactorUuid): a
+    // bearer who could protect any of 3 allies still surfaces once.
+    const fireCreatureTargetedByAction =
+      attackerActor &&
+      Array.isArray(ar.targets) &&
+      ar.targets.length > 0 &&
+      (ar.kind === "Attack" || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
+    if (fireCreatureTargetedByAction) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        // DirectorCombatant exposes .actorDoc (live ref). Not Foundry's
+        // Combat.combatants — that lives at .combat?.combatants for the
+        // FSM's diagnostic mirror, not the authoritative participant list.
+        const combatants = Array.isArray(director?.dCombat?.combatants)
+          ? director.dCombat.combatants
+          : [];
+        const attackerActorUuid = attackerActor.uuid;
+        const reactorActors = new Map();
+        for (const c of combatants) {
+          if (c?.defeated) continue;
+          const actor = c?.actorDoc ?? null;
+          if (!actor) continue;
+          if (actor.uuid === attackerActorUuid) continue;
+          reactorActors.set(actor.uuid, actor);
+        }
+
+        const seenKeys = new Set();
+        // Attack-kind actions don't stamp `actionIntent` on the
+        // actionResult — they're harmful by definition. Default it so
+        // Protect's `reaction_action_intent: "harmful"` filter passes.
+        // Skills carry their own classified intent (set at TARGET via
+        // classifyActionIntent) and we preserve it verbatim.
+        const effectiveIntent = ar.actionIntent
+          ?? (ar.kind === "Attack" ? "harmful" : null);
+
+        for (const target of ar.targets) {
+          const subjectActorUuid = target?.actorUuid;
+          if (!subjectActorUuid) continue;
+          const subjectTokenUuid = target?.tokenUuid ?? null;
+          const payloadForTrigger = {
+            sourceActorUuid: subjectActorUuid,
+            subjectActorUuid,
+            subjectTokenUuid,
+            targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+            attackerActorUuid,
+            attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+            actionIntent: effectiveIntent,
+            actionKind: ar.kind,
+            actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
+          };
+
+          for (const reactor of reactorActors.values()) {
+            let cands;
+            try {
+              cands = await findPassiveCandidates({
+                casterActor: reactor,
+                trigger: "creature_targeted_by_action",
+                payload: payloadForTrigger,
+                includeManual: true,    // Protect is `isPassive: false` (manual)
+                includeUnavailable: false,
+              });
+            } catch (e) {
+              warn(`CONFIRM: creature_targeted_by_action findPassiveCandidates threw for ${reactor.name}`, e);
+              continue;
+            }
+            for (const cand of cands ?? []) {
+              const dedup = `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`;
+              if (seenKeys.has(dedup)) continue;
+              seenKeys.add(dedup);
+              log(`CONFIRM: third-party reaction matched — reactor=${reactor.name} skill=${cand.carrierName} (subject=${target?.name ?? subjectActorUuid})`);
+              prePassives.push({
+                ...cand,
+                reactorActorUuid: reactor.uuid,
+                reactorActorName: reactor.name,
+                reactorActorImg:  reactor.img ?? cand.carrierImg,
+                reactorIsPlayer:  !!reactor.hasPlayerOwner,
+                subjectActorUuid,
+                subjectTokenUuid,
+                payloadAtFire: payloadForTrigger,
+              });
+            }
+          }
+        }
+      } catch (e) {
+        warn("CONFIRM: creature_targeted_by_action dispatch threw", e);
+      }
+    }
+
+    // Guard-side dispatch — creature_guards. Action-level (not per-target);
+    // the guarder IS the reactor. Bodyguard's "covered ally gains RS to
+    // all damage types" rides on this. Force-mode rows surface on the
+    // card as informational "Active" pills via buildReactionPillRow.
+    //
+    // Note Guard's actionResult (DECLARE branch ~line 1402) doesn't set
+    // `attackerActorRef`, so use the resolved `attackerActor.uuid`
+    // directly — `passesMatchFilters` reads `payload.sourceActorUuid` to
+    // gate `reaction_source: "self"` rows and silently rejects on
+    // undefined. The attacker doc was already looked up upstream via the
+    // `ar.attackerActorRef ?? ar.attacker.actorUuid` fallback.
+    if (ar.kind === "Guard" && attackerActor) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const cov = ar.coverTarget;
+        const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
+        const guarderUuid = attackerActor.uuid;
+        const guardCands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_guards",
+          payload: {
+            sourceActorUuid:      guarderUuid,
+            sourceTokenUuid:      ar.attacker?.tokenUuid ?? null,
+            guarderActorUuid:     guarderUuid,
+            guarderTokenUuid:     ar.attacker?.tokenUuid ?? null,
+            didCoverAlly:         !!cov,
+            coveredAllyUuid:      cov?.actorUuid ?? null,
+            coveredAllyTokenUuid: cov?.tokenUuid ?? null,
+            targets:              coveredTokenUuids,
+            targetTokenUuids:     coveredTokenUuids,
+          },
+        });
+        for (const cand of guardCands ?? []) {
+          prePassives.push(cand);
+        }
+      } catch (e) {
+        warn("CONFIRM: creature_guards findPassiveCandidates threw", e);
+      }
+    }
+
     // Critical-hit cut-in — fire it AS the action card (with the roll result)
     // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
     // alongside the card while the player reads the crit roll and confirms.
@@ -3165,10 +3323,27 @@ const Confirm = {
         carrierUuid: d.carrierUuid,
         rowKey: d.rowKey,
       }));
-      // Recompute per-target damage if any add_damage candidates landed.
-      // Spell + Attack RESOLVE both read ar.perTargetResults; updating
-      // it here is the single point of truth.
-      let recomputedPerTargets = ar.perTargetResults ?? null;
+
+      // Phase 1: card-mutations (redirect_target today; change_element /
+      // replace_damage etc. as future work). These rewrite WHICH actor
+      // is in each target slot, so they run BEFORE add_damage recompute
+      // so the damage-bonus accumulator sees the redirected target.
+      let mutatedTargets = ar.targets ?? null;
+      let mutatedPerTargets = ar.perTargetResults ?? null;
+      try {
+        const { applyAcceptedCardMutations } = await import("./card-mutations.js?cb=" + Date.now());
+        const r = await applyAcceptedCardMutations(ar, applied);
+        if (r.mutationsApplied > 0) {
+          mutatedTargets = r.targets;
+          mutatedPerTargets = r.perTargetResults;
+          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + element/damage hooks)`);
+        }
+      } catch (e) { warn("CONFIRM: card mutations threw", e); }
+
+      // Phase 2: add_damage recompute. Reads (possibly mutated)
+      // perTargetResults so a Cheap Shot-style add_damage on the
+      // redirected target works correctly.
+      let recomputedPerTargets = mutatedPerTargets;
       try {
         const { computeSenderDamageBonuses, recomputePerTargetDamages } = await getSkillEffectsExtras();
         const bonusMap = await computeSenderDamageBonuses({
@@ -3176,16 +3351,17 @@ const Confirm = {
           acceptedPrePassives: applied,
           dCombat: director.dCombat,
         });
-        if (bonusMap.size > 0 && Array.isArray(ar.perTargetResults)) {
+        if (bonusMap.size > 0 && Array.isArray(mutatedPerTargets)) {
           const { applyAffinityToDamage } = await import("./snapshot.js");
           recomputedPerTargets = recomputePerTargetDamages(
-            ar.perTargetResults, bonusMap, applyAffinityToDamage,
+            mutatedPerTargets, bonusMap, applyAffinityToDamage,
           );
           log(`CONFIRM: add_damage recompute applied — ${bonusMap.size} subject(s) modified`);
         }
       } catch (e) { warn("CONFIRM: add_damage recompute threw", e); }
       director.ctx.actionResult = freezeActionResult({
         ...director.ctx.actionResult,
+        targets: mutatedTargets,
         perTargetResults: recomputedPerTargets,
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
@@ -3330,12 +3506,30 @@ const Resolve = {
               guarderActorId,
               appliedAtRound: round,
             },
+            // Wire into the global director-AE tick (homebrew rule
+            // [[ae-default-3-turn-duration]]). `tickDirectorAEsForApplier`
+            // decrements turnsRemaining at the applier's TurnStart and
+            // batch-deletes at 0 — same lifecycle as apply_ae-applied AEs.
+            // Replaces the prior dCombat.activeGuards ledger; the legacy
+            // popActiveGuardsFor loop in TURN_START stays as a no-op
+            // fallback for any pre-refactor resumed save still carrying
+            // entries.
+            directorAppliedBy: {
+              skillUuid: null,
+              reactorActorUuid: guarderActorUuid,
+              effectLabel: role === "covered" ? "guard_cover" : "guard_self",
+              appliedAtRound: round,
+              turnsRemaining: 1,             // expires at guarder's next TurnStart
+            },
           },
           core: { statusId },
         },
         duration: {
           startRound: round,
           startTurn: 0,
+          // Sheet-side display ("expires in 1 round"). Authoritative
+          // expiry is the directorAppliedBy.turnsRemaining counter above.
+          rounds: 1,
         },
         // Cover (role="covered"): declare AE-config target-side block so
         // `applyAttackRangeGate` excludes the covered ally from melee
@@ -3401,18 +3595,52 @@ const Resolve = {
         }
       }
 
-      // Register with dCombat so TURN_START / director.stop can release
-      // the AEs at the right time. Skip if dCombat absent (manual fallback
-      // path) — AEs still apply, just won't auto-remove.
-      if (director.dCombat && guarderActorId) {
-        director.dCombat.addActiveGuard({
-          guarderActorUuid: att.actorUuid,
-          guarderActorId,
-          guarderEffectId,
-          coveredActorUuid,
-          coveredEffectId,
-          appliedAtRound: round,
-        });
+      // NOTE: Guard / Cover lifecycle moved to the global director-AE
+      // tick (homebrew rule [[ae-default-3-turn-duration]]) — the AEs
+      // are stamped with `directorAppliedBy.turnsRemaining: 1` above and
+      // `tickDirectorAEsForApplier` removes them at the guarder's next
+      // TurnStart. The legacy dCombat.activeGuards ledger is no longer
+      // written for new Guard actions; the TURN_START.onEnter cleanup
+      // loop stays as a no-op safety net for any pre-refactor resumed
+      // save still carrying entries.
+
+      // Post-Guard passive trigger — fires once per Guard with the
+      // didCoverAlly bit + covered ally UUIDs. Bodyguard (Guardian
+      // Core RAW p.197) listens with `didCoverAlly === true` to grant
+      // the covered ally Resistance to all damage types via apply_ae.
+      // QUEUED, not fired — same reason as creature_deals_damage above:
+      // reaction-applied AEs end up outside the RESOLVE rewind snapshot.
+      //
+      // Canonical payload field names: `sourceActorUuid` / `sourceTokenUuid`
+      // identify the subject of the trigger (the guarder). The matcher's
+      // reaction_source="self" check reads `payload.sourceActorUuid` —
+      // so the canonical names are load-bearing, not informational.
+      // `guarderActorUuid` / `guarderTokenUuid` kept as aliases for
+      // future authoring clarity.
+      try {
+        const guarderActorForTrigger = await fromUuid(att.actorUuid).catch(() => null);
+        if (guarderActorForTrigger) {
+          const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
+          queuePostResolveTrigger(director, {
+            casterActor: guarderActorForTrigger,
+            trigger: "creature_guards",
+            payload: {
+              sourceActorUuid:     att.actorUuid,
+              sourceTokenUuid:     att.tokenUuid ?? null,
+              guarderActorUuid:    att.actorUuid,
+              guarderTokenUuid:    att.tokenUuid ?? null,
+              didCoverAlly:        !!cov,
+              coveredAllyUuid:     cov?.actorUuid ?? null,
+              coveredAllyTokenUuid: cov?.tokenUuid ?? null,
+              // Belt + suspenders for the apply_ae `target_ref: "action_targets"`
+              // resolver — empty list when the guarder didn't cover anyone.
+              targets:             coveredTokenUuids,
+              targetTokenUuids:    coveredTokenUuids,
+            },
+          });
+        }
+      } catch (e) {
+        warn("RESOLVE Guard: failed to queue creature_guards trigger", e);
       }
     } else if (ar.kind === "Equipment") {
       // Apply the swap collected from the card's per-slot dropdowns.
@@ -3963,6 +4191,17 @@ const TurnEnd = {
 const RoundEnd = {
   async onEnter(director) {
     log(`ROUND_END`);
+
+    // Sweep AEs whose lifetime is "round_end" (Rampart's playtest
+    // mechanic et al.) — they expire at the end of any round, ahead of
+    // the standalone reaction window so round_end-triggered reactions
+    // see a clean slate.
+    try {
+      const swept = await tickDirectorAEsAtRoundEnd();
+      if (swept?.swept) {
+        log(`ROUND_END: swept ${swept.swept} round-end AE(s): ${swept.names.join(", ")}`);
+      }
+    } catch (e) { warn("ROUND_END: tickDirectorAEsAtRoundEnd threw", e); }
 
     // Hand off to STANDALONE_REACTION_WINDOW for round_end. The transition
     // rule branches on endOfCombat (combat over → STOPPED, otherwise →

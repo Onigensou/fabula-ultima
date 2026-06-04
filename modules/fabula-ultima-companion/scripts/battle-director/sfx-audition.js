@@ -15,6 +15,7 @@
 
 import { log, warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
+import { registerDevTool, devToolsAnchorBottom } from "./dev-tools-menu.js";
 
 const FORGE_SOUND_BASE =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -91,11 +92,11 @@ export function initSfxAudition() {
   try {
     if (_booted) return;
     if (CFG.gmOnly && !game.user?.isGM) return;
-    if (document.getElementById(DOM.BTN_ID)) { _booted = true; return; }
     ensureStyle();
-    mountButton();
+    // Bundled under the Developer Tools launcher instead of its own button.
+    registerDevTool({ id: "sfx-audition", icon: "🔊", label: "SFX Checker", onClick: togglePanel });
     _booted = true;
-    log("sfx-audition: button mounted");
+    log("sfx-audition: registered as dev tool");
   } catch (e) {
     warn("initSfxAudition threw", e);
   }
@@ -150,15 +151,6 @@ function ensureStyle() {
   document.head.appendChild(style);
 }
 
-function mountButton() {
-  const btn = document.createElement("div");
-  btn.id = DOM.BTN_ID;
-  btn.title = CFG.tipLabel;
-  btn.textContent = CFG.iconText;
-  btn.addEventListener("click", togglePanel);
-  document.body.appendChild(btn);
-}
-
 // Shared playback state for the panel (volume + hover-preview toggle).
 const _state = { vol: 0.6, previewOnHover: true, lastHover: 0 };
 
@@ -171,6 +163,8 @@ function togglePanel() {
 function buildPanel() {
   const panel = document.createElement("div");
   panel.id = DOM.PANEL_ID;
+  // Anchor just above the Developer Tools launcher (clear of the Players list).
+  try { panel.style.bottom = `${devToolsAnchorBottom()}px`; } catch (_e) {}
 
   // Header
   const head = document.createElement("div");

@@ -182,6 +182,17 @@ function ensureStyles() {
       opacity: 0;
       transition: transform 350ms ease-out, opacity 350ms ease-out 80ms;
     }
+    /* Hide the card while a card-mutation picker (Protect target pick,
+       future change-target prompts, etc.) is on-screen — the floating
+       BD picker banner needs the focus, and overlapping cards confuse
+       the player. Pointer events stop so the player can't click through
+       to pill buttons during the pick. Quick 120ms fade keeps the
+       transition snappy. */
+    #${ROOT_ID}.is-hidden-during-pick {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 120ms ease-out;
+    }
 
     .fud-bf-card {
       position: relative;
@@ -543,6 +554,25 @@ function ensureStyles() {
     }
     .fud-bf-card .fud-bf-target-row .t-affinity .affinity-icon { margin-right: 3px; font-size: 9.5px; }
 
+    /* Redirected target row — applied when a third-party reaction
+       (Protect, Cover) moves the action's target slot to the reactor.
+       Side-tint signals "this row was changed mid-card"; the small
+       arrow text shows who was originally targeted. Visual continuity
+       with the third-party pill row (PC-blue accent). */
+    .fud-bf-card .fud-bf-target-row.is-redirected {
+      background: rgba(180, 215, 255, 0.18);
+      border-left: 2px solid rgba(70, 120, 200, 0.65);
+      padding-left: 6px;
+      margin-left: -6px;
+    }
+    .fud-bf-card .fud-bf-target-row.is-redirected .t-redirect-from {
+      font-size: 10px;
+      font-weight: 600;
+      color: #4a2f87;
+      opacity: 0.7;
+      margin-left: 4px;
+    }
+
     /* Pre-resolve reaction pill row (Healing Power / Support Magic /
        future "during action card" passives). Sits BETWEEN the body and
        the Confirm/Cancel buttons; locks Confirm while any ask pill is
@@ -570,9 +600,10 @@ function ensureStyles() {
       border-radius: 6px;
       border: 1px solid rgba(120, 80, 200, 0.25);
     }
-    .fud-bf-card .fud-bf-reaction-pill.is-resolved {
-      opacity: 0.55;
-    }
+    /* Applied stays at full opacity — the reaction is in effect, so it
+       should read as live information on the card. Skipped fades to
+       0.55 so the player can quickly scan resolved-but-irrelevant
+       pills. */
     .fud-bf-card .fud-bf-reaction-pill.is-applied {
       background: rgba(140, 220, 130, 0.30);
       border-color: rgba(60, 140, 60, 0.55);
@@ -580,6 +611,30 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-reaction-pill.is-skipped {
       background: rgba(220, 220, 220, 0.40);
       border-color: rgba(140, 140, 140, 0.45);
+      opacity: 0.55;
+    }
+    /* Third-party reactor pills — a reaction owned by someone other than
+       the action-taker (Protect on Attack(ally) card). Reactor name
+       prefix is rendered before the carrier name; pill border picks up
+       a side-color so monster-side reactions are visually distinct from
+       party-side reactions. is-applied / is-skipped overrides still
+       win on resolution. */
+    .fud-bf-card .fud-bf-reaction-pill.is-third-party.is-side-pc {
+      background: rgba(180, 215, 255, 0.40);
+      border-color: rgba(70, 120, 200, 0.55);
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-third-party.is-side-npc {
+      background: rgba(255, 200, 175, 0.42);
+      border-color: rgba(190, 90, 60, 0.65);
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-third-party .fud-bf-reaction-reactor {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #2c1c5c;
+      margin-right: 2px;
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-side-npc .fud-bf-reaction-reactor {
+      color: #7a2c1c;
     }
     .fud-bf-card .fud-bf-reaction-icon {
       width: 18px; height: 18px;
@@ -1211,11 +1266,18 @@ function buildAttackerHTML({ attacker, targets }) {
   // the list across multiple rows when the comma-joined text overflows
   // (3+ named targets blow past the column otherwise). The span itself
   // stays nowrap so a single name doesn't break mid-word.
+  //
+  // `data-fud-target-actor-uuid` is the stable hook the card-mutation
+  // recompute sweeps across every target-displaying surface (this row,
+  // portraits, per-target tooltips) so a redirect (Protect, future
+  // change-target effects) propagates consistently. See
+  // `applyTargetMutationToDom` in recomputeTargetPreviews.
   const targetParts = (Array.isArray(targets) && targets.length)
     ? targets.map((t, i) => {
         const c = dispositionColor(t.disposition ?? 0);
         const sep = i > 0 ? `<span class="t-sep">, </span>` : "";
-        return `${sep}<span class="t-name" style="color:${c}">${escapeHtml(t.name)}</span>`;
+        const uuidAttr = ` data-fud-target-actor-uuid="${escapeHtml(String(t.actorUuid ?? ""))}"`;
+        return `${sep}<span class="t-name"${uuidAttr} style="color:${c}">${escapeHtml(t.name)}</span>`;
       }).join("")
     : `<span style="opacity:0.6;">—</span>`;
 
@@ -1716,7 +1778,7 @@ function pickPortraitLayout({ attacker, perTargetResults }) {
     ? { img: attacker.tokenImg, name: attacker.name }
     : null;
   const targetSlots = targets
-    .map((t) => (t?.tokenImg ? { img: t.tokenImg, name: t.name } : null))
+    .map((t) => (t?.tokenImg ? { img: t.tokenImg, name: t.name, actorUuid: t.actorUuid ?? null } : null))
     .filter(Boolean);
 
   return {
@@ -1736,12 +1798,19 @@ function fullSpriteHTML(slot) {
   if (!url) return "";
   const safe = escapeHtml(url);
   const name = escapeHtml(slot.name ?? "");
+  // `data-fud-target-actor-uuid` is the stable hook the recompute
+  // sweeps across when a card mutation (Protect redirect, future
+  // change-target effects) needs to refresh every target surface
+  // consistently.
+  const uuidAttr = slot.actorUuid
+    ? ` data-fud-target-actor-uuid="${escapeHtml(String(slot.actorUuid))}"`
+    : "";
   if (isVideoUrl(url)) {
     return `<video class="fud-bf-portrait-sprite" src="${safe}"
                    autoplay loop muted playsinline disablepictureinpicture
-                   title="${name}" aria-label="${name}"></video>`;
+                   title="${name}" aria-label="${name}"${uuidAttr}></video>`;
   }
-  return `<img class="fud-bf-portrait-sprite" src="${safe}" title="${name}" alt="${name}">`;
+  return `<img class="fud-bf-portrait-sprite" src="${safe}" title="${name}" alt="${name}"${uuidAttr}>`;
 }
 
 // MULTIPLE targets → the compact masked circular grid (the look from before the
@@ -1763,10 +1832,145 @@ function maskedGridHTML(slots) {
     const media = isVideoUrl(url)
       ? `<video src="${safe}" autoplay loop muted playsinline disablepictureinpicture></video>`
       : `<img src="${safe}" alt="${name}">`;
+    const uuidAttr = slot.actorUuid
+      ? ` data-fud-target-actor-uuid="${escapeHtml(String(slot.actorUuid))}"`
+      : "";
     return `<div class="fud-bf-portrait-cell" style="width:${cell}px; height:${cell}px;"
-                 title="${name}" aria-label="${name}" role="img">${media}</div>`;
+                 title="${name}" aria-label="${name}" role="img"${uuidAttr}>${media}</div>`;
   }).join("");
   return `<div class="fud-bf-portrait-grid">${cells}</div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Card target-mutation DOM patcher — shared between GM and player paths
+// ─────────────────────────────────────────────────────────────────────
+//
+// Given a `rootEl` (the GM card root OR the player mirror wrapper) and
+// a `delta` describing target mutations + result-row updates, patches
+// every target-displaying surface inside the root. Identical logic on
+// both sides — GM calls it after computing mutations; player handler
+// calls it after receiving the broadcast.
+//
+// delta shape:
+//   {
+//     redirects: [{
+//       origUuid,         // pre-mutation actor uuid (DOM hook)
+//       newName,          // post-mutation target name
+//       newImg,           // post-mutation portrait sprite src (raw)
+//       newDefense,       // recomputed defense vs the action's roll
+//       newAffinity,      // recomputed affinity code ("RS"/"IM"/...)
+//       newHit, newCrit,  // recomputed hit / crit flags
+//       newDamage,        // post-mutation damage value
+//       fromName,         // original target name (for "← OriginalName")
+//       via,              // skill name that caused the redirect
+//     }],
+//     hasDamageRows,      // gates the t-result re-derive
+//     rollTotal,          // for the tooltip "Total N ≥/< DEF X" line
+//     element,            // for the tooltip Element + Affinity lines
+//   }
+//
+// Future card-mutation kinds (change_element, replace_damage, etc.)
+// extend this delta with additional fields; the patcher gains a new
+// surface-update block for each surface that needs to reflect the
+// change.
+export function applyCardTargetMutationDelta(rootEl, delta) {
+  if (!rootEl || !delta || !Array.isArray(delta.redirects)) return;
+  const { redirects, hasDamageRows, rollTotal, element } = delta;
+  for (const r of redirects) {
+    if (!r?.origUuid) continue;
+    const safeOrig = CSS.escape(String(r.origUuid));
+    const newName = r.newName ?? "";
+    const fromName = r.fromName ?? "";
+
+    // 1. Attacker-line name span — swaps the "Target" side of the
+    //    "Attacker ⚔ Target" header line + appends a redirect arrow.
+    for (const span of rootEl.querySelectorAll(
+      `.fud-bf-attacker-row .t-name[data-fud-target-actor-uuid="${safeOrig}"]`
+    )) {
+      span.innerHTML =
+        `${escapeHtml(newName)} ` +
+        `<small class="t-redirect-from">← ${escapeHtml(fromName)}</small>`;
+      span.classList.add("is-redirected");
+    }
+
+    // 2. Portrait sprites + cells — replace src + title with the
+    //    redirected target's data.
+    const safeNewImg = r.newImg ? escapeHtml(safeImgUrl(r.newImg) ?? r.newImg) : null;
+    for (const sprite of rootEl.querySelectorAll(
+      `[data-fud-target-actor-uuid="${safeOrig}"].fud-bf-portrait-sprite,` +
+      `[data-fud-target-actor-uuid="${safeOrig}"] img,` +
+      `[data-fud-target-actor-uuid="${safeOrig}"] video`
+    )) {
+      if (safeNewImg && (sprite.tagName === "IMG" || sprite.tagName === "VIDEO")) {
+        sprite.setAttribute("src", safeNewImg);
+      }
+      if (sprite.hasAttribute("title")) sprite.setAttribute("title", newName);
+      if (sprite.hasAttribute("alt"))   sprite.setAttribute("alt", newName);
+      if (sprite.hasAttribute("aria-label")) sprite.setAttribute("aria-label", newName);
+    }
+    for (const cell of rootEl.querySelectorAll(
+      `.fud-bf-portrait-cell[data-fud-target-actor-uuid="${safeOrig}"]`
+    )) {
+      if (cell.hasAttribute("title")) cell.setAttribute("title", newName);
+      if (cell.hasAttribute("aria-label")) cell.setAttribute("aria-label", newName);
+    }
+
+    // 3. Result row — name swap + def update + redirect tint + result
+    //    label re-derive (gated on hasDamageRows for non-damage Skills).
+    const rowEl = rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-actor-uuid="${safeOrig}"]`
+    );
+    if (rowEl) {
+      const nameSpan = rowEl.querySelector(".t-name");
+      if (nameSpan) {
+        nameSpan.innerHTML =
+          `${escapeHtml(newName)} ` +
+          `<small class="t-redirect-from">← ${escapeHtml(fromName)}</small>`;
+      }
+      const defSpan = rowEl.querySelector(".t-def");
+      if (defSpan) defSpan.textContent = `DEF ${r.newDefense}`;
+      rowEl.classList.add("is-redirected");
+
+      // Tooltip — rebuild the per-target hover body to reflect the
+      // redirect target's stats so it no longer shows the original.
+      rowEl.setAttribute("data-fud-equip-desc-name", `${newName} ← ${fromName}`);
+      const verdict = r.newHit
+        ? (r.newCrit ? "Critical — auto-hit" : "hit")
+        : "missed";
+      const total = rollTotal ?? "?";
+      const cmp = r.newHit ? "≥" : "<";
+      const elemLabel = element ?? "Physical";
+      const tipBody =
+        `<p><b>Redirected from:</b> ${escapeHtml(fromName)} ` +
+        `<small>(via ${escapeHtml(r.via ?? "reaction")})</small></p>` +
+        `<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>` +
+        `<p><b>Affinity:</b> ${escapeHtml(r.newAffinity ?? "NE")}</p>` +
+        `<p><b>Hit Check:</b> Total ${total} ${cmp} DEF ${r.newDefense} — ${verdict}</p>`;
+      rowEl.setAttribute("data-fud-equip-desc", tipBody);
+
+      if (hasDamageRows) {
+        const resultSpan = rowEl.querySelector(".t-result");
+        if (resultSpan) {
+          let label = "MISS";
+          let cls   = "miss";
+          if (r.newHit) {
+            if (r.newAffinity === "AB") {
+              label = `HEALS ${Math.max(0, r.newDamage)}`;
+              cls   = "absorb";
+            } else if (r.newAffinity === "IM" || r.newDamage <= 0) {
+              label = "NO EFFECT";
+              cls   = "miss";
+            } else {
+              label = `HIT — ${r.newDamage} dmg`;
+              cls   = r.newCrit ? "crit" : "hit";
+            }
+          }
+          resultSpan.className = `t-result ${cls}`;
+          resultSpan.textContent = label;
+        }
+      }
+    }
+  }
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
@@ -1839,6 +2043,11 @@ function buildGuardCard({ attacker, coverTarget }) {
   const coverLine = coverTarget
     ? `<div style="margin-top:4px;">Covers <strong style="color:#3aa0ff">${escapeHtml(coverTarget.name)}</strong> — they cannot be targeted by melee attacks.</div>`
     : "";
+
+  // Reaction surface is rendered uniformly by the central card spawner
+  // (via `payload.prePassives` → `buildReactionPillRow`). State-handlers
+  // CONFIRM populates `prePassives` for Guard via findPassiveCandidates
+  // with trigger `creature_guards`. No per-card duplication needed.
 
   return {
     titleIcon: `<i class="fa-solid fa-shield-halved" style="font-size:20px; color:var(--fud-stroke,#5a6a85);"></i>`,
@@ -2632,10 +2841,12 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // "Mode" footer chip so the player can see whether the pill is acting
 // automatically vs. waiting on their click vs. disabled.
 function buildReactionPillRow(prePassives) {
-  // Hide "off" (auto-rejected) and "force" (engine-mandatory, no
-  // player choice) rows from the visible list. "force" is recorded as
-  // auto-applied in the decision map below so RESOLVE still fires it.
-  const visible = prePassives.filter((p) => p?.mode !== "off" && p?.mode !== "force");
+  // Hide "off" (auto-rejected). Show "on" + "force" + "ask" — Force-mode
+  // is engine-mandatory, no player decision, but the effect is often
+  // player-meaningful (Bodyguard grants RS to all damage, etc.) so it
+  // surfaces informationally with the same "Active" label as On. RESOLVE
+  // still fires Force from the decision map regardless of UI state.
+  const visible = prePassives.filter((p) => p?.mode !== "off");
   if (!visible.length) return "";
   const pillsHtml = visible.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
@@ -2645,9 +2856,28 @@ function buildReactionPillRow(prePassives) {
       ? `<img class="fud-bf-reaction-icon" src="${escapeHtml(p.carrierImg)}" alt="" />`
       : `<span class="fud-bf-reaction-icon" aria-hidden="true">⚡</span>`;
     const modeLabel =
-      p.mode === "on"  ? "Auto-apply (On)"  :
-      p.mode === "off" ? "Disabled (Off)"   :
-                         "Asks (You choose)";
+      p.mode === "on"    ? "Active"            :
+      p.mode === "force" ? "Active"            :
+      p.mode === "off"   ? "Disabled"          :
+                           "Asks (You choose)";
+
+    // Third-party reaction (Protect on an Attack(ally) card) — the
+    // reactor is NOT the action-taker. Surface the reactor's name as
+    // a "<Blanche>:" prefix so the player sees whose reaction this
+    // is, and stamp a side-color class (pc-side vs npc-side per
+    // `reactorIsPlayer`) so monster-side reactions are visually
+    // distinct from party-side reactions.
+    const isThirdParty = !!p.reactorActorUuid;
+    const reactorPrefix = isThirdParty
+      ? `<span class="fud-bf-reaction-reactor">${escapeHtml(String(p.reactorActorName ?? "Reactor"))}:</span> `
+      : "";
+    const sideClass = isThirdParty
+      ? (p.reactorIsPlayer ? "is-third-party is-side-pc" : "is-third-party is-side-npc")
+      : "";
+    const reactorAttr = isThirdParty
+      ? ` data-fud-reactor-uuid="${escapeHtml(String(p.reactorActorUuid))}"`
+      : "";
+
     // Skill descriptions in CSB are rich HTML; trusted (local actor
     // data, not user input). Bundle a mode footer chip so the player
     // sees the dispatch behavior without leaving the card.
@@ -2656,18 +2886,18 @@ function buildReactionPillRow(prePassives) {
       `<div class="fud-bf-reaction-tip-foot">Mode: ${escapeHtml(modeLabel)}</div>`;
     const tipAttrs =
       ` data-fud-equip-desc="${escapeHtml(descBody)}" data-fud-equip-desc-name="${safeName}"`;
-    if (p.mode === "on") {
+    if (p.mode === "on" || p.mode === "force") {
       return `
-        <div class="fud-bf-reaction-pill is-auto" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${tipAttrs}>
+        <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs}>
           ${iconHtml}
-          <span class="fud-bf-reaction-name">${safeName}</span>
-          <span class="fud-bf-reaction-status">Auto-applied</span>
+          <span class="fud-bf-reaction-name">${reactorPrefix}${safeName}</span>
+          <span class="fud-bf-reaction-status">Active</span>
         </div>`;
     }
     return `
-      <div class="fud-bf-reaction-pill is-ask" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}" data-fud-reaction-pending="1"${tipAttrs}>
+      <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr} data-fud-reaction-pending="1"${tipAttrs}>
         ${iconHtml}
-        <span class="fud-bf-reaction-name">${safeName}</span>
+        <span class="fud-bf-reaction-name">${reactorPrefix}${safeName}</span>
         <div class="fud-bf-reaction-actions">
           <div class="fud-btn fud-btn-reaction fud-btn-reaction-apply" data-fud-reaction-action="apply" role="button" tabindex="0">Apply</div>
           <div class="fud-btn fud-btn-reaction fud-btn-reaction-skip" data-fud-reaction-action="skip" role="button" tabindex="0">Skip</div>
@@ -3093,6 +3323,20 @@ export async function postActionCard({ director, kind, payload }) {
           mode: p.mode,
           ref: p.ref,
           decision,
+          // Third-party reactor identity — present when the reaction
+          // belongs to a non-action-taker (Protect on an Attack(ally)
+          // card). RESOLVE-side firing reads these to route the chain
+          // to the reactor's actor instead of the action-taker. Null
+          // for action-taker-owned reactions (Healing Power etc.).
+          reactorActorUuid: p.reactorActorUuid ?? null,
+          reactorActorName: p.reactorActorName ?? null,
+          // Sticky picked-subject cache. card-mutations.resolvePickedSubject
+          // stores the player's pick on the in-memory candidate after the
+          // first prompt; without round-tripping it here, the CONFIRM-stage
+          // re-invocation of applyAcceptedCardMutations against the FROZEN
+          // ar would see a fresh candidate and re-prompt the player. This
+          // field is the load-bearing "don't ask twice" signal.
+          pickedSubjectActorUuid: p.pickedSubjectActorUuid ?? null,
           // Per-action dispatch tags (added by state-handlers' CONFIRM
           // creature_will_deal_damage aggregation). The sender-side
           // accumulator — computeSenderDamageBonuses — reads these to
@@ -3111,23 +3355,25 @@ export async function postActionCard({ director, kind, payload }) {
       }
       return out;
     }
-    function recordPillDecision(rowKey, carrierUuid, decision) {
+    // Visually commit a resolved pill — flips "pending" → "resolved",
+    // patches the status chip, decrements the card-level pending count,
+    // and broadcasts to mirrors. Split out from recordPillDecision so the
+    // "apply" path can await the mutation pipeline (and any picker
+    // prompt) BEFORE committing — if the player cancels the picker, the
+    // pill stays in its pending state.
+    function commitPillDecisionDom(rowKey, carrierUuid, decision) {
       const cardEl = root.querySelector(".fud-bf-card");
       const pillEl = root.querySelector(
         `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
       );
       if (!pillEl) return;
       if (pillEl.dataset.fudReactionPending !== "1") return;
-      reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
       pillEl.dataset.fudReactionPending = "0";
       pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
-      // Replace the Apply/Skip buttons with a status chip showing the
-      // player's choice. Keeps the visual record on the card.
       const actions = pillEl.querySelector(".fud-bf-reaction-actions");
       if (actions) {
         actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
       }
-      // Decrement the card-level pending count; remove attribute at 0.
       const current = Number(cardEl?.dataset?.fudReactionsPending ?? 0);
       const next = Math.max(0, current - 1);
       if (cardEl) {
@@ -3136,8 +3382,6 @@ export async function postActionCard({ director, kind, payload }) {
       }
       // Broadcast pill state change to every mirror so observers see the
       // decision flip from "Waiting…" to "Applied"/"Skipped" in real time.
-      // Without this, non-owners stay frozen on the initial card render
-      // until MENU_CLOSE wipes everything.
       try {
         const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
         for (const u of onlinePlayers) {
@@ -3153,11 +3397,47 @@ export async function postActionCard({ director, kind, payload }) {
             },
           });
         }
-      } catch (e) { warn("recordPillDecision: pill-update broadcast threw", e); }
-      // Phase 3: live preview update — recompute per-target damage and
-      // patch the result spans whenever an add_damage decision toggles.
-      // Fire-and-forget — serialization inside the helper prevents races.
-      try { recomputeTargetPreviews().catch(() => {}); } catch {}
+      } catch (e) { warn("commitPillDecisionDom: pill-update broadcast threw", e); }
+    }
+
+    async function recordPillDecision(rowKey, carrierUuid, decision) {
+      const pillEl = root.querySelector(
+        `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
+      );
+      if (!pillEl) return;
+      if (pillEl.dataset.fudReactionPending !== "1") return;
+
+      // Provisional set so recompute / card-mutations see the decision.
+      // If "apply" needs a picker and the player cancels, we rewind this
+      // before committing the DOM so the pill stays in pending state.
+      reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
+
+      if (decision === "apply") {
+        // Run the mutation pipeline FIRST. If the chain needs a target
+        // picker (Protect on a multi-ally attack) the action card is
+        // hidden while the picker is open and revealed again on
+        // confirm/cancel. Cancellation rewinds the decision so the
+        // pill is still actionable.
+        let cancelled = false;
+        try {
+          const r = await recomputeTargetPreviews();
+          cancelled = !!r?.cancelled;
+        } catch (e) {
+          warn(`recordPillDecision: recompute threw for ${rowKey}:${carrierUuid}`, e);
+        }
+        if (cancelled) {
+          reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+          log(`recordPillDecision: ${rowKey}:${carrierUuid} apply cancelled — pill stays pending`);
+          return;
+        }
+      } else {
+        // skip — no picker needed. Still re-run recompute so any prior
+        // accepted mutation (rare — skip-after-apply isn't reachable via
+        // the current click handler) is revisited.
+        try { await recomputeTargetPreviews().catch(() => {}); } catch {}
+      }
+
+      commitPillDecisionDom(rowKey, carrierUuid, decision);
     }
 
     // Phase 3 of the Cheap Shot integration: live damage preview update.
@@ -3171,12 +3451,15 @@ export async function postActionCard({ director, kind, payload }) {
     // behind the previous recompute instead of racing the DOM.
     let _previewInFlight = null;
     async function recomputeTargetPreviews() {
-      // Non-damage skills (Soul Steal, Torpor, Hallucination, …) have no
-      // base damage for add_damage to recompute against. Skipping here
-      // also preserves the initial-render SUCCESS/FAILED labels, which
-      // the damage-row re-derive below would otherwise overwrite with
-      // "NO EFFECT" (entry.damage <= 0 branch).
-      if (!payload?.hasDamage) return;
+      // Run recompute when the card has a target list (Attack OR damage-
+      // dealing Skill). Non-damage Skills (Soul Steal, Torpor, etc.)
+      // shouldn't have their SUCCESS/FAILED labels overwritten — but
+      // the card-mutation engine (redirect_target etc.) still applies
+      // to their target rows. The result-span patching is gated below
+      // on `hasDamageRows`.
+      const hasDamageRows = !!payload?.hasDamage || kind === "Attack";
+      const hasTargetRows = Array.isArray(payload?.perTargetResults) && payload.perTargetResults.length > 0;
+      if (!hasTargetRows) return { cancelled: false };
       if (_previewInFlight) { try { await _previewInFlight; } catch {} }
       _previewInFlight = (async () => {
         try {
@@ -3188,53 +3471,157 @@ export async function postActionCard({ director, kind, payload }) {
           // Lazy-import — cross-module cache-bust pattern.
           const sk = await import("./skill-effects.js?cb=" + Date.now());
           const sn = await import("./snapshot.js?cb=" + Date.now());
+          const cm = await import("./card-mutations.js?cb=" + Date.now());
+
+          // Phase 1: card-mutations (redirect_target). Computes the
+          // post-mutation target list against a synthetic ar built from
+          // the card's payload. Returns new arrays; the original payload
+          // stays immutable so the recompute is idempotent across
+          // multiple toggle cycles. `kind` + `skillType` flow through
+          // so the mutation engine picks the right defense (DEF for
+          // Attack, MDEF for Spell-kind Skills) when recomputing the
+          // redirected target's hit/damage.
+          const arSnapshot = {
+            kind,
+            targets: Array.isArray(payload?.targets) ? payload.targets : [],
+            perTargetResults: Array.isArray(payload?.perTargetResults) ? payload.perTargetResults : [],
+            roll: payload?.roll ?? null,
+            damage: payload?.damage ?? null,
+            skillType: payload?.skillType ?? null,
+            defenseTargetType: payload?.defenseTargetType ?? null,
+          };
+
+          // Hide the action card while card-mutations runs — if a
+          // picker prompt fires for a redirect with multiple eligible
+          // targets, the card would otherwise overlap the picker
+          // banner. The hide is unconditional (a single-target
+          // auto-confirm is microtask-fast and not visibly perceptible);
+          // try/finally ensures we always reveal even if the pipeline
+          // throws.
+          root.classList.add("is-hidden-during-pick");
+          let mutationResult;
+          try {
+            mutationResult = await cm.applyAcceptedCardMutations(arSnapshot, accepted);
+          } finally {
+            root.classList.remove("is-hidden-during-pick");
+          }
+          if (mutationResult?.cancelled) {
+            // Caller (recordPillDecision) reads `cancelled` to rewind
+            // the provisional pill decision. Stop the recompute here —
+            // don't apply partial mutation visuals or broadcast.
+            return { cancelled: true };
+          }
+
+          // Phase 2: add_damage recompute against the (possibly
+          // redirected) perTargetResults.
           const bonusMap = await sk.computeSenderDamageBonuses({
             casterActor: payload.attackerActor,
             acceptedPrePassives: accepted,
             dCombat: director?.dCombat,
           });
-          const original = Array.isArray(payload.perTargetResults) ? payload.perTargetResults : [];
-          const recomputed = sk.recomputePerTargetDamages(original, bonusMap, sn.applyAffinityToDamage);
-          // Patch each row's t-result label + class.
-          for (const entry of recomputed) {
-            if (!entry?.actorUuid) continue;
-            const rowEl = root.querySelector(
-              `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(entry.actorUuid))}"]`
-            );
-            if (!rowEl) continue;
-            const resultSpan = rowEl.querySelector(".t-result");
-            if (!resultSpan) continue;
-            // Re-derive class + label, mirroring resultLabelFor /
-            // resultClsFor for the damage-row case (the only case
-            // add_damage can apply to — grant rows have no rawDamage).
-            const unit = entry.resource === "mp" ? "MP" : "dmg";
-            let label = "MISS";
-            let cls   = "miss";
-            if (entry.hit) {
-              if (typeof entry.grantAmount === "number") {
-                // Recipe-grant rows aren't damage rows — leave as-is.
-                continue;
-              }
-              if (entry.affinity === "AB") {
-                label = `HEALS ${Math.max(0, entry.damage)}`;
-                cls   = "absorb";
-              } else if (entry.affinity === "IM" || entry.damage <= 0) {
-                label = "NO EFFECT";
-                cls   = "miss";
-              } else {
-                label = `HIT — ${entry.damage} ${unit}`;
-                cls   = entry.crit ? "crit" : "hit";
-              }
+          const recomputed = sk.recomputePerTargetDamages(
+            mutationResult.perTargetResults, bonusMap, sn.applyAffinityToDamage,
+          );
+
+          // Build a `delta` describing per-slot mutations + non-mutation
+          // damage updates. Shared between GM (patch local DOM + broadcast
+          // to mirrors) and player (patch the mirror wrapper). Single
+          // patching function so GM and player can't diverge on layout.
+          const original = arSnapshot.perTargetResults;
+          const redirects = [];
+          for (let i = 0; i < recomputed.length; i++) {
+            const origEntry = original[i];
+            const entry = recomputed[i];
+            if (!origEntry?.actorUuid || !entry) continue;
+            if (entry.redirectedFrom) {
+              redirects.push({
+                origUuid: origEntry.actorUuid,
+                newName: entry.name,
+                newImg: entry.tokenImg,
+                newDefense: entry.defense,
+                newAffinity: entry.affinity,
+                newHit: !!entry.hit,
+                newCrit: !!entry.crit,
+                newDamage: entry.damage,
+                fromName: entry.redirectedFrom.name,
+                via: entry.redirectedFrom.via,
+              });
             }
-            resultSpan.className = `t-result ${cls}`;
-            resultSpan.textContent = label;
           }
+          const delta = {
+            redirects,
+            hasDamageRows,
+            rollTotal: arSnapshot.roll?.total ?? null,
+            element: arSnapshot.damage?.element ?? null,
+          };
+          applyCardTargetMutationDelta(root, delta);
+
+          // Broadcast the delta to every connected player so their
+          // mirror reflects the same redirect visuals. Pass-through
+          // structured-clone-safe — no closures or DOM refs in the
+          // delta. Players apply it via the registered handler
+          // (registerPlayerActionCardHandler → action-card-target-mutation).
+          try {
+            const channel = director?.intentChannel ?? null;
+            const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+            for (const u of onlinePlayers) {
+              channel?.broadcastMenuOpen({
+                targetUserId: u.id,
+                menuSpec: {
+                  kind: "action-card-target-mutation",
+                  combatId: director.combatId,
+                  delta,
+                },
+              });
+            }
+          } catch (e) { warn("recomputeTargetPreviews: mutation broadcast threw", e); }
+
+          // Non-redirect result-span refresh — for the add_damage path
+          // (Cheap Shot bonus toggles). Walks the recomputed list and
+          // patches only rows that DIDN'T get a redirect (those are
+          // already handled by the delta above). Gated on hasDamageRows
+          // so non-damage Skills keep SUCCESS/FAILED labels.
+          if (hasDamageRows) {
+            for (let i = 0; i < recomputed.length; i++) {
+              const origEntry = original[i];
+              const entry = recomputed[i];
+              if (!origEntry?.actorUuid || !entry) continue;
+              if (entry.redirectedFrom) continue; // already patched
+              const rowEl = root.querySelector(
+                `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(origEntry.actorUuid))}"]`
+              );
+              if (!rowEl) continue;
+              const resultSpan = rowEl.querySelector(".t-result");
+              if (!resultSpan) continue;
+              const unit = entry.resource === "mp" ? "MP" : "dmg";
+              let label = "MISS";
+              let cls   = "miss";
+              if (entry.hit) {
+                if (typeof entry.grantAmount === "number") continue;
+                if (entry.affinity === "AB") {
+                  label = `HEALS ${Math.max(0, entry.damage)}`;
+                  cls   = "absorb";
+                } else if (entry.affinity === "IM" || entry.damage <= 0) {
+                  label = "NO EFFECT";
+                  cls   = "miss";
+                } else {
+                  label = `HIT — ${entry.damage} ${unit}`;
+                  cls   = entry.crit ? "crit" : "hit";
+                }
+              }
+              resultSpan.className = `t-result ${cls}`;
+              resultSpan.textContent = label;
+            }
+          }
+          return { cancelled: false };
         } catch (e) {
           warn("action-card: recomputeTargetPreviews threw", e);
+          return { cancelled: false, error: String(e?.message ?? e) };
         }
       })();
-      await _previewInFlight;
+      const result = await _previewInFlight;
       _previewInFlight = null;
+      return result ?? { cancelled: false };
     }
 
     // Initial pass — surfaces "on" / "force" mode bonuses immediately
@@ -3678,6 +4065,18 @@ export function registerPlayerActionCardHandler(channel) {
   // — pending → resolved + status chip — to the local mirror so the
   // observer sees Applied/Skipped flip in real time instead of staying
   // frozen on initial render.
+  // Card target-mutation handler — propagates GM-side redirect (or
+  // future card-mutation kinds) to the local mirror. Single patching
+  // function shared with GM so visuals can't diverge.
+  const offTargetMutation = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-target-mutation") return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper) return;
+    try {
+      applyCardTargetMutationDelta(wrapper, menuSpec.delta);
+    } catch (e) { warn("action-card-target-mutation: patch threw", e); }
+  });
+
   const offPillUpdate = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card-pill-update") return;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
@@ -4108,5 +4507,5 @@ export function registerPlayerActionCardHandler(channel) {
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} };
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} };
 }

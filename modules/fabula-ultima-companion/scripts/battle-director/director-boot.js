@@ -29,11 +29,14 @@ import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
-import { initDirectorRoundBanner, hideRoundBanner } from "./director-round-banner.js";
+import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
+import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
+import { initDevToolsMenu } from "./dev-tools-menu.js";
+import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
@@ -294,6 +297,10 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { AttributePairPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
+  // Surface registry — the despawnAll calls above remove DOM (the observer
+  // unregisters each), but wipe the registry too so any explicitly-registered
+  // overlay (banner / cut-in) doesn't linger as a stale entry.
+  try { clearAllSurfaces(); } catch {}
   // Defensive standalone-menu cleanup. STOPPED.onEnter already calls
   // clearAllStandaloneMenus, but on the rewind path the FSM transition
   // may be mid-await (dispatchStandaloneTrigger blocked on a player's
@@ -390,7 +397,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
 // (we deliberately cleared currentCombatantId during reconstruction so
 // the GM gets one re-pick — handy if the reload was triggered because
 // they made a wrong declaration).
-async function resumeFromSavedState({ scene, state }) {
+async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   log(`Director resume: found saved state on scene "${scene.name}" (round ${state.dCombat?.round ?? "?"})`);
 
   // Refuse to clobber a live director (shouldn't happen at `ready`-time
@@ -570,6 +577,14 @@ async function resumeFromSavedState({ scene, state }) {
   } else {
     resumeAt = STATES.TURN_START;
   }
+
+  // Restore the persistent Round X banner + turn-action icons (client DOM,
+  // wiped on F5; the resume path never re-enters ROUND_START which normally
+  // draws them). On F5 (animateBanner=true) replay the full cinematic before
+  // transitioning into the resumed state; on rewind snap straight to docked.
+  try { await showRoundBannerForResume(director.dCombat, { animate: animateBanner }); }
+  catch (e) { warn("resume: showRoundBannerForResume threw", e); }
+
   try {
     await director.transitionTo(resumeAt);
   } catch (e) {
@@ -724,6 +739,10 @@ async function rewindTo(snapshotId) {
   const mountResult = await resumeFromSavedState({
     scene: result.scene,
     state: result.snapshot,
+    // Rewind happens often during play/testing — snap the banner straight to
+    // docked instead of replaying the full ~2.5s cinematic each time. (F5
+    // resume keeps the full animation.)
+    animateBanner: false,
   });
   if (!mountResult) {
     ui.notifications?.error("Rewind: director mount failed after restore.");
@@ -796,6 +815,22 @@ Hooks.once("ready", () => {
         return require?.("./free-actions.js")?.freeActions ?? null;
       } catch { return null; }
     })(),
+    // UI surface registry — a queryable model of which director UI components
+    // are on screen on THIS client. `list()` returns every tracked surface +
+    // animation; `has(kind)` / `count(kind)` are quick checks. Subscribe to the
+    // `fu-director-surface-change` hook for push updates. See director-surfaces.js.
+    surfaces: {
+      list: (filter) => getActiveSurfaces(filter),
+      has: (kind) => hasSurface(kind),
+      count: (kind) => countSurfaces(kind),
+      clear: () => clearAllSurfaces(),
+    },
+    // Re-broadcast the turn-action tracker from the live dCombat. Used by the
+    // icon focal-point tuner to reflect a saved focus immediately mid-battle.
+    refreshTurnActions: () => {
+      const dc = _instance?.dCombat;
+      if (dc) { try { bannerRefreshTurnActions(dc); } catch (e) { warn("refreshTurnActions API threw", e); } }
+    },
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
@@ -874,8 +909,12 @@ Hooks.once("ready", () => {
   try { initDirectorSfx(); }
   catch (e) { warn("initDirectorSfx on ready threw", e); }
 
-  // SFX audition tool — floating GM button (bottom-left) to preview candidate
-  // hover / click / back UI cues before wiring them into the real menus.
+  // Developer Tools launcher — single bottom-left button (above the Players
+  // list) that bundles the dev tools below; each registers itself into it.
+  try { initDevToolsMenu(); }
+  catch (e) { warn("initDevToolsMenu on ready threw", e); }
+
+  // SFX audition tool — registers into the Developer Tools launcher.
   try { initSfxAudition(); }
   catch (e) { warn("initSfxAudition on ready threw", e); }
 
@@ -883,6 +922,16 @@ Hooks.once("ready", () => {
   // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
   try { initDirectorUiSfx(); }
   catch (e) { warn("initDirectorUiSfx on ready threw", e); }
+
+  // Director UI surface registry — DOM observer that tracks which director UI
+  // components are on screen, per client. Queryable via the surfaces API.
+  try { initDirectorSurfaces(); }
+  catch (e) { warn("initDirectorSurfaces on ready threw", e); }
+
+  // Icon focal-point tuner — GM button to set a per-actor crop focus for the
+  // turn-action tracker icons (frame the face, not the ears).
+  try { initIconFocusTuner(); }
+  catch (e) { warn("initIconFocusTuner on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.
@@ -987,6 +1036,21 @@ Hooks.once("ready", () => {
         }
       } catch (e) {
         warn("Auto-resume detection threw", e);
+      }
+    }, 0);
+  } else {
+    // PLAYER reload: the GM is authoritative and won't re-broadcast just because
+    // a player reloaded, so the round HUD would stay blank. Self-restore it
+    // LOCALLY from the persisted scene flag (no director mount, no broadcast).
+    setTimeout(() => {
+      try {
+        const found = findSavedDirectorState();
+        if (found?.state) {
+          showRoundBannerForResumeFromState(found.state, { animate: false })
+            .catch((e) => warn("Player banner self-restore threw", e));
+        }
+      } catch (e) {
+        warn("Player banner self-restore detection threw", e);
       }
     }, 0);
   }

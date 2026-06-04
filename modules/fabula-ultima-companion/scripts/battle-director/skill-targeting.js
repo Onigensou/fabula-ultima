@@ -29,6 +29,7 @@
 //   self              — reactor only
 
 import { log, warn } from "./logger.js";
+import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -146,15 +147,92 @@ async function resolveTargetingRow(row, ctx) {
     return { ok: true, tokens: [...pool] };
   }
 
-  // For B.1: skill effects don't yet show a picker — the action's TARGET
-  // state already collected user picks (those become candidate_source:
-  // "action_targets"). If we land here with multi-eligible / exact, take
-  // the first N and warn — authors should normally pre-narrow at TARGET.
+  // Ambiguous pick — pool has more candidates than we need. Prompt via
+  // the BD-native target picker (`target-picker.js`), the same canvas
+  // token-ring + floating-banner UI that Attack/Skill TARGET state
+  // uses. Improvements there cascade here. For passive contexts
+  // skip_when_passive already returned above; for `mode: all` likewise.
+  // We only land here when the player is actively deciding and
+  // `auto_confirm_when_obvious` didn't resolve to one.
   const n = mode === "up_to" ? Math.min(count, pool.length) : Math.min(count, pool.length);
-  if (pool.length > n) {
-    warn(`skill-targeting: row "${row.effect_label}" needs user pick (${pool.length} candidates, want ${n}); auto-picking first ${n}. Picker UX pending B.2.`);
+  if (pool.length <= n) {
+    return { ok: true, tokens: pool.slice(0, n) };
   }
-  return { ok: true, tokens: pool.slice(0, n) };
+  const picked = await promptBdPick({ row, pool, n, mode, ctx });
+  if (picked?.cancelled) {
+    return { ok: false, cancelled: true, reason: "cancelled", tokens: [] };
+  }
+  if (!picked?.ok || !picked.tokens?.length) {
+    // Pool > n but no pick — picker unavailable or failed. Fall back to
+    // first N with a warn so the chain still completes; safety net for
+    // the (very rare) "no DOM available" case in test harness runs.
+    warn(`skill-targeting: row "${row.effect_label}" needs user pick (${pool.length} candidates, want ${n}); picker returned no tokens (${picked?.reason ?? "?"}); auto-picking first ${n}.`);
+    return { ok: true, tokens: pool.slice(0, n) };
+  }
+  return { ok: true, tokens: picked.tokens };
+}
+
+// Ask the player to pick from `pool` via the BD-native target picker
+// (`target-picker.js`). This is the SAME picker the Attack action's
+// TARGET state uses — top-floating banner + canvas token-rings +
+// inline Cancel/Confirm buttons. Effect-level picks (Protect's
+// `protect_incoming`, Mercy's redirect, etc.) all flow through here
+// so the UX matches across the whole game.
+//
+// TODO (owner-side routing): the BD picker is rendered on the calling
+// client (typically GM). For player-owned reactors the prompt should
+// appear on the reactor's owner's screen instead. Tracked as a
+// separate enhancement; depends on adding a server-roundtrip to
+// `target-picker.js` or an IntentChannel message to ferry the pick
+// across clients.
+async function promptBdPick({ row, pool, n, mode, ctx }) {
+  // Convert the token-doc pool into target-picker.js's "eligible
+  // snapshot" shape — minimum required fields are `tokenId` + `tokenUuid`
+  // (used to look up canvas tokens for ring placement) plus a few
+  // identity fields for the banner labels.
+  const eligible = pool.map((td) => ({
+    combatantId: null,
+    tokenId: td?.id ?? null,
+    tokenUuid: td?.uuid ?? null,
+    actorId: td?.actor?.id ?? null,
+    actorUuid: td?.actor?.uuid ?? null,
+    name: td?.name ?? td?.actor?.name ?? "?",
+    tokenImg: td?.texture?.src ?? td?.img ?? td?.actor?.img ?? null,
+    disposition: Number(td?.disposition ?? 0),
+  })).filter((e) => e.tokenId && e.tokenUuid);
+
+  if (!eligible.length) {
+    return { ok: false, reason: "no-eligible-tokens", tokens: [] };
+  }
+
+  const titleText = ctx?.skill?.name
+    ? `Pick a target for ${ctx.skill.name}`
+    : `Pick ${n} target${n === 1 ? "" : "s"}`;
+
+  try {
+    const result = await requestBdTargetPicker({
+      director: ctx?.director ?? null,
+      eligible,
+      mode: mode === "up_to" ? "up_to" : "exact",
+      count: n,
+      titleText,
+    });
+    if (!result?.ok) {
+      return {
+        ok: false,
+        cancelled: !!result?.cancelled,
+        reason: result?.reason ?? "pick-failed",
+        tokens: [],
+      };
+    }
+    // target-picker.js returns `tokenUuids: string[]`; resolve back to
+    // token documents from our original pool to preserve identity.
+    const pickedUuids = new Set(result.tokenUuids ?? []);
+    const tokens = pool.filter((td) => pickedUuids.has(td?.uuid));
+    return { ok: true, tokens };
+  } catch (err) {
+    return { ok: false, reason: "picker-threw", error: String(err?.message ?? err), tokens: [] };
+  }
 }
 
 // ── Candidate pool builders ──────────────────────────────────────────────

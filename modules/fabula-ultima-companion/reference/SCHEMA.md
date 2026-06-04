@@ -49,7 +49,18 @@ repo (copyrighted, ~150 MB) — they live on the GM's machine.
       "date": "2026-02-08",
       "field": "max_sl",
       "from": 3,
-      "to": 5
+      "to": 5,
+      "source": "playtest-2026-02-08"
+    }
+  ],
+  "playtest_variants": [          // optional alt-mechanic proposals NOT applied to top-level
+    {
+      "date": "2026-02-08",
+      "source": "playtest-2026-02-08",
+      "applied_to_canonical": false,
+      "alternate_name": "Agile Defender",  // when the variant ships under a new skill name
+      "summary": "What the variant changes (RAW text or paraphrase).",
+      "project_note": "Authoring decision: keep base or split into separate skill."
     }
   ]
 }
@@ -59,6 +70,14 @@ The merged shape (after layering playtest patches) reflects the
 **latest authoritative state**. `playtest_overrides` is a history
 trail — useful for design archaeology and diff PRs, ignored by the
 lint rule.
+
+`playtest_variants` is a parallel field for OPTIONAL alt-mechanic
+proposals the playtest offers that should NOT be applied to the
+canonical top-level shape. Common cases: a "BODYGUARD > AGILE
+DEFENDER" rename (Feb 2026) where the variant lives under a new
+skill name; a "we considered changing X but reverted" history note.
+The top-level skill stays at its authoritative shape; the variant
+is recorded for archaeology + future authoring decisions.
 
 ## Source keys (in `_meta.sources`)
 
