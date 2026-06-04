@@ -1647,6 +1647,11 @@ export async function applyEffectRow(row, ctx) {
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     case "consume_resource": return applyConsumeResourceEffect(row, ctx);
     case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
+    // resolveAction-unification: built-in action commits expressed as effect
+    // rows. Each wraps the proven bespoke function so behavior is identical,
+    // just routed through the unified resolver.
+    case "equip_swap":          return applyEquipSwapEffect(row, ctx);
+    case "encyclopedia_record": return applyEncyclopediaRecordEffect(row, ctx);
     // add_damage is data-only — read by `computeSenderDamageBonuses`
     // which walks acceptedPrePassives BEFORE the standard fire loop and
     // accumulates per-target base-damage bonuses. By the time
@@ -1920,8 +1925,36 @@ function isTargetImmuneToStatuses(actor, statuses) {
   return false;
 }
 
+// True iff a string value looks like a NUMERIC formula (worth baking) rather
+// than a bare string literal. Real formulas carry arithmetic/grouping/comma
+// punctuation, OR a function call (parens), OR an ALL-CAPS schema identifier
+// (2+ consecutive capitals: SL, HR, TOTAL, BOND_STRENGTH, HP_DEALT, CUR_MP …).
+// Bare words ("melee", "ranged", "Light") have none and must pass through
+// unbaked — used as OVERRIDE (mode 5) change values.
+function looksLikeNumericFormula(s) {
+  const str = String(s);
+  if (/[+\-*/%(),]/.test(str)) return true;
+  if (/[A-Z]{2,}/.test(str)) return true;
+  return false;
+}
+
+// Hinder's card-picked status → canonical AE name. The Common/Hinder item
+// uses `ae_template_ref: "status_value"` and the apply_ae handler resolves the
+// concrete debuff name from ctx.actionResult.statusValue at fire time.
+const HINDER_STATUS_NAMES = { dazed: "Dazed", shaken: "Shaken", slow: "Slow", weak: "Weak" };
+
 async function applyApplyAeEffect(row, ctx) {
-  const aeRef = String(row.ae_template_ref ?? "").trim();
+  let aeRef = String(row.ae_template_ref ?? "").trim();
+  // Dynamic ref: resolve the debuff name from the action's picked status
+  // (Hinder). Done before the empty-check so a missing pick fails cleanly.
+  if (aeRef === "status_value" || aeRef === "{status_value}") {
+    const sv = String(ctx.actionResult?.statusValue ?? "").trim().toLowerCase();
+    aeRef = HINDER_STATUS_NAMES[sv] ?? "";
+    if (!aeRef) {
+      warn(`skill-effects.apply_ae: status_value ref but no/unknown actionResult.statusValue ("${ctx.actionResult?.statusValue}")`);
+      return { ok: false, kind: "apply_ae", reason: "no-status-value" };
+    }
+  }
   if (!aeRef) {
     warn(`skill-effects.apply_ae: missing ae_template_ref on "${row.effect_label}"`);
     return { ok: false, kind: "apply_ae", reason: "no-ae-ref" };
@@ -1971,12 +2004,24 @@ async function applyApplyAeEffect(row, ctx) {
       continue;
     }
 
-    const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
-    if (existing) {
-      if (baseMode === "skip") { log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}"${isPerCaster ? " from this caster" : ""} (skip)`); continue; }
-      if (baseMode === "remove") { try { await existing.delete(); applied.push({ actorUuid: actor.uuid, removed: existing.name }); } catch (e) { warn("apply_ae remove failed", e); } continue; }
-      if (baseMode === "replace") { try { await existing.delete(); } catch (e) { warn("apply_ae replace-delete failed", e); } }
-      // "stack" falls through to create a new one
+    // `replace_same_status` — Hinder semantics. Distinct statuses coexist
+    // (Weak + Slow together is RAW-legal), but re-applying the SAME status
+    // replaces the prior instance. Match by the template's canonical Foundry
+    // status ids OR the literal name (the four basic debuffs share one parent
+    // world Item, so name/status — not parent id — distinguishes them). This
+    // folds the bespoke Hinder dedup (state-handlers.js) into apply_ae.
+    if (baseMode === "replace_same_status") {
+      const existingSame = findSameStatusAe(actor, template);
+      if (existingSame) { try { await existingSame.delete(); } catch (e) { warn("apply_ae replace_same_status delete failed", e); } }
+      // fall through to create the fresh instance
+    } else {
+      const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
+      if (existing) {
+        if (baseMode === "skip") { log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}"${isPerCaster ? " from this caster" : ""} (skip)`); continue; }
+        if (baseMode === "remove") { try { await existing.delete(); applied.push({ actorUuid: actor.uuid, removed: existing.name }); } catch (e) { warn("apply_ae remove failed", e); } continue; }
+        if (baseMode === "replace") { try { await existing.delete(); } catch (e) { warn("apply_ae replace-delete failed", e); } }
+        // "stack" falls through to create a new one
+      }
     }
 
     // Build the data — stamp `origin` to the firing skill so the AE
@@ -2062,6 +2107,14 @@ async function applyApplyAeEffect(row, ctx) {
       for (const ch of data.changes) {
         if (typeof ch?.value !== "string") continue;
         if (!isFormulaString(ch.value)) continue;
+        // Only bake values that actually LOOK like a numeric formula. A bare
+        // word string-literal change ("melee", "Light", "ranged" — used by
+        // OVERRIDE (mode 5) directives like cannot_be_targeted_by) is not a
+        // number, but evaluateFormula would resolve its unknown identifier to
+        // 0 and silently corrupt it. Real formulas always carry arithmetic /
+        // grouping punctuation OR an ALL-CAPS schema identifier (SL, HR,
+        // BOND_STRENGTH, HP_DEALT, CUR_MP, …) OR a function call (parens).
+        if (!looksLikeNumericFormula(ch.value)) continue;
         const resolved = evaluateFormula(ch.value, getBakeResolver(), null);
         if (resolved == null || !Number.isFinite(resolved)) continue;
         log(`apply_ae bake: "${ch.value}" → ${resolved} (target=${actor.name})`);
@@ -2193,6 +2246,94 @@ function findDuplicateAe(actor, template, scope = null) {
     return eff;
   }
   return null;
+}
+
+// `replace_same_status` matcher (Hinder). An existing enabled AE is "the same
+// status" if it shares any of the template's canonical Foundry status ids OR
+// has the same literal name. This distinguishes Weak from Slow even though the
+// four basic debuffs share one parent world Item — mirrors the bespoke Hinder
+// dedup in state-handlers.js.
+function findSameStatusAe(actor, template) {
+  if (!actor?.effects) return null;
+  const canonical = new Set(
+    (Array.isArray(template.statuses) ? template.statuses : []).map((s) => String(s).toLowerCase())
+  );
+  const wantName = String(template.name ?? "").toLowerCase();
+  for (const eff of actor.effects) {
+    if (eff.disabled) continue;
+    const effStatuses = eff.statuses ? Array.from(eff.statuses).map((s) => String(s).toLowerCase()) : [];
+    if (effStatuses.some((s) => canonical.has(s))) return eff;
+    if (wantName && String(eff.name ?? "").toLowerCase() === wantName) return eff;
+  }
+  return null;
+}
+
+// ── equip_swap (Equipment action) ────────────────────────────────────────
+// Commits the per-slot equipment selections the Equipment card collected onto
+// the acting actor. Wraps the proven `applyEquipmentSwap` (equipment-swap.js)
+// so behavior is byte-identical to the bespoke RESOLVE branch — this is just
+// the declarative entry point. Selections are threaded onto ctx.actionResult
+// by resolveAction (ar.equipmentSelections). Dynamic import avoids a static
+// circular dependency with the action pipeline.
+async function applyEquipSwapEffect(row, ctx) {
+  const actor = ctx.reactorActor;
+  if (!actor) return { ok: false, kind: "equip_swap", reason: "no-actor" };
+  const selections = ctx.actionResult?.equipmentSelections ?? null;
+  if (!selections) {
+    log("skill-effects.equip_swap: no slot selections on action result — no-op");
+    return { ok: true, kind: "equip_swap", reason: "no-selections", applied: [] };
+  }
+  try {
+    const { applyEquipmentSwap } = await import("./equipment-swap.js");
+    const result = await applyEquipmentSwap(actor, selections);
+    if (result?.skipped) {
+      log(`skill-effects.equip_swap: no changes for ${actor.name}`);
+      return { ok: true, kind: "equip_swap", reason: "no-change", applied: [] };
+    }
+    log(`skill-effects.equip_swap: committed ${result?.changes?.length ?? 0} change(s) for ${actor.name}`);
+    return { ok: true, kind: "equip_swap", applied: result?.changes ?? [] };
+  } catch (e) {
+    warn("skill-effects.equip_swap threw", e);
+    return { ok: false, kind: "equip_swap", reason: "threw" };
+  }
+}
+
+// ── encyclopedia_record (Study action) ────────────────────────────────────
+// Records the Study Open-Check result on the studied creature's Monster
+// Encyclopedia page (party-wide best result; lower rolls don't downgrade).
+// Wraps the existing `encApi.recordResult`. Per RAW Core p.74 a Fumble yields
+// no information — skip the record. Reads the studied target + roll from
+// ctx.actionResult. Presentation (token VFX, opening the sheet) stays in the
+// Study RESOLVE wrapper — this effect_kind is the data write only.
+async function applyEncyclopediaRecordEffect(row, ctx) {
+  const ar = ctx.actionResult;
+  const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+  if (!encApi?.recordResult) {
+    warn("skill-effects.encyclopedia_record: encyclopedia.recordResult unavailable");
+    return { ok: false, kind: "encyclopedia_record", reason: "no-api" };
+  }
+  if (ar?.roll?.isFumble) {
+    log("skill-effects.encyclopedia_record: fumble — no information gained (RAW)");
+    return { ok: true, kind: "encyclopedia_record", reason: "fumble", recordedUuid: null };
+  }
+  const candidates = [ar?.target?.worldActorUuid, ar?.target?.actorUuid].filter(Boolean);
+  for (const uuid of candidates) {
+    try {
+      const result = await encApi.recordResult({
+        actorUuid: uuid,
+        total: ar?.roll?.total ?? 0,
+        studierActorId: ar?.attacker?.actorId ?? null,
+        isCrit: !!ar?.roll?.isCrit,
+        isFumble: !!ar?.roll?.isFumble,
+      });
+      log(`skill-effects.encyclopedia_record: ${ar?.target?.name ?? uuid} — changed=${!!result?.changed}`);
+      return { ok: true, kind: "encyclopedia_record", recordedUuid: uuid, changed: !!result?.changed,
+               previousBest: result?.previousBest ?? null, newBest: result?.newBest ?? null };
+    } catch (e) {
+      warn("skill-effects.encyclopedia_record: recordResult threw on", uuid, e);
+    }
+  }
+  return { ok: false, kind: "encyclopedia_record", reason: "no-record" };
 }
 
 // ── consume_charge ──────────────────────────────────────────────────────

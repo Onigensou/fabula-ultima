@@ -46,7 +46,12 @@ export const BD_CLASS_EXTRA_SUBFOLDERS = {
 // Folders directly under "Battle Director", siblings of the class folders.
 //   "Hybrid Heroic Skill" — heroic skills shared across classes
 //   (Hoplite, Quaking Titan, Prophetic Defender, ...).
-export const BD_TOPLEVEL_SIBLINGS = ["Hybrid Heroic Skill"];
+//   "Common" — the canonical action-skill Items that back the built-in turn
+//   actions (Guard, Hinder, Study, Equipment, Item), universal to every
+//   creature. Authored by the resolveAction-unification migrations; resolved
+//   at runtime by the `coreAction` flag, not by folder, so the folder is
+//   purely for GM organisation.
+export const BD_TOPLEVEL_SIBLINGS = ["Hybrid Heroic Skill", "Common"];
 
 /**
  * Find an Item-type folder by name under a given parent (null = world root).

@@ -41,6 +41,9 @@ const RESERVED_REFS = {
   enemy_action_targets:  { candidate_source: "action_targets", category: "enemy", mode: "all" },
   trigger_actor:         { candidate_source: "trigger_actor", mode: "exact", count: 1 },
   trigger_subject:       { candidate_source: "trigger_subject", mode: "exact", count: 1 },
+  // Guard's optional covered ally (resolveAction-unification). mode "all" takes
+  // the (0 or 1) token collectCoverTarget yields without prompting.
+  cover_target:          { candidate_source: "cover_target", mode: "all" },
 };
 
 // Public — resolve a target_ref to a token list within a chain context.
@@ -244,6 +247,7 @@ async function buildCandidatePool(source, ctx) {
     case "hit_action_targets":  return collectHitActionTargets(ctx);
     case "trigger_actor":       return collectTriggerActor(ctx);
     case "trigger_subject":     return collectTriggerSubject(ctx);
+    case "cover_target":        return collectCoverTarget(ctx);
     case "combat":
     default:                    return collectCombatTokens(ctx);
   }
@@ -281,6 +285,14 @@ async function collectTriggerActor(ctx) {
 
 async function collectTriggerSubject(ctx) {
   const uuid = ctx.payload?.subjectTokenUuid ?? ctx.payload?.targetTokenUuid ?? null;
+  return await uuidsToTokens(uuid ? [uuid] : []);
+}
+
+// Guard's optional covered ally. The Guard action stamps the picked ally on
+// the action result (ar.coverTarget) — threaded onto ctx by resolveAction.
+// Empty (no ally covered) → no tokens, so the Covered-AE row simply no-ops.
+async function collectCoverTarget(ctx) {
+  const uuid = ctx.actionResult?.coverTarget?.tokenUuid ?? null;
   return await uuidsToTokens(uuid ? [uuid] : []);
 }
 
