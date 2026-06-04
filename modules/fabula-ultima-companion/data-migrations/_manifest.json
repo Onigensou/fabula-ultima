@@ -347,6 +347,10 @@
     {
       "key": "2026-06-05-common-hinder-author",
       "path": "data-migrations/2026-06-05-common-hinder-author.js"
+    },
+    {
+      "key": "2026-06-05-bd-skills-restore",
+      "path": "data-migrations/2026-06-05-bd-skills-restore.js"
     }
   ]
 }
