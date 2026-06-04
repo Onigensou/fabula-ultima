@@ -2886,57 +2886,68 @@ async function applyRollLootTableEffect(row, ctx) {
       continue;
     }
 
-    // Independent per-row rolls — each row gets its own d100 check.
-    // "(Empty)" + zero-pct rows are skipped silently. Items already
-    // claimed by another caster (in claimedKeys) skip too.
+    // SINGLE weighted d100 roll per enemy. The steal table's loot_percentage
+    // values partition 1..100 (e.g. 15 Zombie Potion / 30 Rotten Nail /
+    // 25 Bloodied Coin / 30 "(Empty)" = 100), so ONE roll lands in exactly one
+    // bucket and each enemy yields AT MOST one item (or nothing). Rows are
+    // walked in table order, accumulating their percentages; the first bucket
+    // the roll falls into wins. A roll past the defined buckets (table sums to
+    // < 100) — or landing on an "(Empty)"/zero-pct bucket — steals nothing.
+    // (Was previously an independent d100 PER row, which let one enemy drop
+    // several items — not the intended single-pick-per-enemy loot model.)
     const won = [];
     const wonKeys = [];
+    const roll = Math.floor(Math.random() * 100) + 1;  // 1..100
+    let cumulative = 0;
+    let chosenRow = null;
     for (const rRow of rows) {
       const pct = Number(rRow.loot_percentage) || 0;
-      if (pct <= 0) continue;
-      const roll = Math.floor(Math.random() * 100) + 1;  // 1..100
-      if (roll > pct) continue;
-      const lootName = String(rRow.loot_id ?? "").trim();
-      if (!lootName || lootName === "(Empty)") continue;
+      if (pct <= 0) continue;          // zero-pct buckets occupy no range
+      cumulative += pct;
+      if (roll <= cumulative) { chosenRow = rRow; break; }
+    }
+    const chosenName = String(chosenRow?.loot_id ?? "").trim();
+    if (chosenRow && chosenName && chosenName !== "(Empty)") {
+      const chosenPct = Number(chosenRow.loot_percentage) || 0;
       const entry = Object.entries(lootMap).find(
-        ([, e]) => String(e?.name ?? "").trim() === lootName
+        ([, e]) => String(e?.name ?? "").trim() === chosenName
       );
       if (!entry) {
-        log(`roll_loot_table: ${target.name}.${chanceProp} references "${lootName}" but ${lootProp} has no entry`);
-        continue;
+        log(`roll_loot_table: ${target.name}.${chanceProp} references "${chosenName}" but ${lootProp} has no entry`);
+      } else {
+        const [lootKey, lootEntry] = entry;
+        if (claimedKeys.has(lootKey)) {
+          // Rolled an item a prior caster already took — nothing stolen this
+          // roll (the bucket is "spent"; no re-roll). Matches the steal model.
+          log(`roll_loot_table: rolled "${chosenName}" but already claimed on ${target.name} — nothing stolen`);
+        } else {
+          // Resolve the source item — prefer world Item via
+          // system.uniqueId / compendiumSource (matches legacy Study macro's
+          // `resolveStealItemOpenUuid`). Falls back to the embedded item.
+          const sourceItem = await resolveStealSourceItem(lootEntry);
+          if (!sourceItem) {
+            log(`roll_loot_table: no source resolvable for ${chosenName}; nothing stolen`);
+          } else {
+            // Stack consumables/materials; create fresh embedded copy for
+            // equipment. The stacking key is `system.uniqueId` — same-uniqueId
+            // items already on the caster are treated as the same stack and
+            // their item_quantity is incremented.
+            const transferred = await transferLootToCaster(caster, sourceItem);
+            if (transferred) {
+              wonKeys.push(lootKey);
+              won.push({
+                name: chosenName,
+                img: sourceItem.img ?? null,
+                desc: String(lootEntry.loot_description ?? ""),
+                sourceItem,
+                stacked: transferred.stacked,
+                rolled: roll,
+                chance: chosenPct,
+              });
+            }
+          }
+        }
       }
-      const [lootKey, lootEntry] = entry;
-      if (claimedKeys.has(lootKey)) {
-        log(`roll_loot_table: "${lootName}" already claimed on ${target.name} — skipping`);
-        continue;
-      }
-
-      // Resolve the source item — prefer world Item via
-      // system.uniqueId / compendiumSource (matches legacy Study macro's
-      // `resolveStealItemOpenUuid`). Falls back to the embedded item.
-      const sourceItem = await resolveStealSourceItem(lootEntry);
-      if (!sourceItem) {
-        log(`roll_loot_table: no source resolvable for ${lootName}; skipping transfer`);
-        continue;
-      }
-
-      // Stack consumables/materials; create fresh embedded copy for
-      // equipment. The stacking key is `system.uniqueId` — same-uniqueId
-      // items already on the caster are treated as the same stack and
-      // their item_quantity is incremented.
-      const transferred = await transferLootToCaster(caster, sourceItem);
-      if (!transferred) continue;
-
-      wonKeys.push(lootKey);
-      won.push({
-        name: lootName,
-        img: sourceItem.img ?? null,
-        desc: String(lootEntry.loot_description ?? ""),
-        sourceItem,
-        stacked: transferred.stacked,
-        rolled: roll,
-        chance: pct,
-      });
     }
 
     // Stamp the hidden tracker AE if anything stuck. The AE marks both
