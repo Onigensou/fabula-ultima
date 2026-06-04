@@ -186,17 +186,24 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   const range = String(entry?.weapon_range ?? "Melee");
   const weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
 
-  // Resolve weapon item image. The entry's `uuid` field is canonical (the
-  // `id` field is an unresolved CSB template literal `${item.id}$`). Local
-  // lookup on the actor's items is enough — no async needed.
-  let imageUrl = entry?.img ?? entry?.image ?? null;
-  if (!imageUrl && entry?.uuid) {
-    try {
-      const itemId = String(entry.uuid).split(".").pop();
-      const item = actor.items?.get?.(itemId);
-      if (item?.img) imageUrl = item.img;
-    } catch (_) {}
+  // Resolve the live weapon Item. The entry's `uuid` field is canonical (the
+  // `id` field is an unresolved CSB template literal `${item.id}$`). When the
+  // weapon_list entry is absent (most PCs carry main_hand as a bare name with
+  // no container entry), fall back to matching an embedded weapon Item by
+  // name. The resolved Item drives both the sheet image AND — since Option B —
+  // its `uuid` is threaded onto the profile so on-hit reaction rows on the
+  // weapon attribute to THIS weapon (see weaponReactionInPlay in skill-effects).
+  let weaponItem = null;
+  if (entry?.uuid) {
+    try { weaponItem = actor.items?.get?.(String(entry.uuid).split(".").pop()) ?? null; } catch (_) {}
   }
+  if (!weaponItem) {
+    weaponItem = actor.items?.find?.(
+      (i) => i?.name === handName &&
+        String(i?.system?.props?.item_type ?? "").toLowerCase() === "weapon"
+    ) ?? null;
+  }
+  const imageUrl = entry?.img ?? entry?.image ?? weaponItem?.img ?? null;
 
   return Object.freeze({
     hand: which,
@@ -208,6 +215,14 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     range,
     weaponType,
     imageUrl,
+    // Live weapon Item uuid — null when the weapon isn't an embedded Item
+    // (on-hit reaction effects simply won't fire then; the basic attack
+    // still resolves from the derived stats above).
+    uuid: weaponItem?.uuid ?? null,
+    // Targeting text (Option B), mirrors buildPseudoWeaponFromNpcAttack so the
+    // Attack TARGET branch honors a weapon's own skill_target (e.g. a whip that
+    // hits all enemies). Blank → the branch falls back to "One Enemy".
+    skillTarget: String(weaponItem?.system?.props?.skill_target ?? "").trim().toLowerCase(),
   });
 }
 

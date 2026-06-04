@@ -3536,6 +3536,15 @@ const Resolve = {
                 weaponUuid: ar.weapon?.uuid ?? null,
                 sourceActorUuid: ar.attackerActorRef,
                 sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+                // Roll context so weapon on-hit gates resolve: TOTAL / HR /
+                // CRIT, and HIT_MARGIN = accuracy total − THIS target's
+                // defense (r.defense already encodes DEF vs MDEF). Drives
+                // "Conquer N" (HIT_MARGIN >= N) converted weapon effects.
+                total: ar.roll?.total ?? 0,
+                hr: ar.roll?.hr ?? 0,
+                isCrit: !!ar.roll?.isCrit,
+                isFumble: !!ar.roll?.isFumble,
+                hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
               },
             });
           }

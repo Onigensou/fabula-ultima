@@ -906,6 +906,29 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 //   { ..., available: boolean, unavailableReason: string|null }
 // `available: false` candidates are still in the array; the caller
 // decides how to render them.
+// Weapons now carry reaction_config_table (Option B — weapons are skill-shaped
+// action sources). Unlike skills/AEs, a weapon's reactions are only live when
+// the weapon is actually in play, so we gate weapon-type carriers:
+//
+//   - The ACTING creature (the one whose action fired this trigger — i.e.
+//     casterActor === payload.sourceActorUuid) only fires the weapon that
+//     struck. payload.weaponUuid identifies it, so a second equipped weapon
+//     (two-weapon) or an inventory weapon doesn't also fire its on-hit row.
+//   - A BYSTANDER reactor (target / ally reacting to someone else's action)
+//     fires its own EQUIPPED weapons; payload.weaponUuid belongs to the
+//     attacker and must not gate the bystander's gear out.
+//   - No weapon context (lifecycle triggers etc.) → equipped weapons only.
+//
+// Non-weapon carriers (skills, equipment, accessories, AEs) are never gated.
+function weaponReactionInPlay(item, payload, casterActor) {
+  if (String(item?.system?.props?.item_type ?? "").toLowerCase() !== "weapon") return true;
+  const usedUuid = payload?.weaponUuid ?? null;
+  const actingActorUuid = payload?.sourceActorUuid ?? null;
+  const reactorIsActor = !!actingActorUuid && casterActor?.uuid === actingActorUuid;
+  if (usedUuid && reactorIsActor) return item.uuid === usedUuid;
+  return item?.system?.props?.isEquipped === true;
+}
+
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
@@ -948,6 +971,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   for (const item of casterActor.items?.contents ?? []) {
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
+    if (!weaponReactionInPlay(item, payload, casterActor)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];

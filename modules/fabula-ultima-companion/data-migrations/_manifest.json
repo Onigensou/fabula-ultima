@@ -319,6 +319,18 @@
     {
       "key": "2026-06-04-fix-ae-duplicate-mode-select-type",
       "path": "data-migrations/2026-06-04-fix-ae-duplicate-mode-select-type.js"
+    },
+    {
+      "key": "2026-06-05-weapon-skillshape-template",
+      "path": "data-migrations/2026-06-05-weapon-skillshape-template.js"
+    },
+    {
+      "key": "2026-06-05-weapon-skillshape-backfill",
+      "path": "data-migrations/2026-06-05-weapon-skillshape-backfill.js"
+    },
+    {
+      "key": "2026-06-05-weapon-onhit-convert",
+      "path": "data-migrations/2026-06-05-weapon-onhit-convert.js"
     }
   ]
 }
