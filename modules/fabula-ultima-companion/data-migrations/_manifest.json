@@ -355,6 +355,10 @@
     {
       "key": "2026-06-05-sharpshooter-hawkeye-author",
       "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js"
+    },
+    {
+      "key": "2026-06-05-sharpshooter-stub-desc-clean",
+      "path": "data-migrations/2026-06-05-sharpshooter-stub-desc-clean.js"
     }
   ]
 }
