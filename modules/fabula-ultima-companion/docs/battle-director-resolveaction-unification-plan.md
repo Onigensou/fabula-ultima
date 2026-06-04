@@ -302,18 +302,86 @@ treats any non-number as a formula, so OVERRIDE (mode 5) literals like `"melee"`
 (skill-effects.js): only bake values with arithmetic/grouping/comma punctuation OR a 2+
 char ALL-CAPS identifier. Affects every apply_ae, not just the Common items.
 
-### REMAINING
-**Phase 6 — Attack — NOT STARTED (hardest/riskiest; do in a dedicated session).**
-Attack is the core combat path (every turn, all creatures). The weapon already carries
-`effect_table` (weapons-as-skill-shaped). To route the Attack RESOLVE branch through
-`resolveAction({actionSkill: weapon})`, first generalize `resolveAction`'s damage loop to
-match the Attack branch's extras the skill loop lacks: `pierceMiss` damage application and
-the per-hit-target `creature_deals_damage` payload carrying `weaponUuid` + `hitMargin` +
-`subject*`/roll context (Attack queues one trigger PER hit target; resolveAction queues one
-for the whole action). Multi-pass (two-weapon) + virtual attacks (Twin Shield) loop through
-CLEANUP→COMPUTE per pass — that stays. Regress hard with `verify-players-attack.mjs`
-(Keren dual-wield, Blanche virtual, Zarg ranged, affinity VU/RS/IM/AB, Muscly-Arm on-hit).
-Add a `UNIFIED_RESOLVE.attack` flag, default false until verified.
+### Post-overnight bug fixes shipped (on main)
+- `6552558` — Skill `intent is not defined`: the `8e837b3` unified-resolveActionTargets
+  refactor dropped the `const intent = classifyActionIntent(skill)` def but left
+  `actionIntent: intent` in the Skill COMPUTE ar-build (state-handlers ~1819/1955). Fired for
+  any Skill through the full pick+target COMPUTE (Soul Steal vs enemy, Infectious Ray). The
+  harness reimplements COMPUTE so it never hit it. Restored the def.
+- `f911b1e` — Soul Steal loot: `roll_loot_table` did an independent d100 PER row (multiple
+  items/enemy). Changed to ONE weighted d100 per enemy over the 100%-partition table
+  (cumulative-threshold walk; "(Empty)"/zero-pct or roll-past-range = nothing). Verified on
+  the live Bandit Zombie table (15/30/25/30): max 1 item/enemy, distribution matches.
+
+---
+
+## ACTIVE — Phase 6 Attack (decision: "Foundation first", 2026-06-05)
+
+**Design north star (from the Keyword Repository journal):** Pierce + Conquer are 2 of ~30
+cross-action COMBAT KEYWORDS (Multi, Chain, Overflow, Exploit, Drain, Feint, Trigger,
+Mana Burn, Cripple, Crush, Channel, Backstab, Blitz, Benign, Homing, Trick, Massive,
+Roulette, Unleash, Desperation, Innate, Execute, Snipe, Thievery, Shield(+elem); equipment:
+Double Strike, Transform, Versatile, Quickchange, Weighted). The end state is a KEYWORD LAYER
+on `resolveAction` (a registry that compiles keywords → the verified primitives:
+damage-loop flags, `HIT_MARGIN`/`chance()` gates, `apply_ae`, `roll_loot_table`). Multi-wield
+(dual/twin/triple/virtual) = a declarative PASS-COLLECTOR (contributors add weapon-shaped
+passes via a `creature_builds_attack` hook + `add_attack_pass` effect_kind; `getRuntimeActionView`
+already makes any item weapon-shaped). BOTH are follow-ups; this session does the FOUNDATION.
+
+**FOUNDATION scope (do now): generalize `resolveAction`'s damage path so Pierce + per-target
+Conquer/HIT_MARGIN are action-agnostic, then route Attack through `resolveAction`.**
+
+Attack `ar` shape (state-handlers.js:2752): `{kind:"Attack", attacker, attackerActorRef,
+weapon (has .uuid), attackMode, passIndex, totalPasses, targets, roll, damage{element,...},
+perTargetResults}`. **NO `hasDamage`, NO `damageResource`** (so treat kind Attack as damaging,
+default resource "hp"). `weapon.uuid` present for PC (resolveAttackerWeapon) + NPC
+(buildPseudoWeaponFromNpcAttack); virtual attacks (Twin Shield) MAY lack it → gate on it.
+
+Concrete edits in `resolveAction` (state-handlers.js ~265–530):
+1. **Damage loop gate** (~352): `if (ar.hasDamage && hits.length)` → `if ((ar.hasDamage ||
+   view.kind === "Attack") && hits.length)`.
+2. **Pierce-on-miss** (~349, inside loop): `if (!r.hit) {playMissVfx; continue;}` →
+   `if (!r.hit && !r.pierceMiss) {playMissVfx; continue;}`. Add `logSuffix` `[Pierce]` when
+   `r.pierceMiss`. (Universal — benefits skills that set pierceMiss too.) `firePostDamageEffect`
+   stays (no-op for weapons: no post_damage_effect_ref).
+3. **Post-loop `creature_deals_damage`** (~502): make kind-aware.
+   - `view.kind === "Attack"` → queue PER hit/pierce target the EXACT bespoke Attack payload
+     (subjectTokenUuid/subjectActorUuid = that target, weaponUuid = `ar.weapon?.uuid`,
+     hitMargin = `total − r.defense`, total/hr/isCrit/isFumble, sourceActorUuid/sourceTokenUuid,
+     targets+hitTargets lists). This is what makes weapon on-hit (Conquer `HIT_MARGIN>=N`,
+     poison `chance()`) fire via `findPassiveCandidates`→`weaponReactionInPlay`(weaponUuid match).
+   - else → keep the current ONCE-fire `payloadForPassives` (preserves skill behavior exactly;
+     hit_action_targets reactions like Vanish unaffected). *Action-agnostic Conquer on skills =
+     later follow-up; don't switch skills to per-target now (Vanish would over-fire).*
+4. **Route Attack RESOLVE branch** (state-handlers.js ~3584 `if (ar.kind === "Attack")`):
+   wrap the bespoke body in an else. At branch top:
+   `const _uw = (useUnifiedResolve("attack") && ar.weapon?.uuid) ? await fromUuid(ar.weapon.uuid).catch(()=>null) : null;`
+   `if (_uw) { await resolveAction(director, ar, {actionSkill:_uw}); } else { /* bespoke body */ }`.
+   Add `attack: false` to `UNIFIED_RESOLVE`; flip true only after verify.
+5. Multi-pass (two-weapon Keren) + virtual (Twin Shield Blanche) loop CLEANUP→COMPUTE per pass —
+   UNCHANGED; resolveAction just resolves each pass's `ar`.
+
+**Verify hard** (`tools/fvtt-playwright/scripts/verify-players-attack.mjs` + a focused
+verify-p6): flip `attack:true`, run — single-target dmg, Keren dual-wield (2 passes), Blanche
+Twin Shield (virtual; if weapon.uuid missing it falls back to bespoke — confirm or extend),
+Zarg ranged, affinity VU/RS/IM/AB, Muscly-Arm Conquer on-hit (HIT_MARGIN gate), poison
+`chance()`, pierce-on-miss. Compare damage + on-hit AEs to the bespoke branch BEFORE flipping.
+Then delete bespoke Attack branch in Phase 7. Keep world data uncommitted.
+
+### Phase 7 — cleanup (after Attack verified)
+Delete bespoke Guard/Hinder/Equipment/Study/Attack branches + `resolveSkillAction` alias +
+`UNIFIED_RESOLVE` switch; full 8-action regression.
+
+### EXTRA-TIME TASKS (after Attack foundation lands, per user 2026-06-05 night)
+1. **Re-check crafted Sharpshooter skills** — audit the Sharpshooter B.1 author migration
+   (`2026-06-03-sharpshooter-b1-author`) + live items vs `reference/skills.json` RAW; verify via
+   director harness. Look for canon drift, transfer:true leaks, AE/statuses issues.
+2. **Other classes used by the 4 player actors** (Keren, Hina, Blanche, Zarg) — identify each
+   actor's class(es) from their items, find which skills aren't authored/verified yet, author or
+   fix per the skill-authoring canon, harness-verify. Blanche=Guardian (done-ish), Zarg=Rogue
+   (Soul Steal/Pillage), Hina=Elementalist/Spiritist (spells), Keren=Chimerist? (phantasm/illusion,
+   dual-wield). Determine precisely from `actor.items` at runtime; prioritize skills the players
+   will actually use next session.
 
 **Phase 7 — cleanup.** Once Attack lands: delete the bespoke Guard/Hinder/Equipment/Study
 branches + the `resolveSkillAction` alias + `UNIFIED_RESOLVE` switch; full 8-action regression.

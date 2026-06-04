@@ -266,16 +266,22 @@ function damageElementIndex(type) {
 const UNIFIED_RESOLVE = Object.freeze({
   guard:     true,    // Phase 1 — VERIFIED 2026-06-05 (unified path reproduces bespoke Guard/Covered AEs + creature_guards)
   item:      false,   // Phase 2 — already effect-level unified (linked skill → resolveAction); no Common item
-  hinder:    true,    // Phase 3 — pending harness verify (this turn)
+  hinder:    true,    // Phase 3 — VERIFIED 2026-06-05 (replace_same_status dedup)
   equipment: true,    // Phase 4 — VERIFIED 2026-06-05 (equip_swap wiring no-op clean)
   study:     true,    // Phase 5 — VERIFIED 2026-06-05 (encyclopedia_record lands best; fumble skips)
+  attack:    true,    // Phase 6 — foundation, pending harness verify (this turn)
 });
 
 // True when the unified RESOLVE path should handle this command: the kind is
 // enabled AND its Common action-skill Item exists.
 function useUnifiedResolve(command) {
   const cmd = String(command ?? "").trim().toLowerCase();
-  return !!UNIFIED_RESOLVE[cmd] && !!getCoreActionSkill(cmd);
+  if (!UNIFIED_RESOLVE[cmd]) return false;
+  // Attack's backing source is the actor's equipped weapon (resolved per-action
+  // in the RESOLVE branch from ar.weapon.uuid), NOT a Battle Director/Common
+  // action-skill Item — so it doesn't require getCoreActionSkill.
+  if (cmd === "attack") return true;
+  return !!getCoreActionSkill(cmd);
 }
 
 // Resolve the canonical "action-skill" Item that backs a built-in turn action
@@ -409,9 +415,17 @@ async function resolveAction(director, ar, opts = {}) {
   //    HP_DEALT vs MP_DEALT resolve correctly in formulas.
   const dmgResource = ar.damageResource ?? "hp";
   const hits = (ar.perTargetResults ?? []);
-  if (ar.hasDamage && hits.length) {
+  // Attack carries no `hasDamage` flag (its perTargetResults are always a
+  // damage result); kind Attack always runs the damage loop. Default resource
+  // is "hp" (weapons never set damageResource).
+  if ((ar.hasDamage || view.kind === "Attack") && hits.length) {
+    // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
+    const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
     for (const r of hits) {
-      if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
+      // Pierce keyword (action-agnostic): a pierce-miss still deals its
+      // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
+      // in COMPUTE for ANY action carrying Pierce — not just Attack.
+      if (!r.hit && !r.pierceMiss) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -434,7 +448,8 @@ async function resolveAction(director, ar, opts = {}) {
           resource: dmgResource,
           targetName: r.name,
           tokenUuid: r.tokenUuid,
-          logPrefix: `Skill ${ar.skillName}:`,
+          logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
+          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
         });
         const finalValue = dmgRes.finalValue;
         const valueType = dmgRes.resource;
@@ -538,7 +553,47 @@ async function resolveAction(director, ar, opts = {}) {
   // save site. Otherwise reaction-applied AEs (e.g. Vanish) land BEFORE
   // the "After X's Action" rewind anchor, requiring two rewinds to
   // undo them. See [[reaction-architecture]].
-  if (ar.hasDamage && hits.some((r) => r.hit)) {
+  if (view.kind === "Attack") {
+    // Attack fires `creature_deals_damage` PER hit/pierce target so per-target
+    // gates resolve against the right creature: weapon on-hit keywords
+    // (Conquer `HIT_MARGIN >= N`, poison `chance()`) are gated by THIS target's
+    // hitMargin, and `weaponReactionInPlay` matches the acting weapon via
+    // `weaponUuid`. This is the exact payload the legacy Attack RESOLVE branch
+    // queued — routing Attack through resolveAction reproduces it. Skills keep
+    // the single action-level fire below (per-target firing for skills would
+    // make `hit_action_targets` reactions like Vanish over-apply — that's a
+    // later keyword-layer follow-up, not this foundation).
+    const struck = hits.filter((r) => r.hit || r.pierceMiss);
+    if (struck.length) {
+      const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+      const struckTokenUuids = struck.map((r) => r.tokenUuid);
+      for (const r of struck) {
+        queuePostResolveTrigger(director, {
+          casterActor,
+          trigger: "creature_deals_damage",
+          payload: {
+            targets: allTargetUuids,
+            targetTokenUuids: allTargetUuids,
+            hitTargets: struckTokenUuids,
+            hitTargetTokenUuids: struckTokenUuids,
+            subjectTokenUuid: r.tokenUuid,
+            subjectActorUuid: r.actorUuid,
+            actionIntent: ar.actionIntent,
+            weaponUuid: ar.weapon?.uuid ?? null,
+            sourceActorUuid: ar.attackerActorRef,
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            total: ar.roll?.total ?? 0,
+            hr: ar.roll?.hr ?? 0,
+            isCrit: !!ar.roll?.isCrit,
+            isFumble: !!ar.roll?.isFumble,
+            // HIT_MARGIN = accuracy total − THIS target's defense (r.defense
+            // already encodes DEF vs MDEF). Drives "Conquer N".
+            hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+          },
+        });
+      }
+    }
+  } else if (ar.hasDamage && hits.some((r) => r.hit)) {
     queuePostResolveTrigger(director, {
       casterActor,
       trigger: "creature_deals_damage",
@@ -3582,6 +3637,20 @@ const Resolve = {
     // roll result appears — see Confirm.onEnter. Not replayed here.)
 
     if (ar.kind === "Attack") {
+      // ── Unified path (resolveAction-unification Phase 6) ──
+      // Route the Attack through resolveAction with the equipped weapon as the
+      // backing action-skill (weapons are skill-shaped). resolveAction's
+      // generalized damage loop applies per-target damage (incl. Pierce) and
+      // queues the per-target creature_deals_damage (weaponUuid + hitMargin) so
+      // weapon on-hit keywords (Conquer/poison) fire identically to the legacy
+      // branch. Gated by UNIFIED_RESOLVE.attack + a resolvable weapon Item;
+      // otherwise the legacy branch below runs (e.g. a virtual/Twin-Shield pass
+      // whose source has no weapon.uuid, or the flag off). Removed in Phase 7.
+      const _unifiedWeapon = (useUnifiedResolve("attack") && ar.weapon?.uuid)
+        ? await fromUuid(ar.weapon.uuid).catch(() => null) : null;
+      if (_unifiedWeapon) {
+        await resolveAction(director, ar, { actionSkill: _unifiedWeapon });
+      } else {
       // Single-pass damage application. Multi-pass two-weapon attacks
       // loop back through COMPUTE → CONFIRM → RESOLVE per pass via the
       // CLEANUP→COMPUTE branch in the transition table, so each pass
@@ -3655,6 +3724,7 @@ const Resolve = {
           }
         }
       }
+      }  // end legacy Attack fallback (else of the unified resolveAction path)
     } else if (ar.kind === "Guard" && useUnifiedResolve("guard")) {
       // ── Unified path (resolveAction-unification Phase 1) ──
       // The Battle Director/Common/Guard action-skill Item carries the Guard +
