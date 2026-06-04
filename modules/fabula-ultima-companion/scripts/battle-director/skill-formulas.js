@@ -475,6 +475,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // `DID_COVER_ALLY == 1`. Read from payload.didCoverAlly (queued by
       // state-handlers.js Guard RESOLVE).
       case "DID_COVER_ALLY":      return payload?.didCoverAlly ? 1 : 0;
+      // In-flight-attack weapon-class predicates. Read the triggering
+      // action's weapon TYPE off the payload (`weaponType` = the homebrew
+      // CSB melee/ranged/arcane class, threaded by the Attack damage
+      // path onto both creature_will_deal_damage (pre-resolve) and
+      // creature_deals_damage (post-resolve) payloads). Unlike
+      // HAS_RANGED_WEAPON (which asks "is a ranged weapon EQUIPPED"),
+      // these ask "is THIS attack a ranged/melee/arcane one" — the gate
+      // Sharpshooter's Hawkeye / Warning Shot need so a "next ranged
+      // attack" buff doesn't fire on a melee swing. 0 when no weaponType
+      // was threaded (non-weapon action / skill) → a `== 1` gate fails closed.
+      case "ATTACK_IS_RANGED": return String(payload?.weaponType ?? "").toLowerCase() === "ranged" ? 1 : 0;
+      case "ATTACK_IS_MELEE":  return String(payload?.weaponType ?? "").toLowerCase() === "melee"  ? 1 : 0;
+      case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer

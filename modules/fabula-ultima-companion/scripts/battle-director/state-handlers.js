@@ -580,6 +580,11 @@ async function resolveAction(director, ar, opts = {}) {
             subjectActorUuid: r.actorUuid,
             actionIntent: ar.actionIntent,
             weaponUuid: ar.weapon?.uuid ?? null,
+            // Melee/ranged/arcane class of the acting weapon — drives the
+            // ATTACK_IS_RANGED / ATTACK_IS_MELEE formula gates (Warning Shot,
+            // ranged-only on-hit reactions). Mirrors the field on the
+            // pre-resolve creature_will_deal_damage payload.
+            weaponType: ar.weapon?.weaponType ?? null,
             sourceActorUuid: ar.attackerActorRef,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             total: ar.roll?.total ?? 0,
@@ -3708,6 +3713,7 @@ const Resolve = {
                 subjectActorUuid: r.actorUuid,
                 actionIntent: ar.actionIntent,
                 weaponUuid: ar.weapon?.uuid ?? null,
+                weaponType: ar.weapon?.weaponType ?? null,
                 sourceActorUuid: ar.attackerActorRef,
                 sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
                 // Roll context so weapon on-hit gates resolve: TOTAL / HR /

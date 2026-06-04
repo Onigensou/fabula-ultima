@@ -2147,6 +2147,35 @@ async function applyApplyAeEffect(row, ctx) {
         data.flags[FLAG_NS][k] = Number.isInteger(resolved) ? resolved : Number(resolved);
       }
     }
+
+    // Bake reaction-formula fields on the cloned AE's carried reactionConfig.
+    // An applied buff AE's reaction (e.g. Hawkeye's "+SL×2 to your next ranged
+    // attack") lives in flags.<ns>.reactionConfig.effect_table[*]. SL there
+    // resolves against the CARRIER AE at fire-time — but an applied AE has no
+    // level, so SL would fall back to 1 and lose the granting skill's scaling.
+    // Resolve `damage_amount` / `grant_amount` formulas NOW (against the
+    // caster + granting skill in ctx), writing literals so the buff reflects
+    // the skill's SL at apply-time. Same gate as changes[] (skip bare-word
+    // string literals; only bake true numeric formulas). Reusable for any
+    // SL-scaling applied-buff reaction, not just Hawkeye.
+    const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount"];
+    const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
+    const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
+    if (rcfgTable && typeof rcfgTable === "object") {
+      for (const erow of Object.values(rcfgTable)) {
+        if (!erow || typeof erow !== "object" || erow.$deleted) continue;
+        for (const f of REACTION_FORMULA_FIELDS) {
+          const raw = erow[f];
+          if (typeof raw !== "string") continue;
+          if (!isFormulaString(raw) || !looksLikeNumericFormula(raw)) continue;
+          const resolved = evaluateFormula(raw, getBakeResolver(), null);
+          if (resolved == null || !Number.isFinite(resolved)) continue;
+          log(`apply_ae bake (reactionConfig.${f}): "${raw}" → ${resolved} (target=${actor.name})`);
+          erow[f] = String(resolved);
+        }
+      }
+    }
+
     if (!data.flags) data.flags = {};
     data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
     // Per-AE duration counter (homebrew rule: default 3 turns, tick at
