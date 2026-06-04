@@ -1628,13 +1628,20 @@ const Target = {
         targets = [attackerSnap];
         targetUuids = [attackerSnap.tokenUuid];
       } else {
-        // Pick category. "ally" keywords + aid intent → ally; default → enemy.
+        // Pick category.
+        // "creature/creatures" keyword → any (ally + enemy both valid per RAW).
+        // "ally/allies" keyword OR aid intent → ally only.
+        // Default → enemy.
+        //
+        // "creature" takes priority over intent: Capote / Cross-Guard / etc.
+        // say "One Creature" and genuinely allow either ally or enemy.
         // Hostile non-damage Active skills (NPC Steal *, Hinder, Provoke)
         // need `action_intent: "harmful"` on the item — the classifier's
         // step-8 "Active without damage → aid" default would otherwise
         // route them to allies. See the 2026-06-03 migration.
-        const wantsAlly = /ally|allies/i.test(skillTargetText) || intent === "aid";
-        const category = wantsAlly ? "ally" : "enemy";
+        const wantsCreature = /creature|creatures/i.test(skillTargetText);
+        const wantsAlly = !wantsCreature && (/ally|allies/i.test(skillTargetText) || intent === "aid");
+        const category = wantsCreature ? "any" : (wantsAlly ? "ally" : "enemy");
         const eligibleRaw = director.dCombat
           ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
           : snapshotEligibleTargets(director.combat, attackerSnap, { category });
@@ -1665,9 +1672,10 @@ const Target = {
           count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
         }
 
+        const categoryLabel = category === "any" ? "creatures" : `${category}s`;
         if (mode === "all") {
           if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${category}s on this scene.`);
+            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
             director.enqueue({ type: INTENTS.TARGET_BACK });
             return;
           }
@@ -1675,7 +1683,7 @@ const Target = {
           targetUuids = eligibleRaw.map((e) => e.tokenUuid);
         } else {
           if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${category}s on this scene.`);
+            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
             director.enqueue({ type: INTENTS.TARGET_BACK });
             return;
           }
@@ -1997,6 +2005,46 @@ const Target = {
     const currentWeaponForRange = director.ctx.pendingPasses?.[0];
     const eligible = applyAttackRangeGate(eligibleRaw, currentWeaponForRange);
     director.ctx.eligibleTargets = eligible;
+
+    // ── Roulette keyword ── random target from every combatant except self.
+    // Overrides the normal enemy-only picker entirely.
+    if (currentWeaponForRange?.hasRoulette) {
+      const allCombatants = director.dCombat
+        ? snapshotEligibleTargetsFromDCombat(director.dCombat, director.ctx.turnSnapshot, { category: "creature" })
+        : snapshotEligibleTargets(director.combat, director.ctx.turnSnapshot, { category: "creature" });
+      const roulettePool = allCombatants.filter((t) => t.tokenUuid !== director.ctx.turnSnapshot.tokenUuid);
+      if (!roulettePool.length) {
+        ui.notifications?.warn(`${director.ctx.turnSnapshot.name}: no valid Roulette targets.`);
+        director.dispatch({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      const rouletteTarget = roulettePool[Math.floor(Math.random() * roulettePool.length)];
+      log(`TARGET Roulette: picked ${rouletteTarget.name} from pool of ${roulettePool.length}`);
+      // Expand eligibleTargets so COMPUTE can snapshot the chosen token
+      // even when it's a friendly (not in the enemy-only eligible list).
+      director.ctx.eligibleTargets = allCombatants;
+      director.ctx.pickedTargetUuids = [rouletteTarget.tokenUuid];
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: [rouletteTarget.tokenUuid] } });
+      return;
+    }
+
+    // skill_target "all *" — mirrors the Skill/Spell branch's all-enemies
+    // auto-targeting. Single source of truth: the item's skill_target field.
+    // hasOverflow is bookkeeping only and does not drive this check.
+    if (/\ball\b/i.test(currentWeaponForRange?.skillTarget ?? "")) {
+      if (!eligibleRaw.length) {
+        ui.notifications?.warn(`${director.ctx.turnSnapshot.name}: no enemies to target.`);
+        director.dispatch({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      const overflowUuids = eligibleRaw.map((e) => e.tokenUuid);
+      director.ctx.eligibleTargets = eligibleRaw;
+      director.ctx.pickedTargetUuids = [...overflowUuids];
+      log(`TARGET all-enemies (skill_target="${currentWeaponForRange.skillTarget}"): ${eligibleRaw.length} targets`);
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: overflowUuids } });
+      return;
+    }
+
     if (eligible.length === 0) {
       // Edge case for multi-pass: if pass 1 wiped the targets, the
       // off-hand has nothing to hit. Clear the queue + return through
@@ -2554,6 +2602,7 @@ const Compute = {
       for (const e of targetSnapshots) {
         let hit = false;
         let rawDamage = 0;
+        let pierceMiss = false;
         if (isFumble) {
           hit = false;
         } else if (isCrit) {
@@ -2562,6 +2611,11 @@ const Compute = {
         } else if (total >= e.defense) {
           hit = true;
           rawDamage = effectiveHr + damageBonus;
+        } else if (weapon.hasPierce) {
+          // Pierce: miss still deals 50% of potential damage (round up).
+          hit = false;
+          rawDamage = Math.ceil((effectiveHr + damageBonus) / 2);
+          pierceMiss = true;
         }
 
         // Effective affinity = sheet value + forced-VU from active conditions.
@@ -2577,7 +2631,7 @@ const Compute = {
           affinityCode = "RS";
         }
 
-        const damage = hit ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
+        const damage = (hit || pierceMiss) ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
 
         perTargetResults.push({
           tokenUuid: e.tokenUuid,
@@ -2592,6 +2646,7 @@ const Compute = {
           damage,
           affinity: affinityCode,
           studied: checkStudied(e),
+          pierceMiss,
         });
       }
 
@@ -2961,6 +3016,7 @@ const Confirm = {
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
             rawDamage: entry.rawDamage,
+            hr: ar.roll?.hr ?? 0,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
             weaponType: ar.weapon?.weaponType ?? null,
             affinity: entry.affinity,
@@ -3186,13 +3242,15 @@ const Resolve = {
       const passLabel = ar.totalPasses > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
       const hitTokenUuids = [];
       for (const r of (ar.perTargetResults ?? [])) {
-        if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
+        if (!r.hit && !r.pierceMiss) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
         try {
           const actor = await fromUuid(r.actorUuid);
           if (!actor) { warn("RESOLVE: actor not found", r.actorUuid); continue; }
           // Shared damage path — same helper Skill RESOLVE uses, so any
           // damage-time reaction AE (Mercy + family) fires uniformly
           // regardless of source. Attack is always HP-resource.
+          // Pierce misses (pierceMiss=true) deal their pre-halved r.damage here
+          // the same as a normal hit — affinity was already applied in COMPUTE.
           await applyDamageToTarget({
             target: actor,
             damage: r.damage,
@@ -3200,43 +3258,45 @@ const Resolve = {
             resource: "hp",
             targetName: r.name,
             tokenUuid: r.tokenUuid,
-            logSuffix: passLabel,
+            logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
           });
           hitTokenUuids.push(r.tokenUuid);
         } catch (e) {
           err("RESOLVE: failed to apply damage", r, e);
         }
       }
-      // Post-damage passive trigger — fires once per Attack action with
-      // the list of hit targets so reactions like Vanish (apply AE to
-      // each hit creature) can resolve via target_ref: "hit_action_targets".
+      // Post-damage passive trigger — fired once PER HIT TARGET so that
+      // per-target kill-detection gates (TARGET_CURRENT_HP <= 0) evaluate
+      // against the correct actor after damage has been committed.
+      // Action-level fields (hitTargets, HIT_COUNT, SINGLE_TARGET_ATTACK)
+      // are included on every dispatch so action-scoped formulas still resolve.
       //
       // QUEUED, not fired — runs after the RESOLVE save site so reaction-
-      // applied AEs (Vanish AE on the hit target) don't end up in the
-      // "After X's Action" rewind snapshot. Without queueing the user
-      // needs two rewinds to undo a Vanish that just fired.
+      // applied AEs don't end up in the "After X's Action" rewind snapshot.
       if (hitTokenUuids.length) {
         const attackerActor = await fromUuid(ar.attackerActorRef).catch(() => null);
         if (attackerActor) {
           const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
-          queuePostResolveTrigger(director, {
-            casterActor: attackerActor,
-            trigger: "creature_deals_damage",
-            payload: {
-              // Belt + suspenders — both naming conventions present so
-              // the chain's `hit_action_targets` resolver picks the
-              // list up via either path (ctx.hitActionTargetUuids OR
-              // ctx.payload.hitTargets).
-              targets: allTargetUuids,
-              targetTokenUuids: allTargetUuids,
-              hitTargets: hitTokenUuids,
-              hitTargetTokenUuids: hitTokenUuids,
-              actionIntent: ar.actionIntent,
-              weaponUuid: ar.weapon?.uuid ?? null,
-              sourceActorUuid: ar.attackerActorRef,
-              sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
-            },
-          });
+          for (const r of (ar.perTargetResults ?? [])) {
+            if (!r.hit && !r.pierceMiss) continue;
+            queuePostResolveTrigger(director, {
+              casterActor: attackerActor,
+              trigger: "creature_deals_damage",
+              payload: {
+                targets: allTargetUuids,
+                targetTokenUuids: allTargetUuids,
+                hitTargets: hitTokenUuids,
+                hitTargetTokenUuids: hitTokenUuids,
+                // Subject fields enable TARGET_CURRENT_HP in per-target gates.
+                subjectTokenUuid: r.tokenUuid,
+                subjectActorUuid: r.actorUuid,
+                actionIntent: ar.actionIntent,
+                weaponUuid: ar.weapon?.uuid ?? null,
+                sourceActorUuid: ar.attackerActorRef,
+                sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+              },
+            });
+          }
         }
       }
     } else if (ar.kind === "Guard") {

@@ -213,10 +213,11 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
         const allowed = new Set(enabledLabels.map((s) => String(s).trim()));
         const flat = LEGACY_PAGES.flatMap((p) => p.items);
         const filtered = flat.filter((label) => allowed.has(label));
-        // Stable order: matched in their declared sequence, then Passive, then Cancel.
+        // Passive only shown when explicitly included in enabledLabels — omitting
+        // it keeps the menu clean for single-type free actions like Voracious.
         const items = [
           ...filtered.map((label) => ({ label })),
-          { label: "Passive" },
+          ...(allowed.has("Passive") ? [{ label: "Passive" }] : []),
           { label: "Cancel" },
         ];
         return [{ name: "Free Action", items }];
