@@ -30,6 +30,17 @@ function ensureStyles() {
     }
     .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#a8c4d8; }
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
+    /* Roulette mode — all eligible rings strobe rapidly while the random
+       draw is in progress. CSS steps(1) makes it a hard digital blink
+       rather than a smooth fade, reinforcing the "slot machine" feel. */
+    .fud-target-ring.is-roulette{
+      border-style:solid; border-color:#e8a040; transition:none;
+      box-shadow:0 0 12px rgba(232,160,64,.7), inset 0 0 12px rgba(232,160,64,.25);
+      animation:fud-roulette-blink 0.14s steps(1) infinite;
+    }
+    @keyframes fud-roulette-blink{
+      50%{ opacity:0.15; border-color:#7a9bb6; box-shadow:0 0 10px rgba(122,155,182,.6), inset 0 0 10px rgba(122,155,182,.3); }
+    }
     /* Excluded-target overlay — drawn over tokens removed from the eligible
        pool by an AE-driven block (e.g. Vanish's cannot_target_uuids). The
        ring is grey + thinner, sits below regular target rings, and the
@@ -142,10 +153,105 @@ function worldToClient(x, y) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// ─── Dim / highlight helpers ──────────────────────────────────────────────────
+// Ported from the JRPG targeting highlight system. While the ring picker is
+// open, non-eligible tokens are darkened + desaturated so the player's eye is
+// drawn to the valid targets. The background is also dimmed for clarity.
+// Filters are stored and fully restored in finish() / on token deletion.
+
+const _DIM_BRIGHTNESS = 0.30;
+const _DIM_DESATURATE  = true;
+const _BG_DIM_BRIGHTNESS = 0.50;
+
+function _buildDimFilter() {
+  const f = new PIXI.filters.ColorMatrixFilter();
+  if (_DIM_DESATURATE) f.desaturate();
+  f.brightness(_DIM_BRIGHTNESS, false);
+  return f;
+}
+
+function _buildBgDimFilter() {
+  const f = new PIXI.filters.ColorMatrixFilter();
+  f.brightness(_BG_DIM_BRIGHTNESS, false);
+  return f;
+}
+
+// Apply dim to all visible scene tokens that are NOT in the eligible list
+// and NOT the acting token (source). Returns a state bag for cleanup.
+function applyTargetingDim(eligible, director) {
+  const visibleUuids = new Set(eligible.map((e) => e.tokenUuid).filter(Boolean));
+  // Keep the caster fully visible (matches JRPG `alwaysKeepSourceVisible`).
+  const sourceUuid = director?.ctx?.turnSnapshot?.tokenUuid ?? null;
+  if (sourceUuid) visibleUuids.add(sourceUuid);
+
+  const savedTokenFilters = new Map(); // tokenUuid → { mesh, original }
+  let savedBgFilters = null;
+  let bg = null;
+
+  const sceneTokens = (canvas?.tokens?.placeables ?? [])
+    .filter((t) => t?.visible && !t?.document?.hidden);
+
+  for (const token of sceneTokens) {
+    const uuid = token?.document?.uuid;
+    if (!uuid || visibleUuids.has(uuid)) continue;
+    const mesh = token?.mesh;
+    if (!mesh) continue;
+    try {
+      const original = Array.isArray(mesh.filters) ? [...mesh.filters] : [];
+      savedTokenFilters.set(uuid, { mesh, original });
+      mesh.filters = [...original, _buildDimFilter()];
+    } catch (e) {
+      warn("targetPicker dim apply failed", e);
+    }
+  }
+
+  bg = canvas?.primary?.background ?? null;
+  if (bg) {
+    try {
+      savedBgFilters = Array.isArray(bg.filters) ? [...bg.filters] : [];
+      bg.filters = [...savedBgFilters, _buildBgDimFilter()];
+    } catch (e) {
+      warn("targetPicker bg dim apply failed", e);
+    }
+  }
+
+  return { savedTokenFilters, savedBgFilters, bg };
+}
+
+// Restore a single token's filters when it is deleted mid-pick.
+function clearTokenDim(dimState, tokenUuid) {
+  if (!dimState?.savedTokenFilters?.has(tokenUuid)) return;
+  const rec = dimState.savedTokenFilters.get(tokenUuid);
+  try { rec.mesh.filters = rec.original; } catch {}
+  dimState.savedTokenFilters.delete(tokenUuid);
+}
+
+// Restore all filters and the background — called from finish().
+function clearTargetingDim(dimState) {
+  if (!dimState) return;
+  const { savedTokenFilters, savedBgFilters, bg } = dimState;
+  for (const rec of savedTokenFilters.values()) {
+    try { rec.mesh.filters = rec.original; } catch {}
+  }
+  savedTokenFilters.clear();
+  if (bg && savedBgFilters !== null) {
+    try { bg.filters = savedBgFilters; } catch {}
+  }
+}
+
 // `eligible` is the snapshotEligibleTargets() output.
 // Returns Promise<{ ok, cancelled, skipped?, tokenUuids }>.
-// `opts.mode`: "exact" or "up_to" (default "exact")
-// `opts.count`: number of targets required/maximum (default 1)
+// `opts.mode`: "exact" | "up_to" | "self" | "all" | "random" (default "exact")
+//   "self"   — immediately resolves with eligible[0]; no UI shown.
+//   "all"    — immediately resolves with all eligible; no UI shown.
+//   "random" — shows roulette animation then resolves with a random draw.
+// `opts.count`: target count (exact N for exact/random; max N for up_to/random+randomizeCount)
+// `opts.randomizeCount`: when true with mode "random", the draw count itself is
+//   randomised in [1, count] — handles "up to N random X" syntax.
+// `opts.randomPool`: optional explicit draw pool for random mode. Targets are
+//   drawn from this list instead of `eligible`. Rings still display around all
+//   `eligible` tokens. Pass when a future script needs to constrain the random
+//   draw to a specific subset while still visualising all candidates.
 // `opts.titleText`: banner text override
 // `opts.cancelLabel`: text on the Cancel button (default "Cancel"; use
 //   "Skip" or similar for mid-action picks where the action has already
@@ -155,7 +261,7 @@ function worldToClient(x, y) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null } = {}) {
   // No GM gate: target picking is client-local. The GM client uses this
   // as fallback when an NPC acts; player clients use it inside their
   // own composeAction() chain. See [[director-player-driven-input]].
@@ -168,12 +274,43 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     }
     return Promise.resolve({ ok: false, cancelled: false, tokenUuids: [], reason: "no eligible targets" });
   }
+
+  // "self" — exactly one pre-determined target (the caster). Resolve
+  // immediately; no picker overlay or user interaction needed.
+  if (mode === "self") {
+    const uuid = eligible[0]?.tokenUuid;
+    if (!uuid) return Promise.resolve({ ok: false, cancelled: false, tokenUuids: [], reason: "no eligible self target" });
+    return Promise.resolve({ ok: true, cancelled: false, tokenUuids: [uuid] });
+  }
+
+  // "all" — every eligible token is selected. Resolve immediately; the
+  // action card in COMPUTE/CONFIRM provides the visual target summary.
+  if (mode === "all") {
+    return Promise.resolve({ ok: true, cancelled: false, tokenUuids: eligible.map((e) => e.tokenUuid) });
+  }
+
   ensureStyles();
 
   return new Promise((resolve) => {
     // Build canvas-positioned rings around each eligible token.
     const rings = new Map(); // tokenUuid -> { el, token }
     const selected = new Set(); // tokenUuid
+
+    // Random-mode state — both closed over by the roulette timer, tryConfirm,
+    // and finish, so they're declared here at the top of the Promise scope.
+    let rouletteTimer = null;
+    let randomPicked  = [];
+
+    // Pre-compute the random draw immediately — the result is sealed before
+    // the animation plays, so the roulette is purely theatrical.
+    if (mode === "random") {
+      const pool = Array.isArray(randomPool) && randomPool.length ? randomPool : eligible;
+      const actualCount = randomizeCount
+        ? Math.floor(Math.random() * count) + 1
+        : Math.min(count, pool.length);
+      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      randomPicked = shuffled.slice(0, actualCount);
+    }
 
     const banner = document.createElement("div");
     banner.className = "fud-target-banner";
@@ -199,12 +336,21 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
 
     function isValidSelection() {
+      if (mode === "random") return true; // draw is pre-computed; confirm is always valid
       if (mode === "exact") return selected.size === count;
       if (mode === "up_to") return selected.size >= 1 && selected.size <= count;
       return selected.size > 0;
     }
 
     function updateBanner() {
+      if (mode === "random") {
+        const label = titleText ?? "Random target";
+        // Always show "Randomizing…" — the draw is sealed but never revealed
+        // in the picker itself. Confirm resolves it; Cancel aborts.
+        labelEl.innerHTML = `${label}<span class="selected-count">Randomizing…</span>`;
+        confirmBtn.classList.remove("is-disabled");
+        return;
+      }
       const verb = mode === "up_to" ? "up to" : "";
       const label = titleText ?? `Pick ${verb ? verb + " " : ""}${count} target${count === 1 ? "" : "s"}`;
       const countText = `${selected.size}/${count} selected`;
@@ -219,6 +365,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     updateBanner();
 
     function tryConfirm() {
+      if (mode === "random") {
+        // Resolve with the pre-computed draw regardless of animation state.
+        finish({ ok: true, cancelled: false, tokenUuids: randomPicked.map((e) => e.tokenUuid) });
+        return;
+      }
       if (!isValidSelection()) {
         if (mode === "exact") {
           ui.notifications?.warn(`Pick exactly ${count} target${count === 1 ? "" : "s"}.`);
@@ -373,6 +524,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // or fall back to global Hooks.on + manual cleanup (player clients
     // running composeAction with no director).
     const manualHooks = [];
+    // dimState is assigned after buildRings(); closed over by onPreDel + finish.
+    let dimState = null;
     const onPreDel = (_scene, doc) => {
       const uuid = doc?.uuid;
       if (uuid && rings.has(uuid)) {
@@ -382,6 +535,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         if (selected.has(uuid)) selected.delete(uuid);
         updateBanner();
       }
+      // Restore dim filter for deleted tokens so their mesh isn't left dirty.
+      if (uuid) clearTokenDim(dimState, uuid);
     };
     let hH, hP, hU, hD;
     if (director?.hooks?.on) {
@@ -404,6 +559,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // For v1 we use the Foundry hook "clickToken" if available; otherwise
     // we intercept the canvas pointerdown and resolve tokens via canvas API.
     const handlerClick = (event) => {
+      // Random mode: the player cannot manually pick — swallow all canvas clicks.
+      if (mode === "random") { event.preventDefault?.(); event.stopPropagation?.(); return; }
       try {
         const rect = canvas?.app?.view?.getBoundingClientRect?.();
         const transform = canvas?.stage?.worldTransform;
@@ -431,6 +588,14 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
 
     buildRings();
     repositionAll();
+    dimState = applyTargetingDim(eligible, director);
+
+    // Random mode: strobe all eligible rings indefinitely via CSS animation.
+    // The draw is pre-computed but never shown in the picker — the player
+    // clicks Confirm (or Cancel) to resolve. No auto-landing timer.
+    if (mode === "random") {
+      for (const rec of rings.values()) rec.el.classList.add("is-roulette");
+    }
 
     // External cancellation: when composeAction is racing GM-local vs
     // remote and the remote wins, the local picker overlay must tear
@@ -447,6 +612,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     }
 
     function finish(result) {
+      // Strip roulette animation from all rings before tearing down.
+      if (mode === "random") {
+        for (const rec of rings.values()) rec.el.classList.remove("is-roulette");
+      }
+      clearTargetingDim(dimState);
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}

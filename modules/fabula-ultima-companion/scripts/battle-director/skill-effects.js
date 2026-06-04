@@ -1155,22 +1155,11 @@ export async function computeSenderDamageBonuses({
       runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
       carrierSkill = null;
     }
-    // Find the labelled effect row pointed to by cand.ref.
-    const effRow = Object.values(runtimeEffectTable ?? {})
-      .find((r) => r?.effect_label === cand.ref);
-    if (!effRow) continue;
-    if (String(effRow.effect_kind ?? "").toLowerCase() !== "add_damage") continue;
-
-    // Targets that receive this candidate's bonus.
-    //
-    // Modern shape (post 2026-05-31): `appliesToTargetUuids` carries
-    // every hit target for which the row's gates matched. RAW: one
-    // reaction decision per action, effect applies per qualifying target.
-    //
-    // Legacy shape: a single `subjectActorUuid` from a pre-refactor
-    // per-target candidate. Kept for any in-flight or persisted snapshots
-    // that pre-date the aggregation refactor. New dispatches always go
-    // through the modern path.
+    // Walk from cand.ref through the effect table, summing every
+    // add_damage row reachable via chain steps. Handles both the simple
+    // case (cand.ref points directly to an add_damage row) and the
+    // chained case (cand.ref points to a chain that contains add_damage
+    // rows — e.g. Salamander Blaze: blaze_chain → blaze_damage + blaze_consume).
     let subjectUuids;
     if (Array.isArray(cand.appliesToTargetUuids) && cand.appliesToTargetUuids.length) {
       subjectUuids = cand.appliesToTargetUuids;
@@ -1180,7 +1169,6 @@ export async function computeSenderDamageBonuses({
       subjectUuids = [single];
     }
 
-    // Evaluate damage_amount against the candidate's payload.
     let amount = 0;
     try {
       const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
@@ -1190,7 +1178,27 @@ export async function computeSenderDamageBonuses({
         skill: carrierSkill,
         round: dCombat?.round ?? 0,
       });
-      amount = Number(evaluateFormula(String(effRow.damage_amount ?? "0"), resolver)) || 0;
+      const byLabel = new Map();
+      for (const r of Object.values(runtimeEffectTable ?? {})) {
+        if (!r || r.$deleted) continue;
+        const lbl = String(r.effect_label ?? "").trim();
+        if (lbl) byLabel.set(lbl, r);
+      }
+      const seen = new Set();
+      function walkDamage(label) {
+        if (!label || seen.has(label)) return;
+        seen.add(label);
+        const row = byLabel.get(label);
+        if (!row) return;
+        const kind = String(row.effect_kind ?? "").toLowerCase();
+        if (kind === "add_damage") {
+          amount += Number(evaluateFormula(String(row.damage_amount ?? "0"), resolver)) || 0;
+        } else if (kind === "chain") {
+          const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+          for (const s of steps) walkDamage(s);
+        }
+      }
+      walkDamage(cand.ref);
     } catch (e) {
       warn(`computeSenderDamageBonuses: damage_amount eval threw on ${cand.carrierName}`, e);
       amount = 0;

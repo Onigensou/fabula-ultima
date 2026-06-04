@@ -1475,9 +1475,12 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
     : (roll
         ? `<p><b>HR:</b> ${hrVal} (from accuracy roll)</p>`
         : `<p><b>HR:</b> — (no Check rolled)</p>`);
+  const prePassiveBonus = Number(damage.prePassiveBonus ?? 0) || 0;
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
-    : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
+    : prePassiveBonus > 0
+      ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
+      : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
 
   // Per-source breakdown of where the base damage bonus came from. Same
   // shape as the Accuracy panel's checkBonusParts breakdown — set by
@@ -3106,6 +3109,39 @@ export async function postActionCard({ director, kind, payload }) {
   const prior = _overlays.get(director.combatId);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
 
+  // Pre-compute bonus from auto-accepted ("on"-mode) pre-passives so the
+  // damage header reflects passive bonuses before the player confirms.
+  // "ask"-mode passives are uncertain — we don't pre-apply them to the header.
+  // Fire-and-forget: any throw leaves effectivePayload = payload (no bonus shown).
+  let effectivePayload = payload;
+  {
+    const autoPassives = (Array.isArray(payload?.prePassives) ? payload.prePassives : [])
+      .filter((p) => p?.mode === "on");
+    if (autoPassives.length && payload?.attackerActor && Array.isArray(payload?.perTargetResults)) {
+      try {
+        const { computeSenderDamageBonuses } = await import("./skill-effects.js");
+        const bonusMap = await computeSenderDamageBonuses({
+          casterActor: payload.attackerActor,
+          acceptedPrePassives: autoPassives,
+          dCombat: director.dCombat,
+        });
+        if (bonusMap.size > 0) {
+          const maxBonus = Math.max(...bonusMap.values());
+          if (maxBonus > 0 && payload.damage) {
+            effectivePayload = {
+              ...payload,
+              damage: {
+                ...payload.damage,
+                finalIfHit: (payload.damage.finalIfHit ?? 0) + maxBonus,
+                prePassiveBonus: maxBonus,
+              },
+            };
+          }
+        }
+      } catch (e) { warn("postActionCard: pre-passive bonus preview threw", e); }
+    }
+  }
+
   // Build the card defensively. If the whole composition throws, we
   // still produce a minimal "something went wrong but proceed" card so
   // the FSM doesn't abort — the player can confirm and the dice that
@@ -3114,19 +3150,19 @@ export async function postActionCard({ director, kind, payload }) {
   let card = null;
   try {
     if (kind === "Attack") {
-      card = buildAttackCard(payload);
+      card = buildAttackCard(effectivePayload);
     } else if (kind === "Guard") {
-      card = buildGuardCard(payload);
+      card = buildGuardCard(effectivePayload);
     } else if (kind === "Study") {
-      card = buildStudyCard(payload);
+      card = buildStudyCard(effectivePayload);
     } else if (kind === "Hinder") {
-      card = buildHinderCard(payload);
+      card = buildHinderCard(effectivePayload);
     } else if (kind === "Equipment") {
-      card = buildEquipmentCard(payload);
+      card = buildEquipmentCard(effectivePayload);
     } else if (kind === "Item") {
-      card = buildItemCard(payload);
+      card = buildItemCard(effectivePayload);
     } else if (kind === "Skill") {
-      card = buildSkillCard(payload);
+      card = buildSkillCard(effectivePayload);
     } else {
       card = {
         titleIcon: "",

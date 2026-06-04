@@ -490,33 +490,28 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
   }
 
   // Target count. NPC attacks read the same `skill_target` text as skills
-  // ("One Creature", "Up to two creatures", "All Enemy", etc.). Reuse the
-  // skill-side resolver so identifiers like HAS_SKILL_<NAME>, BOND_COUNT,
-  // SL evaluate correctly.
+  // ("One Creature", "Up to two creatures", "All Enemy", "One Random Creature", etc.).
   const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
-  const targetCountResolver = buildSkillResolver({
-    actor,
-    payload: null,
-    skill: attackItem,
-    round: director.dCombat?.round ?? 0,
-  });
-  let mode = "exact";
-  let count = 1;
-  if (/\ball\b/i.test(skillTargetText)) {
-    mode = "all";
-    count = filtered.length;
-  } else if (/up\s+to/i.test(skillTargetText)) {
-    mode = "up_to";
-    count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
-  } else {
-    count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
-  }
-  count = Math.max(1, Math.min(count, filtered.length));
 
   let targetUuids;
-  if (mode === "all") {
+  if (/\brandom\b/i.test(skillTargetText)) {
+    // Random targeting is resolved GM-side via the roulette picker.
+    // Don't pre-compose a target here — TARGET state runs resolveActionTargets.
+    targetUuids = [];
+  } else if (/\ball\b/i.test(skillTargetText)) {
     targetUuids = filtered.map((e) => e.tokenUuid);
   } else {
+    const targetCountResolver = buildSkillResolver({
+      actor,
+      payload: null,
+      skill: attackItem,
+      round: director.dCombat?.round ?? 0,
+    });
+    const isUpTo = /up\s+to/i.test(skillTargetText);
+    let count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
+    count = Math.max(1, Math.min(count, filtered.length));
+    const mode = isUpTo ? "up_to" : "exact";
+
     const result = await raceCancel(
       requestTargeting({
         director,
@@ -680,55 +675,56 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   if (isSelf) {
     targetUuids = [snap.tokenUuid];
   } else {
-    // Same category rule the GM uses: ally if the skill_target text
-    // says ally/allies OR the action intent classifies as "aid" (Heal,
-    // Aura, Reinforce, Cleanse, etc. — skills whose text doesn't
-    // mention "ally" but are obviously beneficial). Without this,
-    // Heal-type spells resolve to "enemy" since their skill_target
-    // is usually "One creature" not "One ally".
+    // Same category rule the GM uses — mirrors state-handlers.js exactly:
+    // "creature/creatures" keyword → any (ally + enemy pool combined per RAW).
+    // "ally/allies" keyword OR aid intent → ally only.
+    // Default → enemy.
     //
-    // RAW "creature" is generic — Heal/Aura's "Up to three creatures"
-    // means allies; Steal Item's "One Creature" means enemy. We can't
-    // disambiguate from text alone. Author intent is the source of
-    // truth: hostile-but-not-damaging NPC skills (Steal *, Hinder,
-    // Provoke) carry `action_intent: "harmful"` so the classifier
-    // returns harmful and they route to enemies correctly. See the
+    // "creature" takes priority over intent: skills like Capote / Cross-Guard
+    // say "One Creature" and allow either ally or enemy. The intent===aid
+    // fallback stays for spells whose skill_target says "one creature" but are
+    // clearly ally-only by design (Heal, Aura, etc.) — authors mark those with
+    // no explicit "creature" noun and rely on intent. Hostile-but-not-damaging
+    // NPC skills (Steal *, Hinder, Provoke) carry `action_intent: "harmful"`
+    // so the classifier returns harmful and they route to enemies. See the
     // 2026-06-03 hostile-intent data migration.
     const intent = classifyActionIntent(skill);
-    const wantsAlly = /ally|allies/i.test(skillTargetText) || intent === "aid";
-    const targetList = wantsAlly ? (eligible?.allies ?? []) : (eligible?.enemies ?? []);
+    const wantsCreature = /creature|creatures/i.test(skillTargetText);
+    const wantsAlly = !wantsCreature && (/ally|allies/i.test(skillTargetText) || intent === "aid");
+    // "creature" → combine allies + enemies into one pool so the picker shows all.
+    const targetList = wantsCreature
+      ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
+      : (wantsAlly ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
+    const categoryLabel = wantsCreature ? "creatures" : (wantsAlly ? "allies" : "enemies");
     if (!targetList.length) {
-      ui.notifications?.warn(`No eligible ${wantsAlly ? "allies" : "enemies"} on this scene.`);
+      ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
       return { cancelled: true, reason: "no targets" };
     }
 
-    // Mode + count from text. Same resolver the GM uses — identifiers
-    // that need only `actor` + `skill` (SL, CHAR_LEVEL, HAS_SKILL_<NAME>,
-    // BOND_*) evaluate correctly player-side; payload-dependent ones
-    // (HR, HIT_COUNT, etc.) fold to 0 since no payload exists yet.
-    // Enables cross-skill gates like Soul Steal × Pillage:
-    //   skill_target: "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures".
-    const targetCountResolver = buildSkillResolver({
-      actor,
-      payload: null,
-      skill,
-      round: director.dCombat?.round ?? 0,
-    });
-    let mode = "exact";
-    let count = 1;
-    if (/\ball\b/i.test(skillTargetText)) {
-      mode = "all";
-      count = targetList.length;
-    } else if (/up\s+to/i.test(skillTargetText)) {
-      mode = "up_to";
-      count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
-    } else {
-      count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
-    }
-
-    if (mode === "all") {
+    // Random targeting is resolved entirely on the GM side via the roulette
+    // picker — the player doesn't pick a target at all. Send an empty
+    // targetUuids so the GM's TARGET state skips the pre-composed bypass
+    // (isAutoPick = true for random mode, so it always re-derives anyway).
+    if (/\brandom\b/i.test(skillTargetText)) {
+      targetUuids = [];
+    } else if (/\ball\b/i.test(skillTargetText)) {
+      // "All *" — pre-compose every eligible token; TARGET auto-confirms.
       targetUuids = targetList.map((e) => e.tokenUuid);
     } else {
+      // Mode + count from text. Same resolver the GM uses — identifiers
+      // that need only `actor` + `skill` (SL, CHAR_LEVEL, HAS_SKILL_<NAME>,
+      // BOND_*) evaluate correctly player-side; payload-dependent ones
+      // (HR, HIT_COUNT, etc.) fold to 0 since no payload exists yet.
+      const targetCountResolver = buildSkillResolver({
+        actor,
+        payload: null,
+        skill,
+        round: director.dCombat?.round ?? 0,
+      });
+      const isUpTo = /up\s+to/i.test(skillTargetText);
+      const count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
+      const mode = isUpTo ? "up_to" : "exact";
+
       const result = await raceCancel(
         requestTargeting({
           director,

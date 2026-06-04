@@ -384,6 +384,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? countStatusDebuffs(subject) : 0;
       }
+      // Current HP of the trigger's subject (the target that was damaged).
+      // Reads after damage is applied, so 0 means the target just died.
+      // Used by kill-detection gates (Voracious, Chomp kill buff).
+      case "TARGET_CURRENT_HP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.current_hp ?? 0) || 0) : 0;
+      }
       // Count of targets that PASSED the Check (hit). For Active Skill
       // RESOLVE, chainPayload populates payload.hitTargets (see
       // state-handlers.js Skill resolve). For attack RESOLVE the same
@@ -484,6 +493,60 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return getNamedSkillLevel(actor, needle);
+        }
+        // Dynamic AE_COUNT_<NAME> identifier — counts non-disabled AEs
+        // with the given name on the reactor. Spaces → underscores,
+        // case-insensitive. Examples:
+        //   AE_COUNT_BURN      → number of "Burn" AEs on the actor
+        //   AE_COUNT_SOUL_LINK → number of "Soul Link" AEs
+        // Used by stackable-status passives (Salamander Blaze: "AE_COUNT_BURN * 4").
+        if (name.startsWith("AE_COUNT_")) {
+          const needle = name
+            .slice("AE_COUNT_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+          return effects.filter(
+            (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
+          ).length;
+        }
+        // Dynamic AE_CHARGES_<NAME> — sums charges across all non-disabled
+        // AEs with the given name. Works for both the single-AE-with-charges
+        // model (returns that AE's charge count) and the multi-AE stacking
+        // model (returns 0 for chargeless AEs, sum for any that have charges).
+        // Examples:
+        //   AE_CHARGES_BURN → total charges on all "Burn" AEs (e.g. 3)
+        if (name.startsWith("AE_CHARGES_")) {
+          const needle = name
+            .slice("AE_CHARGES_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const effects = actor?.effects?.contents ?? Array.from(actor?.effects ?? []);
+          return effects
+            .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+            .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
+        }
+        // Dynamic TARGET_AE_CHARGES_<NAME> — same as AE_CHARGES_<NAME> but
+        // reads from the trigger's SUBJECT (the attack target) rather than
+        // the reactor. Uses payload.subjectActorUuid (sync lookup).
+        // Used by Blaze-style passives that consume stacks on the TARGET.
+        //   TARGET_AE_CHARGES_BURN → total Burn charges on the target
+        if (name.startsWith("TARGET_AE_CHARGES_")) {
+          const needle = name
+            .slice("TARGET_AE_CHARGES_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
+          return effects
+            .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+            .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
         }
         return null;  // unknown → fold to 0 in evalNode
     }

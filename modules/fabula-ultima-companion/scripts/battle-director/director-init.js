@@ -501,6 +501,46 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 const PARTY_DASH_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav";
 
+const ROAR_BASE_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
+const ROAR_BY_SPECIES = {
+  BEAST:     "Monster1.ogg",
+  CONSTRUCT: "Gundam.mp3",
+  DEMON:     "Spook.mp3",
+  ELEMENTAL: "Pollen.ogg",
+  HUMANOID:  "Unsheathe.wav",
+  MONSTER:   "Monster5.ogg",
+  PLANT:     "Monster3.ogg",
+  UNDEAD:    "Monster2.ogg",
+};
+const ROAR_FALLBACK_FILE = "Monster4.ogg";
+const ROAR_VOLUME = 0.2;
+
+// Pick a random roar URL from the set of spawned enemy token IDs, based on each
+// enemy's actor species field. Mirrors the legacy Entrance Animation Listener.
+function pickEnemyRoarUrl(enemyTokenIds) {
+  const toks = (enemyTokenIds ?? []).map((id) => canvas?.tokens?.get?.(id)).filter(Boolean);
+  if (!toks.length) return ROAR_BASE_URL + ROAR_FALLBACK_FILE;
+  const files = toks.map((tok) => {
+    const s = String(tok.actor?.system?.props?.species ?? "").trim().toUpperCase();
+    return ROAR_BY_SPECIES[s] ?? ROAR_FALLBACK_FILE;
+  });
+  const file = files[Math.floor(Math.random() * files.length)] ?? ROAR_FALLBACK_FILE;
+  return ROAR_BASE_URL + file;
+}
+
+// Return the unique set of roar URLs for a batch of spawned enemy TokenDocuments
+// so they can be added to the preload list (preloaded behind the curtain).
+function buildEnemyRoarUrls(enemyTokenDocs) {
+  const urls = new Set();
+  for (const td of (enemyTokenDocs ?? [])) {
+    const actor = td.actor ?? game.actors?.get?.(td.actorId);
+    const s = String(actor?.system?.props?.species ?? "").trim().toUpperCase();
+    urls.add(ROAR_BASE_URL + (ROAR_BY_SPECIES[s] ?? ROAR_FALLBACK_FILE));
+  }
+  if (!urls.size) urls.add(ROAR_BASE_URL + ROAR_FALLBACK_FILE);
+  return Array.from(urls);
+}
+
 const ENTRANCE_MODULE_ID = "fabula-ultima-companion";
 const ACTION_ENTRANCE = "FU_DIRECTOR_ENTRANCE_PLAY";
 let _entranceSocket = null;
@@ -670,6 +710,11 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [] } = {}
     // Party dashes in first, then enemies fade in (kept light + sequential so
     // we're not moving + fading + looping every WEBM token on the same frames).
     await dashInParty();
+    // Play one species-based roar (random pick from the enemy group) as enemies
+    // begin fading in — mirrors the legacy Entrance Animation Listener logic.
+    if (enemyTokenIds.length > 0) {
+      playSfx(pickEnemyRoarUrl(enemyTokenIds), ROAR_VOLUME);
+    }
     await Promise.all(enemyTokenIds.map((id, i) => fadeIn(id, i * PER_TOKEN_STAGGER_MS)));
   } catch (e) {
     warn("playEntranceLocal threw", e);
@@ -815,7 +860,10 @@ export async function runDirectorInit(payload) {
   // the curtain stays up until the preload has either ACKed from clients or
   // timed out. This is the user's requested behavior: "only fade out the
   // darken when preload is completed".
-  const urls = buildPreloadUrls({ tokens: [...partyTokens, ...enemyTokens], payload });
+  const urls = [
+    ...buildPreloadUrls({ tokens: [...partyTokens, ...enemyTokens], payload }),
+    ...buildEnemyRoarUrls(enemyTokens),
+  ];
   const preloadResult = await preloadUrls(urls, { label: `director-${Date.now()}` });
   if (preloadResult?.timedOut) {
     ui.notifications?.warn?.("Battle Director: asset preload timed out; some clients may see fallbacks.");

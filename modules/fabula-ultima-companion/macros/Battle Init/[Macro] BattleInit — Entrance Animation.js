@@ -69,9 +69,11 @@
     const currentSceneId = canvas.scene?.id;
     if (!currentSceneId) return null;
 
-    const local = canvas.scene.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
-    if (local) return { payload: local, sourceScene: canvas.scene };
-
+    // Score all scenes that have a payload pointing at this battle scene.
+    // Prefer payloads that are fully progressed (gate+resolve+layout+spawn ok)
+    // and most recently transitioned — same logic as the Spawner so both
+    // steps always agree on which payload is "live".
+    let best = null;
     for (const s of (game.scenes?.contents ?? [])) {
       const p = s.getFlag(PAYLOAD_SCOPE, PAYLOAD_KEY);
       if (!p) continue;
@@ -82,10 +84,29 @@
         p?.context?.battleSceneId ??
         null;
 
-      if (transitionedBattleId && transitionedBattleId === currentSceneId) {
-        return { payload: p, sourceScene: s };
-      }
+      // Also accept a payload stored directly on the battle scene itself,
+      // but only if it references itself as the battle scene (not a stale
+      // payload written there by a previous aborted run without step4 data).
+      const isLocal = (s.id === currentSceneId);
+      const matchesBattleScene = transitionedBattleId === currentSceneId;
+      if (!matchesBattleScene && !isLocal) continue;
+      if (isLocal && !matchesBattleScene && !p?.step4?.battleScene?.id) continue;
+
+      const gateOk      = (p?.phases?.gate?.status === "ok");
+      const resolveOk   = (p?.phases?.resolve?.status === "ok");
+      const layoutOk    = (p?.phases?.layout?.status === "ok") ? 1 : 0;
+      const spawnOk     = (p?.phases?.spawn?.status === "ok") ? 1 : 0;
+      const transAt     = Number(p?.step4?.transitionedAt ?? 0) || 0;
+
+      const score = ((gateOk && resolveOk) ? 1_000_000_000_000 : 0)
+        + (layoutOk * 1_000_000_000)
+        + (spawnOk  * 100_000_000)
+        + transAt;
+
+      if (!best || score > best.score) best = { score, payload: p, sourceScene: s };
     }
+    if (best) return { payload: best.payload, sourceScene: best.sourceScene };
+
     return null;
   }
 
