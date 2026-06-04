@@ -368,6 +368,25 @@ Zarg ranged, affinity VU/RS/IM/AB, Muscly-Arm Conquer on-hit (HIT_MARGIN gate), 
 `chance()`, pierce-on-miss. Compare damage + on-hit AEs to the bespoke branch BEFORE flipping.
 Then delete bespoke Attack branch in Phase 7. Keep world data uncommitted.
 
+### TWO-WEAPON RULE — BUG FOUND (audit 2026-06-05, needs user call to fix)
+**Correct rule** (Custom Rules journal → "Double Strike", an Equipment Keyword):
+"You may perform Two-weapon Fighting with this weapon. This effect does not stack
+(dual-wielding two Double Strike weapons does NOT give 4 attacks)." So two-weapon
+fighting is granted by the **Double Strike keyword on a weapon**, capped at 2 attacks.
+**Current impl is WRONG:** `snapshot.js buildWeaponBundle` sets
+`canTwoWeaponFight = weapon && offWeapon && (mainWeaponType === offWeaponType)` —
+gates on same weapon TYPE, unrelated to the rule. **Blocker:** Double Strike is NOT
+machine-readable — none of 458 weapons carry a keyword/trait prop; "Double Strike"
+only appears in free-text `description` (e.g. Jur, Sonic Katar, via a @UUID link to
+the Double Strike journal). **Fix options:** (a) interim — detect Double Strike by
+parsing the weapon description for the keyword / its journal UUID; (b) proper —
+add a machine-readable `keywords` field to weapons (part of the keyword-layer
+follow-up) + a migration tagging Double Strike weapons, then gate on it. NOT
+auto-applied: changing the gate changes who can dual-wield (Keren currently relies
+on the same-type quirk) — gameplay decision for the user. Two Double Strike weapons
+must still cap at 2 (no-stack). The resolveAction Attack foundation is unaffected
+(pass machinery unchanged); this is purely the `canTwoWeaponFight` gate.
+
 ### Phase 7 — cleanup (after Attack verified)
 Delete bespoke Guard/Hinder/Equipment/Study/Attack branches + `resolveSkillAction` alias +
 `UNIFIED_RESOLVE` switch; full 8-action regression.
