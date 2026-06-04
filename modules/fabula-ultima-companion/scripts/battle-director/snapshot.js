@@ -6,6 +6,90 @@
 import { warn } from "./logger.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 
+// ── Dual Shieldbearer / Twin Shield ──────────────────────────────────────────
+// Mirrors the logic in [Macro] Attack - Player.js (v0.2 section).
+// When a PC has both hands equipped with shields AND carries the Dual
+// Shieldbearer passive, `buildWeaponBundle` injects a synthetic "Twin Shield"
+// weapon so the BD attack flow sees a single main-hand option instead of two
+// null slots.
+//
+// World item IDs (stable — these are world items, not compendium imports):
+//   DSB  = Dual Shieldbearer passive   (Item.TwiggXCPpT07L0OR)
+//   TWIN = Twin Shield virtual weapon  (Item.uENFXqIkJf5MeART)
+const _DSB_BASE_ID  = "TwiggXCPpT07L0OR";
+const _TWIN_ITEM_ID = "uENFXqIkJf5MeART";
+
+function _normStr(v) {
+  return (v ?? "").toString().trim().toLowerCase();
+}
+
+// Returns true if the actor owns the Dual Shieldbearer passive.
+// Matches by compendium-source UUID suffix OR normalised item name.
+function _hasDualShieldbearer(actor) {
+  try {
+    const items = Array.from(actor?.items ?? []);
+    const hasUuidMatch = (it) => {
+      const cands = [
+        it?.uuid,
+        it?.sourceId,
+        foundry?.utils?.getProperty?.(it, "sourceId"),
+        foundry?.utils?.getProperty?.(it, "flags.core.sourceId"),
+        foundry?.utils?.getProperty?.(it, "_stats.compendiumSource"),
+      ].filter(Boolean).map(String);
+      return cands.some((u) => u.includes(`.${_DSB_BASE_ID}`));
+    };
+    return items.some((it) => hasUuidMatch(it) || _normStr(it?.name) === "dual shieldbearer");
+  } catch {
+    return false;
+  }
+}
+
+// Returns true when the actor's equipped hand ("main" | "off") is a shield.
+// Checks both the CSB attribute slot (A1 === "SHI") and the weapon_list entry
+// type, mirroring the dual-check in Attack - Player.js::isShieldEntry /
+// isShieldByAttrKeys.
+function _isShieldHand(actor, which) {
+  const props = actor?.system?.props ?? {};
+  const A1key = which === "main" ? "main_attrib_1" : "off_attrib_1";
+  const A1 = String(props[A1key] ?? "").toUpperCase();
+  if (A1 === "SHI") return true;
+  const handName = which === "main" ? props.main_hand : props.off_hand;
+  if (!handName) return false;
+  const entry = Object.values(props?.weapon_list ?? {}).find((w) => w?.name === handName) ?? null;
+  return _normStr(entry?.weapon_type ?? entry?.category ?? "") === "shield";
+}
+
+// Build a frozen weapon row from the Twin Shield world item.
+// Uses game.items cache (sync) instead of fromUuid (async) — equivalent for
+// world items while keeping buildWeaponBundle synchronous.
+// Returns null when the item is not present in the world.
+function _buildTwinShieldRow() {
+  try {
+    const doc = game.items?.get?.(_TWIN_ITEM_ID) ?? null;
+    if (!doc) { warn("Twin Shield item not found in world items", _TWIN_ITEM_ID); return null; }
+    const GP = (k, d = "") => foundry?.utils?.getProperty?.(doc, `system.props.${k}`) ?? d;
+    const A1 = (GP("rolled_atr1", "MIG") || "MIG").toUpperCase();
+    const A2 = (GP("rolled_atr2", "MIG") || "MIG").toUpperCase();
+    return Object.freeze({
+      hand: "main",
+      name: doc.name ?? "Twin Shield",
+      A1,
+      A2,
+      checkBonus:  Number(GP("check_bonus",  0)) || 0,
+      damageBonus: Number(GP("damage_bonus", 0)) || 0,
+      damageType:  GP("type_damage", "Physical") || "Physical",
+      range:       GP("weapon_range", GP("skill_range", "Melee")) || "Melee",
+      weaponType:  GP("weapon_type", GP("category", "")) || "",
+      imageUrl:    doc.img ?? null,
+      isTwinShield: true,
+    });
+  } catch (e) {
+    warn("_buildTwinShieldRow threw", e);
+    return null;
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Element → affinity_N prop key mapping, mirroring legacy AdvanceDamage.js
 // line 278. The CSB template stores elemental affinities under numbered keys
 // (`affinity_1` etc.) — these are dropdown values: "" / "NE" (neutral),
@@ -256,6 +340,22 @@ function buildWeaponBundle(actor) {
       canTwoWeaponFight = !!mt && mt === ot;
     }
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
+
+  // Dual Shieldbearer injection: when both hands resolved to null (shields
+  // return null from resolveAttackerWeapon because A1 = "SHI") AND the actor
+  // carries Dual Shieldbearer, replace the empty weapon slots with the Twin
+  // Shield virtual weapon. This mirrors the injection in Attack - Player.js.
+  if (!weapon && !offWeapon) {
+    try {
+      if (_isShieldHand(actor, "main") && _isShieldHand(actor, "off") && _hasDualShieldbearer(actor)) {
+        const twin = _buildTwinShieldRow();
+        if (twin) {
+          weapon = twin;
+          canTwoWeaponFight = false;
+        }
+      }
+    } catch (e) { warn("buildWeaponBundle: Twin Shield injection threw", e); }
+  }
 
   return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, npcAttackItems: Object.freeze([]) };
 }
