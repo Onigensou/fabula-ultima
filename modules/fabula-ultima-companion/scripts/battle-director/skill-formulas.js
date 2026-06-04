@@ -436,6 +436,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Dodge's "while no shield and no martial armor" RAW gate.
       case "HAS_SHIELD":          return hasEquippedItemOfType(actor, "shield") ? 1 : 0;
       case "HAS_MARTIAL_ARMOR":   return hasEquippedItemOfType(actor, "armor", { requireMartial: true }) ? 1 : 0;
+      // Count-aware variants — author can gate on N copies. Used by
+      // Dual Shieldbearer's Twin Shields exposure (`EQUIPPED_SHIELD_COUNT >= 2`).
+      case "EQUIPPED_SHIELD_COUNT":  return countEquippedItemsOfType(actor, "shield");
+      case "EQUIPPED_WEAPON_COUNT":  return countEquippedItemsOfType(actor, "weapon");
+      case "EQUIPPED_ARMOR_COUNT":   return countEquippedItemsOfType(actor, "armor");
+      // Base attribute die sizes — pre-status reductions. Used by skills
+      // that scale on the bearer's underlying attribute regardless of
+      // current Shaken/Dazed/Slow/Weak penalties (Prophetic Defender's
+      // permanent +INS-die HP, future "base attribute = die size" gates).
+      case "INS_BASE_DIE": return readProp(actor, "ins_base");
+      case "MIG_BASE_DIE": return readProp(actor, "mig_base");
+      case "DEX_BASE_DIE": return readProp(actor, "dex_base");
+      case "WLP_BASE_DIE": return readProp(actor, "wlp_base");
+      // Current attribute die sizes — post-reduction. Used by skills
+      // that scale on the attribute as it is at cast time.
+      case "INS_CURRENT_DIE": return readProp(actor, "ins_current") || readProp(actor, "ins_base");
+      case "MIG_CURRENT_DIE": return readProp(actor, "mig_current") || readProp(actor, "mig_base");
+      case "DEX_CURRENT_DIE": return readProp(actor, "dex_current") || readProp(actor, "dex_base");
+      case "WLP_CURRENT_DIE": return readProp(actor, "wlp_current") || readProp(actor, "wlp_base");
       // Guard-payload identifier — 1 when the triggering Guard action
       // covered an ally, else 0. Used by Bodyguard's `creature_guards`
       // reaction-config row to gate the RS-to-all grant on
@@ -460,6 +479,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return hasNamedSkill(actor, needle) ? 1 : 0;
+        }
+        // Dynamic SL_<NAME> — current SL of a named owned skill, 0 if
+        // not owned. Cross-skill arithmetic gate: Dual Shieldbearer's
+        // Twin Shields virtual weapon uses `SL_DEFENSIVE_MASTERY` to add
+        // the bearer's Defensive Mastery SL as bonus damage. Same name
+        // grammar as HAS_SKILL_<NAME>: underscores → spaces,
+        // case-insensitive match.
+        if (name.startsWith("SL_")) {
+          const needle = name
+            .slice("SL_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return getNamedSkillLevel(actor, needle);
         }
         // Dynamic AE_COUNT_<NAME> identifier — counts non-disabled AEs
         // with the given name on the reactor. Spaces → underscores,
@@ -582,6 +615,151 @@ function hasEquippedItemOfType(actor, item_type, { requireMartial = false } = {}
     return true;
   }
   return false;
+}
+
+// Count of EQUIPPED items of a given `item_type` — the multi-item
+// generalisation of `hasEquippedItemOfType`. Used by Dual Shieldbearer
+// (`EQUIPPED_SHIELD_COUNT >= 2` to gate the Twin Shields virtual
+// weapon) and by any future "wield N copies of X" rule.
+function countEquippedItemsOfType(actor, item_type) {
+  if (!actor) return 0;
+  const wanted = String(item_type ?? "").toLowerCase();
+  const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  let count = 0;
+  for (const item of items) {
+    const p = item?.system?.props ?? {};
+    if (String(p.item_type ?? "").toLowerCase() !== wanted) continue;
+    if (!p.isEquipped) continue;
+    count += 1;
+  }
+  return count;
+}
+
+// Current SL of the named skill on the actor, 0 if not owned. Used by
+// the dynamic `SL_<NAME>` formula identifier — Dual Shieldbearer reads
+// `SL_DEFENSIVE_MASTERY` to add the bearer's Defensive Mastery SL as
+// the Twin Shields damage rider. Skill items expose level at
+// `system.level`, `system.props.skill_level`, or `system.props.level`
+// depending on template — check all three (same fallback chain as the
+// `SL` identifier in buildSkillResolver).
+function getNamedSkillLevel(actor, wantedLower) {
+  if (!actor) return 0;
+  const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
+  for (const item of items) {
+    if (String(item?.name ?? "").trim().toLowerCase() !== wantedLower) continue;
+    const lvl = Number(item?.system?.level
+      ?? item?.system?.props?.skill_level
+      ?? item?.system?.props?.level
+      ?? 0);
+    return Number.isFinite(lvl) ? Math.max(0, lvl) : 0;
+  }
+  return 0;
+}
+
+// Build a per-source breakdown of an actor's damage bonus for an attack
+// hand. Surfaced in the action-card Damage tooltip so the player sees
+// where each +N came from (weapon base, Hoplite, Twin Shields' SL_DM,
+// free-action grant, etc.).
+//
+// Returns: [{source: "Weapon (Muscly Arm)", amount: 5}, {source: "Hoplite", amount: 5}, ...]
+//
+// Strategy:
+//   1. Look up the equipped item for the hand → its `damage_bonus` is the
+//      weapon base. PC main reads `props.main_hand`; PC off reads
+//      `props.off_hand`. NPCs lack these props and fall through to a
+//      single "Weapon (name)" entry equal to weapon.damageBonus.
+//   2. Walk `actor.appliedEffects` for AEs whose `changes[]` write to
+//      the prop CSB stores the hand's aggregated damage_bonus
+//      (`weapon1_damage` for main, `off_mod_2` for off). Each contributing
+//      AE adds a `{source: ae.name, amount}` entry.
+//   3. Caller appends grant entries (free-action damageBonus) after.
+//
+// The parsed AE contribution is an APPROXIMATION:
+//   - Numeric value strings → use the number directly.
+//   - `aeXxxWhen("query", "N")` gate values → use N (assumes the gate is
+//     active; appliedEffects already filters disabled/suppressed AEs).
+//   - Other formula values → fall through to 0 (won't surface).
+// If the sum of parts doesn't match `weapon.damageBonus`, an "Other"
+// entry absorbs the difference so the breakdown remains internally
+// consistent. False-positive Hoplite (gate active showing as
+// contributing when the slot conditions actually evaluated false) is
+// caught by this reconciliation.
+export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGrant = null } = {}) {
+  const parts = [];
+  if (!weapon) return parts;
+  const targetKey = hand === "off" ? "off_mod_2" : "weapon1_damage";
+  const handNameKey = hand === "off" ? "off_hand" : "main_hand";
+  const expectedTotal = Number(weapon.damageBonus) || 0;
+  const grantAmount = attackGrant ? (Number(attackGrant.damageBonus) || 0) : 0;
+  // The grant contributes outside the actor-level AE walk; expected total
+  // for the AE-derived breakdown excludes it.
+  const aggregateTarget = expectedTotal - grantAmount;
+
+  // 1. Weapon base — from the equipped item.
+  const handName = actor?.system?.props?.[handNameKey];
+  let weaponName = weapon?.name ?? "Weapon";
+  let weaponBase = 0;
+  if (handName) {
+    const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
+    const item = items.find((i) =>
+      String(i?.system?.props?.name ?? "").trim() === String(handName).trim()
+      && i?.system?.props?.isEquipped);
+    if (item) {
+      weaponBase = Number(item.system?.props?.damage_bonus ?? 0) || 0;
+      weaponName = item.name;
+    }
+  }
+  // NPCs (no weapon_list / no main_hand) — surface weapon name + base 0;
+  // the discrepancy reconciliation below will assign the full damage to
+  // the NPC attack item line.
+  if (weaponBase !== 0 || handName) {
+    parts.push({ source: `Weapon (${weaponName})`, amount: weaponBase });
+  }
+
+  // 2. Actor AE contributions to the target prop key.
+  let effs = [];
+  try {
+    if (actor?.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor?.allApplicableEffects) effs = Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled);
+    else if (actor?.effects?.contents) effs = actor.effects.contents;
+  } catch (_e) { effs = []; }
+
+  const gateValueRe = /^ae\w+When\s*\(\s*["'][^"']*["']\s*,\s*["']?(-?\d+(?:\.\d+)?)["']?\s*\)$/i;
+  const numericRe = /^-?\d+(?:\.\d+)?$/;
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    for (const change of (ae?.changes ?? [])) {
+      if (change.key !== targetKey) continue;
+      if (Number(change.mode) !== 2) continue; // Only ADD mode counts as a contribution
+      const raw = String(change.value ?? "").trim();
+      let amount = 0;
+      if (numericRe.test(raw)) {
+        amount = Number(raw);
+      } else {
+        const gateMatch = raw.match(gateValueRe);
+        if (gateMatch) amount = Number(gateMatch[1]) || 0;
+      }
+      if (amount !== 0) {
+        parts.push({ source: ae.name || "Effect", amount });
+      }
+    }
+  }
+
+  // 3. Reconciliation — if the AE walker over- or under-counted (gate
+  //    parsing approximation), absorb the difference into an "Other"
+  //    entry so the displayed parts sum to weapon.damageBonus - grant.
+  const parsedSum = parts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const discrepancy = aggregateTarget - parsedSum;
+  if (discrepancy !== 0) {
+    parts.push({ source: "Other (unattributed)", amount: discrepancy });
+  }
+
+  // 4. Free-action grant — explicit, distinct from AE-driven bonuses.
+  if (grantAmount !== 0) {
+    parts.push({ source: attackGrant?.sourceLabel || "Free Action grant", amount: grantAmount });
+  }
+
+  return parts;
 }
 
 // Sync uuid → actor lookup. Foundry V12's fromUuidSync handles top-

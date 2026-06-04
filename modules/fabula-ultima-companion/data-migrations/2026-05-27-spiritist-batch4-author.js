@@ -32,6 +32,8 @@
  * IDEMPOTENT: re-runs no-op when content already matches the spec.
  */
 
+import { ensureFolderPath } from "./_folder-tree.js";
+
 export const key = "2026-05-27-spiritist-batch4-author";
 export const description =
   "Author the 6 Spiritist Batch 4 master items (Ritual Spiritism, Healing " +
@@ -61,14 +63,12 @@ async function fetchSpec(log) {
   } catch (e) { log(`fetch failed: ${e?.message ?? e}`); return null; }
 }
 
-function resolveClassFolder(game, classKey, subFolderName, log) {
-  const top = game.folders?.contents?.find((f) => f.type === "Item" && f.name === ROOT_FOLDER_NAME && !f.folder);
-  if (!top) { log(`  folder "${ROOT_FOLDER_NAME}" missing — scaffold first`); return null; }
-  const classFolder = game.folders?.contents?.find((f) => f.type === "Item" && f.name === classKey && f.folder?.id === top.id);
-  if (!classFolder) { log(`  folder "${ROOT_FOLDER_NAME} / ${classKey}" missing — scaffold first`); return null; }
-  const subFolder = game.folders?.contents?.find((f) => f.type === "Item" && f.name === subFolderName && f.folder?.id === classFolder.id);
-  if (!subFolder) { log(`  folder "${ROOT_FOLDER_NAME} / ${classKey} / ${subFolderName}" missing — scaffold first`); return null; }
-  return subFolder;
+// Self-healing: ensure the folder path exists on demand (creates missing
+// levels) rather than skipping. See `_folder-tree.js`.
+async function resolveClassFolder(game, classKey, subFolderName, log) {
+  const { folder } = await ensureFolderPath(
+    game, [ROOT_FOLDER_NAME, classKey, subFolderName], { log });
+  return folder ?? null;
 }
 
 function findExistingMaster(game, spec) {
@@ -131,7 +131,7 @@ async function ensureMaster(game, spec, log) {
   const label = `master "${name}"`;
   const subFolderName = String(spec.folder ?? "Skill");
   const classKey = String(spec.props?.class ?? "Spiritist");
-  const folder = resolveClassFolder(game, classKey, subFolderName, log);
+  const folder = await resolveClassFolder(game, classKey, subFolderName, log);
   if (!folder) { log(`${label}: folder unresolved — skipping`); return { skipped: true, reason: "no-folder" }; }
 
   let item = findExistingMaster(game, spec);

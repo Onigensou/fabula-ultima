@@ -43,6 +43,14 @@ export function devToolsAnchorBottom() {
   return playersHeight() + GAP_ABOVE_PLAYERS + SIZE + 10;
 }
 
+// Left offset (px) just to the RIGHT of the dev-tools button column — tool
+// panels anchor here so they don't cover the launcher + its speed-dial child
+// buttons (which let you re-trigger a tool on another target without first
+// closing the panel).
+export function devToolsAnchorLeft() {
+  return LEFT + SIZE + 12;
+}
+
 // ── boot ────────────────────────────────────────────────────────────────────
 export function initDevToolsMenu() {
   try {

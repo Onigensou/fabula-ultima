@@ -62,45 +62,37 @@
 
   function buildPanelHtml({ lifetimeMode, crossScene, directorPermanent }) {
     const sel = (v) => (v === lifetimeMode ? "selected" : "");
+    // Compact layout — two checkboxes share one row, help notes collapse
+    // to a single tooltip-style line so the panel doesn't dominate the
+    // sheet. The verbose per-field help text moved to the title= tooltips
+    // on the labels (visible on hover).
     return `
       <fieldset class="${PANEL_MARKER_CLASS}" style="margin-top: .5rem;">
         <legend>Lifecycle (Fabula Ultima)</legend>
 
-        <div class="form-group">
-          <label>Lifetime Mode</label>
-          <div class="form-fields">
-            <select name="flags.${MODULE_ID}.lifetimeMode" data-dtype="String">
-              <option value=""           ${sel("")}>Default — tick at applier's TurnStart</option>
-              <option value="round_end"  ${sel("round_end")}>Round End — swept at ROUND_END</option>
-            </select>
+        <div class="form-group" style="display:grid; grid-template-columns: 100px 1fr; gap: 4px 8px; align-items: center;">
+          <label title="How this AE expires. Default ticks at the applier's TurnStart (3 turns by default, or duration.rounds on the template). Round End is swept at the next ROUND_END (Rampart-style).">Expiry</label>
+          <select name="flags.${MODULE_ID}.lifetimeMode" data-dtype="String">
+            <option value=""           ${sel("")}>Per turn (default — 3 turns)</option>
+            <option value="round_end"  ${sel("round_end")}>End of round</option>
+          </select>
+
+          <label title="Skip the per-turn lifecycle ticker AND the scene-end sweep. Equivalent to 'this AE never expires automatically' — only consume_self / consume_charge / explicit delete removes it. Use for resource-pool charges (Prophecy Point) and trait-style passives.">Never Expires</label>
+          <div>
+            <label style="font-weight: normal; margin-right: 12px;">
+              <input type="checkbox" name="flags.${MODULE_ID}.directorPermanent" data-dtype="Boolean" ${directorPermanent ? "checked" : ""}>
+              No auto-cleanup
+            </label>
+            <label style="font-weight: normal;" title="Survives scene-end sweep. Use for AEs that should persist across scene transitions inside the same conflict.">
+              <input type="checkbox" name="flags.${MODULE_ID}.crossScene" data-dtype="Boolean" ${crossScene ? "checked" : ""}>
+              Cross-Scene
+            </label>
           </div>
-          <p class="notes">
-            <strong>Default</strong>: AE expires after N applier-turns (N = duration.rounds on the template, default 3).
-            <strong>Round End</strong>: AE expires at the end of any round (Rampart-style; the applier-turn tick skips it).
-          </p>
         </div>
 
-        <div class="form-group">
-          <label>Cross-Scene</label>
-          <div class="form-fields">
-            <input type="checkbox"
-                   name="flags.${MODULE_ID}.crossScene"
-                   data-dtype="Boolean"
-                   ${crossScene ? "checked" : ""}>
-          </div>
-          <p class="notes">Survives scene-end sweep (director.stop with cleanupTokens). Use for AEs that should persist across scene transitions inside the same conflict.</p>
-        </div>
-
-        <div class="form-group">
-          <label>Director Permanent</label>
-          <div class="form-fields">
-            <input type="checkbox"
-                   name="flags.${MODULE_ID}.directorPermanent"
-                   data-dtype="Boolean"
-                   ${directorPermanent ? "checked" : ""}>
-          </div>
-          <p class="notes">Never ticks, never swept. Trait-style permanent passive. Rare — most class traits live on the item as transfer:true and don't need this.</p>
-        </div>
+        <p class="notes" style="margin: 4px 0 0; font-size: 11px; opacity: 0.8;">
+          Hover each label for details. Default ticking + scene-end sweep handle most AEs; opt out only for charge pools and trait-style passives.
+        </p>
       </fieldset>
     `;
   }

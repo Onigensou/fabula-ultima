@@ -168,38 +168,48 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
   };
 }
 
-// Resolve the redirect's "source slot" — which target on the action card
-// gets moved to the reactor. Reads `target_ref` from the redirect_target
+// Resolve the redirect's "source slots" — which targets on the action
+// card get moved to the reactor. Reads `target_ref` from the redirect_target
 // row, looks up the corresponding targeting row on the carrier item, and
 // runs it through the **BD-native** resolver (`skill-targeting.js`).
 // The resolver honors:
 //   - auto_confirm_when_obvious (1 valid candidate → auto-pick)
 //   - exclude_self (the reactor isn't a valid source slot for themselves)
 //   - **BD-native target picker** prompt when multiple candidates match
-//     (same UI as Attack's TARGET state — banner + canvas rings + inline
-//     Cancel/Confirm)
-// Results are CACHED on the candidate (`pickedSubjectActorUuid`) so a
+//     and `mode: "exact"` with a count constraint (same UI as Attack's
+//     TARGET state). `mode: "all"` resolves to every matching target
+//     automatically without a picker — Prophetic Defender's "take the
+//     place of all threatened allies" rides on this.
+// Returns an ARRAY of actor uuids:
+//   - Protect's single-target targeting row → [oneActorUuid]
+//   - Prophetic Defender's mode:"all" targeting row → [...allUuids]
+// Results are cached on the candidate (`pickedSubjectActorUuids`) so a
 // re-recompute (e.g. another pill toggled afterwards) doesn't re-prompt.
-async function resolvePickedSubject({ cand, row, reactor, reactorTok, ctx }) {
+// The legacy single-uuid cache (`pickedSubjectActorUuid`) is preserved
+// for snapshotReactionDecisions round-trip when N === 1.
+async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) {
+  if (Array.isArray(cand.pickedSubjectActorUuids) && cand.pickedSubjectActorUuids.length) {
+    return cand.pickedSubjectActorUuids;
+  }
   if (cand.pickedSubjectActorUuid) {
-    // Already resolved on a prior recompute — use the cached pick.
-    return cand.pickedSubjectActorUuid;
+    // Backwards-compat: prior session cached a single-target pick.
+    return [cand.pickedSubjectActorUuid];
   }
   const targetRef = String(row?.target_ref ?? "").trim();
   if (!targetRef) {
     warn(`redirect: row "${row?.effect_label}" missing target_ref; falling back to scan-time subject`);
-    return cand.subjectActorUuid ?? null;
+    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
   }
   const item = await fromUuid(cand.carrierUuid);
   if (!item) {
     warn(`redirect: cannot resolve carrier item ${cand.carrierUuid}; falling back`);
-    return cand.subjectActorUuid ?? null;
+    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
   }
   // Build a BD-native chain ctx. `action_targets` candidate_source reads
   // ctx.actionTargetUuids; we feed the action's full target list from
   // arSnapshot. isPassive:false → the resolver prompts when multiple
-  // valid candidates exist. `skill` carries the carrier item so the
-  // picker title can show the skill name.
+  // valid candidates exist and mode requires a pick. `skill` carries the
+  // carrier item so the picker title can show the skill name.
   const allTargetTokenUuids = (ctx.ar?.targets ?? [])
     .map((t) => t?.tokenUuid)
     .filter(Boolean);
@@ -219,20 +229,24 @@ async function resolvePickedSubject({ cand, row, reactor, reactorTok, ctx }) {
     if (resolved?.cancelled) {
       log(`redirect: player cancelled target pick for ${cand.carrierName}`);
       cand._pickerCancelled = true;
-      return null;
+      return [];
     }
     warn(`redirect: BD target resolver failed (${resolved?.reason}); falling back to scan-time subject`);
-    return cand.subjectActorUuid ?? null;
+    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
   }
-  const pickedTok = resolved.tokens[0];
-  const pickedActorUuid = pickedTok?.actor?.uuid ?? null;
-  if (!pickedActorUuid) {
-    warn(`redirect: resolver returned a token with no actor uuid`);
-    return cand.subjectActorUuid ?? null;
+  const pickedUuids = resolved.tokens
+    .map((t) => t?.actor?.uuid)
+    .filter(Boolean);
+  if (!pickedUuids.length) {
+    warn(`redirect: resolver returned tokens with no actor uuids`);
+    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
   }
-  // Cache so the next recompute pass doesn't re-prompt.
-  cand.pickedSubjectActorUuid = pickedActorUuid;
-  return pickedActorUuid;
+  // Cache so the next recompute pass doesn't re-prompt. Mirror the
+  // single-uuid field when N === 1 so snapshotReactionDecisions'
+  // existing round-trip continues to work for Protect.
+  cand.pickedSubjectActorUuids = pickedUuids;
+  if (pickedUuids.length === 1) cand.pickedSubjectActorUuid = pickedUuids[0];
+  return pickedUuids;
 }
 
 // Apply a single redirect_target mutation to ctx. The "source slot" is
@@ -267,49 +281,66 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
   }
 
   // Distinguish cancel vs fall-through-fail by tagging the result with
-  // a sentinel before resolvePickedSubject. resolvePickedSubject returns
-  // null on player cancel, undefined/string on success/fail-fallback.
+  // a sentinel before resolveRedirectSubjects. Returns [] on player
+  // cancel (paired with _pickerCancelled=true); array of uuids on
+  // success / fail-fallback.
   cand._pickerCancelled = false;
-  const subjectUuid = await resolvePickedSubject({ cand, row, reactor, reactorTok, ctx });
+  const subjectUuids = await resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx });
   if (cand._pickerCancelled) {
     return "cancelled";
   }
-  if (!subjectUuid) {
-    return "failed";
-  }
-  const idx = ctx.targets.findIndex((t) => t?.actorUuid === subjectUuid);
-  if (idx === -1) {
-    warn(`redirect: picked subject ${subjectUuid} not found in ar.targets`);
+  if (!subjectUuids.length) {
     return "failed";
   }
 
   const { applyAffinityToDamage } = await import("./snapshot.js");
-  const newPerTarget = recomputePerTargetForRedirect({
-    ar: ctx.ar, reactor, reactorTok, applyAffinityToDamage,
-  });
 
-  // Annotate with redirect origin so the card-renderer (and chat-log
-  // if we ever surface one) can show "→ Blanche (via Protect)".
-  const originalName = ctx.targets[idx]?.name ?? "?";
-  newPerTarget.redirectedFrom = {
-    actorUuid: subjectUuid,
-    name: originalName,
-    via: cand.carrierName ?? "redirect",
-    reactorName: reactor.name,
-  };
+  // Iterate over each subject — Protect's single-target case swaps one
+  // slot; Prophetic Defender's multi-target case ("take the place of
+  // all those allies") swaps every matching slot, so the damage
+  // pipeline applies the action once per original target against the
+  // reactor's stats.
+  let touchedSlots = 0;
+  for (const subjectUuid of subjectUuids) {
+    const idx = ctx.targets.findIndex((t) => t?.actorUuid === subjectUuid);
+    if (idx === -1) {
+      warn(`redirect: picked subject ${subjectUuid} not found in ar.targets — skipping slot`);
+      continue;
+    }
+    const originalName = ctx.targets[idx]?.name ?? "?";
 
-  ctx.targets[idx] = {
-    actorUuid: reactor.uuid,
-    tokenUuid: reactorTok.uuid,
-    name: reactor.name,
-    tokenImg: reactorTok.texture?.src ?? reactor.img,
-    disposition: reactorTok.disposition,
-    defense: newPerTarget.defense,
-    redirectedFrom: { actorUuid: subjectUuid, name: originalName, via: cand.carrierName ?? "redirect" },
-  };
-  ctx.perTargets[idx] = newPerTarget;
+    // Per-slot recompute. The reactor's defense/affinity is identical
+    // across slots, so the same shape applies; the redirectedFrom
+    // annotation differs per slot so the card-renderer can show "via
+    // PD, originally targeting Hina" etc. per row.
+    const perTargetForSlot = recomputePerTargetForRedirect({
+      ar: ctx.ar, reactor, reactorTok, applyAffinityToDamage,
+    });
+    perTargetForSlot.redirectedFrom = {
+      actorUuid: subjectUuid,
+      name: originalName,
+      via: cand.carrierName ?? "redirect",
+      reactorName: reactor.name,
+    };
 
-  log(`redirect: slot ${idx} ${originalName} → ${reactor.name} (via ${cand.carrierName})`);
+    ctx.targets[idx] = {
+      actorUuid: reactor.uuid,
+      tokenUuid: reactorTok.uuid,
+      name: reactor.name,
+      tokenImg: reactorTok.texture?.src ?? reactor.img,
+      disposition: reactorTok.disposition,
+      defense: perTargetForSlot.defense,
+      redirectedFrom: { actorUuid: subjectUuid, name: originalName, via: cand.carrierName ?? "redirect" },
+    };
+    ctx.perTargets[idx] = perTargetForSlot;
+    touchedSlots += 1;
+    log(`redirect: slot ${idx} ${originalName} → ${reactor.name} (via ${cand.carrierName})`);
+  }
+
+  if (touchedSlots === 0) {
+    warn(`redirect: no matching slots found for picked subjects [${subjectUuids.join(", ")}]`);
+    return "failed";
+  }
   return "applied";
 }
 

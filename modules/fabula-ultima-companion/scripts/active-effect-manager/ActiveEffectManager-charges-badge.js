@@ -1,13 +1,15 @@
 /**
  * ActiveEffect Charges — Token Badge (Foundry VTT v12)
  * -----------------------------------------------------------------------------
- * Renders the current charge count as a small numeric badge in the top-right
+ * Renders the current charge count as a small numeric badge in the BOTTOM-right
  * corner of each token effect icon whose source ActiveEffect carries
- * flags.fabula-ultima-companion.charges.
+ * flags.fabula-ultima-companion.charges — hidden ONLY when chargesMax === 1 (a
+ * pure on/off effect, where a "1" is noise). Shown for max > 1 and for an unset
+ * max (unlimited / open-ended count).
  *
  * Storage (matches ActiveEffectManager-charges.js):
  *   flags.fabula-ultima-companion.charges     Number  current count
- *   flags.fabula-ultima-companion.chargesMax  Number? optional, ignored here
+ *   flags.fabula-ultima-companion.chargesMax  Number? max — badge hidden iff === 1
  *
  * Strategy:
  *   Wrap Token.prototype.drawEffects. After Foundry finishes drawing the
@@ -30,6 +32,7 @@ Hooks.once("ready", () => {
     const PATCH_KEY = "__ONI_AE_CHARGES_BADGE_V1__";
     const MODULE_ID = "fabula-ultima-companion";
     const FLAG_CHARGES = "charges";
+    const FLAG_CHARGES_MAX = "chargesMax";
     const BADGE_MARKER = "__oniChargeBadge";
     const DEBUG = false;
 
@@ -58,6 +61,18 @@ Hooks.once("ready", () => {
       try { raw = effect.getFlag?.(MODULE_ID, FLAG_CHARGES); } catch (_e) {}
       if (raw === undefined || raw === null) {
         raw = effect?.flags?.[MODULE_ID]?.[FLAG_CHARGES];
+      }
+      if (raw === undefined || raw === null || raw === "") return null;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function getChargeMax(effect) {
+      if (!effect) return null;
+      let raw;
+      try { raw = effect.getFlag?.(MODULE_ID, FLAG_CHARGES_MAX); } catch (_e) {}
+      if (raw === undefined || raw === null) {
+        raw = effect?.flags?.[MODULE_ID]?.[FLAG_CHARGES_MAX];
       }
       if (raw === undefined || raw === null || raw === "") return null;
       const n = Number(raw);
@@ -105,16 +120,16 @@ Hooks.once("ready", () => {
 
       const badge = new PIXI.Text(String(count), style);
       badge[BADGE_MARKER] = true;
-      badge.anchor?.set?.(1, 0);
+      badge.anchor?.set?.(1, 1); // bottom-right anchor
 
       // The icon sprite's anchor shifts where (0,0) of its local space sits
-      // on the texture. Texture top-right in local space is at:
+      // on the texture. Texture BOTTOM-right in local space is at:
       //   x = (1 - anchor.x) * localW
-      //   y = -anchor.y * localH
+      //   y = (1 - anchor.y) * localH
       const ax = iconSprite.anchor?.x ?? 0;
       const ay = iconSprite.anchor?.y ?? 0;
       badge.x = (1 - ax) * localW;
-      badge.y = -ay * localH;
+      badge.y = (1 - ay) * localH;
       badge.zIndex = 100;
 
       iconSprite.sortableChildren = true;
@@ -132,6 +147,11 @@ Hooks.once("ready", () => {
         seen.add(eff);
         const count = getChargeCount(eff);
         if (count === null) return;
+        // Hide the badge ONLY for a fixed max of 1 (a pure on/off effect, where
+        // a "1" is noise). Show for max > 1, and for an UNSET max (unlimited /
+        // open-ended charges — the running count is still meaningful).
+        const max = getChargeMax(eff);
+        if (max === 1) return;
         const imgNorm = normalizePath(eff.img ?? eff.icon ?? "");
         if (!imgNorm) return;
         out.push({ effect: eff, count, imgNorm });

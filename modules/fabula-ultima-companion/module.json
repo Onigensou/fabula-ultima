@@ -76,6 +76,7 @@
     "scripts/active-effect-manager/ActiveEffectManager-button.js",
     "scripts/active-effect-manager/ActiveEffectManager-charges.js",
     "scripts/active-effect-manager/ActiveEffectManager-charges-ui.js",
+    "scripts/active-effect-manager/ActiveEffectManager-charges-badge.js",
     "scripts/active-effect-manager/ActiveEffectManager-lifecycle-ui.js",
     "scripts/active-effect-manager/ActiveEffectManager-reaction-ui.js",
     "scripts/active-effect-manager/ActiveEffectManager-bonus-actions.js",

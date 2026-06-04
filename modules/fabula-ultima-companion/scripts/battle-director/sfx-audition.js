@@ -15,7 +15,7 @@
 
 import { log, warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
-import { registerDevTool, devToolsAnchorBottom } from "./dev-tools-menu.js";
+import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "./dev-tools-menu.js";
 
 const FORGE_SOUND_BASE =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
@@ -163,8 +163,10 @@ function togglePanel() {
 function buildPanel() {
   const panel = document.createElement("div");
   panel.id = DOM.PANEL_ID;
-  // Anchor just above the Developer Tools launcher (clear of the Players list).
+  // Anchor just above the Players list and to the RIGHT of the launcher column
+  // so it never covers the dev-tools buttons.
   try { panel.style.bottom = `${devToolsAnchorBottom()}px`; } catch (_e) {}
+  try { panel.style.left = `${devToolsAnchorLeft()}px`; } catch (_e) {}
 
   // Header
   const head = document.createElement("div");

@@ -25,12 +25,49 @@
 
 import { log, warn } from "./logger.js";
 
+const FLAG_NS = "fabula-ultima-companion";
 const _registry = new Map();  // actor.id → grant
 
+// Free-attack prevention check. Looks up the live actor and walks its
+// appliedEffects for any AE carrying `flags.fabula-ultima-companion
+// .preventFreeAttack: true`. Used by Quaking Titan's "No Free Attack"
+// debuff (May 4 2026 playtest); pays forward to any future "this
+// creature can't free-attack" status.
+function actorHasFreeAttackPrevention(actorId) {
+  if (!actorId) return false;
+  try {
+    const actor = game?.actors?.get?.(actorId);
+    if (!actor) return false;
+    const effs = actor.appliedEffects
+      ? Array.from(actor.appliedEffects)
+      : (actor.allApplicableEffects
+          ? Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled)
+          : (actor.effects?.contents ?? []));
+    for (const ae of effs) {
+      if (ae?.disabled) continue;
+      if (ae?.flags?.[FLAG_NS]?.preventFreeAttack === true) return true;
+    }
+  } catch (e) {
+    warn("actorHasFreeAttackPrevention threw", e);
+  }
+  return false;
+}
+
 export const freeActions = {
-  /** Get the pending grant for `actorId`, or null. */
+  /**
+   * Get the pending grant for `actorId`, or null. Returns null when the
+   * actor has an active `preventFreeAttack` AE (Quaking Titan etc.) —
+   * the grant is shelved but not consumed, so a subsequent expiry of
+   * the prevention AE would surface the grant naturally on the next
+   * read (typical use is one-shot: the prevention covers exactly the
+   * window in which a counterattack-style grant would have fired).
+   */
   get(actorId) {
     if (!actorId) return null;
+    if (actorHasFreeAttackPrevention(actorId)) {
+      log(`freeActions.get: ${actorId} has preventFreeAttack AE — grant suppressed`);
+      return null;
+    }
     return _registry.get(actorId) ?? null;
   },
 
@@ -38,6 +75,11 @@ export const freeActions = {
    * Register a grant. Overwrites any prior grant on the same actor.
    * Pass `null` / `undefined` for the grant to clear (equivalent to
    * `clear(actorId)`).
+   *
+   * Refuses to register a grant on an actor with an active
+   * preventFreeAttack AE — the grant source (typically a reaction)
+   * gets told "no" at the dispatch site so the player isn't shown a
+   * misleading free-action affordance the engine would later swallow.
    */
   set(actorId, grant) {
     if (!actorId) {
@@ -47,6 +89,10 @@ export const freeActions = {
     if (grant == null) {
       _registry.delete(actorId);
       log(`freeActions: cleared grant for ${actorId}`);
+      return;
+    }
+    if (actorHasFreeAttackPrevention(actorId)) {
+      log(`freeActions.set: ${actorId} has preventFreeAttack AE — grant refused`);
       return;
     }
     _registry.set(actorId, { ...grant });

@@ -34,6 +34,7 @@ import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
+import { initBattleStateTool } from "./battle-state-tool.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
@@ -482,14 +483,15 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Branch priority (first match wins):
   //   1. pendingAction set → CONFIRM (F5 mid-action-card; one-shot
   //      orthogonal to the stack — survives any combination of frames)
-  //   2. currentTurnResolved (and no in-flight stack) → TURN_END (turn
+  //   2. round=0 → STANDALONE_REACTION_WINDOW for conflict_start
+  //      (pre-combat phase; defensively clears a stale
+  //      currentTurnResolved=true that would otherwise misroute to
+  //      TURN_END and flip currentSide before anyone's turn)
+  //   3. currentTurnResolved (and no in-flight stack) → TURN_END (turn
   //      committed pre-reload, just advance)
-  //   3. Stack non-empty → top.resumeAt (suspended sub-flow:
+  //   4. Stack non-empty → top.resumeAt (suspended sub-flow:
   //      freeAction → FAW for teardown / drain; srwDetour → SRW for
   //      pop + re-dispatch loop; future interrupt frames likewise)
-  //   4. round=1 + no combatant + standaloneTrigger set → SRW
-  //      (Battle Start / mid-conflict_start cold resume — the
-  //      standalone* fields were restored above, so SRW can re-dispatch)
   //   5. Default → TURN_START (auto-picks the saved combatant)
   const facSummary = hydrateContinuationState(director, state);
   if (facSummary.restored) {
@@ -538,6 +540,34 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
       warn("resume: failed to restore pendingAction — falling back to TURN_START", e);
       resumeAt = STATES.TURN_START;
     }
+  } else if ((dCombat.round ?? 0) === 0) {
+    // "Battle Start" rewind / cold resume — conflict_start hasn't
+    // completed yet. dCombat.start() leaves round=0 as the pre-combat
+    // phase marker; ROUND_START.onEnter bumps to 1 only when entering
+    // Round 1 for real. So any saved state with round=0 is, by
+    // construction, pre-conflict_start.
+    //
+    // This branch fires BEFORE the currentTurnResolved-based routing to
+    // catch a corrupted edge case: if currentTurnResolved persists as
+    // true at round=0 (which is impossible in normal flow — RESOLVE
+    // only runs during a turn, and turns only exist at round>0), the
+    // old order would route to TURN_END → nextTurn() flips currentSide
+    // → "Round 0 · Enemies Pick Next Turn" surfaces with no real turn
+    // having taken place. Clearing the flag here + routing via SRW is
+    // the authoritative repair.
+    if (dCombat.currentTurnResolved) {
+      warn("resume: corrupted state — currentTurnResolved=true at round=0; clearing + routing via conflict_start SRW");
+      dCombat.currentTurnResolved = false;
+    }
+    // Re-enter the same handoff so conflict_start reactions (High
+    // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
+    // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
+    // sees fresh candidates. For F5 mid-conflict_start the flag was
+    // NOT cleared so only un-decided reactors re-spawn menus.
+    director.ctx.standaloneTrigger = "conflict_start";
+    director.ctx.standaloneAfter   = STATES.ROUND_START;
+    director.ctx.standalonePayload = null;
+    resumeAt = STATES.STANDALONE_REACTION_WINDOW;
   } else if (dCombat.currentTurnResolved && stackDepth(director.ctx) === 0) {
     // Normal turn fully resolved pre-reload AND no suspended sub-flows.
     // currentTurnResolved is only set when we're back at the top-level
@@ -552,28 +582,6 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
     const top = peekTop(director.ctx);
     resumeAt = top?.resumeAt ?? STATES.TURN_START;
     log(`resume: routing into ${resumeAt} per top frame "${top?.reason}"`);
-  } else if ((dCombat.round ?? 0) === 0) {
-    // "Battle Start" rewind / cold resume — conflict_start hasn't
-    // completed yet. dCombat.start() leaves round=0 as the pre-combat
-    // phase marker; ROUND_START.onEnter bumps to 1 only when entering
-    // Round 1 for real. So any saved state with round=0 is, by
-    // construction, pre-conflict_start.
-    //
-    // Earlier shape — `round=1 + currentCombatantId=null` — was
-    // ambiguous: it also matched TURN_END saves IN Round 1 (nextTurn
-    // clears combatantId between turns), and F5 there misrouted to
-    // SRW and re-fired every conflict_start reaction. Round 0 makes
-    // the discrimination unambiguous.
-    //
-    // Re-enter the same handoff so conflict_start reactions (High
-    // Speed pill, future Sentinel, etc.) re-fire — the standaloneFired
-    // flag was cleared by the rewind pipeline so dispatchStandaloneTrigger
-    // sees fresh candidates. For F5 mid-conflict_start the flag was
-    // NOT cleared so only un-decided reactors re-spawn menus.
-    director.ctx.standaloneTrigger = "conflict_start";
-    director.ctx.standaloneAfter   = STATES.ROUND_START;
-    director.ctx.standalonePayload = null;
-    resumeAt = STATES.STANDALONE_REACTION_WINDOW;
   } else {
     resumeAt = STATES.TURN_START;
   }
@@ -831,6 +839,57 @@ Hooks.once("ready", () => {
       const dc = _instance?.dCombat;
       if (dc) { try { bannerRefreshTurnActions(dc); } catch (e) { warn("refreshTurnActions API threw", e); } }
     },
+    // ── Dev state controls (GM-only) ─────────────────────────────────────
+    // Manual FSM nudges for testing — drive the battle forward without playing
+    // out every turn. All operate on the live director instance; no-op (with a
+    // reason) when no battle is running. Used by the Battle State dev tool.
+    //
+    // A compact read of the current state for a tool's status line.
+    stateInfo: () => {
+      const d = _instance, dc = d?.dCombat;
+      if (!dc || !dc.started || dc.ended) return { running: false };
+      return {
+        running: true,
+        round: dc.round ?? 0,
+        currentSide: dc.currentSide === "enemy" ? "Enemies" : "Party",
+        current: dc.current?.name ?? null,
+        fsmState: d.state ?? null,
+        combatants: (dc.combatants ?? []).map((c) => ({
+          name: c.name, side: c.side, turnsRemaining: c.turnsRemaining,
+          turnsPerRound: c.turnsPerRound, defeated: !!c.isDefeatedLive?.(),
+        })),
+      };
+    },
+    // Skip the current turn — route straight through TURN_END (which advances
+    // the turn / flips side, wrapping the round only if all turns are spent).
+    forceNextTurn: async () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
+      catch (e) { warn("forceNextTurn threw", e); return { ok: false, error: String(e?.message ?? e) }; }
+    },
+    // End the current round + advance to the next: zero everyone's remaining
+    // turns so TURN_END's nextTurn() wraps the round (round++ → ROUND_START
+    // banner → next-turn picker).
+    forceNextRound: async () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      for (const c of d.dCombat.combatants) c.turnsRemaining = 0;
+      try { await d.transitionTo(STATES.TURN_END); return { ok: true, round: d.dCombat.round }; }
+      catch (e) { warn("forceNextRound threw", e); return { ok: false, error: String(e?.message ?? e) }; }
+    },
+    // Refill every un-defeated combatant's turns for the CURRENT round (re-run
+    // a round without advancing). Updates the turn-action HUD.
+    refillRoundTurns: () => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance;
+      if (!d?.dCombat?.started || d.dCombat.ended) return { ok: false, error: "no active battle" };
+      for (const c of d.dCombat.combatants) c.turnsRemaining = c.isDefeatedLive?.() ? 0 : c.turnsPerRound;
+      try { bannerRefreshTurnActions(d.dCombat); } catch (e) { warn("refillRoundTurns refresh threw", e); }
+      return { ok: true };
+    },
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
@@ -932,6 +991,9 @@ Hooks.once("ready", () => {
   // turn-action tracker icons (frame the face, not the ears).
   try { initIconFocusTuner(); }
   catch (e) { warn("initIconFocusTuner on ready threw", e); }
+
+  try { initBattleStateTool(); }
+  catch (e) { warn("initBattleStateTool on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.

@@ -154,7 +154,10 @@ async function playRoundSfx(url = ROUND_SFX_URL, vol = 0.6) {
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
   const css = `
-#${LAYER_ID} { position: fixed; inset: 0; z-index: 100000; pointer-events: none; overflow: hidden; display: none; --slant: ${SLANT_VH}vh; }
+/* z-index 99 = just BELOW Foundry application windows (which float at 100+), so
+   CSB sheets / dialogs render OVER the docked HUD instead of being covered by
+   it, while the banner still sits above the canvas/battlefield + chrome. */
+#${LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; overflow: hidden; display: none; --slant: ${SLANT_VH}vh; }
 #${LAYER_ID}.active { display: block; }
 #${LAYER_ID} .fu-rb-band {
   position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%);

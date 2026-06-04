@@ -5,90 +5,9 @@
 
 import { warn } from "./logger.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
+import { buildSkillResolver, evaluateFormula, isFormulaString } from "./skill-formulas.js";
 
-// ── Dual Shieldbearer / Twin Shield ──────────────────────────────────────────
-// Mirrors the logic in [Macro] Attack - Player.js (v0.2 section).
-// When a PC has both hands equipped with shields AND carries the Dual
-// Shieldbearer passive, `buildWeaponBundle` injects a synthetic "Twin Shield"
-// weapon so the BD attack flow sees a single main-hand option instead of two
-// null slots.
-//
-// World item IDs (stable — these are world items, not compendium imports):
-//   DSB  = Dual Shieldbearer passive   (Item.TwiggXCPpT07L0OR)
-//   TWIN = Twin Shield virtual weapon  (Item.uENFXqIkJf5MeART)
-const _DSB_BASE_ID  = "TwiggXCPpT07L0OR";
-const _TWIN_ITEM_ID = "uENFXqIkJf5MeART";
-
-function _normStr(v) {
-  return (v ?? "").toString().trim().toLowerCase();
-}
-
-// Returns true if the actor owns the Dual Shieldbearer passive.
-// Matches by compendium-source UUID suffix OR normalised item name.
-function _hasDualShieldbearer(actor) {
-  try {
-    const items = Array.from(actor?.items ?? []);
-    const hasUuidMatch = (it) => {
-      const cands = [
-        it?.uuid,
-        it?.sourceId,
-        foundry?.utils?.getProperty?.(it, "sourceId"),
-        foundry?.utils?.getProperty?.(it, "flags.core.sourceId"),
-        foundry?.utils?.getProperty?.(it, "_stats.compendiumSource"),
-      ].filter(Boolean).map(String);
-      return cands.some((u) => u.includes(`.${_DSB_BASE_ID}`));
-    };
-    return items.some((it) => hasUuidMatch(it) || _normStr(it?.name) === "dual shieldbearer");
-  } catch {
-    return false;
-  }
-}
-
-// Returns true when the actor's equipped hand ("main" | "off") is a shield.
-// Checks both the CSB attribute slot (A1 === "SHI") and the weapon_list entry
-// type, mirroring the dual-check in Attack - Player.js::isShieldEntry /
-// isShieldByAttrKeys.
-function _isShieldHand(actor, which) {
-  const props = actor?.system?.props ?? {};
-  const A1key = which === "main" ? "main_attrib_1" : "off_attrib_1";
-  const A1 = String(props[A1key] ?? "").toUpperCase();
-  if (A1 === "SHI") return true;
-  const handName = which === "main" ? props.main_hand : props.off_hand;
-  if (!handName) return false;
-  const entry = Object.values(props?.weapon_list ?? {}).find((w) => w?.name === handName) ?? null;
-  return _normStr(entry?.weapon_type ?? entry?.category ?? "") === "shield";
-}
-
-// Build a frozen weapon row from the Twin Shield world item.
-// Uses game.items cache (sync) instead of fromUuid (async) — equivalent for
-// world items while keeping buildWeaponBundle synchronous.
-// Returns null when the item is not present in the world.
-function _buildTwinShieldRow() {
-  try {
-    const doc = game.items?.get?.(_TWIN_ITEM_ID) ?? null;
-    if (!doc) { warn("Twin Shield item not found in world items", _TWIN_ITEM_ID); return null; }
-    const GP = (k, d = "") => foundry?.utils?.getProperty?.(doc, `system.props.${k}`) ?? d;
-    const A1 = (GP("rolled_atr1", "MIG") || "MIG").toUpperCase();
-    const A2 = (GP("rolled_atr2", "MIG") || "MIG").toUpperCase();
-    return Object.freeze({
-      hand: "main",
-      name: doc.name ?? "Twin Shield",
-      A1,
-      A2,
-      checkBonus:  Number(GP("check_bonus",  0)) || 0,
-      damageBonus: Number(GP("damage_bonus", 0)) || 0,
-      damageType:  GP("type_damage", "Physical") || "Physical",
-      range:       GP("weapon_range", GP("skill_range", "Melee")) || "Melee",
-      weaponType:  GP("weapon_type", GP("category", "")) || "",
-      imageUrl:    doc.img ?? null,
-      isTwinShield: true,
-    });
-  } catch (e) {
-    warn("_buildTwinShieldRow threw", e);
-    return null;
-  }
-}
-// ─────────────────────────────────────────────────────────────────────────────
+const FLAG_NS = "fabula-ultima-companion";
 
 // Element → affinity_N prop key mapping, mirroring legacy AdvanceDamage.js
 // line 278. The CSB template stores elemental affinities under numbered keys
@@ -292,6 +211,90 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   });
 }
 
+// Resolve virtual attack profiles exposed by AEs on the actor.
+//
+// An AE can expose a synthetic attack option by carrying
+//   flags.fabula-ultima-companion.exposedVirtualAttack = {
+//     profile: { name, A1, A2, damageBonus, damageType, range, weaponType, ... },
+//     condition_formula: "EQUIPPED_SHIELD_COUNT >= 2"   // optional
+//   }
+// When `condition_formula` is present and evaluates truthy (or absent),
+// the profile is included in the snapshot's `virtualAttacks` list and
+// becomes pickable in the weapon-mode picker. Used by Dual Shieldbearer
+// to expose "Twin Shields" when the bearer has two shields equipped;
+// generalises to any future "wield X+Y, gain access to Z attack" rule.
+//
+// Formula resolution at snapshot time means the bonus values are
+// frozen — re-equip after snapshot doesn't re-evaluate until the next
+// snapshot. That's fine for the current authoring model (Dual
+// Shieldbearer scenarios don't have mid-turn shield swaps).
+export function resolveVirtualAttacks(actor) {
+  if (!actor) return Object.freeze([]);
+  // Foundry V12: `actor.effects.contents` lists only actor-stamped AEs;
+  // item-owned `transfer:true` templates land in `actor.appliedEffects`
+  // (already filtered for disabled/suppressed). DSB's AE lives on the
+  // skill item with transfer:true, so we MUST read appliedEffects.
+  // Fallback chain covers both V12 and legacy code paths.
+  let effs = [];
+  try {
+    if (actor.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor.allApplicableEffects) effs = Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled);
+    else if (actor.effects?.contents) effs = actor.effects.contents;
+    else if (actor.effects) effs = Array.from(actor.effects);
+  } catch (e) {
+    warn("resolveVirtualAttacks: effect enumeration threw", e);
+    effs = [];
+  }
+  if (!effs.length) return Object.freeze([]);
+
+  const resolver = buildSkillResolver({ actor });
+  const out = [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    const spec = ae?.flags?.[FLAG_NS]?.exposedVirtualAttack;
+    if (!spec || typeof spec !== "object") continue;
+
+    // Gate by condition_formula. Absent → always exposes.
+    const cond = spec.condition_formula;
+    if (cond != null && cond !== "") {
+      const ok = isFormulaString(cond)
+        ? evaluateFormula(cond, resolver, 0)
+        : Number(cond);
+      if (!ok) continue;
+    }
+
+    const profile = spec.profile ?? {};
+    const A1 = String(profile.A1 ?? profile.rolled_atr1 ?? "MIG").toUpperCase();
+    const A2 = String(profile.A2 ?? profile.rolled_atr2 ?? "MIG").toUpperCase();
+    const damageBonusRaw = profile.damageBonus ?? profile.damage_bonus ?? 0;
+    const checkBonusRaw  = profile.checkBonus  ?? profile.check_bonus  ?? 0;
+
+    const damageBonus = isFormulaString(damageBonusRaw)
+      ? evaluateFormula(damageBonusRaw, resolver, 0)
+      : (Number(damageBonusRaw) || 0);
+    const checkBonus = isFormulaString(checkBonusRaw)
+      ? evaluateFormula(checkBonusRaw, resolver, 0)
+      : (Number(checkBonusRaw) || 0);
+
+    out.push(Object.freeze({
+      hand: "virtual",
+      virtualIndex: out.length,
+      name: String(profile.name ?? ae.name ?? "Virtual Attack"),
+      A1, A2,
+      checkBonus,
+      damageBonus,
+      damageType: String(profile.damageType ?? profile.type_damage ?? "Physical"),
+      range: String(profile.range ?? profile.weapon_range ?? "Melee"),
+      weaponType: String(profile.weaponType ?? profile.category ?? "Brawling"),
+      imageUrl: profile.imageUrl ?? profile.img ?? ae.icon ?? null,
+      sourceAeId: ae.id,
+      sourceAeName: ae.name,
+    }));
+  }
+
+  return Object.freeze(out);
+}
+
 // Build the weapon-related fields for a combatant snapshot — main weapon,
 // off-hand, and the two-weapon eligibility flag — in one safe pass. Each
 // piece is individually defended: if `resolveAttackerWeapon` throws for one
@@ -322,6 +325,7 @@ function buildWeaponBundle(actor) {
       offWeapon: null,
       canTwoWeaponFight: false,
       npcAttackItems: Object.freeze(npcAttackItems),
+      virtualAttacks: Object.freeze([]),
     };
   }
 
@@ -341,23 +345,11 @@ function buildWeaponBundle(actor) {
     }
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
 
-  // Dual Shieldbearer injection: when both hands resolved to null (shields
-  // return null from resolveAttackerWeapon because A1 = "SHI") AND the actor
-  // carries Dual Shieldbearer, replace the empty weapon slots with the Twin
-  // Shield virtual weapon. This mirrors the injection in Attack - Player.js.
-  if (!weapon && !offWeapon) {
-    try {
-      if (_isShieldHand(actor, "main") && _isShieldHand(actor, "off") && _hasDualShieldbearer(actor)) {
-        const twin = _buildTwinShieldRow();
-        if (twin) {
-          weapon = twin;
-          canTwoWeaponFight = false;
-        }
-      }
-    } catch (e) { warn("buildWeaponBundle: Twin Shield injection threw", e); }
-  }
+  let virtualAttacks = Object.freeze([]);
+  try { virtualAttacks = resolveVirtualAttacks(actor); }
+  catch (e) { warn("buildWeaponBundle: resolveVirtualAttacks threw", e); }
 
-  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, npcAttackItems: Object.freeze([]) };
+  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, npcAttackItems: Object.freeze([]), virtualAttacks };
 }
 
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc

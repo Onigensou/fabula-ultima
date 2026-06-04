@@ -1,6 +1,10 @@
 {
   "migrations": [
     {
+      "key": "2026-05-26-bd-folder-bootstrap",
+      "path": "data-migrations/2026-05-26-bd-folder-bootstrap.js"
+    },
+    {
       "key": "2026-05-17-reaction-action-intent",
       "path": "data-migrations/2026-05-17-reaction-action-intent.js"
     },
@@ -283,6 +287,38 @@
     {
       "key": "2026-06-03-sharpshooter-b1-author",
       "path": "data-migrations/2026-06-03-sharpshooter-b1-author.js"
+    },
+    {
+      "key": "2026-06-04-guardian-unbreakable-author",
+      "path": "data-migrations/2026-06-04-guardian-unbreakable-author.js"
+    },
+    {
+      "key": "2026-06-04-guardian-dual-shieldbearer-author",
+      "path": "data-migrations/2026-06-04-guardian-dual-shieldbearer-author.js"
+    },
+    {
+      "key": "2026-06-04-guardian-hoplite-author",
+      "path": "data-migrations/2026-06-04-guardian-hoplite-author.js"
+    },
+    {
+      "key": "2026-06-04-defensive-mastery-hide-token-icon",
+      "path": "data-migrations/2026-06-04-defensive-mastery-hide-token-icon.js"
+    },
+    {
+      "key": "2026-06-04-guardian-quaking-titan-author",
+      "path": "data-migrations/2026-06-04-guardian-quaking-titan-author.js"
+    },
+    {
+      "key": "2026-06-04-guardian-prophetic-defender-author",
+      "path": "data-migrations/2026-06-04-guardian-prophetic-defender-author.js"
+    },
+    {
+      "key": "2026-06-04-template-options-ae-duplicate-mode",
+      "path": "data-migrations/2026-06-04-template-options-ae-duplicate-mode.js"
+    },
+    {
+      "key": "2026-06-04-fix-ae-duplicate-mode-select-type",
+      "path": "data-migrations/2026-06-04-fix-ae-duplicate-mode-select-type.js"
     }
   ]
 }

@@ -186,16 +186,23 @@ function weaponIcon(weaponType) {
 //   `two-weapon`             → both, main hand fires first (RAW: any order)
 //   `two-weapon-off-first`   → both, off hand fires first
 //   `off`                    → off-hand only (always available when off equipped)
+//   `virtual:<N>`            → exposed virtual attack at virtualAttacks[N]
+//                              (e.g. Dual Shieldbearer's Twin Shields when
+//                              two shields are equipped)
 //   `null`                   → cancelled (escape / cancel button)
 //
 // `allowTwoWeapon` is true only when the two equipped weapons share the
 // same Category (RAW Core p.69). When false, the Two-Weapon options are
 // hidden — Main / Off only.
 //
+// `virtualAttacks` is an array of frozen profile objects from
+// snapshot.resolveVirtualAttacks — each gets its own pick option in a
+// separate "Virtual" section.
+//
 // RAW grants both orders ("you perform the two attacks in any order you
 // prefer"). Order matters because some weapon riders (poison ticks,
 // status applies, on-hit reactions) depend on which strike lands first.
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, externalCancel = null }) {
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, virtualAttacks = [], externalCancel = null }) {
   // No GM gate: weapon-mode picker is client-local.
   ensureStyles();
 
@@ -270,6 +277,23 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
           secondary: `Off fires first`,
         },
       ],
+    });
+  }
+
+  // Virtual attacks — synthesised profiles exposed by AEs
+  // (Dual Shieldbearer's Twin Shields, future "X+Y unlocks Z").
+  // Author label per profile so multiple exposures are distinguishable.
+  if (Array.isArray(virtualAttacks) && virtualAttacks.length) {
+    sections.push({
+      label: "Virtual",
+      hint: virtualAttacks.length === 1 ? null : `${virtualAttacks.length} options`,
+      items: virtualAttacks.map((va, i) => ({
+        mode: `virtual:${i}`,
+        imageUrl: safeUrl(va.imageUrl),
+        fallbackIcon: weaponIcon(va.weaponType),
+        primary: escapeHtml(va.name),
+        secondary: `${escapeHtml(va.weaponType || "Brawling")}<span class="dot">•</span>${escapeHtml(va.A1)} + ${escapeHtml(va.A2)}`,
+      })),
     });
   }
 

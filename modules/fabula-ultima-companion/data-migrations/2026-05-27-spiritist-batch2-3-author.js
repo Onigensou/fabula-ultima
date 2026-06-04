@@ -36,6 +36,8 @@
  * the _Skill Template so Cleanse's effect_table row stores cleanly).
  */
 
+import { ensureFolderPath } from "./_folder-tree.js";
+
 export const key = "2026-05-27-spiritist-batch2-3-author";
 export const description =
   "Author the 7 Spiritist Batch 2+3 master items (Cleanse / Torpor / " +
@@ -69,30 +71,13 @@ async function fetchSpec(log) {
   }
 }
 
-function resolveClassFolder(game, classKey, subFolderName, log) {
-  // Walk: Battle Director / <classKey> / <subFolderName>
-  const top = game.folders?.contents?.find(
-    (f) => f.type === "Item" && f.name === ROOT_FOLDER_NAME && !f.folder
-  );
-  if (!top) {
-    log(`  folder "${ROOT_FOLDER_NAME}" missing at world root — scaffold first`);
-    return null;
-  }
-  const classFolder = game.folders?.contents?.find(
-    (f) => f.type === "Item" && f.name === classKey && f.folder?.id === top.id
-  );
-  if (!classFolder) {
-    log(`  folder "${ROOT_FOLDER_NAME} / ${classKey}" missing — scaffold first`);
-    return null;
-  }
-  const subFolder = game.folders?.contents?.find(
-    (f) => f.type === "Item" && f.name === subFolderName && f.folder?.id === classFolder.id
-  );
-  if (!subFolder) {
-    log(`  folder "${ROOT_FOLDER_NAME} / ${classKey} / ${subFolderName}" missing — scaffold first`);
-    return null;
-  }
-  return subFolder;
+// Self-healing: ensure `Battle Director / <classKey> / <subFolderName>` exists
+// (creating any missing level), so a fresh world resolves the folder instead of
+// skipping the author. See [[battle-director-folder-tree]] + `_folder-tree.js`.
+async function resolveClassFolder(game, classKey, subFolderName, log) {
+  const { folder } = await ensureFolderPath(
+    game, [ROOT_FOLDER_NAME, classKey, subFolderName], { log });
+  return folder ?? null;
 }
 
 function findExistingMaster(game, spec) {
@@ -169,7 +154,7 @@ async function ensureMaster(game, spec, log) {
   const subFolderName = String(spec.folder ?? "Skill");
   const classKey = String(spec.props?.class ?? "Spiritist");
 
-  const folder = resolveClassFolder(game, classKey, subFolderName, log);
+  const folder = await resolveClassFolder(game, classKey, subFolderName, log);
   if (!folder) {
     log(`${label}: folder unresolved — skipping`);
     return { skipped: true, reason: "no-folder" };
