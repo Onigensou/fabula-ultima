@@ -1628,13 +1628,20 @@ const Target = {
         targets = [attackerSnap];
         targetUuids = [attackerSnap.tokenUuid];
       } else {
-        // Pick category. "ally" keywords + aid intent → ally; default → enemy.
+        // Pick category.
+        // "creature/creatures" keyword → any (ally + enemy both valid per RAW).
+        // "ally/allies" keyword OR aid intent → ally only.
+        // Default → enemy.
+        //
+        // "creature" takes priority over intent: Capote / Cross-Guard / etc.
+        // say "One Creature" and genuinely allow either ally or enemy.
         // Hostile non-damage Active skills (NPC Steal *, Hinder, Provoke)
         // need `action_intent: "harmful"` on the item — the classifier's
         // step-8 "Active without damage → aid" default would otherwise
         // route them to allies. See the 2026-06-03 migration.
-        const wantsAlly = /ally|allies/i.test(skillTargetText) || intent === "aid";
-        const category = wantsAlly ? "ally" : "enemy";
+        const wantsCreature = /creature|creatures/i.test(skillTargetText);
+        const wantsAlly = !wantsCreature && (/ally|allies/i.test(skillTargetText) || intent === "aid");
+        const category = wantsCreature ? "any" : (wantsAlly ? "ally" : "enemy");
         const eligibleRaw = director.dCombat
           ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
           : snapshotEligibleTargets(director.combat, attackerSnap, { category });
@@ -1665,9 +1672,10 @@ const Target = {
           count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
         }
 
+        const categoryLabel = category === "any" ? "creatures" : `${category}s`;
         if (mode === "all") {
           if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${category}s on this scene.`);
+            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
             director.enqueue({ type: INTENTS.TARGET_BACK });
             return;
           }
@@ -1675,7 +1683,7 @@ const Target = {
           targetUuids = eligibleRaw.map((e) => e.tokenUuid);
         } else {
           if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${category}s on this scene.`);
+            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
             director.enqueue({ type: INTENTS.TARGET_BACK });
             return;
           }
