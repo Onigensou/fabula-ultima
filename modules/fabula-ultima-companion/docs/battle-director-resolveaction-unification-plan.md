@@ -391,6 +391,41 @@ must still cap at 2 (no-stack). The resolveAction Attack foundation is unaffecte
 Delete bespoke Guard/Hinder/Equipment/Study/Attack branches + `resolveSkillAction` alias +
 `UNIFIED_RESOLVE` switch; full 8-action regression.
 
+### SKILL AUDIT (2026-06-05 night — Sharpshooter + 4-player classes)
+
+**Sharpshooter (Zarg) — RAW assessed vs `2026-06-03-sharpshooter-b1-author`:**
+- *Ranged Weapon Mastery* — FULL (passive AE `attack_accuracy_mod_ranged += level`).
+  VERIFY it actually adds SL to ranged accuracy via harness (was flagged "no
+  mechanics" only because the audit heuristic ignores embedded AEs).
+- *Hawkeye* (max SL 5) — **MOST BUILDABLE NOW.** RAW: on Guard WITHOUT covering,
+  choose: next ranged attack +SL×2 damage, OR a free bow/firearm attack (HR=0).
+  All primitives exist: `creature_guards` trigger (shipped w/ Guard unification,
+  `didCoverAlly === false` filter), `open_action_menu` (2 options), `apply_ae`
+  (a "next ranged attack +SL×2 dmg" buff consumed on use), free-action grant
+  (Attack consumes damageBonus). Good first authoring target.
+- *Warning Shot* (SL 4) — PARTIAL. RAW: on ranged hit, may deal no damage;
+  instead inflict Shaken OR Slow on each hit target, OR each loses SL×10 MP. Uses
+  per-target `creature_deals_damage` (now available) + `apply_ae` + `consume_resource`
+  (MP burn on target) + `open_action_menu`; needs a damage-replace ("deal no damage")
+  card-mutation.
+- *Barrage* (SL 1) — needs the **Multi(x) keyword** (spend 10 MP → attack gains
+  multi(2), or +1 up to multi(3)). Part of the keyword-layer + multi-target attack
+  follow-up.
+- *Crossfire* (SL 1) — needs a new `creature_performs_ranged_attack` trigger +
+  `force_miss` effect_kind + variable cost (= the attacker's Accuracy total). Medium.
+- *Perfect Aim* — appears on Zarg but not in the author migration; RAW + author needed.
+
+**4-player class backlog (broad — many sessions):** Keren=Illusionist/Esper/Chimerist/
+Necromancer/Rogue; Hina=Entropist/Elementalist/Darkblade/Spiritist; Blanche=Matador/
+Wayfarer/Guardian; Zarg=Sharpshooter/Tinkerer/Rogue. `probe-player-skills.mjs` lists
+per-class unwired skills, BUT it over-flags: it ignores embedded passive AEs (so
+working passives like Ranged Weapon Mastery / Defensive Mastery / Dodge show as
+"no mechanics") and narrative skills (Wayfarer Resourceful/Tavern Talk are correctly
+mechanic-free). Re-run with an AE-aware + narrative-exclusion filter before treating
+it as a worklist. Prioritize skills the party will use next session; author per
+skill-authoring-canon + reference/skills.json RAW; harness-verify each. Do NOT batch-
+author — each affects live play.
+
 ### EXTRA-TIME TASKS (after Attack foundation lands, per user 2026-06-05 night)
 1. **Re-check crafted Sharpshooter skills** — audit the Sharpshooter B.1 author migration
    (`2026-06-03-sharpshooter-b1-author`) + live items vs `reference/skills.json` RAW; verify via
