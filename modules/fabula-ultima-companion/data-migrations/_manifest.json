@@ -1,6 +1,10 @@
 {
   "migrations": [
     {
+      "key": "2026-05-26-bd-folder-bootstrap",
+      "path": "data-migrations/2026-05-26-bd-folder-bootstrap.js"
+    },
+    {
       "key": "2026-05-17-reaction-action-intent",
       "path": "data-migrations/2026-05-17-reaction-action-intent.js"
     },

@@ -50,6 +50,8 @@
  * IDEMPOTENT.
  */
 
+import { ensureFolderPath } from "./_folder-tree.js";
+
 export const key = "2026-06-04-guardian-quaking-titan-author";
 export const description =
   "Author Quaking Titan v1 per May 4 2026 playtest: Active, 30 MP, " +
@@ -86,12 +88,12 @@ function templateMatches(item) {
   return String(item?.system?.template ?? "") === SKILL_TEMPLATE_ID;
 }
 
-function findHybridHeroicFolder(game) {
-  const bd = game.folders?.find?.((f) =>
-    f.name === BD_ROOT_NAME && f.type === "Item" && !(f.folder?.id ?? f.folder));
-  if (!bd) return null;
-  return game.folders.find((f) =>
-    f.name === HYBRID_HEROIC_FOLDER && f.type === "Item" && f.folder?.id === bd.id) ?? null;
+// Self-healing: ensure Battle Director / Hybrid Heroic Skill exists, creating
+// it (and the root) on demand. See `_folder-tree.js`.
+async function ensureHybridHeroicFolder(game, log) {
+  const { folder } = await ensureFolderPath(
+    game, [BD_ROOT_NAME, HYBRID_HEROIC_FOLDER], { log });
+  return folder ?? null;
 }
 
 // ── DATA ────────────────────────────────────────────────────────────────────
@@ -310,9 +312,9 @@ async function patchQuakingTitanItem(item, log, ownerLabel) {
 }
 
 export async function migrate(game, log) {
-  const hybridFolder = findHybridHeroicFolder(game);
+  const hybridFolder = await ensureHybridHeroicFolder(game, log);
   if (!hybridFolder) {
-    log(`  ERROR: no "${HYBRID_HEROIC_FOLDER}" folder found under "${BD_ROOT_NAME}".`);
+    log(`  ERROR: could not ensure "${HYBRID_HEROIC_FOLDER}" folder under "${BD_ROOT_NAME}".`);
     return { applied: false, summary: `Quaking Titan: missing folder "${BD_ROOT_NAME}/${HYBRID_HEROIC_FOLDER}"` };
   }
 

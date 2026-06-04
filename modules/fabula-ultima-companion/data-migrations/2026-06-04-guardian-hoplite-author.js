@@ -34,6 +34,8 @@
  * IDEMPOTENT.
  */
 
+import { ensureFolderPath } from "./_folder-tree.js";
+
 export const key = "2026-06-04-guardian-hoplite-author";
 export const description =
   "Author Hoplite per Atlas HF p.159: true bearer-resident passive granting " +
@@ -72,13 +74,12 @@ function templateMatches(item) {
   return String(item?.system?.template ?? "") === SKILL_TEMPLATE_ID;
 }
 
-// Find the Hybrid Heroic Skill folder under Battle Director.
-function findHybridHeroicFolder(game) {
-  const bd = game.folders?.find?.((f) =>
-    f.name === BD_ROOT_NAME && f.type === "Item" && !(f.folder?.id ?? f.folder));
-  if (!bd) return null;
-  return game.folders.find((f) =>
-    f.name === HYBRID_HEROIC_FOLDER && f.type === "Item" && f.folder?.id === bd.id) ?? null;
+// Ensure the Hybrid Heroic Skill folder under Battle Director, creating it
+// (and the root) on demand. See `_folder-tree.js`.
+async function ensureHybridHeroicFolder(game, log) {
+  const { folder } = await ensureFolderPath(
+    game, [BD_ROOT_NAME, HYBRID_HEROIC_FOLDER], { log });
+  return folder ?? null;
 }
 
 // ── DATA ────────────────────────────────────────────────────────────────────
@@ -252,9 +253,9 @@ async function patchHopliteItem(item, log, ownerLabel) {
 
 export async function migrate(game, log) {
   // Locate or create the master in Battle Director / Hybrid Heroic Skill.
-  const hybridFolder = findHybridHeroicFolder(game);
+  const hybridFolder = await ensureHybridHeroicFolder(game, log);
   if (!hybridFolder) {
-    log(`  ERROR: no "${HYBRID_HEROIC_FOLDER}" folder found under "${BD_ROOT_NAME}". Run folder-bootstrap first.`);
+    log(`  ERROR: could not ensure "${HYBRID_HEROIC_FOLDER}" folder under "${BD_ROOT_NAME}".`);
     return { applied: false, summary: `Hoplite: missing folder "${BD_ROOT_NAME}/${HYBRID_HEROIC_FOLDER}"` };
   }
 

@@ -37,6 +37,8 @@
  * creating; updates props deep-equal style for re-runs.
  */
 
+import { ensureFolderPath } from "./_folder-tree.js";
+
 export const key = "2026-06-03-sharpshooter-b1-author";
 export const description =
   "Sharpshooter B.1: full Ranged Weapon Mastery + stubs for Barrage, " +
@@ -55,19 +57,6 @@ function stableStringify(v) {
   return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
 }
 const deepEqual = (a, b) => stableStringify(a) === stableStringify(b);
-
-function findSkillSubfolder(game) {
-  for (const f of game.folders?.contents ?? []) {
-    if (f.name !== SKILL_SUBFOLDER) continue;
-    const parent = f.folder;
-    if (parent?.name !== CLASS_NAME) continue;
-    const grand = parent.folder;
-    if (grand?.name !== BD_ROOT_NAME) continue;
-    if (grand.folder?.id ?? grand.folder) continue; // BD_ROOT must be top
-    return f;
-  }
-  return null;
-}
 
 function findExistingInFolder(game, folder, name) {
   for (const item of game.items?.contents ?? []) {
@@ -307,9 +296,12 @@ async function ensureSkillItem(folder, spec, log) {
 }
 
 export async function migrate(game, log) {
-  const folder = findSkillSubfolder(game);
+  // Self-healing: create `Battle Director / Sharpshooter / Skill` on demand
+  // (any missing level) so a fresh world authors into it instead of skipping.
+  const { folder } = await ensureFolderPath(
+    game, [BD_ROOT_NAME, CLASS_NAME, SKILL_SUBFOLDER], { log });
   if (!folder) {
-    log("  Sharpshooter / Skill subfolder not found in BD tree — skipping author");
+    log("  Sharpshooter / Skill subfolder could not be ensured — skipping author");
     return { applied: false, summary: "BD Sharpshooter folder missing" };
   }
   let created = 0;

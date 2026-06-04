@@ -350,44 +350,43 @@ return (async () => {
   // Folder resolution.
   //
   //   • `spec.class` set → resolve `Battle Director / <class> /
-  //     <spec.folder or "Skill">` via the org tree (folders created by
-  //     the world's scaffold). Authors write
-  //     `{ class: "Arcanist", folder: "Skill" }` — no ID lookup needed.
+  //     <spec.folder or "Skill">` via the org tree, CREATING any missing
+  //     level on demand (idempotent). Authors write
+  //     `{ class: "Arcanist", folder: "Skill" }` — no ID lookup needed, and
+  //     no need to pre-scaffold the tree. Mirrors the data-migration helper
+  //     `data-migrations/_folder-tree.js` so a fresh world never dumps a
+  //     skill at world root just because the tree wasn't built yet.
   //
   //   • `spec.class` unset → `spec.folder` is treated as a literal
   //     folder ID (back-compat with pre-tree authoring).
-  //
-  // A failed resolution warns + falls back to root (no folder). Run
-  // the scaffold once if the tree's missing.
   if (!parent) {
     let folderId = null;
     if (spec.class) {
       const subName = (spec.folder ?? spec.category ?? "Skill").toString();
-      const root = game.folders.find(f =>
-        f.type === "Item" && f.name === "Battle Director" && !(f.folder?.id ?? f.folder)
-      );
-      if (!root) {
-        warnings.push(`Battle Director root folder not found — run the folder scaffold first; item created at world root.`);
-      } else {
-        const clsFolder = game.folders.find(f =>
-          f.type === "Item" &&
-          f.name === spec.class &&
-          ((f.folder?.id ?? f.folder ?? null) === root.id)
-        );
-        if (!clsFolder) {
-          warnings.push(`Battle Director / ${spec.class} not found — run the folder scaffold for that class; item created at world root.`);
-        } else {
-          const sub = game.folders.find(f =>
-            f.type === "Item" &&
-            f.name === subName &&
-            ((f.folder?.id ?? f.folder ?? null) === clsFolder.id)
+      // Ensure each level of Battle Director / <class> / <sub> exists,
+      // parent-first. Match by (name, parentId); create when absent.
+      const ensureFolderPath = async (segments) => {
+        let parentId = null;
+        let current = null;
+        for (const name of segments) {
+          let f = game.folders.find(x =>
+            x.type === "Item" &&
+            x.name === name &&
+            ((x.folder?.id ?? x.folder ?? null) === (parentId ?? null))
           );
-          if (!sub) {
-            warnings.push(`Battle Director / ${spec.class} / ${subName} not found; item created at world root.`);
-          } else {
-            folderId = sub.id;
+          if (!f) {
+            f = await Folder.create({ name, type: "Item", folder: parentId, sorting: "a" });
           }
+          current = f;
+          parentId = f?.id ?? null;
         }
+        return current;
+      };
+      try {
+        const leaf = await ensureFolderPath(["Battle Director", spec.class, subName]);
+        folderId = leaf?.id ?? null;
+      } catch (e) {
+        warnings.push(`Battle Director / ${spec.class} / ${subName} could not be ensured (${e?.message ?? e}); item created at world root.`);
       }
     } else if (spec.folder) {
       folderId = spec.folder;  // legacy: literal ID
