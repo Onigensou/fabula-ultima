@@ -397,11 +397,13 @@ export async function dispatchReactionMenu({
     // Exclude from askable:
     //   - "off" — explicit player opt-out
     //   - "force" — engine-mandatory + UI-invisible per [[force-mode-canonical-rows]]
-    //   - wasUsed — already fired/auto'd this scope; F5 + Battle Start
-    //     re-dispatch otherwise spawns the menu with previously-decided
-    //     reactions stamped "Used", and processFire has no wasUsed gate
-    //     so clicking Use a second time would re-fire side effects.
+    //   - wasUsed — already fired/auto'd this scope
+    //   - isAutoMode && !c.available — auto-mode passive whose condition
+    //     failed; silence it rather than showing "CONDITIONS NOT MET" in
+    //     the menu. Manual / ask-mode rows still show disabled badges so
+    //     the player knows WHY their reaction didn't fire.
     if (c.mode === "off" || c.mode === "force" || wasUsed) continue;
+    if (isAutoMode && !c.available) continue;
 
     // Harness override — auto-resolve without spawning the menu when the
     // test harness has stamped __FU_HARNESS_ACCEPT_PASSIVES__. true →

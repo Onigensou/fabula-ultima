@@ -55,17 +55,24 @@ export function getActorKind(actor) {
 }
 
 // Pull the actor's Attack-typed items. Filters embedded items by
-// `skill_type === "Attack"` (case-insensitive). Used as the source list
-// for the NPC Attack picker AND as a fallback when an NPC's attack_list
-// prop is empty but the items are present (data drift).
+// `skill_type === "Attack"` (case-insensitive), and also includes
+// offensive spells (`isOffensiveSpell === true` + `isCheck === true`)
+// so NPC spellcasters can use their Spell-type skills as attack options.
+//
+// Note (v1): `buildPseudoWeaponFromNpcAttack` does not forward
+// `defense_target_type`, so all NPC attacks check against DEF. Spells
+// that should check against MDEF will use the wrong defense stat until
+// the pseudo-weapon shape is extended.
 //
 // Returns an array of Item docs in the order they appear on the actor.
 // Empty array = no attack item; caller surfaces "no attack available".
 export function getNpcAttackItems(actor) {
   const items = actor?.items?.contents ?? [];
   return items.filter((it) => {
-    const t = String(it?.system?.props?.skill_type ?? "").trim().toLowerCase();
-    return t === SKILL_TYPE_ATTACK;
+    const p = it?.system?.props ?? {};
+    const t = String(p.skill_type ?? "").trim().toLowerCase();
+    if (t === SKILL_TYPE_ATTACK) return true;
+    return p.isOffensiveSpell === true && p.isCheck === true;
   });
 }
 
@@ -104,5 +111,13 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     // Carry the source Item UUID so the action card can deep-link back to
     // the attack sheet, and so rewind can attribute the action correctly.
     npcAttackItemUuid: item?.uuid ?? null,
+    // skill_target text — drives all-enemies auto-targeting (mirrors the
+    // Skill/Spell branch's /\ball\b/ check). Stored lowercase for easy test.
+    skillTarget: String(p.skill_target ?? "").trim().toLowerCase(),
+    // Keyword bookkeeping tags — read by future interaction code.
+    // Does NOT drive targeting logic (that comes from skillTarget above).
+    hasPierce:   !!p.has_pierce,
+    hasRoulette: !!p.has_roulette,
+    hasOverflow: !!p.has_overflow,
   });
 }
