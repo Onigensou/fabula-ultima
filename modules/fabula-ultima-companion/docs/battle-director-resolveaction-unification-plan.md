@@ -393,27 +393,42 @@ Delete bespoke Guard/Hinder/Equipment/Study/Attack branches + `resolveSkillActio
 
 ### SKILL AUDIT (2026-06-05 night — Sharpshooter + 4-player classes)
 
-**Sharpshooter (Zarg) — RAW assessed vs `2026-06-03-sharpshooter-b1-author`:**
-- *Ranged Weapon Mastery* — FULL (passive AE `attack_accuracy_mod_ranged += level`).
-  VERIFY it actually adds SL to ranged accuracy via harness (was flagged "no
-  mechanics" only because the audit heuristic ignores embedded AEs).
-- *Hawkeye* (max SL 5) — **MOST BUILDABLE NOW.** RAW: on Guard WITHOUT covering,
-  choose: next ranged attack +SL×2 damage, OR a free bow/firearm attack (HR=0).
-  All primitives exist: `creature_guards` trigger (shipped w/ Guard unification,
-  `didCoverAlly === false` filter), `open_action_menu` (2 options), `apply_ae`
-  (a "next ranged attack +SL×2 dmg" buff consumed on use), free-action grant
-  (Attack consumes damageBonus). Good first authoring target.
-- *Warning Shot* (SL 4) — PARTIAL. RAW: on ranged hit, may deal no damage;
-  instead inflict Shaken OR Slow on each hit target, OR each loses SL×10 MP. Uses
-  per-target `creature_deals_damage` (now available) + `apply_ae` + `consume_resource`
-  (MP burn on target) + `open_action_menu`; needs a damage-replace ("deal no damage")
-  card-mutation.
-- *Barrage* (SL 1) — needs the **Multi(x) keyword** (spend 10 MP → attack gains
-  multi(2), or +1 up to multi(3)). Part of the keyword-layer + multi-target attack
-  follow-up.
-- *Crossfire* (SL 1) — needs a new `creature_performs_ranged_attack` trigger +
-  `force_miss` effect_kind + variable cost (= the attacker's Accuracy total). Medium.
-- *Perfect Aim* — appears on Zarg but not in the author migration; RAW + author needed.
+**Sharpshooter (Zarg) — status as of 2026-06-05 LATE (post-Hawkeye):**
+- *Ranged Weapon Mastery* — ✅ **FULL + VERIFIED** (`8dfa552`). Transfer:true passive
+  `attack_accuracy_mod_ranged = ${level}$`; harness-confirmed Zarg SL4 → derived
+  `attack_accuracy_mod_ranged: 4`. No change needed.
+- *Hawkeye* (max SL 5) — ✅ **SHIPPED + VERIFIED** (`8dfa552`,
+  `2026-06-05-sharpshooter-hawkeye-author.js`). `creature_guards` + `reaction_source:self`
+  + `DID_COVER_ALLY == 0` → `open_action_menu`. Option A: apply "Hawkeye" buff AE
+  (charge:1, directorPermanent) carrying `creature_will_deal_damage` gated
+  `ATTACK_IS_RANGED == 1`, chain `[add_damage SL*2, consume_charge]`. Option B:
+  `open_action_menu free_mode` (Attack) → free attack. Verified via `verify-hawkeye.mjs`
+  (PASS): ATTACK_IS_RANGED gate, SL*2 baked to 6 at SL3, +6 ranged / +0 melee,
+  charge-gated. **v1 limitation (documented, not enforced):** option B's "treat HR as 0
+  for damage" has no HR-override hook on free-action grants yet → free attack uses
+  rolled HR. Follow-up: add `hr_override` to the free-action grant.
+- *Warning Shot* (SL 4) — ⏳ PENDING. Description cleaned (`d40a902`). Blocker: needs a
+  **pre-resolve damage-override mutation** (set rawDamage→0 on hit targets) — `add_damage`
+  only adds (clamped ≥0). Also wants a **hit-target targeting source** (`action_targets`
+  = all targets, not just hits) + `open_action_menu` (Shaken / Slow / grant mp −SL×10).
+  `ATTACK_IS_RANGED` gate now exists. ~2 new engine surfaces; verify end-to-end via
+  attack simulate.
+- *Barrage* (SL 1) — ⏳ PENDING. Description cleaned. Needs the **multi(x) keyword**
+  (extra attack passes; the damage loop already has `passIndex`/`totalPasses`). Part of
+  the keyword-layer / multi-wield pass-collector follow-up.
+- *Crossfire* (SL 1) — ⏳ PENDING. Description cleaned. Needs a new
+  `creature_performs_ranged_attack` trigger + `force_miss` effect_kind + variable MP cost
+  (= attacker's Accuracy total) + crit-success exemption. Medium-large.
+- *Perfect Aim* (Heroic) — ⏳ PENDING. Modifies Warning Shot ("choose two options") —
+  build after Warning Shot lands.
+
+**Reusable primitives shipped this session (`8dfa552`):**
+- `ATTACK_IS_RANGED` / `ATTACK_IS_MELEE` / `ATTACK_IS_ARCANE` formula identifiers
+  (skill-formulas.js) — gate on the in-flight `payload.weaponType` ("is THIS attack
+  ranged"), distinct from `HAS_RANGED_WEAPON` ("is one equipped").
+- `weaponType` threaded onto both `creature_deals_damage` payloads (state-handlers.js).
+- apply_ae bakes `damage_amount`/`grant_amount` in a cloned AE's reactionConfig at
+  apply-time (skill-effects.js) — SL-scaling now correct for ANY applied-buff reaction.
 
 **4-player class backlog (broad — many sessions):** Keren=Illusionist/Esper/Chimerist/
 Necromancer/Rogue; Hina=Entropist/Elementalist/Darkblade/Spiritist; Blanche=Matador/
