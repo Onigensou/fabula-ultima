@@ -319,6 +319,10 @@
     {
       "key": "2026-06-04-fix-ae-duplicate-mode-select-type",
       "path": "data-migrations/2026-06-04-fix-ae-duplicate-mode-select-type.js"
+    },
+    {
+      "key": "2026-06-05-bd-skills-restore",
+      "path": "data-migrations/2026-06-05-bd-skills-restore.js"
     }
   ]
 }
