@@ -87,7 +87,7 @@
                    value="${m}"
                    placeholder="(optional)">
           </div>
-          <p class="notes">Optional. Display-only; not enforced. Use to show "2 / 2" in custom UI.</p>
+          <p class="notes">Blank = unlimited (no cap on stacking / refills). When set, drives the "N / max" display + the badge counter.</p>
         </div>
 
         <div class="form-group">
