@@ -1357,6 +1357,144 @@ const Declare = {
   },
 };
 
+// ─── Unified action targeting resolver ───────────────────────────────────────
+// All TARGET branches that need to pick token(s) from the scene call this
+// function instead of building their own mode/category/count logic and
+// requestTargeting call. Attack, Skill, Spell, Study, Hinder, and Guard's
+// Cover picker all share this single path.
+//
+// opts.skillTargetText   — free-text field ("One Random Enemy", "All Ally", …).
+//   Drives mode, category, and count. Defaults to "One Enemy".
+// opts.attackerActor     — resolved actor doc; needed for formula counts (SL…).
+// opts.skill             — item doc; used for intent classification + formulas.
+// opts.eligiblePostFilter — optional fn(pool) → pool applied AFTER category
+//   pool building. Attack uses this for applyAttackRangeGate (Covered/Vanish).
+// opts.excludeSelf       — strips the attacker's own token from the pool.
+//   Pass true for all attack-type actions (can't target yourself in combat).
+// opts.usingPreComposed  — when true + composedTargetUuids has entries, skip
+//   the interactive picker for Exact/Up-to modes (composeAction race winner).
+// opts.composedTargetUuids — pre-resolved token UUIDs from composeAction.
+// opts.titleText         — banner label override (null = auto-generated).
+// opts.cancelLabel       — Cancel button text override.
+// opts.secondaryAction   — forwarded to requestTargeting (Guard "Skip Cover").
+//
+// Returns { ok, cancelled, skipped?, secondaryValue?, targets, targetUuids }.
+// When ok is false, cancelled/reason indicates why (user cancel vs no targets).
+async function resolveActionTargets(director, attackerSnap, opts = {}) {
+  const {
+    skillTargetText:    rawText       = "One Enemy",
+    attackerActor                     = null,
+    skill                             = null,
+    eligiblePostFilter                = null,
+    excludeSelf                       = false,
+    usingPreComposed                  = false,
+    composedTargetUuids               = null,
+    titleText:          forcedTitle   = null,
+    cancelLabel                       = "Cancel",
+    secondaryAction                   = null,
+  } = opts;
+
+  const text   = String(rawText ?? "").trim().toLowerCase();
+  const isSelf = !text || /^self$/i.test(text);
+
+  // ── Build eligible pool ────────────────────────────────────────────────
+  let category = "enemy";
+  let eligibleForPicker;
+
+  if (isSelf) {
+    eligibleForPicker = [attackerSnap];
+  } else {
+    const wantsCreature = /creature|creatures/i.test(text);
+    const intent        = skill ? classifyActionIntent(skill) : "harmful";
+    const wantsAlly     = !wantsCreature && (/ally|allies/i.test(text) || intent === "aid");
+    category            = wantsCreature ? "any" : (wantsAlly ? "ally" : "enemy");
+    eligibleForPicker   = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
+      : snapshotEligibleTargets(director.combat, attackerSnap, { category });
+    if (excludeSelf) {
+      eligibleForPicker = eligibleForPicker.filter((e) => e.tokenUuid !== attackerSnap.tokenUuid);
+    }
+    if (eligiblePostFilter) {
+      eligibleForPicker = eligiblePostFilter(eligibleForPicker);
+    }
+  }
+
+  // ── Determine picker mode ──────────────────────────────────────────────
+  let pickerMode    = "exact";
+  let count         = 1;
+  let randomizeCount = false;
+
+  if (isSelf) {
+    pickerMode = "self";
+  } else {
+    const resolver = (attackerActor && skill)
+      ? buildSkillResolver({ actor: attackerActor, payload: null, skill, round: director.dCombat?.round ?? 0 })
+      : null;
+    const isRandom    = /\brandom\b/i.test(text);
+    const textForCount = isRandom
+      ? text.replace(/\brandom\b/gi, "").replace(/\s+/g, " ").trim()
+      : text;
+    if (isRandom) {
+      pickerMode = "random";
+      if (/up\s+to/i.test(text)) {
+        randomizeCount = true;
+        count = resolver ? extractTargetCountFromText(textForCount, { isUpTo: true,  resolver }) : 1;
+      } else {
+        count = resolver ? extractTargetCountFromText(textForCount, { isUpTo: false, resolver }) : 1;
+      }
+    } else if (/\ball\b/i.test(text)) {
+      pickerMode = "all";
+    } else if (/up\s+to/i.test(text)) {
+      pickerMode = "up_to";
+      count = resolver ? extractTargetCountFromText(text, { isUpTo: true,  resolver }) : 1;
+    } else {
+      count = resolver ? extractTargetCountFromText(text, { isUpTo: false, resolver }) : 1;
+    }
+  }
+
+  // ── Guard against empty pool ────────────────────────────────────────────
+  if (!isSelf && !eligibleForPicker.length) {
+    const categoryLabel = category === "any" ? "creatures" : `${category}s`;
+    ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
+    return { ok: false, cancelled: false, reason: "no_eligible", targets: [], targetUuids: [] };
+  }
+
+  director.ctx.eligibleTargets = eligibleForPicker;
+
+  // ── Route to picker ────────────────────────────────────────────────────
+  const isAutoPick = pickerMode === "self" || pickerMode === "all" || pickerMode === "random";
+  let result;
+  if (!isAutoPick && usingPreComposed
+      && Array.isArray(composedTargetUuids) && composedTargetUuids.length) {
+    result = { ok: true, cancelled: false, tokenUuids: [...composedTargetUuids] };
+  } else {
+    const titleText = forcedTitle
+      ?? (pickerMode === "self" || pickerMode === "all" ? null
+        : pickerMode === "random"
+          ? `${attackerSnap.name}: randomizing target`
+          : `${attackerSnap.name}: pick target${count > 1 ? "s" : ""}`);
+    result = await requestTargeting({
+      director, eligible: eligibleForPicker,
+      mode: pickerMode, count, titleText, cancelLabel, secondaryAction, randomizeCount,
+    });
+  }
+
+  if (!result.ok) {
+    return {
+      ok: false, cancelled: result.cancelled ?? false,
+      skipped: result.skipped ?? false, secondaryValue: result.secondaryValue ?? null,
+      targets: [], targetUuids: [],
+    };
+  }
+  const targetUuids = [...result.tokenUuids];
+  const targets     = eligibleForPicker.filter((e) => targetUuids.includes(e.tokenUuid));
+  return {
+    ok: true, cancelled: false,
+    skipped: result.skipped ?? false, secondaryValue: result.secondaryValue ?? null,
+    targets, targetUuids,
+  };
+}
+
 // ─── TARGET ────────────────────────────────────────────────────────────
 const Target = {
   async onEnter(director, { triggerIntent }) {
@@ -1374,42 +1512,35 @@ const Target = {
     // the player can mouse-only Guard alone OR Guard + Cover an ally.
     if (command === "Guard") {
       const attackerSnap = director.ctx.turnSnapshot;
-      // Eligible cover targets: same-side combatants on the scene,
-      // excluding self (Guard is self-applied implicitly).
-      const allies = director.dCombat
-        ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category: "ally" })
-        : snapshotEligibleTargets(director.combat, attackerSnap, { category: "ally" });
-      const coverEligible = (allies ?? []).filter((a) => a.tokenUuid !== attackerSnap.tokenUuid);
-      director.ctx.eligibleTargets = coverEligible;
-
       // Pre-composed by player? composeGuard's bundle carries
-      // coverTokenUuid (null = skip cover, uuid = picked ally). Skip
-      // the local picker and feed the choice through directly.
+      // coverTokenUuid (null = skip cover, uuid = picked ally).
       const composedGuard = director.ctx._composedBundle;
       let coverTarget;
       if (composedGuard && composedGuard.command === "Guard" && "coverTokenUuid" in composedGuard) {
         log(`TARGET (Guard): using pre-composed coverTokenUuid=${composedGuard.coverTokenUuid ?? "none"}`);
-        coverTarget = composedGuard.coverTokenUuid
-          ? coverEligible.find((t) => t.tokenUuid === composedGuard.coverTokenUuid) ?? null
-          : null;
+        if (composedGuard.coverTokenUuid) {
+          // Resolve the snapshot reference from the live ally pool.
+          const allies = director.dCombat
+            ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category: "ally" })
+            : snapshotEligibleTargets(director.combat, attackerSnap, { category: "ally" });
+          coverTarget = allies.find((t) => t.tokenUuid === composedGuard.coverTokenUuid) ?? null;
+        } else {
+          coverTarget = null;
+        }
       } else {
-        const result = await requestTargeting({
-          director,
-          eligible: coverEligible,
-          mode: "exact",
-          count: 1,
-          titleText: `${attackerSnap.name}: pick an ally to Cover (optional)`,
-          cancelLabel: "Cancel Guard",
+        // Interactive path — shared targeting resolver handles pool + picker.
+        const targeting = await resolveActionTargets(director, attackerSnap, {
+          skillTargetText: "One Ally",
+          excludeSelf:     true,
+          titleText:       `${attackerSnap.name}: pick an ally to Cover (optional)`,
+          cancelLabel:     "Cancel Guard",
           secondaryAction: { label: "Skip Cover", value: "skip" },
         });
-        if (!result.ok) {
-          // Cancel Guard entirely → bounce back to DECLARE.
-          director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+        if (!targeting.ok) {
+          director.dispatch({ type: targeting.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
           return;
         }
-        coverTarget = (result.skipped || result.tokenUuids.length === 0)
-          ? null
-          : coverEligible.find((t) => t.tokenUuid === result.tokenUuids[0]) ?? null;
+        coverTarget = targeting.skipped ? null : (targeting.targets[0] ?? null);
       }
 
       director.ctx.actionResult = freezeActionResult({
@@ -1461,36 +1592,18 @@ const Target = {
     // future scope decision.
     if (command === "Study") {
       const attackerSnap = director.ctx.turnSnapshot;
-      const eligible = director.dCombat
-        ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category: "enemy" })
-        : snapshotEligibleTargets(director.combat, attackerSnap, { category: "enemy" });
-      director.ctx.eligibleTargets = eligible;
-      if (eligible.length === 0) {
-        ui.notifications?.warn("No creatures to Study.");
-        director.enqueue({ type: INTENTS.TARGET_BACK });
+      const studyTargeting = await resolveActionTargets(director, attackerSnap, {
+        skillTargetText:    "One Enemy",
+        usingPreComposed:   !!director.ctx.pickedTargetUuids?.length,
+        composedTargetUuids: director.ctx.pickedTargetUuids,
+        titleText:          `${attackerSnap.name}: pick a creature to Study`,
+      });
+      if (!studyTargeting.ok) {
+        director.dispatch({ type: (studyTargeting.cancelled || studyTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
         return;
       }
-      // Pre-composed targets from player's composeStudy?
-      let tokenUuids;
-      if (director.ctx.pickedTargetUuids?.length) {
-        log(`TARGET (Study): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
-        tokenUuids = [...director.ctx.pickedTargetUuids];
-      } else {
-        const result = await requestTargeting({
-          director,
-          eligible,
-          mode: "exact",
-          count: 1,
-          titleText: `${attackerSnap.name}: pick a creature to Study`,
-        });
-        if (!result.ok) {
-          director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-          return;
-        }
-        tokenUuids = [...result.tokenUuids];
-        director.ctx.pickedTargetUuids = tokenUuids;
-      }
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: tokenUuids } });
+      director.ctx.pickedTargetUuids = studyTargeting.targetUuids;
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: studyTargeting.targetUuids } });
       return;
     }
 
@@ -1505,34 +1618,15 @@ const Target = {
     // weak} via the card buttons — that pick IS the commit.
     if (command === "Hinder") {
       const attackerSnap = director.ctx.turnSnapshot;
-      const eligible = director.dCombat
-        ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category: "enemy" })
-        : snapshotEligibleTargets(director.combat, attackerSnap, { category: "enemy" });
-      director.ctx.eligibleTargets = eligible;
-      if (eligible.length === 0) {
-        ui.notifications?.warn("No opponents to Hinder.");
-        director.enqueue({ type: INTENTS.TARGET_BACK });
+      const hinderTargeting = await resolveActionTargets(director, attackerSnap, {
+        skillTargetText:    "One Enemy",
+        usingPreComposed:   !!director.ctx.pickedTargetUuids?.length,
+        composedTargetUuids: director.ctx.pickedTargetUuids,
+        titleText:          `${attackerSnap.name}: pick an opponent to Hinder`,
+      });
+      if (!hinderTargeting.ok) {
+        director.dispatch({ type: (hinderTargeting.cancelled || hinderTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
         return;
-      }
-      // Pre-composed targets from player's composeHinder? The target is
-      // the player's call but the attribute pair stays GM-side per RAW.
-      let targetTokenUuids;
-      if (director.ctx.pickedTargetUuids?.length) {
-        log(`TARGET (Hinder): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
-        targetTokenUuids = [...director.ctx.pickedTargetUuids];
-      } else {
-        const targetResult = await requestTargeting({
-          director,
-          eligible,
-          mode: "exact",
-          count: 1,
-          titleText: `${attackerSnap.name}: pick an opponent to Hinder`,
-        });
-        if (!targetResult.ok) {
-          director.dispatch({ type: targetResult.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-          return;
-        }
-        targetTokenUuids = [...targetResult.tokenUuids];
       }
 
       // Per RAW Core p.71, the GM picks the attribute pair AFTER the
@@ -1540,8 +1634,7 @@ const Target = {
       // now — the player is committed to the target but waits for the GM
       // to call the check. Default DL is 10 (the fixed RAW value) but the
       // GM can adjust for situational difficulty.
-      const targetSnap = eligible.find((t) => t.tokenUuid === targetTokenUuids[0]) ?? null;
-      const targetName = targetSnap?.name ?? "target";
+      const targetName = hinderTargeting.targets[0]?.name ?? "target";
       const checkConfig = await pickAttributePair({
         director,
         titleText: `Hinder ${targetName}: configure the Check`,
@@ -1551,17 +1644,12 @@ const Target = {
         defaultDL: 10,
       });
       if (!checkConfig.ok) {
-        // GM cancelled the configure step → cancel Hinder, back to DECLARE.
         director.dispatch({ type: INTENTS.TARGET_BACK });
         return;
       }
-      director.ctx.pickedTargetUuids = targetTokenUuids;
-      director.ctx.hinderCheckConfig = {
-        A1: checkConfig.A1,
-        A2: checkConfig.A2,
-        dl: checkConfig.dl ?? 10,
-      };
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids } });
+      director.ctx.pickedTargetUuids = hinderTargeting.targetUuids;
+      director.ctx.hinderCheckConfig = { A1: checkConfig.A1, A2: checkConfig.A2, dl: checkConfig.dl ?? 10 };
+      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: hinderTargeting.targetUuids } });
       return;
     }
 
@@ -1625,105 +1713,29 @@ const Target = {
         return;
       }
 
-      // 2) Determine targeting from skill_target prop.
-      //    "Self" / blank-with-no-damage → caster; "all enemies" → all
-      //    eligible enemies (no picker); "one creature"/"one enemy"/etc →
-      //    enemy picker; "ally" → ally picker. Best-effort parse from the
-      //    free-text field — author can pin via explicit override later.
-      const skillTargetText = String(skill.system?.props?.skill_target ?? "").trim().toLowerCase();
-      const intent = classifyActionIntent(skill);
-      const isSelf = !skillTargetText || /^self$/.test(skillTargetText);
-
-      let targets = [];
-      let targetUuids = [];
-
-      if (isSelf) {
-        targets = [attackerSnap];
-        targetUuids = [attackerSnap.tokenUuid];
-      } else {
-        // Pick category.
-        // "creature/creatures" keyword → any (ally + enemy both valid per RAW).
-        // "ally/allies" keyword OR aid intent → ally only.
-        // Default → enemy.
-        //
-        // "creature" takes priority over intent: Capote / Cross-Guard / etc.
-        // say "One Creature" and genuinely allow either ally or enemy.
-        // Hostile non-damage Active skills (NPC Steal *, Hinder, Provoke)
-        // need `action_intent: "harmful"` on the item — the classifier's
-        // step-8 "Active without damage → aid" default would otherwise
-        // route them to allies. See the 2026-06-03 migration.
-        const wantsCreature = /creature|creatures/i.test(skillTargetText);
-        const wantsAlly = !wantsCreature && (/ally|allies/i.test(skillTargetText) || intent === "aid");
-        const category = wantsCreature ? "any" : (wantsAlly ? "ally" : "enemy");
-        const eligibleRaw = director.dCombat
-          ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
-          : snapshotEligibleTargets(director.combat, attackerSnap, { category });
-
-        // Pick mode + count from text. "all X" → all. "up to N" → up_to N.
-        // "N X" → exact N. Default → exact 1.
-        //
-        // Count accepts a FORMULA (not just a literal): "up to SL
-        // creatures" / "SL enemies" / "up to SL+1 allies" all
-        // evaluate `SL` (and friends) via the skill resolver. Lets
-        // RAW Ignis / Stormblade / Magical Artillery declare scaling
-        // target counts directly in `skill_target`. Identifier values
-        // come from the firing skill's level via `SL` in the resolver
-        // (see skill-formulas.js).
-        let mode = "exact";
-        let count = 1;
-        const targetCountResolver = buildSkillResolver({
-          actor: attackerActor,
-          payload: null,
-          skill,
-          round: director.dCombat?.round ?? 0,
-        });
-        if (/\ball\b/i.test(skillTargetText)) { mode = "all"; count = eligibleRaw.length; }
-        else if (/up\s+to/i.test(skillTargetText)) {
-          mode = "up_to";
-          count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
-        } else {
-          count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
-        }
-
-        const categoryLabel = category === "any" ? "creatures" : `${category}s`;
-        if (mode === "all") {
-          if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
-            director.enqueue({ type: INTENTS.TARGET_BACK });
-            return;
-          }
-          targets = eligibleRaw;
-          targetUuids = eligibleRaw.map((e) => e.tokenUuid);
-        } else {
-          if (!eligibleRaw.length) {
-            ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
-            director.enqueue({ type: INTENTS.TARGET_BACK });
-            return;
-          }
-          director.ctx.eligibleTargets = eligibleRaw;
-          // Pre-composed targets from player's composeSkill?
-          let result;
-          if (usingPreComposed && Array.isArray(composedSpell.targetUuids) && composedSpell.targetUuids.length) {
-            log(`TARGET (${command}): using pre-composed targets=${composedSpell.targetUuids.join(",")}`);
-            result = { ok: true, cancelled: false, tokenUuids: [...composedSpell.targetUuids] };
-          } else {
-            const titleText = `${attackerSnap.name}: pick target${count > 1 ? "s" : ""} for ${skill.name}`;
-            result = await requestTargeting({
-              director,
-              eligible: eligibleRaw,
-              mode,
-              count,
-              titleText,
-            });
-          }
-          if (!result.ok) {
-            director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
-            return;
-          }
-          targetUuids = [...result.tokenUuids];
-          targets = eligibleRaw.filter((e) => targetUuids.includes(e.tokenUuid));
-        }
+      // 2) Resolve targets via the unified resolver. All mode/category/count
+      //    parsing lives in resolveActionTargets; this branch just passes
+      //    the skill's raw text + actor/skill refs for formula resolution.
+      const skillTargetText = String(skill.system?.props?.skill_target ?? "").trim();
+      const _isAutoSkillPick = !skillTargetText || /^self$/i.test(skillTargetText) || /\ball\b/i.test(skillTargetText);
+      const _skillTitle = /\brandom\b/i.test(skillTargetText)
+        ? `${attackerSnap.name}: randomizing target for ${skill.name}`
+        : _isAutoSkillPick ? null
+        : `${attackerSnap.name}: pick target for ${skill.name}`;
+      const skillTargeting = await resolveActionTargets(director, attackerSnap, {
+        skillTargetText,
+        attackerActor,
+        skill,
+        usingPreComposed:    usingPreComposed,
+        composedTargetUuids: composedSpell?.targetUuids,
+        titleText:           _skillTitle,
+      });
+      if (!skillTargeting.ok) {
+        director.dispatch({ type: (skillTargeting.cancelled || skillTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+        return;
       }
+      const targets    = skillTargeting.targets;
+      const targetUuids = skillTargeting.targetUuids;
 
       // 3) Re-check affordability with the actual target count (×T tokens).
       const parsedCost = parseSkillCost(String(skill.system?.props?.cost ?? ""));
@@ -2003,143 +2015,81 @@ const Target = {
       } // end PC weapon-mode branch
     }
 
-    // Both first-entry and multi-pass re-entry: re-snapshot eligible
-    // targets (defeated enemies from pass 1 are excluded automatically by
-    // the hp <= 0 filter inside the snapshot helpers) and run the target
-    // picker for the next weapon in the queue.
-    const eligibleRaw = director.dCombat
-      ? snapshotEligibleTargetsFromDCombat(director.dCombat, director.ctx.turnSnapshot, { category: "enemy" })
-      : snapshotEligibleTargets(director.combat, director.ctx.turnSnapshot, { category: "enemy" });
-
-    // RAW Core p.70 — Covered creatures can't be melee-targeted. Route
-    // through `applyAttackRangeGate` so `.excluded` (Vanish overlay
-    // etc.) survives the filtering: Covered creatures join the excluded
-    // list with reason "Covered" instead of vanishing from the canvas.
-    const currentWeaponForRange = director.ctx.pendingPasses?.[0];
-    const eligible = applyAttackRangeGate(eligibleRaw, currentWeaponForRange);
-    director.ctx.eligibleTargets = eligible;
-
-    // ── Roulette keyword ── random target from every combatant except self.
-    // Overrides the normal enemy-only picker entirely.
-    if (currentWeaponForRange?.hasRoulette) {
-      const allCombatants = director.dCombat
-        ? snapshotEligibleTargetsFromDCombat(director.dCombat, director.ctx.turnSnapshot, { category: "creature" })
-        : snapshotEligibleTargets(director.combat, director.ctx.turnSnapshot, { category: "creature" });
-      const roulettePool = allCombatants.filter((t) => t.tokenUuid !== director.ctx.turnSnapshot.tokenUuid);
-      if (!roulettePool.length) {
-        ui.notifications?.warn(`${director.ctx.turnSnapshot.name}: no valid Roulette targets.`);
-        director.dispatch({ type: INTENTS.TARGET_BACK });
-        return;
-      }
-      const rouletteTarget = roulettePool[Math.floor(Math.random() * roulettePool.length)];
-      log(`TARGET Roulette: picked ${rouletteTarget.name} from pool of ${roulettePool.length}`);
-      // Expand eligibleTargets so COMPUTE can snapshot the chosen token
-      // even when it's a friendly (not in the enemy-only eligible list).
-      director.ctx.eligibleTargets = allCombatants;
-      director.ctx.pickedTargetUuids = [rouletteTarget.tokenUuid];
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: [rouletteTarget.tokenUuid] } });
-      return;
-    }
-
-    // skill_target "all *" — mirrors the Skill/Spell branch's all-enemies
-    // auto-targeting. Single source of truth: the item's skill_target field.
-    // hasOverflow is bookkeeping only and does not drive this check.
-    if (/\ball\b/i.test(currentWeaponForRange?.skillTarget ?? "")) {
-      if (!eligibleRaw.length) {
-        ui.notifications?.warn(`${director.ctx.turnSnapshot.name}: no enemies to target.`);
-        director.dispatch({ type: INTENTS.TARGET_BACK });
-        return;
-      }
-      const overflowUuids = eligibleRaw.map((e) => e.tokenUuid);
-      director.ctx.eligibleTargets = eligibleRaw;
-      director.ctx.pickedTargetUuids = [...overflowUuids];
-      log(`TARGET all-enemies (skill_target="${currentWeaponForRange.skillTarget}"): ${eligibleRaw.length} targets`);
-      director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: overflowUuids } });
-      return;
-    }
-
-    if (eligible.length === 0) {
-      // Edge case for multi-pass: if pass 1 wiped the targets, the
-      // off-hand has nothing to hit. Clear the queue + return through
-      // ABORT so the FSM finishes the turn cleanly. Distinguish the
-      // "all-Covered" case so the GM knows why melee is blocked.
-      const allCovered = isMeleeAttack && eligibleRaw.length > 0 && eligible.length === 0;
-      const message = allCovered
-        ? "All eligible enemies are Covered — switch to a ranged weapon or pick a different action."
-        : isMultiPassReEntry
-          ? "No targets remaining for the second attack."
-          : "No eligible enemy targets on this scene.";
-      ui.notifications?.warn(message);
-      director.ctx.pendingPasses = [];
-      director.dispatch({ type: isMultiPassReEntry ? INTENTS.ABORT : INTENTS.TARGET_BACK,
-        body: { reason: isMultiPassReEntry ? "second pass: no targets left" : "no targets" } });
-      return;
-    }
-
-    // Title — for multi-pass, show pass number + weapon so the player
-    // knows which hand they're aiming. The current weapon is the head of
-    // the pendingPasses queue (COMPUTE shifts it after this state).
-    // Read the hand label from `weapon.hand` (set by resolveAttackerWeapon)
-    // rather than inferring from passIndex — passIndex==1 isn't always
-    // "Main Hand" anymore now that two-weapon-off-first exists.
+    // Both first-entry and multi-pass re-entry: resolve targets via the
+    // unified targeting resolver. The weapon's skill_target text drives
+    // mode/category/count — "One Enemy" for basic weapons, "One Random
+    // Creature" for roulette-style, "All Enemy" for AoE, etc.
+    // hasRoulette on older weapons is bridged to "One Random Creature"
+    // during the transition; authors should migrate to skill_target.
     const currentWeapon = director.ctx.pendingPasses?.[0];
-    const totalPasses = director.ctx.totalPasses ?? 1;
+    const weaponSkillTarget = currentWeapon?.hasRoulette
+      ? "One Random Creature"
+      : (currentWeapon?.skillTarget || "One Enemy");
+
+    // Build multi-pass title + cancel label.
+    const totalPasses    = director.ctx.totalPasses ?? 1;
     const currentPassNum = (director.ctx.passIndex ?? 0) + 1;
-    let titleText;
-    let cancelLabel;
+    let attackTitle, attackCancelLabel;
     if (totalPasses > 1) {
       const hand = currentWeapon?.hand === "off" ? "Off-Hand" : "Main Hand";
-      titleText = `${attacker.name}'s ${currentWeapon?.name ?? "weapon"} — ${hand} (${currentPassNum}/${totalPasses})`;
-      // First pass: Cancel returns to DECLARE (action discarded entirely).
-      // Pass 2+: pass 1 already resolved; "Cancel" really means "Skip" —
-      // make the label honest.
-      cancelLabel = isMultiPassReEntry ? "Skip Second Attack" : "Cancel";
+      attackTitle = `${attacker.name}'s ${currentWeapon?.name ?? "weapon"} — ${hand} (${currentPassNum}/${totalPasses})`;
+      attackCancelLabel = isMultiPassReEntry ? "Skip Second Attack" : "Cancel";
     } else {
-      titleText = `Pick a target for ${attacker.name}'s Attack`;
-      cancelLabel = "Cancel";
+      attackTitle = /\brandom\b/i.test(weaponSkillTarget)
+        ? `${attacker.name}: randomizing target for Attack`
+        : `Pick a target for ${attacker.name}'s Attack`;
+      attackCancelLabel = "Cancel";
     }
 
-    // Pre-populated target check (first pass only). composeAction's
-    // bundle already provided pickedTargetUuids for pass 1; skip the
-    // picker and feed those straight through. Multi-pass re-entry
-    // (pass 2 of two-weapon) always re-prompts because pass 1's
-    // targets shouldn't auto-carry over and the player needs to
-    // re-decide (per RAW: "both aimed at the same target or different").
-    let result;
-    if (!isMultiPassReEntry && director.ctx.pickedTargetUuids?.length) {
-      log(`TARGET (Attack): using pre-composed targets=${director.ctx.pickedTargetUuids.join(",")}`);
-      result = {
-        ok: true,
-        cancelled: false,
-        tokenUuids: [...director.ctx.pickedTargetUuids],
-      };
-      // Cleared so pass 2 (if any) re-prompts via the picker.
-      director.ctx.pickedTargetUuids = null;
-    } else {
-      result = await requestTargeting({
-        director,
-        eligible,
-        mode: "exact",
-        count: 1,
-        titleText,
-        cancelLabel,
-      });
-    }
-    if (!result.ok) {
-      if (isMultiPassReEntry && result.cancelled) {
-        // Skip the remaining passes; let CLEANUP → TURN_END finish the
-        // turn. ABORTED will route through CLEANUP correctly because the
-        // first pass already started combat resolution.
+    // RAW Core p.70 — Covered creatures can't be melee-targeted. The
+    // range gate is passed as a post-filter so the unified resolver still
+    // builds the full category pool (needed for random/creature modes)
+    // and then applies coverage + Vanish exclusions on top.
+    const attackTargeting = await resolveActionTargets(director, attacker, {
+      skillTargetText:    weaponSkillTarget,
+      excludeSelf:        true,
+      eligiblePostFilter: (pool) => applyAttackRangeGate(pool, currentWeapon),
+      usingPreComposed:   !isMultiPassReEntry,
+      composedTargetUuids: director.ctx.pickedTargetUuids,
+      titleText:          attackTitle,
+      cancelLabel:        attackCancelLabel,
+    });
+
+    // Pass 1 pre-composed UUIDs are consumed; pass 2 always re-prompts.
+    if (!isMultiPassReEntry) director.ctx.pickedTargetUuids = null;
+
+    if (!attackTargeting.ok) {
+      if (isMultiPassReEntry && attackTargeting.cancelled) {
+        // Skip remaining passes — first pass already committed.
         director.ctx.pendingPasses = [];
         director.ctx.abortReason = "two-weapon: second pass skipped by player";
         director.dispatch({ type: INTENTS.ABORT });
         return;
       }
-      director.dispatch({ type: result.cancelled ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+      // Empty-pool with Covered enemies deserves a specific message.
+      if (attackTargeting.reason === "no_eligible" && !isMultiPassReEntry) {
+        const eligibleRaw = director.dCombat
+          ? snapshotEligibleTargetsFromDCombat(director.dCombat, attacker, { category: "enemy" })
+          : snapshotEligibleTargets(director.combat, attacker, { category: "enemy" });
+        const gate = applyAttackRangeGate(eligibleRaw, currentWeapon);
+        if (isMeleeAttack && eligibleRaw.length > 0 && gate.length === 0) {
+          ui.notifications?.warn("All eligible enemies are Covered — switch to a ranged weapon or pick a different action.");
+          director.ctx.pendingPasses = [];
+          director.dispatch({ type: INTENTS.TARGET_BACK, body: { reason: "all-covered" } });
+          return;
+        }
+      }
+      if (isMultiPassReEntry && attackTargeting.reason === "no_eligible") {
+        ui.notifications?.warn("No targets remaining for the second attack.");
+        director.ctx.pendingPasses = [];
+        director.dispatch({ type: INTENTS.ABORT, body: { reason: "second pass: no targets left" } });
+        return;
+      }
+      director.dispatch({ type: (attackTargeting.cancelled || attackTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
       return;
     }
-    director.ctx.pickedTargetUuids = [...result.tokenUuids];
-    director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: result.tokenUuids } });
+    director.ctx.pickedTargetUuids = [...attackTargeting.targetUuids];
+    director.dispatch({ type: INTENTS.TARGET_PICKED, body: { targetTokenUuids: attackTargeting.targetUuids } });
   },
 };
 

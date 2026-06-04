@@ -480,33 +480,28 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
   }
 
   // Target count. NPC attacks read the same `skill_target` text as skills
-  // ("One Creature", "Up to two creatures", "All Enemy", etc.). Reuse the
-  // skill-side resolver so identifiers like HAS_SKILL_<NAME>, BOND_COUNT,
-  // SL evaluate correctly.
+  // ("One Creature", "Up to two creatures", "All Enemy", "One Random Creature", etc.).
   const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
-  const targetCountResolver = buildSkillResolver({
-    actor,
-    payload: null,
-    skill: attackItem,
-    round: director.dCombat?.round ?? 0,
-  });
-  let mode = "exact";
-  let count = 1;
-  if (/\ball\b/i.test(skillTargetText)) {
-    mode = "all";
-    count = filtered.length;
-  } else if (/up\s+to/i.test(skillTargetText)) {
-    mode = "up_to";
-    count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
-  } else {
-    count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
-  }
-  count = Math.max(1, Math.min(count, filtered.length));
 
   let targetUuids;
-  if (mode === "all") {
+  if (/\brandom\b/i.test(skillTargetText)) {
+    // Random targeting is resolved GM-side via the roulette picker.
+    // Don't pre-compose a target here — TARGET state runs resolveActionTargets.
+    targetUuids = [];
+  } else if (/\ball\b/i.test(skillTargetText)) {
     targetUuids = filtered.map((e) => e.tokenUuid);
   } else {
+    const targetCountResolver = buildSkillResolver({
+      actor,
+      payload: null,
+      skill: attackItem,
+      round: director.dCombat?.round ?? 0,
+    });
+    const isUpTo = /up\s+to/i.test(skillTargetText);
+    let count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
+    count = Math.max(1, Math.min(count, filtered.length));
+    const mode = isUpTo ? "up_to" : "exact";
+
     const result = await raceCancel(
       requestTargeting({
         director,
@@ -696,33 +691,30 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
       return { cancelled: true, reason: "no targets" };
     }
 
-    // Mode + count from text. Same resolver the GM uses — identifiers
-    // that need only `actor` + `skill` (SL, CHAR_LEVEL, HAS_SKILL_<NAME>,
-    // BOND_*) evaluate correctly player-side; payload-dependent ones
-    // (HR, HIT_COUNT, etc.) fold to 0 since no payload exists yet.
-    // Enables cross-skill gates like Soul Steal × Pillage:
-    //   skill_target: "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures".
-    const targetCountResolver = buildSkillResolver({
-      actor,
-      payload: null,
-      skill,
-      round: director.dCombat?.round ?? 0,
-    });
-    let mode = "exact";
-    let count = 1;
-    if (/\ball\b/i.test(skillTargetText)) {
-      mode = "all";
-      count = targetList.length;
-    } else if (/up\s+to/i.test(skillTargetText)) {
-      mode = "up_to";
-      count = extractTargetCountFromText(skillTargetText, { isUpTo: true, resolver: targetCountResolver });
-    } else {
-      count = extractTargetCountFromText(skillTargetText, { isUpTo: false, resolver: targetCountResolver });
-    }
-
-    if (mode === "all") {
+    // Random targeting is resolved entirely on the GM side via the roulette
+    // picker — the player doesn't pick a target at all. Send an empty
+    // targetUuids so the GM's TARGET state skips the pre-composed bypass
+    // (isAutoPick = true for random mode, so it always re-derives anyway).
+    if (/\brandom\b/i.test(skillTargetText)) {
+      targetUuids = [];
+    } else if (/\ball\b/i.test(skillTargetText)) {
+      // "All *" — pre-compose every eligible token; TARGET auto-confirms.
       targetUuids = targetList.map((e) => e.tokenUuid);
     } else {
+      // Mode + count from text. Same resolver the GM uses — identifiers
+      // that need only `actor` + `skill` (SL, CHAR_LEVEL, HAS_SKILL_<NAME>,
+      // BOND_*) evaluate correctly player-side; payload-dependent ones
+      // (HR, HIT_COUNT, etc.) fold to 0 since no payload exists yet.
+      const targetCountResolver = buildSkillResolver({
+        actor,
+        payload: null,
+        skill,
+        round: director.dCombat?.round ?? 0,
+      });
+      const isUpTo = /up\s+to/i.test(skillTargetText);
+      const count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
+      const mode = isUpTo ? "up_to" : "exact";
+
       const result = await raceCancel(
         requestTargeting({
           director,
