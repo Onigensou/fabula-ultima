@@ -311,6 +311,10 @@
     {
       "key": "2026-06-04-template-options-ae-duplicate-mode",
       "path": "data-migrations/2026-06-04-template-options-ae-duplicate-mode.js"
+    },
+    {
+      "key": "2026-06-04-fix-ae-duplicate-mode-select-type",
+      "path": "data-migrations/2026-06-04-fix-ae-duplicate-mode-select-type.js"
     }
   ]
 }

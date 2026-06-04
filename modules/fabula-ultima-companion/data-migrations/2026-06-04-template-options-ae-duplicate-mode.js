@@ -9,7 +9,7 @@
  *
  * Column shape:
  *   key:            ae_duplicate_mode
- *   type:           selectBox
+ *   type:           select
  *   options:        replace / stack / skip / remove +
  *                   replace_per_caster / skip_per_caster / remove_per_caster
  *   visibility:     effect_kind == "apply_ae"
@@ -34,7 +34,7 @@
 export const key = "2026-06-04-template-options-ae-duplicate-mode";
 export const description =
   "Add the ae_duplicate_mode column to the _Skill Template's effect_table " +
-  "as a selectBox gated on effect_kind=apply_ae (replace / stack / skip / " +
+  "as a select column gated on effect_kind=apply_ae (replace / stack / skip / " +
   "remove + per-caster variants). Exposes the field that already drives " +
   "engine behavior in skill-effects.js.";
 
@@ -48,7 +48,7 @@ const DUP_MODE_COL = Object.freeze({
   cssClass: "", role: 0, editRole: 0, permission: 0,
   tooltip: "How to handle the case when the target already has a copy of this AE. 'replace' (default) removes the prior; 'stack' adds another; 'skip' aborts; 'remove' cures without applying. *_per_caster variants restrict the duplicate match to AEs THIS caster previously applied.",
   visibilityFormula: GATE_FORMULA,
-  type: "selectBox", size: "full-size", label: "Duplicate Mode",
+  type: "select", size: "full-size", label: "Duplicate Mode",
   defaultValue: "replace",
   options: [
     { key: "replace",             value: "Replace" },
