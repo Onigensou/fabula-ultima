@@ -1810,6 +1810,13 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
+      // Action intent (aid / harmful / neutral) — read once from the resolved
+      // skill and stamped onto the actionResult below (`actionIntent: intent`).
+      // Without this definition the ar build threw "intent is not defined" for
+      // any Skill reaching the full pick+target COMPUTE (e.g. Soul Steal vs an
+      // enemy, Infectious Ray "All Enemy"); the harness reimplements COMPUTE so
+      // it never exercised this branch.
+      const intent = classifyActionIntent(skill);
 
       // 2) Resolve targets via the unified resolver. All mode/category/count
       //    parsing lives in resolveActionTargets; this branch just passes
