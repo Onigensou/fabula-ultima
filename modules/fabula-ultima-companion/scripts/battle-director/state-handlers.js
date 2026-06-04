@@ -32,7 +32,7 @@ import { OptionPicker } from "./option-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
-import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, buildDamageBonusParts } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
@@ -1947,7 +1947,9 @@ const Target = {
       //   - Only off equipped → no picker; off is used.
       const hasMain = !!attacker.weapon;
       const hasOff = !!attacker.offWeapon;
-      if (!hasMain && !hasOff) {
+      const virtualAttacks = Array.isArray(attacker.virtualAttacks) ? attacker.virtualAttacks : [];
+      const hasVirtual = virtualAttacks.length > 0;
+      if (!hasMain && !hasOff && !hasVirtual) {
         ui.notifications?.warn(`${attacker.name} has no usable weapon.`);
         warn("TARGET Attack: no weapon equipped", attacker.name);
         director.enqueue({ type: INTENTS.TARGET_BACK });
@@ -1960,20 +1962,27 @@ const Target = {
       if (director.ctx.attackMode) {
         attackMode = director.ctx.attackMode;
         log(`TARGET (Attack): using pre-composed attackMode=${attackMode}`);
-      } else if (hasMain && hasOff) {
-        const picked = await pickWeaponMode({
-          director,
-          mainWeapon: attacker.weapon,
-          offWeapon: attacker.offWeapon,
-          allowTwoWeapon: !!attacker.canTwoWeaponFight,
-        });
-        if (!picked) {
-          director.enqueue({ type: INTENTS.TARGET_BACK });
-          return;
+      } else {
+        const totalRealOptions = (hasMain ? 1 : 0) + (hasOff ? 1 : 0);
+        const needsPicker = totalRealOptions + virtualAttacks.length > 1;
+        if (needsPicker) {
+          const picked = await pickWeaponMode({
+            director,
+            mainWeapon: attacker.weapon,
+            offWeapon: attacker.offWeapon,
+            allowTwoWeapon: !!attacker.canTwoWeaponFight,
+            virtualAttacks,
+          });
+          if (!picked) {
+            director.enqueue({ type: INTENTS.TARGET_BACK });
+            return;
+          }
+          attackMode = picked;
+        } else if (hasVirtual && !hasMain && !hasOff) {
+          attackMode = "virtual:0";
+        } else if (hasOff && !hasMain) {
+          attackMode = "off";
         }
-        attackMode = picked;
-      } else if (hasOff && !hasMain) {
-        attackMode = "off";
       }
       // Two-weapon: each pass is its OWN action card (separate confirm +
       // resolve + reaction window + target pick) so reactions can fire
@@ -1982,11 +1991,15 @@ const Target = {
       // ("two-weapon") and off-first ("two-weapon-off-first") — because
       // RAW lets the player choose order (Core p.69: "you perform the two
       // attacks in any order you prefer").
-      const weaponsUsed = (attackMode === "two-weapon")
-        ? [attacker.weapon, attacker.offWeapon]
-        : (attackMode === "two-weapon-off-first")
-          ? [attacker.offWeapon, attacker.weapon]
-          : (attackMode === "off" ? [attacker.offWeapon] : [attacker.weapon]);
+      // virtual:N modes single-pass; the synthesised profile is the
+      // sole weapon for that attack (Twin Shields is RAW two-handed).
+      const weaponsUsed = attackMode.startsWith("virtual:")
+        ? [virtualAttacks[Number(attackMode.slice("virtual:".length)) | 0]].filter(Boolean)
+        : (attackMode === "two-weapon")
+          ? [attacker.weapon, attacker.offWeapon]
+          : (attackMode === "two-weapon-off-first")
+            ? [attacker.offWeapon, attacker.weapon]
+            : (attackMode === "off" ? [attacker.offWeapon] : [attacker.weapon]);
       director.ctx.attackMode = attackMode;
       director.ctx.weaponsUsed = weaponsUsed;
       director.ctx.pendingPasses = [...weaponsUsed];   // shifted by COMPUTE
@@ -2608,6 +2621,24 @@ const Compute = {
         });
       }
 
+      // Per-source breakdown of where the damage bonus came from — same
+      // shape as checkBonusParts. Walks AEs that contribute to the
+      // hand's aggregated damage prop, plus the free-action grant.
+      // Renders in the Damage tooltip as an indented list.
+      const damageBonusParts = (() => {
+        try {
+          return buildDamageBonusParts({
+            actor: liveAttacker,
+            weapon,
+            hand: weapon?.hand ?? (director.ctx.attackMode === "off" ? "off" : "main"),
+            attackGrant: attackGrant ?? null,
+          });
+        } catch (e) {
+          warn("COMPUTE Attack: buildDamageBonusParts threw", e);
+          return [];
+        }
+      })();
+
       director.ctx.actionResult = freezeActionResult({
         kind: "Attack",
         attacker,
@@ -2627,6 +2658,7 @@ const Compute = {
         },
         damage: {
           base: damageBonus,
+          baseParts: damageBonusParts,
           // Use the overridden element (set by Spiritist Soul Weapon and
           // any future damage-type override AE) instead of the weapon's
           // raw type — so the action card label + affinity routing on

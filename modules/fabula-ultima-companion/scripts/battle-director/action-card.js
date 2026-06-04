@@ -364,6 +364,27 @@ function ensureStyles() {
       line-height: 1.3;
       align-self: center;
     }
+
+    /* Per-cell role mini-tag — disambiguates "which name is the
+       attacker, which is the target" since the disposition-based layout
+       can put the attacker on either side. Renders as a small uppercase
+       label above the name. Attacker tag has a subtle accent color;
+       Target tag is muted. */
+    .fud-bf-card .fud-bf-attacker-row .fud-bf-role-tag {
+      display: block;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      opacity: 0.65;
+      margin-bottom: 1px;
+    }
+    .fud-bf-card .fud-bf-attacker-row .is-attacker .fud-bf-role-tag {
+      color: var(--fud-stroke, #5a6a85);
+    }
+    .fud-bf-card .fud-bf-attacker-row .is-targets .fud-bf-role-tag {
+      color: var(--fud-ink-soft, #4b4338);
+    }
     .fud-bf-card .fud-bf-attacker-row .is-targets .t-name {
       white-space: nowrap;
     }
@@ -1291,15 +1312,18 @@ function buildAttackerHTML({ attacker, targets }) {
   const { attackerSide } = pickActionSides({ attacker, targets });
   const attackerOnRight = attackerSide === "right";
 
-  // CSS class flavors:
-  //   .is-attacker  — single nowrap name (ellipsis if it'd overflow)
-  //   .is-targets   — wraps multi-row, vertically centered
-  const attackerCell = `<div class="${attackerOnRight ? "right" : "left"} is-attacker">${attackerName}</div>`;
-  const targetsCell  = `<div class="${attackerOnRight ? "left"  : "right"} is-targets">${targetParts}</div>`;
+  // Per-cell role mini-tag — the disposition layout can swap which side
+  // holds the attacker, so the legend "Attacker" alone is ambiguous to
+  // a reader scanning left-to-right. Tag each cell explicitly to remove
+  // any doubt. Targets get plural form when N > 1.
+  const targetCount = Array.isArray(targets) ? targets.length : 0;
+  const targetTagText = targetCount > 1 ? "Targets" : "Target";
+  const attackerCell = `<div class="${attackerOnRight ? "right" : "left"} is-attacker"><span class="fud-bf-role-tag">Attacker</span>${attackerName}</div>`;
+  const targetsCell  = `<div class="${attackerOnRight ? "left"  : "right"} is-targets"><span class="fud-bf-role-tag">${targetTagText}</span>${targetParts}</div>`;
 
   return `
     <fieldset class="fud-bf-section">
-      <legend>Attacker</legend>
+      <legend>Engagement</legend>
       <div class="fud-bf-attacker-row">
         ${attackerOnRight ? targetsCell : attackerCell}
         <div class="mid"><i class="fa-solid fa-swords"></i></div>
@@ -1454,11 +1478,30 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
     : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
+
+  // Per-source breakdown of where the base damage bonus came from. Same
+  // shape as the Accuracy panel's checkBonusParts breakdown — set by
+  // COMPUTE Attack via buildDamageBonusParts (walks AEs contributing to
+  // weapon1_damage / off_mod_2 + free-action grants). Renders as an
+  // indented list under "Base bonus" when ≥1 part has a non-zero amount.
+  const baseParts = Array.isArray(damage.baseParts)
+    ? damage.baseParts.filter((p) => p && Number(p.amount) !== 0)
+    : [];
+  const baseBreakdownHTML = baseParts.length
+    ? `<ul style="margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;">`
+      + baseParts.map((p) => {
+          const a = Number(p.amount) || 0;
+          const sign = a >= 0 ? "+" : "−";
+          return `<li><b>${escapeHtml(String(p.source ?? "Unknown"))}:</b> ${sign}${Math.abs(a)}</li>`;
+        }).join("")
+      + `</ul>`
+    : "";
+
   const tipBody = [
     isMpDamage
       ? `<p><b>Element:</b> MP damage (resource burn, no element)</p>`
       : `<p><b>Element:</b> ${escapeHtml(cap(elemKey))}${damage.declaresHealing ? " (healing)" : ""}</p>`,
-    `<p><b>Base bonus:</b> ${baseStr}</p>`,
+    `<p style="margin-bottom:0;"><b>Base bonus:</b> ${baseStr}</p>${baseBreakdownHTML}`,
     hrLine,
     formula,
     isMpDamage
@@ -3294,13 +3337,16 @@ export async function postActionCard({ director, kind, payload }) {
           // for action-taker-owned reactions (Healing Power etc.).
           reactorActorUuid: p.reactorActorUuid ?? null,
           reactorActorName: p.reactorActorName ?? null,
-          // Sticky picked-subject cache. card-mutations.resolvePickedSubject
+          // Sticky picked-subject cache. card-mutations.resolveRedirectSubjects
           // stores the player's pick on the in-memory candidate after the
           // first prompt; without round-tripping it here, the CONFIRM-stage
           // re-invocation of applyAcceptedCardMutations against the FROZEN
-          // ar would see a fresh candidate and re-prompt the player. This
-          // field is the load-bearing "don't ask twice" signal.
+          // ar would see a fresh candidate and re-prompt the player. Both
+          // shapes are passed through: the array form for multi-target
+          // redirects (Prophetic Defender), the single-uuid form for
+          // backward-compat with Protect's single-target.
           pickedSubjectActorUuid: p.pickedSubjectActorUuid ?? null,
+          pickedSubjectActorUuids: Array.isArray(p.pickedSubjectActorUuids) ? [...p.pickedSubjectActorUuids] : null,
           // Per-action dispatch tags (added by state-handlers' CONFIRM
           // creature_will_deal_damage aggregation). The sender-side
           // accumulator — computeSenderDamageBonuses — reads these to

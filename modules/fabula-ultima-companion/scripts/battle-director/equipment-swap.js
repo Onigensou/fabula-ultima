@@ -31,6 +31,21 @@ const ITEM_TYPE_WEAPON    = "weapon";
 const ITEM_TYPE_SHIELD    = "shield";
 const ITEM_TYPE_ACCESSORY = "accessory";
 
+// RAW Core p.???: shields can only be equipped in the OFF-hand slot.
+// Dual Shieldbearer (Guardian Skill) relaxes this — owners may equip a
+// shield in the main hand as well. Author-side gate read on both the
+// UI (filter main-slot candidates) and the apply-side (reject stale
+// submissions). Defaults to "no" → main-hand-shield blocked unless the
+// actor owns the named skill.
+const DSB_SKILL_NAME = "Dual Shieldbearer";
+function actorOwnsDualShieldbearer(actor) {
+  const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
+  for (const item of items) {
+    if (String(item?.name ?? "").trim() === DSB_SKILL_NAME) return true;
+  }
+  return false;
+}
+
 // Pull every equipment-relevant item off the actor, grouped by category.
 function partitionInventory(actor) {
   const all = Array.from(actor?.items ?? []);
@@ -154,8 +169,17 @@ export function gatherEquipmentSlots(actor) {
   const acc1Equipped = props.accessory_name ?? "";
   const acc2Equipped = props.accessory2_name ?? "";
 
-  const handCandidates = handItems.map(buildHandCandidate);
-  const accCandidates  = accessories.map(buildAccCandidate);
+  // Main-hand-shield gate. RAW: shields are off-hand by default; the
+  // Dual Shieldbearer skill relaxes the rule for owners. UI hides
+  // shields from the main slot's candidate list when the actor doesn't
+  // own the skill. applyEquipmentSwap repeats the check authoritatively.
+  const allowShieldInMain = actorOwnsDualShieldbearer(actor);
+  const mainHandItems = allowShieldInMain
+    ? handItems
+    : handItems.filter((i) => i?.system?.props?.item_type !== ITEM_TYPE_SHIELD);
+  const mainHandCandidates = mainHandItems.map(buildHandCandidate);
+  const offHandCandidates  = handItems.map(buildHandCandidate);
+  const accCandidates      = accessories.map(buildAccCandidate);
 
   const mainIdx = indexByEquippedName(handItems, mainEquipped);
   const offIdx  = indexByEquippedName(handItems, offEquipped);
@@ -168,13 +192,13 @@ export function gatherEquipmentSlots(actor) {
         key: "main", label: "Main Hand",
         currentItemId: mainIdx >= 0 ? handItems[mainIdx].id : null,
         currentName: mainIdx >= 0 ? handItems[mainIdx].system?.props?.name : "Unarmed",
-        candidates: handCandidates,
+        candidates: mainHandCandidates,
       },
       {
         key: "off", label: "Off Hand",
         currentItemId: offIdx >= 0 ? handItems[offIdx].id : null,
         currentName: offIdx >= 0 ? handItems[offIdx].system?.props?.name : "Unarmed",
-        candidates: handCandidates,
+        candidates: offHandCandidates,
       },
       {
         key: "accessory1", label: "Accessory",
@@ -273,10 +297,24 @@ export async function applyEquipmentSwap(actor, selections) {
 
   // Resolve the desired items per slot from the IDs supplied by the card.
   // Null = nothing equipped in that slot (empty hand / no accessory).
-  const wantMain = findById(handItems, selections.main);
+  let wantMain = findById(handItems, selections.main);
   const wantOff  = findById(handItems, selections.off);
   const wantAcc1 = findById(accessories, selections.accessory1);
   const wantAcc2 = findById(accessories, selections.accessory2);
+
+  // Main-hand-shield gate. Authoritative rejection: even if the UI
+  // somehow let a stale client submit a shield for the main slot, only
+  // Dual Shieldbearer owners may actually equip one there. Drop the
+  // attempt + notify; the swap proceeds with main untouched (curMain
+  // stays equipped).
+  if (wantMain?.system?.props?.item_type === ITEM_TYPE_SHIELD
+      && !actorOwnsDualShieldbearer(actor)) {
+    warn(`applyEquipmentSwap: ${actor.name} cannot equip shield "${wantMain.name}" in main hand without Dual Shieldbearer — dropped.`);
+    try { ui.notifications?.warn(`${actor.name} cannot equip a shield in the main hand without the Dual Shieldbearer skill.`); } catch {}
+    wantMain = findById(handItems, indexByEquippedName(handItems, actor.system?.props?.main_hand) >= 0
+      ? handItems[indexByEquippedName(handItems, actor.system?.props?.main_hand)].id
+      : null);
+  }
 
   const props = actor.system?.props ?? {};
   const curMain = findById(handItems, indexByEquippedName(handItems, props.main_hand) >= 0 ? handItems[indexByEquippedName(handItems, props.main_hand)].id : null);

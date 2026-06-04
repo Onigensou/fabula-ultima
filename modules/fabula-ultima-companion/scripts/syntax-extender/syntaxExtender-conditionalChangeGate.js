@@ -52,7 +52,7 @@
   const TRACE_TAG = "[ONI][AE-Gate][TRACE]";
   const VERSION = "6.3.0-affinity-false-fallback-na-2026-05-05";
 
-  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeAffinityFloor"];
+  const HELPERS = ["aeWhen", "aeUuidWhen", "aeStatusWhen", "aeEquippedWhen", "aeNotEquippedWhen", "aeSlotEquippedWhen", "aeAffinityFloor"];
 
   const PATCH_FLAGS = {
     actorPatched: "__oniAeConditionalGateActorPatched",
@@ -253,7 +253,7 @@
 
   function hasGateSyntax(value) {
     return typeof value === "string"
-      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeAffinityFloor)\s*\(/i.test(value);
+      && /\b(?:aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen|aeAffinityFloor)\s*\(/i.test(value);
   }
 
   // Does the actor have any equipped item matching the requested type
@@ -269,6 +269,49 @@
   // Multiple tokens may be comma-separated; the function returns true
   // on the FIRST equipped match. Unknown tokens silently miss (no
   // throw — keeps a stale formula from breaking the entire AE chain).
+  // Slot-aware "X equipped in slot Y" check. Reads the CSB actor props
+  // that equipment-swap.js stamps deterministically:
+  //   main_hand / off_hand → equipped item name in that slot ("" = unarmed)
+  //   main_attrib_1 / off_attrib_1 → "SHI" when slot holds a shield
+  // RAW use case: Hoplite ("weapon in main AND shield in off"); pays
+  // forward to any future slot-specific rule.
+  function isSlotEquipped(actor, slot, type) {
+    const props = actor?.system?.props ?? {};
+    const handName = slot === "main"
+      ? String(props.main_hand ?? "").trim()
+      : slot === "off"
+        ? String(props.off_hand ?? "").trim()
+        : "";
+    if (!handName) return false;
+    const attr = slot === "main" ? props.main_attrib_1 : props.off_attrib_1;
+    const isShield = String(attr ?? "").trim().toUpperCase() === "SHI";
+    const t = String(type ?? "").trim().toLowerCase();
+    if (t === "shield") return isShield;
+    if (t === "weapon") return !isShield;
+    if (t === "any") return true;
+    return false;
+  }
+
+  // Evaluate a slot-spec string. Grammar:
+  //   "main:weapon"            → main hand has a weapon
+  //   "off:shield"             → off hand has a shield
+  //   "main:weapon&off:shield" → BOTH (AND)
+  //   "main:weapon,off:shield" → EITHER (OR)
+  // First separator wins (AND if `&` appears, else OR with `,`).
+  function isSlotSpecActive(actor, spec) {
+    const trimmed = String(spec ?? "").trim();
+    if (!trimmed) return false;
+    const isAnd = trimmed.includes("&");
+    const sep = isAnd ? "&" : ",";
+    const parts = trimmed.split(sep).map(s => s.trim()).filter(Boolean);
+    if (!parts.length) return false;
+    const results = parts.map(part => {
+      const [slot, type] = part.split(":").map(s => s.trim());
+      return isSlotEquipped(actor, String(slot ?? "").toLowerCase(), type);
+    });
+    return isAnd ? results.every(Boolean) : results.some(Boolean);
+  }
+
   function hasAnyItemTypeEquipped(actor, typeListStr) {
     if (!actor?.items?.contents) return false;
     const wanted = String(typeListStr ?? "")
@@ -769,7 +812,7 @@ function hasEffectStatus(actor, statusId, currentEffect = null) {
 
     // Two-arg helpers: (query, value).
     const match2 = text.match(
-      /^\s*(?:\$\{\s*)?(aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen)\s*\(\s*(['"])(.*?)\2\s*,\s*(?:(['"])(.*?)\4|([^)]*?))\s*\)\s*(?:\}\$)?\s*$/i
+      /^\s*(?:\$\{\s*)?(aeWhen|aeUuidWhen|aeStatusWhen|aeEquippedWhen|aeNotEquippedWhen|aeSlotEquippedWhen)\s*\(\s*(['"])(.*?)\2\s*,\s*(?:(['"])(.*?)\4|([^)]*?))\s*\)\s*(?:\}\$)?\s*$/i
     );
 
     if (match2) {
@@ -851,6 +894,11 @@ if (helperNorm === "aewhen") {
   // NONE of the listed types is equipped → active
   // Pattern: gear-restricted passives (Dodge: no shield + no martial armor).
   active = !hasAnyItemTypeEquipped(actor, parsed.query);
+} else if (helperNorm === "aeslotequippedwhen") {
+  // Slot-aware equipment check with AND/OR conjunction.
+  // Grammar: "slot:type" pairs joined by `&` (AND) or `,` (OR).
+  // RAW use: Hoplite's "weapon in main AND shield in off".
+  active = isSlotSpecActive(actor, parsed.query);
 } else if (helperNorm === "aeaffinityfloor") {
   // ALWAYS apply a value on the affinity_N key being patched. Preserve the
   // current value if it's already "IM" or "AB" (immune / absorb) so a

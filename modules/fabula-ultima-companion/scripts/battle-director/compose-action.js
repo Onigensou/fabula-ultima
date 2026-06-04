@@ -335,20 +335,26 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
 
   const hasMain = !!snap.weapon;
   const hasOff = !!snap.offWeapon;
-  if (!hasMain && !hasOff) {
+  const virtualAttacks = Array.isArray(snap.virtualAttacks) ? snap.virtualAttacks : [];
+  const hasVirtual = virtualAttacks.length > 0;
+  if (!hasMain && !hasOff && !hasVirtual) {
     ui.notifications?.warn(`${snap.name} has no usable weapon.`);
     return { cancelled: true, reason: "no weapon" };
   }
 
-  // Weapon mode
+  // Weapon mode. Picker appears whenever the actor has more than one
+  // option — real-hand combos OR exposed virtual attacks.
   let attackMode = "main";
-  if (hasMain && hasOff) {
+  const totalRealOptions = (hasMain ? 1 : 0) + (hasOff ? 1 : 0);
+  const needsPicker = totalRealOptions + virtualAttacks.length > 1;
+  if (needsPicker) {
     const picked = await raceCancel(
       pickWeaponMode({
         director,
         mainWeapon: snap.weapon,
         offWeapon: snap.offWeapon,
         allowTwoWeapon: !!snap.canTwoWeaponFight,
+        virtualAttacks,
         // Forward the cancel sentinel so the picker overlay tears
         // itself down if the race resolves against us.
         externalCancel: cancelSentinel,
@@ -357,6 +363,8 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     );
     if (!picked) return { cancelled: true, reason: "weapon-mode-cancelled" };
     attackMode = picked;
+  } else if (hasVirtual && !hasMain && !hasOff) {
+    attackMode = "virtual:0";
   } else if (hasOff && !hasMain) {
     attackMode = "off";
   }
@@ -373,9 +381,11 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
 
   // Apply Covered range gate via the unified helper — preserves the
   // `.excluded` side-channel (Vanish overlay etc.). RAW Core p.70.
-  const currentWeapon = (attackMode === "off" || attackMode === "two-weapon-off-first")
-    ? snap.offWeapon
-    : snap.weapon;
+  const currentWeapon = attackMode.startsWith("virtual:")
+    ? virtualAttacks[Number(attackMode.slice("virtual:".length)) | 0]
+    : (attackMode === "off" || attackMode === "two-weapon-off-first")
+      ? snap.offWeapon
+      : snap.weapon;
   const filtered = applyAttackRangeGate(enemies, currentWeapon);
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
