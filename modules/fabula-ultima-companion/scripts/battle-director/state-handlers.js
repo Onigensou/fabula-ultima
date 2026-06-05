@@ -415,10 +415,17 @@ async function resolveAction(director, ar, opts = {}) {
   //    HP_DEALT vs MP_DEALT resolve correctly in formulas.
   const dmgResource = ar.damageResource ?? "hp";
   const hits = (ar.perTargetResults ?? []);
-  // Attack carries no `hasDamage` flag (its perTargetResults are always a
-  // damage result); kind Attack always runs the damage loop. Default resource
-  // is "hp" (weapons never set damageResource).
-  if ((ar.hasDamage || view.kind === "Attack") && hits.length) {
+  // ── Card-normalized "is this a damaging attack?" — decided ONCE, never
+  // re-derived from a weapon item at apply time. The Action Card is the
+  // source of truth post-creation: an action is an Attack if its action
+  // kind (ar.kind) OR its source classification (view.kind) says so —
+  // covering weaponless monster basic attacks, Twin-Shield virtual passes,
+  // and `skill_type: "attack"` skills, all of which carry computed
+  // perTargetResults that must be applied even though no weapon item backs
+  // them. A Skill/Spell deals damage when COMPUTE set ar.hasDamage.
+  const isAttackAction = ar.kind === "Attack" || view.kind === "Attack";
+  const isDamagingAction = isAttackAction || !!ar.hasDamage;
+  if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
     for (const r of hits) {
@@ -553,7 +560,7 @@ async function resolveAction(director, ar, opts = {}) {
   // save site. Otherwise reaction-applied AEs (e.g. Vanish) land BEFORE
   // the "After X's Action" rewind anchor, requiring two rewinds to
   // undo them. See [[reaction-architecture]].
-  if (view.kind === "Attack") {
+  if (isAttackAction) {
     // Attack fires `creature_deals_damage` PER hit/pierce target so per-target
     // gates resolve against the right creature: weapon on-hit keywords
     // (Conquer `HIT_MARGIN >= N`, poison `chance()`) are gated by THIS target's
