@@ -326,6 +326,18 @@ async function resolveAction(director, ar, opts = {}) {
       }
       catch (e) { warn("Skill resolve: debitCost threw", e); }
     }
+    // Item-action cost: a consumable "use" pays with the item itself (consume 1
+    // of the source). This is the action's cost, paid uniformly here — NOT a
+    // per-kind RESOLVE branch. "create" pays IP, already handled via costMap
+    // above (ip is a standard cost resource). Source-driven: keyed off the
+    // consumable source + the card's use/create selection, not ar.kind.
+    if (ar.itemSelection?.mode === "use"
+        && String(skill?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
+      try {
+        const r = await consumeOne(casterActor, skill);
+        if (!r?.ok) warn("Item resolve: consumeOne failed", r);
+      } catch (e) { warn("Item resolve: consumeOne threw", e); }
+    }
   }
 
   // 2. Build the chain ctx (recipe-merged effect_table + fire-points).
@@ -1482,11 +1494,11 @@ const Declare = {
         if (Array.isArray(winnerBundle.targetUuids)) {
           director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
         }
-      } else if (winnerBundle.command === "Skill" || winnerBundle.command === "Spell") {
-        // Skill/Spell carries the picked skill + sourceItem + targets.
-        // TARGET's Skill branch reads ctx._composedBundle to skip
-        // pickSkill / requestTargeting; the affordability check +
-        // Vismagus + actionResult build stay GM-authority.
+      } else if (winnerBundle.command === "Skill" || winnerBundle.command === "Spell" || winnerBundle.command === "Item") {
+        // Skill/Spell/Item carries the picked source (skillUuid = skill or
+        // consumable) + targets (+ Item's itemMode/itemKey/itemCost). TARGET's
+        // branch reads ctx._composedBundle to skip the picker; for Item it also
+        // reads the use/create cost. actionResult build stays GM-authority.
         if (Array.isArray(winnerBundle.targetUuids)) {
           director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
         }
@@ -2074,6 +2086,12 @@ const Target = {
     // the linked skill names so the player knows what's *coming*, and
     // the commit toast notes the deferred status.
     if (command === "Item") {
+      // Item action: the consumable was chosen + targeted in the compose chain
+      // (composeItem → pickItem → shared resolveTargetsForSource), exactly like
+      // Skill. This branch only SHAPES the standard actionResult from the chosen
+      // consumable source; COMPUTE/CONFIRM/RESOLVE are the SHARED skill path (no
+      // Item-specific divergence). Cost: "create" pays IP (a normal cost
+      // resource); "use" pays the item itself (consumed in resolveAction).
       const attackerSnap = director.ctx.turnSnapshot;
       let attackerActor = null;
       try { attackerActor = await fromUuid(attackerSnap.actorUuid); } catch {}
@@ -2082,27 +2100,78 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
-      const [useList, createList] = await Promise.all([
-        gatherConsumables(attackerActor),
-        gatherCreatables(attackerActor),
-      ]);
-      if (!useList.length && !createList.length) {
-        ui.notifications?.warn("No consumables to use and no recipes to create.");
+      const bundle = director.ctx._composedBundle;
+      if (!bundle || bundle.command !== "Item" || !bundle.skillUuid) {
+        ui.notifications?.warn("Pick an item to use first.");
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
-      const ip = readActorIp(attackerActor);
+      const consumable = await fromUuid(bundle.skillUuid).catch(() => null);
+      if (!consumable) {
+        ui.notifications?.warn("Chosen item could not be resolved.");
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+      const view = getRuntimeActionView(consumable);
+      const skillTargetText = String(consumable.system?.props?.skill_target ?? "").trim();
+      const itemTargeting = await resolveActionTargets(director, attackerSnap, {
+        skillTargetText,
+        attackerActor,
+        skill: consumable,
+        usingPreComposed:    true,
+        composedTargetUuids: bundle.targetUuids,
+        titleText:           null,
+      });
+      if (!itemTargeting.ok) {
+        director.dispatch({ type: (itemTargeting.cancelled || itemTargeting.reason === "no_eligible") ? INTENTS.TARGET_BACK : INTENTS.ABORT });
+        return;
+      }
+      const targets = itemTargeting.targets;
+      const targetUuids = itemTargeting.targetUuids;
+
+      // Cost — "create" debits IP (standard cost resource); "use" consumes the
+      // item itself (paid in resolveAction). Affordability gate for the IP case.
+      const itemMode = String(bundle.itemMode ?? "use");
+      const itemCost = Number(bundle.itemCost ?? 0) || 0;
+      const costMap = new Map();
+      if (itemMode === "create" && itemCost > 0) costMap.set("ip", itemCost);
+      const gate = checkAffordable(attackerActor, costMap);
+      if (!gate.ok) {
+        const missing = gate.missing.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ");
+        ui.notifications?.warn(`Can't create ${consumable.name} — missing ${missing}.`);
+        director.enqueue({ type: INTENTS.TARGET_BACK });
+        return;
+      }
+
       director.ctx.actionResult = freezeActionResult({
-        kind: "Item",
+        kind: view.kind,   // "Item" (source-derived)
         attacker: attackerSnap,
         attackerActorRef: attackerSnap.actorUuid,
-        targets: [attackerSnap],
-        itemCandidates: { use: useList, create: createList },
-        ip,
+        skillUuid: consumable.uuid,
+        skillName: consumable.name,
+        skillImg: consumable.img,
+        skillType: String(consumable.system?.props?.skill_type ?? ""),
+        defenseTargetType: String(consumable.system?.props?.defense_target_type ?? "").toLowerCase(),
+        isCheck: !!consumable.system?.props?.isCheck,
+        rolledA1: String(consumable.system?.props?.rolled_atr1 ?? "").toUpperCase(),
+        rolledA2: String(consumable.system?.props?.rolled_atr2 ?? "").toUpperCase(),
+        checkBonus: Number(consumable.system?.props?.check_bonus ?? 0) || 0,
+        damageBonus: consumable.system?.props?.damage_bonus ?? 0,
+        damageType: String(consumable.system?.props?.type_damage ?? ""),
+        skillRange: String(consumable.system?.props?.skill_range ?? ""),
+        skillTarget: skillTargetText,
+        sourceItemUuid: bundle.sourceItemUuid ?? null,
+        descriptionHtml: String(consumable.system?.props?.description ?? ""),
+        targets,
+        costSerialized: serializeCostMap(costMap),
+        rawCost: itemMode === "create" ? `${itemCost} IP` : "",
+        actionIntent: classifyActionIntent(consumable),
+        itemSelection: { mode: itemMode, key: bundle.itemKey ?? null, cost: itemCost },
       });
-      director.enqueue({
+      director.ctx.pickedTargetUuids = targetUuids;
+      director.dispatch({
         type: INTENTS.TARGET_PICKED,
-        body: { targetTokenUuids: [attackerSnap.tokenUuid] },
+        body: { targetTokenUuids: targetUuids },
       });
       return;
     }
@@ -2318,16 +2387,15 @@ const Compute = {
       ? triggerIntent.body.targetTokenUuids
       : director.ctx.pickedTargetUuids ?? []);
 
-    if (command === "Guard" || command === "Equipment" || command === "Item") {
-      // Guard/Equipment/Item actionResult was already shaped in TARGET —
-      // all three are no-roll menu declarations. Pass through to CONFIRM
-      // where the card collects the player's pick (cover target /
-      // equipment slots / item to use or create).
+    if (command === "Guard" || command === "Equipment") {
+      // Guard/Equipment actionResult was already shaped in TARGET — both are
+      // no-roll menu declarations. Pass through to CONFIRM where the card
+      // collects the player's pick (cover target / equipment slots).
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
 
-    if (command === "Skill" || command === "Spell") {
+    if (command === "Skill" || command === "Spell" || command === "Item") {
       // Skill / Spell COMPUTE: roll the Check (if isCheck), compute
       // per-target damage (if type_damage set), per-target affinity
       // routing. Skill effects (on_activate / post_damage) fire in
@@ -3722,109 +3790,11 @@ const Resolve = {
       // Common/Equipment carries a single equip_swap effect row that wraps
       // applyEquipmentSwap(actor, ar.equipmentSelections).
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("equipment") });
-    } else if (ar.kind === "Item") {
-      // Debit the chosen resource — quantity for Use, IP for Create.
-      // ar.itemSelection = { mode, key, cost } from the card. Look up the
-      // candidate in ar.itemCandidates (set in TARGET so we don't re-
-      // fetch). Skill execution is deferred to Phase B — for now the
-      // toast spells that out explicitly.
-      const sel = ar.itemSelection ?? null;
-      if (!sel) {
-        log(`Item: no selection on actionResult (cancelled or skipped)`);
-      } else {
-        try {
-          const targetActor = await fromUuid(ar.attackerActorRef ?? ar.attacker?.actorUuid);
-          if (!targetActor) {
-            warn("RESOLVE Item: actor not found", ar.attackerActorRef);
-          } else if (sel.mode === "use") {
-            const cand = (ar.itemCandidates?.use ?? []).find((c) => c.id === sel.key);
-            // Re-fetch the live Item doc here (candidate stripped it to
-            // avoid freezeActionResult recursing through Foundry's
-            // circular doc refs at CONFIRM time).
-            const liveItem = cand?.uuid ? await fromUuid(cand.uuid).catch(() => null) : null;
-            if (!cand || !liveItem) {
-              warn("RESOLVE Item: use candidate not resolvable", sel.key, cand?.uuid);
-            } else {
-              const r = await consumeOne(targetActor, liveItem);
-              if (r?.ok) {
-                log(`Item used: ${cand.name} by ${ar.attacker?.name ?? "?"} (deleted=${!!r.deleted}, after=${r.after})`);
-                // Skill-shaped consumable (items-as-skill-shaped B.2): fire the
-                // consumable's OWN effect_table through the unified resolveAction
-                // pipeline, against the action's target(s) (ar.targets — self or
-                // the card-picked creature). The item was the cost (consumed
-                // above), so skipCost. resolveAction reads the synthesized
-                // on_activate fire-point (getRuntimeActionView) for consumables.
-                const effTable = liveItem.system?.props?.effect_table ?? null;
-                const hasEffect = effTable && Object.keys(effTable).length > 0;
-                if (hasEffect) {
-                  await resolveAction(director, ar, { actionSkill: liveItem, skipCost: true });
-                }
-                // Legacy: any explicitly-linked active skills (no consumable
-                // carries these today; kept for backward compat). Fires on self.
-                for (const skillUuid of (cand.skillUuids ?? [])) {
-                  try {
-                    await fireLinkedSkillFromItem({
-                      director,
-                      casterSnap: ar.attacker,
-                      casterActor: targetActor,
-                      skillUuid,
-                      sourceItemUuid: cand.uuid,
-                    });
-                  } catch (e) {
-                    warn(`RESOLVE Item: linked skill ${skillUuid} threw`, e);
-                  }
-                }
-              } else {
-                warn("RESOLVE Item use: consume failed", r);
-                ui.notifications?.warn(`Couldn't use ${cand.name}.`);
-              }
-            }
-          } else if (sel.mode === "create") {
-            const cand = (ar.itemCandidates?.create ?? []).find((c) => c.key === sel.key);
-            if (!cand) {
-              warn("RESOLVE Item: create candidate not resolvable", sel.key);
-            } else {
-              const cost = Number(sel.cost ?? cand.ipCost ?? 0) || 0;
-              const r = await spendIp(targetActor, cost);
-              if (r?.ok) {
-                log(`Item created: ${cand.name} by ${ar.attacker?.name ?? "?"} (-${cost} IP)`);
-                const ipSpent = Number(r.spent ?? cost) || 0;
-                if (ipSpent > 0) playResourceSpendVfx({ tokenUuid: ar.attacker?.tokenUuid, resource: "ip", amount: ipSpent });
-                // D.5 closure — crafted items can also carry an active
-                // skill (the recipe casts the item's effect on creation
-                // in some classes, e.g. Tinkerer Magisphere "free spell").
-                // Fire linked skills with cost-already-paid (the IP was
-                // the cost).
-                for (const skillUuid of (cand.skillUuids ?? [])) {
-                  try {
-                    await fireLinkedSkillFromItem({
-                      director,
-                      casterSnap: ar.attacker,
-                      casterActor: targetActor,
-                      skillUuid,
-                      sourceItemUuid: cand.itemUuid,
-                    });
-                  } catch (e) {
-                    warn(`RESOLVE Item: linked skill ${skillUuid} threw`, e);
-                  }
-                }
-              } else {
-                warn("RESOLVE Item create: IP spend failed", r);
-                ui.notifications?.warn(`Couldn't create ${cand.name}.`);
-              }
-            }
-          } else {
-            warn("RESOLVE Item: unknown mode", sel.mode);
-          }
-        } catch (e) {
-          warn("RESOLVE Item: commit threw", e);
-        }
-      }
-    } else if (ar.kind === "Skill") {
-      // Resolve a Skill cast: debit cost → fire on_activate effect →
-      // apply damage per target (if any) + fire post_damage per target.
-      // Skill effects (apply_ae / grant / consume_charge / chain) run
-      // through the director-native effect engine (skill-effects.js).
+    } else if (ar.kind === "Skill" || ar.kind === "Item") {
+      // Resolve a Skill cast OR Item use through the ONE pipeline — both are
+      // skill-shaped sources. resolveAction debits cost (incl. the item cost:
+      // consume the consumable for "use", IP for "create"), fires on_activate /
+      // per-target damage / post_damage / effect_table. No Item-specific branch.
       await resolveAction(director, ar);
     } else if (ar.kind === "Hinder") {
       // Success-gating + fail/fumble Miss VFX stay here (presentation); on a

@@ -3159,9 +3159,10 @@ export async function postActionCard({ director, kind, payload }) {
       card = buildHinderCard(effectivePayload);
     } else if (kind === "Equipment") {
       card = buildEquipmentCard(effectivePayload);
-    } else if (kind === "Item") {
-      card = buildItemCard(effectivePayload);
-    } else if (kind === "Skill") {
+    } else if (kind === "Skill" || kind === "Item") {
+      // Item is skill-shaped: after source selection (composeItem) it uses the
+      // standard reactable action card, same as a Skill. (Selection no longer
+      // happens on the card — buildItemCard is retired from the action flow.)
       card = buildSkillCard(effectivePayload);
     } else {
       card = {

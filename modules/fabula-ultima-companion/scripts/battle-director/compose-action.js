@@ -38,6 +38,7 @@ import { TurnUI } from "./turn-ui.js";
 import { requestTargeting } from "./target-picker.js";
 import { pickWeaponMode } from "./weapon-mode-picker.js";
 import { pickSkill } from "./skill-picker.js";
+import { pickItem } from "./item-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
@@ -165,11 +166,11 @@ export async function composeAction({
         });
         break;
       case "Item":
-        // Item card has inline use/create lists rendered by the action
-        // card itself — no pre-card picker needed. Pass through as a
-        // command-only bundle; GM's Item branch builds the list and the
-        // player interacts with the mirrored card.
-        return { cancelled: false, bundle: { command, _commandOnly: true } };
+        // Item = source selection (pickItem) then the SHARED targeting, exactly
+        // like Skill. After this the consumable flows through the one pipeline
+        // (TARGET→COMPUTE→CONFIRM→resolveAction) with no Item-specific path.
+        result = await composeItem({ director, snap, eligible, cancelSentinel });
+        break;
       default:
         return { cancelled: true, reason: `unknown command: ${command}` };
     }
@@ -679,6 +680,55 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
   }
   return { cancelled: false, targetUuids: [...result.tokenUuids] };
+}
+
+// ─── Item ────────────────────────────────────────────────────────────
+//
+// Item is a skill-shaped action: pick the source (a consumable to Use or a
+// recipe to Create) via pickItem — Item's "pickSkill" — then run the SHARED
+// targeting (resolveTargetsForSource) off the consumable's skill_target. The
+// returned bundle carries the source + use/create cost + targets; the GM's
+// TARGET branch shapes the standard actionResult and everything downstream is
+// the one pipeline. No Item-specific path after selection.
+async function composeItem({ director, snap, eligible, cancelSentinel }) {
+  let actor = null;
+  try { actor = await fromUuid(snap.actorUuid); } catch {}
+  if (!actor) {
+    ui.notifications?.warn("Couldn't read your inventory.");
+    return { cancelled: true, reason: "no actor" };
+  }
+
+  // Step 1: source picker (the item menu).
+  const pick = await raceCancel(
+    pickItem({ director, actor, externalCancel: cancelSentinel }),
+    cancelSentinel,
+  );
+  if (!pick) return { cancelled: true, reason: "item-cancelled" };
+
+  // Step 2: resolve the source item to read its skill_target for targeting.
+  let source = null;
+  try { source = await fromUuid(pick.uuid); } catch {}
+  if (!source) {
+    ui.notifications?.error("Chosen item could not be resolved.");
+    return { cancelled: true, reason: "item-uuid-fail" };
+  }
+
+  // Step 3: shared targeting — same code Skill uses.
+  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel });
+  if (tr.cancelled) return { cancelled: true, reason: tr.reason ?? "target-cancelled" };
+
+  return {
+    cancelled: false,
+    bundle: {
+      command: "Item",
+      skillUuid: pick.uuid,          // the consumable IS the action source
+      sourceItemUuid: pick.uuid,
+      itemMode: pick.mode,           // "use" | "create"
+      itemKey: pick.key,
+      itemCost: pick.cost,
+      targetUuids: tr.targetUuids,
+    },
+  };
 }
 
 async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell }) {
