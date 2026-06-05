@@ -11,6 +11,7 @@
 //     (null = cancelled / closed without choice)
 
 import { log, warn } from "./logger.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 const CSS_ID  = "fud-weapon-mode-picker-style";
 const ROOT_ID = "fud-weapon-mode-picker-root";
@@ -106,6 +107,12 @@ function ensureStyles() {
     }
     .fud-wmp-card .fud-wmp-option:hover  { filter: brightness(1.03); transform: translateY(-1px); }
     .fud-wmp-card .fud-wmp-option:active { transform: translateY(0); }
+    .fud-wmp-card .fud-wmp-option.is-kb-focused {
+      background: linear-gradient(180deg, #fef5dc, #ebd9a6);
+      border-color: rgba(90, 62, 28, 0.75);
+      box-shadow: 0 3px 0 rgba(41, 33, 24, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
+      transform: translateY(-1px);
+    }
     .fud-wmp-card .fud-wmp-option .icon {
       display: flex; align-items: center; justify-content: center;
       width: 36px; height: 36px;
@@ -341,6 +348,27 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     let resolved = false;
     let keyListener = null;
     let despawnTid = null;
+    let kbIndex = 0;
+    let kbActive = false;
+
+    const getOptionEls = () => Array.from(root.querySelectorAll(".fud-wmp-option"));
+
+    function setKbFocus(idx) {
+      const els = getOptionEls();
+      if (!els.length) return;
+      kbActive = true;
+      kbIndex = ((idx % els.length) + els.length) % els.length;
+      els.forEach((el, i) => el.classList.toggle("is-kb-focused", i === kbIndex));
+      playUiHoverSfx();
+    }
+
+    // Mouse entering any option clears kb mode so both indicators never coexist.
+    root.addEventListener("pointerenter", (e) => {
+      if (kbActive && e.target?.closest?.(".fud-wmp-option")) {
+        kbActive = false;
+        getOptionEls().forEach((el) => el.classList.remove("is-kb-focused"));
+      }
+    }, true);
 
     const finish = (mode) => {
       if (resolved) return;
@@ -371,8 +399,20 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
 
     keyListener = (ev) => {
       if (resolved) return;
-      if (ev.key === "Escape") { ev.preventDefault(); finish("cancel"); return; }
-      // Number-key shortcuts: 1=main, 2=two-weapon, 3=off
+      if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish("cancel"); return; }
+      if (ev.key === "ArrowUp") {
+        ev.preventDefault(); setKbFocus(kbIndex - 1); return;
+      }
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault(); setKbFocus(kbIndex + 1); return;
+      }
+      if (ev.key === "Enter" || ev.key === "z" || ev.key === "Z") {
+        ev.preventDefault();
+        const mode = opts[kbIndex]?.mode;
+        if (mode) finish(mode);
+        return;
+      }
+      // Number-key shortcuts preserved for quick pick.
       const opt = opts.find((o) => o.key === ev.key);
       if (opt) { ev.preventDefault(); finish(opt.mode); }
     };
