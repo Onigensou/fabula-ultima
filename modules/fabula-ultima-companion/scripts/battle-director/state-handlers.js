@@ -2909,17 +2909,6 @@ const Confirm = {
         },
       }).catch((e) => warn("CONFIRM: saveDirectorState failed", e));
 
-      // Action namecard — JRPG title banner for the freshly-posted action.
-      // Fire-and-forget so the ~2s banner plays alongside the action card
-      // rather than blocking the FSM. Only on the first pass: a multi-pass
-      // action (e.g. double attack) re-enters CONFIRM per pass, and we want
-      // one banner per declared action, not one per pass. Lives inside this
-      // `else` (the fresh-post path) so an F5-resume into CONFIRM
-      // (_resumedFromPendingAction) does NOT re-fire a banner that already
-      // played pre-reload. See director-vfx.js for the port rationale.
-      if ((ar.passIndex ?? 1) <= 1) {
-        playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
-      }
     }
 
     // Pre-resolve passive evaluation — "during action card" reactions
@@ -3371,6 +3360,14 @@ const Confirm = {
       });
     } catch (e) {
       warn("CONFIRM: pendingAction-clear save failed", e);
+    }
+
+    // Action namecard — fire AFTER the player presses Confirm so the banner
+    // appears as a consequence of the decision, not before they've seen the
+    // action card. Fire-and-forget: the ~2s banner runs while RESOLVE executes.
+    // Only on the first pass (no duplicate banner per multi-hit pass).
+    if (result.confirmed && (ar.passIndex ?? 1) <= 1) {
+      playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
     }
 
     director.dispatch({ type: result.confirmed ? INTENTS.CONFIRM_ACTION : INTENTS.CANCEL_ACTION });

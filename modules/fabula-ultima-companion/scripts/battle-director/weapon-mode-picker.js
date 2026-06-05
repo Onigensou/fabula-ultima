@@ -73,7 +73,7 @@ function ensureStyles() {
       text-transform: uppercase;
       color: var(--fud-stroke, #7a6a55);
       padding: 6px 4px 3px;
-      border-bottom: 1px solid rgba(90, 106, 133, 0.4);
+      border-bottom: 1px solid rgba(122, 106, 85, 0.4);
       margin-bottom: 1px;
     }
     .fud-wmp-card .fud-wmp-section-label:first-child {
@@ -94,17 +94,17 @@ function ensureStyles() {
       align-items: center;
       padding: 8px 12px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #7a6a55);
-      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
-      color: #221b14;
+      border: 2px solid rgba(90, 62, 28, 0.5);
+      background: linear-gradient(180deg, #fffef8, #f5eedd);
+      color: #2d1f0d;
       box-shadow:
-        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
-        0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+        0 2px 0 rgba(41, 33, 24, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
       cursor: pointer;
       user-select: none;
       transition: transform 100ms ease, filter 100ms ease, box-shadow 100ms ease;
     }
-    .fud-wmp-card .fud-wmp-option:hover  { filter: brightness(1.05); transform: translateY(-1px); }
+    .fud-wmp-card .fud-wmp-option:hover  { filter: brightness(1.03); transform: translateY(-1px); }
     .fud-wmp-card .fud-wmp-option:active { transform: translateY(0); }
     .fud-wmp-card .fud-wmp-option .icon {
       display: flex; align-items: center; justify-content: center;
@@ -155,7 +155,7 @@ function ensureStyles() {
       text-align: center;
       user-select: none;
       box-shadow:
-        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
+        0 3px 0 rgba(41, 33, 24, 0.55),
         0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
     }
     .fud-wmp-card .fud-wmp-cancel:hover { filter: brightness(1.05); }
