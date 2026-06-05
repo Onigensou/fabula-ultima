@@ -536,13 +536,6 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       if (kbHoveredUuid) {
         setHover(kbHoveredUuid, true);
         playUiHoverSfx();
-        // Pan the camera softly to the focused token so it stays in view.
-        const rec = rings.get(kbHoveredUuid);
-        if (rec?.token && !rec.token.destroyed) {
-          const t = rec.token;
-          const c = t.center ?? t.getCenter?.() ?? { x: (t.x ?? 0) + (t.w ?? 100) / 2, y: (t.y ?? 0) + (t.h ?? 100) / 2 };
-          try { canvas.animatePan({ x: c.x, y: c.y, duration: 200 }); } catch {}
-        }
       }
     }
 
@@ -568,7 +561,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         if (eligibleUuids.length) setKbHover(kbFocusIdx - 1);
         return;
       }
-      if (e.key === " ") {
+      if (e.key === " " || e.key === "z" || e.key === "Z") {
         e.preventDefault(); e.stopPropagation();
         if (!kbHoveredUuid) return;
         const rec = rings.get(kbHoveredUuid);
