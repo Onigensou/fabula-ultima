@@ -296,15 +296,26 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   const items = [];
   let startClock = performance.now();
   let kbIndex = 0;
+  let kbActive = false; // true only while keyboard is driving; mouse hover clears it
 
   function setKbFocus(idx) {
     if (!items.length) return;
+    kbActive = true;
     kbIndex = ((idx % items.length) + items.length) % items.length;
     for (let i = 0; i < items.length; i++) {
       items[i].btn.classList.toggle("is-kb-focused", i === kbIndex);
     }
     if (isEnabledLabel(items[kbIndex]?.label)) playUiHoverSfx();
   }
+
+  // Clear keyboard mode the moment the pointer enters any blade so the two
+  // visual states never coexist.
+  root.addEventListener("pointerenter", (e) => {
+    if (kbActive && e.target?.closest?.(".blade")) {
+      kbActive = false;
+      for (const it of items) it.btn.classList.remove("is-kb-focused");
+    }
+  }, true);
 
   function buildPage() {
     for (const it of items.splice(0)) it.wrap.remove();
@@ -385,7 +396,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
       it.wrap.style.transform = `translate(0,-50%) rotate(${angleDeg}deg) scale(${scale})`;
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
       it.btn.style.opacity = (isEnabled ? animOpacity : animOpacity * 0.22).toFixed(3);
-      it.btn.classList.toggle("is-kb-focused", i === kbIndex && isEnabled);
+      it.btn.classList.toggle("is-kb-focused", kbActive && i === kbIndex && isEnabled);
       if (!isEnabled) {
         // Greyscale + no-pointer apply once (idempotent assignments
         // are cheap; setting an unchanged style is a no-op in the
