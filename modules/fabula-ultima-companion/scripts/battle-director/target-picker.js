@@ -501,15 +501,16 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function onTokenHover(token, hovered) {
       const uuid = token?.document?.uuid;
       if (!uuid || !rings.has(uuid)) return;
-      // When the mouse takes over, sync kbFocusIdx so subsequent arrow
-      // presses continue from where the mouse left off.
       if (hovered) {
-        if (kbHoveredUuid && kbHoveredUuid !== uuid) {
-          setHover(kbHoveredUuid, false);
-        }
+        // Mouse takes over — clear previous kb ring and sync group/row indices.
+        if (kbHoveredUuid && kbHoveredUuid !== uuid) setHover(kbHoveredUuid, false);
         kbHoveredUuid = uuid;
-        const idx = eligibleUuids.indexOf(uuid);
-        if (idx >= 0) kbFocusIdx = idx;
+        // Find which group and row this uuid lives in so arrow keys continue
+        // from the mouse-hover position.
+        for (let gi = 0; gi < kbGroups.length; gi++) {
+          const ri = kbGroups[gi].indexOf(uuid);
+          if (ri >= 0) { kbGroupIdx = gi; kbRowIdx = ri; break; }
+        }
       } else if (uuid === kbHoveredUuid) {
         kbHoveredUuid = null;
       }
@@ -537,23 +538,74 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       updateBanner();
     }
 
-    // Keyboard target cycling — arrow keys move focus, Z/Space toggles
-    // selection, Enter confirms. X cancels at any point.
-    // When the selection reaches its maximum, focus auto-shifts to the
-    // banner buttons so the player can confirm or cancel with the keyboard.
+    // Keyboard target navigation — spatial two-axis system:
+    //   Left/Right : switch between groups (enemies column ↔ allies column)
+    //   Up/Down    : cycle within the current group (top → bottom by canvas Y)
+    //   Z/Space    : toggle selection on the focused target
+    //   X/Escape   : cancel
+    // Auto-advances to banner buttons when the selection is complete.
     const eligibleUuids = eligible.map((e) => e.tokenUuid).filter(Boolean);
-    let kbFocusIdx = 0;
-    let kbHoveredUuid = null;
     // bannerFocused / bannerBtnIdx declared earlier (before updateBanner).
 
-    function setKbHover(idx) {
-      if (kbHoveredUuid) setHover(kbHoveredUuid, false);
-      kbFocusIdx = ((idx % eligibleUuids.length) + eligibleUuids.length) % eligibleUuids.length;
-      kbHoveredUuid = eligibleUuids[kbFocusIdx] ?? null;
-      if (kbHoveredUuid) {
-        setHover(kbHoveredUuid, true);
-        playUiHoverSfx();
+    // Groups are built after buildRings() when token data is accessible.
+    let kbGroups   = [];  // array of uuid[] per column, sorted top→bottom
+    let kbGroupIdx = 0;
+    let kbRowIdx   = 0;
+    let kbHoveredUuid = null;
+
+    function buildKbGroups() {
+      const hostile = [], friendly = [];
+      for (const e of eligible) {
+        const uuid = e.tokenUuid;
+        if (!uuid) continue;
+        const rec = rings.get(uuid);
+        if (!rec) continue;
+        const disp = rec.token?.document?.disposition ?? 0;
+        const y = rec.token?.document?.y ?? rec.token?.y ?? 0;
+        const x = rec.token?.document?.x ?? rec.token?.x ?? 0;
+        (disp === -1 ? hostile : friendly).push({ uuid, x, y });
       }
+      const byY = (a, b) => a.y - b.y;
+      hostile.sort(byY); friendly.sort(byY);
+      // Order groups left-to-right by average canvas X.
+      const avgX = (arr) => arr.length ? arr.reduce((s, e) => s + e.x, 0) / arr.length : 0;
+      const groups = [];
+      if (hostile.length && friendly.length) {
+        const leftFirst = avgX(hostile) <= avgX(friendly);
+        groups.push((leftFirst ? hostile : friendly).map((e) => e.uuid));
+        groups.push((leftFirst ? friendly : hostile).map((e) => e.uuid));
+      } else if (hostile.length) {
+        groups.push(hostile.map((e) => e.uuid));
+      } else if (friendly.length) {
+        groups.push(friendly.map((e) => e.uuid));
+      }
+      return groups;
+    }
+
+    function kbCurrentUuid() {
+      return kbGroups[kbGroupIdx]?.[kbRowIdx] ?? null;
+    }
+
+    function kbApplyHover() {
+      const newUuid = kbCurrentUuid();
+      if (newUuid === kbHoveredUuid) return;
+      if (kbHoveredUuid) setHover(kbHoveredUuid, false);
+      kbHoveredUuid = newUuid;
+      if (kbHoveredUuid) { setHover(kbHoveredUuid, true); playUiHoverSfx(); }
+    }
+
+    function kbMoveGroup(dir) {
+      if (kbGroups.length <= 1) return;
+      kbGroupIdx = ((kbGroupIdx + dir) % kbGroups.length + kbGroups.length) % kbGroups.length;
+      kbRowIdx = Math.min(kbRowIdx, Math.max(0, (kbGroups[kbGroupIdx]?.length ?? 1) - 1));
+      kbApplyHover();
+    }
+
+    function kbMoveRow(dir) {
+      const group = kbGroups[kbGroupIdx] ?? [];
+      if (!group.length) return;
+      kbRowIdx = ((kbRowIdx + dir) % group.length + group.length) % group.length;
+      kbApplyHover();
     }
 
     function getBannerBtns() {
@@ -586,10 +638,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       bannerFocused = false;
       getBannerBtns().forEach((b) => b.classList.remove("is-kb-focused"));
       // Restore hover ring on the last kb-focused target.
-      if (eligibleUuids.length) {
-        kbHoveredUuid = eligibleUuids[kbFocusIdx] ?? null;
-        if (kbHoveredUuid) setHover(kbHoveredUuid, true);
-      }
+      kbHoveredUuid = kbCurrentUuid();
+      if (kbHoveredUuid) setHover(kbHoveredUuid, true);
     }
 
     function onKey(e) {
@@ -631,16 +681,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         tryConfirm();
         return;
       }
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-        e.preventDefault(); e.stopPropagation();
-        if (eligibleUuids.length) setKbHover(kbFocusIdx + 1);
-        return;
-      }
-      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-        e.preventDefault(); e.stopPropagation();
-        if (eligibleUuids.length) setKbHover(kbFocusIdx - 1);
-        return;
-      }
+      // Left/Right: switch between columns (enemies ↔ allies)
+      if (e.key === "ArrowLeft")  { e.preventDefault(); e.stopPropagation(); kbMoveGroup(-1); return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); kbMoveGroup(+1); return; }
+      // Up/Down: move within current column (top → bottom)
+      if (e.key === "ArrowUp")   { e.preventDefault(); e.stopPropagation(); kbMoveRow(-1); return; }
+      if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); kbMoveRow(+1); return; }
       if (e.key === " " || e.key === "z" || e.key === "Z") {
         e.preventDefault(); e.stopPropagation();
         if (!kbHoveredUuid) return;
@@ -720,8 +766,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     repositionAll();
     dimState = applyTargetingDim(eligible, director);
 
-    // Prime keyboard hover on the first eligible target for non-random modes.
-    if (mode !== "random" && eligibleUuids.length) setKbHover(0);
+    // Build spatial groups and prime kb hover on the first token.
+    if (mode !== "random" && eligibleUuids.length) {
+      kbGroups = buildKbGroups();
+      kbApplyHover();
+    }
 
     // Random mode: strobe all eligible rings indefinitely via CSS animation.
     // The draw is pre-computed but never shown in the picker — the player
