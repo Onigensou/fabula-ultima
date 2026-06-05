@@ -383,6 +383,10 @@
     {
       "key": "2026-06-06-consumable-skillshape-author",
       "path": "data-migrations/2026-06-06-consumable-skillshape-author.js"
+    },
+    {
+      "key": "2026-06-06-template-options-completes-item",
+      "path": "data-migrations/2026-06-06-template-options-completes-item.js"
     }
   ]
 }

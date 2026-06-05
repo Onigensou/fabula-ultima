@@ -49,6 +49,15 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // "if all targets hit, do X" passives (e.g. Centauros Blazing Sweep
   // repeat) can gate on a single clean event rather than per-target fires.
   "creature_completes_attack",
+  // Pre-resolve item hook — fires DURING the Item action card so a player can
+  // react before the item resolves (pills on the card). Action-level, once per
+  // action. Payload carries actionKind/actionName + targets. The post-resolve
+  // counterpart is `creature_completes_item`.
+  "creature_uses_item",
+  // Post-resolve item hook — fires ONCE after a creature uses an Item (the
+  // Item action, items-as-skill-shaped). Lets reactions hook "when a creature
+  // uses an item". Payload carries actionKind/actionName + targets.
+  "creature_completes_item",
   // Pre-resolve attack damage hook — fires per-target AFTER COMPUTE has
   // locked rawDamage + affinity but BEFORE the action card commits the
   // damage. Reactions matching this trigger surface as pre-resolve
@@ -146,9 +155,11 @@ export const TRIGGER_PHASE = Object.freeze({
   "caster_short_on_mp":         "pre-resolve",
   "creature_completes_spell":   "pre-resolve",
   "creature_will_deal_damage":  "pre-resolve",
+  "creature_uses_item":         "pre-resolve",
   // Post-resolve — token-anchored menu, fires after action commits.
   "creature_deals_damage":      "post-resolve",
   "creature_completes_attack":  "post-resolve",
+  "creature_completes_item":    "post-resolve",
   "creature_takes_damage":      "post-resolve",
   "creature_guards":            "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.

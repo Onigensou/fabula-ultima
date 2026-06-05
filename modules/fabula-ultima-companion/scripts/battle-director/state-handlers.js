@@ -519,6 +519,11 @@ async function resolveAction(director, ar, opts = {}) {
     sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
     sourceActorUuid: ar.attackerActorRef,
     actionIntent: ar.actionIntent,
+    // Action type on every post-resolve reaction payload so reactions can
+    // filter by kind (e.g. "react when a creature uses an Item"). Mirrors the
+    // actionKind already carried on the pre-resolve creature_targeted_by_action
+    // payload. Item-use reactions read this off creature_completes_item (§8b).
+    actionKind: ar.kind ?? null,
   };
   const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
   if (accepted.length) {
@@ -643,6 +648,19 @@ async function resolveAction(director, ar, opts = {}) {
       trigger: "creature_completes_spell",
       payload: payloadForPassives,
       skipEvaluated: evaluated,
+    });
+  }
+
+  // 7b. Post-resolve creature_completes_item dispatch — fires once after a
+  //     creature USES an item (the Item action), so reactions can hook
+  //     "when a creature uses an item" (e.g. an ally's counter to a thrown
+  //     item, a self-buff on quaffing). Item-only; payload carries actionKind.
+  //     Queued for post-save firing, same as the other completion triggers.
+  if (ar.kind === "Item") {
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_completes_item",
+      payload: payloadForPassives,
     });
   }
 
@@ -3132,6 +3150,33 @@ const Confirm = {
       }
     }
 
+    // Item-side dispatch — creature_uses_item. Fires DURING the Item action
+    // card so a player can react BEFORE the item resolves (pills on the card).
+    // Action-level (once per action). The post-resolve counterpart is
+    // creature_completes_item (queued in resolveAction). Payload carries
+    // actionKind so reactions can discriminate by action type.
+    if (ar.kind === "Item" && attackerActor) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const itemCands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_uses_item",
+          payload: {
+            targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+            targets: (ar.targets ?? []).map((t) => t.tokenUuid),
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            sourceActorUuid: ar.attackerActorRef,
+            actionIntent: ar.actionIntent,
+            actionKind: ar.kind,
+            actionName: ar.skillName ?? ar.kind,
+          },
+        });
+        for (const cand of itemCands ?? []) prePassives.push(cand);
+      } catch (e) {
+        warn("CONFIRM: creature_uses_item findPassiveCandidates threw", e);
+      }
+    }
+
     // Phase 3: creature_will_deal_damage — single-fire-per-action,
     // pre-resolve base-damage modification hook. Fires for Attack-kind
     // and damage-dealing Skill-kind (isOffensive + hasDamage).
@@ -3256,7 +3301,9 @@ const Confirm = {
       attackerActor &&
       Array.isArray(ar.targets) &&
       ar.targets.length > 0 &&
-      (ar.kind === "Attack" || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
+      (ar.kind === "Attack"
+        || ar.kind === "Item"   // item-use is reactable ("targeted by an item"); payload carries actionKind
+        || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
     if (fireCreatureTargetedByAction) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
