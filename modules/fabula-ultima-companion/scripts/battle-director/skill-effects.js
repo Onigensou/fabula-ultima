@@ -2067,6 +2067,19 @@ async function applyApplyAeEffect(row, ctx) {
         }
       }
     }
+    // Clear Foundry core duration fields so the core AE-expiry system never
+    // touches director-applied AEs. BD uses directorAppliedBy.turnsRemaining
+    // instead. Without this, world-template AEs that carry duration.rounds
+    // (e.g. the Debuff-container Burn has duration.rounds=3) expire via
+    // Foundry core mid-turn when the BD advances the combat turn for a free
+    // action — causing the AE to be deleted before the second sweep can find it.
+    if (data.duration) {
+      data.duration.rounds    = null;
+      data.duration.turns     = null;
+      data.duration.seconds   = null;
+      data.duration.startRound = null;
+      data.duration.startTurn  = null;
+    }
     // Force `transfer: false` on the clone. Foundry's `transfer` flag
     // only fires for AE-on-Item → equip-to-Actor transfers; once we've
     // CLONED the template onto a target actor it's not transferable
