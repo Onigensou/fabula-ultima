@@ -90,7 +90,7 @@ function ensureStyles() {
       margin-left: 6px;
     }
     .fud-wmp-card .fud-wmp-option {
-      display: grid; grid-template-columns: 40px 1fr auto;
+      display: grid; grid-template-columns: 40px 1fr;
       gap: 10px;
       align-items: center;
       padding: 8px 12px;
@@ -304,12 +304,8 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     });
   }
 
-  // Number keyboard shortcuts in visual order across sections, then
-  // collapse to a flat `opts` list for the key listener below.
-  let nextKey = 1;
   const sectionsHTML = sections.map((section) => {
     const itemsHTML = section.items.map((o) => {
-      o.key = String(nextKey++);
       opts.push(o);
       return `
         <div class="fud-wmp-option" data-fud-mode="${o.mode}" role="button" tabindex="0">
@@ -318,7 +314,6 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
             <div class="primary">${o.primary}</div>
             <div class="secondary">${o.secondary}</div>
           </div>
-          <div class="kbd">${o.key}</div>
         </div>
       `;
     }).join("");
@@ -412,9 +407,6 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
         if (mode) finish(mode);
         return;
       }
-      // Number-key shortcuts preserved for quick pick.
-      const opt = opts.find((o) => o.key === ev.key);
-      if (opt) { ev.preventDefault(); finish(opt.mode); }
     };
     window.addEventListener("keydown", keyListener, true);
 
