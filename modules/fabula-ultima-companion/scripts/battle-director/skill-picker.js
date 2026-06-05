@@ -15,6 +15,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 // Display-time formula resolver for free-text props like skill_target.
 // Some authors embed inline expressions like
@@ -570,10 +571,14 @@ export async function pickSkill({
 
     function setKbFocus(idx, rows) {
       rows = rows ?? getRows();
+      const prev = kbIndex;
       kbIndex = Math.max(0, Math.min(idx, rows.length - 1));
       rows.forEach((r, i) => r.classList.toggle("is-kb-focused", i === kbIndex));
       const focused = rows[kbIndex];
-      if (focused) focused.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (focused) {
+        focused.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        if (kbIndex !== prev) playUiHoverSfx();
+      }
     }
 
     const finish = (result) => {

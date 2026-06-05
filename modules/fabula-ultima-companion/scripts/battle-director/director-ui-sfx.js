@@ -101,6 +101,15 @@ function onClick(e) {
   }
 }
 
+// Programmatic SFX helpers — for keyboard navigation paths that don't go
+// through pointer events and therefore miss the delegated listeners above.
+export function playUiHoverSfx() {
+  try { playSfx(UI_HOVER_SFX_URL, HOVER_VOL); } catch {}
+}
+export function playUiClickSfx() {
+  try { playSfx(UI_CLICK_SFX_URL, CLICK_VOL); } catch {}
+}
+
 // Install the delegated listeners once, on every client (players interact
 // with their own menus / action-card mirror too). Capture phase so the cue
 // fires even when a surface's own handler calls stopPropagation on bubble.

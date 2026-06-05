@@ -11,6 +11,7 @@
 // the Turn UI ownership model.
 
 import { log, warn } from "./logger.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -484,6 +485,18 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function onTokenHover(token, hovered) {
       const uuid = token?.document?.uuid;
       if (!uuid || !rings.has(uuid)) return;
+      // When the mouse takes over, sync kbFocusIdx so subsequent arrow
+      // presses continue from where the mouse left off.
+      if (hovered) {
+        if (kbHoveredUuid && kbHoveredUuid !== uuid) {
+          setHover(kbHoveredUuid, false);
+        }
+        kbHoveredUuid = uuid;
+        const idx = eligibleUuids.indexOf(uuid);
+        if (idx >= 0) kbFocusIdx = idx;
+      } else if (uuid === kbHoveredUuid) {
+        kbHoveredUuid = null;
+      }
       setHover(uuid, !!hovered);
     }
 
@@ -508,15 +521,59 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       updateBanner();
     }
 
-    // Keyboard parity for mouse-first players who prefer hotkeys —
-    // Enter / Esc both feed the same code paths the buttons do.
+    // Keyboard target cycling — arrow keys move focus, Space toggles
+    // selection, Enter confirms. Not active in random/self/all modes
+    // since those don't involve manual picking.
+    const eligibleUuids = eligible.map((e) => e.tokenUuid).filter(Boolean);
+    let kbFocusIdx = 0;
+    let kbHoveredUuid = null;
+
+    function setKbHover(idx) {
+      // Clear current kb hover ring
+      if (kbHoveredUuid) setHover(kbHoveredUuid, false);
+      kbFocusIdx = ((idx % eligibleUuids.length) + eligibleUuids.length) % eligibleUuids.length;
+      kbHoveredUuid = eligibleUuids[kbFocusIdx] ?? null;
+      if (kbHoveredUuid) {
+        setHover(kbHoveredUuid, true);
+        playUiHoverSfx();
+        // Pan the camera softly to the focused token so it stays in view.
+        const rec = rings.get(kbHoveredUuid);
+        if (rec?.token && !rec.token.destroyed) {
+          const t = rec.token;
+          const c = t.center ?? t.getCenter?.() ?? { x: (t.x ?? 0) + (t.w ?? 100) / 2, y: (t.y ?? 0) + (t.h ?? 100) / 2 };
+          try { canvas.animatePan({ x: c.x, y: c.y, duration: 200 }); } catch {}
+        }
+      }
+    }
+
     function onKey(e) {
       if (e.key === "Escape") {
         e.preventDefault(); e.stopPropagation();
         finish({ ok: false, cancelled: true, tokenUuids: [] });
-      } else if (e.key === "Enter") {
+        return;
+      }
+      if (e.key === "Enter") {
         e.preventDefault(); e.stopPropagation();
         tryConfirm();
+        return;
+      }
+      if (mode === "random") return; // no manual pick in random mode
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault(); e.stopPropagation();
+        if (eligibleUuids.length) setKbHover(kbFocusIdx + 1);
+        return;
+      }
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault(); e.stopPropagation();
+        if (eligibleUuids.length) setKbHover(kbFocusIdx - 1);
+        return;
+      }
+      if (e.key === " ") {
+        e.preventDefault(); e.stopPropagation();
+        if (!kbHoveredUuid) return;
+        const rec = rings.get(kbHoveredUuid);
+        if (rec?.token) onTokenClick(null, rec.token);
+        return;
       }
     }
 
@@ -589,6 +646,9 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     buildRings();
     repositionAll();
     dimState = applyTargetingDim(eligible, director);
+
+    // Prime keyboard hover on the first eligible target for non-random modes.
+    if (mode !== "random" && eligibleUuids.length) setKbHover(0);
 
     // Random mode: strobe all eligible rings indefinitely via CSS animation.
     // The draw is pre-computed but never shown in the picker — the player
