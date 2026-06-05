@@ -161,7 +161,7 @@ function serializeCostMap(costMap) {
 // Targets default to the caster (self) for B.1; cross-actor item use
 // lands in B.2.
 //
-// Builds the same actionResult shape resolveSkillAction expects, then
+// Builds the same actionResult shape resolveAction expects, then
 // delegates so the linked skill goes through the full pipeline (cost
 // gate bypassed, effect_table fires, post_damage_effect_ref hooks, etc.).
 async function fireLinkedSkillFromItem({ director, casterSnap, casterActor, skillUuid, sourceItemUuid = null }) {
@@ -199,7 +199,7 @@ async function fireLinkedSkillFromItem({ director, casterSnap, casterActor, skil
     perTargetResults: [],   // built below if the skill deals damage
     hasDamage: false,
   };
-  // If the skill deals damage, build perTargetResults so resolveSkillAction
+  // If the skill deals damage, build perTargetResults so resolveAction
   // applies the damage. Auto-hit (no Check) — uses HR=0 (item-cast skills
   // skip the roll, RAW-ish for B.1).
   const damageType = String(ar.damageType ?? "").toLowerCase();
@@ -234,7 +234,7 @@ async function fireLinkedSkillFromItem({ director, casterSnap, casterActor, skil
     }
     ar.hasDamage = true;
   }
-  await resolveSkillAction(director, ar, { skipCost: true });
+  await resolveAction(director, ar, { skipCost: true });
 }
 
 // Map a damage type to its affinity_N prop slot (mirrors Attack flow's
@@ -255,39 +255,16 @@ function damageElementIndex(type) {
   }
 }
 
-// resolveAction-unification kill-switch. Each built-in action's RESOLVE has
-// BOTH a unified path (route through resolveAction + a Battle Director/Common
-// action-skill Item) and the legacy bespoke branch. The unified path only
-// takes over for a kind once its flag here is `true` — flipped only AFTER the
-// Phase harness sim confirms it reproduces the bespoke result. Until then the
-// bespoke branch runs even though the Common item already exists, so a boot
-// that applies the authoring migration never silently switches live play onto
-// an unverified path. Removed in Phase 7 when the bespoke branches are deleted.
-const UNIFIED_RESOLVE = Object.freeze({
-  guard:     true,    // Phase 1 — VERIFIED 2026-06-05 (unified path reproduces bespoke Guard/Covered AEs + creature_guards)
-  item:      false,   // Phase 2 — already effect-level unified (linked skill → resolveAction); no Common item
-  hinder:    true,    // Phase 3 — VERIFIED 2026-06-05 (replace_same_status dedup)
-  equipment: true,    // Phase 4 — VERIFIED 2026-06-05 (equip_swap wiring no-op clean)
-  study:     true,    // Phase 5 — VERIFIED 2026-06-05 (encyclopedia_record lands best; fumble skips)
-  // attack — Phase 7 (2026-06-05): bespoke branch retired; Attack ALWAYS routes
-  // through resolveAction (no switch). See the Attack RESOLVE branch.
-});
-
-// True when the unified RESOLVE path should handle this command: the kind is
-// enabled AND its Common action-skill Item exists.
-function useUnifiedResolve(command) {
-  const cmd = String(command ?? "").trim().toLowerCase();
-  if (!UNIFIED_RESOLVE[cmd]) return false;
-  return !!getCoreActionSkill(cmd);
-}
-
 // Resolve the canonical "action-skill" Item that backs a built-in turn action
 // (Guard / Hinder / Study / Equipment / Item). These universal Items live under
 // `Battle Director / Common` and are tagged with a stable
 // `flags["fabula-ultima-companion"].coreAction` value, so they're found
 // regardless of world/actor inventory — no hard-coded UUID. Returns null when
-// the authoring migration hasn't run yet (callers fall back to the bespoke
-// branch).
+// the authoring migration hasn't run on this world yet — in which case the
+// Guard/Hinder/Study/Equipment RESOLVE branches pass null to resolveAction,
+// which bails with a warn (the Common Item carries the action's effects, so
+// there's nothing to apply without it). The Common-item delivery migration is
+// the guarantee that keeps these actions working on every world.
 function getCoreActionSkill(command) {
   const cmd = String(command ?? "").trim().toLowerCase();
   if (!cmd) return null;
@@ -297,13 +274,12 @@ function getCoreActionSkill(command) {
   ) ?? null;
 }
 
-// The single action resolver. Renamed from `resolveSkillAction` during the
-// resolveAction-unification work — every turn action (Attack/Skill/Spell/
-// Guard/Hinder/Study/Item/Equipment) routes its RESOLVE through this one
-// pipeline: debit cost → on_activate effect → per-target damage →
-// post_damage effect → walk effect_table → queue post-resolve triggers.
-// `resolveSkillAction` is kept as a thin alias while callers migrate; remove
-// in Phase 7 once all per-kind RESOLVE branches call resolveAction directly.
+// The single action resolver. Every turn action (Attack/Skill/Spell/Guard/
+// Hinder/Study/Item/Equipment) routes its RESOLVE through this one pipeline:
+// debit cost → on_activate effect → per-target damage → post_damage effect →
+// walk effect_table → queue post-resolve triggers. (Phase 7: the per-kind
+// bespoke RESOLVE branches and the `resolveSkillAction` alias are retired —
+// this is the only resolver.)
 async function resolveAction(director, ar, opts = {}) {
   const skipCost = !!opts.skipCost;
   // Caster: prefer the explicit attackerActorRef (Skill/Spell/Attack/Item/
@@ -697,12 +673,6 @@ async function resolveAction(director, ar, opts = {}) {
     });
   }
 }
-
-// Backward-compatible alias. All current callers (the Skill RESOLVE branch +
-// fireLinkedSkillFromItem) reference `resolveSkillAction`; they keep working
-// unchanged. New per-kind branches call `resolveAction` directly. Removed in
-// Phase 7 once no caller uses the old name.
-const resolveSkillAction = resolveAction;
 
 // Stash a passive-trigger config in ctx so RESOLVE.onEnter's tail can
 // fire it AFTER the actor-snapshot save site. Per-action queue —
@@ -2059,7 +2029,7 @@ const Target = {
         costSerialized: serializeCostMap(costMap),
         rawCost: displayCost,
         actionIntent: intent,
-        // Vismagus alt-cost flag — resolveSkillAction reads this and
+        // Vismagus alt-cost flag — resolveAction reads this and
         // suppresses self-heal when the spell would heal the caster
         // (RAW: "you instead recover no HP, the spell still works on
         // other targets").
@@ -3694,219 +3664,17 @@ const Resolve = {
       // creature_completes_attack — reproducing the retired bespoke branch.
       const weaponItem = ar.weapon?.uuid ? await fromUuid(ar.weapon.uuid).catch(() => null) : null;
       await resolveAction(director, ar, { actionSkill: weaponItem });
-    } else if (ar.kind === "Guard" && useUnifiedResolve("guard")) {
-      // ── Unified path (resolveAction-unification Phase 1) ──
+    } else if (ar.kind === "Guard") {
       // The Battle Director/Common/Guard action-skill Item carries the Guard +
       // Covered AE templates and the self/cover apply_ae chain. resolveAction
       // fires its on_activate chain (applying both AEs) and queues the
-      // creature_guards trigger (kind === "Guard"). Gated by UNIFIED_RESOLVE.guard
-      // so it only goes live after the Phase 1 harness sim confirms parity with
-      // the legacy branch below (retained as fallback; removed in Phase 7).
+      // creature_guards trigger (kind === "Guard"). Null Common item (migration
+      // not yet run) → resolveAction bails with a warn.
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("guard") });
-    } else if (ar.kind === "Guard") {
-      // RAW Core p.70: until the start of the guarder's next turn:
-      //   - Guarder gains Resistance to all damage types
-      //   - Guarder gains +2 to Opposed Checks
-      //   - Optional Cover target cannot be targeted by melee attacks
-      // We materialize this as Active Effects (one on the guarder, one on
-      // the covered ally if any) so:
-      //   1. Other systems can read them (cards, target filters, future AE
-      //      manager extensions).
-      //   2. The guarder's player sees a status badge on their token.
-      //   3. Removal is data-driven (delete the AE → effect's gone).
-      //
-      // The release point (next-turn-start of the guarder) is owned by
-      // TURN_START.onEnter which consults dCombat.activeGuards.
-      const att = ar.attacker;
-      const cov = ar.coverTarget;
-      const round = director.dCombat?.round ?? 0;
-      const NS = "fabula-ultima-companion";
-
-      const buildEffectData = ({ name, statusId, iconUrl, role, guarderActorUuid, guarderActorId }) => ({
-        name,
-        icon: iconUrl,
-        origin: guarderActorUuid,
-        flags: {
-          [NS]: {
-            directorGuard: {
-              role,                          // "guard" | "covered"
-              guarderActorUuid,
-              guarderActorId,
-              appliedAtRound: round,
-            },
-            // Wire into the global director-AE tick (homebrew rule
-            // [[ae-default-3-turn-duration]]). `tickDirectorAEsForApplier`
-            // decrements turnsRemaining at the applier's TurnStart and
-            // batch-deletes at 0 — same lifecycle as apply_ae-applied AEs.
-            // Replaces the prior dCombat.activeGuards ledger; the legacy
-            // popActiveGuardsFor loop in TURN_START stays as a no-op
-            // fallback for any pre-refactor resumed save still carrying
-            // entries.
-            directorAppliedBy: {
-              skillUuid: null,
-              reactorActorUuid: guarderActorUuid,
-              effectLabel: role === "covered" ? "guard_cover" : "guard_self",
-              appliedAtRound: round,
-              turnsRemaining: 1,             // expires at guarder's next TurnStart
-            },
-          },
-          core: { statusId },
-        },
-        duration: {
-          startRound: round,
-          startTurn: 0,
-          // Sheet-side display ("expires in 1 round"). Authoritative
-          // expiry is the directorAppliedBy.turnsRemaining counter above.
-          rounds: 1,
-        },
-        // Cover (role="covered"): declare AE-config target-side block so
-        // `applyAttackRangeGate` excludes the covered ally from melee
-        // pickers via the same mechanism Vanish uses on the attacker
-        // side. Render reason in the picker overlay = this AE's name
-        // ("Covered"). Guarder AE (role="guard") carries no targeting
-        // block — its mechanical effects (Resistance to all damage,
-        // +2 Opposed Check) attach at COMPUTE time, not at target pick.
-        // Mode 5 = OVERRIDE (string value, not arithmetic).
-        changes: role === "covered"
-          ? [{ key: "cannot_be_targeted_by", value: "melee", mode: 5, priority: 0 }]
-          : [],
-      });
-
-      let guarderEffectId = null;
-      let coveredEffectId = null;
-      let coveredActorUuid = null;
-      let guarderActorId = null;
-
-      try {
-        const guarderActor = await fromUuid(att.actorUuid);
-        if (!guarderActor) {
-          warn("RESOLVE Guard: guarder actor not found", att.actorUuid);
-        } else {
-          guarderActorId = guarderActor.id;
-          const data = buildEffectData({
-            name: "Guard",
-            statusId: "guard",
-            iconUrl: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
-            role: "guard",
-            guarderActorUuid: att.actorUuid,
-            guarderActorId,
-          });
-          const [created] = await guarderActor.createEmbeddedDocuments("ActiveEffect", [data]);
-          guarderEffectId = created?.id ?? null;
-          log(`Guard applied to ${att.name} (effect ${guarderEffectId})`);
-        }
-      } catch (e) {
-        warn("RESOLVE Guard: failed to apply Guard AE", e);
-      }
-
-      if (cov) {
-        try {
-          const coveredActor = await fromUuid(cov.actorUuid);
-          if (!coveredActor) {
-            warn("RESOLVE Guard: covered actor not found", cov.actorUuid);
-          } else {
-            coveredActorUuid = cov.actorUuid;
-            const data = buildEffectData({
-              name: "Covered",
-              statusId: "covered",
-              iconUrl: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/intervene.png",
-              role: "covered",
-              guarderActorUuid: att.actorUuid,
-              guarderActorId,
-            });
-            const [created] = await coveredActor.createEmbeddedDocuments("ActiveEffect", [data]);
-            coveredEffectId = created?.id ?? null;
-            log(`Cover applied to ${cov.name} by ${att.name} (effect ${coveredEffectId})`);
-          }
-        } catch (e) {
-          warn("RESOLVE Guard: failed to apply Covered AE", e);
-        }
-      }
-
-      // NOTE: Guard / Cover lifecycle moved to the global director-AE
-      // tick (homebrew rule [[ae-default-3-turn-duration]]) — the AEs
-      // are stamped with `directorAppliedBy.turnsRemaining: 1` above and
-      // `tickDirectorAEsForApplier` removes them at the guarder's next
-      // TurnStart. The legacy dCombat.activeGuards ledger is no longer
-      // written for new Guard actions; the TURN_START.onEnter cleanup
-      // loop stays as a no-op safety net for any pre-refactor resumed
-      // save still carrying entries.
-
-      // Post-Guard passive trigger — fires once per Guard with the
-      // didCoverAlly bit + covered ally UUIDs. Bodyguard (Guardian
-      // Core RAW p.197) listens with `didCoverAlly === true` to grant
-      // the covered ally Resistance to all damage types via apply_ae.
-      // QUEUED, not fired — same reason as creature_deals_damage above:
-      // reaction-applied AEs end up outside the RESOLVE rewind snapshot.
-      //
-      // Canonical payload field names: `sourceActorUuid` / `sourceTokenUuid`
-      // identify the subject of the trigger (the guarder). The matcher's
-      // reaction_source="self" check reads `payload.sourceActorUuid` —
-      // so the canonical names are load-bearing, not informational.
-      // `guarderActorUuid` / `guarderTokenUuid` kept as aliases for
-      // future authoring clarity.
-      try {
-        const guarderActorForTrigger = await fromUuid(att.actorUuid).catch(() => null);
-        if (guarderActorForTrigger) {
-          const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
-          queuePostResolveTrigger(director, {
-            casterActor: guarderActorForTrigger,
-            trigger: "creature_guards",
-            payload: {
-              sourceActorUuid:     att.actorUuid,
-              sourceTokenUuid:     att.tokenUuid ?? null,
-              guarderActorUuid:    att.actorUuid,
-              guarderTokenUuid:    att.tokenUuid ?? null,
-              didCoverAlly:        !!cov,
-              coveredAllyUuid:     cov?.actorUuid ?? null,
-              coveredAllyTokenUuid: cov?.tokenUuid ?? null,
-              // Belt + suspenders for the apply_ae `target_ref: "action_targets"`
-              // resolver — empty list when the guarder didn't cover anyone.
-              targets:             coveredTokenUuids,
-              targetTokenUuids:    coveredTokenUuids,
-            },
-          });
-        }
-      } catch (e) {
-        warn("RESOLVE Guard: failed to queue creature_guards trigger", e);
-      }
-    } else if (ar.kind === "Equipment" && useUnifiedResolve("equipment")) {
-      // ── Unified path (resolveAction-unification Phase 4) ──
-      // Common/Equipment carries a single equip_swap effect row that wraps
-      // applyEquipmentSwap(actor, ar.equipmentSelections). Gated by
-      // UNIFIED_RESOLVE.equipment; bespoke branch below is the fallback.
-      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("equipment") });
     } else if (ar.kind === "Equipment") {
-      // Apply the swap collected from the card's per-slot dropdowns.
-      // applyEquipmentSwap mirrors the legacy [Macro] Equipment.js commit
-      // logic — actor.system.props.* writes + per-item isEquipped toggles
-      // + per-item Active Effect disabled toggles. Order: items, AEs,
-      // actor (legacy comment in the source explains why).
-      //
-      // Player feedback uses ui.notifications (toast) rather than a chat
-      // message — the director's policy is to keep the chat log clean and
-      // surface action confirmations in-UI. The card's fade-out + the
-      // toast together are the "yes, this happened" cue.
-      const selections = ar.equipmentSelections ?? null;
-      if (!selections) {
-        log(`Equipment: no slot selections (card didn't surface dropdowns?), no-op`);
-      } else {
-        try {
-          const targetActor = await fromUuid(ar.attackerActorRef ?? ar.attacker?.actorUuid);
-          if (!targetActor) {
-            warn("RESOLVE Equipment: actor not found for swap", ar.attackerActorRef);
-          } else {
-            const result = await applyEquipmentSwap(targetActor, selections);
-            if (result?.skipped) {
-              log(`Equipment: no changes for ${ar.attacker?.name ?? "?"}`);
-            } else {
-              log(`Equipment swap committed for ${ar.attacker?.name ?? "?"}: ${result.changes.length} change(s)`);
-            }
-          }
-        } catch (e) {
-          warn("RESOLVE Equipment: swap failed", e);
-        }
-      }
+      // Common/Equipment carries a single equip_swap effect row that wraps
+      // applyEquipmentSwap(actor, ar.equipmentSelections).
+      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("equipment") });
     } else if (ar.kind === "Item") {
       // Debit the chosen resource — quantity for Use, IP for Create.
       // ar.itemSelection = { mode, key, cost } from the card. Look up the
@@ -4002,120 +3770,23 @@ const Resolve = {
       // apply damage per target (if any) + fire post_damage per target.
       // Skill effects (apply_ae / grant / consume_charge / chain) run
       // through the director-native effect engine (skill-effects.js).
-      await resolveSkillAction(director, ar);
-    } else if (ar.kind === "Hinder" && useUnifiedResolve("hinder")) {
-      // ── Unified path (resolveAction-unification Phase 3) ──
+      await resolveAction(director, ar);
+    } else if (ar.kind === "Hinder") {
       // Success-gating + fail/fumble Miss VFX stay here (presentation); on a
       // success, resolveAction fires Common/Hinder's apply_ae row, which
       // resolves the card-picked status (ar.statusValue) via the dynamic
       // "status_value" ae_template_ref and applies it to action_targets with
-      // replace_same_status dedup. Gated by UNIFIED_RESOLVE.hinder.
+      // replace_same_status dedup.
       if (!ar.success) {
         log(`Hinder failed against ${ar.target?.name ?? "?"} (roll ${ar.roll?.total ?? "?"} vs DL ${ar.dl})`);
         playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
         await resolveAction(director, ar, { actionSkill: getCoreActionSkill("hinder") });
       }
-    } else if (ar.kind === "Hinder") {
-      // Apply the chosen status AE to the target. The pick (dazed /
-      // shaken / slow / weak) was made by the card's button click and
-      // merged into actionResult.statusValue by Confirm. On failure or
-      // fumble, no AE applies.
-      if (!ar.success) {
-        log(`Hinder failed against ${ar.target?.name ?? "?"} (roll ${ar.roll?.total ?? "?"} vs DL ${ar.dl})`);
-        // Failed opposed check — no status lands. Show the Miss flourish on
-        // the target, same as a whiffed attack/spell.
-        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
-      } else {
-        const statusKey = String(ar.statusValue ?? "").toLowerCase();
-        const STATUS_NAMES = { dazed: "Dazed", shaken: "Shaken", slow: "Slow", weak: "Weak" };
-        const statusName = STATUS_NAMES[statusKey];
-        if (!statusName) {
-          warn("RESOLVE Hinder: no/unknown statusValue, skipping AE", ar.statusValue);
-        } else {
-          // Pull the canonical "Weak" / "Slow" / "Dazed" / "Shaken" AE
-          // data from the FUCompanion AE registry. The registry entries
-          // are the SAME effectData the legacy [Macro] Hinder + manual
-          // sheet drops apply — carrying the proper status id,
-          // `system.tags: ["debuff"]`, mechanical changes (e.g.
-          // bonus_mig -2 for Weak), and the `effectmacro.onCreate /
-          // onDelete` toggles for `system.props.isWeak` etc.
-          //
-          // We deliberately bypass `aem.applyEffects(...)` here: its
-          // duplicate detection matches by shared canonical IDs, and
-          // all four debuffs are stored as ActiveEffects on the same
-          // world Item ("Debuff", Item.XVOWOq9oUmEECGrU). That parent
-          // Item id is in every applied debuff's canonical-id set, so
-          // applying Slow with `duplicateMode: "replace"` matches the
-          // existing Weak AE on the target and replaces it. RAW Hinder
-          // allows multiple distinct statuses to coexist (Weak + Slow
-          // together is fine), so we route through the registry's
-          // effectData directly and dedupe only against same-status
-          // duplicates (name + statuses[]).
-          try {
-            const aem = globalThis.FUCompanion?.api?.activeEffectManager;
-            const regApi = aem?._internal?.getRegistryApi?.();
-            const targetActor = await fromUuid(ar.target?.actorUuid).catch(() => null);
-            if (!regApi?.findByName) {
-              warn("RESOLVE Hinder: AE registry API unavailable — status not applied");
-            } else if (!targetActor) {
-              warn("RESOLVE Hinder: target actor not found", ar.target?.actorUuid);
-            } else {
-              // Pick the world-item-effect entry (priority 100) when
-              // available — that's the full canonical AE with changes,
-              // effectmacro, etc. The fallback "config-status-effect"
-              // entry (priority 80) is a status-only stub.
-              const entries = regApi.findByName(statusName) ?? [];
-              const entry = entries.find((e) => e?.sourceType === "world-item-effect") ?? entries[0];
-              const sourceData = entry?.effectData;
-              if (!sourceData) {
-                warn(`RESOLVE Hinder: registry has no effectData for "${statusName}"`);
-              } else {
-                // Same-status dedup. Match against AEs that share the
-                // CANONICAL Foundry status id (from sourceData.statuses[0])
-                // or the literal name — distinguishes Weak from Slow even
-                // though both share a parent Item.
-                const canonicalStatuses = new Set(
-                  (Array.isArray(sourceData.statuses) ? sourceData.statuses : [])
-                    .map((s) => String(s).toLowerCase())
-                );
-                const existing = (targetActor.effects?.contents ?? []).find((eff) => {
-                  if (eff.disabled) return false;
-                  const effStatuses = eff.statuses ? Array.from(eff.statuses) : [];
-                  if (effStatuses.some((s) => canonicalStatuses.has(String(s).toLowerCase()))) return true;
-                  if (String(eff.name ?? "").toLowerCase() === statusName.toLowerCase()) return true;
-                  return false;
-                });
-                if (existing) {
-                  try { await existing.delete(); }
-                  catch (e) { warn("RESOLVE Hinder: failed to delete prior same-status AE", e); }
-                }
-                const aeData = foundry.utils.deepClone(sourceData);
-                delete aeData._id;
-                // 3-round Hinder duration override + attribution.
-                aeData.duration = { ...(aeData.duration ?? {}), rounds: 3, turns: 0 };
-                aeData.origin = ar.attacker?.actorUuid ?? aeData.origin ?? null;
-                aeData.disabled = false;
-                aeData.transfer = false;
-                try {
-                  const [eff] = await targetActor.createEmbeddedDocuments("ActiveEffect", [aeData]);
-                  log(`Hinder: ${statusName} applied to ${ar.target.name} (eff ${eff?.id ?? "?"})`);
-                } catch (e) {
-                  warn("RESOLVE Hinder: createEmbeddedDocuments threw", e);
-                }
-              }
-            }
-          } catch (e) {
-            warn("RESOLVE Hinder: registry-driven apply threw", e);
-          }
-        }
-      }
-    } else if (ar.kind === "Study" && useUnifiedResolve("study")) {
-      // ── Unified path (resolveAction-unification Phase 5) ──
+    } else if (ar.kind === "Study") {
       // resolveAction fires Common/Study's encyclopedia_record row (the data
       // write, incl. the RAW fumble-skip). Presentation (token VFX + opening
       // the encyclopedia sheet) is not a data effect, so it stays here.
-      // Gated by UNIFIED_RESOLVE.study.
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("study") });
       const encApi = globalThis.FUCompanion?.api?.encyclopedia;
       if (ar.roll?.isFumble) {
@@ -4134,91 +3805,6 @@ const Resolve = {
           catch (e) { warn("RESOLVE Study (unified): openEncyclopediaForActor failed", e); }
           try { game.socket?.emit?.("module.fabula-ultima-companion", { type: "encyclopedia:open", actorUuid: recordedUuid }); }
           catch (e) { warn("RESOLVE Study (unified): socket emit failed", e); }
-        }
-      }
-    } else if (ar.kind === "Study") {
-      // Record the Open Check result on the Monster Encyclopedia journal
-      // page. The encyclopedia tracks the party-wide best result; lower
-      // rolls don't downgrade an existing better record.
-      // Per RAW Core p.74 a Fumble = "no information gained" — explicitly
-      // skip the record so a fumble doesn't accidentally count.
-      if (ar.roll?.isFumble) {
-        log(`Study fumbled by ${ar.attacker.name} on ${ar.target?.name ?? "?"} — no record.`);
-        // Fumble = no information gained (RAW) — show the Miss flourish.
-        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
-      } else {
-        const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-        if (!encApi?.recordResult) {
-          warn("RESOLVE Study: encyclopedia.recordResult not available");
-        } else {
-          const candidates = [ar.target?.worldActorUuid, ar.target?.actorUuid].filter(Boolean);
-          let recordedUuid = null;
-          for (const uuid of candidates) {
-            try {
-              const result = await encApi.recordResult({
-                actorUuid: uuid,
-                total: ar.roll.total,
-                studierActorId: ar.attacker?.actorId ?? null,
-                isCrit: !!ar.roll.isCrit,
-                isFumble: !!ar.roll.isFumble,
-              });
-              recordedUuid = uuid;
-              if (result?.changed) {
-                log(`Study: encyclopedia updated for ${ar.target?.name ?? uuid} — ${result.previousBest} → ${result.newBest}`);
-              } else {
-                log(`Study: no improvement for ${ar.target?.name ?? uuid} (roll ${ar.roll.total}, best ${result?.previousBest ?? "?"})`);
-              }
-              break;  // first successful uuid wins; don't double-record
-            } catch (e) {
-              warn("RESOLVE Study: recordResult threw on", uuid, e);
-            }
-          }
-
-          // Token VFX. A Study below the lowest reveal tier (Identity = 7)
-          // learns nothing — show the Miss flourish instead of the green
-          // "studied" marker, so a useless roll reads as a whiff. A Crit
-          // auto-promotes to full reveal regardless of total, so it's never
-          // treated as below-bar. Above the bar: the green marker, then the
-          // encyclopedia opens AFTER it settles (asset URLs are preloaded so
-          // first use during a battle is lag-free).
-          const STUDY_LOWEST_BAR = 7; // TIER_IDENTITY in encyclopedia-core.js
-          const studyTotal = Number(ar.roll?.total ?? 0) || 0;
-          const studyBelowBar = !ar.roll?.isCrit && studyTotal < STUDY_LOWEST_BAR;
-          try {
-            if (studyBelowBar) {
-              log(`Study below lowest bar (${studyTotal} < ${STUDY_LOWEST_BAR}) — Miss VFX.`);
-              playMissVfx({ tokenUuid: ar.target?.tokenUuid });
-            } else {
-              await playStudyVfx({ targetTokenUuid: ar.target?.tokenUuid, durationMs: 2500 });
-            }
-          } catch (e) {
-            warn("RESOLVE Study: study/miss VFX threw", e);
-          }
-
-          // Open the encyclopedia at the studied target's page on the GM
-          // client, then socket-broadcast so player views also open it.
-          //
-          // The unlock animation (slide-in + glow on newly-revealed tier
-          // sections) is queued inside recordResult() with a 30s TTL; the
-          // encyclopedia's own renderJournalSheet hook calls
-          // flushPendingUnlocks() on render, so opening the sheet here
-          // automatically plays the animation if a tier was crossed. No
-          // extra call needed from us.
-          if (recordedUuid && encApi.openEncyclopediaForActor) {
-            try {
-              await encApi.openEncyclopediaForActor(recordedUuid);
-            } catch (e) {
-              warn("RESOLVE Study: openEncyclopediaForActor failed", e);
-            }
-            try {
-              game.socket?.emit?.("module.fabula-ultima-companion", {
-                type: "encyclopedia:open",
-                actorUuid: recordedUuid,
-              });
-            } catch (e) {
-              warn("RESOLVE Study: encyclopedia:open socket emit failed", e);
-            }
-          }
         }
       }
     }
