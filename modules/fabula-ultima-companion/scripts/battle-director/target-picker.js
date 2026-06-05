@@ -147,6 +147,27 @@ function ensureStyles() {
       outline-offset:2px;
       filter:brightness(1.12);
     }
+
+    /* Feather cursor — appears when banner mode is active */
+    #fud-tp-feather-cursor {
+      position:fixed; z-index:2147483647;
+      width:48px; height:48px;
+      pointer-events:none;
+      transform:translate(-38%, -92%) rotate(20deg) translateY(0px);
+      transition:left .18s cubic-bezier(.22,1,.36,1), top .18s cubic-bezier(.22,1,.36,1), opacity .12s ease;
+      opacity:0;
+      border:none !important; outline:none !important;
+      box-shadow:none !important; background:transparent !important;
+    }
+    #fud-tp-feather-cursor.is-visible {
+      opacity:1;
+      animation:fud-tp-cursor-float 2.2s ease-in-out infinite;
+    }
+    #fud-tp-feather-cursor.no-anim { transition:none !important; }
+    @keyframes fud-tp-cursor-float {
+      0%,100% { transform:translate(-38%,-92%) rotate(20deg) translateY(0px); }
+      50%      { transform:translate(-38%,-92%) rotate(20deg) translateY(-6px); }
+    }
   `;
   document.head.appendChild(css);
 }
@@ -311,6 +332,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     // the keyboard section) can safely read these without TDZ errors.
     let bannerFocused = false;
     let bannerBtnIdx  = 0;
+    let cursorEl      = null;   // feather cursor, created on first enterBannerMode
+    let cursorReady   = false;  // false = skip transition on first position
 
     // Pre-compute the random draw immediately — the result is sealed before
     // the animation plays, so the roulette is purely theatrical.
@@ -612,13 +635,34 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       return Array.from(banner.querySelectorAll(".fud-target-btn:not(.is-disabled)"));
     }
 
+    function moveCursor(btnEl) {
+      if (!cursorEl || !btnEl) return;
+      const rect = btnEl.getBoundingClientRect();
+      if (!cursorReady) {
+        // First position: skip slide transition so cursor snaps in instantly.
+        cursorEl.classList.add("no-anim");
+        cursorEl.style.left = `${rect.right}px`;
+        cursorEl.style.top  = `${rect.bottom}px`;
+        cursorEl.classList.add("is-visible");
+        requestAnimationFrame(() => { cursorEl?.classList.remove("no-anim"); });
+        cursorReady = true;
+      } else {
+        cursorEl.style.left = `${rect.right}px`;
+        cursorEl.style.top  = `${rect.bottom}px`;
+        cursorEl.classList.add("is-visible");
+      }
+    }
+
     function setBannerBtnFocus(idx) {
       const btns = getBannerBtns();
       if (!btns.length) return;
       const prev = bannerBtnIdx;
       bannerBtnIdx = ((idx % btns.length) + btns.length) % btns.length;
       btns.forEach((b, i) => b.classList.toggle("is-kb-focused", i === bannerBtnIdx));
-      if (bannerBtnIdx !== prev) playUiHoverSfx();
+      if (bannerBtnIdx !== prev) {
+        playUiHoverSfx();
+        moveCursor(btns[bannerBtnIdx]);
+      }
     }
 
     function enterBannerMode() {
@@ -626,10 +670,18 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       bannerFocused = true;
       // Suppress target ring hover while banner is focused.
       if (kbHoveredUuid) { setHover(kbHoveredUuid, false); kbHoveredUuid = null; }
+      // Create the feather cursor on first use.
+      if (!cursorEl) {
+        cursorEl = document.createElement("img");
+        cursorEl.id  = "fud-tp-feather-cursor";
+        cursorEl.src = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+        document.body.appendChild(cursorEl);
+      }
+      cursorReady = false; // next moveCursor call snaps without transition
       // Auto-land on the Confirm button.
       const btns = getBannerBtns();
       const confirmIdx = btns.findIndex((b) => b.dataset.fudTarget === "confirm");
-      bannerBtnIdx = -1; // force SFX on first setBannerBtnFocus call
+      bannerBtnIdx = -1; // force first setBannerBtnFocus to see a change
       setBannerBtnFocus(confirmIdx >= 0 ? confirmIdx : btns.length - 1);
     }
 
@@ -637,6 +689,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       if (!bannerFocused) return;
       bannerFocused = false;
       getBannerBtns().forEach((b) => b.classList.remove("is-kb-focused"));
+      // Hide cursor when returning to target-cycling mode.
+      if (cursorEl) cursorEl.classList.remove("is-visible");
       // Restore hover ring on the last kb-focused target.
       kbHoveredUuid = kbCurrentUuid();
       if (kbHoveredUuid) setHover(kbHoveredUuid, true);
@@ -802,6 +856,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}
+      try { if (cursorEl) { cursorEl.remove(); cursorEl = null; } } catch {}
       for (const rec of rings.values()) { try { rec.el.remove(); } catch {} }
       rings.clear();
       // Tear down the excluded overlays + their reason labels alongside.
