@@ -21,14 +21,14 @@ function ensureStyles() {
   css.textContent = `
     .fud-target-ring{
       position:absolute;
-      border:3px dashed #7a9bb6;
+      border:3px dashed #b7935a;
       border-radius:50%;
       box-shadow:0 0 10px rgba(122,155,182,.6), inset 0 0 10px rgba(122,155,182,.3);
       pointer-events:none;
       z-index:30;
       transition:filter 100ms ease, border-color 100ms ease;
     }
-    .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#a8c4d8; }
+    .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#d5b67a; }
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
     /* Roulette mode — all eligible rings strobe rapidly while the random
        draw is in progress. CSS steps(1) makes it a hard digital blink
@@ -39,7 +39,7 @@ function ensureStyles() {
       animation:fud-roulette-blink 0.14s steps(1) infinite;
     }
     @keyframes fud-roulette-blink{
-      50%{ opacity:0.15; border-color:#7a9bb6; box-shadow:0 0 10px rgba(122,155,182,.6), inset 0 0 10px rgba(122,155,182,.3); }
+      50%{ opacity:0.15; border-color:#b7935a; box-shadow:0 0 10px rgba(213,182,122,.6), inset 0 0 10px rgba(213,182,122,.3); }
     }
     /* Excluded-target overlay — drawn over tokens removed from the eligible
        pool by an AE-driven block (e.g. Vanish's cannot_target_uuids). The
@@ -86,8 +86,8 @@ function ensureStyles() {
       position:fixed; left:50%; top:18%; transform:translate(-50%, 0);
       padding:10px 14px 10px; border-radius:14px;
       background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
-      border:2px solid #5a6a85;
-      box-shadow:0 4px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      border:2px solid #7a6a55;
+      box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       color:#3a3228; z-index:9999; pointer-events:auto;
@@ -95,16 +95,16 @@ function ensureStyles() {
       display:flex; flex-direction:column; align-items:center; gap:8px;
       min-width:260px;
     }
-    .fud-target-banner .director-pip{ color:#5a6a85; opacity:.85; font-size:10px; letter-spacing:.5px; display:block; margin-top:2px;}
+    .fud-target-banner .director-pip{ color:#7a6a55; opacity:.85; font-size:10px; letter-spacing:.5px; display:block; margin-top:2px;}
     .fud-target-banner .label-line{ font-size:13px; line-height:1.2; }
     .fud-target-banner .selected-count{
       display:inline-block;
       margin-left:6px;
       padding:1px 8px;
       border-radius:999px;
-      border:1px solid #5a6a85;
+      border:1px solid #7a6a55;
       background:rgba(255,255,255,.45);
-      color:#5a6a85;
+      color:#7a6a55;
       font-size:11px;
     }
     .fud-target-banner .fud-target-btn-row{
@@ -114,16 +114,16 @@ function ensureStyles() {
       flex:1;
       padding:7px 12px;
       border-radius:8px;
-      border:2px solid #5a6a85;
+      border:2px solid #7a6a55;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       font-size:11.5px;
       cursor:pointer; user-select:none;
       text-align:center;
-      box-shadow:0 3px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      box-shadow:0 3px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       transition:transform 100ms ease, filter 100ms ease;
     }
     .fud-target-banner .fud-target-btn.confirm{
-      background:linear-gradient(180deg, #a8c4d8, #7a9bb6);
+      background:linear-gradient(180deg, #d5b67a, #b7935a);
       color:#221b14;
     }
     .fud-target-banner .fud-target-btn.cancel{

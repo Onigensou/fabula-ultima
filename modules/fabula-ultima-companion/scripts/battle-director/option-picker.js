@@ -44,7 +44,7 @@ function ensureStyles() {
       max-height: 70vh;
       display: flex; flex-direction: column;
       padding: 12px 14px 12px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
@@ -56,7 +56,7 @@ function ensureStyles() {
       font-size: 13.5px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 8px;
     }
     .fud-opt-picker-subtitle {
@@ -76,7 +76,7 @@ function ensureStyles() {
       display: flex; flex-direction: column;
       gap: 2px;
       padding: 8px 12px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.55);
       cursor: pointer;
@@ -104,7 +104,7 @@ function ensureStyles() {
       min-width: 16px;
       font-size: 10px;
       font-weight: 900;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       margin-right: 5px;
       opacity: 0.7;
     }
@@ -112,7 +112,7 @@ function ensureStyles() {
       align-self: center;
       margin-top: 10px;
       padding: 6px 14px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.55);
       color: var(--fud-ink, #3a3228);

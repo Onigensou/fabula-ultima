@@ -39,7 +39,7 @@ export function ensureDescTooltipStyles() {
       min-width: 200px;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: var(--fud-parchment, #f1e6c4);
       color: var(--fud-ink, #3a3228);
       font-family: "Signika", "Roboto", sans-serif;
@@ -78,8 +78,8 @@ export function ensureDescTooltipStyles() {
       text-transform: uppercase;
     }
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-acc {
-      background: rgba(90, 106, 133, 0.18);
-      color: var(--fud-stroke, #5a6a85);
+      background: rgba(122, 106, 85, 0.18);
+      color: var(--fud-stroke, #7a6a55);
     }
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-dmg {
       background: rgba(154, 75, 34, 0.18);

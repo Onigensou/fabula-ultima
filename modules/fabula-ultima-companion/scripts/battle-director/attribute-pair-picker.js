@@ -56,7 +56,7 @@ function ensureStyles() {
       width: 360px;
       max-width: 92vw;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow:
@@ -70,9 +70,9 @@ function ensureStyles() {
       align-self: flex-start;
       display: inline-block;
       font-size: 9.5px; font-weight: 900; letter-spacing: 0.5px;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       padding: 2px 8px;
-      border: 1px solid var(--fud-stroke, #5a6a85);
+      border: 1px solid var(--fud-stroke, #7a6a55);
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.45);
       margin-bottom: 4px;
@@ -81,7 +81,7 @@ function ensureStyles() {
       font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 8px;
     }
     .fud-app-card .fud-app-hint {
@@ -106,7 +106,7 @@ function ensureStyles() {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 8px 4px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #f7ecd9, #e7d8b6);
       color: var(--fud-ink, #3a3228);
       cursor: pointer; user-select: none;
@@ -123,9 +123,9 @@ function ensureStyles() {
     .fud-app-card .fud-app-attr-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
     .fud-app-card .fud-app-attr-btn:active { transform: translateY(0); }
     .fud-app-card .fud-app-attr-btn.is-selected {
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
-      border-color: var(--fud-stroke, #5a6a85);
+      border-color: var(--fud-stroke, #7a6a55);
       box-shadow:
         0 0 0 2px rgba(255, 255, 255, 0.45) inset,
         0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55));
@@ -148,7 +148,7 @@ function ensureStyles() {
     .fud-app-card .fud-app-dl-step {
       width: 28px; height: 28px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #f7ecd9, #e7d8b6);
       color: var(--fud-ink, #3a3228);
       font-weight: 900; font-size: 14px; line-height: 1;
@@ -162,13 +162,13 @@ function ensureStyles() {
       width: 64px; height: 30px;
       text-align: center;
       font-size: 16px; font-weight: 900;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.55);
       color: var(--fud-ink, #3a3228);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
     }
-    .fud-app-card .fud-app-dl-input:focus { outline: 2px solid var(--fud-gold-2, #7a9bb6); outline-offset: -1px; }
+    .fud-app-card .fud-app-dl-input:focus { outline: 2px solid var(--fud-gold-2, #b7935a); outline-offset: -1px; }
     .fud-app-card .fud-app-dl-presets {
       display: flex; gap: 4px;
       flex-wrap: wrap; justify-content: center;
@@ -176,7 +176,7 @@ function ensureStyles() {
     .fud-app-card .fud-app-dl-preset {
       padding: 3px 9px;
       border-radius: 999px;
-      border: 1px solid var(--fud-stroke, #5a6a85);
+      border: 1px solid var(--fud-stroke, #7a6a55);
       background: rgba(255, 255, 255, 0.45);
       color: var(--fud-ink-soft, #4b4338);
       font-size: 10.5px; font-weight: 800;
@@ -185,7 +185,7 @@ function ensureStyles() {
     }
     .fud-app-card .fud-app-dl-preset:hover { background: rgba(255, 255, 255, 0.7); }
     .fud-app-card .fud-app-dl-preset.is-selected {
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
     }
 
@@ -197,7 +197,7 @@ function ensureStyles() {
       flex: 1;
       padding: 8px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
       font-size: 11.5px;
       cursor: pointer; user-select: none; text-align: center;
@@ -205,7 +205,7 @@ function ensureStyles() {
       transition: transform 100ms ease, filter 100ms ease;
     }
     .fud-app-card .fud-app-btn.confirm {
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
     }
     .fud-app-card .fud-app-btn.cancel {

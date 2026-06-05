@@ -43,7 +43,7 @@ function ensureStyles() {
       font-size:12px; white-space:nowrap;
       color:var(--fud-ink, #3a3228);
       background:linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
-      border:2px solid var(--fud-stroke, #5a6a85);
+      border:2px solid var(--fud-stroke, #7a6a55);
       border-radius:999px;
       box-shadow:0 4px 0 var(--fud-shadow, rgba(24,28,41,.55)), 0 0 0 1px var(--fud-highlight, rgba(255,255,255,.7)) inset;
       text-shadow:0 1px 0 var(--fud-highlight, rgba(255,255,255,.7));
@@ -53,8 +53,8 @@ function ensureStyles() {
     }
     .fud-pickturn .pill::before{
       content:""; width:8px; height:8px; border-radius:50%;
-      background:linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
-      border:1.5px solid var(--fud-stroke, #5a6a85);
+      background:linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
+      border:1.5px solid var(--fud-stroke, #7a6a55);
       box-shadow:0 0 0 1px var(--fud-highlight, rgba(255,255,255,.7)) inset;
       flex-shrink:0;
     }
@@ -71,7 +71,7 @@ function ensureStyles() {
     .fud-pickturn .pill.side-party:active{ transform:translate(0, -50%) translateY(0) scale(.98) }
     .fud-pickturn .pill .director-tag{
       margin-left:6px; padding-left:8px;
-      color:#5a6a85; opacity:.8; font-weight:900; letter-spacing:.5px; font-size:9px;
+      color:#7a6a55; opacity:.8; font-weight:900; letter-spacing:.5px; font-size:9px;
       border-left:1px solid rgba(90,106,133,.35);
     }
   `;

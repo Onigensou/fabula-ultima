@@ -61,12 +61,10 @@ function ensureBaseStyles() {
       --fud-parchment-bot:#ebe3d0;
       --fud-ink:#3a3228;
       --fud-ink-soft:#4b4338;
-      /* Director uses a blue-tinted gold so it visually differs from the
-         legacy oni-octopath gold. Same family, different hue. */
-      --fud-gold-1:#a8c4d8;
-      --fud-gold-2:#7a9bb6;
-      --fud-stroke:#5a6a85;
-      --fud-shadow:rgba(24,28,41,.55);
+      --fud-gold-1:#d5b67a;
+      --fud-gold-2:#b7935a;
+      --fud-stroke:#7a6a55;
+      --fud-shadow:rgba(41,33,24,.55);
       --fud-highlight:rgba(255,255,255,.7);
     }
 
@@ -156,7 +154,7 @@ function ensureBaseStyles() {
     }
     .fud-octopath .budget-label .director-tag{
       margin-left:auto; padding-left:8px;
-      color:#5a6a85;
+      color:#7a6a55;
       opacity:.85; font-weight:900; letter-spacing:.5px; font-size:10px;
     }
   `;

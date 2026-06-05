@@ -46,7 +46,7 @@ function ensureStyles() {
       width: 360px;
       max-width: 92vw;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow:
@@ -60,7 +60,7 @@ function ensureStyles() {
       font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 10px;
     }
     .fud-wmp-card .fud-wmp-options {
@@ -71,7 +71,7 @@ function ensureStyles() {
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       padding: 6px 4px 3px;
       border-bottom: 1px solid rgba(90, 106, 133, 0.4);
       margin-bottom: 1px;
@@ -94,8 +94,8 @@ function ensureStyles() {
       align-items: center;
       padding: 8px 12px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      border: 2px solid var(--fud-stroke, #7a6a55);
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
       box-shadow:
         0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
@@ -137,16 +137,16 @@ function ensureStyles() {
     .fud-wmp-card .fud-wmp-option .secondary .dot { margin: 0 5px; opacity: 0.6; }
     .fud-wmp-card .fud-wmp-option .kbd {
       font-size: 10px; font-weight: 800; padding: 2px 6px;
-      border: 1px solid var(--fud-stroke, #5a6a85);
+      border: 1px solid var(--fud-stroke, #7a6a55);
       border-radius: 4px;
       background: rgba(255, 255, 255, 0.4);
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
     }
     .fud-wmp-card .fud-wmp-cancel {
       margin-top: 8px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;

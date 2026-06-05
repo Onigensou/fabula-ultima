@@ -6,7 +6,7 @@
 // director-boot stop() / preflightCleanup().
 //
 // Aesthetic: legacy CreateActionCard layout ported into the director's
-// blue-tinted gold theme (`--fud-gold-1/2`, `--fud-stroke`) from turn-ui.js.
+// parchment/earth-tone theme (`--fud-gold-1/2`, `--fud-stroke`) from turn-ui.js.
 // Card is narrower than legacy (~320px) per user request — emphasize vertical
 // reading order over horizontal sprawl.
 //
@@ -200,7 +200,7 @@ function ensureStyles() {
       width: 320px;
       max-width: 92vw;
       padding: 12px 14px 11px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow:
@@ -279,7 +279,7 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-header {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
       padding: 4px 8px 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 8px;
     }
     .fud-bf-card .fud-bf-title-row {
@@ -318,7 +318,7 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-subtitle i.fa-solid { margin-right: 4px; }
 
     .fud-bf-card fieldset.fud-bf-section {
-      border: 1px solid var(--fud-stroke, #5a6a85);
+      border: 1px solid var(--fud-stroke, #7a6a55);
       border-radius: 8px;
       padding: 4px 9px 7px;
       margin: 0 0 7px 0;
@@ -380,7 +380,7 @@ function ensureStyles() {
       margin-bottom: 1px;
     }
     .fud-bf-card .fud-bf-attacker-row .is-attacker .fud-bf-role-tag {
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
     }
     .fud-bf-card .fud-bf-attacker-row .is-targets .fud-bf-role-tag {
       color: var(--fud-ink-soft, #4b4338);
@@ -745,7 +745,7 @@ function ensureStyles() {
       flex: 1 1 auto; min-width: 0;
       padding: 8px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
       font-size: 11px;
       cursor: pointer;
@@ -758,7 +758,7 @@ function ensureStyles() {
     }
     .fud-bf-card .fud-btn-confirm {
       flex: 1 1 100%;
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
       font-size: 12.5px;
       padding: 10px 12px;
@@ -844,7 +844,7 @@ function ensureStyles() {
       align-items: center;
       padding: 8px 14px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
@@ -885,7 +885,7 @@ function ensureStyles() {
       min-height: 56px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: rgba(255, 255, 255, 0.65);
       color: var(--fud-ink, #3a3228);
       cursor: pointer;
@@ -895,9 +895,9 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-equip-trigger:hover { background: rgba(255, 255, 255, 0.85); }
     .fud-bf-card .fud-bf-equip-trigger:focus,
     .fud-bf-card .fud-bf-equip-row.is-open .fud-bf-equip-trigger {
-      outline: 2px solid var(--fud-gold-2, #7a9bb6);
+      outline: 2px solid var(--fud-gold-2, #b7935a);
       outline-offset: -1px;
-      border-color: var(--fud-gold-2, #7a9bb6);
+      border-color: var(--fud-gold-2, #b7935a);
     }
     /* Slot has changed from its initial value — bright gold ring +
        leading dot in the label, so the GM/player can see at a glance
@@ -1003,7 +1003,7 @@ function ensureStyles() {
       overflow-y: auto;
       padding: 4px;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: var(--fud-parchment, #f1e6c4);
       box-shadow: 0 6px 18px rgba(24, 28, 41, 0.40);
       display: none;
@@ -1022,8 +1022,8 @@ function ensureStyles() {
       background: rgba(122, 155, 182, 0.18);
     }
     .fud-bf-card .fud-bf-equip-option.is-selected {
-      background: rgba(122, 155, 182, 0.28);
-      box-shadow: inset 0 0 0 1px var(--fud-gold-2, #7a9bb6);
+      background: rgba(213, 182, 122, 0.28);
+      box-shadow: inset 0 0 0 1px var(--fud-gold-2, #b7935a);
     }
     .fud-bf-card .fud-bf-equip-option .fud-bf-equip-icon {
       width: 36px; height: 36px; font-size: 18px;
@@ -1048,7 +1048,7 @@ function ensureStyles() {
       letter-spacing: 0.5px;
       text-transform: uppercase;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: rgba(255, 255, 255, 0.55);
       color: var(--fud-ink-soft, #4b4338);
       cursor: pointer;
@@ -1059,8 +1059,8 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-item-tab.is-active {
       background: linear-gradient(180deg, #fff0bd, #e4bf78);
       color: var(--fud-ink, #3a3228);
-      border-color: var(--fud-gold-2, #7a9bb6);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 2px 0 rgba(24,28,41,.25);
+      border-color: var(--fud-gold-2, #b7935a);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 2px 0 rgba(41,33,24,.25);
     }
     .fud-bf-card .fud-bf-item-tab .fud-bf-item-tab-count {
       margin-left: 4px;
@@ -1091,7 +1091,7 @@ function ensureStyles() {
       padding: 6px 8px;
       margin: 3px 0;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: rgba(255, 255, 255, 0.55);
       cursor: pointer;
       transition: background-color 100ms ease, transform 80ms ease;
@@ -1099,7 +1099,7 @@ function ensureStyles() {
     .fud-bf-card .fud-bf-item-row:hover { background: rgba(255, 255, 255, 0.85); }
     .fud-bf-card .fud-bf-item-row.is-selected {
       background: linear-gradient(180deg, #fff0bd, #e4bf78);
-      border-color: var(--fud-gold-2, #7a9bb6);
+      border-color: var(--fud-gold-2, #b7935a);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
     }
     .fud-bf-card .fud-bf-item-row.is-disabled {
@@ -1184,7 +1184,7 @@ function ensureStyles() {
       min-width: 200px;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1.5px solid var(--fud-stroke, #5a6a85);
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
       background: var(--fud-parchment, #f1e6c4);
       color: var(--fud-ink, #3a3228);
       font-family: "Signika", "Roboto", sans-serif;
@@ -1223,8 +1223,8 @@ function ensureStyles() {
       text-transform: uppercase;
     }
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-acc {
-      background: rgba(90, 106, 133, 0.18);
-      color: var(--fud-stroke, #5a6a85);
+      background: rgba(122, 106, 85, 0.18);
+      color: var(--fud-stroke, #7a6a55);
     }
     .fud-bf-desc-tip .fud-bf-desc-tip-stat-dmg {
       background: rgba(154, 75, 34, 0.18);
@@ -2093,7 +2093,7 @@ function buildGuardCard({ attacker, coverTarget }) {
   // with trigger `creature_guards`. No per-card duplication needed.
 
   return {
-    titleIcon: `<i class="fa-solid fa-shield-halved" style="font-size:20px; color:var(--fud-stroke,#5a6a85);"></i>`,
+    titleIcon: `<i class="fa-solid fa-shield-halved" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
     titleText: "Guard",
     subtitle: `<div class="fud-bf-subtitle">Defensive Stance<span class="dot">•</span>${coverTarget ? "With Cover" : "Self only"}<span class="dot">•</span>Until next turn</div>`,
     portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: portraitsInput })),
@@ -2436,7 +2436,7 @@ function buildEquipmentCard({ attacker, attackerActor }) {
   ` : "";
 
   return {
-    titleIcon: `<i class="fa-solid fa-toolbox" style="font-size:20px; color:var(--fud-stroke,#5a6a85);"></i>`,
+    titleIcon: `<i class="fa-solid fa-toolbox" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
     titleText: "Equipment",
     subtitle: `<div class="fud-bf-subtitle">Swap any items<span class="dot">•</span>No armor mid-combat</div>`,
     portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: [] })),
@@ -2709,7 +2709,7 @@ function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
   const initialTab = useList.length ? "use" : (createList.length ? "create" : "use");
 
   return {
-    titleIcon: `<i class="fa-solid fa-flask" style="font-size:20px; color:var(--fud-stroke,#5a6a85);"></i>`,
+    titleIcon: `<i class="fa-solid fa-flask" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
     titleText: "Item",
     subtitle: `<div class="fud-bf-subtitle">Use a consumable<span class="dot">•</span>Spend IP to craft</div>`,
     portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: [] })),

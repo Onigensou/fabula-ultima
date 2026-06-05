@@ -82,7 +82,7 @@ function ensureStyles() {
       max-height: 70vh;
       display: flex; flex-direction: column;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
@@ -94,7 +94,7 @@ function ensureStyles() {
       font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 10px;
       flex-shrink: 0;
     }
@@ -108,7 +108,7 @@ function ensureStyles() {
     .fud-skp-card .fud-skp-section-label {
       font-size: 9.5px; font-weight: 900; letter-spacing: 0.8px;
       text-transform: uppercase;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       padding: 6px 4px 3px;
       border-bottom: 1px solid rgba(90, 106, 133, 0.4);
       margin-bottom: 1px;
@@ -117,7 +117,7 @@ function ensureStyles() {
     .fud-skp-card .fud-skp-empty {
       padding: 16px;
       text-align: center;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       font-size: 11px;
       font-style: italic;
     }
@@ -131,8 +131,8 @@ function ensureStyles() {
       align-items: center;
       padding: 8px 10px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
+      border: 2px solid var(--fud-stroke, #7a6a55);
+      background: linear-gradient(180deg, var(--fud-gold-1, #d5b67a), var(--fud-gold-2, #b7935a));
       color: #221b14;
       box-shadow: 0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
       cursor: pointer;
@@ -217,7 +217,7 @@ function ensureStyles() {
       margin-top: 8px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
@@ -236,7 +236,7 @@ function ensureStyles() {
       max-width: 320px;
       padding: 10px 12px;
       background: linear-gradient(180deg, #fff8e8, #f0e4cc);
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       color: var(--fud-ink, #3a3228);
@@ -485,10 +485,20 @@ export async function pickSkill({
 
   // Group into sections.
   const sections = [];
-  const actorOwned = candidates.filter((c) => c.source === "actor");
-  const itemGranted = candidates.filter((c) => c.source === "item-granted");
-  if (actorOwned.length) sections.push({ label: "Active Skills", items: actorOwned });
-  if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
+  const isSpellMode = Array.isArray(allowedSkillTypes) && allowedSkillTypes.length === 1
+    && allowedSkillTypes[0].toLowerCase() === "spell";
+
+  if (isSpellMode) {
+    const offensive = candidates.filter((c) => c.isOffensiveSpell);
+    const normal = candidates.filter((c) => !c.isOffensiveSpell);
+    if (offensive.length) sections.push({ label: "Offensive Spell", items: offensive });
+    if (normal.length)    sections.push({ label: "Normal Spell",    items: normal });
+  } else {
+    const actorOwned  = candidates.filter((c) => c.source === "actor");
+    const itemGranted = candidates.filter((c) => c.source === "item-granted");
+    if (actorOwned.length)  sections.push({ label: "Active Skills", items: actorOwned });
+    if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
+  }
 
   // Build HTML. Number-key shortcuts on first 9 affordable rows; rows
   // past the 9-cap still render but with an empty shortcut slot so the
