@@ -359,6 +359,10 @@
     {
       "key": "2026-06-05-sharpshooter-stub-desc-clean",
       "path": "data-migrations/2026-06-05-sharpshooter-stub-desc-clean.js"
+    },
+    {
+      "key": "2026-06-05-dedup-bd-masters",
+      "path": "data-migrations/2026-06-05-dedup-bd-masters.js"
     }
   ]
 }
