@@ -40,6 +40,9 @@ const SPECS = [
     name: "Apple Juice",
     props: {
       skill_target: "One Ally",
+      // Recovery item: clear the vestigial type_damage so the shared COMPUTE
+      // treats it as non-damaging (the grant below does the healing).
+      type_damage: "",
       effect_table: {
         "0": { effect_label: "applejuice_heal", effect_kind: "grant",
                grant_resource: "hp", grant_amount: "30", target_ref: "action_targets" },
@@ -50,6 +53,7 @@ const SPECS = [
     name: "Grape Juice",
     props: {
       skill_target: "One Ally",
+      type_damage: "",
       effect_table: {
         "0": { effect_label: "grapejuice_restore", effect_kind: "grant",
                grant_resource: "mp", grant_amount: "20", target_ref: "action_targets" },

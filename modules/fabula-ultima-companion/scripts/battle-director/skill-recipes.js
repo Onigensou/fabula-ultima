@@ -183,6 +183,7 @@ export function getRuntimeActionView(source, ctx = {}) {
   let kind;
   if (actionCommand && COMMAND_KIND[actionCommand]) kind = COMMAND_KIND[actionCommand];
   else if (itemType === "weapon") kind = "Attack";
+  else if (itemType === "consumable") kind = "Item";   // skill-shaped consumable (Item action) — source-derived kind
   else if (skillType === "attack") kind = "Attack";
   else if (skillType === "spell") kind = "Spell";
   else kind = "Skill";
