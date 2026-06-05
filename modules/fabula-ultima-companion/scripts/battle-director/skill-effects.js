@@ -2010,7 +2010,30 @@ async function applyApplyAeEffect(row, ctx) {
     // status ids OR the literal name (the four basic debuffs share one parent
     // world Item, so name/status — not parent id — distinguishes them). This
     // folds the bespoke Hinder dedup (state-handlers.js) into apply_ae.
-    if (baseMode === "replace_same_status") {
+    // `add_charges` — find existing AE by name; if found, increment its
+    // charges by ae_initial_charges (or the template's charges value) up
+    // to ae_initial_charges_max (or the existing AE's chargesMax). If no
+    // existing AE, fall through to create a fresh one with the normal path.
+    if (baseMode === "add_charges") {
+      const rowChargesAdd = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
+      const rowChargesMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
+      const existing = findDuplicateAe(actor, template, null);
+      if (existing) {
+        const curCharges = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+        const addCharges = (rowChargesAdd != null && Number.isFinite(rowChargesAdd))
+          ? rowChargesAdd
+          : (Number(template.flags?.[FLAG_NS]?.charges ?? 0) || 0);
+        const maxCharges = (rowChargesMax != null && Number.isFinite(rowChargesMax))
+          ? rowChargesMax
+          : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
+        const newCharges = Math.min(maxCharges, curCharges + addCharges);
+        await existing.update({ [`flags.${FLAG_NS}.charges`]: newCharges });
+        log(`skill-effects.apply_ae add_charges: "${template.name}" on ${actor.name} charges ${curCharges}+${addCharges}=${newCharges} (max=${maxCharges})`);
+        applied.push({ actorUuid: actor.uuid, aeId: existing.id, name: existing.name, chargesAdded: addCharges, newCharges });
+        continue;
+      }
+      // No existing AE — fall through to create a new one below.
+    } else if (baseMode === "replace_same_status") {
       const existingSame = findSameStatusAe(actor, template);
       if (existingSame) { try { await existingSame.delete(); } catch (e) { warn("apply_ae replace_same_status delete failed", e); } }
       // fall through to create the fresh instance
@@ -2028,6 +2051,22 @@ async function applyApplyAeEffect(row, ctx) {
     // tracks back to its source (matches legacy behavior).
     const data = foundry.utils.deepClone(template);
     delete data._id;  // let Foundry assign a fresh id
+    // ae_initial_charges / ae_initial_charges_max — row-level charge
+    // override. Lets the effect row stamp a specific charge count onto an
+    // otherwise chargeless world-template AE (e.g. the "Burn" Debuff
+    // container entry has no charges; the burn_apply row specifies 3).
+    {
+      const rowC = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
+      const rowCMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
+      if (rowC != null && Number.isFinite(rowC) && rowC > 0) {
+        data.flags = data.flags ?? {};
+        data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
+        data.flags[FLAG_NS].charges = rowC;
+        if (rowCMax != null && Number.isFinite(rowCMax)) {
+          data.flags[FLAG_NS].chargesMax = rowCMax;
+        }
+      }
+    }
     // Force `transfer: false` on the clone. Foundry's `transfer` flag
     // only fires for AE-on-Item → equip-to-Actor transfers; once we've
     // CLONED the template onto a target actor it's not transferable
