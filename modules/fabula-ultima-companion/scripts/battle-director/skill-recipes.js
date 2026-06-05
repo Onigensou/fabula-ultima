@@ -143,3 +143,61 @@ function readFirePointsFromSkill(skill) {
     post_damage_effect_ref: String(p.post_damage_effect_ref ?? "").trim(),
   };
 }
+
+// ── Unified runtime view (resolveAction-unification) ──────────────────────
+//
+// `getRuntimeActionView(source)` generalizes `getRuntimeSkillView` so EVERY
+// turn action reads through one path: an Item → a uniform view. It is a strict
+// superset of the skill view — the existing `{ skill, effect_table, fire_points,
+// recipeApplied }` fields are preserved verbatim (so the Skill/Spell resolve
+// path is byte-identical), plus action-level metadata the unified resolver +
+// COMPUTE consult: `source`, `kind`, `check_mode`, `roll_atrs`,
+// `defense_target_type`, `skill_target`, `picker`, `cost`.
+//
+// `kind` classification (from the Item's props):
+//   - item_type === "weapon"            → "Attack"
+//   - skill_type === "spell"            → "Spell"
+//   - action_command set (Common items) → that command's action kind
+//   - otherwise                         → "Skill"
+//
+// `check_mode` precedence: an explicit `props.check_mode` wins; else derived —
+// a rolled skill/spell/attack is "opposed", a no-Check skill is "none".
+export function getRuntimeActionView(source, ctx = {}) {
+  const base = getRuntimeSkillView(source);   // { skill, effect_table, fire_points, recipeApplied }
+  const p = source?.system?.props ?? {};
+
+  const itemType = String(p.item_type ?? "").trim().toLowerCase();
+  const skillType = String(p.skill_type ?? "").trim().toLowerCase();
+  const actionCommand = String(p.action_command ?? "").trim().toLowerCase();
+
+  // Command → action kind for the Battle Director / Common singleton items.
+  const COMMAND_KIND = {
+    guard: "Guard", hinder: "Hinder", study: "Study",
+    equipment: "Equipment", item: "Item",
+  };
+
+  let kind;
+  if (actionCommand && COMMAND_KIND[actionCommand]) kind = COMMAND_KIND[actionCommand];
+  else if (itemType === "weapon") kind = "Attack";
+  else if (skillType === "spell") kind = "Spell";
+  else kind = "Skill";
+
+  const isCheck = p.isCheck === true || String(p.isCheck) === "true";
+  const explicitMode = String(p.check_mode ?? "").trim().toLowerCase();
+  const check_mode = explicitMode
+    || (kind === "Attack" ? "opposed"
+        : isCheck ? "opposed"
+        : "none");
+
+  return {
+    ...base,
+    source,
+    kind,
+    check_mode,
+    roll_atrs: { A1: p.rolled_atr1 ?? null, A2: p.rolled_atr2 ?? null },
+    defense_target_type: String(p.defense_target_type ?? p.target_defense ?? "").trim().toLowerCase() || null,
+    skill_target: String(p.skill_target ?? "").trim(),
+    picker: String(p.picker ?? "").trim().toLowerCase() || null,
+    check_difficulty_level: Number(p.check_difficulty_level ?? 0) || 0,
+  };
+}

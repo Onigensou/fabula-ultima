@@ -111,6 +111,9 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     // Carry the source Item UUID so the action card can deep-link back to
     // the attack sheet, and so rewind can attribute the action correctly.
     npcAttackItemUuid: item?.uuid ?? null,
+    // Unified `uuid` (mirrors resolveAttackerWeapon) so on-hit reaction rows
+    // on the attack Item attribute to THIS source (see weaponReactionInPlay).
+    uuid: item?.uuid ?? null,
     // skill_target text — drives all-enemies auto-targeting (mirrors the
     // Skill/Spell branch's /\ball\b/ check). Stored lowercase for easy test.
     skillTarget: String(p.skill_target ?? "").trim().toLowerCase(),

@@ -319,6 +319,46 @@
     {
       "key": "2026-06-04-fix-ae-duplicate-mode-select-type",
       "path": "data-migrations/2026-06-04-fix-ae-duplicate-mode-select-type.js"
+    },
+    {
+      "key": "2026-06-05-weapon-skillshape-template",
+      "path": "data-migrations/2026-06-05-weapon-skillshape-template.js"
+    },
+    {
+      "key": "2026-06-05-weapon-skillshape-backfill",
+      "path": "data-migrations/2026-06-05-weapon-skillshape-backfill.js"
+    },
+    {
+      "key": "2026-06-05-weapon-onhit-convert",
+      "path": "data-migrations/2026-06-05-weapon-onhit-convert.js"
+    },
+    {
+      "key": "2026-06-05-common-guard-author",
+      "path": "data-migrations/2026-06-05-common-guard-author.js"
+    },
+    {
+      "key": "2026-06-05-common-equipment-author",
+      "path": "data-migrations/2026-06-05-common-equipment-author.js"
+    },
+    {
+      "key": "2026-06-05-common-study-author",
+      "path": "data-migrations/2026-06-05-common-study-author.js"
+    },
+    {
+      "key": "2026-06-05-common-hinder-author",
+      "path": "data-migrations/2026-06-05-common-hinder-author.js"
+    },
+    {
+      "key": "2026-06-05-bd-skills-restore",
+      "path": "data-migrations/2026-06-05-bd-skills-restore.js"
+    },
+    {
+      "key": "2026-06-05-sharpshooter-hawkeye-author",
+      "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js"
+    },
+    {
+      "key": "2026-06-05-sharpshooter-stub-desc-clean",
+      "path": "data-migrations/2026-06-05-sharpshooter-stub-desc-clean.js"
     }
   ]
 }

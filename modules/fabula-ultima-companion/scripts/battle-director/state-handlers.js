@@ -54,7 +54,7 @@ async function getSkillEffectsExtras() {
   _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
   return _seExtraModule;
 }
-import { getRuntimeSkillView } from "./skill-recipes.js";
+import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -255,12 +255,71 @@ function damageElementIndex(type) {
   }
 }
 
-async function resolveSkillAction(director, ar, opts = {}) {
+// resolveAction-unification kill-switch. Each built-in action's RESOLVE has
+// BOTH a unified path (route through resolveAction + a Battle Director/Common
+// action-skill Item) and the legacy bespoke branch. The unified path only
+// takes over for a kind once its flag here is `true` — flipped only AFTER the
+// Phase harness sim confirms it reproduces the bespoke result. Until then the
+// bespoke branch runs even though the Common item already exists, so a boot
+// that applies the authoring migration never silently switches live play onto
+// an unverified path. Removed in Phase 7 when the bespoke branches are deleted.
+const UNIFIED_RESOLVE = Object.freeze({
+  guard:     true,    // Phase 1 — VERIFIED 2026-06-05 (unified path reproduces bespoke Guard/Covered AEs + creature_guards)
+  item:      false,   // Phase 2 — already effect-level unified (linked skill → resolveAction); no Common item
+  hinder:    true,    // Phase 3 — VERIFIED 2026-06-05 (replace_same_status dedup)
+  equipment: true,    // Phase 4 — VERIFIED 2026-06-05 (equip_swap wiring no-op clean)
+  study:     true,    // Phase 5 — VERIFIED 2026-06-05 (encyclopedia_record lands best; fumble skips)
+  attack:    true,    // Phase 6 — foundation, pending harness verify (this turn)
+});
+
+// True when the unified RESOLVE path should handle this command: the kind is
+// enabled AND its Common action-skill Item exists.
+function useUnifiedResolve(command) {
+  const cmd = String(command ?? "").trim().toLowerCase();
+  if (!UNIFIED_RESOLVE[cmd]) return false;
+  // Attack's backing source is the actor's equipped weapon (resolved per-action
+  // in the RESOLVE branch from ar.weapon.uuid), NOT a Battle Director/Common
+  // action-skill Item — so it doesn't require getCoreActionSkill.
+  if (cmd === "attack") return true;
+  return !!getCoreActionSkill(cmd);
+}
+
+// Resolve the canonical "action-skill" Item that backs a built-in turn action
+// (Guard / Hinder / Study / Equipment / Item). These universal Items live under
+// `Battle Director / Common` and are tagged with a stable
+// `flags["fabula-ultima-companion"].coreAction` value, so they're found
+// regardless of world/actor inventory — no hard-coded UUID. Returns null when
+// the authoring migration hasn't run yet (callers fall back to the bespoke
+// branch).
+function getCoreActionSkill(command) {
+  const cmd = String(command ?? "").trim().toLowerCase();
+  if (!cmd) return null;
+  return game.items?.find((it) =>
+    it.type === "equippableItem" &&
+    (it.flags?.["fabula-ultima-companion"]?.coreAction ?? null) === cmd
+  ) ?? null;
+}
+
+// The single action resolver. Renamed from `resolveSkillAction` during the
+// resolveAction-unification work — every turn action (Attack/Skill/Spell/
+// Guard/Hinder/Study/Item/Equipment) routes its RESOLVE through this one
+// pipeline: debit cost → on_activate effect → per-target damage →
+// post_damage effect → walk effect_table → queue post-resolve triggers.
+// `resolveSkillAction` is kept as a thin alias while callers migrate; remove
+// in Phase 7 once all per-kind RESOLVE branches call resolveAction directly.
+async function resolveAction(director, ar, opts = {}) {
   const skipCost = !!opts.skipCost;
-  const casterActor = await fromUuid(ar.attackerActorRef).catch(() => null);
-  if (!casterActor) { warn("Skill resolve: caster actor not found", ar.attackerActorRef); return; }
-  const skill = await fromUuid(ar.skillUuid).catch(() => null);
-  if (!skill) { warn("Skill resolve: skill item not found", ar.skillUuid); return; }
+  // Caster: prefer the explicit attackerActorRef (Skill/Spell/Attack/Item/
+  // Equipment paths set it); fall back to the attacker snapshot's actorUuid
+  // (the singleton TARGET branches — Guard — stamp only ar.attacker).
+  const casterRef = ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null;
+  const casterActor = casterRef ? await fromUuid(casterRef).catch(() => null) : null;
+  if (!casterActor) { warn("resolveAction: caster actor not found", casterRef); return; }
+  // Backing Item: an action-skill Item passed by the caller (the singleton
+  // RESOLVE branches resolve their Battle Director/Common item and hand it in
+  // via opts.actionSkill), else the cast's own skill via ar.skillUuid.
+  const skill = opts.actionSkill ?? (ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null);
+  if (!skill) { warn("resolveAction: backing item not found", ar.skillUuid); return; }
 
   // 1. Debit cost (unless an outer flow paid out-of-band).
   if (!skipCost) {
@@ -287,7 +346,12 @@ async function resolveSkillAction(director, ar, opts = {}) {
   //    formulas (e.g. Heal's recipe_amount: "HR + 5"). For no-Check
   //    skills `ar.roll` is null → identifiers fold to 0 and author
   //    formulas like "HR + 5" cleanly evaluate to the additive part.
-  const view = getRuntimeSkillView(skill);
+  // Unified action view (resolveAction-unification). For skill/spell Items
+  // this returns the exact same { effect_table, fire_points } the legacy
+  // getRuntimeSkillView produced (it's a superset), so the Skill/Spell path
+  // is unchanged. Singleton actions (Guard/Hinder/Study/Equipment) carry their
+  // behavior in the same effect_table, read through this one seam.
+  const view = getRuntimeActionView(skill);
   const reactorToken = canvas?.tokens?.get(ar.attacker?.tokenId)?.document ?? null;
   // Hit list. For no-Check skills `hitTokenUuids` mirrors all action
   // targets (COMPUTE stamps it that way). For Checks it's the strict
@@ -323,6 +387,13 @@ async function resolveSkillAction(director, ar, opts = {}) {
     // it auto-resolve open_action_menu prompts. Always null in live play.
     harnessPicks: ar?._harnessPicks ?? null,
   });
+  // Thread the live action result + view onto ctx so action-level effect_kinds
+  // (equip_swap, encyclopedia_record, cover-ally targeting) can read the
+  // card-collected selections (ar.equipmentSelections / ar.statusValue /
+  // ar.coverTarget / ar.itemSelection) without re-plumbing makeChainContext.
+  // Skill/Spell effect_kinds never read these, so this is inert for them.
+  ctx.actionResult = ar;
+  ctx.actionView = view;
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   try {
@@ -344,9 +415,17 @@ async function resolveSkillAction(director, ar, opts = {}) {
   //    HP_DEALT vs MP_DEALT resolve correctly in formulas.
   const dmgResource = ar.damageResource ?? "hp";
   const hits = (ar.perTargetResults ?? []);
-  if (ar.hasDamage && hits.length) {
+  // Attack carries no `hasDamage` flag (its perTargetResults are always a
+  // damage result); kind Attack always runs the damage loop. Default resource
+  // is "hp" (weapons never set damageResource).
+  if ((ar.hasDamage || view.kind === "Attack") && hits.length) {
+    // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
+    const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
     for (const r of hits) {
-      if (!r.hit) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
+      // Pierce keyword (action-agnostic): a pierce-miss still deals its
+      // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
+      // in COMPUTE for ANY action carrying Pierce — not just Attack.
+      if (!r.hit && !r.pierceMiss) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -369,7 +448,8 @@ async function resolveSkillAction(director, ar, opts = {}) {
           resource: dmgResource,
           targetName: r.name,
           tokenUuid: r.tokenUuid,
-          logPrefix: `Skill ${ar.skillName}:`,
+          logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
+          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
         });
         const finalValue = dmgRes.finalValue;
         const valueType = dmgRes.resource;
@@ -473,7 +553,52 @@ async function resolveSkillAction(director, ar, opts = {}) {
   // save site. Otherwise reaction-applied AEs (e.g. Vanish) land BEFORE
   // the "After X's Action" rewind anchor, requiring two rewinds to
   // undo them. See [[reaction-architecture]].
-  if (ar.hasDamage && hits.some((r) => r.hit)) {
+  if (view.kind === "Attack") {
+    // Attack fires `creature_deals_damage` PER hit/pierce target so per-target
+    // gates resolve against the right creature: weapon on-hit keywords
+    // (Conquer `HIT_MARGIN >= N`, poison `chance()`) are gated by THIS target's
+    // hitMargin, and `weaponReactionInPlay` matches the acting weapon via
+    // `weaponUuid`. This is the exact payload the legacy Attack RESOLVE branch
+    // queued — routing Attack through resolveAction reproduces it. Skills keep
+    // the single action-level fire below (per-target firing for skills would
+    // make `hit_action_targets` reactions like Vanish over-apply — that's a
+    // later keyword-layer follow-up, not this foundation).
+    const struck = hits.filter((r) => r.hit || r.pierceMiss);
+    if (struck.length) {
+      const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+      const struckTokenUuids = struck.map((r) => r.tokenUuid);
+      for (const r of struck) {
+        queuePostResolveTrigger(director, {
+          casterActor,
+          trigger: "creature_deals_damage",
+          payload: {
+            targets: allTargetUuids,
+            targetTokenUuids: allTargetUuids,
+            hitTargets: struckTokenUuids,
+            hitTargetTokenUuids: struckTokenUuids,
+            subjectTokenUuid: r.tokenUuid,
+            subjectActorUuid: r.actorUuid,
+            actionIntent: ar.actionIntent,
+            weaponUuid: ar.weapon?.uuid ?? null,
+            // Melee/ranged/arcane class of the acting weapon — drives the
+            // ATTACK_IS_RANGED / ATTACK_IS_MELEE formula gates (Warning Shot,
+            // ranged-only on-hit reactions). Mirrors the field on the
+            // pre-resolve creature_will_deal_damage payload.
+            weaponType: ar.weapon?.weaponType ?? null,
+            sourceActorUuid: ar.attackerActorRef,
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            total: ar.roll?.total ?? 0,
+            hr: ar.roll?.hr ?? 0,
+            isCrit: !!ar.roll?.isCrit,
+            isFumble: !!ar.roll?.isFumble,
+            // HIT_MARGIN = accuracy total − THIS target's defense (r.defense
+            // already encodes DEF vs MDEF). Drives "Conquer N".
+            hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+          },
+        });
+      }
+    }
+  } else if (ar.hasDamage && hits.some((r) => r.hit)) {
     queuePostResolveTrigger(director, {
       casterActor,
       trigger: "creature_deals_damage",
@@ -498,7 +623,40 @@ async function resolveSkillAction(director, ar, opts = {}) {
       skipEvaluated: evaluated,
     });
   }
+
+  // 8. Action-kind post-resolve triggers (resolveAction-unification). These
+  //    mirror the bespoke RESOLVE branches' trailing trigger dispatches so the
+  //    per-kind branch can collapse to a single resolveAction call. Keyed off
+  //    the unified view's kind; inert for Skill/Spell/Attack.
+  if (view.kind === "Guard") {
+    // Bodyguard (Guardian Core RAW p.197) listens on `creature_guards` with
+    // `didCoverAlly === true`. Canonical payload field names: sourceActorUuid
+    // identifies the guarder (matcher's reaction_source="self" reads it).
+    const cov = ar.coverTarget;
+    const coveredTokenUuids = cov ? [cov.tokenUuid] : [];
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_guards",
+      payload: {
+        sourceActorUuid:      casterActor.uuid,
+        sourceTokenUuid:      ar.attacker?.tokenUuid ?? null,
+        guarderActorUuid:     casterActor.uuid,
+        guarderTokenUuid:     ar.attacker?.tokenUuid ?? null,
+        didCoverAlly:         !!cov,
+        coveredAllyUuid:      cov?.actorUuid ?? null,
+        coveredAllyTokenUuid: cov?.tokenUuid ?? null,
+        targets:              coveredTokenUuids,
+        targetTokenUuids:     coveredTokenUuids,
+      },
+    });
+  }
 }
+
+// Backward-compatible alias. All current callers (the Skill RESOLVE branch +
+// fireLinkedSkillFromItem) reference `resolveSkillAction`; they keep working
+// unchanged. New per-kind branches call `resolveAction` directly. Removed in
+// Phase 7 once no caller uses the old name.
+const resolveSkillAction = resolveAction;
 
 // Stash a passive-trigger config in ctx so RESOLVE.onEnter's tail can
 // fire it AFTER the actor-snapshot save site. Per-action queue —
@@ -1712,6 +1870,13 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
+      // Action intent (aid / harmful / neutral) — read once from the resolved
+      // skill and stamped onto the actionResult below (`actionIntent: intent`).
+      // Without this definition the ar build threw "intent is not defined" for
+      // any Skill reaching the full pick+target COMPUTE (e.g. Soul Steal vs an
+      // enemy, Infectious Ray "All Enemy"); the harness reimplements COMPUTE so
+      // it never exercised this branch.
+      const intent = classifyActionIntent(skill);
 
       // 2) Resolve targets via the unified resolver. All mode/category/count
       //    parsing lives in resolveActionTargets; this branch just passes
@@ -3474,6 +3639,20 @@ const Resolve = {
     // roll result appears — see Confirm.onEnter. Not replayed here.)
 
     if (ar.kind === "Attack") {
+      // ── Unified path (resolveAction-unification Phase 6) ──
+      // Route the Attack through resolveAction with the equipped weapon as the
+      // backing action-skill (weapons are skill-shaped). resolveAction's
+      // generalized damage loop applies per-target damage (incl. Pierce) and
+      // queues the per-target creature_deals_damage (weaponUuid + hitMargin) so
+      // weapon on-hit keywords (Conquer/poison) fire identically to the legacy
+      // branch. Gated by UNIFIED_RESOLVE.attack + a resolvable weapon Item;
+      // otherwise the legacy branch below runs (e.g. a virtual/Twin-Shield pass
+      // whose source has no weapon.uuid, or the flag off). Removed in Phase 7.
+      const _unifiedWeapon = (useUnifiedResolve("attack") && ar.weapon?.uuid)
+        ? await fromUuid(ar.weapon.uuid).catch(() => null) : null;
+      if (_unifiedWeapon) {
+        await resolveAction(director, ar, { actionSkill: _unifiedWeapon });
+      } else {
       // Single-pass damage application. Multi-pass two-weapon attacks
       // loop back through COMPUTE → CONFIRM → RESOLVE per pass via the
       // CLEANUP→COMPUTE branch in the transition table, so each pass
@@ -3531,13 +3710,33 @@ const Resolve = {
                 subjectActorUuid: r.actorUuid,
                 actionIntent: ar.actionIntent,
                 weaponUuid: ar.weapon?.uuid ?? null,
+                weaponType: ar.weapon?.weaponType ?? null,
                 sourceActorUuid: ar.attackerActorRef,
                 sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+                // Roll context so weapon on-hit gates resolve: TOTAL / HR /
+                // CRIT, and HIT_MARGIN = accuracy total − THIS target's
+                // defense (r.defense already encodes DEF vs MDEF). Drives
+                // "Conquer N" (HIT_MARGIN >= N) converted weapon effects.
+                total: ar.roll?.total ?? 0,
+                hr: ar.roll?.hr ?? 0,
+                isCrit: !!ar.roll?.isCrit,
+                isFumble: !!ar.roll?.isFumble,
+                hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
               },
             });
           }
         }
       }
+      }  // end legacy Attack fallback (else of the unified resolveAction path)
+    } else if (ar.kind === "Guard" && useUnifiedResolve("guard")) {
+      // ── Unified path (resolveAction-unification Phase 1) ──
+      // The Battle Director/Common/Guard action-skill Item carries the Guard +
+      // Covered AE templates and the self/cover apply_ae chain. resolveAction
+      // fires its on_activate chain (applying both AEs) and queues the
+      // creature_guards trigger (kind === "Guard"). Gated by UNIFIED_RESOLVE.guard
+      // so it only goes live after the Phase 1 harness sim confirms parity with
+      // the legacy branch below (retained as fallback; removed in Phase 7).
+      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("guard") });
     } else if (ar.kind === "Guard") {
       // RAW Core p.70: until the start of the guarder's next turn:
       //   - Guarder gains Resistance to all damage types
@@ -3705,6 +3904,12 @@ const Resolve = {
       } catch (e) {
         warn("RESOLVE Guard: failed to queue creature_guards trigger", e);
       }
+    } else if (ar.kind === "Equipment" && useUnifiedResolve("equipment")) {
+      // ── Unified path (resolveAction-unification Phase 4) ──
+      // Common/Equipment carries a single equip_swap effect row that wraps
+      // applyEquipmentSwap(actor, ar.equipmentSelections). Gated by
+      // UNIFIED_RESOLVE.equipment; bespoke branch below is the fallback.
+      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("equipment") });
     } else if (ar.kind === "Equipment") {
       // Apply the swap collected from the card's per-slot dropdowns.
       // applyEquipmentSwap mirrors the legacy [Macro] Equipment.js commit
@@ -3832,6 +4037,19 @@ const Resolve = {
       // Skill effects (apply_ae / grant / consume_charge / chain) run
       // through the director-native effect engine (skill-effects.js).
       await resolveSkillAction(director, ar);
+    } else if (ar.kind === "Hinder" && useUnifiedResolve("hinder")) {
+      // ── Unified path (resolveAction-unification Phase 3) ──
+      // Success-gating + fail/fumble Miss VFX stay here (presentation); on a
+      // success, resolveAction fires Common/Hinder's apply_ae row, which
+      // resolves the card-picked status (ar.statusValue) via the dynamic
+      // "status_value" ae_template_ref and applies it to action_targets with
+      // replace_same_status dedup. Gated by UNIFIED_RESOLVE.hinder.
+      if (!ar.success) {
+        log(`Hinder failed against ${ar.target?.name ?? "?"} (roll ${ar.roll?.total ?? "?"} vs DL ${ar.dl})`);
+        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
+      } else {
+        await resolveAction(director, ar, { actionSkill: getCoreActionSkill("hinder") });
+      }
     } else if (ar.kind === "Hinder") {
       // Apply the chosen status AE to the target. The pick (dazed /
       // shaken / slow / weak) was made by the card's button click and
@@ -3924,6 +4142,32 @@ const Resolve = {
           } catch (e) {
             warn("RESOLVE Hinder: registry-driven apply threw", e);
           }
+        }
+      }
+    } else if (ar.kind === "Study" && useUnifiedResolve("study")) {
+      // ── Unified path (resolveAction-unification Phase 5) ──
+      // resolveAction fires Common/Study's encyclopedia_record row (the data
+      // write, incl. the RAW fumble-skip). Presentation (token VFX + opening
+      // the encyclopedia sheet) is not a data effect, so it stays here.
+      // Gated by UNIFIED_RESOLVE.study.
+      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("study") });
+      const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+      if (ar.roll?.isFumble) {
+        playMissVfx({ tokenUuid: ar.target?.tokenUuid });
+      } else {
+        const STUDY_LOWEST_BAR = 7; // TIER_IDENTITY in encyclopedia-core.js
+        const studyTotal = Number(ar.roll?.total ?? 0) || 0;
+        const studyBelowBar = !ar.roll?.isCrit && studyTotal < STUDY_LOWEST_BAR;
+        try {
+          if (studyBelowBar) playMissVfx({ tokenUuid: ar.target?.tokenUuid });
+          else await playStudyVfx({ targetTokenUuid: ar.target?.tokenUuid, durationMs: 2500 });
+        } catch (e) { warn("RESOLVE Study (unified): VFX threw", e); }
+        const recordedUuid = ar.target?.worldActorUuid ?? ar.target?.actorUuid ?? null;
+        if (recordedUuid && encApi?.openEncyclopediaForActor) {
+          try { await encApi.openEncyclopediaForActor(recordedUuid); }
+          catch (e) { warn("RESOLVE Study (unified): openEncyclopediaForActor failed", e); }
+          try { game.socket?.emit?.("module.fabula-ultima-companion", { type: "encyclopedia:open", actorUuid: recordedUuid }); }
+          catch (e) { warn("RESOLVE Study (unified): socket emit failed", e); }
         }
       }
     } else if (ar.kind === "Study") {

@@ -212,6 +212,13 @@ const FUNCTIONS = {
   abs:   (n) => Math.abs(n),
   min:   (...n) => Math.min(...n),
   max:   (...n) => Math.max(...n),
+  // chance(N): probability gate, returns 1 with N% likelihood else 0. Lets a
+  // condition_formula express "N% chance to fire" (e.g. weapon on-hit
+  // "25% chance to inflict Poison" → condition_formula "chance(25)"). Rolls
+  // ONCE per condition evaluation (one evaluation per trigger fire in the BD
+  // passive path). Math.random is fine in live play; only cron/workflow
+  // contexts forbid it, and reactions never fire there.
+  chance: (n) => (Math.random() * 100 < Number(n) ? 1 : 0),
 };
 
 function evalNode(node, resolver) {
@@ -422,6 +429,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "CRIT":   return payload?.isCrit ? 1 : 0;
       case "FUMBLE": return payload?.isFumble ? 1 : 0;
       case "TOTAL":  return Math.max(0, Number(payload?.total ?? 0) || 0);
+      // HIT_MARGIN — how much the action's accuracy total beat the subject's
+      // defense (the SAME defense the attack checked: DEF or MDEF, already
+      // baked into the per-target `defense`). Threaded onto the per-target
+      // creature_deals_damage payload as `hitMargin`. Drives "Conquer N"
+      // weapon on-hit gates: condition_formula "HIT_MARGIN >= N". Negative or
+      // 0 when no margin was threaded → a "HIT_MARGIN >= N" gate fails closed.
+      case "HIT_MARGIN": return Number(payload?.hitMargin ?? 0) || 0;
       // Equipped-weapon predicates. Read from actor.system.props.weapon_list
       // (CSB's stored equip list); each row carries `weapon_type` per the
       // legacy schema. Returns 1 if at least one EQUIPPED weapon has the
@@ -461,6 +475,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // `DID_COVER_ALLY == 1`. Read from payload.didCoverAlly (queued by
       // state-handlers.js Guard RESOLVE).
       case "DID_COVER_ALLY":      return payload?.didCoverAlly ? 1 : 0;
+      // In-flight-attack weapon-class predicates. Read the triggering
+      // action's weapon TYPE off the payload (`weaponType` = the homebrew
+      // CSB melee/ranged/arcane class, threaded by the Attack damage
+      // path onto both creature_will_deal_damage (pre-resolve) and
+      // creature_deals_damage (post-resolve) payloads). Unlike
+      // HAS_RANGED_WEAPON (which asks "is a ranged weapon EQUIPPED"),
+      // these ask "is THIS attack a ranged/melee/arcane one" — the gate
+      // Sharpshooter's Hawkeye / Warning Shot need so a "next ranged
+      // attack" buff doesn't fire on a melee swing. 0 when no weaponType
+      // was threaded (non-weapon action / skill) → a `== 1` gate fails closed.
+      case "ATTACK_IS_RANGED": return String(payload?.weaponType ?? "").toLowerCase() === "ranged" ? 1 : 0;
+      case "ATTACK_IS_MELEE":  return String(payload?.weaponType ?? "").toLowerCase() === "melee"  ? 1 : 0;
+      case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer

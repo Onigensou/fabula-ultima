@@ -1003,6 +1003,21 @@ return {
     if (!item) return [];
 
     const props = item.system?.props ?? {};
+
+    // Defer to the Battle Director per-weapon. Once a weapon has been ported
+    // to BD on-hit handling (a creature_deals_damage row in its
+    // reaction_config_table → an effect_table row), the Director owns its
+    // on-hit effects. The legacy Action Pipeline must NOT also apply them, or
+    // a ported effect would fire twice. (Converted legacy rows are also
+    // $deleted from active_effect_config_table, so this is belt-and-suspenders
+    // — but it also defers weapons authored directly in BD with no legacy row.)
+    const rcfg = props.reaction_config_table ?? {};
+    const bdOwnsOnHit = Object.values(rcfg).some(
+      (r) => r && !r.$deleted &&
+        String(r.reaction_trigger ?? "").trim() === "creature_deals_damage"
+    );
+    if (bdOwnsOnHit) return [];
+
     const cfg   = props.active_effect_config_table ?? {};
     const rows  = Object.values(cfg).filter(r => !r?.$deleted);
 

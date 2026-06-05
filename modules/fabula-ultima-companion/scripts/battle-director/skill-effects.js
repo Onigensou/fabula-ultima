@@ -906,6 +906,29 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 //   { ..., available: boolean, unavailableReason: string|null }
 // `available: false` candidates are still in the array; the caller
 // decides how to render them.
+// Weapons now carry reaction_config_table (Option B — weapons are skill-shaped
+// action sources). Unlike skills/AEs, a weapon's reactions are only live when
+// the weapon is actually in play, so we gate weapon-type carriers:
+//
+//   - The ACTING creature (the one whose action fired this trigger — i.e.
+//     casterActor === payload.sourceActorUuid) only fires the weapon that
+//     struck. payload.weaponUuid identifies it, so a second equipped weapon
+//     (two-weapon) or an inventory weapon doesn't also fire its on-hit row.
+//   - A BYSTANDER reactor (target / ally reacting to someone else's action)
+//     fires its own EQUIPPED weapons; payload.weaponUuid belongs to the
+//     attacker and must not gate the bystander's gear out.
+//   - No weapon context (lifecycle triggers etc.) → equipped weapons only.
+//
+// Non-weapon carriers (skills, equipment, accessories, AEs) are never gated.
+function weaponReactionInPlay(item, payload, casterActor) {
+  if (String(item?.system?.props?.item_type ?? "").toLowerCase() !== "weapon") return true;
+  const usedUuid = payload?.weaponUuid ?? null;
+  const actingActorUuid = payload?.sourceActorUuid ?? null;
+  const reactorIsActor = !!actingActorUuid && casterActor?.uuid === actingActorUuid;
+  if (usedUuid && reactorIsActor) return item.uuid === usedUuid;
+  return item?.system?.props?.isEquipped === true;
+}
+
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
@@ -948,6 +971,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   for (const item of casterActor.items?.contents ?? []) {
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
+    if (!weaponReactionInPlay(item, payload, casterActor)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
@@ -1623,6 +1647,11 @@ export async function applyEffectRow(row, ctx) {
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     case "consume_resource": return applyConsumeResourceEffect(row, ctx);
     case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
+    // resolveAction-unification: built-in action commits expressed as effect
+    // rows. Each wraps the proven bespoke function so behavior is identical,
+    // just routed through the unified resolver.
+    case "equip_swap":          return applyEquipSwapEffect(row, ctx);
+    case "encyclopedia_record": return applyEncyclopediaRecordEffect(row, ctx);
     // add_damage is data-only — read by `computeSenderDamageBonuses`
     // which walks acceptedPrePassives BEFORE the standard fire loop and
     // accumulates per-target base-damage bonuses. By the time
@@ -1896,8 +1925,36 @@ function isTargetImmuneToStatuses(actor, statuses) {
   return false;
 }
 
+// True iff a string value looks like a NUMERIC formula (worth baking) rather
+// than a bare string literal. Real formulas carry arithmetic/grouping/comma
+// punctuation, OR a function call (parens), OR an ALL-CAPS schema identifier
+// (2+ consecutive capitals: SL, HR, TOTAL, BOND_STRENGTH, HP_DEALT, CUR_MP …).
+// Bare words ("melee", "ranged", "Light") have none and must pass through
+// unbaked — used as OVERRIDE (mode 5) change values.
+function looksLikeNumericFormula(s) {
+  const str = String(s);
+  if (/[+\-*/%(),]/.test(str)) return true;
+  if (/[A-Z]{2,}/.test(str)) return true;
+  return false;
+}
+
+// Hinder's card-picked status → canonical AE name. The Common/Hinder item
+// uses `ae_template_ref: "status_value"` and the apply_ae handler resolves the
+// concrete debuff name from ctx.actionResult.statusValue at fire time.
+const HINDER_STATUS_NAMES = { dazed: "Dazed", shaken: "Shaken", slow: "Slow", weak: "Weak" };
+
 async function applyApplyAeEffect(row, ctx) {
-  const aeRef = String(row.ae_template_ref ?? "").trim();
+  let aeRef = String(row.ae_template_ref ?? "").trim();
+  // Dynamic ref: resolve the debuff name from the action's picked status
+  // (Hinder). Done before the empty-check so a missing pick fails cleanly.
+  if (aeRef === "status_value" || aeRef === "{status_value}") {
+    const sv = String(ctx.actionResult?.statusValue ?? "").trim().toLowerCase();
+    aeRef = HINDER_STATUS_NAMES[sv] ?? "";
+    if (!aeRef) {
+      warn(`skill-effects.apply_ae: status_value ref but no/unknown actionResult.statusValue ("${ctx.actionResult?.statusValue}")`);
+      return { ok: false, kind: "apply_ae", reason: "no-status-value" };
+    }
+  }
   if (!aeRef) {
     warn(`skill-effects.apply_ae: missing ae_template_ref on "${row.effect_label}"`);
     return { ok: false, kind: "apply_ae", reason: "no-ae-ref" };
@@ -1947,12 +2004,24 @@ async function applyApplyAeEffect(row, ctx) {
       continue;
     }
 
-    const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
-    if (existing) {
-      if (baseMode === "skip") { log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}"${isPerCaster ? " from this caster" : ""} (skip)`); continue; }
-      if (baseMode === "remove") { try { await existing.delete(); applied.push({ actorUuid: actor.uuid, removed: existing.name }); } catch (e) { warn("apply_ae remove failed", e); } continue; }
-      if (baseMode === "replace") { try { await existing.delete(); } catch (e) { warn("apply_ae replace-delete failed", e); } }
-      // "stack" falls through to create a new one
+    // `replace_same_status` — Hinder semantics. Distinct statuses coexist
+    // (Weak + Slow together is RAW-legal), but re-applying the SAME status
+    // replaces the prior instance. Match by the template's canonical Foundry
+    // status ids OR the literal name (the four basic debuffs share one parent
+    // world Item, so name/status — not parent id — distinguishes them). This
+    // folds the bespoke Hinder dedup (state-handlers.js) into apply_ae.
+    if (baseMode === "replace_same_status") {
+      const existingSame = findSameStatusAe(actor, template);
+      if (existingSame) { try { await existingSame.delete(); } catch (e) { warn("apply_ae replace_same_status delete failed", e); } }
+      // fall through to create the fresh instance
+    } else {
+      const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
+      if (existing) {
+        if (baseMode === "skip") { log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}"${isPerCaster ? " from this caster" : ""} (skip)`); continue; }
+        if (baseMode === "remove") { try { await existing.delete(); applied.push({ actorUuid: actor.uuid, removed: existing.name }); } catch (e) { warn("apply_ae remove failed", e); } continue; }
+        if (baseMode === "replace") { try { await existing.delete(); } catch (e) { warn("apply_ae replace-delete failed", e); } }
+        // "stack" falls through to create a new one
+      }
     }
 
     // Build the data — stamp `origin` to the firing skill so the AE
@@ -2038,6 +2107,14 @@ async function applyApplyAeEffect(row, ctx) {
       for (const ch of data.changes) {
         if (typeof ch?.value !== "string") continue;
         if (!isFormulaString(ch.value)) continue;
+        // Only bake values that actually LOOK like a numeric formula. A bare
+        // word string-literal change ("melee", "Light", "ranged" — used by
+        // OVERRIDE (mode 5) directives like cannot_be_targeted_by) is not a
+        // number, but evaluateFormula would resolve its unknown identifier to
+        // 0 and silently corrupt it. Real formulas always carry arithmetic /
+        // grouping punctuation OR an ALL-CAPS schema identifier (SL, HR,
+        // BOND_STRENGTH, HP_DEALT, CUR_MP, …) OR a function call (parens).
+        if (!looksLikeNumericFormula(ch.value)) continue;
         const resolved = evaluateFormula(ch.value, getBakeResolver(), null);
         if (resolved == null || !Number.isFinite(resolved)) continue;
         log(`apply_ae bake: "${ch.value}" → ${resolved} (target=${actor.name})`);
@@ -2070,6 +2147,35 @@ async function applyApplyAeEffect(row, ctx) {
         data.flags[FLAG_NS][k] = Number.isInteger(resolved) ? resolved : Number(resolved);
       }
     }
+
+    // Bake reaction-formula fields on the cloned AE's carried reactionConfig.
+    // An applied buff AE's reaction (e.g. Hawkeye's "+SL×2 to your next ranged
+    // attack") lives in flags.<ns>.reactionConfig.effect_table[*]. SL there
+    // resolves against the CARRIER AE at fire-time — but an applied AE has no
+    // level, so SL would fall back to 1 and lose the granting skill's scaling.
+    // Resolve `damage_amount` / `grant_amount` formulas NOW (against the
+    // caster + granting skill in ctx), writing literals so the buff reflects
+    // the skill's SL at apply-time. Same gate as changes[] (skip bare-word
+    // string literals; only bake true numeric formulas). Reusable for any
+    // SL-scaling applied-buff reaction, not just Hawkeye.
+    const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount"];
+    const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
+    const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
+    if (rcfgTable && typeof rcfgTable === "object") {
+      for (const erow of Object.values(rcfgTable)) {
+        if (!erow || typeof erow !== "object" || erow.$deleted) continue;
+        for (const f of REACTION_FORMULA_FIELDS) {
+          const raw = erow[f];
+          if (typeof raw !== "string") continue;
+          if (!isFormulaString(raw) || !looksLikeNumericFormula(raw)) continue;
+          const resolved = evaluateFormula(raw, getBakeResolver(), null);
+          if (resolved == null || !Number.isFinite(resolved)) continue;
+          log(`apply_ae bake (reactionConfig.${f}): "${raw}" → ${resolved} (target=${actor.name})`);
+          erow[f] = String(resolved);
+        }
+      }
+    }
+
     if (!data.flags) data.flags = {};
     data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
     // Per-AE duration counter (homebrew rule: default 3 turns, tick at
@@ -2169,6 +2275,94 @@ function findDuplicateAe(actor, template, scope = null) {
     return eff;
   }
   return null;
+}
+
+// `replace_same_status` matcher (Hinder). An existing enabled AE is "the same
+// status" if it shares any of the template's canonical Foundry status ids OR
+// has the same literal name. This distinguishes Weak from Slow even though the
+// four basic debuffs share one parent world Item — mirrors the bespoke Hinder
+// dedup in state-handlers.js.
+function findSameStatusAe(actor, template) {
+  if (!actor?.effects) return null;
+  const canonical = new Set(
+    (Array.isArray(template.statuses) ? template.statuses : []).map((s) => String(s).toLowerCase())
+  );
+  const wantName = String(template.name ?? "").toLowerCase();
+  for (const eff of actor.effects) {
+    if (eff.disabled) continue;
+    const effStatuses = eff.statuses ? Array.from(eff.statuses).map((s) => String(s).toLowerCase()) : [];
+    if (effStatuses.some((s) => canonical.has(s))) return eff;
+    if (wantName && String(eff.name ?? "").toLowerCase() === wantName) return eff;
+  }
+  return null;
+}
+
+// ── equip_swap (Equipment action) ────────────────────────────────────────
+// Commits the per-slot equipment selections the Equipment card collected onto
+// the acting actor. Wraps the proven `applyEquipmentSwap` (equipment-swap.js)
+// so behavior is byte-identical to the bespoke RESOLVE branch — this is just
+// the declarative entry point. Selections are threaded onto ctx.actionResult
+// by resolveAction (ar.equipmentSelections). Dynamic import avoids a static
+// circular dependency with the action pipeline.
+async function applyEquipSwapEffect(row, ctx) {
+  const actor = ctx.reactorActor;
+  if (!actor) return { ok: false, kind: "equip_swap", reason: "no-actor" };
+  const selections = ctx.actionResult?.equipmentSelections ?? null;
+  if (!selections) {
+    log("skill-effects.equip_swap: no slot selections on action result — no-op");
+    return { ok: true, kind: "equip_swap", reason: "no-selections", applied: [] };
+  }
+  try {
+    const { applyEquipmentSwap } = await import("./equipment-swap.js");
+    const result = await applyEquipmentSwap(actor, selections);
+    if (result?.skipped) {
+      log(`skill-effects.equip_swap: no changes for ${actor.name}`);
+      return { ok: true, kind: "equip_swap", reason: "no-change", applied: [] };
+    }
+    log(`skill-effects.equip_swap: committed ${result?.changes?.length ?? 0} change(s) for ${actor.name}`);
+    return { ok: true, kind: "equip_swap", applied: result?.changes ?? [] };
+  } catch (e) {
+    warn("skill-effects.equip_swap threw", e);
+    return { ok: false, kind: "equip_swap", reason: "threw" };
+  }
+}
+
+// ── encyclopedia_record (Study action) ────────────────────────────────────
+// Records the Study Open-Check result on the studied creature's Monster
+// Encyclopedia page (party-wide best result; lower rolls don't downgrade).
+// Wraps the existing `encApi.recordResult`. Per RAW Core p.74 a Fumble yields
+// no information — skip the record. Reads the studied target + roll from
+// ctx.actionResult. Presentation (token VFX, opening the sheet) stays in the
+// Study RESOLVE wrapper — this effect_kind is the data write only.
+async function applyEncyclopediaRecordEffect(row, ctx) {
+  const ar = ctx.actionResult;
+  const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+  if (!encApi?.recordResult) {
+    warn("skill-effects.encyclopedia_record: encyclopedia.recordResult unavailable");
+    return { ok: false, kind: "encyclopedia_record", reason: "no-api" };
+  }
+  if (ar?.roll?.isFumble) {
+    log("skill-effects.encyclopedia_record: fumble — no information gained (RAW)");
+    return { ok: true, kind: "encyclopedia_record", reason: "fumble", recordedUuid: null };
+  }
+  const candidates = [ar?.target?.worldActorUuid, ar?.target?.actorUuid].filter(Boolean);
+  for (const uuid of candidates) {
+    try {
+      const result = await encApi.recordResult({
+        actorUuid: uuid,
+        total: ar?.roll?.total ?? 0,
+        studierActorId: ar?.attacker?.actorId ?? null,
+        isCrit: !!ar?.roll?.isCrit,
+        isFumble: !!ar?.roll?.isFumble,
+      });
+      log(`skill-effects.encyclopedia_record: ${ar?.target?.name ?? uuid} — changed=${!!result?.changed}`);
+      return { ok: true, kind: "encyclopedia_record", recordedUuid: uuid, changed: !!result?.changed,
+               previousBest: result?.previousBest ?? null, newBest: result?.newBest ?? null };
+    } catch (e) {
+      warn("skill-effects.encyclopedia_record: recordResult threw on", uuid, e);
+    }
+  }
+  return { ok: false, kind: "encyclopedia_record", reason: "no-record" };
 }
 
 // ── consume_charge ──────────────────────────────────────────────────────
@@ -2721,57 +2915,68 @@ async function applyRollLootTableEffect(row, ctx) {
       continue;
     }
 
-    // Independent per-row rolls — each row gets its own d100 check.
-    // "(Empty)" + zero-pct rows are skipped silently. Items already
-    // claimed by another caster (in claimedKeys) skip too.
+    // SINGLE weighted d100 roll per enemy. The steal table's loot_percentage
+    // values partition 1..100 (e.g. 15 Zombie Potion / 30 Rotten Nail /
+    // 25 Bloodied Coin / 30 "(Empty)" = 100), so ONE roll lands in exactly one
+    // bucket and each enemy yields AT MOST one item (or nothing). Rows are
+    // walked in table order, accumulating their percentages; the first bucket
+    // the roll falls into wins. A roll past the defined buckets (table sums to
+    // < 100) — or landing on an "(Empty)"/zero-pct bucket — steals nothing.
+    // (Was previously an independent d100 PER row, which let one enemy drop
+    // several items — not the intended single-pick-per-enemy loot model.)
     const won = [];
     const wonKeys = [];
+    const roll = Math.floor(Math.random() * 100) + 1;  // 1..100
+    let cumulative = 0;
+    let chosenRow = null;
     for (const rRow of rows) {
       const pct = Number(rRow.loot_percentage) || 0;
-      if (pct <= 0) continue;
-      const roll = Math.floor(Math.random() * 100) + 1;  // 1..100
-      if (roll > pct) continue;
-      const lootName = String(rRow.loot_id ?? "").trim();
-      if (!lootName || lootName === "(Empty)") continue;
+      if (pct <= 0) continue;          // zero-pct buckets occupy no range
+      cumulative += pct;
+      if (roll <= cumulative) { chosenRow = rRow; break; }
+    }
+    const chosenName = String(chosenRow?.loot_id ?? "").trim();
+    if (chosenRow && chosenName && chosenName !== "(Empty)") {
+      const chosenPct = Number(chosenRow.loot_percentage) || 0;
       const entry = Object.entries(lootMap).find(
-        ([, e]) => String(e?.name ?? "").trim() === lootName
+        ([, e]) => String(e?.name ?? "").trim() === chosenName
       );
       if (!entry) {
-        log(`roll_loot_table: ${target.name}.${chanceProp} references "${lootName}" but ${lootProp} has no entry`);
-        continue;
+        log(`roll_loot_table: ${target.name}.${chanceProp} references "${chosenName}" but ${lootProp} has no entry`);
+      } else {
+        const [lootKey, lootEntry] = entry;
+        if (claimedKeys.has(lootKey)) {
+          // Rolled an item a prior caster already took — nothing stolen this
+          // roll (the bucket is "spent"; no re-roll). Matches the steal model.
+          log(`roll_loot_table: rolled "${chosenName}" but already claimed on ${target.name} — nothing stolen`);
+        } else {
+          // Resolve the source item — prefer world Item via
+          // system.uniqueId / compendiumSource (matches legacy Study macro's
+          // `resolveStealItemOpenUuid`). Falls back to the embedded item.
+          const sourceItem = await resolveStealSourceItem(lootEntry);
+          if (!sourceItem) {
+            log(`roll_loot_table: no source resolvable for ${chosenName}; nothing stolen`);
+          } else {
+            // Stack consumables/materials; create fresh embedded copy for
+            // equipment. The stacking key is `system.uniqueId` — same-uniqueId
+            // items already on the caster are treated as the same stack and
+            // their item_quantity is incremented.
+            const transferred = await transferLootToCaster(caster, sourceItem);
+            if (transferred) {
+              wonKeys.push(lootKey);
+              won.push({
+                name: chosenName,
+                img: sourceItem.img ?? null,
+                desc: String(lootEntry.loot_description ?? ""),
+                sourceItem,
+                stacked: transferred.stacked,
+                rolled: roll,
+                chance: chosenPct,
+              });
+            }
+          }
+        }
       }
-      const [lootKey, lootEntry] = entry;
-      if (claimedKeys.has(lootKey)) {
-        log(`roll_loot_table: "${lootName}" already claimed on ${target.name} — skipping`);
-        continue;
-      }
-
-      // Resolve the source item — prefer world Item via
-      // system.uniqueId / compendiumSource (matches legacy Study macro's
-      // `resolveStealItemOpenUuid`). Falls back to the embedded item.
-      const sourceItem = await resolveStealSourceItem(lootEntry);
-      if (!sourceItem) {
-        log(`roll_loot_table: no source resolvable for ${lootName}; skipping transfer`);
-        continue;
-      }
-
-      // Stack consumables/materials; create fresh embedded copy for
-      // equipment. The stacking key is `system.uniqueId` — same-uniqueId
-      // items already on the caster are treated as the same stack and
-      // their item_quantity is incremented.
-      const transferred = await transferLootToCaster(caster, sourceItem);
-      if (!transferred) continue;
-
-      wonKeys.push(lootKey);
-      won.push({
-        name: lootName,
-        img: sourceItem.img ?? null,
-        desc: String(lootEntry.loot_description ?? ""),
-        sourceItem,
-        stacked: transferred.stacked,
-        rolled: roll,
-        chance: pct,
-      });
     }
 
     // Stamp the hidden tracker AE if anything stuck. The AE marks both
