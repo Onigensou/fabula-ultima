@@ -367,6 +367,10 @@
     {
       "key": "2026-06-05-template-options-open-action-menu",
       "path": "data-migrations/2026-06-05-template-options-open-action-menu.js"
+    },
+    {
+      "key": "2026-06-06-consolidate-bd-skill-masters",
+      "path": "data-migrations/2026-06-06-consolidate-bd-skill-masters.js"
     }
   ]
 }
