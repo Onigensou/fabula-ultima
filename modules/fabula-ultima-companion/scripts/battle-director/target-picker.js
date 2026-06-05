@@ -11,6 +11,7 @@
 // the Turn UI ownership model.
 
 import { log, warn } from "./logger.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -21,14 +22,14 @@ function ensureStyles() {
   css.textContent = `
     .fud-target-ring{
       position:absolute;
-      border:3px dashed #7a9bb6;
+      border:3px dashed #b7935a;
       border-radius:50%;
       box-shadow:0 0 10px rgba(122,155,182,.6), inset 0 0 10px rgba(122,155,182,.3);
       pointer-events:none;
       z-index:30;
       transition:filter 100ms ease, border-color 100ms ease;
     }
-    .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#a8c4d8; }
+    .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#d5b67a; }
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
     /* Roulette mode — all eligible rings strobe rapidly while the random
        draw is in progress. CSS steps(1) makes it a hard digital blink
@@ -39,7 +40,7 @@ function ensureStyles() {
       animation:fud-roulette-blink 0.14s steps(1) infinite;
     }
     @keyframes fud-roulette-blink{
-      50%{ opacity:0.15; border-color:#7a9bb6; box-shadow:0 0 10px rgba(122,155,182,.6), inset 0 0 10px rgba(122,155,182,.3); }
+      50%{ opacity:0.15; border-color:#b7935a; box-shadow:0 0 10px rgba(213,182,122,.6), inset 0 0 10px rgba(213,182,122,.3); }
     }
     /* Excluded-target overlay — drawn over tokens removed from the eligible
        pool by an AE-driven block (e.g. Vanish's cannot_target_uuids). The
@@ -86,8 +87,8 @@ function ensureStyles() {
       position:fixed; left:50%; top:18%; transform:translate(-50%, 0);
       padding:10px 14px 10px; border-radius:14px;
       background:linear-gradient(180deg,#f6f1e6,#ebe3d0);
-      border:2px solid #5a6a85;
-      box-shadow:0 4px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      border:2px solid #7a6a55;
+      box-shadow:0 4px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       font-family:"Inter","Segoe UI",system-ui,sans-serif;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       color:#3a3228; z-index:9999; pointer-events:auto;
@@ -95,16 +96,16 @@ function ensureStyles() {
       display:flex; flex-direction:column; align-items:center; gap:8px;
       min-width:260px;
     }
-    .fud-target-banner .director-pip{ color:#5a6a85; opacity:.85; font-size:10px; letter-spacing:.5px; display:block; margin-top:2px;}
+    .fud-target-banner .director-pip{ color:#7a6a55; opacity:.85; font-size:10px; letter-spacing:.5px; display:block; margin-top:2px;}
     .fud-target-banner .label-line{ font-size:13px; line-height:1.2; }
     .fud-target-banner .selected-count{
       display:inline-block;
       margin-left:6px;
       padding:1px 8px;
       border-radius:999px;
-      border:1px solid #5a6a85;
+      border:1px solid #7a6a55;
       background:rgba(255,255,255,.45);
-      color:#5a6a85;
+      color:#7a6a55;
       font-size:11px;
     }
     .fud-target-banner .fud-target-btn-row{
@@ -114,16 +115,16 @@ function ensureStyles() {
       flex:1;
       padding:7px 12px;
       border-radius:8px;
-      border:2px solid #5a6a85;
+      border:2px solid #7a6a55;
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       font-size:11.5px;
       cursor:pointer; user-select:none;
       text-align:center;
-      box-shadow:0 3px 0 rgba(24,28,41,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
+      box-shadow:0 3px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       transition:transform 100ms ease, filter 100ms ease;
     }
     .fud-target-banner .fud-target-btn.confirm{
-      background:linear-gradient(180deg, #a8c4d8, #7a9bb6);
+      background:linear-gradient(180deg, #d5b67a, #b7935a);
       color:#221b14;
     }
     .fud-target-banner .fud-target-btn.cancel{
@@ -141,6 +142,32 @@ function ensureStyles() {
     }
     .fud-target-banner .fud-target-btn:not(.is-disabled):hover { filter:brightness(1.05); transform:translateY(-1px); }
     .fud-target-banner .fud-target-btn:not(.is-disabled):active { transform:translateY(0); }
+    .fud-target-banner .fud-target-btn.is-kb-focused:not(.is-disabled) {
+      outline:2px solid rgba(255,255,255,.8);
+      outline-offset:2px;
+      filter:brightness(1.12);
+    }
+
+    /* Feather cursor — appears when banner mode is active */
+    #fud-tp-feather-cursor {
+      position:fixed; z-index:2147483647;
+      width:48px; height:48px;
+      pointer-events:none;
+      transform:translate(-38%, -92%) rotate(20deg) translateY(0px);
+      transition:left .18s cubic-bezier(.22,1,.36,1), top .18s cubic-bezier(.22,1,.36,1), opacity .12s ease;
+      opacity:0;
+      border:none !important; outline:none !important;
+      box-shadow:none !important; background:transparent !important;
+    }
+    #fud-tp-feather-cursor.is-visible {
+      opacity:1;
+      animation:fud-tp-cursor-float 2.2s ease-in-out infinite;
+    }
+    #fud-tp-feather-cursor.no-anim { transition:none !important; }
+    @keyframes fud-tp-cursor-float {
+      0%,100% { transform:translate(-38%,-92%) rotate(20deg) translateY(0px); }
+      50%      { transform:translate(-38%,-92%) rotate(20deg) translateY(-6px); }
+    }
   `;
   document.head.appendChild(css);
 }
@@ -301,6 +328,13 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     let rouletteTimer = null;
     let randomPicked  = [];
 
+    // Banner-focus state — declared early so updateBanner (called before
+    // the keyboard section) can safely read these without TDZ errors.
+    let bannerFocused = false;
+    let bannerBtnIdx  = 0;
+    let cursorEl      = null;   // feather cursor, created on first enterBannerMode
+    let cursorReady   = false;  // false = skip transition on first position
+
     // Pre-compute the random draw immediately — the result is sealed before
     // the animation plays, so the roulette is purely theatrical.
     if (mode === "random") {
@@ -345,8 +379,6 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function updateBanner() {
       if (mode === "random") {
         const label = titleText ?? "Random target";
-        // Always show "Randomizing…" — the draw is sealed but never revealed
-        // in the picker itself. Confirm resolves it; Cancel aborts.
         labelEl.innerHTML = `${label}<span class="selected-count">Randomizing…</span>`;
         confirmBtn.classList.remove("is-disabled");
         return;
@@ -355,11 +387,19 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const label = titleText ?? `Pick ${verb ? verb + " " : ""}${count} target${count === 1 ? "" : "s"}`;
       const countText = `${selected.size}/${count} selected`;
       labelEl.innerHTML = `${label}<span class="selected-count">${countText}</span>`;
-      // Confirm is greyed out until the selection is valid — no hidden state.
       if (isValidSelection()) {
         confirmBtn.classList.remove("is-disabled");
       } else {
         confirmBtn.classList.add("is-disabled");
+      }
+      // Auto-advance keyboard focus to the banner when the player has filled
+      // all target slots (exact: must equal count; up_to: at max capacity).
+      // Auto-retreat when they drop below that threshold (e.g. a deselect).
+      const atMax = selected.size >= count;
+      if (atMax && !bannerFocused) {
+        enterBannerMode();
+      } else if (!atMax && bannerFocused) {
+        exitBannerMode();
       }
     }
     updateBanner();
@@ -484,6 +524,19 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function onTokenHover(token, hovered) {
       const uuid = token?.document?.uuid;
       if (!uuid || !rings.has(uuid)) return;
+      if (hovered) {
+        // Mouse takes over — clear previous kb ring and sync group/row indices.
+        if (kbHoveredUuid && kbHoveredUuid !== uuid) setHover(kbHoveredUuid, false);
+        kbHoveredUuid = uuid;
+        // Find which group and row this uuid lives in so arrow keys continue
+        // from the mouse-hover position.
+        for (let gi = 0; gi < kbGroups.length; gi++) {
+          const ri = kbGroups[gi].indexOf(uuid);
+          if (ri >= 0) { kbGroupIdx = gi; kbRowIdx = ri; break; }
+        }
+      } else if (uuid === kbHoveredUuid) {
+        kbHoveredUuid = null;
+      }
       setHover(uuid, !!hovered);
     }
 
@@ -508,15 +561,192 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       updateBanner();
     }
 
-    // Keyboard parity for mouse-first players who prefer hotkeys —
-    // Enter / Esc both feed the same code paths the buttons do.
+    // Keyboard target navigation — spatial two-axis system:
+    //   Left/Right : switch between groups (enemies column ↔ allies column)
+    //   Up/Down    : cycle within the current group (top → bottom by canvas Y)
+    //   Z/Space    : toggle selection on the focused target
+    //   X/Escape   : cancel
+    // Auto-advances to banner buttons when the selection is complete.
+    const eligibleUuids = eligible.map((e) => e.tokenUuid).filter(Boolean);
+    // bannerFocused / bannerBtnIdx declared earlier (before updateBanner).
+
+    // Groups are built after buildRings() when token data is accessible.
+    let kbGroups   = [];  // array of uuid[] per column, sorted top→bottom
+    let kbGroupIdx = 0;
+    let kbRowIdx   = 0;
+    let kbHoveredUuid = null;
+
+    function buildKbGroups() {
+      const hostile = [], friendly = [];
+      for (const e of eligible) {
+        const uuid = e.tokenUuid;
+        if (!uuid) continue;
+        const rec = rings.get(uuid);
+        if (!rec) continue;
+        const disp = rec.token?.document?.disposition ?? 0;
+        const y = rec.token?.document?.y ?? rec.token?.y ?? 0;
+        const x = rec.token?.document?.x ?? rec.token?.x ?? 0;
+        (disp === -1 ? hostile : friendly).push({ uuid, x, y });
+      }
+      const byY = (a, b) => a.y - b.y;
+      hostile.sort(byY); friendly.sort(byY);
+      // Order groups left-to-right by average canvas X.
+      const avgX = (arr) => arr.length ? arr.reduce((s, e) => s + e.x, 0) / arr.length : 0;
+      const groups = [];
+      if (hostile.length && friendly.length) {
+        const leftFirst = avgX(hostile) <= avgX(friendly);
+        groups.push((leftFirst ? hostile : friendly).map((e) => e.uuid));
+        groups.push((leftFirst ? friendly : hostile).map((e) => e.uuid));
+      } else if (hostile.length) {
+        groups.push(hostile.map((e) => e.uuid));
+      } else if (friendly.length) {
+        groups.push(friendly.map((e) => e.uuid));
+      }
+      return groups;
+    }
+
+    function kbCurrentUuid() {
+      return kbGroups[kbGroupIdx]?.[kbRowIdx] ?? null;
+    }
+
+    function kbApplyHover() {
+      const newUuid = kbCurrentUuid();
+      if (newUuid === kbHoveredUuid) return;
+      if (kbHoveredUuid) setHover(kbHoveredUuid, false);
+      kbHoveredUuid = newUuid;
+      if (kbHoveredUuid) { setHover(kbHoveredUuid, true); playUiHoverSfx(); }
+    }
+
+    function kbMoveGroup(dir) {
+      if (kbGroups.length <= 1) return;
+      kbGroupIdx = ((kbGroupIdx + dir) % kbGroups.length + kbGroups.length) % kbGroups.length;
+      kbRowIdx = Math.min(kbRowIdx, Math.max(0, (kbGroups[kbGroupIdx]?.length ?? 1) - 1));
+      kbApplyHover();
+    }
+
+    function kbMoveRow(dir) {
+      const group = kbGroups[kbGroupIdx] ?? [];
+      if (!group.length) return;
+      kbRowIdx = ((kbRowIdx + dir) % group.length + group.length) % group.length;
+      kbApplyHover();
+    }
+
+    function getBannerBtns() {
+      return Array.from(banner.querySelectorAll(".fud-target-btn:not(.is-disabled)"));
+    }
+
+    function moveCursor(btnEl) {
+      if (!cursorEl || !btnEl) return;
+      const rect = btnEl.getBoundingClientRect();
+      if (!cursorReady) {
+        // First position: skip slide transition so cursor snaps in instantly.
+        cursorEl.classList.add("no-anim");
+        cursorEl.style.left = `${rect.right}px`;
+        cursorEl.style.top  = `${rect.bottom}px`;
+        cursorEl.classList.add("is-visible");
+        requestAnimationFrame(() => { cursorEl?.classList.remove("no-anim"); });
+        cursorReady = true;
+      } else {
+        cursorEl.style.left = `${rect.right}px`;
+        cursorEl.style.top  = `${rect.bottom}px`;
+        cursorEl.classList.add("is-visible");
+      }
+    }
+
+    function setBannerBtnFocus(idx) {
+      const btns = getBannerBtns();
+      if (!btns.length) return;
+      const prev = bannerBtnIdx;
+      bannerBtnIdx = ((idx % btns.length) + btns.length) % btns.length;
+      btns.forEach((b, i) => b.classList.toggle("is-kb-focused", i === bannerBtnIdx));
+      if (bannerBtnIdx !== prev) {
+        playUiHoverSfx();
+        moveCursor(btns[bannerBtnIdx]);
+      }
+    }
+
+    function enterBannerMode() {
+      if (bannerFocused) return;
+      bannerFocused = true;
+      // Suppress target ring hover while banner is focused.
+      if (kbHoveredUuid) { setHover(kbHoveredUuid, false); kbHoveredUuid = null; }
+      // Create the feather cursor on first use.
+      if (!cursorEl) {
+        cursorEl = document.createElement("img");
+        cursorEl.id  = "fud-tp-feather-cursor";
+        cursorEl.src = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+        document.body.appendChild(cursorEl);
+      }
+      cursorReady = false; // next moveCursor call snaps without transition
+      // Auto-land on the Confirm button.
+      const btns = getBannerBtns();
+      const confirmIdx = btns.findIndex((b) => b.dataset.fudTarget === "confirm");
+      bannerBtnIdx = -1; // force first setBannerBtnFocus to see a change
+      setBannerBtnFocus(confirmIdx >= 0 ? confirmIdx : btns.length - 1);
+    }
+
+    function exitBannerMode() {
+      if (!bannerFocused) return;
+      bannerFocused = false;
+      getBannerBtns().forEach((b) => b.classList.remove("is-kb-focused"));
+      // Hide cursor when returning to target-cycling mode.
+      if (cursorEl) cursorEl.classList.remove("is-visible");
+      // Restore hover ring on the last kb-focused target.
+      kbHoveredUuid = kbCurrentUuid();
+      if (kbHoveredUuid) setHover(kbHoveredUuid, true);
+    }
+
     function onKey(e) {
-      if (e.key === "Escape") {
+      // X and Escape always cancel the whole operation.
+      if (e.key === "Escape" || e.key === "x" || e.key === "X") {
         e.preventDefault(); e.stopPropagation();
         finish({ ok: false, cancelled: true, tokenUuids: [] });
-      } else if (e.key === "Enter") {
+        return;
+      }
+      if (mode === "random") {
+        if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); tryConfirm(); }
+        return;
+      }
+
+      // ── Banner mode ──────────────────────────────────────────────────
+      if (bannerFocused) {
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault(); e.stopPropagation();
+          setBannerBtnFocus(bannerBtnIdx - 1);
+          return;
+        }
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          e.preventDefault(); e.stopPropagation();
+          setBannerBtnFocus(bannerBtnIdx + 1);
+          return;
+        }
+        if (e.key === "Enter" || e.key === "z" || e.key === "Z" || e.key === " ") {
+          e.preventDefault(); e.stopPropagation();
+          const focused = getBannerBtns()[bannerBtnIdx];
+          if (focused) focused.click();
+          return;
+        }
+        return; // swallow all other keys in banner mode
+      }
+
+      // ── Target cycling mode ──────────────────────────────────────────
+      if (e.key === "Enter") {
         e.preventDefault(); e.stopPropagation();
         tryConfirm();
+        return;
+      }
+      // Left/Right: switch between columns (enemies ↔ allies)
+      if (e.key === "ArrowLeft")  { e.preventDefault(); e.stopPropagation(); kbMoveGroup(-1); return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); kbMoveGroup(+1); return; }
+      // Up/Down: move within current column (top → bottom)
+      if (e.key === "ArrowUp")   { e.preventDefault(); e.stopPropagation(); kbMoveRow(-1); return; }
+      if (e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); kbMoveRow(+1); return; }
+      if (e.key === " " || e.key === "z" || e.key === "Z") {
+        e.preventDefault(); e.stopPropagation();
+        if (!kbHoveredUuid) return;
+        const rec = rings.get(kbHoveredUuid);
+        if (rec?.token) onTokenClick(null, rec.token);
+        return;
       }
     }
 
@@ -590,6 +820,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     repositionAll();
     dimState = applyTargetingDim(eligible, director);
 
+    // Build spatial groups and prime kb hover on the first token.
+    if (mode !== "random" && eligibleUuids.length) {
+      kbGroups = buildKbGroups();
+      kbApplyHover();
+    }
+
     // Random mode: strobe all eligible rings indefinitely via CSS animation.
     // The draw is pre-computed but never shown in the picker — the player
     // clicks Confirm (or Cancel) to resolve. No auto-landing timer.
@@ -620,6 +856,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}
+      try { if (cursorEl) { cursorEl.remove(); cursorEl = null; } } catch {}
       for (const rec of rings.values()) { try { rec.el.remove(); } catch {} }
       rings.clear();
       // Tear down the excluded overlays + their reason labels alongside.

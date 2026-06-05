@@ -47,7 +47,7 @@ function ensureStyles() {
       max-height: 72vh;
       display: flex; flex-direction: column;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
@@ -59,7 +59,7 @@ function ensureStyles() {
       font-size: 13.5px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 8px;
     }
     .fud-passive-mgr-subtitle {
@@ -82,7 +82,7 @@ function ensureStyles() {
       align-items: center;
       padding: 8px 10px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #f3e8d0, #e7d6b4);
     }
     .fud-passive-mgr-row .icon img {
@@ -141,7 +141,7 @@ function ensureStyles() {
       margin-top: 8px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;

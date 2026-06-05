@@ -15,6 +15,7 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 // Display-time formula resolver for free-text props like skill_target.
 // Some authors embed inline expressions like
@@ -82,7 +83,7 @@ function ensureStyles() {
       max-height: 70vh;
       display: flex; flex-direction: column;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
@@ -94,7 +95,7 @@ function ensureStyles() {
       font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 10px;
       flex-shrink: 0;
     }
@@ -108,60 +109,49 @@ function ensureStyles() {
     .fud-skp-card .fud-skp-section-label {
       font-size: 9.5px; font-weight: 900; letter-spacing: 0.8px;
       text-transform: uppercase;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       padding: 6px 4px 3px;
-      border-bottom: 1px solid rgba(90, 106, 133, 0.4);
+      border-bottom: 1px solid rgba(122, 106, 85, 0.4);
       margin-bottom: 1px;
     }
     .fud-skp-card .fud-skp-section-label:first-child { margin-top: 0; padding-top: 2px; }
     .fud-skp-card .fud-skp-empty {
       padding: 16px;
       text-align: center;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       font-size: 11px;
       font-style: italic;
     }
     .fud-skp-card .fud-skp-row {
-      /* Fixed-width shortcut slot keeps the row layout identical whether
-         or not the row has a number-key shortcut — without it, the cost
-         badge would shift left for unshortcut rows (rank 10+ after the
-         9-shortcut cap). */
-      display: grid; grid-template-columns: 22px 44px 1fr auto;
+      display: grid; grid-template-columns: 44px 1fr auto;
       gap: 8px;
       align-items: center;
       padding: 8px 10px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
-      color: #221b14;
-      box-shadow: 0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+      border: 2px solid rgba(90, 62, 28, 0.5);
+      background: linear-gradient(180deg, #fffef8, #f5eedd);
+      color: #2d1f0d;
+      box-shadow: 0 2px 0 rgba(41, 33, 24, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
       cursor: pointer;
       user-select: none;
-      transition: transform 100ms ease, filter 100ms ease;
+      transition: transform 100ms ease, filter 100ms ease, background 80ms ease;
     }
-    .fud-skp-card .fud-skp-row:hover  { filter: brightness(1.05); transform: translateY(-1px); }
+    .fud-skp-card .fud-skp-row:hover  { filter: brightness(1.03); transform: translateY(-1px); }
     .fud-skp-card .fud-skp-row:active { transform: translateY(0); }
+    .fud-skp-card .fud-skp-row.is-kb-focused {
+      background: linear-gradient(180deg, #fef5dc, #ebd9a6);
+      border-color: rgba(90, 62, 28, 0.75);
+      box-shadow: 0 3px 0 rgba(41, 33, 24, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
+      transform: translateY(-1px);
+    }
     .fud-skp-card .fud-skp-row.is-disabled {
-      filter: grayscale(0.7) brightness(0.85);
+      filter: grayscale(0.7) brightness(0.9);
       opacity: 0.55;
       cursor: not-allowed;
       transform: none;
     }
-    .fud-skp-card .fud-skp-row.is-disabled:hover { filter: grayscale(0.7) brightness(0.85); transform: none; }
-    .fud-skp-card .fud-skp-row .shortcut-slot {
-      display: flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px;
-      border-radius: 6px;
-      font-size: 11px; font-weight: 900;
-      color: rgba(34, 27, 20, 0.55);
-      background: rgba(40, 30, 18, 0.12);
-      border: 1px solid rgba(40, 30, 18, 0.22);
-      letter-spacing: 0;
-    }
-    .fud-skp-card .fud-skp-row .shortcut-slot.empty {
-      background: transparent;
-      border-color: transparent;
-    }
+    .fud-skp-card .fud-skp-row.is-disabled:hover { filter: grayscale(0.7) brightness(0.9); transform: none; }
+    .fud-skp-card .fud-skp-row.is-disabled.is-kb-focused { transform: none; box-shadow: 0 2px 0 rgba(41,33,24,.25), 0 0 0 1px rgba(255,255,255,.8) inset; }
     .fud-skp-card .fud-skp-row .icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
     .fud-skp-card .fud-skp-row .icon img {
       width: 40px; height: 40px;
@@ -217,7 +207,7 @@ function ensureStyles() {
       margin-top: 8px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
@@ -226,7 +216,7 @@ function ensureStyles() {
       text-align: center;
       user-select: none;
       flex-shrink: 0;
-      box-shadow: 0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+      box-shadow: 0 3px 0 var(--fud-shadow, rgba(41, 33, 24, 0.55)), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
     }
     .fud-skp-card .fud-skp-cancel:hover { filter: brightness(1.05); }
 
@@ -236,7 +226,7 @@ function ensureStyles() {
       max-width: 320px;
       padding: 10px 12px;
       background: linear-gradient(180deg, #fff8e8, #f0e4cc);
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       color: var(--fud-ink, #3a3228);
@@ -485,37 +475,32 @@ export async function pickSkill({
 
   // Group into sections.
   const sections = [];
-  const actorOwned = candidates.filter((c) => c.source === "actor");
-  const itemGranted = candidates.filter((c) => c.source === "item-granted");
-  if (actorOwned.length) sections.push({ label: "Active Skills", items: actorOwned });
-  if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
+  const isSpellMode = Array.isArray(allowedSkillTypes) && allowedSkillTypes.length === 1
+    && allowedSkillTypes[0].toLowerCase() === "spell";
 
-  // Build HTML. Number-key shortcuts on first 9 affordable rows; rows
-  // past the 9-cap still render but with an empty shortcut slot so the
-  // grid layout stays identical.
-  let nextKey = 1;
+  if (isSpellMode) {
+    const offensive = candidates.filter((c) => c.isOffensiveSpell);
+    const normal = candidates.filter((c) => !c.isOffensiveSpell);
+    if (offensive.length) sections.push({ label: "Offensive Spell", items: offensive });
+    if (normal.length)    sections.push({ label: "Normal Spell",    items: normal });
+  } else {
+    const actorOwned  = candidates.filter((c) => c.source === "actor");
+    const itemGranted = candidates.filter((c) => c.source === "item-granted");
+    if (actorOwned.length)  sections.push({ label: "Active Skills", items: actorOwned });
+    if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
+  }
+
   const sectionsHTML = sections.map((section) => {
     const itemsHTML = section.items.map((c) => {
-      // Subtitle bullets — wrap each so the cost-style chunk ("5 x T MP")
-      // and the check-attr chip ("INS+WLP") don't fracture across lines.
       const subtitleParts = [];
-      // Element first (when present), then range / target.
       if (c.element) subtitleParts.push(escapeHtml(c.element));
       if (c.range) subtitleParts.push(escapeHtml(c.range));
       if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
-      // Check-attribute pair for offensive / Check-bearing spells. RAW
-      // for Spiritist offensive spells is INS+WLP; other classes have
-      // their own pairs. We surface whatever the skill carries so the
-      // GM can see at a glance what the Check rolls. No bullet when
-      // rolled_atr1/2 are blank (e.g. "-").
       const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;
       const a2 = c.rolledA2 && c.rolledA2 !== "-" ? c.rolledA2 : null;
       if (c.isCheck && a1 && a2) {
         subtitleParts.push(`<span class="check-attr">${escapeHtml(a1)} + ${escapeHtml(a2)}</span>`);
       }
-      // Spaces around the dot give the browser explicit wrap opportunities
-      // — without them, `</span><span>` adjacency blocks line breaks and
-      // the subtitle overflows into the cost-badge column.
       const wrappedBullets = subtitleParts.map((b) => `<span class="bullet">${b}</span>`);
       const subtitle = wrappedBullets.join(` <span class="dot">•</span> `);
 
@@ -526,13 +511,6 @@ export async function pickSkill({
         ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span>` : "";
 
       const disabled = c.affordable ? "" : " is-disabled";
-      // Reserved-slot shortcut: always render the cell so the grid
-      // doesn't reflow between shortcut-bearing and shortcut-less rows.
-      const hasShortcut = c.affordable && nextKey <= 9;
-      const shortcutLabel = hasShortcut ? String(nextKey++) : "";
-      const shortcutHTML = hasShortcut
-        ? `<div class="shortcut-slot">${shortcutLabel}</div>`
-        : `<div class="shortcut-slot empty"></div>`;
       const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
 
       const tipBody = stripHtml(c.descriptionHtml || "(no description)");
@@ -549,7 +527,6 @@ export async function pickSkill({
              data-fud-source-uuid="${escapeHtml(c.sourceItemUuid ?? "")}"
              data-fud-tip="${tipPayload}"
              role="button" tabindex="0">
-          ${shortcutHTML}
           <div class="icon"><img src="${safeImg}" alt=""></div>
           <div class="info">
             <div class="primary">${sourceTag}${escapeHtml(c.name)}</div>
@@ -573,7 +550,11 @@ export async function pickSkill({
     </div>
   `;
   document.body.appendChild(root);
-  requestAnimationFrame(() => root.classList.add("is-visible"));
+  requestAnimationFrame(() => {
+    root.classList.add("is-visible");
+    const firstRow = root.querySelector("[data-fud-skill-uuid]");
+    if (firstRow) firstRow.classList.add("is-kb-focused");
+  });
 
   log(`SkillPicker spawned with ${candidates.length} skills (${candidates.filter(c => c.affordable).length} affordable)`);
 
@@ -582,6 +563,23 @@ export async function pickSkill({
     let keyListener = null;
     let despawnTid = null;
     let hoverDwellTid = null;
+    let kbIndex = 0;
+
+    function getRows() {
+      return Array.from(root.querySelectorAll("[data-fud-skill-uuid]"));
+    }
+
+    function setKbFocus(idx, rows) {
+      rows = rows ?? getRows();
+      const prev = kbIndex;
+      kbIndex = Math.max(0, Math.min(idx, rows.length - 1));
+      rows.forEach((r, i) => r.classList.toggle("is-kb-focused", i === kbIndex));
+      const focused = rows[kbIndex];
+      if (focused) {
+        focused.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        if (kbIndex !== prev) playUiHoverSfx();
+      }
+    }
 
     const finish = (result) => {
       if (resolved) return;
@@ -605,7 +603,7 @@ export async function pickSkill({
       if (!rowEl) return;
       if (rowEl.classList.contains("is-disabled")) {
         ev.stopPropagation();
-        return;  // unaffordable — ignore
+        return;
       }
       ev.stopPropagation();
       finish({
@@ -615,22 +613,18 @@ export async function pickSkill({
     };
     root.addEventListener("click", onClick);
 
-    // Hover-dwell tooltip (mirrors equipment card pattern).
+    // Hover syncs kb focus index so arrow keys continue from where the
+    // mouse left off.
     const onMove = (ev) => {
-      // While the picker is fading out, ignore further hovers — otherwise
-      // a mousemove during the 200ms despawn animation reschedules a
-      // dwell that fires AFTER root.remove(), leaving a ghost tooltip
-      // floating with no menu behind it.
       if (resolved) return;
       const rowEl = ev.target?.closest?.("[data-fud-skill-uuid]");
       if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
       if (!rowEl) { hideTip(); return; }
+      const rows = getRows();
+      const idx = rows.indexOf(rowEl);
+      if (idx >= 0 && idx !== kbIndex) setKbFocus(idx, rows);
       const rect = rowEl.getBoundingClientRect();
       hoverDwellTid = setTimeout(() => {
-        // Re-check resolved on fire — finish() may have been called
-        // during the dwell wait. (clearTimeout in finish covers most
-        // cases, but a setTimeout already queued for the next macrotask
-        // can still slip through on some browsers.)
         if (resolved) return;
         try {
           const payload = JSON.parse(decodeURIComponent(rowEl.dataset.fudTip ?? "%7B%7D"));
@@ -646,15 +640,25 @@ export async function pickSkill({
 
     keyListener = (ev) => {
       if (resolved) return;
-      if (ev.key === "Escape") { ev.preventDefault(); finish(null); return; }
-      // Number-key shortcut: pick the Nth affordable row.
-      const num = parseInt(ev.key, 10);
-      if (!Number.isFinite(num) || num < 1 || num > 9) return;
-      const affordable = candidates.filter((c) => c.affordable);
-      const cand = affordable[num - 1];
-      if (!cand) return;
-      ev.preventDefault();
-      finish({ skillUuid: cand.uuid, sourceItemUuid: cand.sourceItemUuid });
+      const rows = getRows();
+      if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish(null); return; }
+      if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
+        ev.preventDefault();
+        setKbFocus(kbIndex + 1, rows);
+        return;
+      }
+      if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
+        ev.preventDefault();
+        setKbFocus(kbIndex - 1, rows);
+        return;
+      }
+      if (ev.key === "Enter" || ev.key === " " || ev.key === "z" || ev.key === "Z") {
+        ev.preventDefault();
+        const row = rows[kbIndex];
+        if (!row || row.classList.contains("is-disabled")) return;
+        finish({ skillUuid: row.dataset.fudSkillUuid, sourceItemUuid: row.dataset.fudSourceUuid || null });
+        return;
+      }
     };
     window.addEventListener("keydown", keyListener, true);
 

@@ -22,6 +22,7 @@
 import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { PassiveManager } from "./passive-manager.js";
+import { playUiHoverSfx, playUiTabSwitchSfx } from "./director-ui-sfx.js";
 
 const STYLE_ID = "fud-turnui-style";
 
@@ -61,12 +62,10 @@ function ensureBaseStyles() {
       --fud-parchment-bot:#ebe3d0;
       --fud-ink:#3a3228;
       --fud-ink-soft:#4b4338;
-      /* Director uses a blue-tinted gold so it visually differs from the
-         legacy oni-octopath gold. Same family, different hue. */
-      --fud-gold-1:#a8c4d8;
-      --fud-gold-2:#7a9bb6;
-      --fud-stroke:#5a6a85;
-      --fud-shadow:rgba(24,28,41,.55);
+      --fud-gold-1:#d5b67a;
+      --fud-gold-2:#b7935a;
+      --fud-stroke:#7a6a55;
+      --fud-shadow:rgba(41,33,24,.55);
       --fud-highlight:rgba(255,255,255,.7);
     }
 
@@ -89,6 +88,13 @@ function ensureBaseStyles() {
     .fud-octopath .blade:hover{
       margin-left:-6px; filter:brightness(1.04);
       box-shadow:0 6px 0 var(--fud-shadow), 0 0 0 1px var(--fud-highlight) inset;
+    }
+    .fud-octopath .blade.is-kb-focused{
+      margin-left:-6px; filter:brightness(1.06);
+      box-shadow:0 6px 0 var(--fud-shadow), 0 0 0 1px var(--fud-highlight) inset;
+    }
+    .fud-octopath .blade.is-kb-focused::before{
+      filter:brightness(1.18);
     }
     .fud-octopath .blade.fud-disabled{
       cursor:not-allowed; filter:grayscale(0.6) brightness(0.85); opacity:0.55;
@@ -156,7 +162,7 @@ function ensureBaseStyles() {
     }
     .fud-octopath .budget-label .director-tag{
       margin-left:auto; padding-left:8px;
-      color:#5a6a85;
+      color:#7a6a55;
       opacity:.85; font-weight:900; letter-spacing:.5px; font-size:10px;
     }
   `;
@@ -289,6 +295,27 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
 
   const items = [];
   let startClock = performance.now();
+  let kbIndex = 0;
+  let kbActive = false; // true only while keyboard is driving; mouse hover clears it
+
+  function setKbFocus(idx) {
+    if (!items.length) return;
+    kbActive = true;
+    kbIndex = ((idx % items.length) + items.length) % items.length;
+    for (let i = 0; i < items.length; i++) {
+      items[i].btn.classList.toggle("is-kb-focused", i === kbIndex);
+    }
+    if (isEnabledLabel(items[kbIndex]?.label)) playUiHoverSfx();
+  }
+
+  // Clear keyboard mode the moment the pointer enters any blade so the two
+  // visual states never coexist.
+  root.addEventListener("pointerenter", (e) => {
+    if (kbActive && e.target?.closest?.(".blade")) {
+      kbActive = false;
+      for (const it of items) it.btn.classList.remove("is-kb-focused");
+    }
+  }, true);
 
   function buildPage() {
     for (const it of items.splice(0)) it.wrap.remove();
@@ -305,6 +332,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
     }
     title.textContent = PAGES[pageIndex].name;
     startClock = performance.now();
+    kbIndex = 0; // reset focus to top of new page (no SFX — tab SFX plays separately)
   }
 
   function computeSlots() {
@@ -368,6 +396,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
       it.wrap.style.transform = `translate(0,-50%) rotate(${angleDeg}deg) scale(${scale})`;
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
       it.btn.style.opacity = (isEnabled ? animOpacity : animOpacity * 0.22).toFixed(3);
+      it.btn.classList.toggle("is-kb-focused", kbActive && i === kbIndex && isEnabled);
       if (!isEnabled) {
         // Greyscale + no-pointer apply once (idempotent assignments
         // are cheap; setting an unchanged style is a no-op in the
@@ -455,16 +484,48 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   }
 
   function flipPage(dir) {
+    if (PAGES.length <= 1) return;
     pageIndex = (pageIndex + dir + PAGES.length) % PAGES.length;
     buildPage();
     render();
+    playUiTabSwitchSfx();
   }
   leftA.addEventListener("click", (e) => { e.stopPropagation(); flipPage(-1); });
   rightA.addEventListener("click", (e) => { e.stopPropagation(); flipPage(+1); });
 
   const keyListener = (e) => {
-    if (e.key === "ArrowLeft") flipPage(-1);
-    if (e.key === "ArrowRight") flipPage(+1);
+    // Left/Right: switch tab (Actions ↔ System) with dedicated tab SFX
+    if (e.key === "ArrowLeft")  { e.preventDefault(); flipPage(-1); return; }
+    if (e.key === "ArrowRight") { e.preventDefault(); flipPage(+1); return; }
+    // Up/Down: cycle through the current tab's commands
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (items.length) setKbFocus(kbIndex - 1);
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (items.length) setKbFocus(kbIndex + 1);
+      return;
+    }
+    // Z / Enter: activate the focused command
+    if (e.key === "z" || e.key === "Z" || e.key === "Enter") {
+      const it = items[kbIndex];
+      if (!it || !isEnabledLabel(it.label)) return;
+      e.preventDefault();
+      if (it.label === "Cancel") {
+        try { onPick?.(null); } catch (err) { warn("Turn UI kb: onPick(null) threw", err); }
+        return;
+      }
+      if (NON_ACTION_COMMANDS.has(it.label)) {
+        if (it.label === "Passive") {
+          try { onPassive?.(); } catch (err) { warn("Turn UI kb: onPassive threw", err); }
+        }
+        return;
+      }
+      try { onPick?.(it.label); } catch (err) { warn("Turn UI kb: onPick threw", err); }
+      return;
+    }
   };
   window.addEventListener("keydown", keyListener, true);
 

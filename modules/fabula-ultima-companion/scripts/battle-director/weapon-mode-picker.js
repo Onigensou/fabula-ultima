@@ -11,6 +11,7 @@
 //     (null = cancelled / closed without choice)
 
 import { log, warn } from "./logger.js";
+import { playUiHoverSfx } from "./director-ui-sfx.js";
 
 const CSS_ID  = "fud-weapon-mode-picker-style";
 const ROOT_ID = "fud-weapon-mode-picker-root";
@@ -46,7 +47,7 @@ function ensureStyles() {
       width: 360px;
       max-width: 92vw;
       padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       border-radius: 14px;
       background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
       box-shadow:
@@ -60,7 +61,7 @@ function ensureStyles() {
       font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       text-align: center;
       padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #5a6a85);
+      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
       margin-bottom: 10px;
     }
     .fud-wmp-card .fud-wmp-options {
@@ -71,9 +72,9 @@ function ensureStyles() {
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
       padding: 6px 4px 3px;
-      border-bottom: 1px solid rgba(90, 106, 133, 0.4);
+      border-bottom: 1px solid rgba(122, 106, 85, 0.4);
       margin-bottom: 1px;
     }
     .fud-wmp-card .fud-wmp-section-label:first-child {
@@ -89,23 +90,29 @@ function ensureStyles() {
       margin-left: 6px;
     }
     .fud-wmp-card .fud-wmp-option {
-      display: grid; grid-template-columns: 40px 1fr auto;
+      display: grid; grid-template-columns: 40px 1fr;
       gap: 10px;
       align-items: center;
       padding: 8px 12px;
       border-radius: 9px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
-      background: linear-gradient(180deg, var(--fud-gold-1, #a8c4d8), var(--fud-gold-2, #7a9bb6));
-      color: #221b14;
+      border: 2px solid rgba(90, 62, 28, 0.5);
+      background: linear-gradient(180deg, #fffef8, #f5eedd);
+      color: #2d1f0d;
       box-shadow:
-        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
-        0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
+        0 2px 0 rgba(41, 33, 24, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
       cursor: pointer;
       user-select: none;
       transition: transform 100ms ease, filter 100ms ease, box-shadow 100ms ease;
     }
-    .fud-wmp-card .fud-wmp-option:hover  { filter: brightness(1.05); transform: translateY(-1px); }
+    .fud-wmp-card .fud-wmp-option:hover  { filter: brightness(1.03); transform: translateY(-1px); }
     .fud-wmp-card .fud-wmp-option:active { transform: translateY(0); }
+    .fud-wmp-card .fud-wmp-option.is-kb-focused {
+      background: linear-gradient(180deg, #fef5dc, #ebd9a6);
+      border-color: rgba(90, 62, 28, 0.75);
+      box-shadow: 0 3px 0 rgba(41, 33, 24, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
+      transform: translateY(-1px);
+    }
     .fud-wmp-card .fud-wmp-option .icon {
       display: flex; align-items: center; justify-content: center;
       width: 36px; height: 36px;
@@ -137,16 +144,16 @@ function ensureStyles() {
     .fud-wmp-card .fud-wmp-option .secondary .dot { margin: 0 5px; opacity: 0.6; }
     .fud-wmp-card .fud-wmp-option .kbd {
       font-size: 10px; font-weight: 800; padding: 2px 6px;
-      border: 1px solid var(--fud-stroke, #5a6a85);
+      border: 1px solid var(--fud-stroke, #7a6a55);
       border-radius: 4px;
       background: rgba(255, 255, 255, 0.4);
-      color: var(--fud-stroke, #5a6a85);
+      color: var(--fud-stroke, #7a6a55);
     }
     .fud-wmp-card .fud-wmp-cancel {
       margin-top: 8px;
       padding: 6px 10px;
       border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #5a6a85);
+      border: 2px solid var(--fud-stroke, #7a6a55);
       background: linear-gradient(180deg, #e5d6c5, #c9b294);
       color: var(--fud-ink, #3a3228);
       font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
@@ -155,7 +162,7 @@ function ensureStyles() {
       text-align: center;
       user-select: none;
       box-shadow:
-        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
+        0 3px 0 rgba(41, 33, 24, 0.55),
         0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
     }
     .fud-wmp-card .fud-wmp-cancel:hover { filter: brightness(1.05); }
@@ -297,12 +304,8 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     });
   }
 
-  // Number keyboard shortcuts in visual order across sections, then
-  // collapse to a flat `opts` list for the key listener below.
-  let nextKey = 1;
   const sectionsHTML = sections.map((section) => {
     const itemsHTML = section.items.map((o) => {
-      o.key = String(nextKey++);
       opts.push(o);
       return `
         <div class="fud-wmp-option" data-fud-mode="${o.mode}" role="button" tabindex="0">
@@ -311,7 +314,6 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
             <div class="primary">${o.primary}</div>
             <div class="secondary">${o.secondary}</div>
           </div>
-          <div class="kbd">${o.key}</div>
         </div>
       `;
     }).join("");
@@ -341,6 +343,27 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     let resolved = false;
     let keyListener = null;
     let despawnTid = null;
+    let kbIndex = 0;
+    let kbActive = false;
+
+    const getOptionEls = () => Array.from(root.querySelectorAll(".fud-wmp-option"));
+
+    function setKbFocus(idx) {
+      const els = getOptionEls();
+      if (!els.length) return;
+      kbActive = true;
+      kbIndex = ((idx % els.length) + els.length) % els.length;
+      els.forEach((el, i) => el.classList.toggle("is-kb-focused", i === kbIndex));
+      playUiHoverSfx();
+    }
+
+    // Mouse entering any option clears kb mode so both indicators never coexist.
+    root.addEventListener("pointerenter", (e) => {
+      if (kbActive && e.target?.closest?.(".fud-wmp-option")) {
+        kbActive = false;
+        getOptionEls().forEach((el) => el.classList.remove("is-kb-focused"));
+      }
+    }, true);
 
     const finish = (mode) => {
       if (resolved) return;
@@ -371,10 +394,19 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
 
     keyListener = (ev) => {
       if (resolved) return;
-      if (ev.key === "Escape") { ev.preventDefault(); finish("cancel"); return; }
-      // Number-key shortcuts: 1=main, 2=two-weapon, 3=off
-      const opt = opts.find((o) => o.key === ev.key);
-      if (opt) { ev.preventDefault(); finish(opt.mode); }
+      if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish("cancel"); return; }
+      if (ev.key === "ArrowUp") {
+        ev.preventDefault(); setKbFocus(kbIndex - 1); return;
+      }
+      if (ev.key === "ArrowDown") {
+        ev.preventDefault(); setKbFocus(kbIndex + 1); return;
+      }
+      if (ev.key === "Enter" || ev.key === "z" || ev.key === "Z") {
+        ev.preventDefault();
+        const mode = opts[kbIndex]?.mode;
+        if (mode) finish(mode);
+        return;
+      }
     };
     window.addEventListener("keydown", keyListener, true);
 
