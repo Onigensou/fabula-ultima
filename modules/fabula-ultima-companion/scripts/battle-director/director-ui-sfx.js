@@ -23,8 +23,9 @@ import { playSfx } from "./director-sfx.js";
 const FORGE_SOUND_BASE =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
-export const UI_HOVER_SFX_URL = FORGE_SOUND_BASE + "BattleCursor_4.wav";
-export const UI_CLICK_SFX_URL = FORGE_SOUND_BASE + "switch_mode.wav";
+export const UI_HOVER_SFX_URL      = FORGE_SOUND_BASE + "BattleCursor_4.wav";
+export const UI_CLICK_SFX_URL      = FORGE_SOUND_BASE + "switch_mode.wav";
+export const UI_TAB_SWITCH_SFX_URL = FORGE_SOUND_BASE + "BattleCursor_1.wav";
 
 const HOVER_VOL = 0.5;
 const CLICK_VOL = 0.6;
@@ -108,6 +109,9 @@ export function playUiHoverSfx() {
 }
 export function playUiClickSfx() {
   try { playSfx(UI_CLICK_SFX_URL, CLICK_VOL); } catch {}
+}
+export function playUiTabSwitchSfx() {
+  try { playSfx(UI_TAB_SWITCH_SFX_URL, HOVER_VOL); } catch {}
 }
 
 // Install the delegated listeners once, on every client (players interact
