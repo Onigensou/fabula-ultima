@@ -194,8 +194,24 @@ export function getRuntimeActionView(source, ctx = {}) {
         : isCheck ? "opposed"
         : "none");
 
+  // Skill-shaped consumables (Item action): `_Item Template` carries `effect_table`
+  // but NOT the `on_activate_effect_ref` fire-point column (_Skill Template only).
+  // Reuse the existing effect_table: synthesize the activation fire-point to the
+  // table's ENTRY row (key "0", else the first row) so resolveAction fires the
+  // consumable's effect on use — no template surgery, no per-item ref column.
+  // An explicit on_activate_effect_ref (if the column is ever added) still wins.
+  let fire_points = base.fire_points;
+  if (itemType === "consumable" && !fire_points?.on_activate_effect_ref) {
+    const et = p.effect_table ?? {};
+    const entry = et["0"] ?? Object.values(et)[0];
+    if (entry?.effect_label) {
+      fire_points = { ...fire_points, on_activate_effect_ref: entry.effect_label };
+    }
+  }
+
   return {
     ...base,
+    fire_points,
     source,
     kind,
     check_mode,

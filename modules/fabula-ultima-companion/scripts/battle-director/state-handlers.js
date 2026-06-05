@@ -3701,11 +3701,19 @@ const Resolve = {
               const r = await consumeOne(targetActor, liveItem);
               if (r?.ok) {
                 log(`Item used: ${cand.name} by ${ar.attacker?.name ?? "?"} (deleted=${!!r.deleted}, after=${r.after})`);
-                // Phase B.1 D.5 closure — fire the item's linked
-                // active skill(s) via the director-native skill pipeline.
-                // The item was the cost, so the skill fires with no MP
-                // debit (skipCost=true). Targets default to the user
-                // (self) for B.1; cross-actor item use lands in B.2.
+                // Skill-shaped consumable (items-as-skill-shaped B.2): fire the
+                // consumable's OWN effect_table through the unified resolveAction
+                // pipeline, against the action's target(s) (ar.targets — self or
+                // the card-picked creature). The item was the cost (consumed
+                // above), so skipCost. resolveAction reads the synthesized
+                // on_activate fire-point (getRuntimeActionView) for consumables.
+                const effTable = liveItem.system?.props?.effect_table ?? null;
+                const hasEffect = effTable && Object.keys(effTable).length > 0;
+                if (hasEffect) {
+                  await resolveAction(director, ar, { actionSkill: liveItem, skipCost: true });
+                }
+                // Legacy: any explicitly-linked active skills (no consumable
+                // carries these today; kept for backward compat). Fires on self.
                 for (const skillUuid of (cand.skillUuids ?? [])) {
                   try {
                     await fireLinkedSkillFromItem({

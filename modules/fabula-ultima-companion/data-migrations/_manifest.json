@@ -379,6 +379,10 @@
     {
       "key": "2026-06-06-burn-ae-duration-clear",
       "path": "data-migrations/2026-06-06-burn-ae-duration-clear.js"
+    },
+    {
+      "key": "2026-06-06-consumable-skillshape-author",
+      "path": "data-migrations/2026-06-06-consumable-skillshape-author.js"
     }
   ]
 }
