@@ -155,9 +155,13 @@ function readFirePointsFromSkill(skill) {
 // `defense_target_type`, `skill_target`, `picker`, `cost`.
 //
 // `kind` classification (from the Item's props):
-//   - item_type === "weapon"            → "Attack"
-//   - skill_type === "spell"            → "Spell"
 //   - action_command set (Common items) → that command's action kind
+//   - item_type === "weapon"            → "Attack"
+//   - skill_type === "attack"           → "Attack" (NPC basic attacks,
+//        attack-type skills, virtual/Twin-Shield passes — these are weaponless
+//        but ARE attacks; classifying them as "Attack" is what lets RESOLVE
+//        apply their computed damage without re-deriving from a weapon item)
+//   - skill_type === "spell"            → "Spell"
 //   - otherwise                         → "Skill"
 //
 // `check_mode` precedence: an explicit `props.check_mode` wins; else derived —
@@ -179,6 +183,7 @@ export function getRuntimeActionView(source, ctx = {}) {
   let kind;
   if (actionCommand && COMMAND_KIND[actionCommand]) kind = COMMAND_KIND[actionCommand];
   else if (itemType === "weapon") kind = "Attack";
+  else if (skillType === "attack") kind = "Attack";
   else if (skillType === "spell") kind = "Spell";
   else kind = "Skill";
 
