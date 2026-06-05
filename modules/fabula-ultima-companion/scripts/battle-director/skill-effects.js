@@ -2560,8 +2560,8 @@ async function applyOpenActionMenuEffect(row, ctx) {
     const resolver = buildSkillResolver({
       actor: reactor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
     });
-    const checkBonus  = Math.max(0, evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0);
-    const damageBonus = Math.max(0, evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0);
+    const checkBonus  = evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0;
+    const damageBonus = evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0;
     const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
     freeActionQueue.enqueue({
       reactorActorId:   reactor.id,

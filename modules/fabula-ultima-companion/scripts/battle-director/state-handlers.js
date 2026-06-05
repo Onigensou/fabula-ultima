@@ -597,6 +597,25 @@ async function resolveAction(director, ar, opts = {}) {
           },
         });
       }
+      // One-shot post-attack trigger — fires after all per-target
+      // creature_deals_damage fires. Carries allTargetsHit so passives
+      // like Blazing Sweep's "repeat if all hit" can gate on a single
+      // clean event without per-target multi-fire.
+      queuePostResolveTrigger(director, {
+        casterActor,
+        trigger: "creature_completes_attack",
+        payload: {
+          targets: allTargetUuids,
+          targetTokenUuids: allTargetUuids,
+          hitTargets: struckTokenUuids,
+          hitTargetTokenUuids: struckTokenUuids,
+          allTargetsHit: struckTokenUuids.length >= allTargetUuids.length && allTargetUuids.length > 0,
+          sourceActorUuid: ar.attackerActorRef,
+          sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+          actionIntent: ar.actionIntent,
+          weaponUuid: ar.weapon?.uuid ?? null,
+        },
+      });
     }
   } else if (ar.hasDamage && hits.some((r) => r.hit)) {
     queuePostResolveTrigger(director, {
@@ -3725,6 +3744,22 @@ const Resolve = {
               },
             });
           }
+          // One-shot post-attack trigger — mirrors the unified path above.
+          queuePostResolveTrigger(director, {
+            casterActor: attackerActor,
+            trigger: "creature_completes_attack",
+            payload: {
+              targets: allTargetUuids,
+              targetTokenUuids: allTargetUuids,
+              hitTargets: hitTokenUuids,
+              hitTargetTokenUuids: hitTokenUuids,
+              allTargetsHit: hitTokenUuids.length >= allTargetUuids.length && allTargetUuids.length > 0,
+              sourceActorUuid: ar.attackerActorRef,
+              sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+              actionIntent: ar.actionIntent,
+              weaponUuid: ar.weapon?.uuid ?? null,
+            },
+          });
         }
       }
       }  // end legacy Attack fallback (else of the unified resolveAction path)

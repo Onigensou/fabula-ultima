@@ -359,6 +359,14 @@
     {
       "key": "2026-06-05-sharpshooter-stub-desc-clean",
       "path": "data-migrations/2026-06-05-sharpshooter-stub-desc-clean.js"
+    },
+    {
+      "key": "2026-06-05-template-options-completes-attack",
+      "path": "data-migrations/2026-06-05-template-options-completes-attack.js"
+    },
+    {
+      "key": "2026-06-05-template-options-open-action-menu",
+      "path": "data-migrations/2026-06-05-template-options-open-action-menu.js"
     }
   ]
 }

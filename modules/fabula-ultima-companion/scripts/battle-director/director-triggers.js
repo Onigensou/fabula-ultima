@@ -44,6 +44,11 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // After a successful spell resolve (Spell type checks). Spiritual
   // Magic + Heart-of-Light style passives chain off this.
   "creature_completes_spell",
+  // Post-resolve attack hook — fires ONCE per Attack action after all
+  // per-target creature_deals_damage fires. Carries allTargetsHit so
+  // "if all targets hit, do X" passives (e.g. Centauros Blazing Sweep
+  // repeat) can gate on a single clean event rather than per-target fires.
+  "creature_completes_attack",
   // Pre-resolve attack damage hook — fires per-target AFTER COMPUTE has
   // locked rawDamage + affinity but BEFORE the action card commits the
   // damage. Reactions matching this trigger surface as pre-resolve
@@ -143,6 +148,7 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_will_deal_damage":  "pre-resolve",
   // Post-resolve — token-anchored menu, fires after action commits.
   "creature_deals_damage":      "post-resolve",
+  "creature_completes_attack":  "post-resolve",
   "creature_takes_damage":      "post-resolve",
   "creature_guards":            "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.

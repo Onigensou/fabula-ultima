@@ -1,8 +1,8 @@
 // Re-export sentinel — bumped whenever a new identifier ships so
 // reload-aware callers can verify they have a fresh enough module.
-// Currently 2 (Phase 1 of Cheap Shot integration added SINGLE_TARGET_ATTACK
-// and TARGET_STATUS_COUNT). Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 2;
+// Currently 3 (added pow() math function, ALL_TARGETS_HIT identifier).
+// Not load-bearing; diagnostic only.
+export const SKILL_FORMULAS_SCHEMA = 3;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -212,6 +212,7 @@ const FUNCTIONS = {
   abs:   (n) => Math.abs(n),
   min:   (...n) => Math.min(...n),
   max:   (...n) => Math.max(...n),
+  pow:   (base, exp) => Math.pow(base, exp),
   // chance(N): probability gate, returns 1 with N% likelihood else 0. Lets a
   // condition_formula express "N% chance to fire" (e.g. weapon on-hit
   // "25% chance to inflict Poison" → condition_formula "chance(25)"). Rolls
@@ -413,6 +414,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const h = payload?.hitTargets;
         return Array.isArray(h) ? h.length : 0;
       }
+      // 1 if every targeted creature was hit this action, else 0.
+      // Populated by creature_completes_attack payload (allTargetsHit field).
+      // Returns 0 on creature_deals_damage (per-target) — use this identifier
+      // only in creature_completes_attack rows.
+      case "ALL_TARGETS_HIT": return payload?.allTargetsHit ? 1 : 0;
       // Roll-derived identifiers — populated whenever the action's roll
       // is threaded onto `payload` (Skill resolveSkillAction does this
       // via makeChainContext.payload and the firePostDamageEffect
