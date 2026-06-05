@@ -375,6 +375,10 @@
     {
       "key": "2026-06-06-dedup-bd-duplicate-masters",
       "path": "data-migrations/2026-06-06-dedup-bd-duplicate-masters.js"
+    },
+    {
+      "key": "2026-06-06-burn-ae-duration-clear",
+      "path": "data-migrations/2026-06-06-burn-ae-duration-clear.js"
     }
   ]
 }
