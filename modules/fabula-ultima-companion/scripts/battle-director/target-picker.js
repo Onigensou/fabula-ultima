@@ -142,6 +142,11 @@ function ensureStyles() {
     }
     .fud-target-banner .fud-target-btn:not(.is-disabled):hover { filter:brightness(1.05); transform:translateY(-1px); }
     .fud-target-banner .fud-target-btn:not(.is-disabled):active { transform:translateY(0); }
+    .fud-target-banner .fud-target-btn.is-kb-focused:not(.is-disabled) {
+      outline:2px solid rgba(255,255,255,.8);
+      outline-offset:2px;
+      filter:brightness(1.12);
+    }
   `;
   document.head.appendChild(css);
 }
@@ -302,6 +307,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     let rouletteTimer = null;
     let randomPicked  = [];
 
+    // Banner-focus state — declared early so updateBanner (called before
+    // the keyboard section) can safely read these without TDZ errors.
+    let bannerFocused = false;
+    let bannerBtnIdx  = 0;
+
     // Pre-compute the random draw immediately — the result is sealed before
     // the animation plays, so the roulette is purely theatrical.
     if (mode === "random") {
@@ -346,8 +356,6 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function updateBanner() {
       if (mode === "random") {
         const label = titleText ?? "Random target";
-        // Always show "Randomizing…" — the draw is sealed but never revealed
-        // in the picker itself. Confirm resolves it; Cancel aborts.
         labelEl.innerHTML = `${label}<span class="selected-count">Randomizing…</span>`;
         confirmBtn.classList.remove("is-disabled");
         return;
@@ -356,11 +364,19 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       const label = titleText ?? `Pick ${verb ? verb + " " : ""}${count} target${count === 1 ? "" : "s"}`;
       const countText = `${selected.size}/${count} selected`;
       labelEl.innerHTML = `${label}<span class="selected-count">${countText}</span>`;
-      // Confirm is greyed out until the selection is valid — no hidden state.
       if (isValidSelection()) {
         confirmBtn.classList.remove("is-disabled");
       } else {
         confirmBtn.classList.add("is-disabled");
+      }
+      // Auto-advance keyboard focus to the banner when the player has filled
+      // all target slots (exact: must equal count; up_to: at max capacity).
+      // Auto-retreat when they drop below that threshold (e.g. a deselect).
+      const atMax = selected.size >= count;
+      if (atMax && !bannerFocused) {
+        enterBannerMode();
+      } else if (!atMax && bannerFocused) {
+        exitBannerMode();
       }
     }
     updateBanner();
@@ -521,15 +537,16 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       updateBanner();
     }
 
-    // Keyboard target cycling — arrow keys move focus, Space toggles
-    // selection, Enter confirms. Not active in random/self/all modes
-    // since those don't involve manual picking.
+    // Keyboard target cycling — arrow keys move focus, Z/Space toggles
+    // selection, Enter confirms. X cancels at any point.
+    // When the selection reaches its maximum, focus auto-shifts to the
+    // banner buttons so the player can confirm or cancel with the keyboard.
     const eligibleUuids = eligible.map((e) => e.tokenUuid).filter(Boolean);
     let kbFocusIdx = 0;
     let kbHoveredUuid = null;
+    // bannerFocused / bannerBtnIdx declared earlier (before updateBanner).
 
     function setKbHover(idx) {
-      // Clear current kb hover ring
       if (kbHoveredUuid) setHover(kbHoveredUuid, false);
       kbFocusIdx = ((idx % eligibleUuids.length) + eligibleUuids.length) % eligibleUuids.length;
       kbHoveredUuid = eligibleUuids[kbFocusIdx] ?? null;
@@ -539,18 +556,81 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       }
     }
 
+    function getBannerBtns() {
+      return Array.from(banner.querySelectorAll(".fud-target-btn:not(.is-disabled)"));
+    }
+
+    function setBannerBtnFocus(idx) {
+      const btns = getBannerBtns();
+      if (!btns.length) return;
+      const prev = bannerBtnIdx;
+      bannerBtnIdx = ((idx % btns.length) + btns.length) % btns.length;
+      btns.forEach((b, i) => b.classList.toggle("is-kb-focused", i === bannerBtnIdx));
+      if (bannerBtnIdx !== prev) playUiHoverSfx();
+    }
+
+    function enterBannerMode() {
+      if (bannerFocused) return;
+      bannerFocused = true;
+      // Suppress target ring hover while banner is focused.
+      if (kbHoveredUuid) { setHover(kbHoveredUuid, false); kbHoveredUuid = null; }
+      // Auto-land on the Confirm button.
+      const btns = getBannerBtns();
+      const confirmIdx = btns.findIndex((b) => b.dataset.fudTarget === "confirm");
+      bannerBtnIdx = -1; // force SFX on first setBannerBtnFocus call
+      setBannerBtnFocus(confirmIdx >= 0 ? confirmIdx : btns.length - 1);
+    }
+
+    function exitBannerMode() {
+      if (!bannerFocused) return;
+      bannerFocused = false;
+      getBannerBtns().forEach((b) => b.classList.remove("is-kb-focused"));
+      // Restore hover ring on the last kb-focused target.
+      if (eligibleUuids.length) {
+        kbHoveredUuid = eligibleUuids[kbFocusIdx] ?? null;
+        if (kbHoveredUuid) setHover(kbHoveredUuid, true);
+      }
+    }
+
     function onKey(e) {
-      if (e.key === "Escape") {
+      // X and Escape always cancel the whole operation.
+      if (e.key === "Escape" || e.key === "x" || e.key === "X") {
         e.preventDefault(); e.stopPropagation();
         finish({ ok: false, cancelled: true, tokenUuids: [] });
         return;
       }
+      if (mode === "random") {
+        if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); tryConfirm(); }
+        return;
+      }
+
+      // ── Banner mode ──────────────────────────────────────────────────
+      if (bannerFocused) {
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault(); e.stopPropagation();
+          setBannerBtnFocus(bannerBtnIdx - 1);
+          return;
+        }
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          e.preventDefault(); e.stopPropagation();
+          setBannerBtnFocus(bannerBtnIdx + 1);
+          return;
+        }
+        if (e.key === "Enter" || e.key === "z" || e.key === "Z" || e.key === " ") {
+          e.preventDefault(); e.stopPropagation();
+          const focused = getBannerBtns()[bannerBtnIdx];
+          if (focused) focused.click();
+          return;
+        }
+        return; // swallow all other keys in banner mode
+      }
+
+      // ── Target cycling mode ──────────────────────────────────────────
       if (e.key === "Enter") {
         e.preventDefault(); e.stopPropagation();
         tryConfirm();
         return;
       }
-      if (mode === "random") return; // no manual pick in random mode
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault(); e.stopPropagation();
         if (eligibleUuids.length) setKbHover(kbFocusIdx + 1);

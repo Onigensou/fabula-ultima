@@ -641,7 +641,7 @@ export async function pickSkill({
     keyListener = (ev) => {
       if (resolved) return;
       const rows = getRows();
-      if (ev.key === "Escape") { ev.preventDefault(); finish(null); return; }
+      if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish(null); return; }
       if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
         ev.preventDefault();
         setKbFocus(kbIndex + 1, rows);
@@ -652,7 +652,7 @@ export async function pickSkill({
         setKbFocus(kbIndex - 1, rows);
         return;
       }
-      if (ev.key === "Enter" || ev.key === " ") {
+      if (ev.key === "Enter" || ev.key === " " || ev.key === "z" || ev.key === "Z") {
         ev.preventDefault();
         const row = rows[kbIndex];
         if (!row || row.classList.contains("is-disabled")) return;
