@@ -3303,6 +3303,8 @@ const Confirm = {
             actionIntent: ar.actionIntent,
             targetTokenUuids: allTargetUuids,
             hitTargetTokenUuids: hitTargetUuids,
+            skillUuid: ar.skillUuid ?? null,
+            weaponUuid: ar.weapon?.uuid ?? null,
           };
 
           let cands;

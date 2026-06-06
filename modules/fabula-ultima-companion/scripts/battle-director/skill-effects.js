@@ -959,6 +959,21 @@ function weaponReactionInPlay(item, payload, casterActor) {
   return item?.system?.props?.isEquipped === true;
 }
 
+// Action-skill items (has skill_type) only fire their passive rows when they
+// are the current acting skill/weapon. This prevents e.g. Fiery Onslaught's
+// blaze_chain passive from firing during Blazing Sweep or any other action.
+// Gate uses skillUuid (Skill-kind actions) with weaponUuid as fallback
+// (Attack-kind actions where the weapon carries the UUID instead).
+// When payload has neither (lifecycle triggers like round_start), all pass.
+function skillActionPassiveApplies(item, payload) {
+  const props = item?.system?.props ?? {};
+  const skillType = String(props.skill_type ?? "").trim();
+  if (!skillType) return true;
+  const usedUuid = payload?.skillUuid ?? payload?.weaponUuid ?? null;
+  if (!usedUuid) return true;
+  return item.uuid === usedUuid;
+}
+
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
@@ -1002,6 +1017,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     if (!weaponReactionInPlay(item, payload, casterActor)) continue;
+    if (!skillActionPassiveApplies(item, payload)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
