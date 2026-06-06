@@ -1684,6 +1684,22 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     if (hasDamage) {
       tipLines.push(`<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>`);
       tipLines.push(affinityLineHTML(r.affinity, elemLabel));
+      // Target-specific damage modifiers (incoming reduction + crit
+      // bonus/multiplier) so the GM sees why this target's number differs
+      // from the headline. Source/amount shape matches the Accuracy /
+      // Damage panel breakdowns. Negative amounts (reductions) render with
+      // a minus sign.
+      const modParts = Array.isArray(r.damageModParts)
+        ? r.damageModParts.filter((p) => p && Number(p.amount) !== 0)
+        : [];
+      if (modParts.length) {
+        const modLines = modParts.map((p) => {
+          const amt = Number(p.amount);
+          const sign = amt > 0 ? "+" : "−";
+          return `<div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(p.source)}</span><span>${sign}${Math.abs(amt)}</span></div>`;
+        }).join("");
+        tipLines.push(`<p style="margin:4px 0 0;"><b>Damage Mods:</b></p>${modLines}`);
+      }
     }
     if (roll?.isFumble) {
       tipLines.push(`<p><b>Hit Check:</b> Fumble — auto-miss</p>`);

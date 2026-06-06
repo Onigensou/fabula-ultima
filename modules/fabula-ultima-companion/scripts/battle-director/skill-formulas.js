@@ -919,3 +919,254 @@ function bondStrengthTowardSubject(actor, payload) {
   }
   return 0;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Actor-status modifier layer
+// ════════════════════════════════════════════════════════════════════
+//
+// The actor sheet derives a family of "status modifier" props (accuracy,
+// outgoing damage, incoming reduction, crit) that the BD resolver
+// historically DROPPED — it computed an attack from weapon + attribute +
+// defense + affinity only. This section is the single source of truth that
+// BOTH Attack COMPUTE and Skill/Spell COMPUTE consume, so the two paths
+// can't diverge.
+//
+// KEY-NAME CANON: the prop key names mirror apply-damage-core.js exactly
+// (that file documents the full sheet mapping). Keep the two in sync.
+//
+// CRITICAL — do NOT read `skill_accuracy` / `skill_attack_damage` here.
+// The CSB sheet already folds them into `weapon1_mod` / `weapon1_damage`
+//   weapon1_mod    = weapon1_base_mod    + skill_accuracy
+//   weapon1_damage = weapon1_base_damage + skill_attack_damage
+// which the snapshot surfaces as `weapon.checkBonus` / `weapon.damageBonus`.
+// Re-adding them would double-count. Only the *_mod_* families below are
+// unaccounted-for by the snapshot.
+//
+// Every resolver returns a `{ source, amount }[]` parts list (same shape as
+// buildDamageBonusParts) so each contribution is traceable in the action
+// card Check / Damage tooltips.
+
+const _mnum = (v) => {
+  if (v === null || v === undefined) return 0;
+  const n = Number(String(v).replace(/%/g, "").trim());
+  return Number.isFinite(n) ? n : 0;
+};
+
+const _capWord = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : s);
+
+// "Melee" | "Ranged" | "range" → "melee" | "ranged" | null
+function normalizeModRange(range) {
+  const s = String(range ?? "").toLowerCase().trim();
+  if (s === "melee") return "melee";
+  if (s === "ranged" || s === "range") return "ranged";
+  return null;
+}
+
+// ── Per-AE attribution ─────────────────────────────────────────────────
+// The actor sheet derives each modifier prop (e.g. attack_accuracy_mod_ranged)
+// as the SUM of every AE that writes to it, so the prop alone can't tell us
+// WHICH skill contributed. To surface the source name in the action card
+// ("Ranged Weapon Mastery +1" instead of "Accuracy (Ranged) +1") we walk the
+// actor's active effects and attribute the derived total to the AE(s) writing
+// that key. The derived prop stays authoritative — returned parts always sum
+// to it, so hit/damage math is unchanged; only the labels improve.
+const _numChangeRe  = /^-?\d+(?:\.\d+)?$/;
+const _gateChangeRe = /^ae\w+When\s*\(\s*["'][^"']*["']\s*,\s*["']?(-?\d+(?:\.\d+)?)["']?\s*\)$/i;
+
+function _activeEffectsOf(actor) {
+  try {
+    if (actor?.appliedEffects) return Array.from(actor.appliedEffects);
+    if (actor?.allApplicableEffects) return Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled);
+    if (actor?.effects?.contents) return actor.effects.contents;
+  } catch (_e) { /* fall through */ }
+  return [];
+}
+
+// Numeric value of a change, or null when unparseable (e.g. a CSB ref
+// formula like "${level}$" — common on transfer passives such as RWM).
+function _changeAmount(raw) {
+  const s = String(raw ?? "").trim();
+  if (_numChangeRe.test(s)) return Number(s);
+  const g = s.match(_gateChangeRe);
+  if (g) return Number(g[1]) || 0;
+  return null;
+}
+
+// Attribute a derived modifier total to the AE(s) that set `key`. Returns
+// `{ source, amount }[]` summing to `total`. `label` is the generic fallback
+// used when no AE can be matched (base-prop value) or to absorb a parsing
+// remainder. `sign` multiplies the displayed amount (-1 for reductions).
+export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
+  const T = Number(total) || 0;
+  if (T === 0) return [];
+  const mk = (src, amt) => ({ source: src, amount: amt * sign });
+  if (!actor) return [mk(label, T)];
+
+  const contribs = [];
+  for (const ae of _activeEffectsOf(actor)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key === key) contribs.push({ ae, change: ch });
+    }
+  }
+  if (contribs.length === 0) return [mk(label, T)];
+  // Single source — attribute the whole derived total to it. Handles the
+  // common passive case (one skill → one key) including unparseable CSB
+  // formula values like RWM's "${level}$".
+  if (contribs.length === 1) return [mk(contribs[0].ae.name || label, T)];
+
+  // Multiple sources — parse what we can, reconcile the remainder.
+  const parts = [];
+  let parsedSum = 0;
+  const unparsed = [];
+  for (const c of contribs) {
+    const amt = _changeAmount(c.change.value);
+    if (amt === null) { unparsed.push(c); continue; }
+    if (amt !== 0) { parts.push(mk(c.ae.name || label, amt)); parsedSum += amt; }
+  }
+  const remainder = T - parsedSum;
+  if (remainder !== 0) {
+    // Exactly one unparsed contributor → it owns the remainder by name.
+    if (unparsed.length === 1) parts.push(mk(unparsed[0].ae.name || label, remainder));
+    else parts.push(mk(label, remainder));
+  }
+  return parts;
+}
+
+// ── Accuracy (added to the attack/spell Check total) ───────────────────
+// `kind`: "melee" | "ranged" | "magic". `check_mod_all` applies to EVERY
+// check — and an Attack is a Check — so it is included for attacks too
+// (confirmed by design 2026-06-07). `skill_accuracy` is intentionally
+// absent (already in weapon.checkBonus, see header). Pass `actor` to get
+// per-skill source names; `props` alone falls back to the generic label.
+export function resolveAccuracyParts({ actor = null, props = null, kind = null } = {}) {
+  const p = props ?? actor?.system?.props ?? null;
+  if (!p) return [];
+  const parts = [];
+  const add = (key, label) => {
+    const total = _mnum(p[key]);
+    if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
+  };
+  add("attack_accuracy_mod_all", "Accuracy (All)");
+  if (kind === "melee")  add("attack_accuracy_mod_melee",  "Accuracy (Melee)");
+  if (kind === "ranged") add("attack_accuracy_mod_ranged", "Accuracy (Ranged)");
+  if (kind === "magic")  add("attack_accuracy_mod_magic",  "Accuracy (Magic)");
+  add("check_mod_all", "Check Bonus");
+  return parts;
+}
+
+// ── Outgoing damage (added to rawDamage, pre-reduction/affinity) ───────
+// `kind`: "melee" | "ranged" | "spell". `elementType` lowercased element
+// (physical/fire/…). `weaponKey` lowercased weapon family (sword/bow/…) or
+// null (spells / NPC attacks). `skill_attack_damage` is intentionally
+// absent (already in weapon.damageBonus, see header). Pass `actor` for
+// per-skill source names.
+export function resolveOutgoingDamageParts({ actor = null, props = null, kind = null, elementType = null, weaponKey = null } = {}) {
+  const p = props ?? actor?.system?.props ?? null;
+  if (!p) return [];
+  const parts = [];
+  const add = (key, label) => {
+    const total = _mnum(p[key]);
+    if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
+  };
+  add("extra_damage_mod_all", "Damage (All)");
+  if (kind === "melee")  add("extra_damage_mod_melee",  "Damage (Melee)");
+  if (kind === "ranged") add("extra_damage_mod_ranged", "Damage (Ranged)");
+  if (kind === "spell")  add("extra_damage_mod_spell",  "Damage (Spell)");
+  const el = String(elementType ?? "").toLowerCase();
+  if (el && el !== "elementless") add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
+  const wk = String(weaponKey ?? "").toLowerCase();
+  if (wk && wk !== "none") add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
+  return parts;
+}
+
+// ── Crit detection ─────────────────────────────────────────────────────
+// Mirrors invokeButtons.js / checkRoller-core.js: a crit needs the two
+// dice within `critical_dice_range` of each other AND at least one die >=
+// `minimum_critical_dice`. Sheet defaults (minCrit 6, range 0) reproduce
+// the classic "matching dice both >= 6". A fumble is never a crit.
+export function resolveCritParams(props) {
+  const rangeRaw = _mnum(props?.critical_dice_range);
+  const critRange = rangeRaw > 0 ? rangeRaw : 0;
+  const minRaw = Number(props?.minimum_critical_dice);
+  const critMin = Number.isFinite(minRaw) && minRaw > 0 ? minRaw : 6;
+  return { critMin, critRange };
+}
+
+export function isCriticalHit({ rA, rB, props, isFumble = false } = {}) {
+  if (isFumble) return false;
+  const { critMin, critRange } = resolveCritParams(props);
+  return Math.abs(Number(rA) - Number(rB)) <= critRange &&
+    (Number(rA) >= critMin || Number(rB) >= critMin);
+}
+
+// ── Crit damage (attacker-side; applied to rawDamage on a crit) ────────
+// Mirrors apply-damage-core steps 5-6: + critical_damage_bonus then ×
+// critical_damage_multiplier. Returns { value, parts }. Pass `actor` to
+// attribute the flat bonus to the skill that granted it.
+export function applyCritDamage({ raw, props = null, actor = null } = {}) {
+  const p = props ?? actor?.system?.props ?? null;
+  const parts = [];
+  let v = _mnum(raw);
+  const flat = _mnum(p?.critical_damage_bonus);
+  if (flat !== 0) {
+    v += flat;
+    const named = attributeModParts({ actor, key: "critical_damage_bonus", total: flat, label: "Critical Bonus" });
+    parts.push(...named);
+  }
+  const multRaw = Number(p?.critical_damage_multiplier);
+  const mult = Number.isFinite(multRaw) && multRaw > 0 ? multRaw : 1;
+  if (mult !== 1) {
+    const before = v;
+    v = Math.ceil(v * mult);
+    parts.push({ source: `Critical ×${mult}`, amount: v - before });
+  } else {
+    v = Math.ceil(v);
+  }
+  return { value: v, parts };
+}
+
+// ── Incoming damage reduction (target-side; pre-affinity) ──────────────
+// Mirrors apply-damage-core steps 3-4: flat (damage_receiving_mod_*) then
+// % (damage_receiving_percentage_*). `range`: "melee" | "ranged". NOTE the
+// sheet's FLAT ranged key is `damage_receiving_mod_range` (not `_ranged`)
+// — quirk preserved from apply-damage-core. Returns { value, parts }
+// where parts carry NEGATIVE amounts (they subtract from damage).
+export function resolveIncomingReduction({ actor = null, props = null, elementType = null, range = null, raw = 0 } = {}) {
+  const parts = [];
+  const base = _mnum(raw);
+  const p = props ?? actor?.system?.props ?? null;
+  if (!p) return { value: base, parts };
+  const r = normalizeModRange(range);
+  const el = String(elementType ?? "").toLowerCase();
+
+  // Flat reduction — attribute each key to the AE(s) that set it (negative
+  // amounts, since reductions subtract). Falls back to the generic label.
+  let flat = 0;
+  const addFlat = (key, label) => {
+    const v = _mnum(p[key]);
+    if (v !== 0) { flat += v; parts.push(...attributeModParts({ actor, key, total: v, label, sign: -1 })); }
+  };
+  addFlat("damage_receiving_mod_all", "Reduction (All)");
+  if (r === "melee")  addFlat("damage_receiving_mod_melee", "Reduction (Melee)");
+  if (r === "ranged") addFlat("damage_receiving_mod_range", "Reduction (Ranged)");
+  if (el && el !== "elementless") addFlat(`damage_receiving_mod_${el}`, `Reduction (${_capWord(el)})`);
+
+  let v = base - flat;
+
+  // % reduction (sum the family, then 1 − pct/100).
+  let pct = 0;
+  pct += _mnum(p.damage_receiving_percentage_all);
+  if (r === "melee")  pct += _mnum(p.damage_receiving_percentage_melee);
+  if (r === "ranged") pct += _mnum(p.damage_receiving_percentage_range);
+  if (el && el !== "elementless") pct += _mnum(p[`damage_receiving_percentage_${el}`]);
+  if (pct !== 0) {
+    const mult = Math.max(0, 1 - pct / 100);
+    const before = Math.ceil(Math.max(0, v));
+    v = v * mult;
+    const after = Math.ceil(Math.max(0, v));
+    parts.push({ source: `Reduction (${pct}%)`, amount: after - before });
+  }
+
+  return { value: Math.max(0, Math.ceil(v)), parts };
+}

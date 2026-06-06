@@ -32,7 +32,9 @@ import { OptionPicker } from "./option-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
-import { evaluateFormula, buildSkillResolver, buildDamageBonusParts } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, buildDamageBonusParts,
+  resolveAccuracyParts, resolveOutgoingDamageParts, isCriticalHit, applyCritDamage,
+  resolveIncomingReduction } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
@@ -2380,13 +2382,23 @@ const Compute = {
       const hasDamage = isMpDamage || isElementalDamage;
       const damageResource = isMpDamage ? "mp" : "hp";
 
+      // ── Actor-status modifier layer (shared with Attack COMPUTE) ──────
+      // Spells route accuracy/damage through the "magic"/"spell" mod
+      // families; non-Spell skills only pick up the *_all + check_mod_all
+      // families (they're neither weapon-melee/ranged nor magic). MP-burn
+      // and heal-style skills bypass the damage/reduction families.
+      const casterProps = casterActor?.system?.props ?? null;
+      const isSpellForMods = String(ar.skillType ?? "").toLowerCase() === "spell";
+      const accKind = isSpellForMods ? "magic" : null;
+      const dmgKind = isSpellForMods ? "spell" : null;
+
       let roll = null;
       if (ar.isCheck) {
         const A1 = ar.rolledA1 || "INS";
         const A2 = ar.rolledA2 || "INS";
         const dA = attacker.attributes?.[A1] ?? 8;
         const dB = attacker.attributes?.[A2] ?? 8;
-        const checkBonus = ar.checkBonus | 0;
+        let checkBonus = ar.checkBonus | 0;
         // Per-source breakdown for the Check tooltip. Skills/Spells get
         // their bonus from `skill.system.props.check_bonus` only — no
         // free-action grant consumer here today (see
@@ -2399,6 +2411,10 @@ const Compute = {
             amount: checkBonus,
           });
         }
+        // Accuracy modifier layer — attack_accuracy_mod_{all,magic} +
+        // check_mod_all (an offensive Check is still a Check).
+        const accuracyParts = resolveAccuracyParts({ actor: casterActor, props: casterProps, kind: accKind });
+        for (const p of accuracyParts) { checkBonus += p.amount; checkBonusParts.push(p); }
         const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
         const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
         const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
@@ -2407,7 +2423,7 @@ const Compute = {
         const total = (rA + rB + checkBonus) | 0;
         const hr = Math.max(rA, rB);
         const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-        const isCrit = (rA === rB) && !isFumble && rA >= 6;
+        const isCrit = isCriticalHit({ rA, rB, props: casterProps, isFumble });
         roll = { A1, A2, dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr, isCrit, isFumble, opportunities: isCrit && !isFumble };
       }
 
@@ -2459,6 +2475,15 @@ const Compute = {
       // hit/miss row layout as damage spells, just with damage fields at
       // zero. This is what surfaces "which targets got the status" on the
       // action card.
+      // Outgoing damage modifier layer (elemental damage only — MP-burn /
+      // heal skills bypass it). Attacker-global → computed once; folded
+      // into each target's rawDamage in the loop. weaponKey is null
+      // (spells/skills carry no weapon family).
+      const outgoingDamageParts = (hasDamage && !isMpDamage)
+        ? resolveOutgoingDamageParts({ actor: casterActor, props: casterProps, kind: dmgKind, elementType: damageType, weaponKey: null })
+        : [];
+      const outgoingDamageTotal = outgoingDamageParts.reduce((s, p) => s + p.amount, 0);
+
       const perTargetResults = [];
       if (hasDamage || ar.isCheck) {
         const effectiveHr = roll?.isFumble ? 0 : (roll?.hr ?? 0);
@@ -2472,7 +2497,25 @@ const Compute = {
             else if (roll.isCrit) hit = true;
             else hit = roll.total >= defStat;
           }
-          const rawDamage = (hasDamage && hit) ? (effectiveHr + damageBonus) : 0;
+          let rawDamage = (hasDamage && hit) ? (effectiveHr + damageBonus + outgoingDamageTotal) : 0;
+          // Target reduction + crit damage (elemental HP damage only;
+          // MP-burn skips both). Order mirrors Attack COMPUTE /
+          // apply-damage-core: reduction (flat then %) → crit, pre-affinity.
+          let damageModParts = [];
+          if (hasDamage && hit && !isMpDamage) {
+            const liveTarget = await fromUuid(e.actorUuid).catch(() => null);
+            const red = resolveIncomingReduction({
+              actor: liveTarget,
+              elementType: damageType, range: null, raw: rawDamage,
+            });
+            rawDamage = red.value;
+            damageModParts = red.parts;
+            if (roll?.isCrit) {
+              const cd = applyCritDamage({ raw: rawDamage, actor: casterActor });
+              rawDamage = cd.value;
+              damageModParts = [...damageModParts, ...cd.parts];
+            }
+          }
           // MP damage skips elemental affinity (no sheet declares
           // "Vulnerable to MP damage"); everything resolves as NE.
           // Status-only Checks also use NE since there's no damage
@@ -2484,6 +2527,7 @@ const Compute = {
               : (e.affinities?.[damageType] ?? "NE");
           const damage = (hasDamage && hit) ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
           perTargetResults.push({
+            damageModParts,
             tokenUuid: e.tokenUuid,
             actorUuid: e.actorUuid,
             name: e.name,
@@ -2511,14 +2555,18 @@ const Compute = {
       const effectiveHr = roll?.isFumble ? 0 : (roll?.hr ?? 0);
       const damageObj = hasDamage
         ? {
-            base: damageBonus,
+            // base / finalIfHit include the actor-status outgoing damage
+            // mods so the headline agrees with the per-target rows. Target
+            // reduction + crit are per-target (perTargetResults[].damageModParts).
+            base: damageBonus + outgoingDamageTotal,
+            baseParts: outgoingDamageParts,
             element: damageType,
             // Mark the card so the Damage panel can label it correctly
             // ("MP" instead of an element name) and skip the +HR pill
             // logic appropriately for MP-burn skills.
             resource: damageResource,
             ignoreHR: !roll,
-            finalIfHit: effectiveHr + damageBonus,
+            finalIfHit: effectiveHr + damageBonus + outgoingDamageTotal,
           }
         : null;
 
@@ -2749,6 +2797,22 @@ const Compute = {
         freeActions.clear(attackerActorIdForGrant);
       }
 
+      // ── Actor-status modifier layer (accuracy family) ────────────────
+      // The actor's derived accuracy mods (attack_accuracy_mod_*,
+      // check_mod_all) are NOT folded into weapon.checkBonus by the sheet
+      // (only weapon1_base_mod + skill_accuracy are) — so the BD resolver
+      // adds them here. This is what makes Ranged Weapon Mastery
+      // (attack_accuracy_mod_ranged) and similar passives actually apply.
+      const liveAttacker = await fromUuid(attacker.actorUuid).catch(() => null);
+      const attackerProps = liveAttacker?.system?.props ?? null;
+      const attackRangeKind = /melee/i.test(weapon.range) ? "melee"
+        : /rang/i.test(weapon.range) ? "ranged" : null; // "melee"|"ranged"|null
+      const accuracyParts = resolveAccuracyParts({ actor: liveAttacker, props: attackerProps, kind: attackRangeKind });
+      for (const p of accuracyParts) {
+        checkBonus += p.amount;
+        checkBonusParts.push(p);
+      }
+
       // V12+: Roll#evaluate is always async; the legacy `{async: true}`
       // option emits a compat warning. Just await the roll directly.
       const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
@@ -2758,7 +2822,10 @@ const Compute = {
       const total = (rA + rB + checkBonus) | 0;
       const hr = Math.max(rA, rB);
       const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-      const isCrit = (rA === rB) && !isFumble && rA >= 6;
+      // Crit detection honors the actor's crit-mod props
+      // (minimum_critical_dice / critical_dice_range). Sheet defaults
+      // (6 / 0) reproduce the classic "matching dice both >= 6".
+      const isCrit = isCriticalHit({ rA, rB, props: attackerProps, isFumble });
       // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69).
       const ignoreHR = isTwoWeapon;
       const effectiveHr = ignoreHR ? 0 : hr;
@@ -2769,8 +2836,8 @@ const Compute = {
       //   weapon.damageType           → native, lowest priority
       // Soul Weapon writes the attack-scope key; future class traits
       // can write the all-scope key. Spell damage uses scope="spell"
-      // separately in the Skill COMPUTE branch.
-      const liveAttacker = await fromUuid(attacker.actorUuid).catch(() => null);
+      // separately in the Skill COMPUTE branch. `liveAttacker` /
+      // `attackerProps` were resolved above with the accuracy family.
       const overriddenElement = resolveDamageElementOverride({
         actor: liveAttacker,
         scope: "attack",
@@ -2778,24 +2845,59 @@ const Compute = {
       });
       const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
 
+      // ── Actor-status modifier layer (outgoing damage family) ─────────
+      // extra_damage_mod_{all,melee/ranged,<element>,<weaponKey>}. Like
+      // accuracy, these are NOT folded into weapon.damageBonus by the
+      // sheet (only weapon1_base_damage + skill_attack_damage are), so the
+      // BD resolver adds them. Attacker-global → computed once here; the
+      // per-target loop folds the total into rawDamage.
+      const weaponKey = String(weapon.weaponType ?? "").toLowerCase() || null;
+      const outgoingDamageParts = resolveOutgoingDamageParts({
+        actor: liveAttacker, props: attackerProps, kind: attackRangeKind, elementType: elementKey, weaponKey,
+      });
+      const outgoingDamageTotal = outgoingDamageParts.reduce((s, p) => s + p.amount, 0);
+
       const perTargetResults = [];
       for (const e of targetSnapshots) {
         let hit = false;
         let rawDamage = 0;
         let pierceMiss = false;
+        // Attacker-side base = HR + weapon damage bonus + outgoing mods.
+        const outBase = effectiveHr + damageBonus + outgoingDamageTotal;
         if (isFumble) {
           hit = false;
         } else if (isCrit) {
           hit = true;
-          rawDamage = effectiveHr + damageBonus;
+          rawDamage = outBase;
         } else if (total >= e.defense) {
           hit = true;
-          rawDamage = effectiveHr + damageBonus;
+          rawDamage = outBase;
         } else if (weapon.hasPierce) {
           // Pierce: miss still deals 50% of potential damage (round up).
           hit = false;
-          rawDamage = Math.ceil((effectiveHr + damageBonus) / 2);
+          rawDamage = Math.ceil(outBase / 2);
           pierceMiss = true;
+        }
+
+        // ── Modifier layer: target-side reduction + crit damage ────────
+        // Order mirrors apply-damage-core (steps 3-6): target flat/% damage
+        // reduction first, then attacker crit bonus/multiplier, all
+        // pre-affinity. Resolve the live target for its receiving props.
+        let reductionParts = [];
+        let critDamageParts = [];
+        if (hit || pierceMiss) {
+          const liveTarget = await fromUuid(e.actorUuid).catch(() => null);
+          const red = resolveIncomingReduction({
+            actor: liveTarget,
+            elementType: elementKey, range: attackRangeKind, raw: rawDamage,
+          });
+          rawDamage = red.value;
+          reductionParts = red.parts;
+          if (isCrit) {
+            const cd = applyCritDamage({ raw: rawDamage, actor: liveAttacker });
+            rawDamage = cd.value;
+            critDamageParts = cd.parts;
+          }
         }
 
         // Effective affinity = sheet value + forced-VU from active conditions.
@@ -2814,6 +2916,10 @@ const Compute = {
         const damage = (hit || pierceMiss) ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
 
         perTargetResults.push({
+          // Per-target modifier breakdown (target reduction + crit damage)
+          // for the action-card Damage tooltip. Attacker-global outgoing
+          // mods are surfaced once in damage.baseParts below.
+          damageModParts: [...reductionParts, ...critDamageParts],
           tokenUuid: e.tokenUuid,
           actorUuid: e.actorUuid,
           name: e.name,
@@ -2836,15 +2942,18 @@ const Compute = {
       // Renders in the Damage tooltip as an indented list.
       const damageBonusParts = (() => {
         try {
-          return buildDamageBonusParts({
+          const base = buildDamageBonusParts({
             actor: liveAttacker,
             weapon,
             hand: weapon?.hand ?? (director.ctx.attackMode === "off" ? "off" : "main"),
             attackGrant: attackGrant ?? null,
           });
+          // Append the actor-status outgoing damage mods (attacker-global,
+          // same for every target) so the Damage tooltip traces them.
+          return [...base, ...outgoingDamageParts];
         } catch (e) {
           warn("COMPUTE Attack: buildDamageBonusParts threw", e);
-          return [];
+          return [...outgoingDamageParts];
         }
       })();
 
@@ -2866,7 +2975,11 @@ const Compute = {
           opportunities: isCrit && !isFumble,
         },
         damage: {
-          base: damageBonus,
+          // base / finalIfHit include the actor-status outgoing damage
+          // mods (outgoingDamageTotal) so the card's headline damage agrees
+          // with the per-target rows. Target reduction + crit are per-target
+          // (see perTargetResults[].damageModParts).
+          base: damageBonus + outgoingDamageTotal,
           baseParts: damageBonusParts,
           // Use the overridden element (set by Spiritist Soul Weapon and
           // any future damage-type override AE) instead of the weapon's
@@ -2875,7 +2988,7 @@ const Compute = {
           // native type when no override is active.
           element: overriddenElement ?? weapon.damageType,
           ignoreHR,
-          finalIfHit: effectiveHr + damageBonus,
+          finalIfHit: effectiveHr + damageBonus + outgoingDamageTotal,
         },
         perTargetResults,
         // Free-action grant audit — when High Speed (or any other grant
