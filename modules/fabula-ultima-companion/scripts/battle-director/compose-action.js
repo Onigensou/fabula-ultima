@@ -39,6 +39,7 @@ import { requestTargeting } from "./target-picker.js";
 import { pickWeaponMode } from "./weapon-mode-picker.js";
 import { pickSkill } from "./skill-picker.js";
 import { pickItem } from "./item-picker.js";
+import { getLinkedSkillUuid } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
@@ -730,16 +731,32 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
     return { cancelled: true, reason: "item-uuid-fail" };
   }
 
-  // Step 3: shared targeting — same code Skill uses.
-  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel });
+  // Step 2b: resolve the consumable's LINKED activation skill (item_skill_active).
+  // That skill carries the real skill_target / intent — the consumable is just
+  // the carrier. Target off it. Fall back to the item itself for already-skill-
+  // shaped consumables that authored their effect onto the item (no link).
+  let targetingSource = source;
+  let linkedSkillUuid = null;
+  try {
+    linkedSkillUuid = getLinkedSkillUuid(source);
+    if (linkedSkillUuid) {
+      const linked = await fromUuid(linkedSkillUuid).catch(() => null);
+      if (linked) targetingSource = linked;
+      else warn(`composeItem: linked skill ${linkedSkillUuid} not resolvable; targeting off item`);
+    }
+  } catch (e) { warn("composeItem: linked-skill resolve threw", e); }
+
+  // Step 3: shared targeting — same code Skill uses, off the activation skill.
+  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: targetingSource, cancelSentinel });
   if (tr.cancelled) return { cancelled: true, reason: tr.reason ?? "target-cancelled" };
 
   return {
     cancelled: false,
     bundle: {
       command: "Item",
-      skillUuid: pick.uuid,          // the consumable IS the action source
+      skillUuid: pick.uuid,          // the consumable IS the picked source
       sourceItemUuid: pick.uuid,
+      linkedSkillUuid,               // the activation skill (null = item-shaped)
       itemMode: pick.mode,           // "use" | "create"
       itemKey: pick.key,
       itemCost: pick.cost,

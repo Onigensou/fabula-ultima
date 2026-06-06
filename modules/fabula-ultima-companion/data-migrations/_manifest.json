@@ -401,6 +401,10 @@
       "path": "data-migrations/2026-06-06-burn-status-tick.js"
     },
     {
+      "key": "2026-06-06-dedup-bd-masters-by-uniqueid",
+      "path": "data-migrations/2026-06-06-dedup-bd-masters-by-uniqueid.js"
+    },
+    {
       "key": "2026-06-06-charge-reaction-aes-on-activation-expiry",
       "path": "data-migrations/2026-06-06-charge-reaction-aes-on-activation-expiry.js"
     },
