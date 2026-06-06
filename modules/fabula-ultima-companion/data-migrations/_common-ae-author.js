@@ -68,6 +68,22 @@ function patchSatisfied(ae, patch) {
 }
 
 /**
+ * Build a Foundry "delete key" update for each dotted path, so an OBJECT-valued
+ * field replaces cleanly instead of deep-merging. "a.b.c" → { "a.b.-=c": null }.
+ * Needed because `ae.update({ "flags.ns.reactionConfig": {...} })` MERGES the
+ * new object into the old (stale sub-keys survive) — clear first, then set.
+ */
+function buildClearUpdate(paths) {
+  const upd = {};
+  for (const p of paths) {
+    const i = String(p).lastIndexOf(".");
+    if (i < 0) upd[`-=${p}`] = null;
+    else upd[`${p.slice(0, i)}.-=${p.slice(i + 1)}`] = null;
+  }
+  return upd;
+}
+
+/**
  * Patch a named common AE across its container master(s) + every applied copy.
  *
  * spec = {
@@ -93,6 +109,11 @@ export async function authorCommonAe(game, spec, log = () => {}) {
   const syncCopies = spec.syncCopies !== false;
   const masterScope = spec.masterScope ?? "container";
   const matches = (ae) => ae?.name === name;
+  // Object-valued fields (e.g. flags…reactionConfig) must be cleared before
+  // re-set, else Foundry deep-merges and stale sub-keys survive.
+  const clearUpdate = Array.isArray(spec.clearFirst) && spec.clearFirst.length
+    ? buildClearUpdate(spec.clearFirst)
+    : null;
 
   const counts = { masters: 0, actorCopies: 0, itemCopies: 0, tokenCopies: 0, created: 0, skipped: 0 };
 
@@ -100,6 +121,7 @@ export async function authorCommonAe(game, spec, log = () => {}) {
     if (!matches(ae)) return;
     if (patchSatisfied(ae, patch)) { counts.skipped += 1; return; }
     try {
+      if (clearUpdate) await ae.update(clearUpdate);
       await ae.update(patch);
       counts[bucket] += 1;
       log(`  ${label}: patched "${name}"`);

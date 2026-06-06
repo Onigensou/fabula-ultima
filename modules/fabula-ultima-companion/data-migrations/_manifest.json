@@ -395,6 +395,10 @@
     {
       "key": "2026-06-06-consumable-skillshape-batch3",
       "path": "data-migrations/2026-06-06-consumable-skillshape-batch3.js"
+    },
+    {
+      "key": "2026-06-06-burn-status-tick",
+      "path": "data-migrations/2026-06-06-burn-status-tick.js"
     }
   ]
 }
