@@ -19,15 +19,18 @@ function ensureChrome() {
   const css = `
   .fud-itempick-backdrop { position:fixed; inset:0; z-index:120000; display:flex;
     align-items:center; justify-content:center; background:rgba(0,0,0,.45); }
-  .fud-itempick-wrap { width:min(440px,94vw); max-height:84vh; overflow:hidden auto;
-    border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5); }
-  .fud-itempick-wrap .fud-bf-card { margin:0; border-bottom-left-radius:0; border-bottom-right-radius:0; }
-  .fud-itempick-hint { display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding:8px 14px; background:var(--fud-paper,#efe7d6); color:#3a3122; font-size:12px;
-    border-top:1px solid rgba(0,0,0,.15); }
-  .fud-itempick-btn { cursor:pointer; padding:5px 14px; border-radius:7px;
-    border:1px solid rgba(0,0,0,.25); font-size:12px; font-weight:600; background:#fff; color:#3a3122; }
-  .fud-itempick-btn:hover { background:rgba(0,0,0,.06); }
+  /* The card styles itself (320px parchment panel w/ its own border+shadow).
+     The footer lives INSIDE it so it matches the card's width + background. */
+  .fud-itempick-card { max-height:86vh; overflow:hidden auto; }
+  .fud-itempick-card .fud-itempick-hint { display:flex; align-items:center;
+    justify-content:space-between; gap:10px; margin:11px -14px -11px; padding:9px 14px;
+    border-top:1px solid rgba(0,0,0,.18); background:rgba(0,0,0,.05);
+    border-bottom-left-radius:12px; border-bottom-right-radius:12px;
+    font-size:12px; color:var(--fud-ink,#3a3228); }
+  .fud-itempick-card .fud-itempick-btn { cursor:pointer; padding:5px 16px; border-radius:7px;
+    border:1px solid rgba(0,0,0,.3); font-size:12px; font-weight:600;
+    background:#fff; color:var(--fud-ink,#3a3228); }
+  .fud-itempick-card .fud-itempick-btn:hover { background:rgba(0,0,0,.08); }
   `;
   const el = document.createElement("style");
   el.id = "fud-item-picker-chrome";
@@ -66,14 +69,12 @@ export function pickItem({ director, actor, externalCancel = null } = {}) {
     const backdrop = document.createElement("div");
     backdrop.className = "fud-itempick-backdrop";
     backdrop.innerHTML = `
-      <div class="fud-itempick-wrap">
-        <div class="fud-bf-card">
-          <div class="fud-bf-title-row">
-            <div class="fud-bf-title">${card.titleIcon ?? ""}<span>${card.titleText ?? "Item"}</span></div>
-          </div>
-          ${card.subtitle ?? ""}
-          ${card.body ?? ""}
+      <div class="fud-bf-card fud-itempick-card" role="dialog" aria-label="Use an Item">
+        <div class="fud-bf-title-row">
+          <div class="fud-bf-title">${card.titleIcon ?? ""}<span>${card.titleText ?? "Item"}</span></div>
         </div>
+        ${card.subtitle ?? ""}
+        ${card.body ?? ""}
         <div class="fud-itempick-hint">
           <span>Click an item to choose its target</span>
           <div class="fud-itempick-btn cancel">Cancel</div>

@@ -343,32 +343,24 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     return { cancelled: true, reason: "no weapon" };
   }
 
-  // Weapon mode. Picker appears whenever the actor has more than one
-  // option — real-hand combos OR exposed virtual attacks.
-  let attackMode = "main";
-  const totalRealOptions = (hasMain ? 1 : 0) + (hasOff ? 1 : 0);
-  const needsPicker = totalRealOptions + virtualAttacks.length > 1;
-  if (needsPicker) {
-    const picked = await raceCancel(
-      pickWeaponMode({
-        director,
-        mainWeapon: snap.weapon,
-        offWeapon: snap.offWeapon,
-        allowTwoWeapon: !!snap.canTwoWeaponFight,
-        virtualAttacks,
-        // Forward the cancel sentinel so the picker overlay tears
-        // itself down if the race resolves against us.
-        externalCancel: cancelSentinel,
-      }),
-      cancelSentinel,
-    );
-    if (!picked) return { cancelled: true, reason: "weapon-mode-cancelled" };
-    attackMode = picked;
-  } else if (hasVirtual && !hasMain && !hasOff) {
-    attackMode = "virtual:0";
-  } else if (hasOff && !hasMain) {
-    attackMode = "off";
-  }
+  // Weapon mode. ALWAYS show the picker — even with a single option — so the
+  // player can see/track which weapon they're attacking with (and gets a free
+  // cancel). pickWeaponMode renders a one-row list fine; no auto-pick.
+  const picked = await raceCancel(
+    pickWeaponMode({
+      director,
+      mainWeapon: snap.weapon,
+      offWeapon: snap.offWeapon,
+      allowTwoWeapon: !!snap.canTwoWeaponFight,
+      virtualAttacks,
+      // Forward the cancel sentinel so the picker overlay tears
+      // itself down if the race resolves against us.
+      externalCancel: cancelSentinel,
+    }),
+    cancelSentinel,
+  );
+  if (!picked) return { cancelled: true, reason: "weapon-mode-cancelled" };
+  const attackMode = picked;
 
   // Target pick. We deliberately picks only ONE target for the FIRST
   // pass — multi-pass attacks (two-weapon) will re-enter TARGET on GM
@@ -637,7 +629,20 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // `HAS_SKILL_PILLAGE` matched case-sensitively. Category regex below is /i.
   const skillTargetText = String(source?.system?.props?.skill_target ?? "").trim();
   const isSelf = !skillTargetText || /^self$/i.test(skillTargetText);
-  if (isSelf) return { cancelled: false, targetUuids: [snap.tokenUuid] };
+  if (isSelf) {
+    // Obvious target (self) — still enter the picker with the caster locked so
+    // the player gets a confirm/cancel pass (no-consequence back-out).
+    const selfEligible = [{ tokenUuid: snap.tokenUuid, tokenId: snap.tokenId, name: snap.name }];
+    const r = await raceCancel(
+      requestTargeting({
+        director, eligible: selfEligible, mode: "exact", count: 1, lockSelection: true,
+        titleText: `${snap.name}: ${source.name} (self)`, externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    if (!r || !r.ok) return { cancelled: true, reason: r?.cancelled ? "target-cancelled" : "target-failed" };
+    return { cancelled: false, targetUuids: [...r.tokenUuids] };
+  }
 
   // "creature/creatures" → any (ally + enemy pool). "ally/allies" OR aid intent
   // → ally only. Default → enemy. "creature" takes priority over intent. Mirrors
@@ -654,9 +659,21 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: true, reason: "no targets" };
   }
 
-  // Random → GM-side roulette (player sends empty). "All" → every eligible token.
+  // Random → GM-side roulette (player sends empty; the theatrical roulette
+  // picker runs GM-side). "All" → enter the picker with every eligible target
+  // locked, so the player gets a confirm/cancel pass before committing.
   if (/\brandom\b/i.test(skillTargetText)) return { cancelled: false, targetUuids: [] };
-  if (/\ball\b/i.test(skillTargetText)) return { cancelled: false, targetUuids: targetList.map((e) => e.tokenUuid) };
+  if (/\ball\b/i.test(skillTargetText)) {
+    const r = await raceCancel(
+      requestTargeting({
+        director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true,
+        titleText: `${snap.name}: ${source.name} (all ${categoryLabel})`, externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    if (!r || !r.ok) return { cancelled: true, reason: r?.cancelled ? "target-cancelled" : "target-failed" };
+    return { cancelled: false, targetUuids: [...r.tokenUuids] };
+  }
 
   const targetCountResolver = buildSkillResolver({
     actor, payload: null, skill: source, round: director?.dCombat?.round ?? 0,

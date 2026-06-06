@@ -288,7 +288,12 @@ function clearTargetingDim(dimState) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false } = {}) {
+  // `lockSelection`: render the picker with EVERY eligible target pre-selected
+  // and locked (ring clicks ignored), so an "obvious" target (self / all) still
+  // gets a confirm/cancel pass instead of auto-resolving. Confirm is always
+  // valid; Cancel backs out with no consequence. Used by resolveTargetsForSource
+  // for self/all-target actions.
   // No GM gate: target picking is client-local. The GM client uses this
   // as fallback when an NPC acts; player clients use it inside their
   // own composeAction() chain. See [[director-player-driven-input]].
@@ -370,6 +375,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
 
     function isValidSelection() {
+      if (lockSelection) return true; // locked obvious target — confirm always valid
       if (mode === "random") return true; // draw is pre-computed; confirm is always valid
       if (mode === "exact") return selected.size === count;
       if (mode === "up_to") return selected.size >= 1 && selected.size <= count;
@@ -541,6 +547,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     }
 
     function onTokenClick(_event, token) {
+      if (lockSelection) return; // locked obvious target — selection can't change
       const uuid = token?.document?.uuid;
       if (!uuid || !rings.has(uuid)) return;
       if (selected.has(uuid)) {
@@ -819,6 +826,15 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     buildRings();
     repositionAll();
     dimState = applyTargetingDim(eligible, director);
+
+    // Locked obvious target — pre-select every eligible ring + show confirm.
+    if (lockSelection) {
+      for (const e of eligible) {
+        selected.add(e.tokenUuid);
+        setSelected(e.tokenUuid, true);
+      }
+      updateBanner();
+    }
 
     // Build spatial groups and prime kb hover on the first token.
     if (mode !== "random" && eligibleUuids.length) {
