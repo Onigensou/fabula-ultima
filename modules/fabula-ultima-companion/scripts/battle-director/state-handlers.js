@@ -23,7 +23,7 @@ import { playStudyVfx, playActionNamecard, playMissVfx, playResourceSpendVfx } f
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
-import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp } from "./item-resource.js";
+import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, getLinkedSkillUuid } from "./item-resource.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
 // Phase B.1 Skill engine
 import { pickSkill, SkillPicker } from "./skill-picker.js";
@@ -156,104 +156,11 @@ function serializeCostMap(costMap) {
 // If `opts.skipCost` is true, debit is bypassed — used when the cost
 // has already been paid out-of-band (e.g. Item.use consumed an item
 // instead of paying MP).
-// D.5 closure — fire a skill linked to an item (consumable use or
-// recipe creation). Cost is skipped (the item itself was the cost).
-// Targets default to the caster (self) for B.1; cross-actor item use
-// lands in B.2.
-//
-// Builds the same actionResult shape resolveAction expects, then
-// delegates so the linked skill goes through the full pipeline (cost
-// gate bypassed, effect_table fires, post_damage_effect_ref hooks, etc.).
-async function fireLinkedSkillFromItem({ director, casterSnap, casterActor, skillUuid, sourceItemUuid = null }) {
-  const skill = await fromUuid(skillUuid).catch(() => null);
-  if (!skill) {
-    warn(`fireLinkedSkillFromItem: skill ${skillUuid} not resolvable`);
-    return;
-  }
-  // Cap targets to self for B.1. The skill's own `skill_target` may
-  // suggest otherwise, but cross-actor item use needs a target picker
-  // (B.2).
-  const ar = {
-    kind: "Skill",
-    attacker: casterSnap,
-    attackerActorRef: casterSnap.actorUuid,
-    skillUuid: skill.uuid,
-    skillName: skill.name,
-    skillImg: skill.img,
-    skillType: String(skill.system?.props?.skill_type ?? ""),
-    defenseTargetType: String(skill.system?.props?.defense_target_type ?? "").toLowerCase(),
-    isCheck: false,  // linked-item skills bypass the Check (auto-hit)
-    rolledA1: "",
-    rolledA2: "",
-    checkBonus: 0,
-    damageBonus: skill.system?.props?.damage_bonus ?? 0,
-    damageType: String(skill.system?.props?.type_damage ?? ""),
-    skillRange: String(skill.system?.props?.skill_range ?? ""),
-    skillTarget: String(skill.system?.props?.skill_target ?? "").toLowerCase(),
-    sourceItemUuid,
-    descriptionHtml: String(skill.system?.props?.description ?? ""),
-    targets: [casterSnap],
-    costSerialized: {},
-    rawCost: "",
-    actionIntent: classifyActionIntent(skill),
-    perTargetResults: [],   // built below if the skill deals damage
-    hasDamage: false,
-  };
-  // If the skill deals damage, build perTargetResults so resolveAction
-  // applies the damage. Auto-hit (no Check) — uses HR=0 (item-cast skills
-  // skip the roll, RAW-ish for B.1).
-  const damageType = String(ar.damageType ?? "").toLowerCase();
-  const hasDamage = !!damageType && !["", "none", "healing", "heal", "hp", "mp", "recovery"].includes(damageType);
-  if (hasDamage) {
-    const resolver = buildSkillResolver({
-      actor: casterActor,
-      payload: null,
-      skill,
-      round: director.dCombat?.round ?? 0,
-    });
-    const damageBonus = evaluateFormula(ar.damageBonus, resolver, 0);
-    for (const t of ar.targets) {
-      const tActor = await fromUuid(t.actorUuid).catch(() => null);
-      const affinityCode = tActor?.system?.props?.[`affinity_${damageElementIndex(damageType)}`] ?? "NE";
-      const rawDamage = damageBonus;  // HR=0 for item-cast
-      const damage = applyAffinityToDamage(rawDamage, String(affinityCode).toUpperCase());
-      ar.perTargetResults.push({
-        tokenUuid: t.tokenUuid,
-        actorUuid: t.actorUuid,
-        name: t.name,
-        tokenImg: t.tokenImg,
-        disposition: t.disposition,
-        defense: t.defense ?? 0,
-        hit: true,
-        crit: false,
-        rawDamage,
-        damage,
-        affinity: String(affinityCode).toUpperCase(),
-        studied: true,
-      });
-    }
-    ar.hasDamage = true;
-  }
-  await resolveAction(director, ar, { skipCost: true });
-}
-
-// Map a damage type to its affinity_N prop slot (mirrors Attack flow's
-// `physical→1, air→2, bolt→3, dark→4, earth→5, fire→6, ice→7, light→8,
-// poison→9` lookup).
-function damageElementIndex(type) {
-  switch (String(type ?? "").toLowerCase()) {
-    case "physical": return 1;
-    case "air":      return 2;
-    case "bolt":     return 3;
-    case "dark":     return 4;
-    case "earth":    return 5;
-    case "fire":     return 6;
-    case "ice":      return 7;
-    case "light":    return 8;
-    case "poison":   return 9;
-    default: return null;
-  }
-}
+// NOTE: the Item action no longer has a separate "fire linked skill" helper.
+// The Item TARGET branch resolves the consumable's linked activation skill
+// (item_skill_active) inline and shapes a standard actionResult from it, so it
+// runs through the same COMPUTE/RESOLVE path as any Skill — with full targeting
+// from the skill's skill_target and item consumption keyed off sourceItemUuid.
 
 // Resolve the canonical "action-skill" Item that backs a built-in turn action
 // (Guard / Hinder / Study / Equipment / Item). These universal Items live under
@@ -331,12 +238,20 @@ async function resolveAction(director, ar, opts = {}) {
     // per-kind RESOLVE branch. "create" pays IP, already handled via costMap
     // above (ip is a standard cost resource). Source-driven: keyed off the
     // consumable source + the card's use/create selection, not ar.kind.
-    if (ar.itemSelection?.mode === "use"
-        && String(skill?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
-      try {
-        const r = await consumeOne(casterActor, skill);
-        if (!r?.ok) warn("Item resolve: consumeOne failed", r);
-      } catch (e) { warn("Item resolve: consumeOne threw", e); }
+    if (ar.itemSelection?.mode === "use") {
+      // Consume the SOURCE consumable (the carrier). ar.skillUuid now points at
+      // the linked activation skill (skill_type "Item"), not the consumable, so
+      // we re-fetch the item via sourceItemUuid. Fall back to the backing item
+      // for already-skill-shaped consumables (skillUuid == the consumable).
+      const sourceItem = ar.sourceItemUuid
+        ? await fromUuid(ar.sourceItemUuid).catch(() => null)
+        : skill;
+      if (String(sourceItem?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
+        try {
+          const r = await consumeOne(casterActor, sourceItem);
+          if (!r?.ok) warn("Item resolve: consumeOne failed", r);
+        } catch (e) { warn("Item resolve: consumeOne threw", e); }
+      }
     }
   }
 
@@ -2112,12 +2027,25 @@ const Target = {
         director.enqueue({ type: INTENTS.TARGET_BACK });
         return;
       }
-      const view = getRuntimeActionView(consumable);
-      const skillTargetText = String(consumable.system?.props?.skill_target ?? "").trim();
+      // Resolve the consumable's LINKED activation skill (item_skill_active).
+      // It carries the real targeting + effect; the consumable is the carrier +
+      // cost. Fall back to the consumable itself for already-skill-shaped items
+      // that have no linked skill. Everything downstream (view, targeting,
+      // actionResult, COMPUTE/RESOLVE) reads the activation skill, except item
+      // consumption which keys off the source consumable (sourceItemUuid).
+      let activation = consumable;
+      const linkedUuid = bundle.linkedSkillUuid ?? getLinkedSkillUuid(consumable);
+      if (linkedUuid) {
+        const linked = await fromUuid(linkedUuid).catch(() => null);
+        if (linked) activation = linked;
+        else warn(`Item TARGET: linked skill ${linkedUuid} not resolvable; using item as activation`);
+      }
+      const view = getRuntimeActionView(activation);
+      const skillTargetText = String(activation.system?.props?.skill_target ?? "").trim();
       const itemTargeting = await resolveActionTargets(director, attackerSnap, {
         skillTargetText,
         attackerActor,
-        skill: consumable,
+        skill: activation,
         usingPreComposed:    true,
         composedTargetUuids: bundle.targetUuids,
         titleText:           null,
@@ -2143,29 +2071,38 @@ const Target = {
         return;
       }
 
+      const ap = activation.system?.props ?? {};
       director.ctx.actionResult = freezeActionResult({
-        kind: view.kind,   // "Item" (source-derived)
+        // Action kind stays "Item" so the creature_uses_item / completes_item
+        // triggers + Item-card UI fire; resolveAction still finds the backing
+        // skill via skillUuid, so the shared Skill COMPUTE/RESOLVE path runs.
+        kind: "Item",
         attacker: attackerSnap,
         attackerActorRef: attackerSnap.actorUuid,
-        skillUuid: consumable.uuid,
+        // Effects/Check resolve from the linked activation skill…
+        skillUuid: activation.uuid,
+        // …but the card displays the item the player actually used.
         skillName: consumable.name,
         skillImg: consumable.img,
-        skillType: String(consumable.system?.props?.skill_type ?? ""),
-        defenseTargetType: String(consumable.system?.props?.defense_target_type ?? "").toLowerCase(),
-        isCheck: !!consumable.system?.props?.isCheck,
-        rolledA1: String(consumable.system?.props?.rolled_atr1 ?? "").toUpperCase(),
-        rolledA2: String(consumable.system?.props?.rolled_atr2 ?? "").toUpperCase(),
-        checkBonus: Number(consumable.system?.props?.check_bonus ?? 0) || 0,
-        damageBonus: consumable.system?.props?.damage_bonus ?? 0,
-        damageType: String(consumable.system?.props?.type_damage ?? ""),
-        skillRange: String(consumable.system?.props?.skill_range ?? ""),
+        skillType: String(ap.skill_type ?? ""),
+        defenseTargetType: String(ap.defense_target_type ?? "").toLowerCase(),
+        isCheck: !!ap.isCheck,
+        rolledA1: String(ap.rolled_atr1 ?? "").toUpperCase(),
+        rolledA2: String(ap.rolled_atr2 ?? "").toUpperCase(),
+        checkBonus: Number(ap.check_bonus ?? 0) || 0,
+        damageBonus: ap.damage_bonus ?? 0,
+        damageType: String(ap.type_damage ?? ""),
+        skillRange: String(ap.skill_range ?? ""),
         skillTarget: skillTargetText,
-        sourceItemUuid: bundle.sourceItemUuid ?? null,
-        descriptionHtml: String(consumable.system?.props?.description ?? ""),
+        // Consume THIS item on resolve (the carrier), regardless of which skill
+        // drove the effect. [[edit-master-not-copy]] — sourceItemUuid is the
+        // owned consumable, not the shared skill master.
+        sourceItemUuid: bundle.sourceItemUuid ?? consumable.uuid,
+        descriptionHtml: String(ap.description ?? consumable.system?.props?.description ?? ""),
         targets,
         costSerialized: serializeCostMap(costMap),
         rawCost: itemMode === "create" ? `${itemCost} IP` : "",
-        actionIntent: classifyActionIntent(consumable),
+        actionIntent: classifyActionIntent(activation),
         itemSelection: { mode: itemMode, key: bundle.itemKey ?? null, cost: itemCost },
       });
       director.ctx.pickedTargetUuids = targetUuids;

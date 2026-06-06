@@ -66,6 +66,28 @@ function skillEntryUuid(entry) {
   return entry?.uuid ?? entry?.skillUuid ?? entry?.skill_uuid ?? entry?.itemUuid ?? null;
 }
 
+// ─── Public: the consumable's linked activation skill ───────────────
+//
+// A consumable carries its activation as a linked skill (skill_type "Item")
+// in `item_skill_active` (or the legacy `active_skill_list` / `skill_active_list`
+// aliases). That skill IS the Battle Director action definition — it holds the
+// targeting (`skill_target`) + effect (effect_table / on_activate_effect_ref /
+// recipe, or legacy type_damage + damage_bonus). The consumable itself is just
+// the carrier + cost. The Item action resolves this skill and routes it through
+// the shared Skill pipeline (see compose-action.js composeItem +
+// state-handlers.js Item TARGET branch).
+//
+// Returns the first resolvable linked-skill uuid, else null (already-skill-
+// shaped consumables that authored their effect onto the item have no link —
+// callers fall back to the item itself).
+export function getLinkedSkillUuid(item) {
+  for (const entry of extractSkillEntries(item)) {
+    const uuid = skillEntryUuid(entry);
+    if (uuid) return uuid;
+  }
+  return null;
+}
+
 // Shape per candidate:
 //   {
 //     mode: "use",

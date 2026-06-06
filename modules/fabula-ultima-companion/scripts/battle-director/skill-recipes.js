@@ -71,8 +71,14 @@ export function readRecipe(skill) {
 // Returns the original skill if no recipe (cheap fast-path).
 export function getRuntimeSkillView(skill) {
   const recipe = readRecipe(skill);
-  if (!recipe) return { skill, effect_table: skill?.system?.props?.effect_table ?? null,
-                        fire_points: readFirePointsFromSkill(skill), recipeApplied: null };
+  if (!recipe) {
+    const legacy = applyLegacyItemGrant(
+      skill,
+      skill?.system?.props?.effect_table ?? null,
+      readFirePointsFromSkill(skill),
+    );
+    return { skill, effect_table: legacy.effect_table, fire_points: legacy.fire_points, recipeApplied: null };
+  }
 
   const p = skill.system?.props ?? {};
   const resource = String(p.recipe_resource ?? "").trim().toLowerCase();
@@ -144,6 +150,46 @@ function readFirePointsFromSkill(skill) {
   };
 }
 
+// Legacy item-activation skills (skill_type "Item" — the skill a consumable
+// links from `item_skill_active`) often encode their effect the OLD way:
+// `type_damage` + `damage_bonus`, with no effect_table / recipe / fire-point.
+// Synthesize a recovery grant so the linked skill fires through resolveAction
+// (the on_activate path) AND previews in COMPUTE. Lives here (not in
+// getRuntimeActionView) so COMPUTE's heal-preview path — which calls
+// getRuntimeSkillView directly — sees the same synthesized grant RESOLVE does.
+//
+// Effect config (effect_table / on_activate_effect_ref / recipe) ALWAYS wins:
+// the synthesis only fires when none is authored. Only resource-recovery
+// type_damage values map to a grant; real damage types are left to the damage
+// path (perTargetResults). Returns possibly-updated { effect_table, fire_points }.
+const LEGACY_ITEM_GRANT_RES = {
+  heal: "hp", healing: "hp", hp: "hp", hp_heal: "hp", recovery: "hp",
+  mp: "mp", mp_heal: "mp",
+};
+function applyLegacyItemGrant(skill, effect_table, fire_points) {
+  const p = skill?.system?.props ?? {};
+  if (String(p.skill_type ?? "").trim().toLowerCase() !== "item") return { effect_table, fire_points };
+  if (fire_points?.on_activate_effect_ref) return { effect_table, fire_points };
+  const hasRows = effect_table && Object.values(effect_table).some((r) => r && !r.$deleted);
+  if (hasRows) return { effect_table, fire_points };
+
+  const dt = String(p.type_damage ?? "").trim().toLowerCase();
+  const resource = LEGACY_ITEM_GRANT_RES[dt];
+  const amount = p.damage_bonus ?? "";
+  if (!resource || String(amount).trim() === "" || Number(amount) === 0) return { effect_table, fire_points };
+
+  const label = "__legacy_item_grant__";
+  log(`skill-recipes: legacy item grant on ${skill.name} → grant ${resource} ${amount} → action_targets`);
+  return {
+    effect_table: {
+      "0": { effect_label: label, effect_kind: "grant",
+             grant_resource: resource, grant_amount: String(amount),
+             target_ref: "action_targets" },
+    },
+    fire_points: { ...fire_points, on_activate_effect_ref: label },
+  };
+}
+
 // ── Unified runtime view (resolveAction-unification) ──────────────────────
 //
 // `getRuntimeActionView(source)` generalizes `getRuntimeSkillView` so EVERY
@@ -201,6 +247,10 @@ export function getRuntimeActionView(source, ctx = {}) {
   // table's ENTRY row (key "0", else the first row) so resolveAction fires the
   // consumable's effect on use — no template surgery, no per-item ref column.
   // An explicit on_activate_effect_ref (if the column is ever added) still wins.
+  // Skill-shaped consumables synthesize their on_activate fire-point from
+  // effect_table["0"] (the legacy item-activation grant for linked skills is
+  // handled one level down, in getRuntimeSkillView, so COMPUTE's preview path
+  // — which calls getRuntimeSkillView directly — sees it too).
   let fire_points = base.fire_points;
   if (itemType === "consumable" && !fire_points?.on_activate_effect_ref) {
     const et = p.effect_table ?? {};
