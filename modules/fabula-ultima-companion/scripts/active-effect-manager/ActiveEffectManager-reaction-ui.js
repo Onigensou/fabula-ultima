@@ -218,7 +218,9 @@
     consume_charge:   ["charge_key", "grant_target", "on_empty", "count"],
     redirect_target:  ["target_select", "rebuild_card"],
     chain:            ["chain_steps"],
-    open_action_menu: ["allowed_types", "free_mode", "max_mp_cost"]
+    open_action_menu: ["allowed_types", "free_mode", "max_mp_cost"],
+    // Unified damage adjustment (replaced add_damage + modify_damage_taken).
+    adjust_damage:    ["damage_operation", "damage_amount", "damage_stage"],
   });
 
   function effectKindFields(kind) {

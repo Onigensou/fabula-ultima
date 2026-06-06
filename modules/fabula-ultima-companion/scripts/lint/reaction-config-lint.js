@@ -79,6 +79,25 @@
  *     MASTER_COPY_AE_ROW_MISSING/AE_FIELD_DRIFT — same checks inside the
  *                             AE-bound reactionConfig blob
  *
+ *   Option-list coverage (runTemplateEngineEnums) — every author-facing
+ *   place that picks an effect_kind / reaction_trigger must expose every
+ *   engine value, or authors silently can't select it ([[csb-template-gating]]).
+ *   Checked surfaces: the _Skill Template, the _Item Template (skill-shaped
+ *   weapons + consumables), AND the AE reaction editor's effect_kind dropdown.
+ *     ENGINE_KIND_UNEXPOSED    engine dispatches an effect_kind a TEMPLATE
+ *                              doesn't list (per-template; warning)
+ *     TEMPLATE_KIND_ORPHAN     template lists an effect_kind the engine
+ *                              doesn't dispatch (no-op at runtime)
+ *     ENGINE_TRIGGER_UNEXPOSED engine knows a reaction_trigger a template
+ *                              doesn't list (info)
+ *     TEMPLATE_TRIGGER_ORPHAN  template lists a trigger with no emit site
+ *     AE_CONFIG_KIND_UNEXPOSED engine effect_kind missing from the AE
+ *                              reaction editor's EFFECT_KIND_FIELDS dropdown
+ *                              (info; action-only kinds excluded). AE-config
+ *                              triggers share the engine registry → can't drift.
+ *     AE_CONFIG_KIND_ORPHAN    AE editor offers a kind the engine can't dispatch
+ *     TEMPLATE_NOT_FOUND / ENGINE_PARSE_FAILED / AE_CONFIG_PARSE_FAILED
+ *
  *   Item-level canon rules (run on every item, regardless of isReaction):
  *     COST_DOUBLE_CHARGE      Item has both a non-empty `cost` field AND a
  *                             `consume_resource` row reachable from
@@ -147,10 +166,23 @@
   ]);
   const TARGETING_MODE_VALUES   = new Set(["exact", "up_to", "all"]);
   const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy"]);
+  // Mirror of the engine's dispatch switch (skill-effects.js applyEffectRow) +
+  // the sidecar/pre-resolve kinds. Keep in sync when a new effect_kind ships.
   const EFFECT_KIND_VALUES      = new Set([
     "grant", "apply_ae", "consume_charge", "consume_resource",
     "redirect_target", "chain", "open_action_menu", "targeting",
-    "remove_tagged_ae", "modify_damage_taken", "substitute_cost",
+    "remove_tagged_ae", "substitute_cost",
+    "set_resource", "roll_loot_table", "deal_damage", "equip_swap",
+    "encyclopedia_record",
+    // Unified damage adjustment (replaced add_damage + modify_damage_taken).
+    "adjust_damage",
+  ]);
+  // Reserved target_ref words resolved by the targeting resolver
+  // (skill-targeting.js RESERVED_REFS) — these are NOT effect_labels, so a
+  // target_ref check must accept them without demanding a matching row.
+  const RESERVED_TARGET_REFS    = new Set([
+    "self", "action_targets", "hit_action_targets", "ally_action_targets",
+    "enemy_action_targets", "trigger_actor", "trigger_subject", "cover_target",
   ]);
   // Kinds that operate on tokens and therefore require a target_ref. apply_ae
   // is conditional (target_prompt: "visible" bypasses), handled inline.
@@ -449,6 +481,9 @@
         }));
         continue;
       }
+      // Reserved words (self / action_targets / …) are resolved by the
+      // targeting resolver, not by an effect_label — they're always valid.
+      if (RESERVED_TARGET_REFS.has(tref)) continue;
       const tRow = labelToRow.get(tref);
       if (!tRow) {
         issues.push(mkIssue({
@@ -1251,12 +1286,20 @@
   // Async because it parses skill-effects.js via fetch.
   // ------------------------------------------------------------------
   const DEFAULT_SKILL_TEMPLATE_UUID = "Item.j0F5Msw5RZ8aIB3j";
+  const DEFAULT_ITEM_TEMPLATE_UUID  = "Item.ZoiV53VaLzeRsEps"; // weapons + consumables (skill-shaped)
   const SKILL_EFFECTS_PATH = "/modules/fabula-ultima-companion/scripts/battle-director/skill-effects.js";
+  const AE_REACTION_UI_PATH = "/modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-reaction-ui.js";
+  // effect_kinds that only make sense in the action pipeline, never as an
+  // AE-borne reaction effect — excluded from the AE-config completeness check.
+  const AE_CONFIG_ACTION_ONLY_KINDS = new Set(["equip_swap", "encyclopedia_record", "targeting"]);
   // Effect kinds dispatched outside applyEffectRow's central switch.
   // These are handled in side pipelines (e.g. modify_damage_taken fires
   // from the damage-application path, not the standard dispatcher). Add
   // to this list whenever we introduce another out-of-band kind.
-  const SIDECAR_EFFECT_KINDS = new Set(["modify_damage_taken"]);
+  // adjust_damage is dispatched as a data-only case in applyEffectRow's central
+  // switch (read out-of-band by the sender accumulator / receiver clamp), so it
+  // needs no sidecar entry. No sidecar kinds remain after the unify refactor.
+  const SIDECAR_EFFECT_KINDS = new Set([]);
 
   // Walk a CSB template tree for nodes that look like a select-column.
   // CSB select columns have shape `{ key: "<colKey>", options: [...] }`
@@ -1301,26 +1344,33 @@
     }
   }
 
-  async function lintTemplateEngineEnums({ skillTemplateUuid } = {}) {
-    const issues = [];
-    const uuid = skillTemplateUuid || DEFAULT_SKILL_TEMPLATE_UUID;
-    let template = null;
-    try { template = await fromUuid(uuid); }
-    catch (_) { template = null; }
-    if (!template) {
-      issues.push({
-        severity: "warning",
-        code: "TEMPLATE_NOT_FOUND",
-        owner: "template-engine",
-        location: uuid,
-        message: `_Skill Template at ${uuid} not found — enum consistency check skipped. Set FUCompanion.api.lint.runTemplateEngineEnums({ skillTemplateUuid: "Item.<id>" }) if it moved.`,
-      });
-      return issues;
+  // Parse the effect_kind keys offered by the AE reaction editor's dropdown
+  // (EFFECT_KIND_FIELDS in ActiveEffectManager-reaction-ui.js). This is a
+  // hand-maintained subset, so it can fall behind the engine.
+  async function parseAeConfigEffectKinds() {
+    try {
+      const res = await fetch(AE_REACTION_UI_PATH + "?cb=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return null;
+      const src = await res.text();
+      const block = src.match(/EFFECT_KIND_FIELDS\s*=\s*Object\.freeze\(\s*\{([\s\S]*?)\}\s*\)/);
+      if (!block) return null;
+      const out = new Set();
+      // Keys are `<kind>:` at the start of each entry; array values are quoted
+      // strings (no bare colon), so this only captures the kind keys.
+      const re = /(\w+)\s*:/g;
+      let m;
+      while ((m = re.exec(block[1]))) out.add(m[1]);
+      return out;
+    } catch (e) {
+      console.warn(`${TAG} parseAeConfigEffectKinds fetch failed`, e);
+      return null;
     }
-    const tmplKinds   = collectTemplateSelectOptions(template?.system, "effect_kind");
-    const tmplTriggers = collectTemplateSelectOptions(template?.system, "reaction_trigger");
+  }
 
+  async function lintTemplateEngineEnums({ skillTemplateUuid, itemTemplateUuid } = {}) {
+    const issues = [];
     const engineKinds = await parseEngineEffectKinds();
+    const engineTriggers = listCanonicalTriggerKeys();
     if (!engineKinds) {
       issues.push({
         severity: "warning",
@@ -1328,56 +1378,120 @@
         owner: "template-engine",
         message: `Could not fetch/parse skill-effects.js for engine kind set — comparison skipped.`,
       });
-    } else {
+    }
+
+    // --- 1 & 2: author-facing TEMPLATES that carry effect_kind /
+    // reaction_trigger select-columns (skill items + skill-shaped weapons /
+    // consumables). Both must expose every engine kind + trigger or CSB sheet
+    // authors silently can't pick it ([[csb-template-gating]]). ---
+    const templates = [
+      { label: "_Skill Template", uuid: skillTemplateUuid || DEFAULT_SKILL_TEMPLATE_UUID },
+      { label: "_Item Template",  uuid: itemTemplateUuid  || DEFAULT_ITEM_TEMPLATE_UUID  },
+    ];
+    for (const { label, uuid } of templates) {
+      let template = null;
+      try { template = await fromUuid(uuid); } catch (_) { template = null; }
+      if (!template) {
+        issues.push({
+          severity: "warning",
+          code: "TEMPLATE_NOT_FOUND",
+          owner: "template-engine",
+          location: uuid,
+          message: `${label} at ${uuid} not found — enum check skipped for it. Pass runTemplateEngineEnums({ skillTemplateUuid / itemTemplateUuid: "Item.<id>" }) if it moved.`,
+        });
+        continue;
+      }
+      const tmplKinds    = collectTemplateSelectOptions(template?.system, "effect_kind");
+      const tmplTriggers = collectTemplateSelectOptions(template?.system, "reaction_trigger");
+
+      if (engineKinds) {
+        for (const k of engineKinds) {
+          if (!tmplKinds.has(k)) {
+            issues.push({
+              severity: "warning",
+              code: "ENGINE_KIND_UNEXPOSED",
+              owner: "template-engine",
+              location: `${label} effect_kind options`,
+              message: `Engine dispatches effect_kind "${k}" but ${label} options do NOT include it. CSB sheet authors cannot select this kind; only programmatic Item.create can use it. Run a template-surgery migration to add the option.`,
+            });
+          }
+        }
+        for (const k of tmplKinds) {
+          if (!engineKinds.has(k)) {
+            issues.push({
+              severity: "warning",
+              code: "TEMPLATE_KIND_ORPHAN",
+              owner: "template-engine",
+              location: `${label} effect_kind options`,
+              message: `${label} exposes effect_kind "${k}" but the engine has no dispatch case. Author can write this value but dispatch will warn + no-op. Either implement the kind or remove the template option.`,
+            });
+          }
+        }
+      }
+      if (engineTriggers) {
+        for (const t of engineTriggers) {
+          if (!tmplTriggers.has(t)) {
+            issues.push({
+              severity: "info",
+              code: "ENGINE_TRIGGER_UNEXPOSED",
+              owner: "template-engine",
+              location: `${label} reaction_trigger options`,
+              message: `Engine knows reaction_trigger "${t}" but ${label} options do NOT include it. CSB sheet authors cannot select this trigger; run a template-surgery migration.`,
+            });
+          }
+        }
+        for (const t of tmplTriggers) {
+          if (!engineTriggers.has(t)) {
+            issues.push({
+              severity: "warning",
+              code: "TEMPLATE_TRIGGER_ORPHAN",
+              owner: "template-engine",
+              location: `${label} reaction_trigger options`,
+              message: `${label} exposes reaction_trigger "${t}" but the engine has no registered trigger emit site. Rows using this trigger will never fire.`,
+            });
+          }
+        }
+      }
+    }
+
+    // --- 3: AE CONFIGURATION editor (ActiveEffectManager-reaction-ui.js). The
+    // trigger dropdown is sourced from the same oni.ReactionTriggers registry
+    // as the engine, so it CANNOT drift (no check needed). The effect_kind
+    // dropdown is a hand-maintained subset (EFFECT_KIND_FIELDS) that can. ---
+    const aeKinds = await parseAeConfigEffectKinds();
+    if (!aeKinds) {
+      issues.push({
+        severity: "info",
+        code: "AE_CONFIG_PARSE_FAILED",
+        owner: "ae-config",
+        message: `Could not parse EFFECT_KIND_FIELDS from ActiveEffectManager-reaction-ui.js — AE-config effect_kind check skipped.`,
+      });
+    } else if (engineKinds) {
       for (const k of engineKinds) {
-        if (!tmplKinds.has(k)) {
+        if (AE_CONFIG_ACTION_ONLY_KINDS.has(k)) continue; // action-pipeline only
+        if (!aeKinds.has(k)) {
           issues.push({
-            severity: "warning",
-            code: "ENGINE_KIND_UNEXPOSED",
-            owner: "template-engine",
-            location: `_Skill Template effect_kind options`,
-            message: `Engine dispatches effect_kind "${k}" but the _Skill Template options array does NOT include it. CSB sheet authors cannot select this kind; only programmatic Item.create can use it. Run a template-surgery migration to add the option.`,
+            severity: "info",
+            code: "AE_CONFIG_KIND_UNEXPOSED",
+            owner: "ae-config",
+            location: `EFFECT_KIND_FIELDS (AE reaction editor)`,
+            message: `Engine dispatches effect_kind "${k}" but the AE reaction editor's EFFECT_KIND_FIELDS does NOT list it — authors can't pick it when adding a reaction effect to an ActiveEffect. Add it (+ its field list) if it's valid in an AE/reaction context.`,
           });
         }
       }
-      for (const k of tmplKinds) {
+      for (const k of aeKinds) {
         if (!engineKinds.has(k)) {
           issues.push({
             severity: "warning",
-            code: "TEMPLATE_KIND_ORPHAN",
-            owner: "template-engine",
-            location: `_Skill Template effect_kind options`,
-            message: `_Skill Template exposes effect_kind "${k}" but the engine has no dispatch case. Author can write this value but dispatch will warn + no-op. Either implement the kind or remove the template option.`,
+            code: "AE_CONFIG_KIND_ORPHAN",
+            owner: "ae-config",
+            location: `EFFECT_KIND_FIELDS (AE reaction editor)`,
+            message: `AE reaction editor offers effect_kind "${k}" but the engine has no dispatch case — selecting it no-ops.`,
           });
         }
       }
     }
 
-    const engineTriggers = listCanonicalTriggerKeys();
-    if (engineTriggers) {
-      for (const t of engineTriggers) {
-        if (!tmplTriggers.has(t)) {
-          issues.push({
-            severity: "info",
-            code: "ENGINE_TRIGGER_UNEXPOSED",
-            owner: "template-engine",
-            location: `_Skill Template reaction_trigger options`,
-            message: `Engine knows reaction_trigger "${t}" but the _Skill Template options array does NOT include it. CSB sheet authors cannot select this trigger; run a template-surgery migration.`,
-          });
-        }
-      }
-      for (const t of tmplTriggers) {
-        if (!engineTriggers.has(t)) {
-          issues.push({
-            severity: "warning",
-            code: "TEMPLATE_TRIGGER_ORPHAN",
-            owner: "template-engine",
-            location: `_Skill Template reaction_trigger options`,
-            message: `_Skill Template exposes reaction_trigger "${t}" but the engine has no registered trigger emit site. Rows using this trigger will never fire.`,
-          });
-        }
-      }
-    }
     return issues;
   }
 

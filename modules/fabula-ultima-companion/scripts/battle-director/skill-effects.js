@@ -114,17 +114,16 @@ export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 // `current_hp` on a damage-application path. Walks the target's AEs for
 // any `reactionConfig` declaring a `creature_takes_damage` trigger whose
 // filter (e.g. `reaction_damage_outcome: "would_reduce_to_zero"`)
-// matches the pending damage. Matching AEs' effect rows can MUTATE the
-// pending HP — set a floor (Mercy), cap damage (future), reflect, etc.
+// matches the pending damage. Matching AEs' INCOMING `adjust_damage` rows
+// mutate the landed damage (which derives the final HP) — cap it (Mercy),
+// reduce it, reflect, etc.
 //
-// Currently implemented modify modes (via effect_kind: "modify_damage_taken"):
-//   - `set_hp_floor` — if the computed newHp would be below `modify_value`,
-//     clamp it up to that value. Used by Mercy (value=1).
-//
-// Future modes (placeholder):
-//   - `cap_damage`     — cap pre-affinity damage at modify_value
-//   - `reflect_damage` — reflect pct/value back at the source
-//   - `multiply_damage` — additional affinity-like multiplier
+// Incoming damage adjustment (effect_kind: "adjust_damage",
+// damage_stage: "incoming"): applies `damage_operation` (add | subtract |
+// multiply | set | cap | floor) with `damage_amount` (a formula; CUR_HP /
+// MAX_HP resolve to the VICTIM's sheet) to the running landed damage. The
+// new HP is `curHp − adjustedDamage`. Mercy ("survive at 1 HP") = an
+// incoming `cap` at `CUR_HP - 1` (only binds when the hit would be lethal).
 //
 // Reaction config shape (on the AE's flags.fabula-ultima-companion.reactionConfig):
 //   {
@@ -141,9 +140,10 @@ export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 //     effect_table: {
 //       "0": {
 //         effect_label: "mercy_clamp",
-//         effect_kind: "modify_damage_taken",
-//         modify_mode: "set_hp_floor",
-//         modify_value: 1,
+//         effect_kind: "adjust_damage",
+//         damage_stage: "incoming",
+//         damage_operation: "cap",
+//         damage_amount: "CUR_HP - 1",
 //         consume_self: true
 //       }
 //     }
@@ -159,9 +159,24 @@ export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 //     if (ae) await ae.delete();
 //   }
 export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
-  const baselineHp = Math.max(0, curHp - rawDamage);
-  const result = { newHp: baselineHp, consumedAeIds: [], fired: [] };
+  const result = { newHp: Math.max(0, curHp - rawDamage), consumedAeIds: [], fired: [] };
   if (!target || rawDamage <= 0) return result;
+
+  // Running landed-damage value the incoming adjust_damage rows mutate.
+  let dmg = rawDamage;
+  let resolver = null;
+  const getResolver = async () => {
+    if (resolver) return resolver;
+    const { buildSkillResolver } = await getSkillFormulas();
+    // actor = victim, so CUR_HP / MAX_HP resolve to the victim's sheet
+    // (current_hp is still the pre-damage value at this point).
+    resolver = buildSkillResolver({
+      actor: target,
+      payload: { subjectActorUuid: sourceActor?.uuid ?? null },
+      skill: null, round: 0,
+    });
+    return resolver;
+  };
 
   for (const ae of (target.effects?.contents ?? Array.from(target.effects ?? []))) {
     if (ae.disabled) continue;
@@ -173,42 +188,41 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
     for (const tRow of triggerRows) {
       if (tRow.reaction_trigger !== "creature_takes_damage") continue;
       // reaction_source defaults to "self" — reactor IS the damage target.
-      // For damage-time clamps the AE-bearer is always the target, so
-      // anything except an explicit cross-actor source ("ally" etc.) is
-      // a match. Leaving the full source-matrix to Phase F.
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
 
-      // Filter: damage_outcome.
+      // Filter: damage_outcome (evaluated against the ORIGINAL incoming damage).
       const outcome = tRow.reaction_damage_outcome ?? "any";
-      if (outcome === "would_reduce_to_zero") {
-        if ((curHp - rawDamage) > 0) continue; // damage wouldn't drop them → skip
-      }
-      // (Future filters — reaction_damage_source / element / intent — can
-      // gate here. For Mercy none are needed.)
+      if (outcome === "would_reduce_to_zero" && (curHp - rawDamage) > 0) continue;
 
-      // Find effect row by label.
+      // Find effect row by label — must be an incoming adjust_damage row.
       const effRow = Object.values(effectTable)
         .find((r) => r.effect_label === tRow.reaction_effect_ref);
       if (!effRow) continue;
-      if (effRow.effect_kind !== "modify_damage_taken") continue;
+      if (String(effRow.effect_kind ?? "").toLowerCase() !== "adjust_damage") continue;
+      const { op, amountFormula, stage } = readAdjustRow(effRow);
+      if (stage !== "incoming" || !DAMAGE_OPS.has(op)) continue;
 
-      const mode = effRow.modify_mode ?? "set_hp_floor";
-      if (mode === "set_hp_floor") {
-        const floor = Number(effRow.modify_value ?? 1) || 1;
-        if (result.newHp < floor) {
-          log(`damage-reaction: ${target.name} clamped HP floor at ${floor} via AE "${ae.name}"`);
-          result.newHp = floor;
-          result.fired.push({ aeId: ae.id, aeName: ae.name, mode, floor });
-        }
+      let amount = 0;
+      try {
+        const { evaluateFormula } = await getSkillFormulas();
+        amount = Number(evaluateFormula(amountFormula, await getResolver())) || 0;
+      } catch (e) {
+        warn(`resolveDamageReactions: damage_amount eval threw on AE "${ae.name}"`, e);
       }
-      // (Other modes wire here when implemented.)
 
-      if (effRow.consume_self) {
-        if (!result.consumedAeIds.includes(ae.id)) result.consumedAeIds.push(ae.id);
+      const before = dmg;
+      dmg = Math.max(0, Math.floor(applyDamageOp(dmg, op, amount)));
+      if (dmg !== before) {
+        log(`damage-reaction: ${target.name} ${op} ${amount} → damage ${before} → ${dmg} via AE "${ae.name}"`);
+        result.fired.push({ aeId: ae.id, aeName: ae.name, op, amount, from: before, to: dmg });
+        if (effRow.consume_self && !result.consumedAeIds.includes(ae.id)) {
+          result.consumedAeIds.push(ae.id);
+        }
       }
     }
   }
+  result.newHp = Math.max(0, curHp - dmg);
   return result;
 }
 
@@ -1176,8 +1190,39 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   return { ok: !!r?.ok, kind: r?.kind, applied: r?.applied, reason: r?.reason ?? null, abort: !!r?.abort };
 }
 
-// Phase 2: sender-side damage accumulator for pre-resolve add_damage
-// candidates (Cheap Shot et al.).
+// ── Unified damage adjustment (effect_kind: "adjust_damage") ─────────────
+// One kind replaces the former `add_damage` (outgoing/sender-side) and
+// `modify_damage_taken` (incoming/receiver-side). Every row is:
+//   { effect_kind: "adjust_damage",
+//     damage_operation: "add"|"subtract"|"multiply"|"set"|"cap"|"floor",
+//     damage_amount:    <formula>,          // the operand
+//     damage_stage:     "outgoing"|"incoming" }   // default "outgoing"
+// "outgoing" rows adjust the attacker's base damage pre-resolve (read by
+// computeSenderDamageBonuses); "incoming" rows adjust the landed damage at
+// HP-write (read by resolveDamageReactions). `cap` = upper bound, `floor` =
+// lower bound. Mercy ("survive at 1") = incoming cap at `CUR_HP - 1`.
+const DAMAGE_OPS = new Set(["add", "subtract", "multiply", "set", "cap", "floor"]);
+function applyDamageOp(d, op, amount) {
+  switch (op) {
+    case "add":      return d + amount;
+    case "subtract": return d - amount;
+    case "multiply": return d * amount;
+    case "set":      return amount;
+    case "cap":      return Math.min(d, amount); // upper bound
+    case "floor":    return Math.max(d, amount); // lower bound
+    default:         return d;
+  }
+}
+function readAdjustRow(row) {
+  return {
+    op: String(row.damage_operation ?? "add").trim().toLowerCase(),
+    amountFormula: String(row.damage_amount ?? "0"),
+    stage: String(row.damage_stage ?? "outgoing").trim().toLowerCase(),
+  };
+}
+
+// Phase 2: sender-side damage accumulator for pre-resolve outgoing
+// adjust_damage candidates (Cheap Shot, Hawkeye, Warning Shot et al.).
 //
 // Walks the accepted pre-resolve candidates and finds every effect row
 // of `effect_kind: "add_damage"`. For each, evaluates `damage_amount`
@@ -1245,7 +1290,7 @@ export async function computeSenderDamageBonuses({
       subjectUuids = [single];
     }
 
-    let amount = 0;
+    const ops = []; // ordered outgoing damage operations for this candidate
     try {
       const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
       const resolver = buildSkillResolver({
@@ -1267,8 +1312,11 @@ export async function computeSenderDamageBonuses({
         const row = byLabel.get(label);
         if (!row) return;
         const kind = String(row.effect_kind ?? "").toLowerCase();
-        if (kind === "add_damage") {
-          amount += Number(evaluateFormula(String(row.damage_amount ?? "0"), resolver)) || 0;
+        if (kind === "adjust_damage") {
+          const { op, amountFormula, stage } = readAdjustRow(row);
+          if (stage !== "outgoing" || !DAMAGE_OPS.has(op)) return; // incoming handled receiver-side
+          const amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+          ops.push({ op, amount });
         } else if (kind === "chain") {
           const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
           for (const s of steps) walkDamage(s);
@@ -1276,14 +1324,13 @@ export async function computeSenderDamageBonuses({
       }
       walkDamage(cand.ref);
     } catch (e) {
-      warn(`computeSenderDamageBonuses: damage_amount eval threw on ${cand.carrierName}`, e);
-      amount = 0;
+      warn(`computeSenderDamageBonuses: adjust_damage eval threw on ${cand.carrierName}`, e);
+      ops.length = 0;
     }
-    amount = Math.max(0, Math.floor(amount));
-    if (amount <= 0) continue;
+    if (!ops.length) continue;
 
     for (const uuid of subjectUuids) {
-      out.set(uuid, (out.get(uuid) ?? 0) + amount);
+      out.set(uuid, (out.get(uuid) ?? []).concat(ops));
     }
   }
   return out;
@@ -1301,26 +1348,30 @@ export async function computeSenderDamageBonuses({
 // `applyAffinity` is injected so this helper stays decoupled from the
 // snapshot module (snapshot has the affinity table). state-handlers
 // passes `applyAffinityToDamage` from snapshot.js at call sites.
-export function recomputePerTargetDamages(perTargetResults, bonusMap, applyAffinity) {
+export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinity) {
   if (!Array.isArray(perTargetResults) || !perTargetResults.length) return perTargetResults;
-  if (!bonusMap || bonusMap.size === 0) return perTargetResults;
+  if (!opsMap || opsMap.size === 0) return perTargetResults;
   if (typeof applyAffinity !== "function") {
     warn("recomputePerTargetDamages: applyAffinity not supplied; returning original");
     return perTargetResults;
   }
   return perTargetResults.map((entry) => {
-    const bonus = bonusMap.get(entry?.actorUuid) ?? 0;
-    if (bonus <= 0) return entry;
-    if (!entry.hit) return entry;  // misses don't accumulate damage bonuses
-    const newRaw = (Number(entry.rawDamage) || 0) + bonus;
-    const newDamage = applyAffinity(newRaw, String(entry.affinity ?? "NE"));
+    const ops = opsMap.get(entry?.actorUuid);
+    if (!ops || !ops.length) return entry;
+    if (!entry.hit) return entry;  // misses don't take damage adjustments
+    const baseRaw = Number(entry.rawDamage) || 0;
+    let d = baseRaw;
+    for (const { op, amount } of ops) d = applyDamageOp(d, op, amount);
+    d = Math.max(0, Math.floor(d));
+    const newDamage = applyAffinity(d, String(entry.affinity ?? "NE"));
     return {
       ...entry,
-      rawDamage: newRaw,
+      rawDamage: d,
       damage: newDamage,
-      // Diagnostic — lets the action card show a "+X (Cheap Shot)" hint
-      // and lets the RESOLVE log explain where the extra came from.
-      bonusBreakdown: { baseBonus: bonus },
+      // Diagnostic — lets the action card show a "+X / ×0 (Skill)" hint and
+      // lets the RESOLVE log explain the change. `baseBonus` kept for back-compat
+      // with readers that show a simple delta.
+      bonusBreakdown: { ops, from: baseRaw, to: d, baseBonus: d - baseRaw },
     };
   });
 }
@@ -1706,14 +1757,14 @@ export async function applyEffectRow(row, ctx) {
     // just routed through the unified resolver.
     case "equip_swap":          return applyEquipSwapEffect(row, ctx);
     case "encyclopedia_record": return applyEncyclopediaRecordEffect(row, ctx);
-    // add_damage is data-only — read by `computeSenderDamageBonuses`
-    // which walks acceptedPrePassives BEFORE the standard fire loop and
-    // accumulates per-target base-damage bonuses. By the time
-    // firePreAcceptedCandidate routes this row through applyEffectRow,
-    // the bonus is already accumulated and perTargetResults is already
-    // recomputed; firing here is a no-op. Returning ok keeps the chain
-    // log clean. See Phase 2/3 of the Cheap Shot integration plan.
-    case "add_damage":
+    // adjust_damage is data-only here. `damage_stage: "outgoing"` rows are read
+    // by `computeSenderDamageBonuses` (walks acceptedPrePassives BEFORE the fire
+    // loop, accumulating per-target damage ops); `damage_stage: "incoming"` rows
+    // are read by `resolveDamageReactions` at HP-write time. By the time a row
+    // reaches applyEffectRow the adjustment is already applied, so firing is a
+    // no-op — returning ok keeps the chain log clean. Unifies the former
+    // add_damage (outgoing) + modify_damage_taken (incoming) kinds.
+    case "adjust_damage":
       return { ok: true, kind, applied: [], reason: "data-only" };
     case "redirect_target":
       // Data-only at chain-fire time. The target replacement happens in
