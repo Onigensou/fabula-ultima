@@ -39,7 +39,7 @@ import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
-import { LEGACY_BRIDGED_TRIGGERS, MULTI_REACTOR_TRIGGERS } from "./director-triggers.js";
+import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
@@ -1030,34 +1030,8 @@ Hooks.once("ready", () => {
       if (!game.user?.isGM) return;
       const trigger = payload?.trigger;
       if (!trigger || !LEGACY_BRIDGED_TRIGGERS.has(trigger)) return;
-
-      // Multi-reactor triggers (e.g. creature_enter_crisis): fire reactions
-      // on EVERY combatant, not just the payload actor. The event subject is
-      // stamped into the payload so reaction_source / trigger_subject resolve.
-      if (MULTI_REACTOR_TRIGGERS.has(trigger)) {
-        const subjectActorUuid  = payload?.actorUuid ?? null;
-        const subjectTokenUuid  = payload?.tokenUuid ?? null;
-        const normalizedPayload = {
-          ...payload,
-          subjectActorUuid,
-          subjectTokenUuid,
-          targetTokenUuid:  subjectTokenUuid,
-          sourceActorUuid:  subjectActorUuid,
-        };
-        for (const combatant of game.combat?.combatants?.contents ?? []) {
-          const reactorActor = combatant.actor;
-          if (!reactorActor) continue;
-          await firePassiveTriggers({
-            director: _instance ?? null,
-            casterActor: reactorActor,
-            trigger,
-            payload: normalizedPayload,
-          });
-        }
-        return;
-      }
-
-      // Single-reactor path: legacy triggers fire on the payload's actor only.
+      // Resolve subject actor. The legacy payload uses `actorUuid` (some
+      // emit sites) or carries an `actor` directly; tolerate both.
       let actor = payload.actor ?? null;
       if (!actor && payload.actorUuid) {
         actor = await fromUuid(payload.actorUuid).catch(() => null);

@@ -401,15 +401,6 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.current_hp ?? 0) || 0) : 0;
       }
-      // Max HP of the trigger's subject (the attack target). Reads from
-      // payload.subjectActorUuid. Useful for percentage-based damage effects
-      // like status DOTs: damage_amount: "round(TARGET_MAX_HP * 0.1)".
-      case "TARGET_MAX_HP": {
-        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
-        if (!subjectUuid) return 0;
-        const subject = _resolveActorByUuidSync(subjectUuid);
-        return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
-      }
       // Count of targets that PASSED the Check (hit). For Active Skill
       // RESOLVE, chainPayload populates payload.hitTargets (see
       // state-handlers.js Skill resolve). For attack RESOLVE the same

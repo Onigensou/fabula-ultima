@@ -36,7 +36,6 @@ const RESOURCE_PROPS = {
   zenit:      { prop: "zenit",         max: null        },
   enmity:     { prop: "enmity",        max: null        },
   fp:         { prop: "fabula_point",  max: null        },
-  up:         { prop: "ultima_point",  max: null        },
   // Shield — temporary damage buffer (absorbed before HP in applyDamageToTarget).
   // grant adds to it (Golem Soulstone "+10 Shield"); no max.
   shield:     { prop: "shield_value",  max: null, hardMin: 0 },
@@ -2187,10 +2186,7 @@ async function applyApplyAeEffect(row, ctx) {
     // to ae_initial_charges_max (or the existing AE's chargesMax). If no
     // existing AE, fall through to create a fresh one with the normal path.
     if (baseMode === "add_charges") {
-      const _rawIc = row.ae_initial_charges;
-      const rowChargesAdd = _rawIc != null
-        ? evaluateFormula(_rawIc, buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 }), null)
-        : null;
+      const rowChargesAdd = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
       const rowChargesMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
       const existing = findDuplicateAe(actor, template, null);
       if (existing) {
@@ -2227,14 +2223,11 @@ async function applyApplyAeEffect(row, ctx) {
     const data = foundry.utils.deepClone(template);
     delete data._id;  // let Foundry assign a fresh id
     // ae_initial_charges / ae_initial_charges_max — row-level charge
-    // override. Accepts a formula string (e.g. "AE_CHARGES_BURN" to mirror
-    // the target's current Burn stack count). Evaluated per-target with the
-    // target actor as the resolver's actor.
+    // override. Lets the effect row stamp a specific charge count onto an
+    // otherwise chargeless world-template AE (e.g. the "Burn" Debuff
+    // container entry has no charges; the burn_apply row specifies 3).
     {
-      const _rawC = row.ae_initial_charges;
-      const rowC = _rawC != null
-        ? evaluateFormula(_rawC, buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 }), null)
-        : null;
+      const rowC = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
       const rowCMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
       if (rowC != null && Number.isFinite(rowC) && rowC > 0) {
         data.flags = data.flags ?? {};
