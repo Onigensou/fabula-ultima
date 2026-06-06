@@ -19,16 +19,15 @@ function ensureChrome() {
   const css = `
   .fud-itempick-backdrop { position:fixed; inset:0; z-index:120000; display:flex;
     align-items:center; justify-content:center; background:rgba(0,0,0,.45); }
-  .fud-itempick-wrap { width:min(440px,94vw); max-height:84vh; overflow:auto;
+  .fud-itempick-wrap { width:min(440px,94vw); max-height:84vh; overflow:hidden auto;
     border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5); }
-  .fud-itempick-wrap .fud-bf-card { margin:0; }
-  .fud-itempick-actions { display:flex; justify-content:flex-end; gap:8px;
-    padding:10px 14px; background:var(--fud-paper,#efe7d6); border-top:1px solid rgba(0,0,0,.15);
-    border-bottom-left-radius:12px; border-bottom-right-radius:12px; }
-  .fud-itempick-btn { cursor:pointer; padding:6px 16px; border-radius:7px;
-    border:1px solid rgba(0,0,0,.25); font-size:13px; font-weight:600; background:#fff; }
-  .fud-itempick-btn.confirm { background:var(--fud-accent,#c9a24b); color:#1d1a16; }
-  .fud-itempick-btn.is-disabled { opacity:.4; cursor:not-allowed; }
+  .fud-itempick-wrap .fud-bf-card { margin:0; border-bottom-left-radius:0; border-bottom-right-radius:0; }
+  .fud-itempick-hint { display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:8px 14px; background:var(--fud-paper,#efe7d6); color:#3a3122; font-size:12px;
+    border-top:1px solid rgba(0,0,0,.15); }
+  .fud-itempick-btn { cursor:pointer; padding:5px 14px; border-radius:7px;
+    border:1px solid rgba(0,0,0,.25); font-size:12px; font-weight:600; background:#fff; color:#3a3122; }
+  .fud-itempick-btn:hover { background:rgba(0,0,0,.06); }
   `;
   const el = document.createElement("style");
   el.id = "fud-item-picker-chrome";
@@ -75,15 +74,14 @@ export function pickItem({ director, actor, externalCancel = null } = {}) {
           ${card.subtitle ?? ""}
           ${card.body ?? ""}
         </div>
-        <div class="fud-itempick-actions">
+        <div class="fud-itempick-hint">
+          <span>Click an item to choose its target</span>
           <div class="fud-itempick-btn cancel">Cancel</div>
-          <div class="fud-itempick-btn confirm is-disabled">Use</div>
         </div>
       </div>`;
     document.body.appendChild(backdrop);
 
     const cardRoot = backdrop.querySelector(".fud-bf-card");
-    const confirmBtn = backdrop.querySelector(".fud-itempick-btn.confirm");
 
     let done = false;
     const finish = (val) => {
@@ -101,25 +99,16 @@ export function pickItem({ director, actor, externalCancel = null } = {}) {
         for (const p of cardRoot.querySelectorAll(".fud-bf-item-panel")) p.classList.toggle("is-active", p.dataset.fudItemPanel === tab.dataset.fudItemTab);
         return;
       }
-      // Row select (mirrors postActionCard: store on the card root dataset).
+      // Row click → choose immediately and proceed to targeting (no separate
+      // Confirm — the player confirms the TARGET next anyway).
       const row = ev.target.closest?.(".fud-bf-item-row");
       if (row) {
         if (row.dataset.fudItemDisabled === "1") return;
-        for (const r of cardRoot.querySelectorAll(".fud-bf-item-row")) r.classList.toggle("is-selected", r === row);
-        cardRoot.dataset.fudItemMode = row.dataset.fudItemMode || "";
-        cardRoot.dataset.fudItemKey  = row.dataset.fudItemKey  || "";
-        cardRoot.dataset.fudItemCost = row.dataset.fudItemCost || "0";
-        confirmBtn.textContent = row.dataset.fudItemMode === "create" ? "Create" : "Use";
-        confirmBtn.classList.remove("is-disabled");
-        return;
-      }
-      if (ev.target.closest?.(".fud-itempick-btn.cancel")) { finish(null); return; }
-      if (ev.target.closest?.(".fud-itempick-btn.confirm")) {
-        const mode = cardRoot.dataset.fudItemMode;
-        const key  = cardRoot.dataset.fudItemKey;
+        const mode = row.dataset.fudItemMode;
+        const key  = row.dataset.fudItemKey;
         if (!mode || !key) return;
-        const cost = Number(cardRoot.dataset.fudItemCost) || 0;
-        // Map the selection back to the candidate to recover the source uuid.
+        const cost = Number(row.dataset.fudItemCost) || 0;
+        // Map the row back to the candidate to recover the source uuid.
         let uuid = null, name = "";
         if (mode === "use") {
           const c = useList.find((x) => String(x.id) === String(key));
@@ -133,6 +122,7 @@ export function pickItem({ director, actor, externalCancel = null } = {}) {
         finish({ mode, key, cost, uuid, name });
         return;
       }
+      if (ev.target.closest?.(".fud-itempick-btn.cancel")) { finish(null); return; }
       if (ev.target === backdrop) finish(null);
     });
   });
