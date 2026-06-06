@@ -50,10 +50,33 @@ async function fetchSnapshot(log) {
   }
 }
 
-function findInFolder(game, folderId, name) {
-  return game.items?.contents?.find(
-    (i) => i.name === name && (i.folder?.id ?? i.folder ?? null) === folderId
-  ) ?? null;
+const BD_ROOT_NAME = "Battle Director";
+
+function isInBattleDirectorTree(item) {
+  let f = item?.folder;
+  while (f) {
+    if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) return true;
+    f = f.folder;
+  }
+  return false;
+}
+
+// Robust "does this skill already exist" check. Dedup by STABLE identity, not
+// by exact folder — folder placement drifts (a skill authored into `Skill`
+// then moved to `Spell`, or a class folder vs a subfolder), and a folder-scoped
+// check then misses the existing copy and creates a duplicate in the snapshot's
+// folder. Two independent signals, either is sufficient:
+//   1. Same `system.uniqueId` ANYWHERE in the world (the content-master id).
+//   2. Same name + same template ANYWHERE under the Battle Director tree.
+function alreadyExists(game, entry) {
+  const uid = String(entry.system?.uniqueId ?? "").trim();
+  const tpl = String(entry.system?.template ?? "");
+  const name = entry.name;
+  for (const i of game.items?.contents ?? []) {
+    if (uid && String(i.system?.uniqueId ?? "").trim() === uid) return i;
+    if (i.name === name && String(i.system?.template ?? "") === tpl && isInBattleDirectorTree(i)) return i;
+  }
+  return null;
 }
 
 export async function migrate(game, log) {
@@ -68,10 +91,13 @@ export async function migrate(game, log) {
 
   for (const entry of snap) {
     try {
+      // Dedup BEFORE touching folders — if the skill already exists anywhere
+      // (by uniqueId or name+template in the BD tree), do nothing. Avoids both
+      // a duplicate Item and a needless empty folder.
+      if (alreadyExists(game, entry)) { existed += 1; continue; }
+
       const { folder } = await ensureFolderPath(game, entry.folderPath, { log });
       if (!folder) { log(`  ${entry.name}: folder path unresolved — skipping`); failed += 1; continue; }
-
-      if (findInFolder(game, folder.id, entry.name)) { existed += 1; continue; }
 
       // Sync the CSB template version stamp to the live template
       // (per [[csb-template-version-sync]]); fall back to the snapshot value.
