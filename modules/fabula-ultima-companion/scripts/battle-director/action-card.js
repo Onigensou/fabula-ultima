@@ -159,7 +159,7 @@ function weaponIconHTML(weaponType) {
 // ─────────────────────────────────────────────────────────────────────
 // Styles
 // ─────────────────────────────────────────────────────────────────────
-function ensureStyles() {
+export function ensureStyles() {
   if (document.getElementById(CSS_ID)) return;
   const css = document.createElement("style");
   css.id = CSS_ID;
@@ -2639,7 +2639,7 @@ function applyTriggerVisualFromOption(row, optEl) {
   if (srcMeta && dstMeta) dstMeta.innerHTML = srcMeta.innerHTML;
 }
 
-function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
+export function buildItemCard({ attacker, attackerActor, itemCandidates, ip }) {
   // Use/Create tabs on the card body — picker UX from legacy [Macro]
   // Item.js, rebuilt director-native. The card itself is the picker;
   // selection state lives on the card root as data-fud-item-mode +
