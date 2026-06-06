@@ -298,6 +298,17 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   let kbIndex = 0;
   let kbActive = false; // true only while keyboard is driving; mouse hover clears it
 
+  // Live-token tracking. Foundry destroys and rebuilds Token placeables on
+  // every canvas redraw, so the closured `token` can read `.destroyed` (and
+  // worldAnchor would then collapse to {0,0}, stranding the menu top-left)
+  // during a benign pan/zoom. Re-acquire the live placeable by id each frame
+  // and anchor off that. When the token is genuinely gone (deleted, or we've
+  // navigated to another scene) it stays missing across frames — a short
+  // grace window distinguishes that from the 1–2 frame rebuild gap.
+  let activeToken = token;
+  let missingFrames = 0;
+  const MISSING_FRAMES_LIMIT = 30; // ~0.5s at 60fps before self-despawn
+
   function setKbFocus(idx) {
     if (!items.length) return;
     kbActive = true;
@@ -337,8 +348,8 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
 
   function computeSlots() {
     if (!items.length) return;
-    const a = worldAnchor(token);
-    const ctr = worldToClient(token, a.x, a.y);
+    const a = worldAnchor(activeToken);
+    const ctr = worldToClient(activeToken, a.x, a.y);
     const hProbe = items[0]?.btn?.getBoundingClientRect()?.height || 18;
     const rowH = hProbe + GAP_PX;
     const totalRise = rowH * (items.length - 1);
@@ -370,6 +381,20 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
 
   function render() {
     if (!document.body.contains(root)) return;
+    // Re-acquire the live token (Foundry rebuilds placeables on redraw). If
+    // it's present, anchor off it and reset the grace counter. If it's been
+    // missing for longer than the rebuild gap, the token is truly gone:
+    // self-heal by resolving the pending pick (so the FSM bounces cleanly via
+    // the same path as a Cancel — never wedged) then tearing the menu down,
+    // instead of pinning orphaned blades to the top-left corner forever.
+    const live = activeToken?.id ? canvas?.tokens?.get(activeToken.id) : null;
+    if (live) { activeToken = live; missingFrames = 0; }
+    else if (++missingFrames > MISSING_FRAMES_LIMIT) {
+      warn("Turn UI: anchor token gone — self-despawning orphaned menu", token?.name);
+      try { onPick?.(null); } catch (e) { warn("Turn UI self-despawn: onPick(null) threw", e); }
+      cleanup();
+      return;
+    }
     if (items.length === 0) buildPage();
     computeSlots();
     const now = performance.now();
