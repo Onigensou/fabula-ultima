@@ -403,6 +403,14 @@
     {
       "key": "2026-06-06-charge-reaction-aes-on-activation-expiry",
       "path": "data-migrations/2026-06-06-charge-reaction-aes-on-activation-expiry.js"
+    },
+    {
+      "key": "2026-06-06-template-options-ae-duplicate-add-charges",
+      "path": "data-migrations/2026-06-06-template-options-ae-duplicate-add-charges.js"
+    },
+    {
+      "key": "2026-06-06-burn-default-charges-3",
+      "path": "data-migrations/2026-06-06-burn-default-charges-3.js"
     }
   ]
 }

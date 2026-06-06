@@ -53,7 +53,15 @@
   const PASSIVE_TARGET_OPTIONS   = ["self"];
   const GRANT_RESOURCE_OPTIONS   = ["hp", "mp", "ip", "zero_power", "zenit", "enmity"];
   const GRANT_TARGET_OPTIONS     = ["self", "ally", "enemy", "all"];
-  const AE_DUPLICATE_OPTIONS     = ["skip", "replace", "stack", "remove", "ask"];
+  // Full engine-supported set (skill-effects.js apply_ae handler). `add_charges`
+  // and `replace_same_status` + the `*_per_caster` variants were previously
+  // engine-only (authored via migration) — now selectable here so charge-based
+  // statuses (Burn) and Hinder-style same-status dedup can be authored in-sheet.
+  const AE_DUPLICATE_OPTIONS     = [
+    "skip", "replace", "stack", "remove", "ask",
+    "add_charges", "replace_same_status",
+    "replace_per_caster", "skip_per_caster", "remove_per_caster",
+  ];
   const ON_EMPTY_OPTIONS         = ["abort", "skip"];
   const TARGET_SELECT_OPTIONS    = ["first"];
 

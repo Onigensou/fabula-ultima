@@ -22,7 +22,8 @@
  *   • Stacking = charges. The applying skill sets the count via
  *     `ae_initial_charges` + `ae_duplicate_mode: "add_charges"`; the preset
  *     carries `chargeKey: "burn"` so clones + consume_charge line up, and a
- *     master default of 1 covers a bare application.
+ *     master default of 3 covers a bare application (see
+ *     2026-06-06-burn-default-charges-3 for the bump on already-migrated worlds).
  *
  * Definitional fields (chargeKey + reactionConfig) are synced to the master
  * AND every applied copy via the common-AE author helper, so Burns already in
@@ -89,16 +90,20 @@ export async function migrate(game, log) {
     log
   );
 
-  // 2. Master-only default charge of 1 (a bare application = 1 stack; skills
-  //    that apply Burn override via ae_initial_charges). Applied copies keep
-  //    their current stacks — never clobbered here.
+  // 2. Master-only default charge of 3 (a bare application = 3 stacks / 3 ticks;
+  //    skills that apply Burn can still override via ae_initial_charges). Applied
+  //    copies keep their current stacks — never clobbered here. NOTE: existing
+  //    worlds that already ran this migration at the old default of 1 are
+  //    corrected by 2026-06-06-burn-default-charges-3 (this file is ledgered and
+  //    won't re-apply); fresh installs land at 3 directly here.
+  const DEFAULT_CHARGES = 3;
   let masterCharged = 0;
   for (const it of game.items?.contents ?? []) {
     if (it.type !== "activeEffectContainer") continue;
     for (const ae of it.effects?.contents ?? []) {
       if (ae.name !== "Burn") continue;
-      if (Number(ae.flags?.[NS]?.charges ?? 0) !== 1) {
-        await ae.update({ [`flags.${NS}.charges`]: 1 });
+      if (Number(ae.flags?.[NS]?.charges ?? 0) !== DEFAULT_CHARGES) {
+        await ae.update({ [`flags.${NS}.charges`]: DEFAULT_CHARGES });
         masterCharged += 1;
       }
     }
