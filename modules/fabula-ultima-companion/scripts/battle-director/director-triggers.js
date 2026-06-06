@@ -103,6 +103,18 @@ export const LEGACY_BRIDGED_TRIGGERS = new Set([
   "creature_recovers_hp",
   "creature_recovers_mp",
   "creature_lose_mp",
+  // Emitted by auto-crisis-detection; needs multi-reactor dispatch so
+  // bystander actors (e.g. Hellhound's On the Hunt) can react.
+  "creature_enter_crisis",
+  "creature_exit_crisis",
+]);
+
+// Triggers that should fire reactions on EVERY combatant, not just the
+// payload's actor. The crisis-entering actor is stamped as subjectActorUuid
+// so reaction_source / trigger_subject targeting work correctly.
+export const MULTI_REACTOR_TRIGGERS = new Set([
+  "creature_enter_crisis",
+  "creature_exit_crisis",
 ]);
 
 // Standalone triggers — fire independent of any action card. Used by
