@@ -3902,6 +3902,48 @@ const Resolve = {
       }
     }
 
+    // Crit → stamp opportunity payload so the RESOLVE transition branches to
+    // OPPORTUNITY_WINDOW. Stamped after the persistence checkpoint so an F5
+    // during the picker gracefully skips the opportunity (action already committed).
+    if (ar.roll?.opportunities) {
+      director.ctx.hasPendingOpportunity = {
+        actorUuid:    ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null,
+        actorName:    ar.attacker?.name ?? "?",
+        actionCardId: ar.cardId ?? null,
+      };
+    }
+
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
+
+// ─── OPPORTUNITY_WINDOW ────────────────────────────────────────────────
+// Entered when ar.roll.opportunities was true in the preceding RESOLVE
+// (crit that is not a fumble). Awaits the full ONI opportunity flow —
+// stagger pause, "Opportunity!" animation, picker, resolution — before
+// releasing to REACTION_WINDOW. offer() has a built-in 120 s safety
+// timeout so the FSM is never permanently wedged if the player walks away.
+const OpportunityWindow = {
+  async onEnter(director) {
+    const opp = director.ctx.hasPendingOpportunity;
+    director.ctx.hasPendingOpportunity = null;
+
+    const oppSys = globalThis.ONI?.OpportunitySystem;
+    if (!opp || !oppSys?.offer) {
+      warn("OPPORTUNITY_WINDOW: OpportunitySystem not available — skipping");
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+
+    log(`OPPORTUNITY_WINDOW — offering to ${opp.actorName}`);
+    await oppSys.offer({
+      actorUuid:    opp.actorUuid,
+      actorName:    opp.actorName,
+      source:       "action",
+      actionCardId: opp.actionCardId,
+      context:      { source: "battle_director" },
+    }).catch(e => warn("OPPORTUNITY_WINDOW: offer() threw", e));
+
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
@@ -4365,8 +4407,9 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.TARGET]:          Target,
   [STATES.COMPUTE]:         Compute,
   [STATES.CONFIRM]:         Confirm,
-  [STATES.RESOLVE]:         Resolve,
-  [STATES.REACTION_WINDOW]: ReactionWindow,
+  [STATES.RESOLVE]:           Resolve,
+  [STATES.OPPORTUNITY_WINDOW]: OpportunityWindow,
+  [STATES.REACTION_WINDOW]:   ReactionWindow,
   [STATES.CLEANUP]:         Cleanup,
   [STATES.TURN_END]:        TurnEnd,
   [STATES.ROUND_END]:       RoundEnd,
