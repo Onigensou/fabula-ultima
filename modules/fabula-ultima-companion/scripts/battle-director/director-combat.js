@@ -131,6 +131,11 @@ export class DirectorCombat {
     this.currentSide = "party";      // flips during nextTurn
     this.currentCombatantId = null;  // resolved by the picker (or auto-pick)
 
+    // Solo-player test mode (dev Test Battle tool): when set, every combatant
+    // whose actorUuid differs gets 0 turns per round, so only the main player
+    // ever acts. The FSM's empty-side handling skips the 0-turn side cleanly.
+    this.soloPlayerActorUuid = null;
+
     // Reload-survival commit marker. Flipped to true when RESOLVE has
     // applied damage/AE/equipment for the current turn (after that, a
     // reload should resume at TURN_END so the player doesn't re-trigger
@@ -237,7 +242,54 @@ export class DirectorCombat {
   addCombatant(opts) {
     const c = (opts instanceof DirectorCombatant) ? opts : new DirectorCombatant(opts);
     this.combatants.push(c);
+    // Solo mode: a freshly-added non-player combatant gets 0 turns too.
+    if (this.soloPlayerActorUuid && c.actorUuid !== this.soloPlayerActorUuid) {
+      c.turnsPerRound = 0;
+      c.turnsRemaining = 0;
+    }
     return c;
+  }
+
+  // Enable solo-player mode: only the given actor keeps its turns; every other
+  // combatant (current + future adds) gets 0 turns per round. Pass null to
+  // clear (does not restore prior turn counts).
+  setSoloPlayer(actorUuid) {
+    this.soloPlayerActorUuid = actorUuid || null;
+    if (!actorUuid) return;
+    for (const c of this.combatants) {
+      if (c.actorUuid !== actorUuid) {
+        c.turnsPerRound = 0;
+        c.turnsRemaining = 0;
+      }
+    }
+    log(`DirectorCombat: solo-player mode → only ${actorUuid} acts`);
+  }
+
+  // Drop combatants whose token no longer exists on the scene (deleted out from
+  // under us). Without this they linger as "ghost" targets in the player's
+  // target list with nothing on the canvas. Returns the number removed.
+  pruneStaleCombatants() {
+    const scene = this.scene;
+    if (!scene?.tokens) return 0;
+    const removed = [];
+    this.combatants = this.combatants.filter((c) => {
+      if (scene.tokens.get(c.tokenId)) return true;
+      removed.push(c);
+      if (this.currentCombatantId === c.id) this.currentCombatantId = null;
+      return false;
+    });
+    if (removed.length) log(`pruneStaleCombatants: removed ${removed.length} ghost(s) — ${removed.map((c) => c.name).join(", ")}`);
+    return removed.length;
+  }
+
+  // Remove a combatant by its id. Clears the current pointer if it was acting.
+  // Returns the removed combatant (or null). Caller deletes the token doc.
+  removeCombatantById(id) {
+    const i = this.combatants.findIndex((c) => c.id === id);
+    if (i < 0) return null;
+    const [removed] = this.combatants.splice(i, 1);
+    if (this.currentCombatantId === id) this.currentCombatantId = null;
+    return removed;
   }
 
   removeCombatant(combatantOrId) {
