@@ -1,7 +1,7 @@
 /**
  * ActiveEffect Charges — Token Badge (Foundry VTT v12)
  * -----------------------------------------------------------------------------
- * Renders the current charge count as a small numeric badge in the BOTTOM-right
+ * Renders the current charge count as a small numeric badge in the TOP-right
  * corner of each token effect icon whose source ActiveEffect carries
  * flags.fabula-ultima-companion.charges — hidden ONLY when chargesMax === 1 (a
  * pure on/off effect, where a "1" is noise). Shown for max > 1 and for an unset
@@ -87,7 +87,7 @@ Hooks.once("ready", () => {
       catch (_e) { try { iconSprite.removeChild?.(old); } catch (_e2) {} }
     }
 
-    function attachBadge(iconSprite, count) {
+    function attachBadge(iconSprite, count, max = null) {
       if (!iconSprite || typeof PIXI === "undefined") return;
 
       clearBadge(iconSprite);
@@ -100,14 +100,19 @@ Hooks.once("ready", () => {
       if (!localW || !localH) return;
 
       const minDim = Math.min(localW, localH);
-      const fontSize = Math.max(20, Math.round(minDim * 0.45));
-      const stroke   = Math.max(3, Math.round(fontSize * 0.25));
+      const fontSize = Math.max(12, Math.round(minDim * 0.34));
+      const stroke   = Math.max(2, Math.round(fontSize * 0.2));
+
+      // Gold when the charge pool is topped off (count ≥ max); white otherwise.
+      // An unset max (unlimited) never reads as "full" → stays white.
+      const atMax = (max !== null && Number.isFinite(max) && count >= max);
+      const fill  = atMax ? "#ffd23f" : "#ffffff";
 
       const style = new PIXI.TextStyle({
         fontFamily: "Signika, sans-serif",
         fontSize,
         fontWeight: "bold",
-        fill: "#ffffff",
+        fill,
         stroke: "#000000",
         strokeThickness: stroke,
         align: "right",
@@ -120,16 +125,21 @@ Hooks.once("ready", () => {
 
       const badge = new PIXI.Text(String(count), style);
       badge[BADGE_MARKER] = true;
-      badge.anchor?.set?.(1, 1); // bottom-right anchor
+      badge.anchor?.set?.(1, 0); // top-right anchor
 
       // The icon sprite's anchor shifts where (0,0) of its local space sits
-      // on the texture. Texture BOTTOM-right in local space is at:
+      // on the texture. Texture TOP-right in local space is at:
       //   x = (1 - anchor.x) * localW
-      //   y = (1 - anchor.y) * localH
+      //   y = (0 - anchor.y) * localH
       const ax = iconSprite.anchor?.x ?? 0;
       const ay = iconSprite.anchor?.y ?? 0;
-      badge.x = (1 - ax) * localW;
-      badge.y = (1 - ay) * localH;
+      // Push the badge's top-right corner slightly BEYOND the icon's top-right
+      // corner so the number overlaps the icon border a bit (sits half-on /
+      // half-off the top-right edge). The y offset also absorbs PIXI.Text's
+      // internal top-leading. Offsets scale with fontSize so it holds across
+      // icon sizes.
+      badge.x = (1 - ax) * localW + Math.round(fontSize * 0.22);
+      badge.y = (0 - ay) * localH - Math.round(fontSize * 0.30);
       badge.zIndex = 100;
 
       iconSprite.sortableChildren = true;
@@ -154,7 +164,7 @@ Hooks.once("ready", () => {
         if (max === 1) return;
         const imgNorm = normalizePath(eff.img ?? eff.icon ?? "");
         if (!imgNorm) return;
-        out.push({ effect: eff, count, imgNorm });
+        out.push({ effect: eff, count, max, imgNorm });
       };
 
       try {
@@ -211,7 +221,7 @@ Hooks.once("ready", () => {
 
         const match = pool.splice(idx, 1)[0];
         try {
-          attachBadge(child, match.count);
+          attachBadge(child, match.count, match.max);
           log("Badge attached:", { token: token.name, effect: match.effect.name, count: match.count });
         } catch (e) {
           warn("Failed to attach charge badge.", e);
