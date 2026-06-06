@@ -27,7 +27,7 @@ import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
-import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance } from "./director-init.js";
+import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance, spawnLiveDirectorTokens } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
@@ -35,6 +35,7 @@ import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
+import { initTestBattleTool } from "./test-battle-tool.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
@@ -839,6 +840,77 @@ Hooks.once("ready", () => {
       const dc = _instance?.dCombat;
       if (dc) { try { bannerRefreshTurnActions(dc); } catch (e) { warn("refreshTurnActions API threw", e); } }
     },
+    // ── Live roster (GM-only, dev) ───────────────────────────────────────
+    // Add / remove / list combatants on a running battle without restarting.
+    // Used by the Test Battle dev tool to switch the player/enemy or drop in
+    // extra allies/enemies mid-fight. Spawned tokens carry the directorSpawned
+    // flag, so the normal end-of-battle sweep removes them.
+    listCombatants: () => {
+      const dc = _instance?.dCombat;
+      if (!dc?.started || dc.ended) return [];
+      return (dc.combatants ?? []).map((c) => ({
+        id: c.id, name: c.name, side: c.side, tokenUuid: c.tokenUuid,
+        actorUuid: c.actorUuid, defeated: !!c.isDefeatedLive?.(),
+        isCurrent: c.id === dc.currentCombatantId,
+        hasToken: !!dc.scene?.tokens?.get(c.tokenId),
+      }));
+    },
+    // Remove ghost combatants (token deleted out from under them). Returns the
+    // count removed. Auto-runs on deleteToken too (see hook below).
+    pruneGhostCombatants: () => {
+      const dc = _instance?.dCombat;
+      if (!dc?.started || dc.ended) return { ok: false, error: "no active battle" };
+      const n = dc.pruneStaleCombatants();
+      if (n) {
+        try { bannerRefreshTurnActions(dc); } catch (_e) {}
+        try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "prune" }); } catch (_e) {}
+      }
+      return { ok: true, removed: n };
+    },
+    addCombatant: async ({ actorUuid, side } = {}) => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance, dc = d?.dCombat;
+      if (!dc?.started || dc.ended) return { ok: false, error: "no active battle" };
+      const actor = actorUuid ? await fromUuid(actorUuid) : null;
+      if (!actor || actor.documentName !== "Actor") return { ok: false, error: "actor not found" };
+      const sd = side === "enemy" ? "enemy" : "party";
+      const disposition = sd === "enemy" ? -1 : 1;
+      try {
+        const [tokenDoc] = await spawnLiveDirectorTokens({ scene: dc.scene, actorUuids: [actor.uuid], disposition });
+        if (!tokenDoc) return { ok: false, error: "token spawn failed" };
+        const c = dc.addCombatant({ tokenDoc, actorDoc: actor, side: sd, disposition });
+        try { bannerRefreshTurnActions(dc); } catch (_e) {}
+        try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add", combatantId: c.id }); } catch (_e) {}
+        log(`live addCombatant: ${c.name} (${sd})`);
+        return { ok: true, combatantId: c.id, tokenUuid: c.tokenUuid, name: c.name };
+      } catch (e) {
+        warn("addCombatant threw", e);
+        return { ok: false, error: String(e?.message ?? e) };
+      }
+    },
+    removeCombatant: async ({ combatantId, tokenUuid } = {}) => {
+      if (!game.user?.isGM) return { ok: false, error: "GM only" };
+      const d = _instance, dc = d?.dCombat;
+      if (!dc?.started || dc.ended) return { ok: false, error: "no active battle" };
+      const c = combatantId
+        ? dc.findById(combatantId)
+        : (dc.combatants ?? []).find((x) => x.tokenUuid === tokenUuid);
+      if (!c) return { ok: false, error: "combatant not found" };
+      try {
+        const removed = dc.removeCombatantById(c.id);
+        const td = removed?.tokenDoc;
+        if (td?.id && td.parent) {
+          try { await td.parent.deleteEmbeddedDocuments("Token", [td.id]); } catch (e) { warn("removeCombatant: token delete threw", e); }
+        }
+        try { bannerRefreshTurnActions(dc); } catch (_e) {}
+        try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "remove", combatantId: c.id }); } catch (_e) {}
+        log(`live removeCombatant: ${c.name}`);
+        return { ok: true, removedId: c.id, name: c.name };
+      } catch (e) {
+        warn("removeCombatant threw", e);
+        return { ok: false, error: String(e?.message ?? e) };
+      }
+    },
     // ── Dev state controls (GM-only) ─────────────────────────────────────
     // Manual FSM nudges for testing — drive the battle forward without playing
     // out every turn. All operate on the live director instance; no-op (with a
@@ -894,6 +966,25 @@ Hooks.once("ready", () => {
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
   };
+
+  // Auto-prune ghost combatants: if a token is deleted while a director battle
+  // is live, drop its combatant so it never lingers as a target with no token
+  // on the canvas. Self-skips during the api.removeCombatant path (combatant
+  // already gone) and at battle end (dCombat ended).
+  Hooks.on("deleteToken", (tokenDoc) => {
+    try {
+      const dc = _instance?.dCombat;
+      if (!dc?.started || dc.ended) return;
+      if (tokenDoc?.parent?.id !== dc.scene?.id) return;
+      const c = dc.combatants.find((x) => x.tokenId === tokenDoc.id);
+      if (!c) return;
+      dc.removeCombatantById(c.id);
+      try { bannerRefreshTurnActions(dc); } catch (_e) {}
+      try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "token-deleted", combatantId: c.id }); } catch (_e) {}
+      log(`deleteToken: pruned ghost combatant ${c.name}`);
+    } catch (e) { warn("deleteToken prune threw", e); }
+  });
+
   // Async-load freeActions onto the api surface (require isn't available
   // in ESM; the eager-loaded value above is a stub fallback). The async
   // path is the real wire.
@@ -994,6 +1085,11 @@ Hooks.once("ready", () => {
 
   try { initBattleStateTool(); }
   catch (e) { warn("initBattleStateTool on ready threw", e); }
+
+  // Test Battle tool — GM panel to launch a lean live battle with hand-picked
+  // participants (real/class-test player, real/dummy enemy, ally, extra enemies).
+  try { initTestBattleTool(); }
+  catch (e) { warn("initTestBattleTool on ready threw", e); }
 
   // Director entrance renderer — registered on every client so the GM can
   // broadcast the party run-in dash + enemy fade to all screens.

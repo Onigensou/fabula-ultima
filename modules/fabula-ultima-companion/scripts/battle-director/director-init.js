@@ -491,6 +491,72 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
   return created;
 }
 
+// ─── Live (mid-battle) spawn ────────────────────────────────────────────
+// Spawn a token for an actor onto a LIVE battle scene — visible immediately
+// (alpha 1, no curtain/entrance), flagged directorSpawned so the normal
+// end-of-battle sweep removes it. Used by the Test Battle dev tool to add /
+// switch combatants on the fly. Placement is pragmatic: stack just below the
+// lowest existing same-disposition token, or fall back to a side column.
+export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition }) {
+  if (!scene || !Array.isArray(actorUuids) || !actorUuids.length) return [];
+  const grid = scene.grid?.size ?? 100;
+  const baseX = Math.round(scene.width * (disposition === -1 ? 0.16 : 0.82));
+  const baseY = Math.round(scene.height * 0.26);
+  const step = grid * 1.15;
+  const dir = disposition === -1 ? 1 : -1; // enemies fan right, party fans left
+
+  // Occupied token CENTERS (existing same-side + ones we place this call), so
+  // we never drop a new token on top of another (which would make it look like
+  // a "ghost" with no visible token). Scan a small grid for the first free,
+  // in-bounds cell.
+  const occupied = (scene.tokens?.contents ?? [])
+    .filter((t) => t.disposition === disposition)
+    .map((t) => ({ x: t.x + ((t.width ?? 1) * grid) / 2, y: t.y + ((t.height ?? 1) * grid) / 2 }));
+  const freeCell = () => {
+    for (let col = 0; col < 5; col++) {
+      for (let row = 0; row < 8; row++) {
+        const x = baseX + col * step * dir;
+        const y = baseY + row * step;
+        if (x < grid || x > scene.width - grid || y > scene.height - grid) continue;
+        if (occupied.some((o) => Math.abs(o.x - x) < grid * 0.7 && Math.abs(o.y - y) < grid * 0.7)) continue;
+        return { x, y };
+      }
+    }
+    return { x: baseX, y: Math.min(scene.height - grid, baseY) };
+  };
+
+  const out = [];
+  for (const uuid of actorUuids) {
+    const actor = await resolveActor(uuid);
+    if (!actor) { warn(`spawnLive: actor ${uuid} not found`); continue; }
+    const proto = actor.prototypeToken;
+    const td = proto?.toObject?.() ?? {};
+    const battleSprite = String(actor.system?.props?.sprite_battle ?? "").trim();
+    if (battleSprite) td.texture = { ...(td.texture ?? {}), src: battleSprite };
+    if (disposition === -1) {
+      const baseSx = Math.abs(Number(td.texture?.scaleX) || 1) || 1;
+      td.texture = { ...(td.texture ?? {}), scaleX: -baseSx };
+    }
+    const width = td.width ?? 1, height = td.height ?? 1;
+    const center = freeCell();
+    occupied.push(center);
+    td.x = Math.round(center.x - (width * grid) / 2);
+    td.y = Math.round(center.y - (height * grid) / 2);
+    td.actorId = actor.id;
+    td.actorLink = disposition === 1 ? !!proto?.actorLink : false;
+    td.disposition = disposition;
+    td.hidden = false;
+    td.alpha = 1;
+    td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
+    const [created] = await scene.createEmbeddedDocuments("Token", [td]);
+    if (created) out.push(created);
+  }
+  // Kick battle-stance loops on the freshly-spawned tokens (idempotent).
+  try { await ensureBattleStancePlaying(out); } catch (_e) {}
+  log(`spawnLive: spawned ${out.length} token(s) disposition=${disposition}`);
+  return out;
+}
+
 // ─── Entrance animation ────────────────────────────────────────────────
 // Party "run in from the right": each player token is staged off-screen to
 // the right of its final spot, then slides into place via Foundry's token
@@ -762,6 +828,10 @@ function buildDCombatFromSpawn({ battleScene, partyTokens, enemyTokens, payload 
     enemyTokens,
     sourceSceneId: payload?.context?.sourceSceneId ?? null,
   });
+  // Solo-player test mode (dev tool): zero everyone's turns except the main
+  // player, so only they act. Set before start() so the round-1 reset honors it.
+  const soloUuid = payload?.context?.soloPlayerActorUuid ?? null;
+  if (soloUuid) dCombat.setSoloPlayer(soloUuid);
   dCombat.start();
   log(`DirectorCombat ready: ${dCombat.size} combatants, sourceSceneId=${dCombat.sourceSceneId ?? "(none)"}`);
   return dCombat;
@@ -777,6 +847,14 @@ export async function runDirectorInit(payload) {
   const battleScene = await resolveScene(battleSceneUuid);
   if (!battleScene) throw new Error(`Battle scene not found: ${battleSceneUuid}`);
 
+  // Lean mode (dev "Test Battle" tool): run the REAL init pipeline — encounter
+  // resolve, party resolve, scene activate, token spawn, dCombat build, FSM —
+  // but skip the cinematic dressing (battle-start crack, curtain, asset-preload
+  // wait, BGM, entrance dash, BATTLE START banner). Production behavior is
+  // unchanged when the flag is absent. See test-battle-tool.js.
+  const lean = !!(payload?.context?.lean ?? payload?.lean);
+  if (lean) log("runDirectorInit: LEAN mode — cinematics skipped");
+
   // Legacy-listener suppression is handled by director-boot.start() before
   // this function runs (in the FSM path, PrepState.onEnter awaits us — boot
   // already ran). We don't re-suppress here so the console stays quiet.
@@ -788,10 +866,10 @@ export async function runDirectorInit(payload) {
   // to the battle scene. Ports the legacy "BattleInit — Battle Transition"
   // cinematic; broadcasts to all clients. Awaited so the crack is visible
   // before the curtain goes black.
-  await playBattleStartTransition({ waitMs: 900 });
+  if (!lean) await playBattleStartTransition({ waitMs: 900 });
 
   // ── 2. Raise curtain — black screen for the entire prep phase.
-  await raiseCurtain();
+  if (!lean) await raiseCurtain();
 
   // ── 3. Resolve encounter (manual / random / fixed). All of this runs
   // BEHIND the curtain so the user sees nothing until step 9.
@@ -860,13 +938,15 @@ export async function runDirectorInit(payload) {
   // the curtain stays up until the preload has either ACKed from clients or
   // timed out. This is the user's requested behavior: "only fade out the
   // darken when preload is completed".
-  const urls = [
-    ...buildPreloadUrls({ tokens: [...partyTokens, ...enemyTokens], payload }),
-    ...buildEnemyRoarUrls(enemyTokens),
-  ];
-  const preloadResult = await preloadUrls(urls, { label: `director-${Date.now()}` });
-  if (preloadResult?.timedOut) {
-    ui.notifications?.warn?.("Battle Director: asset preload timed out; some clients may see fallbacks.");
+  if (!lean) {
+    const urls = [
+      ...buildPreloadUrls({ tokens: [...partyTokens, ...enemyTokens], payload }),
+      ...buildEnemyRoarUrls(enemyTokens),
+    ];
+    const preloadResult = await preloadUrls(urls, { label: `director-${Date.now()}` });
+    if (preloadResult?.timedOut) {
+      ui.notifications?.warn?.("Battle Director: asset preload timed out; some clients may see fallbacks.");
+    }
   }
 
   // Warm-decode the director's short SFX cues (hit / heal / coin / etc.) into
@@ -880,21 +960,33 @@ export async function runDirectorInit(payload) {
   // playlist write broadcasts to all clients on its own; we don't block the
   // reveal on it. Ports the legacy BattleInit BGM start (plays the chosen
   // track name from whichever playlist holds it).
-  playBattleBgm(payload).catch((e) => warn("PREP: playBattleBgm threw", e));
+  if (!lean) playBattleBgm(payload).catch((e) => warn("PREP: playBattleBgm threw", e));
 
   // ── 9. Drop curtain — only now, after preload ACKs are in. Tokens are
   // positioned but still alpha=0 (invisible) underneath the curtain; the
   // entrance animation reveals them next. The party run-in animates its own
   // (cheap, ~4) WEBM sprite copies; enemy stance loops start at step 10b.
-  await dropCurtain();
+  if (!lean) await dropCurtain();
 
   // Short settle delay so the curtain fade completes visually before
   // entrance starts.
-  await wait(150);
+  if (!lean) await wait(150);
 
   // ── 10. Entrance animation (party run-in from the right, staggered
-  // top→bottom; enemies fade in).
-  await playEntranceAnimation({ partyTokens, enemyTokens });
+  // top→bottom; enemies fade in). In lean mode there's no curtain to reveal
+  // from, so we just persist the durable alpha:1 directly (the same write the
+  // entrance tail does at the end of playEntranceAnimation) — no dash/fade.
+  if (lean) {
+    try {
+      const ids = [...partyTokens, ...enemyTokens].map((t) => t.id);
+      if (ids.length) {
+        await battleScene.updateEmbeddedDocuments(
+          "Token", ids.map((id) => ({ _id: id, alpha: 1 })), { animate: false });
+      }
+    } catch (e) { warn("lean: persist token alpha failed", e); }
+  } else {
+    await playEntranceAnimation({ partyTokens, enemyTokens });
+  }
 
   // ── 10b. Ensure battle-stance WEBM/MP4 loops are running on every token.
   // Idempotent: the party tokens are already animating (their shared texture
@@ -907,7 +999,7 @@ export async function runDirectorInit(payload) {
   // so the battle process (dCombat build → FSM → ROUND 1 banner → turns)
   // only begins once the flash has cleared the screen. Broadcasts to all
   // clients on its own socket channel.
-  await playBattleStartBanner({ text: "BATTLE START" });
+  if (!lean) await playBattleStartBanner({ text: "BATTLE START" });
 
   // ── 11. Build the director-owned DirectorCombat (no Foundry Combat doc).
   // dCombat is the sole authority for round/turn/current. The Foundry Combat
