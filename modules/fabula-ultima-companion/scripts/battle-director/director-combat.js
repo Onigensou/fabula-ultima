@@ -28,9 +28,9 @@
 
 import { log, warn } from "./logger.js";
 
-// Read activation count from actor (Champions/Elites can have >1).
+// Base activation count from actor (Champions/Elites can have >1; PCs default 1).
 // Mirrors the legacy `readDesiredActivations` in `Battle Initiator`.
-function readActivations(actor) {
+function readBaseActivation(actor) {
   const candidates = [
     actor?.system?.props?.activation,
     actor?.system?.activation,
@@ -43,6 +43,19 @@ function readActivations(actor) {
     if (Number.isFinite(n) && n >= 1) return n;
   }
   return 1;
+}
+
+// Effective actions per round = base activation + `bonus_activation` accumulator
+// (buffs/debuffs add to the bonus; Haste = +1, Slow = −1). Clamped to ≥ 0
+// (0 = the creature gets no turn this round). This is re-read each round so
+// changes to either prop — via Active Effects or a direct edit — take effect
+// live without rebuilding the combat. See _effectiveActivation / start /
+// _resetRoundCounters for the read sites.
+function readActivations(actor) {
+  const base = readBaseActivation(actor);
+  const raw = actor?.system?.props?.bonus_activation;
+  const bonus = Number.isFinite(Number(raw)) ? Number(raw) : 0;
+  return Math.max(0, base + bonus);
 }
 
 function readBool(actor, keys) {
@@ -323,9 +336,13 @@ export class DirectorCombat {
     // director-boot.js' Battle Start branch.
     this.round = 0;
     this.turn = 0;
-    // Initialize round-1 turn counts (constructor already set them, but
-    // re-sync in case combatants were appended after construction).
-    for (const c of this.combatants) c.turnsRemaining = c.turnsPerRound;
+    // Initialize round-1 turn counts from the live activation stat (re-read so
+    // any pre-battle change / solo-mode is honored; combatants appended after
+    // construction also get a correct count).
+    for (const c of this.combatants) {
+      c.turnsPerRound = this._effectiveActivation(c);
+      c.turnsRemaining = c.isDefeatedLive() ? 0 : c.turnsPerRound;
+    }
     this.currentSide = this.firstSide;
     this.currentCombatantId = null; // resolved by the first TurnStart pick
     log(`DirectorCombat started: ${this.combatants.length} combatants on ${this.scene?.name ?? "?"}, firstSide=${this.firstSide}`);
@@ -347,10 +364,21 @@ export class DirectorCombat {
     log(`DirectorCombat ended at round ${this.round}`);
   }
 
-  // Reset all un-defeated combatants' turnsRemaining for a new round. Defeated
-  // combatants stay at 0 — they don't get a fresh turn pool.
+  // Current effective actions-per-round for a combatant: the LIVE activation
+  // stat (base + bonus_activation), or 0 if solo-excluded. Re-reading the actor
+  // here is what makes activation a manipulable stat — an effect or sheet edit
+  // changing `activation`/`bonus_activation` is picked up at the next round.
+  _effectiveActivation(c) {
+    if (this.soloPlayerActorUuid && c.actorUuid !== this.soloPlayerActorUuid) return 0;
+    return readActivations(c.actorDoc);
+  }
+
+  // Reset all un-defeated combatants' turnsRemaining for a new round, re-reading
+  // their live activation. Defeated combatants get 0 remaining (but keep their
+  // would-be turnsPerRound so the tracker reads right if they're revived).
   _resetRoundCounters() {
     for (const c of this.combatants) {
+      c.turnsPerRound = this._effectiveActivation(c);
       c.turnsRemaining = c.isDefeatedLive() ? 0 : c.turnsPerRound;
     }
   }
