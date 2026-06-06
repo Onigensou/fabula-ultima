@@ -36,6 +36,9 @@ const RESOURCE_PROPS = {
   zenit:      { prop: "zenit",         max: null        },
   enmity:     { prop: "enmity",        max: null        },
   fp:         { prop: "fabula_point",  max: null        },
+  // Shield — temporary damage buffer (absorbed before HP in applyDamageToTarget).
+  // grant adds to it (Golem Soulstone "+10 Shield"); no max.
+  shield:     { prop: "shield_value",  max: null, hardMin: 0 },
 };
 
 // ── Public entry points ─────────────────────────────────────────────────
@@ -338,10 +341,35 @@ export async function applyDamageToTarget({
     return { resource: "hp", finalValue: healed, valueDirection: "recover", fired: [] };
   }
 
-  // Normal damage path — reaction AEs first, then write, then consume.
+  // Normal damage path.
   if (damage > 0) {
-    const { newHp, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: damage });
-    await target.update({ "system.props.current_hp": newHp });
+    // ── Shield absorption (RAW: Shield soaks damage before HP) ──
+    // `shield_value` is a temporary buffer; incoming damage hits it first and
+    // only the overflow reaches HP. Absorbs all damage types (shield_type is
+    // cosmetic for now). Batched into the same actor.update as the HP write.
+    const curShield = readPropNum(target, ["shield_value"], 0);
+    let toHp = damage;
+    let absorbed = 0;
+    let newShield = curShield;
+    if (curShield > 0) {
+      absorbed = Math.min(curShield, damage);
+      newShield = curShield - absorbed;
+      toHp = damage - absorbed;
+      log(`${prefix}shield absorbed ${absorbed} on ${targetName}: shield ${curShield} → ${newShield}${logSuffix}`);
+      fireResourceLossVfx({ tokenUuid, resource: "shield", amount: absorbed, affinity });
+    }
+
+    // Fully absorbed — only the shield changed; HP untouched.
+    if (toHp <= 0) {
+      await target.update({ "system.props.shield_value": newShield });
+      return { resource: "hp", finalValue: damage, valueDirection: "loss", fired: [], shieldAbsorbed: absorbed };
+    }
+
+    // Overflow → HP, via the reaction AEs (Mercy clamp etc.).
+    const { newHp, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
+    const update = { "system.props.current_hp": newHp };
+    if (absorbed > 0) update["system.props.shield_value"] = newShield;
+    await target.update(update);
     for (const aeId of consumedAeIds) {
       const ae = target.effects?.get?.(aeId);
       if (ae) {
@@ -350,13 +378,15 @@ export async function applyDamageToTarget({
       }
     }
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
-    log(`${prefix}applied ${damage} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${reactionNote}${logSuffix}`);
+    const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
+    log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
     fireResourceLossVfx({ tokenUuid, resource: "hp", amount: curHp - newHp, affinity });
     return {
       resource: "hp",
-      finalValue: Math.max(0, curHp - newHp),
+      finalValue: Math.max(0, curHp - newHp) + absorbed,
       valueDirection: "loss",
       fired,
+      shieldAbsorbed: absorbed,
     };
   }
 
@@ -1639,6 +1669,7 @@ export async function applyEffectRow(row, ctx) {
   switch (kind) {
     case "targeting":      return applyTargetingEffect(row, ctx);
     case "grant":          return applyGrantEffect(row, ctx);
+    case "set_resource":   return applySetResourceEffect(row, ctx);
     case "apply_ae":       return applyApplyAeEffect(row, ctx);
     case "consume_charge": return applyConsumeChargeEffect(row, ctx);
     case "chain":          return applyChainEffect(row, ctx);
@@ -1647,6 +1678,7 @@ export async function applyEffectRow(row, ctx) {
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     case "consume_resource": return applyConsumeResourceEffect(row, ctx);
     case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
+    case "deal_damage":      return applyDealDamageEffect(row, ctx);
     // resolveAction-unification: built-in action commits expressed as effect
     // rows. Each wraps the proven bespoke function so behavior is identical,
     // just routed through the unified resolver.
@@ -1806,6 +1838,123 @@ async function applyGrantEffect(row, ctx) {
   }
   log(`skill-effects.grant: row "${row.effect_label}" applied ${amount} ${resource} to ${applied.length} actor(s)`);
   return { ok: true, kind: "grant", applied };
+}
+
+// ── set_resource (raise-to-value / shield-apply / restore-revive) ────────
+//
+// Sets a resource UP TO a value — newValue = clamp(max(current, amount),
+// hardMin, max). NEVER lowers (raise-only). Two canonical uses:
+//   - Shield application — RAW: a new Shield does NOT stack; you keep the
+//     BIGGER of the two (Golem Soulstone "gain 10 Shield" → max(cur, 10)).
+//   - Restore-to-value revive — Phoenix Feather "restore HP to the Crisis
+//     score" → max(cur, MAX_HP/2); a KO ally (0 HP) comes back at Crisis.
+//     Setting HP > 0 un-defeats them (defeated is HP-derived, no flag).
+//
+// Row fields: grant_resource (hp|mp|shield|…), grant_amount (formula —
+//   evaluated per target so MAX_HP reads the VICTIM's sheet), target_ref.
+async function applySetResourceEffect(row, ctx) {
+  const resource = String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase();
+  const def = RESOURCE_PROPS[resource];
+  if (!def) {
+    warn(`skill-effects.set_resource: unknown resource "${resource}" on row "${row.effect_label}"`);
+    return { ok: false, kind: "set_resource", reason: "unknown-resource" };
+  }
+  const targetResult = await resolveTargetRef(row.target_ref, ctx);
+  if (!targetResult.ok || !targetResult.tokens.length) {
+    return { ok: false, kind: "set_resource", reason: targetResult.reason ?? "no-targets" };
+  }
+  const applied = [];
+  for (const token of targetResult.tokens) {
+    const actor = token.actor;
+    if (!actor) continue;
+    const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    let value = Math.floor(Number(evaluateFormula(row.grant_amount ?? row.set_amount, resolver, 0)) || 0);
+    const maxVal = def.max ? (Number(actor.system?.props?.[def.max]) || null) : null;
+    if (maxVal != null) value = Math.min(value, maxVal);
+    value = Math.max(def.hardMin ?? 0, value);
+    const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
+    const newValue = Math.max(cur, value); // raise-only
+    if (newValue === cur) {
+      log(`skill-effects.set_resource: ${actor.name} ${resource} already ≥ ${value} (cur ${cur}); no change`);
+      continue;
+    }
+    try {
+      await actor.update({ [`system.props.${def.prop}`]: newValue });
+      applied.push({ actorUuid: actor.uuid, resource, from: cur, to: newValue });
+      try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur }); } catch {}
+      log(`skill-effects.set_resource: ${actor.name} ${resource} ${cur} → ${newValue} (row "${row.effect_label}")`);
+    } catch (e) { warn(`skill-effects.set_resource: update failed on ${actor.name}`, e); }
+  }
+  return { ok: true, kind: "set_resource", applied };
+}
+
+// ── deal_damage ────────────────────────────────────────────────────────
+//
+// Deal element-typed damage OUTRIGHT to the target(s) — the offensive
+// counterpart to `grant` (a raw resource delta with no affinity). Routes
+// through the Universal Damage API (`FUCompanion.api.applyDamage.applyToActor`),
+// so target affinity (VU ×2 / RS ½ / IM ×0 / AB → heal) applies automatically.
+// For status ticks (Burn) and any reaction that INFLICTS flat/elemental
+// damage rather than modifying an in-flight attack (that is `add_damage`).
+//
+// Row fields:
+//   damage_element  | element   — "fire" | "ice" | … | "physical" (default "elementless")
+//   damage_amount   | amount    — formula evaluated PER TARGET (so MAX_HP / CUR_HP
+//                                 read the VICTIM's sheet). Floored; ≤0 skips.
+//   target_ref                  — defaults to "self".
+//   damage_verbosity            — "silent" | "numbers" | "fx" | "full" (default "full").
+//   attacker_name               — display label (default the skill/AE name).
+// No attacker outgoing modifiers are applied (status/environmental damage),
+// so a self-tick is not inflated by the bearer's own damage bonuses.
+async function applyDealDamageEffect(row, ctx) {
+  const element = String(row.damage_element ?? row.element ?? "elementless").trim().toLowerCase();
+  const amountFormula = row.damage_amount ?? row.amount ?? "0";
+  const targetRef = row.target_ref || "self";
+  const verbosity = String(row.damage_verbosity ?? "full").trim().toLowerCase();
+  const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
+
+  const targetResult = await resolveTargetRef(targetRef, ctx);
+  if (!targetResult.ok || !targetResult.tokens.length) {
+    return { ok: false, kind: "deal_damage", reason: targetResult.reason ?? "no-targets" };
+  }
+  const api = globalThis.FUCompanion?.api?.applyDamage;
+  if (!api?.applyToActor) {
+    warn(`skill-effects.deal_damage: FUCompanion.api.applyDamage unavailable (row "${row.effect_label}")`);
+    return { ok: false, kind: "deal_damage", reason: "no-damage-api" };
+  }
+
+  const applied = [];
+  for (const token of targetResult.tokens) {
+    const actor = token.actor;
+    if (!actor) continue;
+    // Per-target resolver so MAX_HP / CUR_HP read the VICTIM's sheet.
+    const resolver = buildSkillResolver({
+      actor,
+      payload: ctx.payload,
+      skill: ctx.skill,
+      round: ctx.dCombat?.round ?? 0,
+    });
+    const amount = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
+    if (amount <= 0) {
+      log(`skill-effects.deal_damage: amount ≤ 0 for ${actor.name} (row "${row.effect_label}"); skipping`);
+      continue;
+    }
+    try {
+      const res = await api.applyToActor({
+        baseDamage:  amount,
+        elementType: element,
+        targetActor: actor,
+        targetToken: token,
+        attackerName,
+        verbosity,
+      });
+      applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalDamage ?? res?.applied ?? null });
+    } catch (e) {
+      warn(`skill-effects.deal_damage: applyToActor failed on ${actor.name}`, e);
+    }
+  }
+  log(`skill-effects.deal_damage: row "${row.effect_label}" dealt ${element} to ${applied.length} actor(s)`);
+  return { ok: true, kind: "deal_damage", applied };
 }
 
 // ── consume_resource ───────────────────────────────────────────────────
