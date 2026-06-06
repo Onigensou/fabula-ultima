@@ -134,6 +134,17 @@ async function resolveTargetingRow(row, ctx) {
     pool = pool.filter((t) => t.uuid !== ctx.reactorToken.uuid);
   }
 
+  // 3b. filter_has_ae — restrict pool to tokens whose actor carries a named AE.
+  // Matches by AE name (case-insensitive). Useful for end-of-turn passives that
+  // target only combatants currently affected by a specific status (e.g. Grappled).
+  if (row.filter_has_ae) {
+    const needle = String(row.filter_has_ae).trim().toLowerCase();
+    pool = pool.filter((t) => {
+      const effects = t.actor?.effects?.contents ?? [];
+      return effects.some((e) => !e.disabled && String(e.name ?? "").trim().toLowerCase() === needle);
+    });
+  }
+
   if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
 
   // 4. Apply mode.
