@@ -18,6 +18,7 @@ export const STATES = Object.freeze({
   CONFIRM:          "CONFIRM",
   RESOLVE:          "RESOLVE",
   REACTION_WINDOW:  "REACTION_WINDOW",
+  OPPORTUNITY_WINDOW: "OPPORTUNITY_WINDOW",
   CLEANUP:          "CLEANUP",
   TURN_END:         "TURN_END",
   ROUND_END:        "ROUND_END",
@@ -71,6 +72,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.CONFIRM]:         null,            // was 5 min — disabled, same reason (Equipment / Item composition can be long)
   [STATES.RESOLVE]:         null,
   [STATES.REACTION_WINDOW]: null,            // was 30 s — disabled; GM manually advances when player reactions are done (GM sees all menus). v1 stub still self-fires INTERNAL_DONE after 100ms.
+  [STATES.OPPORTUNITY_WINDOW]: null,         // no timeout — awaits player choice; offer() has a 120s built-in safety timeout
   [STATES.CLEANUP]:         null,
   [STATES.TURN_END]:        null,
   [STATES.ROUND_END]:       null,
@@ -163,6 +165,11 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.RESOLVE]: {
+    INTERNAL_DONE: { next: (ctx) => ctx.hasPendingOpportunity ? STATES.OPPORTUNITY_WINDOW : STATES.REACTION_WINDOW },
+    [INTENTS.ABORT]: { next: STATES.ABORTED },
+  },
+
+  [STATES.OPPORTUNITY_WINDOW]: {
     INTERNAL_DONE: { next: STATES.REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
