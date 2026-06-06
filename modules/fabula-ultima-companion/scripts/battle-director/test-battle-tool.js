@@ -32,6 +32,8 @@ const STYLE_ID = "fud-testbattle-style";
 const SCRATCH_FOLDER = "BD Dev Test";
 const MASSIVE_HP = 999999;
 const SCENE_NAME = "Training Ground";
+const MODULE_ID = "fabula-ultima-companion";
+const NO_ACTIONS_FLAG = "testBattleNoActions";
 
 // CSB template ids decide an actor's sheet + derivation. We pick the base
 // actor to clone by template id (not by name or a prop heuristic) so the
@@ -48,6 +50,7 @@ const PLAYER_TEMPLATE_ID = "OmwL5UqoVwjshkJo";
 const NPC_TEMPLATE_FALLBACK = "yegF6R8aaymhrvCg";
 
 let _booted = false;
+let _soloMode = false; // when true, live-added combatants also get 0 actions
 
 export function initTestBattleTool() {
   try {
@@ -58,7 +61,11 @@ export function initTestBattleTool() {
     // Ephemeral cleanup: when a battle ends, delete the scratch test actors so
     // nothing accumulates and no test data lingers. The director sweeps its
     // spawned tokens before firing this, so the actors are safe to delete.
-    Hooks.on("fu-director-stopped", () => { cleanupScratchActors().catch((e) => warn("scratch cleanup threw", e)); });
+    Hooks.on("fu-director-stopped", () => {
+      _soloMode = false;
+      removeNoActionsAEs().catch((e) => warn("no-actions AE cleanup threw", e));
+      cleanupScratchActors().catch((e) => warn("scratch cleanup threw", e));
+    });
     _booted = true;
     log("test-battle-tool: registered as dev tool");
   } catch (e) {
@@ -215,6 +222,34 @@ async function getScratchFolder() {
   return f;
 }
 
+// Apply a "No Actions" Active Effect that overrides the actor's `activation`
+// stat to 0, so the director's live activation read gives it 0 turns/round.
+// Used to make dummies (and, in solo mode, allies/extra enemies) non-acting via
+// the real stat path — the token's activation bar reads 0 too. Idempotent.
+async function applyNoActionsAE(actor) {
+  if (!actor || actor.documentName !== "Actor") return;
+  if ((actor.effects?.contents ?? []).some((e) => e.getFlag?.(MODULE_ID, NO_ACTIONS_FLAG))) return;
+  try {
+    await actor.createEmbeddedDocuments("ActiveEffect", [{
+      name: "No Actions",
+      img: "icons/svg/downgrade.svg",
+      changes: [{ key: "activation", mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE, value: "0", priority: 20 }],
+      transfer: false,
+      statuses: ["fud-no-actions"],
+      flags: { [MODULE_ID]: { [NO_ACTIONS_FLAG]: true } },
+    }]);
+  } catch (e) { warn("applyNoActionsAE threw", e); }
+}
+
+// Strip every "No Actions" AE we applied (real actors; scratch actors are
+// deleted wholesale on battle end). Called from the stop cleanup.
+async function removeNoActionsAEs() {
+  for (const actor of (game.actors?.contents ?? [])) {
+    const ids = (actor.effects?.contents ?? []).filter((e) => e.getFlag?.(MODULE_ID, NO_ACTIONS_FLAG)).map((e) => e.id);
+    if (ids.length) { try { await actor.deleteEmbeddedDocuments("ActiveEffect", ids); } catch (_e) {} }
+  }
+}
+
 // Find-or-create a `BD Test — <Class>` shell, then strip it to a content-free
 // blank and load only the chosen class's implemented BD skills.
 //
@@ -317,7 +352,10 @@ async function genDummyEnemy() {
   await dummy.update({ "system.props.current_hp": MASSIVE_HP, "prototypeToken.name": name });
   // Best-effort max_hp bump (likely derived & ignored — harmless if so).
   try { await dummy.update({ "system.props.max_hp": MASSIVE_HP }); } catch (_e) {}
-  log(`test-battle: dummy enemy "${name}" ready (current_hp=${MASSIVE_HP}, blank shell)`);
+  // A dummy is a punching bag — bake in 0 actions at creation via the AE so it
+  // never takes a turn (and its activation bar reads 0).
+  await applyNoActionsAE(dummy);
+  log(`test-battle: dummy enemy "${name}" ready (current_hp=${MASSIVE_HP}, 0 actions, blank shell)`);
   return dummy;
 }
 
@@ -419,23 +457,27 @@ async function launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid
   const enemy = enemyActorUuid ? await fromUuid(enemyActorUuid) : null;
   if (!enemy) { ui.notifications?.error("Test Battle: no main enemy actor resolved."); return; }
 
+  const allyActor = allyActorUuid ? await fromUuid(allyActorUuid) : null;
   const members = [{ actorUuid: pc.uuid, actorId: pc.id, name: pc.name, slot: 1, img: pc.img }];
-  if (allyActorUuid) {
-    const ally = await fromUuid(allyActorUuid);
-    if (ally) members.push({ actorUuid: ally.uuid, actorId: ally.id, name: ally.name, slot: 2, img: ally.img });
+  if (allyActor) members.push({ actorUuid: allyActor.uuid, actorId: allyActor.id, name: allyActor.name, slot: 2, img: allyActor.img });
+
+  // Solo mode: give the non-player combatants 0 actions via the No Actions AE
+  // (the dummy already has it from creation; this also covers a real main enemy
+  // and the ally). Tracked so live-added combatants get it too.
+  _soloMode = !!soloPlayer;
+  if (soloPlayer) {
+    await applyNoActionsAE(enemy);
+    if (allyActor) await applyNoActionsAE(allyActor);
   }
 
   const quantity = 1 + Math.max(0, Number(extraEnemies) | 0);
   const payload = {
-    context: {
-      battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true,
-      ...(soloPlayer ? { soloPlayerActorUuid: pc.uuid } : {}),
-    },
+    context: { battleSceneUuid: scene.uuid, sourceSceneId: scene.id, lean: true },
     encounterPlan: { mode: "manual", manualPicks: [{ actorUuid: enemy.uuid, name: enemy.name, quantity }] },
     party: { members },
   };
 
-  log(`test-battle: launching — player=${pc.name} enemy=${enemy.name}×${quantity} ally=${allyActorUuid ? "yes" : "no"} solo=${soloPlayer}`);
+  log(`test-battle: launching — player=${pc.name} enemy=${enemy.name}×${quantity} ally=${allyActor ? "yes" : "no"} solo=${soloPlayer}`);
   try {
     await a.start({ payload });
     ui.notifications?.info("Test Battle launching (lean) on Training Ground.");
@@ -707,6 +749,8 @@ function renderLive(body) {
       const actorUuid = await resolveSource(srcCombo.getValue(), { liveAdd: true });
       if (!actorUuid) ui.notifications?.warn("Pick a source to add.");
       else {
+        // Solo mode: a live-added combatant is non-player → 0 actions too.
+        if (_soloMode) { try { await applyNoActionsAE(await fromUuid(actorUuid)); } catch (_e) {} }
         const res = await a.addCombatant?.({ actorUuid, side: sideSel.value });
         if (res && res.ok === false) ui.notifications?.warn(`Add: ${res.error}`);
         else srcCombo.clear();

@@ -39,8 +39,18 @@ function readBaseActivation(actor) {
   ];
   for (const c of candidates) {
     if (c == null) continue;
-    const n = typeof c === "number" ? c : Number(String(c).replace(/[^0-9]/g, ""));
-    if (Number.isFinite(n) && n >= 1) return n;
+    let n;
+    if (typeof c === "number") {
+      n = c;
+    } else {
+      // Strip formatting but keep an explicit "0" (an Active Effect can set
+      // activation to 0 to make a creature skip its turn). Treat an empty/
+      // blank value as "not set" so the default still kicks in.
+      const s = String(c).replace(/[^0-9.\-]/g, "");
+      if (s === "" || s === "-" || s === ".") continue;
+      n = Number(s);
+    }
+    if (Number.isFinite(n) && n >= 0) return n;
   }
   return 1;
 }
