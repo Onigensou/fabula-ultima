@@ -75,6 +75,10 @@ export async function migrate(game, log) {
       name: "Burn",
       patch: {
         [`flags.${NS}.chargeKey`]: "burn",
+        // Expiry "After effect activation": charge-governed, consumes one charge
+        // each tick and is removed at 0 (not turn-ticked). See
+        // 2026-06-06-charge-reaction-aes-on-activation-expiry.
+        [`flags.${NS}.lifetimeMode`]: "on_activation",
         [`flags.${NS}.reactionConfig`]: REACTION_CONFIG,
       },
       // reactionConfig is object-valued — clear before set so stale rows from a

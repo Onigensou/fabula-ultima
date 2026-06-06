@@ -1123,10 +1123,15 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   // ── AE post-fire bookkeeping ─────────────────────────────────────────
   // Moved here from firePassiveTriggers so EVERY dispatch path (standalone
   // ReactionMenu, post-resolve firePassiveTriggers, pre-resolve pill accept)
-  // honors consume_self / charges semantics. Two signals supported:
+  // honors consume_self / charges semantics. Signals supported:
   //   - row.consume_self === true       → unconditional delete after fire
   //   - effRow.consume_self === true    → effect-row-driven delete
-  //   - AE carries charges flag         → decrement; auto-delete at 0
+  //   - AE carries charges flag AND its Expiry is "After effect activation"
+  //     (lifetimeMode === "on_activation") → decrement; auto-delete at 0.
+  // The expiry gate is what lets a charge-bearing AE NOT consume on fire:
+  // e.g. a Poison that stacks (charges = intensity) but expires by turn-tick
+  // uses lifetimeMode "" / "round_end" so its charges persist. Only the
+  // "on_activation" expiry (Burn, Hawkeye, Protect refills, …) consumes here.
   if (candidate.carrierKind === "ae" && r?.ok && carrier) {
     try {
       const row = aeReactionCfg?.reaction_config_table?.[candidate.rowKey] ?? null;
@@ -1135,13 +1140,14 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
         : null;
       const consumeSelfFlag = row?.consume_self === true || effRow?.consume_self === true;
       const chargeFlags = carrier.flags?.[FLAG_NS] ?? {};
+      const lifetimeMode = String(chargeFlags.lifetimeMode ?? "").trim().toLowerCase();
       const hasCharges = chargeFlags.charges != null || chargeFlags.chargesMax != null;
       if (consumeSelfFlag) {
         try {
           await carrier.delete();
           log(`firePreAcceptedCandidate: ${candidate.carrierName} consume_self → AE deleted`);
         } catch (e) { warn("consume_self delete failed", e); }
-      } else if (hasCharges) {
+      } else if (hasCharges && lifetimeMode === "on_activation") {
         const { consume: consumeCharge } = await import("./skill-charges.js");
         const res = await consumeCharge(carrier, { count: 1 });
         log(`firePreAcceptedCandidate: ${candidate.carrierName} charge consumed (remaining=${res?.remaining ?? "?"}, deleted=${!!res?.deleted})`);
@@ -2400,6 +2406,8 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining = null;  // opt-out: never expires
     } else if (lifetimeMode === "round_end") {
       turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
+    } else if (lifetimeMode === "on_activation") {
+      turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
     } else if (Number.isFinite(explicit) && explicit > 0) {
       turnsRemaining = explicit;
     } else {
@@ -2411,7 +2419,7 @@ async function applyApplyAeEffect(row, ctx) {
       effectLabel: row.effect_label,
       appliedAtRound: ctx.dCombat?.round ?? 0,
       turnsRemaining,
-      ...(lifetimeMode === "round_end" ? { lifetimeMode: "round_end" } : {}),
+      ...(lifetimeMode ? { lifetimeMode } : {}),
     };
     try {
       const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);

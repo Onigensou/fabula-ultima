@@ -54,7 +54,7 @@
     const flags = effect?.flags?.[MODULE_ID] ?? {};
     const mode = String(flags.lifetimeMode ?? "").trim().toLowerCase();
     return {
-      lifetimeMode:      mode === "round_end" ? "round_end" : "",
+      lifetimeMode:      (mode === "round_end" || mode === "on_activation") ? mode : "",
       crossScene:        flags.crossScene === true,
       directorPermanent: flags.directorPermanent === true,
     };
@@ -71,10 +71,11 @@
         <legend>Lifecycle (Fabula Ultima)</legend>
 
         <div class="form-group" style="display:grid; grid-template-columns: 100px 1fr; gap: 4px 8px; align-items: center;">
-          <label title="How this AE expires. Default ticks at the applier's TurnStart (3 turns by default, or duration.rounds on the template). Round End is swept at the next ROUND_END (Rampart-style).">Expiry</label>
+          <label title="How this AE expires. Per turn ticks at the applier's TurnStart (3 turns by default, or duration.rounds). End of round is swept at the next ROUND_END (Rampart-style). After effect activation is charge-governed: the AE is NOT turn-ticked — each time its effect fires it consumes one charge and is removed at 0 (Burn / Hawkeye / Protect-refill). Needs a Charge value set above.">Expiry</label>
           <select name="flags.${MODULE_ID}.lifetimeMode" data-dtype="String">
-            <option value=""           ${sel("")}>Per turn (default — 3 turns)</option>
-            <option value="round_end"  ${sel("round_end")}>End of round</option>
+            <option value=""              ${sel("")}>Per turn (default — 3 turns)</option>
+            <option value="round_end"     ${sel("round_end")}>End of round</option>
+            <option value="on_activation" ${sel("on_activation")}>After effect activation (charge-governed)</option>
           </select>
 
           <label title="Skip the per-turn lifecycle ticker AND the scene-end sweep. Equivalent to 'this AE never expires automatically' — only consume_self / consume_charge / explicit delete removes it. Use for resource-pool charges (Prophecy Point) and trait-style passives.">Never Expires</label>
