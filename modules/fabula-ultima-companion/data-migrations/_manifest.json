@@ -415,6 +415,26 @@
     {
       "key": "2026-06-06-burn-default-charges-3",
       "path": "data-migrations/2026-06-06-burn-default-charges-3.js"
+    },
+    {
+      "key": "2026-06-07-sharpshooter-rwm-bd-and-dummy",
+      "path": "data-migrations/2026-06-07-sharpshooter-rwm-bd-and-dummy.js"
+    },
+    {
+      "key": "2026-06-07-fix-pds-dup-and-zero-strategy",
+      "path": "data-migrations/2026-06-07-fix-pds-dup-and-zero-strategy.js"
+    },
+    {
+      "key": "2026-06-07-template-adjust-damage-option",
+      "path": "data-migrations/2026-06-07-template-adjust-damage-option.js"
+    },
+    {
+      "key": "2026-06-06-sync-player-skill-copies",
+      "path": "data-migrations/2026-06-06-sync-player-skill-copies.js"
+    },
+    {
+      "key": "2026-06-07-unify-adjust-damage",
+      "path": "data-migrations/2026-06-07-unify-adjust-damage.js"
     }
   ]
 }
