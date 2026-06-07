@@ -14,6 +14,14 @@ export const STATES = Object.freeze({
   TURN_START:       "TURN_START",
   DECLARE:          "DECLARE",
   TARGET:           "TARGET",
+  // PRE_ROLL — the pre-roll half of the two-phase Action Card. Entered after
+  // TARGET, before the dice. Hosts performer-side reactions that must commit
+  // BEFORE the result is known (rollPhase "pre" — Barrage). Renders the
+  // pre-roll Action Card (formula + masked DEF, NO result) and awaits the
+  // Roll confirm, then flows to COMPUTE which rolls the (possibly augmented)
+  // target list. Auto-skips straight to COMPUTE when no pre-roll reaction is
+  // eligible (a plain attack gains zero extra clicks).
+  PRE_ROLL:         "PRE_ROLL",
   COMPUTE:          "COMPUTE",
   CONFIRM:          "CONFIRM",
   RESOLVE:          "RESOLVE",
@@ -68,6 +76,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.TURN_START]:      null,
   [STATES.DECLARE]:         null,            // was 5 min — disabled to prevent silent turn-skip on long menu pause
   [STATES.TARGET]:          null,            // was 2 min — disabled, same reason
+  [STATES.PRE_ROLL]:        null,            // awaits the player's pre-roll reaction / Roll confirm
   [STATES.COMPUTE]:         null,
   [STATES.CONFIRM]:         null,            // was 5 min — disabled, same reason (Equipment / Item composition can be long)
   [STATES.RESOLVE]:         null,
@@ -146,8 +155,18 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.TARGET]: {
-    [INTENTS.TARGET_PICKED]: { next: STATES.COMPUTE },
+    [INTENTS.TARGET_PICKED]: { next: STATES.PRE_ROLL },
     [INTENTS.TARGET_BACK]: { next: STATES.DECLARE },
+    [INTENTS.ABORT]: { next: STATES.ABORTED },
+    [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
+  },
+
+  [STATES.PRE_ROLL]: {
+    // PreRoll.onEnter runs the pre-roll reaction window (auto-skips when none
+    // eligible) + awaits the Roll confirm, then enqueues INTERNAL_DONE to roll.
+    INTERNAL_DONE: { next: STATES.COMPUTE },
+    // Back-out from the pre-roll card returns to the action picker.
+    [INTENTS.CANCEL_ACTION]: { next: STATES.DECLARE },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
     [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
   },

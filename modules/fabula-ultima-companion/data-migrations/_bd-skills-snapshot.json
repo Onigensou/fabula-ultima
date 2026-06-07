@@ -2753,7 +2753,7 @@
             "reaction_isPassive": true,
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "barrage_do",
-            "condition_formula": "HAS_RANGED_WEAPON"
+            "condition_formula": "ATTACK_IS_RANGED == 1"
           }
         },
         "effect_table": {
@@ -3145,7 +3145,7 @@
             "reaction_isPassive": true,
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "warning_shot",
-            "condition_formula": "HAS_RANGED_WEAPON"
+            "condition_formula": "ATTACK_IS_RANGED == 1"
           }
         },
         "effect_table": {

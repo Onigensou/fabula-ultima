@@ -74,7 +74,11 @@ const REACTION_CONFIG_TABLE = {
     reaction_isPassive: true,
     reaction_passive_mode: "ask",
     reaction_effect_ref: "warning_shot",
-    condition_formula: "HAS_RANGED_WEAPON",
+    // ATTACK_IS_RANGED (the attack weapon's range) — not HAS_RANGED_WEAPON,
+    // which checks for an *equipped* ranged weapon (isEquipped) and mis-gates
+    // when the attack weapon's isEquipped flag is out of sync with the
+    // main_hand slot. See the Barrage migration for the full rationale.
+    condition_formula: "ATTACK_IS_RANGED == 1",
   },
 };
 

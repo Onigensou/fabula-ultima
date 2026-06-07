@@ -25,7 +25,10 @@
  *                             the affordability walker auto-disables it "Low MP"
  *                             when the attacker can't pay the 10 MP)
  *     reaction_effect_ref   = barrage_do
- *     condition_formula     = HAS_RANGED_WEAPON   (ranged-attack gate)
+ *     condition_formula     = ATTACK_IS_RANGED == 1  (the attack weapon's range
+ *                             is ranged — NOT HAS_RANGED_WEAPON, which checks
+ *                             for an *equipped* ranged weapon and mis-gates when
+ *                             attacking with a non-isEquipped weapon)
  *
  *   effect_table
  *     barrage_do    chain → [barrage_add, barrage_cost]   (cost LAST so a
@@ -69,7 +72,12 @@ const REACTION_CONFIG_TABLE = {
     reaction_isPassive: true,
     reaction_passive_mode: "ask",
     reaction_effect_ref: "barrage_do",
-    condition_formula: "HAS_RANGED_WEAPON",
+    // Gate on the RANGE of the weapon being attacked WITH (ATTACK_IS_RANGED),
+    // not HAS_RANGED_WEAPON — the latter checks for an *equipped* ranged weapon
+    // (system.props.isEquipped), but a BD attack can be performed with a weapon
+    // whose isEquipped flag is false, so HAS_RANGED_WEAPON wrongly gated Barrage
+    // out. ATTACK_IS_RANGED reads payload.weaponRange (the attack weapon's range).
+    condition_formula: "ATTACK_IS_RANGED == 1",
   },
 };
 

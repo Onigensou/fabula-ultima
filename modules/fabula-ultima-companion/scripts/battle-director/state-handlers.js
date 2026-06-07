@@ -534,6 +534,7 @@ async function resolveAction(director, ar, opts = {}) {
             // ranged-only on-hit reactions). Mirrors the field on the
             // pre-resolve creature_will_deal_damage payload.
             weaponType: ar.weapon?.weaponType ?? null,
+            weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             sourceActorUuid: ar.attackerActorRef,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             total: ar.roll?.total ?? 0,
@@ -2350,6 +2351,7 @@ async function runPreRollWindow(director, {
   actionKind = "Attack",
   actionName = null,
   weaponUuid = null,
+  weaponRange = null,   // the attack weapon's range ("Ranged"/"Melee") — gates ATTACK_IS_RANGED
 } = {}) {
   const empty = { addedTokenUuids: [] };
   if (!director || !performerActor || !performerToken) return empty;
@@ -2365,6 +2367,7 @@ async function runPreRollWindow(director, {
     actionKind,
     actionName,
     weaponUuid,
+    weaponRange,          // ATTACK_IS_RANGED / ATTACK_IS_MELEE read this
     _preRoll: preRoll,   // mutable side-channel for add_target → COMPUTE
   };
   try {
@@ -2387,6 +2390,55 @@ async function runPreRollWindow(director, {
       : [],
   };
 }
+
+// ─── PRE_ROLL ──────────────────────────────────────────────────────────
+// Pre-roll half of the two-phase Action Card. Runs the performer-side pre-roll
+// reaction window (Barrage) BEFORE the dice, then flows to COMPUTE. Any extra
+// targets a pre-roll reaction added are merged into ctx.pickedTargetUuids so
+// COMPUTE rolls them into the single shared accuracy roll.
+//
+// Scope: Attack only (the only kind with a pre-roll reaction today), first pass
+// only — two-weapon's second pass re-enters TARGET→PRE_ROLL and must not
+// re-offer (passIndex is incremented in COMPUTE, so it's 0 on the first
+// pre-roll and ≥1 on subsequent passes). Everything else passes straight to
+// COMPUTE. The window itself auto-skips when no pre-roll reaction is eligible.
+const PreRoll = {
+  async onEnter(director) {
+    const command = director.ctx.declaredCommand;
+    if (command === "Attack" && (director.ctx.passIndex ?? 0) === 0) {
+      try {
+        const attacker = director.ctx.turnSnapshot;
+        const tokenUuids = director.ctx.pickedTargetUuids ?? [];
+        const perfActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
+        const perfToken = perfActor
+          ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
+             ?? perfActor.getActiveTokens?.()?.[0] ?? null)
+          : null;
+        if (perfActor && perfToken) {
+          const weapon = director.ctx.pendingPasses?.[0] ?? attacker.weapon ?? null;
+          const { addedTokenUuids } = await runPreRollWindow(director, {
+            performerActor: perfActor,
+            performerToken: perfToken,
+            currentTargetTokenUuids: tokenUuids,
+            actionKind: "Attack",
+            actionName: weapon?.name ?? "Attack",
+            weaponUuid: weapon?.uuid ?? null,
+            weaponRange: weapon?.range ?? weapon?.weapon_range ?? null,
+          });
+          if (addedTokenUuids.length) {
+            const merged = [...tokenUuids];
+            for (const u of addedTokenUuids) if (!merged.includes(u)) merged.push(u);
+            director.ctx.pickedTargetUuids = merged;
+            log(`PRE_ROLL: pre-roll window added ${addedTokenUuids.length} target(s) → ${merged.length} total`);
+          }
+        }
+      } catch (e) {
+        warn("PRE_ROLL onEnter threw", e);
+      }
+    }
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
 
 // ─── COMPUTE ───────────────────────────────────────────────────────────
 // Roll accuracy + damage. Build an immutable actionResult.
@@ -2832,46 +2884,9 @@ const Compute = {
              { tokenUuids, eligibleCount: (director.ctx.eligibleTargets ?? []).length });
       }
 
-      // ── Pre-roll reaction window (Barrage et al.) ─────────────────────
-      // Performer-side "before the roll" reactions fire here — once per
-      // ACTION, so only on the first weapon pass (two-weapon's second
-      // COMPUTE re-enters with passIndex > 1 and must not re-offer). A
-      // pre-roll reaction may append extra targets (add_target); we splice
-      // their eligibleTargets snapshots into targetSnapshots BEFORE the
-      // roll so they share the same accuracy roll, and persist them onto
-      // pickedTargetUuids so reload-survival + the second weapon pass keep
-      // the augmented target list.
-      if ((director.ctx.passIndex ?? 1) === 1) {
-        const perfActor = await fromUuid(attacker.actorUuid).catch(() => null);
-        const perfToken = perfActor
-          ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
-             ?? perfActor.getActiveTokens?.()?.[0] ?? null)
-          : null;
-        if (perfActor && perfToken) {
-          const { addedTokenUuids } = await runPreRollWindow(director, {
-            performerActor: perfActor,
-            performerToken: perfToken,
-            currentTargetTokenUuids: tokenUuids,
-            actionKind: "Attack",
-            actionName: weapon?.name ?? "Attack",
-            weaponUuid: weapon?.uuid ?? null,
-          });
-          for (const addUuid of addedTokenUuids) {
-            if (tokenUuids.includes(addUuid)) continue;          // already a target
-            if (targetSnapshots.some((s) => s.tokenUuid === addUuid)) continue;
-            const snap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === addUuid);
-            if (!snap) {
-              warn("COMPUTE Attack: pre-roll added target not in eligibleTargets — skipped", addUuid);
-              continue;
-            }
-            targetSnapshots.push(snap);
-            log(`COMPUTE Attack: pre-roll window added target ${snap.name ?? addUuid}`);
-          }
-          if (targetSnapshots.length) {
-            director.ctx.pickedTargetUuids = targetSnapshots.map((s) => s.tokenUuid);
-          }
-        }
-      }
+      // (Pre-roll reaction window — Barrage et al. — runs in the PRE_ROLL
+      // state before COMPUTE; any added targets are already merged into
+      // ctx.pickedTargetUuids, so targetSnapshots above includes them.)
 
       // Single-pass roll for the weapon we just shifted from the queue.
       const dA = attacker.attributes?.[weapon.A1] ?? 8;
@@ -3470,6 +3485,7 @@ const Confirm = {
             hr: ar.roll?.hr ?? 0,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
             weaponType: ar.weapon?.weaponType ?? null,
+            weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             affinity: entry.affinity,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             sourceActorUuid: ar.attackerActorRef,
@@ -4585,6 +4601,7 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.TURN_START]:      TurnStart,
   [STATES.DECLARE]:         Declare,
   [STATES.TARGET]:          Target,
+  [STATES.PRE_ROLL]:        PreRoll,
   [STATES.COMPUTE]:         Compute,
   [STATES.CONFIRM]:         Confirm,
   [STATES.RESOLVE]:           Resolve,

@@ -491,8 +491,20 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Sharpshooter's Hawkeye / Warning Shot need so a "next ranged
       // attack" buff doesn't fire on a melee swing. 0 when no weaponType
       // was threaded (non-weapon action / skill) → a `== 1` gate fails closed.
-      case "ATTACK_IS_RANGED": return String(payload?.weaponType ?? "").toLowerCase() === "ranged" ? 1 : 0;
-      case "ATTACK_IS_MELEE":  return String(payload?.weaponType ?? "").toLowerCase() === "melee"  ? 1 : 0;
+      // RANGED/MELEE read the attack weapon's RANGE (payload.weaponRange,
+      // e.g. "Ranged"/"Melee" from weapon.range) — NOT weaponType, which holds
+      // the weapon FAMILY (sword/bow/brawling) and would never equal "ranged".
+      // Substring match tolerates the capitalized sheet value. Falls back to a
+      // legacy weaponType === "ranged" reading for any old caller that set it.
+      case "ATTACK_IS_RANGED": {
+        const wr = String(payload?.weaponRange ?? "").toLowerCase();
+        return (wr.includes("rang") || String(payload?.weaponType ?? "").toLowerCase() === "ranged") ? 1 : 0;
+      }
+      case "ATTACK_IS_MELEE": {
+        const wr = String(payload?.weaponRange ?? "").toLowerCase();
+        return (wr.includes("mele") || String(payload?.weaponType ?? "").toLowerCase() === "melee") ? 1 : 0;
+      }
+      // ARCANE is a weapon FAMILY (not a range), so it correctly reads weaponType.
       case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
