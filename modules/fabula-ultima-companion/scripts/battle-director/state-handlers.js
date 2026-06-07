@@ -57,6 +57,7 @@ async function getSkillEffectsExtras() {
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
+import { computeActionProfile } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -2449,21 +2450,72 @@ const PreRoll = {
       const dA = attacker.attributes?.[weapon.A1] ?? 8;
       const dB = attacker.attributes?.[weapon.A2] ?? 8;
 
-      // Damage RANGE for the pre-roll panel (no roll yet): base + HR, where HR
-      // (High Roll) spans 1…max(dA,dB). Two-Weapon forces HR=0, so min=max=base.
-      const ignoreHR = String(director.ctx.attackMode ?? "").startsWith("two-weapon");
-      const dmgBase = weapon.damageBonus ?? 0;
+      // Damage RANGE + accuracy for the pre-roll panel (no roll yet). HR (High
+      // Roll) spans 1…max(dA,dB); HR is forced to 0 — min=max=base — by
+      // Two-Weapon OR a free-action grant with hrAsZero (Hawkeye option b).
+      const preRollGrantHrAsZero = !!freeActions.get(attacker?.actorId ?? null)?.hrAsZero;
+      const ignoreHR = String(director.ctx.attackMode ?? "").startsWith("two-weapon") || preRollGrantHrAsZero;
       const maxHR = Math.max(Number(dA) || 0, Number(dB) || 0);
-      const preRollRange = ignoreHR
+      // Fallback values (used if the profile build fails). These DON'T include
+      // actor-status accuracy mods (RWM) or auto-fired outgoing damage reactions.
+      let dmgBase = weapon.damageBonus ?? 0;
+      let checkBonusShown = weapon.checkBonus ?? 0;
+      let preRollRange = ignoreHR
         ? { min: dmgBase, max: dmgBase, maxHR: 0 }
         : { min: dmgBase + 1, max: dmgBase + maxHR, maxHR };
+
+      // Single-source pre-roll: route the numbers through computeActionProfile so
+      // RWM (actor-status accuracy), Hawkeye take-aim (auto-fired
+      // creature_will_deal_damage outgoing add), and HR-as-0 grants all surface
+      // in the PREVIEW — the three derivations that diverged before. Defensive:
+      // any failure falls back to the weapon-only values above (no regression).
+      try {
+        // Discover the on/force creature_will_deal_damage reactions that WILL
+        // auto-fire on this attack (Hawkeye etc.) so the preview anticipates them.
+        const targetActorUuids = targetSnaps.map((e) => e.actorUuid);
+        const dmgPayload = {
+          subjectActorUuid: targetActorUuids[0] ?? null, targets: shownUuids, hitTargets: shownUuids,
+          rawDamage: weapon.damageBonus ?? 0, hr: 0,
+          damageType: weapon.damageType ?? null, weaponType: weapon.weaponType ?? null,
+          weaponRange: weapon.range ?? null,
+          sourceActorUuid: perfActor.uuid, sourceTokenUuid: perfToken.document?.uuid ?? perfToken.uuid ?? null,
+          actionIntent: "harmful", targetTokenUuids: shownUuids, hitTargetTokenUuids: shownUuids,
+          weaponUuid: weapon.uuid ?? null,
+        };
+        let acceptedReactions = [];
+        try {
+          const { findPassiveCandidates } = await getSkillEffectsExtras();
+          const dmgCands = await findPassiveCandidates({
+            casterActor: perfActor, trigger: "creature_will_deal_damage", payload: dmgPayload,
+          }) ?? [];
+          acceptedReactions = dmgCands
+            .filter((c) => c.available && c.kind === "passive" && (c.mode === "on" || c.mode === "force"))
+            .map((c) => ({ ...c, appliesToTargetUuids: targetActorUuids, payloadAtFire: dmgPayload }));
+        } catch (e) { warn("PRE_ROLL: will_deal_damage discovery threw", e); }
+
+        const grant = freeActions.get(attacker?.actorId ?? null) ?? null;
+        const profile = await computeActionProfile({
+          view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
+          attacker, weapon, targets: targetSnaps, dice: null,
+          ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant },
+          acceptedReactions,
+        });
+        if (profile?._summary) {
+          if (typeof profile._summary.checkBonusTotal === "number") checkBonusShown = profile._summary.checkBonusTotal;
+          const hr = profile._summary.headlineRange;
+          if (hr) {
+            preRollRange = { min: hr.min, max: hr.max, maxHR: hr.maxHR };
+            if (typeof hr.base === "number") dmgBase = hr.base;
+          }
+        }
+      } catch (e) { warn("PRE_ROLL: profile enhancement failed; using weapon-only fallback", e); }
 
       const cardPayload = {
         preRoll: true,
         attacker: { name: attacker.name, actorUuid: attacker.actorUuid, tokenImg: attacker.tokenImg, disposition: attacker.disposition },
         weapon: { name: weapon.name, range: weapon.range, weaponType: weapon.weaponType, damageType: weapon.damageType, imageUrl: weapon.imageUrl, A1: weapon.A1, A2: weapon.A2 },
         targets: targetSnaps.map((e) => ({ name: e.name, actorUuid: e.actorUuid, tokenImg: e.tokenImg, disposition: e.disposition, defense: e.defense, studied: isStudied(e) })),
-        checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: weapon.checkBonus ?? 0 },
+        checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: checkBonusShown },
         damage: { base: dmgBase, element: weapon.damageType, ignoreHR, preRollRange },
         attackMode: director.ctx.attackMode ?? "main",
         prePassives: askable,

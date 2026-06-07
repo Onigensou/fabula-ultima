@@ -1215,7 +1215,7 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
 // HP-write (read by resolveDamageReactions). `cap` = upper bound, `floor` =
 // lower bound. Mercy ("survive at 1") = incoming cap at `CUR_HP - 1`.
 const DAMAGE_OPS = new Set(["add", "subtract", "multiply", "set", "cap", "floor"]);
-function applyDamageOp(d, op, amount) {
+export function applyDamageOp(d, op, amount) {
   switch (op) {
     case "add":      return d + amount;
     case "subtract": return d - amount;

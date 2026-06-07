@@ -21,7 +21,8 @@ import {
   isCriticalHit, applyCritDamage, resolveIncomingReduction,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage } from "./snapshot.js";
-import { previewEffectRow, resolveDamageElementOverride } from "./skill-effects.js";
+import { previewEffectRow, resolveDamageElementOverride,
+  computeSenderDamageBonuses, applyDamageOp } from "./skill-effects.js";
 
 // Status conditions that force Vulnerability to a specific element (mirrors the
 // Attack COMPUTE table in state-handlers.js — keep in sync).
@@ -214,9 +215,18 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
 }
 
 // ── Per-target outcome + primary EffectPreview ───────────────────────────────
-async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate }) {
+async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const out = [];
+  // Pre-roll = a Check is required but dice aren't known yet (ranges, not finals).
+  const isPreRoll = check.required && (check.total == null);
+  const maxHR = Math.max(Number(check.attrs?.dA) || 0, Number(check.attrs?.dB) || 0);
+  const foldOps = (d, ops) => {
+    if (!ops?.length) return d;
+    let v = d;
+    for (const { op, amount } of ops) v = applyDamageOp(v, op, amount);
+    return v;
+  };
 
   // Defense stat selector — DEF vs MDEF.
   const isSpell = String(ar?.skillType ?? "").toLowerCase() === "spell";
@@ -244,10 +254,47 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     }
 
     const effects = [];
-    let damageVal = 0, rawDamage = 0, affinityCode = "NE";
+    let damageVal = 0, rawDamage = 0, affinityCode = "NE", damageRange = null;
     const damageModParts = [];
+    const targetOps = opsMap?.get?.(e.actorUuid) ?? [];
 
-    if (primary.mode === "damage" && (hit || pierceMiss)) {
+    // Affinity helper (MP damage / status-only → NE). Forced-VU + Guard-RS are
+    // ATTACK-only in COMPUTE today; gate to kind==="Attack" (see state-handlers).
+    const computeAffinity = () => {
+      if (primary.isMpDamage) return "NE";
+      let aff = e.affinities?.[primary.element] ?? "NE";
+      if (kind === "Attack") {
+        for (const cond of (e.conditions ?? [])) {
+          if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
+        }
+        if ((e.conditions ?? []).includes("Guard") && aff !== "IM" && aff !== "AB") aff = "RS";
+      }
+      return aff;
+    };
+
+    if (primary.mode === "damage" && isPreRoll) {
+      // Pre-roll: a pre-affinity damage RANGE over the HR span (1…maxHR, or
+      // 0…0 when HR is forced to 0). Reaction ops (Hawkeye take-aim etc.) fold
+      // into both ends so the preview anticipates them. Per-target reduction /
+      // affinity are NOT applied to the pre-roll range (matches the legacy
+      // pre-roll card's generic "potential damage" range).
+      const ignoreHR = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon");
+      const rawAt = (h) => {
+        const d = foldOps(h + primary.damageBonus + primary.outgoingTotal, targetOps);
+        return Math.max(0, Math.floor(d));
+      };
+      const lo = ignoreHR ? 0 : (maxHR > 0 ? 1 : 0);
+      const hi = ignoreHR ? 0 : maxHR;
+      damageRange = { min: rawAt(lo), max: rawAt(hi), maxHR: hi, base: rawAt(0) };
+      affinityCode = computeAffinity();
+      effects.push({
+        id: `primary-damage:${e.tokenUuid}`,
+        type: "damage", valence: "harmful", source: kind === "Attack" ? "weapon" : "spell",
+        targetRef: e.tokenUuid,
+        element: primary.element, resource: primary.resource, damageClass: "primary",
+        breakdown: [], preAffinity: null, affinity: affinityCode, range: damageRange,
+      });
+    } else if (primary.mode === "damage" && (hit || pierceMiss)) {
       const outBase = effectiveHr + primary.damageBonus + primary.outgoingTotal;
       rawDamage = (kind === "Attack" && pierceMiss) ? Math.ceil(outBase / 2) : outBase;
 
@@ -265,23 +312,13 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         }
       }
 
-      // Affinity (MP damage + status-only → NE). Forced-VU (status→element) and
-      // Guard's blanket Resistance are applied by the ATTACK pipeline only —
-      // the Skill/Spell COMPUTE path uses plain sheet affinity (parity). Keep
-      // this gate aligned with state-handlers.js COMPUTE.
-      if (primary.isMpDamage) {
-        affinityCode = "NE";
-      } else {
-        affinityCode = e.affinities?.[primary.element] ?? "NE";
-        if (kind === "Attack") {
-          for (const cond of (e.conditions ?? [])) {
-            if (FORCED_VU_BY_STATUS[cond] === primary.element) { affinityCode = "VU"; break; }
-          }
-          if ((e.conditions ?? []).includes("Guard") && affinityCode !== "IM" && affinityCode !== "AB") {
-            affinityCode = "RS";
-          }
-        }
+      // Fold accepted-reaction outgoing damage ops (Hawkeye add, Cheap Shot…)
+      // AFTER reduction/crit, on a hit only — mirrors recomputePerTargetDamages.
+      if (hit && targetOps.length) {
+        rawDamage = Math.max(0, Math.floor(foldOps(rawDamage, targetOps)));
       }
+
+      affinityCode = computeAffinity();
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       effects.push({
@@ -300,8 +337,8 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         disposition: e.disposition, studied: studiedGate(e), defenseShown: defStat,
       },
       outcome: {
-        kind: !rolled ? "auto" : (check.isCrit ? "hit" : hit ? "hit" : pierceMiss ? "miss" : "miss"),
-        hit: rolled ? hit : true,
+        kind: isPreRoll ? "pending" : (!rolled ? "auto" : (hit ? "hit" : "miss")),
+        hit: isPreRoll ? null : (rolled ? hit : true),
         margin: rolled ? (check.total - defStat) : null,
         tier: null, source: null,
       },
@@ -396,6 +433,7 @@ function gatherEffectPreviews({ view, resolver }) {
 export async function computeActionProfile(input) {
   const {
     view, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
+    acceptedReactions = null,
   } = input;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
 
@@ -410,11 +448,24 @@ export async function computeActionProfile(input) {
   const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver });
   const check = computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice, ctx });
 
+  // Accepted-reaction outgoing damage ops (Hawkeye take-aim, Cheap Shot…). At
+  // pre-roll the caller passes the auto-fired on/force candidates so the preview
+  // anticipates them; post-roll the accepted set folds the same way.
+  let opsMap = null;
+  if (Array.isArray(acceptedReactions) && acceptedReactions.length) {
+    try {
+      opsMap = await computeSenderDamageBonuses({
+        casterActor: liveAttacker, acceptedPrePassives: acceptedReactions,
+        dCombat: { round: ctx?.round ?? 0 },
+      });
+    } catch (e) { warn("computeActionProfile: computeSenderDamageBonuses threw", e); }
+  }
+
   // Per-target rows: damage/check path, else heal path.
   let perTarget = [];
   let healingObj = null;
   if (primary.mode === "damage" || check.required) {
-    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate });
+    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap });
   }
   if (primary.mode !== "damage") {
     const heal = await buildHealPerTarget({ view, ar, targets, resolver });
@@ -449,6 +500,18 @@ export async function computeActionProfile(input) {
       hasHealing: !!healingObj,
       damageResource: primary.resource,
       primary, healingObj,
+      // Headline check bonus (weapon/skill base + actor-status accuracy mods +
+      // grant + accuracy reactions) — pre-roll card reads this so RWM etc. show.
+      checkBonusTotal: (check.bonusParts ?? []).reduce((s, p) => s + (Number(p.amount) || 0), 0),
+      // Representative pre-roll damage range (first damaged target). The legacy
+      // pre-roll card renders ONE range; per-target ops are in perTarget[].
+      headlineRange: (() => {
+        for (const r of perTarget) {
+          const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.range);
+          if (dmg) return dmg.range;
+        }
+        return null;
+      })(),
     },
   };
   return profile;
