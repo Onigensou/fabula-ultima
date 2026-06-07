@@ -627,5 +627,44 @@
     },
   });
 
+  // ── 15. Shop NPC Inventory ────────────────────────────────────────────────
+  // Captures the full item list (stock quantities + all props) for every world
+  // actor flagged as a shop NPC via system.props.isShop === true.
+  // On load: each shop's items are deleted and recreated from the saved snapshot
+  // so quantities reflect the exact state at save time.
+  SS.registerExtractor({
+    key:   "shopInventoryData",
+    label: "Shop NPC Inventory",
+
+    async extract() {
+      const npcTemplateId = SS.Storage.getNpcTemplateId();
+      const result = {};
+      for (const actor of game.actors.contents) {
+        if (actor.system?.props?.isShop !== true) continue;
+        // npcData (#4) already covers linked NPC template actors — skip to avoid double-apply.
+        if (actor.system?.template === npcTemplateId && actor.prototypeToken?.actorLink) continue;
+        result[actor.uuid] = {
+          name:    actor.name,
+          system:  foundry.utils.deepClone(actor.system  ?? {}),
+          flags:   foundry.utils.deepClone(actor.flags   ?? {}),
+          items:   (actor._source?.items   ?? []).map(d => foundry.utils.deepClone(d)),
+          effects: (actor._source?.effects ?? []).map(d => foundry.utils.deepClone(d)),
+        };
+      }
+      return Object.keys(result).length ? result : null;
+    },
+
+    async apply(ctx, data) {
+      if (!data) return;
+      for (const [uuid, actorData] of Object.entries(data)) {
+        const actor = actorFromUuid(uuid);
+        if (!actor) { console.warn(TAG, "shopInventoryData apply: not found", uuid); continue; }
+        await wipeStaleCsbListEntries(actor, actorData.system?.props);
+        await actor.update({ system: actorData.system, flags: actorData.flags });
+        await applyActorEmbeds(actor, actorData);
+      }
+    },
+  });
+
   console.debug(TAG, "Extractors registered:", SS._extractors.map(e => e.key).join(", "));
 })();
