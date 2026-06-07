@@ -451,6 +451,10 @@
     {
       "key": "2026-06-07-sharpshooter-perfect-aim",
       "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js"
+    },
+    {
+      "key": "2026-06-07-menu-text-on-menu-row",
+      "path": "data-migrations/2026-06-07-menu-text-on-menu-row.js"
     }
   ]
 }

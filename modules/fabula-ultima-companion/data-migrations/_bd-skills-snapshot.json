@@ -9,7 +9,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Equipment",
         "skill_type": "Active",
@@ -51,7 +51,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Guard",
         "skill_type": "Active",
@@ -215,7 +215,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Hinder",
         "skill_type": "Active",
@@ -259,7 +259,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Study",
         "skill_type": "Active",
@@ -303,7 +303,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -828,7 +828,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -963,7 +963,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1157,7 +1157,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1236,7 +1236,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1338,7 +1338,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1417,7 +1417,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Active",
         "isCheck": false,
@@ -1621,7 +1621,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
@@ -1716,7 +1716,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
@@ -1932,7 +1932,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Active",
         "isHeroic": true,
@@ -2054,7 +2054,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Elegance Showmanship",
         "isOffensiveSpell": false,
@@ -2111,7 +2111,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Pillage",
         "skill_type": "Passive",
@@ -2170,7 +2170,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Vanish",
         "skill_type": "Passive",
@@ -2330,7 +2330,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Cheap Shot",
         "skill_type": "Passive",
@@ -2390,7 +2390,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Dodge",
         "skill_type": "Passive",
@@ -2503,7 +2503,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "High Speed",
         "skill_type": "Passive",
@@ -2603,7 +2603,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "See You Later",
         "skill_type": "Active",
@@ -2641,7 +2641,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Soul Steal",
         "skill_type": "Active",
@@ -2902,7 +2902,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "skill_type": "Passive",
         "isReaction": true,
@@ -2929,24 +2929,22 @@
             "effect_kind": "open_action_menu",
             "menu_title": "Hawkeye",
             "menu_subtitle": "You guarded without providing cover — choose:",
-            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack"
+            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack",
+            "menu_option_labels": "Take aim — your next ranged attack deals +SL×2 extra damage | Free attack — bow or firearm (High Roll treated as 0)",
+            "menu_option_descriptions": "Lasts until you make a ranged attack, or the scene ends. | Immediately perform a free bow/firearm attack."
           },
           "1": {
             "effect_label": "hawkeye_opt_aim",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Hawkeye",
             "target_ref": "hawkeye_self_skill",
-            "ae_duplicate_mode": "replace",
-            "menu_label": "Take aim — your next ranged attack deals +SL×2 extra damage",
-            "menu_description": "Lasts until you make a ranged attack, or the scene ends."
+            "ae_duplicate_mode": "replace"
           },
           "2": {
             "effect_label": "hawkeye_opt_attack",
             "effect_kind": "open_action_menu",
             "free_mode": true,
-            "allowed_types": "Attack",
-            "menu_label": "Free attack — bow or firearm (High Roll treated as 0)",
-            "menu_description": "Immediately perform a free bow/firearm attack."
+            "allowed_types": "Attack"
           },
           "3": {
             "effect_label": "hawkeye_self_skill",
@@ -3070,7 +3068,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Perfect Aim",
         "skill_type": "Passive",
@@ -3266,23 +3264,21 @@
             "menu_title": "Warning Shot",
             "menu_subtitle": "The attack deals no damage — choose an effect.",
             "menu_option_refs": "ws_shaken,ws_slow,ws_mp",
-            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM"
+            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM",
+            "menu_option_labels": "Inflict Shaken | Inflict Slow | Drain Mind Points",
+            "menu_option_descriptions": "Each target hit by the attack becomes Shaken. | Each target hit by the attack becomes Slow. | Each target hit loses SL × 10 Mind Points."
           },
           "3": {
             "effect_label": "ws_shaken",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Shaken",
-            "target_ref": "hit_action_targets",
-            "menu_label": "Inflict Shaken",
-            "menu_description": "Each target hit by the attack becomes Shaken."
+            "target_ref": "hit_action_targets"
           },
           "4": {
             "effect_label": "ws_slow",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Slow",
-            "target_ref": "hit_action_targets",
-            "menu_label": "Inflict Slow",
-            "menu_description": "Each target hit by the attack becomes Slow."
+            "target_ref": "hit_action_targets"
           },
           "5": {
             "effect_label": "ws_mp",
@@ -3290,9 +3286,7 @@
             "consume_resource": "mp",
             "consume_amount": "SL * 10",
             "target_ref": "hit_action_targets",
-            "on_empty": "skip",
-            "menu_label": "Drain Mind Points",
-            "menu_description": "Each target hit loses SL × 10 Mind Points."
+            "on_empty": "skip"
           }
         },
         "active_effect_config_table": {},
@@ -3324,7 +3318,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Bimagus",
         "skill_type": "Passive",
@@ -3363,7 +3357,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Healing Power",
         "level": "1",
@@ -3453,7 +3447,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Ritual Spiritism",
         "level": "1",
@@ -3509,7 +3503,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Spiritual Magic",
         "skill_type": "Other",
@@ -3545,7 +3539,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Support Magic",
         "level": "1",
@@ -3707,7 +3701,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Vismagus",
         "level": "1",
@@ -3800,7 +3794,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Aura",
         "skill_type": "Spell",
@@ -3903,7 +3897,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Awaken",
         "skill_type": "Spell",
@@ -3923,43 +3917,37 @@
             "effect_kind": "open_action_menu",
             "menu_title": "Awaken: choose an Attribute to bump",
             "menu_subtitle": "Target's chosen Attribute rises one die size (max d12).",
-            "menu_option_refs": "awaken_dex, awaken_ins, awaken_mig, awaken_wlp"
+            "menu_option_refs": "awaken_dex, awaken_ins, awaken_mig, awaken_wlp",
+            "menu_option_labels": "Dexterity | Insight | Might | Willpower",
+            "menu_option_descriptions": "DEX die rises one stage (d6→d8→d10→d12). Applies the common Swift AE. | INS die rises one stage. Applies the common Awake AE. | MIG die rises one stage. Applies the common Strong AE. | WLP die rises one stage. Applies the common Focus AE."
           },
           "1": {
             "effect_label": "awaken_dex",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Swift",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Dexterity",
-            "menu_description": "DEX die rises one stage (d6→d8→d10→d12). Applies the common Swift AE."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "2": {
             "effect_label": "awaken_ins",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Awake",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Insight",
-            "menu_description": "INS die rises one stage. Applies the common Awake AE."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "3": {
             "effect_label": "awaken_mig",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Strong",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Might",
-            "menu_description": "MIG die rises one stage. Applies the common Strong AE."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "4": {
             "effect_label": "awaken_wlp",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Focus",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Willpower",
-            "menu_description": "WLP die rises one stage. Applies the common Focus AE."
+            "ae_duplicate_mode": "replace_per_caster"
           }
         },
         "on_activate_effect_ref": "awaken_pick",
@@ -3986,7 +3974,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Barrier",
         "level": "1",
@@ -4104,7 +4092,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Cleanse",
         "skill_type": "Spell",
@@ -4153,7 +4141,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Enrage",
         "skill_type": "Spell",
@@ -4222,7 +4210,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "class": "Spiritist",
         "cost": "5 x T MP",
@@ -4258,25 +4246,23 @@
             "effect_kind": "open_action_menu",
             "menu_title": "Hallucination: choose a status to inflict",
             "menu_subtitle": "Hit targets suffer the chosen status.",
-            "menu_option_refs": "hallu_dazed, hallu_shaken"
+            "menu_option_refs": "hallu_dazed, hallu_shaken",
+            "menu_option_labels": "Dazed | Shaken",
+            "menu_option_descriptions": "Penalises INS Opposed Checks (-2 to INS die size). | Penalises WLP Opposed Checks (-2 to WLP die size)."
           },
           "1": {
             "effect_label": "hallu_dazed",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Dazed",
             "target_ref": "hit_action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Dazed",
-            "menu_description": "Penalises INS Opposed Checks (-2 to INS die size)."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "2": {
             "effect_label": "hallu_shaken",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Shaken",
             "target_ref": "hit_action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Shaken",
-            "menu_description": "Penalises WLP Opposed Checks (-2 to WLP die size)."
+            "ae_duplicate_mode": "replace_per_caster"
           }
         },
         "on_activate_effect_ref": "hallu_pick"
@@ -4302,7 +4288,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Heal",
         "skill_type": "Spell",
@@ -4361,7 +4347,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Lux",
         "skill_type": "Spell",
@@ -4420,7 +4406,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Mercy",
         "level": "1",
@@ -4562,7 +4548,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Reinforce",
         "skill_type": "Spell",
@@ -4623,43 +4609,37 @@
             "check_bonus_formula": "",
             "damage_bonus_formula": "",
             "target_ref": "",
-            "menu_option_refs": "reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak"
+            "menu_option_refs": "reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak",
+            "menu_option_labels": "Dazed | Shaken | Slow | Weak",
+            "menu_option_descriptions": "Penalises INS Opposed Checks. Affects mental focus. | Penalises WLP Opposed Checks. Affects resolve. | Penalises DEX Opposed Checks. Affects agility. | Penalises MIG Opposed Checks. Affects might."
           },
           "1": {
             "effect_label": "reinforce_dazed",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Reinforce (Dazed)",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Dazed",
-            "menu_description": "Penalises INS Opposed Checks. Affects mental focus."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "2": {
             "effect_label": "reinforce_shaken",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Reinforce (Shaken)",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Shaken",
-            "menu_description": "Penalises WLP Opposed Checks. Affects resolve."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "3": {
             "effect_label": "reinforce_slow",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Reinforce (Slow)",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Slow",
-            "menu_description": "Penalises DEX Opposed Checks. Affects agility."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "4": {
             "effect_label": "reinforce_weak",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Reinforce (Weak)",
             "target_ref": "action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Weak",
-            "menu_description": "Penalises MIG Opposed Checks. Affects might."
+            "ae_duplicate_mode": "replace_per_caster"
           }
         },
         "on_activate_effect_ref": "reinforce_pick",
@@ -4899,7 +4879,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Soul Weapon",
         "skill_type": "Spell",
@@ -5024,7 +5004,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Torpor",
         "skill_type": "Spell",
@@ -5052,25 +5032,23 @@
             "damage_bonus_formula": "",
             "target_ref": "",
             "menu_label": "",
-            "menu_description": ""
+            "menu_description": "",
+            "menu_option_labels": "Slow | Weak",
+            "menu_option_descriptions": "Penalises DEX Opposed Checks (-2 to DEX die size). | Penalises MIG Opposed Checks (-2 to MIG die size)."
           },
           "1": {
             "effect_label": "torpor_slow",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Slow",
             "target_ref": "hit_action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Slow",
-            "menu_description": "Penalises DEX Opposed Checks (-2 to DEX die size)."
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "2": {
             "effect_label": "torpor_weak",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Weak",
             "target_ref": "hit_action_targets",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "Weak",
-            "menu_description": "Penalises MIG Opposed Checks (-2 to MIG die size)."
+            "ae_duplicate_mode": "replace_per_caster"
           }
         },
         "on_activate_effect_ref": "torpor_pick",
@@ -5117,7 +5095,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Deep Pockets",
         "skill_type": "Passive",
@@ -5155,7 +5133,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3777687116,
+      "templateSystemUniqueVersion": 3023268155,
       "props": {
         "name": "Status Immunity",
         "skill_type": "Passive",

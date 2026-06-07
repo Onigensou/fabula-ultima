@@ -551,10 +551,36 @@ cost-deducting steps AFTER the redirect in the chain.
 
 ### `effect_kind: "open_action_menu"` — spawn the action menu with a filter
 
-Used by Acceleration, Painful Lesson, and similar "free action with constraints"
-mechanics. Spawns the TurnUI command buttons over the reactor's token with only
-the requested labels enabled, and (optionally) registers a free-action grant so
-the next action bypasses the budget gate.
+Two modes:
+- **Option menu** (`menu_option_refs` set): prompts the player to choose one (or
+  `menu_pick_count`) option(s); each chosen option's referenced row is dispatched.
+  Warning Shot, Reinforce, Hawkeye, etc. **All option display text lives on THIS
+  row** (see below) — the referenced option rows hold only their mechanical data.
+- **Free-action mode** (`free_mode: true`): spawns the TurnUI command buttons over
+  the reactor's token with only `allowed_types` enabled + registers a free-action
+  grant. Acceleration, Painful Lesson.
+
+#### Option-menu fields (the menu row owns all the text)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `menu_title` | string | Prompt title (default `"Choose an option"`). |
+| `menu_subtitle` | string | Prompt subtitle / instruction line. |
+| `menu_option_refs` | string | **Comma**-separated `effect_label`s — which option rows this menu offers, in order. Each referenced row is the dispatch row (its own `effect_kind` + params). |
+| `menu_option_labels` | string | **Pipe (`|`)**-separated display labels, positionally paired with `menu_option_refs`. Falls back per-index to the option row's legacy `menu_label` (back-compat), then the ref. |
+| `menu_option_descriptions` | string | **Pipe (`|`)**-separated descriptions, positionally paired with `menu_option_refs` (use `|` so descriptions may contain commas). Falls back to the option row's legacy `menu_description`. |
+| `menu_pick_count` | number OR formula string | See below. |
+
+> **Text lives on the menu row, not the options.** As of 2026-06-07 the per-option
+> display text moved off the option rows onto the `open_action_menu` row
+> (`menu_option_labels` / `menu_option_descriptions`, `|`-separated, paired with
+> the comma-separated `menu_option_refs`). The option rows carry only mechanics.
+> The engine still falls back to the legacy per-option `menu_label` /
+> `menu_description` if the menu row doesn't supply them, so pre-migration skills
+> keep working. These fields (+ the free-mode fields) are now editable in the CSB
+> sheet (columns gated to `effect_kind === "open_action_menu"`).
+
+#### Free-action-mode fields
 
 | Field | Type | Notes |
 |-------|------|-------|

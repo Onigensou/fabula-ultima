@@ -2906,19 +2906,39 @@ function parseEffectRefList(raw) {
 // { options: [{label, description}], optionRows: [sourceRow] } — parallel
 // arrays. Shared by the live dispatch (applyOpenActionMenuEffect) and the
 // apply-click preview (previewReactionMenu) so both see the identical menu.
+//
+// Option display TEXT lives on the menu row (the open_action_menu row), NOT on
+// the option rows: `menu_option_labels` + `menu_option_descriptions` are
+// `|`-separated lists positionally paired with the comma-separated
+// `menu_option_refs`. The option rows then carry only their mechanical data.
+// Back-compat: if the menu row doesn't supply a label/description for an option,
+// fall back to that option row's legacy `menu_label` / `menu_description`
+// (so skills authored under the old per-option shape still render correctly).
 function buildMenuOptions(row, ctx) {
   const refs = parseEffectRefList(row.menu_option_refs);
+  const splitPipe = (s) =>
+    (s == null || String(s).trim() === "") ? [] : String(s).split("|").map((x) => x.trim());
+  const rowLabels = splitPipe(row.menu_option_labels);
+  const rowDescs  = splitPipe(row.menu_option_descriptions);
   let options = [];
   let optionRows = [];
   if (refs.length) {
-    for (const label of refs) {
-      const refRow = findEffectRow(ctx, label);
+    for (let i = 0; i < refs.length; i++) {
+      const ref = refs[i];
+      const refRow = findEffectRow(ctx, ref);
       if (!refRow) {
-        warn(`skill-effects.open_action_menu: ref "${label}" → no matching effect_table row; skipping`);
+        warn(`skill-effects.open_action_menu: ref "${ref}" → no matching effect_table row; skipping`);
         continue;
       }
-      const displayLabel = String(refRow.menu_label ?? refRow.effect_label ?? label);
-      options.push({ label: displayLabel, description: refRow.menu_description ? String(refRow.menu_description) : null });
+      // Menu-row text wins; fall back to the option row's legacy fields, then
+      // to the ref label. (Empty entries in the |-list also fall through.)
+      const label = (rowLabels[i] && rowLabels[i] !== "")
+        ? rowLabels[i]
+        : String(refRow.menu_label ?? refRow.effect_label ?? ref);
+      const desc = (rowDescs[i] && rowDescs[i] !== "")
+        ? rowDescs[i]
+        : (refRow.menu_description ?? null);
+      options.push({ label, description: desc ? String(desc) : null });
       optionRows.push(refRow);
     }
   }
