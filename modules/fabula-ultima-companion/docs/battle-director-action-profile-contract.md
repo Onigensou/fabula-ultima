@@ -5,7 +5,32 @@ Status: **design agreed 2026-06-08. PHASE 0 IMPLEMENTED + parity-verified
 single-source design for the Action Card, the twin of the RESOLVE-side
 `resolveAction` unification (see `battle-director-resolveaction-unification-plan.md`).
 
-## Implementation status
+## Implementation status — COMPUTE single-source COMPLETE (Phases 0–4, 2026-06-08)
+All Action-Card actions that derive a damage/effects preview (Attack, Skill, Spell,
+Item) now flow through ONE source — `computeActionProfile` — at both pre-roll and
+post-roll. The pre-roll/post-roll/recompute three-site divergence is gone; ~390
+net lines of duplicated derivation removed from `state-handlers.js`.
+
+- **Phase 1 — pre-roll Attack card** routes through `computeActionProfile(dice=null)`:
+  fixes the reported pre-roll bugs (Hawkeye take-aim +SL×2 now shown via auto-fired
+  `creature_will_deal_damage` reaction folding; RWM accuracy folded; HR-as-0 grant
+  collapses the range). Fully fallback-guarded.
+- **Phase 2 — Skill/Spell/Item post-roll COMPUTE** derives the whole ar from the
+  profile + `projectProfileToActionResult`. Item action (BD-verified effect_table
+  grant, legacy `type_damage` synthesis, carrier→activation link) all covered.
+- **Phase 3 — Attack post-roll COMPUTE** likewise (grant check/damage/HR-as-0,
+  baseParts breakdown, pierce, forced-VU, Guard-RS all folded into the profile).
+- **Phase 4 — cleanup**: dead COMPUTE locals/imports removed. Basic actions
+  (Guard/Equipment no-roll; Hinder threshold; Study open) intentionally keep their
+  own branches — no damage/effects preview divergence; `computeCheck` already models
+  their modes for a future route.
+- **Verification (gitignored harness):** `verify-profile-projection.mjs` (9 cases,
+  full-field zero-diff) + `verify-attack-projection.mjs` (16 cases) gated each switch;
+  `verify-action-profile-parity.mjs` (10/10 live) + `verify-preroll-profile.mjs`
+  (Hawkeye/RWM/HR-as-0/grant-dmg) + `verify-simulate-smoke.mjs` (COMPUTE→RESOLVE
+  commits) confirm post-switch behavior.
+
+### Original Phase 0 record
 - **Phase 0 — DONE (additive, verified).**
   - `scripts/battle-director/action-profile.js` — `computeActionProfile(input)`
     (Target → Check → Effects), `describePrimary` (synthesizes the primary
@@ -174,12 +199,26 @@ ReactionCandidate = {
    (`describePrimary`) + a `preview()` for each effect_kind + gather effect
    sites. **No caller switched** — parity-tested against current COMPUTE output
    (verify-action-profile-parity.mjs, 7/7 zero-diff).
-1. Route **Attack** (pre-roll + post-roll + recompute) through it → fixes the
-   pre-roll Hawkeye damage/accuracy + HR-as-0 as side effects. Verify.
-2. Route **Skill/Spell** (incl. check modes opposed/threshold/open; synthesized
-   spell heal/damage). Verify.
-3. Route the **basic actions** (Guard/Hinder/Study/Equipment/Item). Verify.
-4. Delete the bespoke branches; fold this doc's status into the resolveAction doc.
+1. ✅ DONE — Route **Attack PRE-ROLL** through it → fixed the pre-roll Hawkeye
+   damage/accuracy + HR-as-0. (commit bc588a1)
+2. ✅ DONE — Route **Skill/Spell + Item** post-roll COMPUTE (projection gated by
+   verify-profile-projection.mjs, 9 cases zero-diff). (commit 779d99f)
+3. ✅ DONE — Route **Attack** post-roll COMPUTE (projection gated by
+   verify-attack-projection.mjs, 16 cases zero-diff). (commit 9bd34f1)
+4. ✅ DONE — Deleted the bespoke Skill+Attack derivation branches + dead imports
+   (~390 net lines). (commits 779d99f / 9bd34f1 / 6da7070) **Basic actions
+   (Guard/Equipment/Hinder/Study) intentionally NOT routed** — no damage/effects
+   preview divergence; left on their own (correct) branches.
+
+### Remaining (not blocking; future)
+- Route Hinder/Study through `computeCheck` (modes already supported) if a unified
+  basic-action card is ever wanted — needs a Hinder/Study projection (dl/success,
+  tier/previousBest/improved). Low value; deferred.
+- The card-recompute reaction path (`recomputeTargetPreviews`) still uses
+  `computeSenderDamageBonuses` directly; it could call `computeActionProfile` with
+  `acceptedReactions` for full symmetry. Functionally correct today.
+- MP-burn skill projection is logic-mirrored but had no live fixture to test (no MP
+  skill in the world) — spot-check when one exists.
 
 ## Open decisions (resolved in discussion)
 - Two functions (computeActionProfile preview + resolveAction apply) sharing the
