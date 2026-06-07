@@ -41,7 +41,7 @@ import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, 
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
-import { dispatchStandaloneTrigger, clearAllStandaloneMenus, dispatchReactionMenu } from "./standalone-reactions.js";
+import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
@@ -2326,71 +2326,6 @@ const Target = {
   },
 };
 
-// ── Pre-roll reaction window (two-phase Action Card) ─────────────────────
-// Fires BEFORE the attack/skill roll for performer-side reactions that must
-// COMMIT before the result is known (rollPhase "pre" — today only the
-// `creature_performs_action` trigger; declarative Barrage). This is the
-// pre-roll half of the two-phase card: no dice exist yet, so nothing can leak
-// the (studied-masked) verdict, and a pre-roll commitment can't be deferred
-// until after the player sees the result.
-//
-// Auto-skip: dispatchReactionMenu returns immediately on an empty candidate
-// list (or all-unavailable), so a plain attack with no eligible pre-roll
-// reaction gains zero clicks and rolls straight through.
-//
-// Target augmentation: the `add_target` effect_kind pushes its picked token
-// uuids onto the mutable `payload._preRoll.addedTokenUuids` side-channel
-// (payload is passed by reference through firePreAcceptedCandidate →
-// makeChainContext). COMPUTE reads them back and appends to the target list
-// BEFORE rolling, so the extra target is included in the single shared
-// accuracy roll — exactly as if it had been picked at TARGET.
-async function runPreRollWindow(director, {
-  performerActor,
-  performerToken,
-  currentTargetTokenUuids = [],
-  actionKind = "Attack",
-  actionName = null,
-  weaponUuid = null,
-  weaponRange = null,   // the attack weapon's range ("Ranged"/"Melee") — gates ATTACK_IS_RANGED
-} = {}) {
-  const empty = { addedTokenUuids: [] };
-  if (!director || !performerActor || !performerToken) return empty;
-  const preRoll = { addedTokenUuids: [] };
-  const payload = {
-    // creature_performs_action subject = the performer (reaction_source "self").
-    sourceActorUuid: performerActor.uuid,
-    subjectActorUuid: performerActor.uuid,
-    sourceTokenUuid: performerToken.document?.uuid ?? performerToken.uuid ?? null,
-    targets: [...currentTargetTokenUuids],
-    targetTokenUuids: [...currentTargetTokenUuids],
-    actionIntent: actionKind === "Attack" ? "harmful" : null,
-    actionKind,
-    actionName,
-    weaponUuid,
-    weaponRange,          // ATTACK_IS_RANGED / ATTACK_IS_MELEE read this
-    _preRoll: preRoll,   // mutable side-channel for add_target → COMPUTE
-  };
-  try {
-    await dispatchReactionMenu({
-      director,
-      reactor: performerActor,
-      token: performerToken,
-      trigger: "creature_performs_action",
-      payload,
-      label: "Before the Roll",
-      passLabel: "Skip",
-      includeManual: true,
-    });
-  } catch (e) {
-    warn("runPreRollWindow: dispatch threw", e);
-  }
-  return {
-    addedTokenUuids: Array.isArray(preRoll.addedTokenUuids)
-      ? [...new Set(preRoll.addedTokenUuids.filter(Boolean))]
-      : [],
-  };
-}
-
 // ─── PRE_ROLL ──────────────────────────────────────────────────────────
 // Pre-roll half of the two-phase Action Card. Runs the performer-side pre-roll
 // reaction window (Barrage) BEFORE the dice, then flows to COMPUTE. Any extra
@@ -2405,38 +2340,113 @@ async function runPreRollWindow(director, {
 const PreRoll = {
   async onEnter(director) {
     const command = director.ctx.declaredCommand;
-    if (command === "Attack" && (director.ctx.passIndex ?? 0) === 0) {
-      try {
-        const attacker = director.ctx.turnSnapshot;
-        const tokenUuids = director.ctx.pickedTargetUuids ?? [];
-        const perfActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
-        const perfToken = perfActor
-          ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
-             ?? perfActor.getActiveTokens?.()?.[0] ?? null)
-          : null;
-        if (perfActor && perfToken) {
-          const weapon = director.ctx.pendingPasses?.[0] ?? attacker.weapon ?? null;
-          const { addedTokenUuids } = await runPreRollWindow(director, {
-            performerActor: perfActor,
-            performerToken: perfToken,
-            currentTargetTokenUuids: tokenUuids,
-            actionKind: "Attack",
-            actionName: weapon?.name ?? "Attack",
-            weaponUuid: weapon?.uuid ?? null,
-            weaponRange: weapon?.range ?? weapon?.weapon_range ?? null,
-          });
-          if (addedTokenUuids.length) {
-            const merged = [...tokenUuids];
-            for (const u of addedTokenUuids) if (!merged.includes(u)) merged.push(u);
-            director.ctx.pickedTargetUuids = merged;
-            log(`PRE_ROLL: pre-roll window added ${addedTokenUuids.length} target(s) → ${merged.length} total`);
-          }
-        }
-      } catch (e) {
-        warn("PRE_ROLL onEnter threw", e);
-      }
+    // Pre-roll card only for the first pass of an Attack. Everything else
+    // (other commands, two-weapon's 2nd pass) flows straight to COMPUTE.
+    if (command !== "Attack" || (director.ctx.passIndex ?? 0) !== 0) {
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
     }
-    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+    try {
+      const attacker = director.ctx.turnSnapshot;
+      const tokenUuids = director.ctx.pickedTargetUuids ?? [];
+      const perfActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
+      const perfToken = perfActor
+        ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
+           ?? perfActor.getActiveTokens?.()?.[0] ?? null)
+        : null;
+      const weapon = director.ctx.pendingPasses?.[0] ?? attacker.weapon ?? null;
+      if (!perfActor || !perfToken || !weapon) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }
+
+      // Discover available pre-roll reactions (creature_performs_action — Barrage).
+      // The mutable `_preRoll` sink is how add_target hands picked tokens back.
+      const sink = { addedTokenUuids: [] };
+      const probePayload = {
+        sourceActorUuid: perfActor.uuid, subjectActorUuid: perfActor.uuid,
+        sourceTokenUuid: perfToken.document?.uuid ?? perfToken.uuid ?? null,
+        targets: [...tokenUuids], targetTokenUuids: [...tokenUuids],
+        actionIntent: "harmful", actionKind: "Attack",
+        actionName: weapon?.name ?? "Attack", weaponUuid: weapon?.uuid ?? null,
+        weaponRange: weapon?.range ?? weapon?.weapon_range ?? null,
+        _preRoll: sink,
+      };
+      const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
+      let cands = [];
+      try {
+        cands = await findPassiveCandidates({
+          casterActor: perfActor, trigger: "creature_performs_action",
+          payload: probePayload, includeManual: true, includeUnavailable: true,
+        }) ?? [];
+      } catch (e) { warn("PRE_ROLL: findPassiveCandidates threw", e); }
+      // Surfaceable + available (drop off/force, and unavailable ones — those
+      // would only render as disabled, so auto-skipping is cleaner here).
+      const askable = cands.filter((c) => c.available && !(c.kind === "passive" && (c.mode === "off" || c.mode === "force")));
+      if (!askable.length) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }   // auto-skip — zero extra clicks
+
+      // Build the pre-roll card payload from TARGET snapshots.
+      const eligible = director.ctx.eligibleTargets ?? [];
+      const targetSnaps = eligible.filter((e) => tokenUuids.includes(e.tokenUuid));
+      const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+      const attackerFriendly = attacker.disposition === 1;
+      const isStudied = (t) => {
+        if (!attackerFriendly || t.disposition !== -1 || !encApi?.getPageForActor) return true;
+        for (const uuid of [t.worldActorUuid, t.actorUuid].filter(Boolean)) {
+          try {
+            const best = Number(encApi.getPageForActor(uuid)?.getFlag?.("fabula-ultima-companion", "encyclopedia")?.bestResult ?? 0) || 0;
+            if (best >= 7) return true;
+          } catch (_) { /* next */ }
+        }
+        return false;
+      };
+      const dA = attacker.attributes?.[weapon.A1] ?? 8;
+      const dB = attacker.attributes?.[weapon.A2] ?? 8;
+
+      const addedAll = [];
+      const cardPayload = {
+        preRoll: true,
+        attacker: { name: attacker.name, actorUuid: attacker.actorUuid, tokenImg: attacker.tokenImg, disposition: attacker.disposition },
+        weapon: { name: weapon.name, range: weapon.range, weaponType: weapon.weaponType, damageType: weapon.damageType, imageUrl: weapon.imageUrl, A1: weapon.A1, A2: weapon.A2 },
+        targets: targetSnaps.map((e) => ({ name: e.name, actorUuid: e.actorUuid, tokenImg: e.tokenImg, disposition: e.disposition, defense: e.defense, studied: isStudied(e) })),
+        checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: weapon.checkBonus ?? 0 },
+        damage: { base: weapon.damageBonus ?? 0, element: weapon.damageType },
+        attackMode: director.ctx.attackMode ?? "main",
+        prePassives: askable,
+        // GM-side callback the card pill's "Apply" runs for a pre-roll reaction:
+        // fire its chain (add_target → cost). Returns added target snapshots so
+        // the card can append rows; cancels leave the pill actionable.
+        onReactionApply: async (cand) => {
+          if (!cand) return { ok: false };
+          sink.addedTokenUuids = [];
+          let res = null;
+          try { res = await firePreAcceptedCandidate({ director, casterActor: perfActor, candidate: cand, payload: probePayload }); }
+          catch (e) { warn("PRE_ROLL: firePreAcceptedCandidate threw", e); return { ok: false }; }
+          if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
+          const added = [];
+          for (const u of sink.addedTokenUuids) {
+            if (addedAll.includes(u)) continue;
+            const snap = eligible.find((e) => e.tokenUuid === u);
+            if (snap) { addedAll.push(u); added.push({ name: snap.name, actorUuid: snap.actorUuid, defense: snap.defense, studied: isStudied(snap) }); }
+          }
+          return { ok: true, addedTargets: added };
+        },
+      };
+
+      const result = await postActionCard({ director, kind: "Attack", payload: cardPayload });
+      if (result?.rolled) {
+        if (addedAll.length) {
+          const merged = [...tokenUuids];
+          for (const u of addedAll) if (!merged.includes(u)) merged.push(u);
+          director.ctx.pickedTargetUuids = merged;
+          log(`PRE_ROLL: card added ${addedAll.length} target(s) → ${merged.length} total`);
+        }
+        director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      } else {
+        // Back / cancel → return to the action picker.
+        director.enqueue({ type: INTENTS.CANCEL_ACTION });
+      }
+    } catch (e) {
+      warn("PRE_ROLL onEnter threw", e);
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+    }
   },
 };
 

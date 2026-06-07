@@ -3596,6 +3596,43 @@ export async function postActionCard({ director, kind, payload }) {
       // before committing the DOM so the pill stays in pending state.
       reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
 
+      // Pre-roll card (two-phase): the pill's Apply runs the reaction's OWN
+      // chain (add_target → cost) via the PRE_ROLL handler's onReactionApply
+      // callback — the post-roll mutation pipeline (recomputeTargetPreviews)
+      // doesn't apply here (no perTargetResults exist yet). Added targets are
+      // appended as rows. A cancelled pick leaves the pill actionable.
+      if (payload?.preRoll) {
+        if (decision === "apply" && typeof payload.onReactionApply === "function") {
+          const cand = (prePassives ?? []).find(
+            (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
+          );
+          let res = null;
+          try { res = await payload.onReactionApply(cand); }
+          catch (e) { warn("recordPillDecision: preRoll onReactionApply threw", e); }
+          if (!res?.ok) {
+            reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+            log(`recordPillDecision: preRoll apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
+            return;
+          }
+          const added = Array.isArray(res.addedTargets) ? res.addedTargets : [];
+          if (added.length) {
+            const list = root.querySelector(".fud-bf-target-list");
+            if (list) {
+              for (const t of added) {
+                const div = document.createElement("div");
+                div.className = "fud-bf-target-row is-added";
+                div.setAttribute("data-fud-target-actor-uuid", String(t.actorUuid ?? ""));
+                const defHtml = t.studied === false ? "DEF ???" : `DEF ${t.defense ?? "?"}`;
+                div.innerHTML = `<span class="t-name">${escapeHtml(t.name ?? "?")}</span><span class="t-def">${defHtml}</span><span class="t-result" style="opacity:0.6;">+ target</span>`;
+                list.appendChild(div);
+              }
+            }
+          }
+        }
+        commitPillDecisionDom(rowKey, carrierUuid, decision);
+        return;
+      }
+
       if (decision === "apply") {
         // Run the mutation pipeline FIRST. If the chain needs a target
         // picker (Protect on a multi-ally attack) the action card is
