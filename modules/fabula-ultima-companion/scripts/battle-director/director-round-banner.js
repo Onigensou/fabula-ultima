@@ -86,6 +86,15 @@ const SPOT_SLIDE_VH = SPOT_H_VH + 2;
 const RAY_VH = 13;
 const END_GOLD = "rgba(255,216,102,.42)";
 const END_GOLD_FADE = "rgba(255,216,102,.12)";
+// Lineup icon enter/exit animation. When an activation is taken its icon is
+// REMOVED: it collapses its layout footprint (margins → -half its width) while
+// shrinking + fading, so the flex row slides the remaining icons toward the
+// centre to fill the gap. A newly-appearing icon does the reverse (grows from
+// nothing, pushing neighbours out) and glows for a few seconds.
+const ICON_ANIM_MS = 360;
+const ICON_ENTER_GLOW_MS = 2500;
+// Enters use the snappy energetic curve; exits use a plain/normal ease.
+const EASE_EXIT = "ease";
 
 let _socket = null;
 // Surface-registry id for the banner overlay while it's visible (it persists
@@ -112,7 +121,9 @@ export function initDirectorRoundBanner() {
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
     _socket.register(ACTION_HIDE, () => { exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
     _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
-    _socket.register(ACTION_TURNACTIONS, renderTurnActionsLocal);
+    // Payload is { list, animate } (tolerate a bare array from older senders).
+    _socket.register(ACTION_TURNACTIONS, (p) =>
+      renderTurnActionsLocal(Array.isArray(p) ? p : p?.list, { animate: !!p?.animate }));
     log("director-round-banner: socket registered");
   } catch (e) {
     warn("director-round-banner: init failed", e);
@@ -121,7 +132,8 @@ export function initDirectorRoundBanner() {
   // from director-combat.js). Registered outside the socket guard so the GM's
   // own local render still works even if socketlib is unavailable.
   try {
-    Hooks.on("fu-director-turnactions", (dCombat) => refreshTurnActions(dCombat));
+    // Mid-round turn changes → animate the spotlight swap + lineup enter/exit.
+    Hooks.on("fu-director-turnactions", (dCombat) => refreshTurnActions(dCombat, { animate: true }));
   } catch (e) { warn("director-round-banner: turnactions hook registration failed", e); }
 
   // Live crisis / defeated tint — re-snapshot when a combatant's HP changes
@@ -305,29 +317,38 @@ function ensureStyle() {
   width: 100%; height: 100%; object-fit: cover; object-position: center top;
   transform: scale(2); transform-origin: center top; display: block;
 }
-#${LAYER_ID} .fu-rb-ta-icon.spent {
-  /* Turn action spent → dim + grey. Darken via grayscale + brightness ONLY,
-     never opacity: the gold ray sits BEHIND the icons, so any transparency lets
-     the gold bleed through the spent icon. The filter cascades to the gold
-     frame + sprite, greying the whole trapezoid. */
-  filter: grayscale(1) brightness(.5);
-}
+/* Spent activations aren't greyed — the icon is REMOVED from the lineup (one
+   icon per pending activation), so there's no .spent state anymore. */
 #${LAYER_ID} .fu-rb-ta-icon.glow { animation: fu-rb-icon-glow 1.1s ease-out; }
 @keyframes fu-rb-icon-glow {
   0%   { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
   22%  { filter: drop-shadow(0 0 13px rgba(255,216,102,1)) drop-shadow(0 0 6px rgba(255,255,255,.95)); }
   100% { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
 }
-/* Active combatant — strong pulsing glow while it's their turn (the keyframe's
-   white inner component reads as the highlight). Placed after .spent/.glow so it
-   wins the box-shadow if classes co-occur. */
-#${LAYER_ID} .fu-rb-ta-icon.active {
-  animation: fu-rb-icon-active 1.4s ease-in-out infinite;
-  z-index: 1;
+/* A newly-added lineup icon glows gold for a couple seconds as it slides in. */
+#${LAYER_ID} .fu-rb-ta-icon.fu-rb-enter-glow { animation: fu-rb-icon-enter-glow 2.4s ease-out; }
+@keyframes fu-rb-icon-enter-glow {
+  0%   { filter: drop-shadow(0 0 0 rgba(255,216,102,0)); }
+  16%  { filter: drop-shadow(0 0 14px rgba(255,216,102,1)) drop-shadow(0 0 6px rgba(255,255,255,.95)); }
+  70%  { filter: drop-shadow(0 0 9px rgba(255,216,102,.8)) drop-shadow(0 0 3px rgba(255,255,255,.5)); }
+  100% { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
 }
-@keyframes fu-rb-icon-active {
-  0%, 100% { filter: drop-shadow(0 0 7px rgba(255,216,102,.85)) drop-shadow(0 0 2px rgba(255,255,255,.6)); }
-  50%      { filter: drop-shadow(0 0 14px rgba(255,216,102,1)) drop-shadow(0 0 6px rgba(255,255,255,.9)); }
+/* The spotlight glows gold for a couple seconds when a new actor grows in. */
+#${LAYER_ID} .fu-rb-spotlight.fu-rb-spot-glow { animation: fu-rb-spot-glow 2.4s ease-out; }
+@keyframes fu-rb-spot-glow {
+  0%   { filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  16%  { filter: drop-shadow(0 0 20px rgba(255,216,102,1)) drop-shadow(0 0 9px rgba(255,255,255,.9)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  70%  { filter: drop-shadow(0 0 12px rgba(255,216,102,.8)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  100% { filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+}
+/* Enemy spotlight: the appear-glow is strong RED instead of gold. More specific
+   than the gold rule above (3 classes vs 2), so it wins for enemies. */
+#${LAYER_ID} .fu-rb-spotlight.enemy.fu-rb-spot-glow { animation: fu-rb-spot-glow-red 2.4s ease-out; }
+@keyframes fu-rb-spot-glow-red {
+  0%   { filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  16%  { filter: drop-shadow(0 0 22px rgba(235,25,25,1)) drop-shadow(0 0 10px rgba(255,130,100,.95)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  70%  { filter: drop-shadow(0 0 13px rgba(225,30,30,.9)) drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
+  100% { filter: drop-shadow(0 4px 10px rgba(0,0,0,.6)); }
 }
 /* Crisis (HP <= half) — subtle pulsing red tint over the sprite as a warning.
    A multiply overlay keeps the sprite's detail (vs a flat red wash); the gentle
@@ -345,9 +366,8 @@ function ensureStyle() {
   50%      { background: rgba(240,15,15,.42); }
 }
 /* Defeated (HP 0, still on the scene — e.g. a downed PC) — grey the sprite and
-   stamp a skull. Overrides spent/active styling so the skull stays bright and
-   the crisis pulse is suppressed. Placed AFTER spent/active/crisis to win on
-   equal specificity. */
+   stamp a skull. Suppresses the crisis pulse so the skull stays clean. Placed
+   AFTER crisis to win on equal specificity. */
 #${LAYER_ID} .fu-rb-ta-icon.defeated {
   filter: none; animation: none; box-shadow: none;
 }
@@ -407,6 +427,10 @@ function ensureStyle() {
    transform animation on dock; this just holds the final opacity + position. */
 #${LAYER_ID} .fu-rb-spotlight.shown { opacity: 1; }
 #${LAYER_ID} .fu-rb-spot-frame { position: absolute; inset: 0; background: ${ACCENT}; clip-path: ${SPOT_CLIP}; }
+/* Enemy in the spotlight faces LEFT — mirror the FRAME (not the media, which
+   carries the inline focal-zoom transform), like the enemy lineup icons. The
+   keystone clip is symmetric, so only the sprite visibly flips. */
+#${LAYER_ID} .fu-rb-spotlight.enemy .fu-rb-spot-frame { transform: scaleX(-1); }
 #${LAYER_ID} .fu-rb-spot-wrap { position: absolute; inset: 3px; background: #0a0a0e; overflow: hidden; clip-path: ${SPOT_CLIP}; }
 #${LAYER_ID} .fu-rb-spotlight .fu-rb-ta-media {
   width: 100%; height: 100%; object-fit: cover; object-position: center top;
@@ -749,7 +773,8 @@ async function buildSnapshotFromState(dc) {
       side: sc.side === "enemy" ? "enemy" : "party",
       name: td?.name ?? sc.name ?? "",
       img: td?.texture?.src ?? baseActor?.img ?? null,
-      spent: !(Number(sc.turnsRemaining) > 0),
+      // Remaining activations this round → one lineup icon each (champions > 1).
+      turnsRemaining: Number(sc.turnsRemaining) || 0,
       active: !!activeId && sc.id === activeId,
       crisis: combatantInCrisis(shim),
       defeated: combatantDefeated(shim),
@@ -797,9 +822,10 @@ export async function playBattleStartBanner({ text = "BATTLE START", holdMs = 90
 
 // ── Turn-action tracker ───────────────────────────────────────────────────
 // Creature icons flanking ROUND X: enemies on the left, party on the right.
-// Each icon is the token sprite masked into a circle; when that creature has
-// spent its turn action(s) for the round it greys out + dims. Driven by the
-// `fu-director-turnactions` hook (director-combat.js fires it on start /
+// Each icon is the token sprite masked into a trapezoid; there is ONE icon per
+// PENDING activation, so as a creature spends its turn action(s) its icons are
+// removed one by one (a champion with N activations starts with N). Driven by
+// the `fu-director-turnactions` hook (director-combat.js fires it on start /
 // nextTurn / round reset); the GM builds a snapshot, renders locally, and
 // broadcasts to every client.
 
@@ -838,8 +864,10 @@ export function applyIconFocusStyle(media, focus) {
 
 function buildTurnActionIcon(c) {
   const icon = document.createElement("div");
-  icon.className = "fu-rb-ta-icon" + (c.spent ? " spent" : "") + (c.active ? " active" : "") + (c.crisis ? " crisis" : "") + (c.defeated ? " defeated" : "");
-  icon.dataset.cid = c.id;
+  icon.className = "fu-rb-ta-icon" + (c.crisis ? " crisis" : "") + (c.defeated ? " defeated" : "");
+  // Unique per activation icon (id#activationIndex) so multi-activation creatures
+  // get one addressable icon each.
+  icon.dataset.cid = `${c.id}#${c._act ?? 0}`;
   icon.title = c.name ?? "";
   let media;
   if (isVideoSrc(c.img)) {
@@ -887,21 +915,10 @@ function buildTurnActionIcon(c) {
 // the inner media only when the subject changes (keyed on id+img); crisis /
 // defeated state classes toggle every call, and the focal crop re-applies so a
 // tuner change updates without a rebuild. Mirrors buildTurnActionIcon's frame.
-function setSpotlight(fu, active) {
-  const sp = fu?.spotlight;
-  if (!sp) return;
+// Build the spotlight's inner frame/wrap/media (or placeholder) for `active`.
+function buildSpotlightContent(sp, active) {
   const hasMedia = !!(active && active.img);
-  const key = active ? `A:${active.id}:${active.img ?? ""}` : "P";
   sp.classList.toggle("placeholder", !hasMedia);
-  sp.classList.toggle("crisis", !!active?.crisis);
-  sp.classList.toggle("defeated", !!active?.defeated);
-  if (fu.spotKey === key) {
-    // Same subject — just re-apply focus (tuner Save) without a rebuild.
-    const media = sp.querySelector(".fu-rb-ta-media");
-    if (media && active) applyIconFocusStyle(media, active.focus);
-    return;
-  }
-  fu.spotKey = key;
   sp.replaceChildren();
   const frame = document.createElement("div"); frame.className = "fu-rb-spot-frame";
   const wrap = document.createElement("div"); wrap.className = "fu-rb-spot-wrap";
@@ -929,11 +946,116 @@ function setSpotlight(fu, active) {
   sp.appendChild(frame);
 }
 
-// Render (idempotent). Rebuilds the icon DOM only when the membership/order
-// changes (new round / combatant added or removed); otherwise just toggles
-// each icon's spent/dim state so an in-round update is a cheap class flip.
-function renderTurnActionsLocal(combatants = []) {
+function setSpotlight(fu, active, animate) {
+  const sp = fu?.spotlight;
+  if (!sp) return;
+  const hasMedia = !!(active && active.img);
+  const key = active ? `A:${active.id}:${active.img ?? ""}` : "P";
+  sp.classList.toggle("crisis", !!active?.crisis);
+  sp.classList.toggle("defeated", !!active?.defeated);
+  // Enemy in the spotlight → mirror to face left + red appear-glow (vs gold).
+  sp.classList.toggle("enemy", active?.side === "enemy");
+  if (fu.spotKey === key) {
+    // Same subject — just re-apply focus (tuner Save) without a rebuild.
+    const media = sp.querySelector(".fu-rb-ta-media");
+    if (media && active) applyIconFocusStyle(media, active.focus);
+    return;
+  }
+  const prevKey = fu.spotKey;
+  fu.spotKey = key;
+  // Mid-round turn change while the spotlight is docked + visible: shrink + fade
+  // the OLD actor OUT (normal easing), swap, then grow + fade the NEW actor IN
+  // with a glow (snappy easing). prevKey "" = first set / not yet shown → no
+  // animation (the dock slide-in handles the initial appearance).
+  const swap = animate && prevKey !== "" && sp.classList.contains("shown") && sp.children.length;
+  for (const a of sp.getAnimations?.() ?? []) a.cancel();
+  if (!swap) { buildSpotlightContent(sp, active); return; }
+  const out = sp.animate(
+    [{ opacity: 1, transform: "translate(-50%, 0) scale(1)" },
+     { opacity: 0, transform: "translate(-50%, 0) scale(.55)" }],
+    { duration: 200, easing: EASE_EXIT, fill: "forwards" });
+  out.finished.then(() => {
+    buildSpotlightContent(sp, active);
+    out.cancel(); // drop the opacity:0 fill so the in-animation can take over
+    sp.animate(
+      [{ opacity: 0, transform: "translate(-50%, 0) scale(.55)" },
+       { opacity: 1, transform: "translate(-50%, 0) scale(1)" }],
+      { duration: 300, easing: EASE_ENERGETIC });
+    if (hasMedia) {
+      sp.classList.add("fu-rb-spot-glow");
+      setTimeout(() => sp.classList.remove("fu-rb-spot-glow"), 2400);
+    }
+  }).catch(() => {});
+}
+
+// Animate a lineup icon OUT (its activation was taken): collapse its layout
+// footprint (margins → -half its width) while it shrinks + fades, so the flex
+// row slides the remaining icons toward the centre to fill the gap. Normal ease.
+function exitIconAnimated(el, left) {
+  if (el.classList.contains("fu-rb-exit")) return;
+  el.classList.add("fu-rb-exit");
+  el.style.pointerEvents = "none";
+  const half = ICON_W_VH / 2;
+  const base = left ? "scaleX(-1) " : "";
+  el.animate(
+    [{ transform: base + "scale(1)", opacity: 1 },
+     { marginLeft: `-${half}vh`, marginRight: `-${half}vh`, transform: base + "scale(.3)", opacity: 0 }],
+    { duration: ICON_ANIM_MS, easing: EASE_EXIT, fill: "forwards" });
+  setTimeout(() => el.remove(), ICON_ANIM_MS + 60);
+}
+
+// Animate a freshly-added lineup icon IN (a new activation): it slides in from
+// the OUTER end of its side ("getting in line") while growing + fading, and
+// glows for a couple seconds. Snappy easing. The slot is already reserved
+// (full width), so neighbours don't move — it just fills the outer empty space.
+function enterIconAnimated(el, left) {
+  const base = left ? "scaleX(-1) " : "";
+  const fromX = `${left ? "-" : ""}${(ICON_W_VH * 0.8).toFixed(2)}vh`;
+  el.animate(
+    [{ opacity: 0, transform: `translateX(${fromX}) ${base}scale(.6)` },
+     { opacity: 1, transform: `${base}scale(1)` }],
+    { duration: ICON_ANIM_MS, easing: EASE_ENERGETIC });
+  el.classList.add("fu-rb-enter-glow");
+  setTimeout(() => el.classList.remove("fu-rb-enter-glow"), ICON_ENTER_GLOW_MS);
+}
+
+// Reconcile one side's group to the desired activation icons WITH animation:
+// removed icons animate out (slide-fill), added icons animate in (at the end),
+// kept icons stay (and follow the reflow driven by the exiting icons' margins).
+function reconcileGroupAnimated(group, desired, left) {
+  const desiredSet = new Set(desired.map((c) => `${c.id}#${c._act}`));
+  // EXIT: live (non-exiting) icons no longer desired.
+  for (const el of [...group.children]) {
+    if (el.classList.contains("fu-rb-exit")) continue;
+    if (!desiredSet.has(el.dataset.cid)) exitIconAnimated(el, left);
+  }
+  // ENTER + order: walk desired, reuse kept, create + animate missing.
+  let prev = null;
+  for (const c of desired) {
+    const cid = `${c.id}#${c._act}`;
+    let el = null;
+    for (const child of group.children) {
+      if (!child.classList.contains("fu-rb-exit") && child.dataset.cid === cid) { el = child; break; }
+    }
+    if (!el) {
+      el = buildTurnActionIcon(c);
+      el.classList.add("shown");
+      if (prev) prev.after(el); else group.prepend(el);
+      enterIconAnimated(el, left);
+    }
+    prev = el;
+  }
+}
+
+// Render. `opts.animate` (mid-round turn change, via the turnactions hook) runs
+// the enter/exit/slide animations; otherwise (round start / resume) it's a
+// plain build that the staggered reveal + dock slide handle. Geometry (bar
+// width / spacer / ray) is set only on the plain path so the bar stays put
+// while icons slide; crisis/defeated are cheap class toggles when membership
+// is unchanged.
+function renderTurnActionsLocal(combatants = [], opts = {}) {
   try {
+    const animate = !!opts.animate;
     const layer = ensureLayer();
     const { leftGroup, rightGroup } = layer.__fu;
     if (!leftGroup || !rightGroup) return;
@@ -942,7 +1064,7 @@ function renderTurnActionsLocal(combatants = []) {
     // spotlight (or a placeholder when no one is acting). The side rows render
     // everyone else; the active one returns to its slot when its turn ends.
     const active = list.find((c) => c.active) ?? null;
-    setSpotlight(layer.__fu, active);
+    setSpotlight(layer.__fu, active, animate);
     // ONE lineup icon per PENDING activation (not per creature): a creature with
     // multiple activations (a champion) shows that many icons, and each is
     // REMOVED as its activation is taken. turnsRemaining counts a creature's
@@ -952,64 +1074,69 @@ function renderTurnActionsLocal(combatants = []) {
     // unique (id#i) for the diff key + per-icon DOM lookup.
     const sideList = [];
     for (const c of list) {
-      let n = Math.max(0, (Number(c.turnsRemaining) || 0) - (c.active ? 1 : 0));
+      const n = Math.max(0, (Number(c.turnsRemaining) || 0) - (c.active ? 1 : 0));
       for (let i = 0; i < n; i++) sideList.push({ ...c, _act: i });
     }
-    // The spacer reserves the bar's centre gap for the spotlight. Narrowed by
-    // 2×SLANT (vs the spotlight's full top width) so the innermost icon on each
-    // side butts FLUSH against the spotlight's slanted edge — its inner edge
-    // becomes collinear with the spotlight border (they share the same angle),
-    // and the icon's top corner meets the spotlight's top corner with no gap.
-    if (layer.__fu.spacer) layer.__fu.spacer.style.width = `${SPOT_W_VH - 2 * SLANT_VH}vh`;
-    // Reserve equal width for both sides (= the larger side's activation-icon
-    // span) so the spotlight stays screen-centred with uneven counts. Empty
-    // space falls on each side's OUTER edge via the group's justify-content.
-    const leftN = sideList.filter((c) => c.side === "enemy").length;
-    const rightN = sideList.length - leftN;
-    const maxN = Math.max(leftN, rightN);
-    // Icons overlap by SLANT_VH (tessellation), so maxN icons span
-    // maxN*ICON_W_VH - (maxN-1)*SLANT_VH, not maxN*ICON_W_VH.
-    const grpVh = maxN > 0 ? (maxN * ICON_W_VH - (maxN - 1) * SLANT_VH) : 0;
-    const grpW = `${grpVh}vh`;
-    leftGroup.style.minWidth = grpW;
-    rightGroup.style.minWidth = grpW;
-    // Single gold ray spans the FULL bar width — both reserved groups plus the
-    // centre spacer (the spotlight gap) — so the gold runs unbroken through the
-    // middle. setRayGeometry adds the RAY_VH tails + the symmetric fade.
-    const spacerVh = SPOT_W_VH - 2 * SLANT_VH;
-    const barVh = 2 * grpVh + spacerVh;
-    setRayGeometry(layer.__fu.ray, barVh);
-    // Key includes img so a changed/recovered sprite forces a rebuild (the
-    // update branch never swaps media) — self-heals a stale/empty icon that a
-    // transient render (e.g. mid-rewind) may have left behind. spent/crisis/
-    // defeated stay OUT of the key: those are cheap class toggles. The active
-    // combatant is absent from sideList, so the key naturally changes when a
-    // turn passes (one icon leaves a row, the prior active returns to its slot).
-    const key = sideList.map((c) => `${c.side === "enemy" ? "L" : "R"}:${c.id}:${c.img ?? ""}`).join("|");
-    // Force a rebuild if the DOM child count desynced from the snapshot, even
-    // when the key matches (defensive against leftover/missing icon elements).
-    const leftCount = leftGroup.children.length;
-    const rightCount = rightGroup.children.length;
-    if (key !== layer.__fu.turnActionKey || leftCount !== leftN || rightCount !== rightN) {
-      leftGroup.replaceChildren();
-      rightGroup.replaceChildren();
-      for (const c of sideList) {
-        const grp = c.side === "enemy" ? leftGroup : rightGroup;
-        const iconEl = buildTurnActionIcon(c);
-        // If icons are already revealed (mid-battle membership change), show the
-        // new one immediately; otherwise leave it hidden for the staggered
-        // reveal the docked banner triggers.
-        if (_iconsRevealed) iconEl.classList.add("shown");
-        grp.appendChild(iconEl);
+    const leftDesired = sideList.filter((c) => c.side === "enemy");
+    const rightDesired = sideList.filter((c) => c.side !== "enemy");
+    const leftN = leftDesired.length;
+    const rightN = rightDesired.length;
+    const animatedPath = animate && _iconsRevealed;
+
+    // Geometry — set only on the PLAIN path (round start / resume). The animated
+    // mid-round path leaves the bar width untouched so it stays put while icons
+    // slide; a removed icon collapses its own footprint to fill the gap.
+    if (!animatedPath) {
+      // The spacer reserves the bar's centre gap for the spotlight. Narrowed by
+      // 2×SLANT so the innermost icon on each side butts FLUSH against the
+      // spotlight's slanted edge (collinear borders, no gap).
+      if (layer.__fu.spacer) layer.__fu.spacer.style.width = `${SPOT_W_VH - 2 * SLANT_VH}vh`;
+      // Reserve equal width for both sides (= the larger side's icon span) so
+      // the spotlight stays screen-centred with uneven counts.
+      const maxN = Math.max(leftN, rightN);
+      // Icons overlap by SLANT_VH (tessellation): maxN icons span
+      // maxN*ICON_W_VH - (maxN-1)*SLANT_VH.
+      const grpVh = maxN > 0 ? (maxN * ICON_W_VH - (maxN - 1) * SLANT_VH) : 0;
+      leftGroup.style.minWidth = `${grpVh}vh`;
+      rightGroup.style.minWidth = `${grpVh}vh`;
+      // Single gold ray spans the FULL bar width (both groups + the centre
+      // spacer) so the gold runs unbroken through the middle.
+      const barVh = 2 * grpVh + (SPOT_W_VH - 2 * SLANT_VH);
+      setRayGeometry(layer.__fu.ray, barVh);
+    }
+
+    // Key encodes one entry per pending activation (id#i) + img, so it changes —
+    // and an icon is added/removed — whenever an activation is taken/granted.
+    const key = sideList.map((c) => `${c.side === "enemy" ? "L" : "R"}:${c.id}#${c._act}:${c.img ?? ""}`).join("|");
+    // Count only LIVE (non-exiting) children, so a still-animating exit icon
+    // doesn't trip the desync rebuild.
+    const liveCount = (g) => [...g.children].filter((e) => !e.classList.contains("fu-rb-exit")).length;
+    const desync = liveCount(leftGroup) !== leftN || liveCount(rightGroup) !== rightN;
+    if (key !== layer.__fu.turnActionKey || desync) {
+      if (animatedPath) {
+        reconcileGroupAnimated(leftGroup, leftDesired, true);
+        reconcileGroupAnimated(rightGroup, rightDesired, false);
+      } else {
+        leftGroup.replaceChildren();
+        rightGroup.replaceChildren();
+        for (const c of sideList) {
+          const grp = c.side === "enemy" ? leftGroup : rightGroup;
+          const iconEl = buildTurnActionIcon(c);
+          // If icons are already revealed (mid-battle membership change), show
+          // the new one immediately; otherwise leave it hidden for the staggered
+          // reveal the docked banner triggers.
+          if (_iconsRevealed) iconEl.classList.add("shown");
+          grp.appendChild(iconEl);
+        }
       }
       layer.__fu.turnActionKey = key;
     } else {
       for (const c of sideList) {
         const grp = c.side === "enemy" ? leftGroup : rightGroup;
-        const sel = `.fu-rb-ta-icon[data-cid="${(window.CSS?.escape?.(c.id)) ?? c.id}"]`;
+        const cid = `${c.id}#${c._act}`;
+        const sel = `.fu-rb-ta-icon[data-cid="${(window.CSS?.escape?.(cid)) ?? cid}"]:not(.fu-rb-exit)`;
         const icon = grp.querySelector(sel);
         if (!icon) continue;
-        icon.classList.toggle("spent", !!c.spent);
         icon.classList.toggle("crisis", !!c.crisis); // crisis warning tint
         icon.classList.toggle("defeated", !!c.defeated); // HP-0 grey + skull
         // Re-apply focus too, so a focal-point change (tuner Save) updates the
@@ -1172,7 +1299,8 @@ function buildTurnActionSnapshot(dCombat) {
       // Prefer the TOKEN name (carries the A/B/C suffix) over the actor name.
       name: td?.name ?? c.name ?? "",
       img: td?.texture?.src ?? c.actorDoc?.img ?? null,
-      spent: !(Number(c.turnsRemaining) > 0),
+      // Remaining activations this round → one lineup icon each (champions > 1).
+      turnsRemaining: Number(c.turnsRemaining) || 0,
       active: !!activeId && c.id === activeId,
       crisis: combatantInCrisis(c),
       defeated: combatantDefeated(c),
@@ -1185,15 +1313,16 @@ function buildTurnActionSnapshot(dCombat) {
 }
 
 // GM: build the snapshot, render locally, and broadcast to every other client.
-// Fired from the `fu-director-turnactions` hook. No-op for non-GM (the hook
-// only fires where dCombat lives, but guard anyway).
-export function refreshTurnActions(dCombat) {
+// Fired from the `fu-director-turnactions` hook (mid-round turn changes →
+// `animate:true`) and from round-start/resume (`animate:false`, plain). No-op
+// for non-GM (the hook only fires where dCombat lives, but guard anyway).
+export function refreshTurnActions(dCombat, { animate = false } = {}) {
   try {
     if (!game.user?.isGM) return;
     _lastDCombat = dCombat ?? _lastDCombat;
     const snap = buildTurnActionSnapshot(dCombat);
-    renderTurnActionsLocal(snap);
-    try { _socket?.executeForOthers?.(ACTION_TURNACTIONS, snap); }
+    renderTurnActionsLocal(snap, { animate });
+    try { _socket?.executeForOthers?.(ACTION_TURNACTIONS, { list: snap, animate }); }
     catch (e) { warn("refreshTurnActions broadcast failed", e); }
   } catch (e) {
     warn("refreshTurnActions threw", e);
