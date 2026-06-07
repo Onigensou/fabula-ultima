@@ -32,12 +32,13 @@ import { OptionPicker } from "./option-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
-import { evaluateFormula, buildSkillResolver, buildDamageBonusParts,
-  resolveAccuracyParts, resolveOutgoingDamageParts, isCriticalHit, applyCritDamage,
-  resolveIncomingReduction } from "./skill-formulas.js";
+// COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
+// isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
+// resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
+import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, resolveDamageElementOverride } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget } from "./skill-effects.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -2628,50 +2629,13 @@ const Compute = {
         director.enqueue({ type: INTENTS.ABORT });
         return;
       }
-      // Both two-weapon variants (main-first + off-first) trigger HR=0.
-      const isTwoWeapon = String(director.ctx.attackMode ?? "").startsWith("two-weapon");
       director.ctx.pendingPasses = queue;          // keep mutated remainder for CLEANUP branch
       director.ctx.currentWeapon = weapon;
       director.ctx.passIndex = (director.ctx.passIndex ?? 0) + 1;
-      const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
+      // (Studied-mask gate, fumble threshold, forced-VU, two-weapon HR=0 and the
+      // whole per-target hit/damage/affinity derivation now live in
+      // computeActionProfile — see the Single-source COMPUTE block below.)
 
-      // Encyclopedia studied-check: a player attacker shouldn't see an
-      // enemy's DEF / MDEF until the party has Studied them to Identity tier
-      // (Study result ≥ 7). The card uses `studied` to decide whether to
-      // mask the DEF number with "???".
-      // Reads the live JournalEntryPage flag via the encyclopedia API;
-      // falls back to "studied=true" for friendly targets (no masking) and
-      // for any lookup error.
-      const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-      const TIER_IDENTITY = 7;
-      const attackerIsFriendly = (attacker.disposition === 1);
-      const checkStudied = (target) => {
-        if (!attackerIsFriendly) return true;
-        if (target.disposition !== -1) return true;
-        if (!encApi?.getPageForActor) return true;
-        const candidates = [target.worldActorUuid, target.actorUuid].filter(Boolean);
-        for (const uuid of candidates) {
-          try {
-            const page = encApi.getPageForActor(uuid);
-            if (!page) continue;
-            const flag = page.getFlag?.("fabula-ultima-companion", "encyclopedia");
-            const best = Number(flag?.bestResult ?? 0) || 0;
-            if (best >= TIER_IDENTITY) return true;
-          } catch (_) { /* try next */ }
-        }
-        return false;
-      };
-
-      // Per-target hit/damage resolution. Base damage = HR + weapon damageBonus
-      // on hit, then the target's affinity to the weapon's damage type
-      // mutates it: VU 2x, RS 0.5x (ceil), IM 0, AB heals instead of damages.
-      // Status-forced VU (Wet+bolt, Oil+fire, Petrify+earth, Hypothermia+ice,
-      // Turbulence+air, Zombie+light) overrides the sheet affinity. Mirrors
-      // legacy AdvanceDamage line 588-597.
-      const FORCED_VU_BY_STATUS = {
-        Wet: "bolt", Oil: "fire", Petrify: "earth",
-        Hypothermia: "ice", Turbulence: "air", Zombie: "light",
-      };
       // Defend against eligibleTargets being null (shouldn't happen on the
       // first pass since TARGET sets it; the multi-pass loop preserves it
       // in CLEANUP, but defend anyway).
