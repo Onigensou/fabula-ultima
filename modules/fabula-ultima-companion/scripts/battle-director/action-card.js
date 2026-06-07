@@ -3753,9 +3753,14 @@ export async function postActionCard({ director, kind, payload }) {
           const cand = (prePassives ?? []).find(
             (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
           );
+          // Hide the pre-roll card while the reaction's targeting picker
+          // (Barrage's add_target) is up, so it doesn't overlap the JRPG
+          // targeting UI — same as every other picker site.
           let res = null;
+          root.classList.add("is-hidden-during-pick");
           try { res = await payload.onReactionApply(cand); }
           catch (e) { warn("recordPillDecision: preRoll onReactionApply threw", e); }
+          finally { root.classList.remove("is-hidden-during-pick"); }
           if (!res?.ok) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
             log(`recordPillDecision: preRoll apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
