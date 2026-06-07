@@ -1742,7 +1742,19 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
   `;
 }
 
-function buildButtonsHTML({ isFumble = false, hasRoll = true }) {
+function buildButtonsHTML({ isFumble = false, hasRoll = true, preRoll = false }) {
+  // Pre-roll card (two-phase Action Card): the dice aren't rolled yet, so the
+  // primary button is "Roll" (commits the pre-roll reactions + rolls), and the
+  // Invoke row is hidden (nothing to reroll). data-fud-action="roll" routes to
+  // the PRE_ROLL handler's await; "Back" returns to the action picker.
+  if (preRoll) {
+    return `
+    <div class="fud-bf-btn-row">
+      <div class="fud-btn fud-btn-cancel" data-fud-action="cancel" role="button" tabindex="0">Back</div>
+      <div class="fud-btn fud-btn-confirm fud-btn-roll" data-fud-action="roll" role="button" tabindex="0">Roll <i class="fa-solid fa-dice-d20"></i></div>
+    </div>
+  `;
+  }
   const lockedAttrs = isFumble
     ? `class="fud-btn fud-btn-invoke is-locked" title="Locked: Invoke cannot be used on a Fumble."`
     : `class="fud-btn fud-btn-invoke is-locked" title="Invoke Trait / Bond — coming in Phase E"`;
@@ -2079,6 +2091,107 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
     `,
     buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble }),
   };
+}
+
+// ── Pre-roll attack card (two-phase Action Card) ─────────────────────────
+// Informative pre-roll variant: shows the check FORMULA (attribute dice + bonus),
+// the damage formula, and each target's DEF (masked ??? for un-studied enemies)
+// — but NO roll result (no rA/rB/total, no hit/damage). Surfaces a "Roll" button.
+// After pre-roll reactions are committed + Roll clicked, the card morphs into the
+// post-roll card (increment 3). `targets` are TARGET-state snapshots
+// ({name, actorUuid, tokenImg, disposition, defense, studied}); `checkFormula`
+// is {A1, A2, dA, dB, checkBonus, checkBonusParts}.
+function buildAttackCardPreRoll({ attacker, weapon, targets, checkFormula, damage, attackMode, passIndex, totalPasses }) {
+  const titleText = weapon?.name ?? "Attack";
+  const safeWeaponUrl = safeImgUrl(weapon?.imageUrl);
+  const titleIcon = safeWeaponUrl
+    ? `<img class="fud-bf-title-icon" src="${escapeHtml(safeWeaponUrl)}" alt="">`
+    : "";
+  const subtitle = tryBuild("subtitle", () => buildSubtitleHTML({
+    weapon, attackMode: attackMode ?? "main", passIndex: passIndex ?? 0, totalPasses: totalPasses ?? 0,
+  }));
+  return {
+    titleIcon,
+    titleText,
+    subtitle,
+    // No perTargetResults → portraits render attacker + targets with no result tint.
+    portraits: tryBuild("portraits", () => buildPortraitsHTML({
+      attacker,
+      perTargetResults: (targets ?? []).map((t) => ({ name: t.name, actorUuid: t.actorUuid, tokenImg: t.tokenImg, disposition: t.disposition })),
+    })),
+    body: `
+      ${tryBuild("attacker", () => buildAttackerHTML({ attacker, targets }))}
+      ${tryBuild("accuracy", () => buildAccuracyFormulaHTML({ formula: checkFormula }))}
+      ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll: null }))}
+      ${tryBuild("perTarget", () => buildPerTargetPreRollHTML({ targets, weapon, element: damage?.element }))}
+    `,
+    buttons: buildButtonsHTML({ preRoll: true }),
+  };
+}
+
+// Accuracy FORMULA (no result) for the pre-roll card: "DEX d8 + INS d8 (+N) vs DEF".
+function buildAccuracyFormulaHTML({ formula, isSpellish = false }) {
+  if (!formula) return "";
+  const { A1, A2, dA, dB, checkBonus = 0, checkBonusParts } = formula;
+  const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span></span>`;
+  const dieB = `<span class="die-block">${attrIconHTML(A2)} <span class="attr">${escapeHtml(A2)}</span> <span class="die-size">d${dB}</span></span>`;
+  const cbVal = Number(checkBonus) || 0;
+  const bonusPart = cbVal !== 0 ? `<span class="bonus">${cbVal >= 0 ? "+" : ""}${cbVal}</span>` : "";
+  const iconUrl = isSpellish ? MAGIC_ICON_URL : STRIKE_ICON_URL;
+  const iconAlt = isSpellish ? "Magic" : "Strike";
+  const parts = Array.isArray(checkBonusParts) ? checkBonusParts.filter((p) => p && Number(p.amount) !== 0) : [];
+  const breakdownHTML = parts.length
+    ? `<ul style="margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;">`
+      + parts.map((p) => { const a = Number(p.amount) || 0; return `<li><b>${escapeHtml(String(p.source ?? "Unknown"))}:</b> ${a >= 0 ? "+" : "−"}${Math.abs(a)}</li>`; }).join("")
+      + `</ul>`
+    : "";
+  const tipBody = [
+    `<p><b>${escapeHtml(A1)}:</b> 1d${dA}</p>`,
+    `<p><b>${escapeHtml(A2)}:</b> 1d${dB}</p>`,
+    `<p style="margin-bottom:0;"><b>Check Bonus:</b> ${cbVal === 0 ? "—" : (cbVal >= 0 ? `+${cbVal}` : cbVal)}</p>${breakdownHTML}`,
+    `<p style="opacity:0.75; margin-top:6px;">Not rolled yet — compares vs target's <b>${isSpellish ? "Magic Defense" : "Defense"}</b> on Roll.</p>`,
+  ].join("");
+  const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="Accuracy Check"`;
+  return `
+    <fieldset class="fud-bf-section"${tipAttrs}>
+      <legend>Accuracy Check <span style="opacity:0.7; font-weight:700;">— before roll</span></legend>
+      <div class="fud-bf-acc">
+        <div class="fud-bf-acc-row">
+          ${dieA}<span class="plus">+</span>${dieB}${bonusPart}
+          <span class="spacer"></span>
+          <span class="total-wrap"><img class="strike-icon" src="${iconUrl}" alt="${iconAlt}" title="${iconAlt}"><span class="total" style="opacity:0.5;">?</span></span>
+        </div>
+      </div>
+    </fieldset>
+  `;
+}
+
+// Per-target list for the pre-roll card: name + DEF (masked ??? for un-studied),
+// no hit/result column (just a dash placeholder).
+function buildPerTargetPreRollHTML({ targets, weapon = null, element = null, isSpellish = false }) {
+  const defLabelTag = isSpellish ? "MDEF" : "DEF";
+  const rows = (targets ?? []).map((t) => {
+    const uuidAttr = ` data-fud-target-actor-uuid="${escapeHtml(String(t.actorUuid ?? ""))}"`;
+    if (t.studied === false) {
+      const maskedTip = `<p>Study this target to identity tier (≥7) to reveal defense + affinity.</p>`;
+      return `<div class="fud-bf-target-row" data-fud-equip-desc="${escapeHtml(maskedTip)}" data-fud-equip-desc-name="${escapeHtml(t.name)}"${uuidAttr}>
+        <span class="t-name">${escapeHtml(t.name)}</span>
+        <span class="t-def">${defLabelTag} ???</span>
+        <span class="t-result" style="opacity:0.5;">—</span>
+      </div>`;
+    }
+    return `<div class="fud-bf-target-row"${uuidAttr}>
+      <span class="t-name">${escapeHtml(t.name)}</span>
+      <span class="t-def">${defLabelTag} ${t.defense ?? t.def ?? "?"}</span>
+      <span class="t-result" style="opacity:0.5;">—</span>
+    </div>`;
+  }).join("");
+  return `
+    <fieldset class="fud-bf-section">
+      <legend>Targets <span style="opacity:0.7; font-weight:700;">— before roll</span></legend>
+      <div class="fud-bf-target-list">${rows || `<div style="opacity:0.6;font-size:12px;">No targets.</div>`}</div>
+    </fieldset>
+  `;
 }
 
 function buildGuardCard({ attacker, coverTarget }) {
@@ -3165,7 +3278,11 @@ export async function postActionCard({ director, kind, payload }) {
   // by tryBuild() inside the builders.
   let card = null;
   try {
-    if (kind === "Attack") {
+    if (kind === "Attack" && effectivePayload?.preRoll) {
+      // Two-phase Action Card: pre-roll variant (formula + masked DEF, no result,
+      // Roll button). Posted by the PRE_ROLL handler before the dice.
+      card = buildAttackCardPreRoll(effectivePayload);
+    } else if (kind === "Attack") {
       card = buildAttackCard(effectivePayload);
     } else if (kind === "Guard") {
       card = buildGuardCard(effectivePayload);
@@ -3341,6 +3458,10 @@ export async function postActionCard({ director, kind, payload }) {
       // reaction-pill decisions so resolve can apply pre-accepted passives.
       resolve({
         confirmed: outcome === "confirm",
+        // Pre-roll card (two-phase): the "Roll" button resolves with rolled:true
+        // (and confirmed:false) so the PRE_ROLL handler knows to proceed to the
+        // dice + COMPUTE rather than treating it as a final Confirm.
+        rolled: outcome === "roll",
         reactionDecisions: snapshotReactionDecisions(),
         ...extras,
       });
