@@ -887,18 +887,32 @@ If you extend either table with a new column:
 4. If the new field is a filter, also update the subject/filter matrix
    table above.
 
-If you add a new `effect_kind`:
+If you add a new `effect_kind` — the engine is now the single source of truth:
 
-1. Add the option key/value in the template's `effect_kind` select
-   options.
-2. Add the handler function in `reaction-grant.js`.
-3. Add the kind to the switch in `applyEffectByLabel`.
-4. Document the per-kind fields here.
+1. Add the kind to `EFFECT_KIND_DISPATCH` in `scripts/battle-director/skill-effects.js`
+   (key → handler; data-only kinds use a small inline `() => ({ok:true,...})`).
+2. Add a label to `EFFECT_KIND_LABELS` in the same file.
+3. Document the per-kind fields here.
+
+That's it for the dropdown: the **every-boot template dropdown-options sync**
+(`_module-boot.js` section 3) reads `SUPPORTED_EFFECT_KINDS` + `EFFECT_KIND_LABELS`
+and backfills the template's `effect_kind` option automatically — NO per-kind
+template migration. (See the select-option gate in [[csb-template-gating]].)
+**Also verify the kind across all four passive modes** —
+[[feedback_effect_kind_check_all_passive_modes]].
 
 If you add a new trigger key:
 
 1. Add the entry to the `TRIGGERS` array in `reaction-triggers.config.js`
    (subject, bucket, filters).
-2. Add it to the template's `reaction_trigger` select options.
-3. Emit it from the appropriate phase handler.
-4. Add the row to the subject/filter matrix table above.
+2. Emit it from the appropriate phase handler.
+3. Add the row to the subject/filter matrix table above.
+
+The template's `reaction_trigger` dropdown is backfilled automatically by the
+boot dropdown-options sync (it reads `oni.ReactionTriggers.listTriggers()`), so
+no template option edit is needed.
+
+**General select columns:** the boot sync also backfills any select column from
+the values actually used in the skill masters — so a value authored via migration
+won't be stripped when a human opens the sheet. New select *columns* still need
+the column-gate surgery in the field checklist above.

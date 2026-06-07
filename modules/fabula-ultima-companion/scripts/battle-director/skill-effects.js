@@ -1747,59 +1747,79 @@ export async function applyEffectByLabel(effectLabel, ctx) {
   return applyEffectRow(row, ctx);
 }
 
+// ── Effect-kind registry — SINGLE SOURCE OF TRUTH ────────────────────────────
+// One map drives BOTH the runtime dispatch (applyEffectRow) AND the CSB template
+// `effect_kind` dropdown (the `effect-kind-template-options` boot migration
+// imports SUPPORTED_EFFECT_KINDS + EFFECT_KIND_LABELS and ensures every key is a
+// template option). This kills the recurring class of bug where a new effect_kind
+// works in data/harness but CSB STRIPS it the moment a human opens the sheet
+// (select values absent from the option list are silently dropped → effect_kind
+// "" → falls back to "grant" → "unknown resource"). Add a new kind in ONE place
+// (here) and both the engine + the dropdown stay in sync. See
+// [[feedback_csb_template_gating]] + [[feedback_effect_kind_check_all_passive_modes]].
+//
+// Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
+// without acting — their real work happens earlier (computeSenderDamageBonuses /
+// resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
+// the chain running so downstream cost steps still fire ([[consume-last-in-chain]]).
+const EFFECT_KIND_DISPATCH = {
+  targeting:           applyTargetingEffect,
+  grant:               applyGrantEffect,
+  set_resource:        applySetResourceEffect,
+  apply_ae:            applyApplyAeEffect,
+  consume_charge:      applyConsumeChargeEffect,
+  chain:               applyChainEffect,
+  open_action_menu:    applyOpenActionMenuEffect,
+  remove_tagged_ae:    applyRemoveTaggedAeEffect,
+  substitute_cost:     applySubstituteCostEffect,
+  consume_resource:    applyConsumeResourceEffect,
+  add_target:          applyAddTargetEffect,
+  roll_loot_table:     applyRollLootTableEffect,
+  deal_damage:         applyDealDamageEffect,
+  equip_swap:          applyEquipSwapEffect,
+  encyclopedia_record: applyEncyclopediaRecordEffect,
+  adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
+  redirect_target:     (row) => ({ ok: true, kind: "redirect_target", applied: [], reason: "applied-at-card-mutation-phase" }),
+  adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
+};
+
+// Canonical effect_kind keys (every kind the engine dispatches). The template
+// migration ensures each has a dropdown option.
+export const SUPPORTED_EFFECT_KINDS = Object.keys(EFFECT_KIND_DISPATCH);
+
+// Human-readable dropdown labels for the CSB template `effect_kind` select.
+// One entry per SUPPORTED_EFFECT_KINDS key (the migration falls back to the key
+// itself if a label is missing, but keep this complete).
+export const EFFECT_KIND_LABELS = {
+  targeting:           "Targeting (produce token list)",
+  grant:               "Grant / Drain Resource",
+  set_resource:        "Set Resource",
+  apply_ae:            "Apply Active Effect",
+  consume_charge:      "Consume Charge",
+  chain:               "Chain (invoke other effects)",
+  open_action_menu:    "Open Action Menu",
+  remove_tagged_ae:    "Remove Tagged AE",
+  substitute_cost:     "Substitute Cost",
+  consume_resource:    "Consume Resource",
+  add_target:          "Add Target",
+  roll_loot_table:     "Roll Loot Table",
+  deal_damage:         "Deal Damage",
+  equip_swap:          "Equip Swap",
+  encyclopedia_record: "Encyclopedia Record",
+  adjust_damage:       "Adjust Damage",
+  redirect_target:     "Redirect Target",
+  adjust_accuracy:     "Adjust Accuracy",
+};
+
 // Dispatch a single effect row. Callers that already have the row
 // (e.g. chain steps) call this directly.
 export async function applyEffectRow(row, ctx) {
   if (!row) return { ok: false, reason: "no-row" };
   const kind = String(row.effect_kind ?? "").trim().toLowerCase();
-  switch (kind) {
-    case "targeting":      return applyTargetingEffect(row, ctx);
-    case "grant":          return applyGrantEffect(row, ctx);
-    case "set_resource":   return applySetResourceEffect(row, ctx);
-    case "apply_ae":       return applyApplyAeEffect(row, ctx);
-    case "consume_charge": return applyConsumeChargeEffect(row, ctx);
-    case "chain":          return applyChainEffect(row, ctx);
-    case "open_action_menu": return applyOpenActionMenuEffect(row, ctx);
-    case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
-    case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
-    case "consume_resource": return applyConsumeResourceEffect(row, ctx);
-    case "add_target":       return applyAddTargetEffect(row, ctx);
-    case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
-    case "deal_damage":      return applyDealDamageEffect(row, ctx);
-    // resolveAction-unification: built-in action commits expressed as effect
-    // rows. Each wraps the proven bespoke function so behavior is identical,
-    // just routed through the unified resolver.
-    case "equip_swap":          return applyEquipSwapEffect(row, ctx);
-    case "encyclopedia_record": return applyEncyclopediaRecordEffect(row, ctx);
-    // adjust_damage is data-only here. `damage_stage: "outgoing"` rows are read
-    // by `computeSenderDamageBonuses` (walks acceptedPrePassives BEFORE the fire
-    // loop, accumulating per-target damage ops); `damage_stage: "incoming"` rows
-    // are read by `resolveDamageReactions` at HP-write time. By the time a row
-    // reaches applyEffectRow the adjustment is already applied, so firing is a
-    // no-op — returning ok keeps the chain log clean. Unifies the former
-    // add_damage (outgoing) + modify_damage_taken (incoming) kinds.
-    case "adjust_damage":
-      return { ok: true, kind, applied: [], reason: "data-only" };
-    case "redirect_target":
-      // Data-only at chain-fire time. The target replacement happens in
-      // card-mutations.js at the CONFIRM write site (before RESOLVE reads
-      // ar.targets / ar.perTargetResults). Returning ok keeps the chain
-      // running so downstream cost steps (consume_charge, consume_resource)
-      // fire after the redirect is recorded as accepted —
-      // [[consume-last-in-chain]].
-      return { ok: true, kind, applied: [], reason: "applied-at-card-mutation-phase" };
-    case "adjust_accuracy":
-      // Data-only here, same as redirect_target. The Accuracy-Check override
-      // (and the resulting hit/miss recompute across all targets) is applied
-      // in card-mutations.js at the CONFIRM write site. Returning ok keeps the
-      // chain running so the downstream cost step (Crossfire's consume_resource
-      // for MP = the attacker's Accuracy Result) still fires —
-      // [[consume-last-in-chain]].
-      return { ok: true, kind, applied: [], reason: "applied-at-card-mutation-phase" };
-    default:
-      warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
-      return { ok: false, kind, reason: "unknown-kind" };
-  }
+  const handler = EFFECT_KIND_DISPATCH[kind];
+  if (handler) return handler(row, ctx);
+  warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
+  return { ok: false, kind, reason: "unknown-kind" };
 }
 
 // Fire the skill's `on_activate_effect_ref` hook — runs after the skill
