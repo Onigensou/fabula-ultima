@@ -56,6 +56,11 @@
       } catch {}
     }
 
+    let removeEffects = [];
+    if (raw.removeEffectsJson) {
+      try { removeEffects = JSON.parse(raw.removeEffectsJson); } catch {}
+    }
+
     return {
       enabled:           bool(raw.enabled),
       useResourceChange: bool(raw.useResourceChange),
@@ -66,6 +71,8 @@
       ignoreReduction:   bool(raw.ignoreReduction),
       useActiveEffect:   bool(raw.useActiveEffect),
       activeEffects,
+      useRemoveEffect:   bool(raw.useRemoveEffect),
+      removeEffects,
       targetMode:        String(raw.targetMode         ?? "all"),
       silent:            bool(raw.silent),
       vfxType:           String(raw.vfxType            ?? "none"),
@@ -193,11 +200,35 @@
     }
   }
 
+  // ── Remove Active Effects (array, one actor) ──────────────────────────────
+  async function removeActiveEffects(actor, removeEffects) {
+    const aeApi = window.FUCompanion?.api?.activeEffectManager;
+    if (!aeApi?.removeEffects) { console.warn(TAG, "AEM removeEffects API not available."); return []; }
+
+    const effectRefs = [];
+    for (const entry of removeEffects) {
+      if (entry.source === "registry" && entry.id) {
+        effectRefs.push(entry.id);
+      } else if (entry.source === "custom" && entry.json) {
+        try { effectRefs.push(JSON.parse(entry.json)); } catch {}
+      }
+    }
+    if (!effectRefs.length) return [];
+
+    try {
+      const res = await aeApi.removeEffects({ actors: [actor], effects: effectRefs });
+      return removeEffects.map(e => ({ label: e.label ?? "Effect", ok: res?.ok ?? true }));
+    } catch (e) {
+      console.error(TAG, `AE remove failed for ${actor.name}:`, e);
+      return removeEffects.map(e => ({ label: e.label ?? "Effect", ok: false }));
+    }
+  }
+
   // ── Apply to a list of actors ──────────────────────────────────────────────
   async function applyToActors(actors, cfg) {
     const results = [];
     for (const actor of actors) {
-      const row = { actorName: actor.name, resource: null, ae: [] };
+      const row = { actorName: actor.name, resource: null, ae: [], aeRemoved: [] };
       if (cfg.useResourceChange) {
         row.resource = await applyResourceDelta(actor, cfg).catch(e => {
           console.error(TAG, `resource delta failed for ${actor.name}:`, e); return null;
@@ -208,6 +239,11 @@
           console.error(TAG, `AE failed for ${actor.name}:`, e); return [];
         });
       }
+      if (cfg.useRemoveEffect && cfg.removeEffects?.length) {
+        row.aeRemoved = await removeActiveEffects(actor, cfg.removeEffects).catch(e => {
+          console.error(TAG, `AE remove failed for ${actor.name}:`, e); return [];
+        });
+      }
       results.push(row);
     }
     return results;
@@ -215,7 +251,7 @@
 
   // ── Chat card ──────────────────────────────────────────────────────────────
   async function createChatCard(results, cfg, tileLabel) {
-    const lines = results.map(({ actorName, resource, ae }) => {
+    const lines = results.map(({ actorName, resource, ae, aeRemoved }) => {
       const parts = [];
       if (resource) {
         const { rt, delta, newValue, max } = resource;
@@ -229,6 +265,9 @@
       }
       for (const { label, ok } of ae) {
         parts.push(ok ? `afflicted by <b>${label}</b>` : `could not apply <b>${label}</b>`);
+      }
+      for (const { label, ok } of (aeRemoved ?? [])) {
+        parts.push(ok ? `lost <b>${label}</b>` : `could not remove <b>${label}</b>`);
       }
       if (!parts.length) parts.push("is unaffected");
       return `<li style="margin-bottom:3px"><b>${actorName}</b> ${parts.join("; ")}.</li>`;
@@ -352,7 +391,7 @@
   // ── Main run() ─────────────────────────────────────────────────────────────
   async function run(cfg, tileDoc, tokenDoc, scene) {
     if (!cfg.enabled) return;
-    if (!cfg.useResourceChange && !cfg.useActiveEffect
+    if (!cfg.useResourceChange && !cfg.useActiveEffect && !cfg.useRemoveEffect
         && cfg.vfxType === "none" && !cfg.sfxUrl) return;
 
     const allMembers = await resolvePartyMembers();
@@ -363,7 +402,7 @@
     // VFX/SFX plays locally on the triggering client immediately.
     if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
 
-    if (!cfg.useResourceChange && !cfg.useActiveEffect) return;
+    if (!cfg.useResourceChange && !cfg.useActiveEffect && !cfg.useRemoveEffect) return;
 
     if (!targets.length) {
       console.warn(TAG, "No party members resolved; skipping resource/AE application.");

@@ -419,6 +419,31 @@
                    value="${(cfg.activeEffectsJson ?? "").replace(/"/g, "&quot;")}" />
           </div>
 
+          <!-- Remove Active Effects (array) -->
+          <h3><i class="fas fa-minus-circle"></i> Remove Effects</h3>
+          <div class="form-group">
+            <label>Remove active effect(s)</label>
+            <input type="checkbox" name="${fl("useRemoveEffect")}"
+                   data-dtype="Boolean" data-oni-ec="ae-remove-toggle"
+                   ${chk(cfg.useRemoveEffect)} />
+          </div>
+
+          <div class="oni-ec-indent" data-oni-ec-ae-remove="1"
+               ${cfg.useRemoveEffect ? "" : 'style="display:none"'}>
+            <ul class="oni-ec-ae-list" data-oni-ae-remove-list="1"></ul>
+            <div class="oni-ec-ae-actions">
+              <button type="button" data-oni-ae-remove-registry="1">
+                <i class="fas fa-list"></i> Add from Registry
+              </button>
+            </div>
+            <p class="notes" style="margin-top:4px;">
+              Selected effects are removed from actors when they step on this tile.
+            </p>
+            <input type="hidden" name="${fl("removeEffectsJson")}"
+                   data-oni-ae-remove-json="1"
+                   value="${(cfg.removeEffectsJson ?? "").replace(/"/g, "&quot;")}" />
+          </div>
+
           <!-- Output -->
           <h3><i class="fas fa-volume-up"></i> Output</h3>
           <div class="form-group">
@@ -555,6 +580,39 @@
     const aeBody = $("[data-oni-ec-ae='1']");
     aeCb?.addEventListener("change", () => { toggle(aeBody, aeCb.checked); resize(); });
 
+    // Remove AE toggle
+    const aeRemoveCb   = $("[data-oni-ec='ae-remove-toggle']");
+    const aeRemoveBody = $("[data-oni-ec-ae-remove='1']");
+    aeRemoveCb?.addEventListener("change", () => { toggle(aeRemoveBody, aeRemoveCb.checked); resize(); });
+
+    // Remove AE list
+    let removeEffects     = cfg.removeEffects ?? [];
+    const removeJsonInput = $("[data-oni-ae-remove-json='1']");
+    const removeListEl    = $("[data-oni-ae-remove-list='1']");
+
+    function syncRemoveJson() {
+      if (removeJsonInput) removeJsonInput.value = JSON.stringify(removeEffects);
+    }
+    function removeFromRemoveList(idx) {
+      removeEffects.splice(idx, 1);
+      syncRemoveJson();
+      renderAeList(removeListEl, removeEffects, removeFromRemoveList);
+      resize();
+    }
+    if (removeListEl) renderAeList(removeListEl, removeEffects, removeFromRemoveList);
+
+    const addRemoveRegistryBtn = $("[data-oni-ae-remove-registry='1']");
+    if (addRemoveRegistryBtn) {
+      addRemoveRegistryBtn.addEventListener("click", () => {
+        openRegistryPicker(entry => {
+          removeEffects.push(entry);
+          syncRemoveJson();
+          renderAeList(removeListEl, removeEffects, removeFromRemoveList);
+          resize();
+        });
+      });
+    }
+
     // Silent toggle
     const silentCb = $("[data-oni-ec='silent-toggle']");
     const outBody  = $("[data-oni-ec-output='1']");
@@ -606,6 +664,11 @@
         } catch {}
       }
 
+      let removeEffects = [];
+      if (raw.removeEffectsJson) {
+        try { removeEffects = JSON.parse(raw.removeEffectsJson); } catch {}
+      }
+
       const cfg = {
         enabled:           bool(raw.enabled),
         useResourceChange: bool(raw.useResourceChange),
@@ -617,6 +680,9 @@
         useActiveEffect:   bool(raw.useActiveEffect),
         activeEffects,
         activeEffectsJson: raw.activeEffectsJson ?? "",
+        useRemoveEffect:   bool(raw.useRemoveEffect),
+        removeEffects,
+        removeEffectsJson: raw.removeEffectsJson ?? "",
         targetMode:        String(raw.targetMode      ?? "all"),
         silent:            bool(raw.silent),
         vfxType:           String(raw.vfxType         ?? "none"),
