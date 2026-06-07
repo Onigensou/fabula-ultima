@@ -3388,11 +3388,31 @@ export async function postActionCard({ director, kind, payload }) {
     // Morph in place: clone-replace the existing (pre-roll) element — drops its
     // listeners — keeping the same DOM position. It's already on-screen, so skip
     // the entrance animation; the content swap reads as the card morphing.
+    // FLIP the inner card's height so the size change animates instead of
+    // snapping (the pre-roll card is shorter than the post-roll results card).
+    const prevCard = reuseRoot.querySelector(".fud-bf-card");
+    const oldH = prevCard ? prevCard.getBoundingClientRect().height : 0;
     root = reuseRoot.cloneNode(false);
     root.id = ROOT_ID;
     root.innerHTML = innerHTML;
     reuseRoot.replaceWith(root);
     root.classList.add("is-visible");
+    const newCard = root.querySelector(".fud-bf-card");
+    const newH = newCard ? newCard.getBoundingClientRect().height : 0;
+    if (newCard && oldH && newH && Math.abs(oldH - newH) > 1) {
+      newCard.style.height = `${oldH}px`;
+      newCard.style.overflow = "hidden";
+      newCard.style.transition = "height 240ms cubic-bezier(.2,.7,.2,1)";
+      requestAnimationFrame(() => { newCard.style.height = `${newH}px`; });
+      const onMorphEnd = (e) => {
+        if (e.target !== newCard || e.propertyName !== "height") return;
+        newCard.style.height = "";
+        newCard.style.overflow = "";
+        newCard.style.transition = "";
+        newCard.removeEventListener("transitionend", onMorphEnd);
+      };
+      newCard.addEventListener("transitionend", onMorphEnd);
+    }
   } else {
     root = document.createElement("div");
     root.id = ROOT_ID;
