@@ -444,10 +444,25 @@ Identifiers (all return 0 if unresolvable):
 | `HIT_COUNT` | `payload.hitTargets.length` — how many targets passed the Check. Threaded onto chainPayload by the Skill RESOLVE path (state-handlers.js), so it's available to `on_activate_effect_ref` chains for gating "fire only on hit" effects. 0 when no roll info was threaded (no-Check skill / passive grant). Example: Soul Steal's IP grant uses `condition_formula: "HIT_COUNT > 0"` to skip on miss. |
 | `SINGLE_TARGET_ATTACK` | 1 if `payload.targets.length === 1`, else 0. Boolean alias that reads cleaner in gates than `ACTION_TARGET_COUNT == 1`. Used by Cheap Shot's "only fires on single-target attacks" gate. |
 | `TARGET_STATUS_COUNT` | Status (debuff) count on the trigger's **subject** creature (the target of the action that fired the trigger), not the reactor. Reads `payload.subjectActorUuid` — populated by per-target firing sites (e.g. `creature_will_deal_damage`). Falls back to 0 if no subject is in the payload. Used by Cheap Shot's "+1 per status on target" damage scaling. |
-| `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | 1 if the reactor has at least one equipped weapon whose `category` matches the type (case-insensitive), else 0. Used by Spiritist's Healing Power / Support Magic to gate on arcane-weapon presence. |
-| `HAS_SHIELD` | 1 if the reactor has any equipped item with `item_type === "shield"`, else 0. |
-| `HAS_MARTIAL_ARMOR` | 1 if the reactor has any equipped item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
+| `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | **LOADOUT gate.** 1 if the reactor has at least one *equipped* weapon (`isEquipped`) whose type matches, else 0. Reads the item `isEquipped` flag — NOT the weapon being used for the current attack. Use for "do I have an X weapon on me" (Spiritist's arcane-weapon gate). For "is the attack I'm performing an X attack", use `ATTACK_IS_*` below instead — see the caveat. |
+| `ATTACK_IS_RANGED` / `ATTACK_IS_MELEE` / `ATTACK_IS_ARCANE` | **ACTIVE-ATTACK gate.** 1 if the in-flight action's weapon is of that kind, else 0. `_RANGED`/`_MELEE` read the attack weapon's **range** (`payload.weaponRange`, threaded by the attack pipeline onto the pre-roll, `creature_will_deal_damage`, and `creature_deals_damage` payloads); `_ARCANE` reads the weapon family. Use for reactions whose RAW says "when you perform a ranged/melee attack" (Barrage, Warning Shot, Hawkeye). 0 when no weapon action is in flight, so a `== 1` gate fails closed. |
+| `HAS_SHIELD` | **LOADOUT gate.** 1 if the reactor has any equipped (`isEquipped`) item with `item_type === "shield"`, else 0. |
+| `HAS_MARTIAL_ARMOR` | **LOADOUT gate.** 1 if the reactor has any equipped (`isEquipped`) item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
 | `HAS_SKILL_<NAME>` | 1 if the reactor owns a skill item whose `name` matches `<NAME>` (case-insensitive), else 0. The skill name is baked into the identifier: spaces become underscores, case is uppercased. Examples: `HAS_SKILL_PILLAGE` (Pillage), `HAS_SKILL_SOUL_STEAL` (Soul Steal), `HAS_SKILL_HEART_OF_DARKNESS` (Heart of Darkness). Used for cross-skill requirement gates (Pillage modifies Soul Steal; Fleeting Moment modifies Counterattack; etc.). The tokenizer doesn't support string literals, so the dynamic-identifier shape is the workaround. |
+
+> **Loadout vs active-attack gates — pick the right one.** `HAS_*_WEAPON` /
+> `HAS_SHIELD` / `HAS_MARTIAL_ARMOR` ask "what's in my loadout" via the per-item
+> `isEquipped` flag. `ATTACK_IS_*` asks "what am I attacking WITH" via the action
+> payload. A reaction whose RAW says *"when you perform a ranged attack"* wants
+> **`ATTACK_IS_RANGED`**, not `HAS_RANGED_WEAPON` — because the two can disagree:
+> a BD attack reads its weapon from the actor's `main_hand` SLOT prop, while
+> `isEquipped` is a separate boolean. They desync whenever equip state is mutated
+> outside `applyEquipmentSwap` (cloning an actor, bulk item add, raw writes,
+> migrations), so a weapon can be the one you're attacking with while its
+> `isEquipped` is `false`. Gating such a reaction on `HAS_RANGED_WEAPON` then
+> wrongly suppresses it. (`equipment-swap.reconcileEquip(actor)` repairs the
+> desync by driving `isEquipped` from the slots; the Test Battle dev tool runs it
+> on generated actors.)
 
 Per-target semantics: damage triggers fire once per affected target, so a
 grant that uses `DAMAGE_DEALT` also fires once per target — cumulatively

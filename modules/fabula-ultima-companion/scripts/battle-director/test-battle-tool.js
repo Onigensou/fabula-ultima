@@ -25,7 +25,7 @@
 
 import { log, warn } from "./logger.js";
 import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "./dev-tools-menu.js";
-import { applyEquipmentSwap } from "./equipment-swap.js";
+import { applyEquipmentSwap, reconcileEquip } from "./equipment-swap.js";
 
 const PANEL_ID = "fud-testbattle-panel";
 const STYLE_ID = "fud-testbattle-style";
@@ -353,6 +353,10 @@ async function genClassActor(className, { withBasicGear = true } = {}) {
       await applyEquipmentSwap(actor, { main: weapon.id });
       log(`test-battle: equipped "${weapon.name}" (${hint ?? "default"}) in ${name}'s main hand`);
     }
+    // Reconcile isEquipped to the slots so loadout gates (HAS_RANGED_WEAPON,
+    // HAS_SHIELD, …) read correctly on the generated actor — even if no weapon
+    // was auto-equipped (lean mode) or the cloned base PC left stale state.
+    await reconcileEquip(actor);
   } catch (e) { warn("test-battle: auto-equip threw", e); }
 
   // Start at full HP (the cloned shell carries the template's default stats),

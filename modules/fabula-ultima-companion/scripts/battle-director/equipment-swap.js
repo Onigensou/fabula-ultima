@@ -448,3 +448,68 @@ export async function applyEquipmentSwap(actor, selections) {
   log(`Equipment swap applied (${changes.length} change${changes.length === 1 ? "" : "s"}) for ${actor.name}`);
   return { changes, skipped: false };
 }
+
+// ─── Public: reconcile isEquipped to the slots ──────────────────────────
+//
+// Repair helper for the equip dual-source-of-truth. The actor's hand/accessory
+// SLOT props (main_hand / off_hand / accessory_name / accessory2_name) are the
+// source of truth for "what's worn" — resolveAttackerWeapon + the sheet read
+// them. The per-item `isEquipped` boolean is a SEPARATE flag that loadout
+// formula gates read (HAS_RANGED_WEAPON / HAS_SHIELD / HAS_MARTIAL_ARMOR / …).
+// They DESYNC whenever equip state is mutated outside applyEquipmentSwap —
+// cloning an actor, bulk item add (the Test Battle dev tool), raw writes,
+// migrations — which silently breaks those gates (e.g. a worn-by-slot weapon
+// whose isEquipped is false → HAS_RANGED_WEAPON returns 0).
+//
+// This drives isEquipped (+ item-resident AE enable) FROM the slots WITHOUT
+// changing the slots, healing the drift. Idempotent; returns { changed }. Run
+// on actor create/clone, after bulk item edits, or as a repair sweep. (To
+// CHANGE what's worn, call applyEquipmentSwap instead — this only reconciles.)
+export async function reconcileEquip(actor) {
+  if (!actor) return { changed: 0 };
+  const { weapons, shields, accessories } = partitionInventory(actor);
+  const handItems = [...weapons, ...shields];
+  const props = actor.system?.props ?? {};
+
+  const wornHandIds = new Set();
+  for (const slot of ["main_hand", "off_hand"]) {
+    const idx = indexByEquippedName(handItems, props[slot]);
+    if (idx >= 0) wornHandIds.add(handItems[idx].id);
+  }
+  const wornAccIds = new Set();
+  for (const slot of ["accessory_name", "accessory2_name"]) {
+    const idx = indexByEquippedName(accessories, props[slot]);
+    if (idx >= 0) wornAccIds.add(accessories[idx].id);
+  }
+
+  const itemUpdates = [];
+  const aeWork = [];
+  const sync = (item, worn) => {
+    if (!!item.system?.props?.isEquipped !== worn) {
+      itemUpdates.push({ _id: item.id, "system.props.isEquipped": worn });
+      aeWork.push({ itemId: item.id, enable: worn });
+    }
+  };
+  for (const it of handItems) sync(it, wornHandIds.has(it.id));
+  for (const ac of accessories) sync(ac, wornAccIds.has(ac.id));
+
+  if (!itemUpdates.length) return { changed: 0 };
+  try { await actor.updateEmbeddedDocuments("Item", itemUpdates); }
+  catch (e) { warn("reconcileEquip: item updates failed", e); }
+
+  // Item-resident AE enable/disable, mirroring applyEquipmentSwap's sync.
+  for (const { itemId, enable } of aeWork) {
+    const item = actor.items?.get?.(itemId);
+    if (!item) continue;
+    const docs = resolveItemEffectDocs(item);
+    const fxUpdates = docs
+      .filter((fx) => !!fx.disabled === enable)   // currently wrong-way → flip
+      .map((fx) => ({ _id: fx.id, disabled: !enable }));
+    if (fxUpdates.length) {
+      try { await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates); }
+      catch (e) { warn(`reconcileEquip: AE sync failed for ${item.name}`, e); }
+    }
+  }
+  log(`reconcileEquip: synced ${itemUpdates.length} item(s) to slots on ${actor.name}`);
+  return { changed: itemUpdates.length };
+}
