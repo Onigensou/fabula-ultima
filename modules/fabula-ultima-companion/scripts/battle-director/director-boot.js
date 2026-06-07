@@ -43,7 +43,7 @@ import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effect
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { clearAllStandaloneMenus } from "./standalone-reactions.js";
-import { freezeActionResult, snapshotDirectorCombatant } from "./snapshot.js";
+import { freezeActionResult, snapshotDirectorCombatant, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 import {
   findSavedDirectorState,
   reconstructDirectorCombat,
@@ -965,6 +965,25 @@ Hooks.once("ready", () => {
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,
+    // Debug: compute the live eligible-enemy list for the current (or first
+    // party) combatant, exposing why an enemy might be filtered out.
+    _debugEligible: () => {
+      const dc = _instance?.dCombat;
+      if (!dc?.started || dc.ended) return { err: "no battle" };
+      const cur = dc.current ?? dc.combatants.find((c) => c.side === "party") ?? null;
+      if (!cur) return { err: "no attacker" };
+      let snap = null;
+      try { snap = snapshotDirectorCombatant(cur); } catch (e) { return { err: "snap threw: " + (e?.message ?? e) }; }
+      let enemies = [];
+      try { enemies = snapshotEligibleTargetsFromDCombat(dc, snap, { category: "enemy" }); } catch (e) { return { err: "eligible threw: " + (e?.message ?? e), attackerDisp: snap?.disposition }; }
+      return {
+        attacker: { name: snap?.name, disposition: snap?.disposition, combatantId: snap?.combatantId },
+        currentSet: !!dc.current,
+        combatants: dc.combatants.map((c) => ({ name: c.name, side: c.side, disp: c.disposition, hasActor: !!c.actorDoc, hasToken: !!c.tokenDoc })),
+        enemyCount: enemies.length,
+        enemyNames: enemies.map((e) => e.name),
+      };
+    },
   };
 
   // Auto-prune ghost combatants: if a token is deleted while a director battle
