@@ -1805,13 +1805,13 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
 
 function buildButtonsHTML({ isFumble = false, hasRoll = true, preRoll = false }) {
   // Pre-roll card (two-phase Action Card): the dice aren't rolled yet, so the
-  // primary button is "Roll" (commits the pre-roll reactions + rolls), and the
-  // Invoke row is hidden (nothing to reroll). data-fud-action="roll" routes to
-  // the PRE_ROLL handler's await; "Back" returns to the action picker.
+  // only button is "Roll" (commits the pre-roll reactions + rolls). Reactable
+  // cards are Confirm-only (no Cancel) — [[director-skill-no-cancel-rule]] — so
+  // there's no Back button; data-fud-action="roll" routes to the PRE_ROLL
+  // handler's await.
   if (preRoll) {
     return `
     <div class="fud-bf-btn-row">
-      <div class="fud-btn fud-btn-cancel" data-fud-action="cancel" role="button" tabindex="0">Back</div>
       <div class="fud-btn fud-btn-confirm fud-btn-roll" data-fud-action="roll" role="button" tabindex="0">Roll <i class="fa-solid fa-dice-d20"></i></div>
     </div>
   `;
