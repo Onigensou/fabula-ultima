@@ -2686,253 +2686,51 @@ const Compute = {
       // state before COMPUTE; any added targets are already merged into
       // ctx.pickedTargetUuids, so targetSnapshots above includes them.)
 
-      // Single-pass roll for the weapon we just shifted from the queue.
-      const dA = attacker.attributes?.[weapon.A1] ?? 8;
-      const dB = attacker.attributes?.[weapon.A2] ?? 8;
-      let checkBonus = weapon.checkBonus ?? 0;
-      let damageBonus = weapon.damageBonus ?? 0;
-      // Per-source breakdown — surfaced in the action-card Check tooltip
-      // so the player sees WHERE each +N came from. Weapon contribution
-      // is `weapon.checkBonus` which already aggregates the actor's
-      // bonus_accuracy_check / attack_accuracy_mod_* AEs via CSB's
-      // derived stat (so a future per-AE breakdown would need to walk
-      // the actor's AE list — out of scope here; we surface "Weapon"
-      // as the umbrella).
-      const checkBonusParts = [];
-      if (Number(weapon.checkBonus) !== 0) {
-        checkBonusParts.push({ source: weapon.name || "Weapon", amount: Number(weapon.checkBonus) || 0 });
-      }
-      // Free-action grant — read + consume. Adds the grant's check /
-      // damage bonus to this attack's roll. The clear-on-consume here
-      // (rather than on RESOLVE success) means a CONFIRM cancel still
-      // consumes the grant, matching the user's commitment-on-pick
-      // model: once they posted the action card, the free action was
-      // used. Use case driver: High Speed's "perform a free attack with
-      // +SL bonus". See [[free-actions]].
+      // ── Single-source COMPUTE (Attack) ───────────────────────────────────
+      // Roll the accuracy dice here (RNG); computeActionProfile derives total /
+      // hr / crit / fumble + per-target hit/damage/affinity/pierce and folds the
+      // free-action grant (check + damage + HR-as-0) + actor-status accuracy /
+      // outgoing-damage mods + damageBonusParts breakdown. projectProfileToActionResult
+      // maps it to the legacy Attack ar fields. Proven zero-diff vs the old
+      // derivation across 4 attackers × hit/crit/miss/multi (verify-attack-projection.mjs).
+      // Free-action grant — read + CONSUME (commitment-on-pick: a CONFIRM cancel
+      // still spends it). The grant folds into the profile via ctx.grant.
       const attackerActorIdForGrant = attacker?.actorId ?? null;
       const attackGrant = attackerActorIdForGrant ? freeActions.get(attackerActorIdForGrant) : null;
-      // Captured before the grant is cleared below — drives the HR-as-0 damage
-      // override (Hawkeye option b: "treating your High Roll as 0").
-      let grantHrAsZero = false;
       if (attackGrant) {
-        const grantCb = Number(attackGrant.checkBonus) || 0;
-        const grantDb = Number(attackGrant.damageBonus) || 0;
-        grantHrAsZero = attackGrant.hrAsZero === true;
-        checkBonus += grantCb;
-        damageBonus += grantDb;
-        if (grantCb !== 0) {
-          checkBonusParts.push({
-            source: attackGrant.sourceLabel || "Free Action",
-            amount: grantCb,
-          });
-        }
         log(`Attack COMPUTE: applied ${attackGrant.sourceLabel} grant (+${attackGrant.checkBonus ?? 0} check / +${attackGrant.damageBonus ?? 0} dmg)`);
         freeActions.clear(attackerActorIdForGrant);
       }
-
-      // ── Actor-status modifier layer (accuracy family) ────────────────
-      // The actor's derived accuracy mods (attack_accuracy_mod_*,
-      // check_mod_all) are NOT folded into weapon.checkBonus by the sheet
-      // (only weapon1_base_mod + skill_accuracy are) — so the BD resolver
-      // adds them here. This is what makes Ranged Weapon Mastery
-      // (attack_accuracy_mod_ranged) and similar passives actually apply.
-      const liveAttacker = await fromUuid(attacker.actorUuid).catch(() => null);
-      const attackerProps = liveAttacker?.system?.props ?? null;
-      const attackRangeKind = /melee/i.test(weapon.range) ? "melee"
-        : /rang/i.test(weapon.range) ? "ranged" : null; // "melee"|"ranged"|null
-      const accuracyParts = resolveAccuracyParts({ actor: liveAttacker, props: attackerProps, kind: attackRangeKind });
-      for (const p of accuracyParts) {
-        checkBonus += p.amount;
-        checkBonusParts.push(p);
-      }
-
-      // V12+: Roll#evaluate is always async; the legacy `{async: true}`
-      // option emits a compat warning. Just await the roll directly.
-      const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-      const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
-      const rA = dice[0] ?? 0;
-      const rB = dice[1] ?? 0;
-      const total = (rA + rB + checkBonus) | 0;
-      const hr = Math.max(rA, rB);
-      const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-      // Crit detection honors the actor's crit-mod props
-      // (minimum_critical_dice / critical_dice_range). Sheet defaults
-      // (6 / 0) reproduce the classic "matching dice both >= 6".
-      const isCrit = isCriticalHit({ rA, rB, props: attackerProps, isFumble });
-      // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69). Also HR=0
-      // when a free-action grant set hrAsZero (Hawkeye option b / Soaring Strike).
-      const ignoreHR = isTwoWeapon || grantHrAsZero;
-      const effectiveHr = ignoreHR ? 0 : hr;
-      // Damage-element override (3 scopes; see
-      // resolveDamageElementOverride in skill-effects.js):
-      //   override_attack_damage_type → applies here (attack scope)
-      //   override_all_damage_type    → fallback catch-all
-      //   weapon.damageType           → native, lowest priority
-      // Soul Weapon writes the attack-scope key; future class traits
-      // can write the all-scope key. Spell damage uses scope="spell"
-      // separately in the Skill COMPUTE branch. `liveAttacker` /
-      // `attackerProps` were resolved above with the accuracy family.
-      const overriddenElement = resolveDamageElementOverride({
-        actor: liveAttacker,
-        scope: "attack",
-        native: weapon.damageType,
-      });
-      const elementKey = String(overriddenElement ?? "Physical").toLowerCase();
-
-      // ── Actor-status modifier layer (outgoing damage family) ─────────
-      // extra_damage_mod_{all,melee/ranged,<element>,<weaponKey>}. Like
-      // accuracy, these are NOT folded into weapon.damageBonus by the
-      // sheet (only weapon1_base_damage + skill_attack_damage are), so the
-      // BD resolver adds them. Attacker-global → computed once here; the
-      // per-target loop folds the total into rawDamage.
-      const weaponKey = String(weapon.weaponType ?? "").toLowerCase() || null;
-      const outgoingDamageParts = resolveOutgoingDamageParts({
-        actor: liveAttacker, props: attackerProps, kind: attackRangeKind, elementType: elementKey, weaponKey,
-      });
-      const outgoingDamageTotal = outgoingDamageParts.reduce((s, p) => s + p.amount, 0);
-
-      const perTargetResults = [];
-      for (const e of targetSnapshots) {
-        let hit = false;
-        let rawDamage = 0;
-        let pierceMiss = false;
-        // Attacker-side base = HR + weapon damage bonus + outgoing mods.
-        const outBase = effectiveHr + damageBonus + outgoingDamageTotal;
-        if (isFumble) {
-          hit = false;
-        } else if (isCrit) {
-          hit = true;
-          rawDamage = outBase;
-        } else if (total >= e.defense) {
-          hit = true;
-          rawDamage = outBase;
-        } else if (weapon.hasPierce) {
-          // Pierce: miss still deals 50% of potential damage (round up).
-          hit = false;
-          rawDamage = Math.ceil(outBase / 2);
-          pierceMiss = true;
-        }
-
-        // ── Modifier layer: target-side reduction + crit damage ────────
-        // Order mirrors apply-damage-core (steps 3-6): target flat/% damage
-        // reduction first, then attacker crit bonus/multiplier, all
-        // pre-affinity. Resolve the live target for its receiving props.
-        let reductionParts = [];
-        let critDamageParts = [];
-        if (hit || pierceMiss) {
-          const liveTarget = await fromUuid(e.actorUuid).catch(() => null);
-          const red = resolveIncomingReduction({
-            actor: liveTarget,
-            elementType: elementKey, range: attackRangeKind, raw: rawDamage,
-          });
-          rawDamage = red.value;
-          reductionParts = red.parts;
-          if (isCrit) {
-            const cd = applyCritDamage({ raw: rawDamage, actor: liveAttacker });
-            rawDamage = cd.value;
-            critDamageParts = cd.parts;
-          }
-        }
-
-        // Effective affinity = sheet value + forced-VU from active conditions.
-        let affinityCode = e.affinities?.[elementKey] ?? "NE";
-        for (const cond of (e.conditions ?? [])) {
-          if (FORCED_VU_BY_STATUS[cond] === elementKey) { affinityCode = "VU"; break; }
-        }
-        // Guard (RAW Core p.70): the guarder gains Resistance to ALL damage
-        // types "regardless of their source". IM and AB still trump — those
-        // are inherent traits, Guard is a temporary action. Everything else
-        // (sheet RS/VU/NE + forced-VU) collapses to RS while Guard is up.
-        if ((e.conditions ?? []).includes("Guard") && affinityCode !== "IM" && affinityCode !== "AB") {
-          affinityCode = "RS";
-        }
-
-        const damage = (hit || pierceMiss) ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
-
-        perTargetResults.push({
-          // Per-target modifier breakdown (target reduction + crit damage)
-          // for the action-card Damage tooltip. Attacker-global outgoing
-          // mods are surfaced once in damage.baseParts below.
-          damageModParts: [...reductionParts, ...critDamageParts],
-          tokenUuid: e.tokenUuid,
-          actorUuid: e.actorUuid,
-          name: e.name,
-          tokenImg: e.tokenImg,
-          disposition: e.disposition,
-          defense: e.defense,
-          hit,
-          crit: isCrit && hit,
-          rawDamage,
-          damage,
-          affinity: affinityCode,
-          studied: checkStudied(e),
-          pierceMiss,
+      {
+        const adA = attacker.attributes?.[weapon.A1] ?? 8;
+        const adB = attacker.attributes?.[weapon.A2] ?? 8;
+        const rollObj = await new Roll(`1d${adA} + 1d${adB}`).roll();
+        const adice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
+        const profile = await computeActionProfile({
+          view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
+          attacker, weapon, targets: targetSnapshots, dice: { rA: adice[0] ?? 0, rB: adice[1] ?? 0 },
+          ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant: attackGrant },
         });
+        const delta = projectProfileToActionResult(profile, null, targetSnapshots);
+        director.ctx.actionResult = freezeActionResult({
+          kind: "Attack",
+          attacker,
+          attackerActorRef: attacker.actorUuid,
+          weapon,
+          attackMode: director.ctx.attackMode ?? "main",
+          passIndex: director.ctx.passIndex,
+          totalPasses: director.ctx.totalPasses,
+          targets: targetSnapshots,
+          roll: delta.roll,
+          damage: delta.damage,
+          perTargetResults: delta.perTargetResults,
+          ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0 } } : {}),
+        });
+        director.enqueue({ type: INTENTS.INTERNAL_DONE });
+        return;
       }
-
-      // Per-source breakdown of where the damage bonus came from — same
-      // shape as checkBonusParts. Walks AEs that contribute to the
-      // hand's aggregated damage prop, plus the free-action grant.
-      // Renders in the Damage tooltip as an indented list.
-      const damageBonusParts = (() => {
-        try {
-          const base = buildDamageBonusParts({
-            actor: liveAttacker,
-            weapon,
-            hand: weapon?.hand ?? (director.ctx.attackMode === "off" ? "off" : "main"),
-            attackGrant: attackGrant ?? null,
-          });
-          // Append the actor-status outgoing damage mods (attacker-global,
-          // same for every target) so the Damage tooltip traces them.
-          return [...base, ...outgoingDamageParts];
-        } catch (e) {
-          warn("COMPUTE Attack: buildDamageBonusParts threw", e);
-          return [...outgoingDamageParts];
-        }
-      })();
-
-      director.ctx.actionResult = freezeActionResult({
-        kind: "Attack",
-        attacker,
-        attackerActorRef: attacker.actorUuid,
-        weapon,
-        attackMode: director.ctx.attackMode ?? "main",
-        passIndex: director.ctx.passIndex,
-        totalPasses: director.ctx.totalPasses,
-        targets: targetSnapshots,
-        roll: {
-          A1: weapon.A1, A2: weapon.A2,
-          dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr,
-          isCrit, isFumble,
-          // Crit generates Opportunities (RAW Core p.68). Visual only here;
-          // mechanical handling is GM-narrated for v1.
-          opportunities: isCrit && !isFumble,
-        },
-        damage: {
-          // base / finalIfHit include the actor-status outgoing damage
-          // mods (outgoingDamageTotal) so the card's headline damage agrees
-          // with the per-target rows. Target reduction + crit are per-target
-          // (see perTargetResults[].damageModParts).
-          base: damageBonus + outgoingDamageTotal,
-          baseParts: damageBonusParts,
-          // Use the overridden element (set by Spiritist Soul Weapon and
-          // any future damage-type override AE) instead of the weapon's
-          // raw type — so the action card label + affinity routing on
-          // the per-target rows agree. Falls through to the weapon's
-          // native type when no override is active.
-          element: overriddenElement ?? weapon.damageType,
-          ignoreHR,
-          finalIfHit: effectiveHr + damageBonus + outgoingDamageTotal,
-        },
-        perTargetResults,
-        // Free-action grant audit — when High Speed (or any other grant
-        // source) bakes a bonus into this attack, stamp the source label
-        // + bonus amounts on the ar for card display + rewind history.
-        ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0 } } : {}),
-      });
-      director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      return;
     }
+
 
     if (command === "Hinder") {
       // Check vs DL set by the GM (default 10 per RAW Core p.71). The GM

@@ -65,7 +65,7 @@ function makeStudiedGate(attacker) {
 //
 // Returns { mode:"damage"|"heal"|"none", element, resource, damageBonus(number),
 //           isMpDamage, outgoingParts, outgoingTotal }.
-function describePrimary({ view, ar, weapon, liveAttacker, resolver }) {
+function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
 
@@ -79,9 +79,13 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver }) {
     const outgoingParts = resolveOutgoingDamageParts({
       actor: liveAttacker, props, kind: rangeKind, elementType: element, weaponKey,
     });
+    // Free-action grant damage (High Speed +SL etc.) folds into the base, like
+    // COMPUTE Attack (`damageBonus += grantDb`). The grant's tooltip line comes
+    // via buildDamageBonusParts(attackGrant) in baseParts.
+    const grantDb = Number(grant?.damageBonus ?? 0) || 0;
     return {
       mode: "damage", element, resource: "hp", isMpDamage: false,
-      damageBonus: Number(weapon?.damageBonus ?? 0) || 0,
+      damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
       rangeKind, weaponKey, nativeElement: native, overriddenElement: overridden,
       pierce: !!weapon?.hasPierce,
@@ -445,7 +449,20 @@ export async function computeActionProfile(input) {
   });
 
   const studiedGate = makeStudiedGate(attacker);
-  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver });
+  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null });
+  // Attack damage tooltip breakdown (per-AE/weapon/grant source list) — the
+  // Skill path's baseParts are just the outgoing-mod parts; Attack appends the
+  // buildDamageBonusParts breakdown ahead of them (mirrors COMPUTE Attack).
+  if (kind === "Attack" && primary.mode === "damage") {
+    try {
+      const hand = weapon?.hand ?? (String(ctx?.attackMode ?? "") === "off" ? "off" : "main");
+      const dbp = buildDamageBonusParts({ actor: liveAttacker, weapon, hand, attackGrant: ctx?.grant ?? null });
+      primary.baseParts = [...dbp, ...(primary.outgoingParts ?? [])];
+    } catch (e) {
+      warn("computeActionProfile: buildDamageBonusParts threw", e);
+      primary.baseParts = [...(primary.outgoingParts ?? [])];
+    }
+  }
   const check = computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice, ctx });
 
   // Accepted-reaction outgoing damage ops (Hawkeye take-aim, Cheap Shot…). At
@@ -499,6 +516,8 @@ export async function computeActionProfile(input) {
       hasDamage: primary.mode === "damage",
       hasHealing: !!healingObj,
       damageResource: primary.resource,
+      // Attack-only HR-as-0 (two-weapon OR a free-action grant with hrAsZero).
+      ignoreHR: kind === "Attack" && (check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")),
       primary, healingObj,
       // Headline check bonus (weapon/skill base + actor-status accuracy mods +
       // grant + accuracy reactions) — pre-roll card reads this so RWM etc. show.
@@ -542,13 +561,15 @@ function flattenRow(r, kind) {
       ...(p.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
     };
   }
-  // Damage row.
+  // Damage row. Attack rows carry pierceMiss but NOT resource; Skill/Spell rows
+  // carry resource (hp/mp) but not pierceMiss — match COMPUTE exactly.
   const out = {
     damageModParts: p.damageModParts ?? [],
     ...baseFields,
-    rawDamage: p.rawDamage ?? 0, damage: p.damage ?? 0, resource: p.resource ?? "hp",
+    rawDamage: p.rawDamage ?? 0, damage: p.damage ?? 0,
   };
   if (kind === "Attack") out.pierceMiss = !!p.pierceMiss;
+  else out.resource = p.resource ?? "hp";
   return out;
 }
 
@@ -573,14 +594,26 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   }
 
   const perTargetResults = (profile.perTarget ?? []).map((r) => flattenRow(r, kind));
-  const effectiveHr = check.isFumble ? 0 : (check.hr ?? 0);
-  const damageObj = hasDamage ? {
+  // HR-as-0: Attack honors two-weapon / hrAsZero grant (profile._summary.ignoreHR);
+  // Skill/Spell damage carries ignoreHR = "no roll happened". effectiveHr zeroes
+  // on the same condition (or a fumble).
+  const attackIgnoreHR = !!profile._summary?.ignoreHR;
+  const effectiveHr = (kind === "Attack")
+    ? (attackIgnoreHR || check.isFumble ? 0 : (check.hr ?? 0))
+    : (check.isFumble ? 0 : (check.hr ?? 0));
+  const damageObj = hasDamage ? (kind === "Attack" ? {
+    base: prim.damageBonus + prim.outgoingTotal,
+    baseParts: prim.baseParts ?? prim.outgoingParts ?? [],
+    element: prim.overriddenElement ?? prim.nativeElement ?? prim.element,
+    ignoreHR: attackIgnoreHR,
+    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
+  } : {
     base: prim.damageBonus + prim.outgoingTotal,
     baseParts: prim.outgoingParts ?? [],
     element: prim.element, resource: prim.resource,
     ignoreHR: !roll,
     finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
-  } : null;
+  }) : null;
 
   // hitTokenUuids — for a Check, the hit rows; with NO Check, ALL action
   // targets (matches COMPUTE: no-Check skills auto-hit every target, even
