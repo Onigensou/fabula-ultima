@@ -344,6 +344,96 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Accuracy adjustment (effect_kind: "adjust_accuracy") ─────────────────
+// Action-level mutation: rewrite the in-flight Accuracy Check total, then
+// recompute every target's hit/miss against the new total. The accuracy
+// equivalent of `adjust_damage`, but action-scoped (one roll) rather than
+// per-target. Crossfire `set`s it to 0 so a ranged attack "fails
+// automatically against all targets".
+//   { effect_kind: "adjust_accuracy",
+//     accuracy_operation: "set" | "add" | "subtract",   // default "set"
+//     accuracy_amount:    <number | formula> }          // the operand
+const ACCURACY_OPS = new Set(["set", "add", "subtract"]);
+function applyAccuracyOp(total, op, amount) {
+  switch (op) {
+    case "add":      return total + amount;
+    case "subtract": return total - amount;
+    case "set":      return amount;
+    default:         return total;
+  }
+}
+
+// Override the action's Accuracy total and recompute hit/miss for every
+// existing target against its own defense. Damage is only re-derived on the
+// MISS side (zeroed) — Crossfire's `set 0` makes everything miss, which is the
+// only operation in use today. (A future `add`/positive that flips a miss to a
+// hit would need full HR/damage recompute; left out until a skill needs it.)
+// Records `ctx.accuracyOverride` so the caller + card UI can show "Blocked".
+async function applyAdjustAccuracyMutation(ctx, cand, row) {
+  const op = String(row.accuracy_operation ?? "set").trim().toLowerCase();
+  if (!ACCURACY_OPS.has(op)) {
+    warn(`adjust_accuracy: unknown accuracy_operation "${op}" — skipping`);
+    return "failed";
+  }
+  const amountFormula = String(row.accuracy_amount ?? "0");
+
+  // Resolve the operand. A bare number short-circuits; otherwise evaluate the
+  // formula against the reactor + the candidate's fire-time payload (so e.g.
+  // SL / payload-derived values work).
+  let amount = Number(amountFormula);
+  if (!Number.isFinite(amount)) {
+    try {
+      const reactor = cand?.reactorActorUuid
+        ? await fromUuid(cand.reactorActorUuid).catch(() => null)
+        : null;
+      const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+      const resolver = buildSkillResolver({
+        actor: reactor,
+        payload: cand?.payloadAtFire ?? null,
+        skill: null,
+        round: ctx.ar?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+    } catch (e) {
+      warn("adjust_accuracy: formula eval threw — treating amount as 0", e);
+      amount = 0;
+    }
+  }
+
+  const oldTotal = Number(ctx.ar?.roll?.total ?? 0);
+  const newTotal = applyAccuracyOp(oldTotal, op, amount);
+  const isCrit = !!ctx.ar?.roll?.isCrit;
+  const isFumble = !!ctx.ar?.roll?.isFumble;
+
+  for (let i = 0; i < ctx.perTargets.length; i++) {
+    const pt = ctx.perTargets[i];
+    if (!pt) continue;
+    const def = Number(pt.defense ?? 10);
+    // Crit always hits, fumble always misses; otherwise compare the new total
+    // to this target's defense. (Crossfire's condition gate already excludes
+    // crits, but keep the rule here so the primitive is self-consistent.)
+    const newHit = isCrit ? true : (!isFumble && newTotal >= def);
+    ctx.perTargets[i] = {
+      ...pt,
+      hit: newHit,
+      crit: isCrit && newHit,
+      rawDamage: newHit ? pt.rawDamage : 0,
+      damage: newHit ? pt.damage : 0,
+      accuracyBlocked: !newHit,
+    };
+  }
+
+  ctx.accuracyOverride = {
+    from: oldTotal,
+    to: newTotal,
+    blocked: newTotal <= 0,
+    via: cand?.carrierName ?? cand?.reactorActorName ?? "reaction",
+    reactorName: cand?.reactorActorName ?? null,
+  };
+  log(`adjust_accuracy: ${op} ${amount} — total ${oldTotal} → ${newTotal} (via ${ctx.accuracyOverride.via})`);
+  return "applied";
+}
+
 // Phase dispatch — orchestrates accepted card-mutations against an
 // action's targets / perTargetResults. Returns NEW arrays (caller
 // re-freezes ar with them) and a count for diagnostics.
@@ -381,10 +471,30 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     if (cancelled) break;
   }
 
+  // Phase 2: adjust_accuracy (Crossfire). Action-level — overrides the roll
+  // total and recomputes hit/miss for every target. Runs AFTER redirect so it
+  // recomputes against the final target identities. Third-party only today
+  // (`reactorActorUuid` discriminator), matching the existing card-mutation
+  // candidates.
+  for (const cand of acceptedPrePassives ?? []) {
+    if (!cand?.reactorActorUuid) continue;
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    const rows = expandEffectChain(effectTable, cand.ref);
+    for (const row of rows) {
+      const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+      if (kind === "adjust_accuracy") {
+        const result = await applyAdjustAccuracyMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
+      }
+    }
+  }
+
   return {
     targets: ctx.targets,
     perTargetResults: ctx.perTargets,
     mutationsApplied,
     cancelled,
+    accuracyOverride: ctx.accuracyOverride ?? null,
   };
 }

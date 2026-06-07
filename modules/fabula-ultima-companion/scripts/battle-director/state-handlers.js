@@ -3631,6 +3631,17 @@ const Confirm = {
             actionIntent: effectiveIntent,
             actionKind: ar.kind,
             actionName: ar.skillName ?? ar.weapon?.name ?? ar.kind,
+            // Roll result + weapon range threaded so post-roll bystander
+            // reactions can gate/scale on the attacker's Accuracy Check —
+            // Crossfire fires only on a ranged, non-crit attack
+            // (ATTACK_IS_RANGED / ATTACK_IS_CRIT) and spends MP equal to the
+            // Result (ATTACK_CHECK_RESULT). Present only post-roll (CONFIRM).
+            checkTotal: Number(ar.roll?.total ?? 0) || 0,
+            isCrit: !!ar.roll?.isCrit,
+            isFumble: !!ar.roll?.isFumble,
+            weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+            weaponType: ar.weapon?.weaponType ?? null,
+            damageType: ar.damageType ?? ar.damage?.element ?? null,
           };
 
           for (const reactor of reactorActors.values()) {
@@ -3814,13 +3825,15 @@ const Confirm = {
       // so the damage-bonus accumulator sees the redirected target.
       let mutatedTargets = ar.targets ?? null;
       let mutatedPerTargets = ar.perTargetResults ?? null;
+      let accuracyOverride = null;
       try {
         const { applyAcceptedCardMutations } = await import("./card-mutations.js?cb=" + Date.now());
         const r = await applyAcceptedCardMutations(ar, applied);
         if (r.mutationsApplied > 0) {
           mutatedTargets = r.targets;
           mutatedPerTargets = r.perTargetResults;
-          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + element/damage hooks)`);
+          accuracyOverride = r.accuracyOverride ?? null;
+          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + accuracy/element/damage hooks)`);
         }
       } catch (e) { warn("CONFIRM: card mutations threw", e); }
 
@@ -3849,6 +3862,7 @@ const Confirm = {
         perTargetResults: recomputedPerTargets,
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
+        accuracyOverride,
       });
     }
     // Drop the survival-flag pendingAction the moment the card resolves

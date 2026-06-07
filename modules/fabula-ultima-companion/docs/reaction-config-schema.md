@@ -279,7 +279,7 @@ Common to every row:
 | Field | Type | Notes |
 |-------|------|-------|
 | `effect_label` | string | Unique identifier; trigger rows reference this in their `reaction_effect_ref` column. Other effect rows reference it via `target_ref` / `destination_ref` / `chain_steps`. Must be non-blank for the row to be findable. |
-| `effect_kind` | `"targeting" \| "grant" \| "apply_ae" \| "consume_charge" \| "redirect_target" \| "chain" \| "modify_damage_taken"` | Default: `"grant"`. Dispatches to the matching handler. |
+| `effect_kind` | `"targeting" \| "grant" \| "apply_ae" \| "consume_charge" \| "consume_resource" \| "redirect_target" \| "adjust_damage" \| "adjust_accuracy" \| "chain" \| "modify_damage_taken"` | Default: `"grant"`. Dispatches to the matching handler. |
 
 Per-kind fields below. Fields irrelevant to the chosen kind are hidden
 in the UI but harmless in JSON.
@@ -445,7 +445,9 @@ Identifiers (all return 0 if unresolvable):
 | `SINGLE_TARGET_ATTACK` | 1 if `payload.targets.length === 1`, else 0. Boolean alias that reads cleaner in gates than `ACTION_TARGET_COUNT == 1`. Used by Cheap Shot's "only fires on single-target attacks" gate. |
 | `TARGET_STATUS_COUNT` | Status (debuff) count on the trigger's **subject** creature (the target of the action that fired the trigger), not the reactor. Reads `payload.subjectActorUuid` — populated by per-target firing sites (e.g. `creature_will_deal_damage`). Falls back to 0 if no subject is in the payload. Used by Cheap Shot's "+1 per status on target" damage scaling. |
 | `HAS_ARCANE_WEAPON` / `HAS_MELEE_WEAPON` / `HAS_RANGED_WEAPON` | **LOADOUT gate.** 1 if the reactor has at least one *equipped* weapon (`isEquipped`) whose type matches, else 0. Reads the item `isEquipped` flag — NOT the weapon being used for the current attack. Use for "do I have an X weapon on me" (Spiritist's arcane-weapon gate). For "is the attack I'm performing an X attack", use `ATTACK_IS_*` below instead — see the caveat. |
-| `ATTACK_IS_RANGED` / `ATTACK_IS_MELEE` / `ATTACK_IS_ARCANE` | **ACTIVE-ATTACK gate.** 1 if the in-flight action's weapon is of that kind, else 0. `_RANGED`/`_MELEE` read the attack weapon's **range** (`payload.weaponRange`, threaded by the attack pipeline onto the pre-roll, `creature_will_deal_damage`, and `creature_deals_damage` payloads); `_ARCANE` reads the weapon family. Use for reactions whose RAW says "when you perform a ranged/melee attack" (Barrage, Warning Shot, Hawkeye). 0 when no weapon action is in flight, so a `== 1` gate fails closed. |
+| `ATTACK_IS_RANGED` / `ATTACK_IS_MELEE` / `ATTACK_IS_ARCANE` | **ACTIVE-ATTACK gate.** 1 if the in-flight action's weapon is of that kind, else 0. `_RANGED`/`_MELEE` read the attack weapon's **range** (`payload.weaponRange`, threaded by the attack pipeline onto the pre-roll, `creature_will_deal_damage`, `creature_deals_damage`, and `creature_targeted_by_action` payloads); `_ARCANE` reads the weapon family. Use for reactions whose RAW says "when you perform a ranged/melee attack" (Barrage, Warning Shot, Hawkeye) or "after a creature performs a ranged attack" (Crossfire). 0 when no weapon action is in flight, so a `== 1` gate fails closed. |
+| `ATTACK_CHECK_RESULT` | The in-flight attack's **Accuracy Check total Result** (post-roll). Threaded onto the `creature_targeted_by_action` payload at CONFIRM, so a post-roll bystander reaction can scale by it. Crossfire spends MP equal to it. 0 when no roll info is in the payload. |
+| `ATTACK_IS_CRIT` / `ATTACK_IS_FUMBLE` | 1 if the in-flight attack's Accuracy Check was a critical success / a fumble, else 0. Used as a gate — Crossfire "has no effect if the Accuracy Check was a critical success" → `ATTACK_IS_CRIT == 0`. 0 when no roll info is threaded, so a `== 0` gate passes by default. |
 | `HAS_SHIELD` | **LOADOUT gate.** 1 if the reactor has any equipped (`isEquipped`) item with `item_type === "shield"`, else 0. |
 | `HAS_MARTIAL_ARMOR` | **LOADOUT gate.** 1 if the reactor has any equipped (`isEquipped`) item with `item_type === "armor"` AND `isMartial: true`, else 0. Paired with `HAS_SHIELD` for Dodge's RAW gate (`"!HAS_SHIELD && !HAS_MARTIAL_ARMOR"`). |
 | `HAS_SKILL_<NAME>` | 1 if the reactor owns a skill item whose `name` matches `<NAME>` (case-insensitive), else 0. The skill name is baked into the identifier: spaces become underscores, case is uppercased. Examples: `HAS_SKILL_PILLAGE` (Pillage), `HAS_SKILL_SOUL_STEAL` (Soul Steal), `HAS_SKILL_HEART_OF_DARKNESS` (Heart of Darkness). Used for cross-skill requirement gates (Pillage modifies Soul Steal; Fleeting Moment modifies Counterattack; etc.). The tokenizer doesn't support string literals, so the dynamic-identifier shape is the workaround. |
@@ -628,6 +630,93 @@ AE-sheet Reactions panel):
   }
 }
 ```
+
+---
+
+### `effect_kind: "adjust_accuracy"` — override the in-flight Accuracy total
+
+Action-level card mutation: rewrite the in-flight Accuracy Check total, then
+recompute hit/miss for **every** target against its own defense. The accuracy
+analogue of `adjust_damage`, but action-scoped (one roll) rather than per-target.
+Crossfire `set`s it to 0 so a ranged attack "fails automatically against all
+targets". The card UI shows **Blocked** in place of the overridden total.
+
+| Field | Type | Notes |
+|---|---|---|
+| `accuracy_operation` | `"set" \| "add" \| "subtract"` | Default `"set"`. How to combine `accuracy_amount` with the current total. |
+| `accuracy_amount` | number OR formula string | The operand. Same formula grammar as `grant_amount` (resolved against the reactor + the candidate's fire-time payload). |
+
+Like `redirect_target`, this kind is **data-only at chain-fire time** — the
+override + hit/miss recompute happen in `card-mutations.js` at the CONFIRM write
+site (before RESOLVE reads `ar.perTargetResults`), and the same pipeline drives
+the live Apply-click preview. It currently only re-derives damage on the **miss**
+side (zeroing it); a future `add`/positive that flips a miss to a hit would need
+a full HR/damage recompute (left out until a skill needs it).
+
+**Phase note:** the override applies at CONFIRM but a downstream cost step
+(`consume_resource`) fires at RESOLVE — a *different* phase, so
+[[consume-last-in-chain]] doesn't protect against an unaffordable reactor paying
+nothing after the attack is already blocked. Gate affordability up front in the
+`condition_formula` (`CUR_MP >= ATTACK_CHECK_RESULT`) so the reaction only
+surfaces when the reactor can pay.
+
+---
+
+## Worked example — "Crossfire" (post-roll bystander accuracy override)
+
+Sharpshooter reaction (Core). RAW: "After a creature you can see performs a
+ranged attack, you may spend an amount of Mind Points equal to the total Result
+of their Accuracy Check in order to have the attack fail automatically against
+all targets. You can only use this Skill if you have a ranged weapon equipped,
+and it has no effect if the Accuracy Check was a critical success."
+
+Crossfire is a **third-party, post-roll** reaction: it rides the existing
+CONFIRM `creature_targeted_by_action` scan (the same path Protect / Cover use),
+so the bystander reactor sees a pill once the attack's roll is known.
+`reaction_source: "all"` because RAW reacts to *any* visible ranged attack
+(even one aimed at an ally or yourself); the scan already excludes the attacker
+as a reactor.
+
+```jsonc
+"reaction_config_table": {
+  "0": {
+    "reaction_trigger":      "creature_targeted_by_action",
+    "reaction_source":       "all",
+    "reaction_action_intent": "harmful",
+    "reaction_isPassive":    false,            // "may" → clickable pill
+    "reaction_effect_ref":   "crossfire_do",
+    "condition_formula":
+      "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT"
+  }
+},
+"effect_table": {
+  "0": { "effect_label": "crossfire_do", "effect_kind": "chain", "chain_steps": "crossfire_block,crossfire_cost" },
+  "1": {
+    "effect_label":     "crossfire_block",
+    "effect_kind":      "adjust_accuracy",
+    "accuracy_operation": "set",
+    "accuracy_amount":  "0"
+  },
+  "2": {
+    "effect_label":    "crossfire_cost",
+    "effect_kind":     "consume_resource",
+    "consume_resource": "mp",
+    "consume_amount":  "ATTACK_CHECK_RESULT",   // = the attacker's Accuracy Result
+    "target_ref":      "self",
+    "on_empty":        "abort"
+  }
+}
+```
+
+Flow: an enemy fires a ranged attack → the roll resolves → at CONFIRM the
+third-party scan offers Crossfire to any bystander with a ranged weapon + enough
+MP (the gate clauses) → the reactor clicks Apply → `adjust_accuracy` sets the
+Accuracy total to 0, so every target's hit/miss recomputes to MISS and the card
+shows **Blocked** → at RESOLVE the `consume_resource` deducts MP equal to the
+attacker's Accuracy Result. `ATTACK_IS_RANGED` reads the *incoming* attack's
+range; `HAS_RANGED_WEAPON` reads the *reactor's* equipped loadout — the
+[loadout vs active-attack](#formula-identifiers-resolved-against-the-reactor--trigger-payload)
+distinction.
 
 ---
 

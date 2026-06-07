@@ -448,6 +448,17 @@ export function ensureStyles() {
       color: #1f1f1f;
       text-shadow: 0 0 9px rgba(0, 0, 0, 0.45);
     }
+    /* Accuracy overridden by a reaction (Crossfire) — the attack is blocked.
+       Shrink the word to fit the slot + tint it so it reads as a negation of
+       the roll, not a number. */
+    .fud-bf-card .fud-bf-acc.is-blocked .total {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #1e6cff;
+      text-shadow: 0 0 9px rgba(30, 108, 255, 0.4);
+    }
 
     /* Crit / Fumble float banner */
     .fud-bf-card .fud-bf-acc .float-banner {
@@ -2053,6 +2064,32 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           resultSpan.textContent = label;
         }
       }
+    }
+  }
+
+  // Accuracy override (Crossfire): the attacker's Accuracy Check was overridden
+  // (set to 0 → the attack fails against all targets). Show "Blocked" in the
+  // accuracy panel instead of the literal total, and flip every target row to
+  // MISS. Always reset to the real roll total when no override is active so
+  // un-toggling the reaction reverts the preview.
+  const accEl    = rootEl.querySelector(".fud-bf-acc");
+  const accTotal = rootEl.querySelector(".fud-bf-acc .total");
+  const blocked  = !!delta.accuracyOverride?.blocked;
+  if (accTotal) {
+    if (blocked) {
+      accTotal.textContent = "Blocked";
+      accEl?.classList.add("is-blocked");
+    } else {
+      if (rollTotal != null) accTotal.textContent = String(rollTotal);
+      accEl?.classList.remove("is-blocked");
+    }
+  }
+  if (blocked && hasDamageRows) {
+    for (const rowEl of rootEl.querySelectorAll(".fud-bf-target-row")) {
+      const resultSpan = rowEl.querySelector(".t-result");
+      if (!resultSpan) continue;
+      resultSpan.className = "t-result miss";
+      resultSpan.textContent = "MISS";
     }
   }
 }
@@ -3842,6 +3879,7 @@ export async function postActionCard({ director, kind, payload }) {
             hasDamageRows,
             rollTotal: arSnapshot.roll?.total ?? null,
             element: arSnapshot.damage?.element ?? null,
+            accuracyOverride: mutationResult.accuracyOverride ?? null,
           };
           applyCardTargetMutationDelta(root, delta);
 

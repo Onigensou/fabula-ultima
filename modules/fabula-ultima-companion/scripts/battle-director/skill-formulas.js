@@ -506,6 +506,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       }
       // ARCANE is a weapon FAMILY (not a range), so it correctly reads weaponType.
       case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
+      // The in-flight action's Accuracy Check total Result (post-roll). Threaded
+      // onto the creature_targeted_by_action payload at CONFIRM so a reaction to
+      // an incoming attack can scale by it — Crossfire spends MP equal to the
+      // attacker's Accuracy Result. 0 when no roll info is in the payload.
+      case "ATTACK_CHECK_RESULT": return Number(payload?.checkTotal ?? 0) || 0;
+      // 1 if the in-flight attack's Accuracy Check was a critical success / a
+      // fumble. Used as a gate (Crossfire "has no effect if the Accuracy Check
+      // was a critical success" → condition `ATTACK_IS_CRIT == 0`). 0 when no
+      // roll info is threaded, so a `== 0` gate passes by default.
+      case "ATTACK_IS_CRIT": return payload?.isCrit ? 1 : 0;
+      case "ATTACK_IS_FUMBLE": return payload?.isFumble ? 1 : 0;
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer

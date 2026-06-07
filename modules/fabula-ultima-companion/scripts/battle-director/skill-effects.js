@@ -1784,6 +1784,14 @@ export async function applyEffectRow(row, ctx) {
       // fire after the redirect is recorded as accepted —
       // [[consume-last-in-chain]].
       return { ok: true, kind, applied: [], reason: "applied-at-card-mutation-phase" };
+    case "adjust_accuracy":
+      // Data-only here, same as redirect_target. The Accuracy-Check override
+      // (and the resulting hit/miss recompute across all targets) is applied
+      // in card-mutations.js at the CONFIRM write site. Returning ok keeps the
+      // chain running so the downstream cost step (Crossfire's consume_resource
+      // for MP = the attacker's Accuracy Result) still fires —
+      // [[consume-last-in-chain]].
+      return { ok: true, kind, applied: [], reason: "applied-at-card-mutation-phase" };
     default:
       warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
       return { ok: false, kind, reason: "unknown-kind" };
