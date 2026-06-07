@@ -1450,9 +1450,18 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
       ? "rgba(30,108,255,0.45)"
       : (ELEMENT_GLOW[elemKey]  ?? ELEMENT_GLOW.physical);
 
-  // Final shown is HR + base. If the roll is a fumble, show "—".
-  const shown = roll?.isFumble ? "—" : (damage.finalIfHit ?? 0);
-  const hrPill = (damage.ignoreHR || roll?.isFumble) ? "" : `<span class="hr-pill">+HR</span>`;
+  // Final shown is HR + base. If the roll is a fumble, show "—". Pre-roll cards
+  // (no roll yet) show a min–max RANGE (base + the HR span) instead of a single
+  // number — the +HR pill is dropped since the range already folds HR in.
+  const preRollRange = (!roll && damage.preRollRange) ? damage.preRollRange : null;
+  const shown = roll?.isFumble
+    ? "—"
+    : preRollRange
+      ? (preRollRange.min === preRollRange.max
+          ? `${preRollRange.min}`                              // no spread (e.g. Two-Weapon HR=0) → single number
+          : `${preRollRange.min}&nbsp;–&nbsp;${preRollRange.max}`)
+      : (damage.finalIfHit ?? 0);
+  const hrPill = (damage.ignoreHR || roll?.isFumble || preRollRange) ? "" : `<span class="hr-pill">+HR</span>`;
   const label = isHpHeal
     ? "Heal"
     : isMpHeal
@@ -1478,9 +1487,13 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   const prePassiveBonus = Number(damage.prePassiveBonus ?? 0) || 0;
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
-    : prePassiveBonus > 0
-      ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
-      : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
+    : preRollRange
+      ? (preRollRange.min === preRollRange.max
+          ? `<p style="margin-top:6px;"><b>Damage:</b> <b>${preRollRange.min}</b> <span style="opacity:0.7;">(before affinity)</span></p>`
+          : `<p style="margin-top:6px;"><b>Damage range:</b> ${baseVal} + HR(1–${preRollRange.maxHR ?? "?"}) = <b>${preRollRange.min} – ${preRollRange.max}</b> <span style="opacity:0.7;">(before affinity)</span></p>`)
+      : prePassiveBonus > 0
+        ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
+        : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
 
   // Per-source breakdown of where the base damage bonus came from. Same
   // shape as the Accuracy panel's checkBonusParts breakdown — set by

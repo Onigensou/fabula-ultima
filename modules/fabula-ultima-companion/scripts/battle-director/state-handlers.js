@@ -2400,6 +2400,15 @@ const PreRoll = {
       const dA = attacker.attributes?.[weapon.A1] ?? 8;
       const dB = attacker.attributes?.[weapon.A2] ?? 8;
 
+      // Damage RANGE for the pre-roll panel (no roll yet): base + HR, where HR
+      // (High Roll) spans 1…max(dA,dB). Two-Weapon forces HR=0, so min=max=base.
+      const ignoreHR = String(director.ctx.attackMode ?? "").startsWith("two-weapon");
+      const dmgBase = weapon.damageBonus ?? 0;
+      const maxHR = Math.max(Number(dA) || 0, Number(dB) || 0);
+      const preRollRange = ignoreHR
+        ? { min: dmgBase, max: dmgBase, maxHR: 0 }
+        : { min: dmgBase + 1, max: dmgBase + maxHR, maxHR };
+
       const addedAll = [];
       const cardPayload = {
         preRoll: true,
@@ -2407,7 +2416,7 @@ const PreRoll = {
         weapon: { name: weapon.name, range: weapon.range, weaponType: weapon.weaponType, damageType: weapon.damageType, imageUrl: weapon.imageUrl, A1: weapon.A1, A2: weapon.A2 },
         targets: targetSnaps.map((e) => ({ name: e.name, actorUuid: e.actorUuid, tokenImg: e.tokenImg, disposition: e.disposition, defense: e.defense, studied: isStudied(e) })),
         checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: weapon.checkBonus ?? 0 },
-        damage: { base: weapon.damageBonus ?? 0, element: weapon.damageType },
+        damage: { base: dmgBase, element: weapon.damageType, ignoreHR, preRollRange },
         attackMode: director.ctx.attackMode ?? "main",
         prePassives: askable,
         // GM-side callback the card pill's "Apply" runs for a pre-roll reaction:
