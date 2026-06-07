@@ -2377,14 +2377,20 @@ const PreRoll = {
           payload: probePayload, includeManual: true, includeUnavailable: true,
         }) ?? [];
       } catch (e) { warn("PRE_ROLL: findPassiveCandidates threw", e); }
-      // Surfaceable + available (drop off/force, and unavailable ones — those
-      // would only render as disabled, so auto-skipping is cleaner here).
-      const askable = cands.filter((c) => c.available && !(c.kind === "passive" && (c.mode === "off" || c.mode === "force")));
-      if (!askable.length) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }   // auto-skip — zero extra clicks
+      // Split by passive mode. off → dropped. on/force → AUTO-FIRE now (they
+      // auto-apply, so their chain — add_target → cost — runs immediately and
+      // its targeting picker surfaces here at pre-roll). ask/manual → clickable
+      // pills. Unavailable → dropped (would only render disabled). Bug before:
+      // force was dropped outright and "on" rendered as a non-clickable pill
+      // whose add_target chain never ran, so neither auto-mode worked.
+      const usable = cands.filter((c) => c.available && !(c.kind === "passive" && c.mode === "off"));
+      if (!usable.length) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }
+      const autoCands = usable.filter((c) => c.kind === "passive" && (c.mode === "on" || c.mode === "force"));
+      const askable = usable.filter((c) => !autoCands.includes(c));
 
-      // Build the pre-roll card payload from TARGET snapshots.
+      // Eligible-target snapshots + the studied-mask gate (used for auto-added
+      // rows + the card).
       const eligible = director.ctx.eligibleTargets ?? [];
-      const targetSnaps = eligible.filter((e) => tokenUuids.includes(e.tokenUuid));
       const encApi = globalThis.FUCompanion?.api?.encyclopedia;
       const attackerFriendly = attacker.disposition === 1;
       const isStudied = (t) => {
@@ -2397,6 +2403,49 @@ const PreRoll = {
         }
         return false;
       };
+
+      // Fire one pre-roll reaction's chain (add_target → cost) and collect any
+      // newly-added target tokens into addedAll. Shared by the auto-fire loop
+      // and the ask-pill Apply callback.
+      const addedAll = [];
+      const fireReaction = async (cand) => {
+        if (!cand) return { ok: false };
+        sink.addedTokenUuids = [];
+        let res = null;
+        try { res = await firePreAcceptedCandidate({ director, casterActor: perfActor, candidate: cand, payload: probePayload }); }
+        catch (e) { warn("PRE_ROLL: firePreAcceptedCandidate threw", e); return { ok: false }; }
+        if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
+        const added = [];
+        for (const u of sink.addedTokenUuids) {
+          if (addedAll.includes(u)) continue;
+          const snap = eligible.find((e) => e.tokenUuid === u);
+          if (snap) { addedAll.push(u); added.push({ name: snap.name, actorUuid: snap.actorUuid, defense: snap.defense, studied: isStudied(snap) }); }
+        }
+        return { ok: true, addedTargets: added };
+      };
+
+      // Auto-apply on/force reactions immediately (prompts their add_target
+      // targeting via skip_when_passive). A cancelled picker just adds nothing.
+      for (const cand of autoCands) { await fireReaction(cand); }
+
+      // No clickable reactions left → skip the card; merge auto-added targets
+      // and roll. (Zero extra clicks beyond any targeting picker auto-fire ran.)
+      if (!askable.length) {
+        if (addedAll.length) {
+          const merged = [...tokenUuids];
+          for (const u of addedAll) if (!merged.includes(u)) merged.push(u);
+          director.ctx.pickedTargetUuids = merged;
+          log(`PRE_ROLL: auto reaction(s) added ${addedAll.length} target(s) → ${merged.length} total`);
+        }
+        director.enqueue({ type: INTENTS.INTERNAL_DONE });
+        return;
+      }
+
+      // Build the pre-roll card from TARGET snapshots — include any targets the
+      // auto-fired reactions already added so they show as rows.
+      const shownUuids = [...tokenUuids];
+      for (const u of addedAll) if (!shownUuids.includes(u)) shownUuids.push(u);
+      const targetSnaps = eligible.filter((e) => shownUuids.includes(e.tokenUuid));
       const dA = attacker.attributes?.[weapon.A1] ?? 8;
       const dB = attacker.attributes?.[weapon.A2] ?? 8;
 
@@ -2409,7 +2458,6 @@ const PreRoll = {
         ? { min: dmgBase, max: dmgBase, maxHR: 0 }
         : { min: dmgBase + 1, max: dmgBase + maxHR, maxHR };
 
-      const addedAll = [];
       const cardPayload = {
         preRoll: true,
         attacker: { name: attacker.name, actorUuid: attacker.actorUuid, tokenImg: attacker.tokenImg, disposition: attacker.disposition },
@@ -2422,21 +2470,7 @@ const PreRoll = {
         // GM-side callback the card pill's "Apply" runs for a pre-roll reaction:
         // fire its chain (add_target → cost). Returns added target snapshots so
         // the card can append rows; cancels leave the pill actionable.
-        onReactionApply: async (cand) => {
-          if (!cand) return { ok: false };
-          sink.addedTokenUuids = [];
-          let res = null;
-          try { res = await firePreAcceptedCandidate({ director, casterActor: perfActor, candidate: cand, payload: probePayload }); }
-          catch (e) { warn("PRE_ROLL: firePreAcceptedCandidate threw", e); return { ok: false }; }
-          if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
-          const added = [];
-          for (const u of sink.addedTokenUuids) {
-            if (addedAll.includes(u)) continue;
-            const snap = eligible.find((e) => e.tokenUuid === u);
-            if (snap) { addedAll.push(u); added.push({ name: snap.name, actorUuid: snap.actorUuid, defense: snap.defense, studied: isStudied(snap) }); }
-          }
-          return { ok: true, addedTargets: added };
-        },
+        onReactionApply: (cand) => fireReaction(cand),
       };
 
       const result = await postActionCard({ director, kind: "Attack", payload: cardPayload });

@@ -3026,7 +3026,7 @@ function describeMenuOptionEffect(optionRow, ctx) {
 // ctx.menuPicks) plus human-readable effect descriptors (for the card's Effect
 // panel). COMMITS NOTHING — the AEs / costs apply later at RESOLVE. Returns
 // { ok, cancelled, hasMenu, picks: string[], effects: [...] }.
-export async function previewReactionMenu({ casterActor, candidate, payload, dCombat, picks = null } = {}) {
+export async function previewReactionMenu({ casterActor, candidate, payload, dCombat, picks = null, isPassive = false } = {}) {
   if (!candidate?.ref || !casterActor) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [] };
 
   // Resolve the carrier's effect_table (mirror firePreAcceptedCandidate).
@@ -3055,7 +3055,11 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     actionTargetUuids: payload?.targetTokenUuids ?? payload?.targets ?? [],
     hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.hitTargets ?? payload?.targetTokenUuids ?? payload?.targets ?? [],
     runtimeEffectTable,
-    isPassive: false,   // PROMPT — this is the player's apply-click choice
+    // ask (apply-click) → isPassive false = always PROMPT. on/force (spawn
+    // auto-apply) → isPassive true, so selectMenuPicks honors skip_when_passive
+    // (auto-pick the first option) but still PROMPTS when it's not set — an
+    // auto-applied reaction with a real choice must still let the player choose.
+    isPassive: !!isPassive,
     // Optional pre-supplied picks (tests / auto-callers) → selectMenuPicks
     // consumes them instead of prompting. Omitted in real apply-click use.
     menuPicks: Array.isArray(picks) ? picks : null,

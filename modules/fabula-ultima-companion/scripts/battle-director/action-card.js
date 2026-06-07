@@ -4101,11 +4101,43 @@ export async function postActionCard({ director, kind, payload }) {
       return result ?? { cancelled: false };
     }
 
-    // Initial pass — surfaces "on" / "force" mode bonuses immediately
-    // on card spawn (they pre-record as "apply" above). Without this,
-    // the card would briefly show pre-bonus values until the first
-    // ask-mode click. Fire-and-forget.
-    try { recomputeTargetPreviews().catch(() => {}); } catch {}
+    // Initial pass — surface "on" / "force" auto-applied reactions immediately
+    // on card spawn (they pre-record as "apply" above). Besides damage bonuses,
+    // resolve any auto reaction's option-menu NOW (so the menu prompts at card
+    // creation, not deferred to RESOLVE), then recompute + render the Effect
+    // panel. Fire-and-forget so the card return isn't blocked.
+    (async () => {
+      try {
+        for (const p of prePassives ?? []) {
+          if (!(p?.mode === "on" || p?.mode === "force")) continue;
+          if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
+          if (Array.isArray(p.chosenMenuPicks)) continue;   // already resolved
+          try {
+            const se = await import("./skill-effects.js?cb=" + Date.now());
+            const reactorActor = p.reactorActorUuid
+              ? await fromUuid(p.reactorActorUuid).catch(() => null)
+              : (payload?.attackerActor ?? null);
+            if (!reactorActor) continue;
+            root.classList.add("is-hidden-during-pick");
+            let menuRes;
+            try {
+              menuRes = await se.previewReactionMenu({
+                casterActor: reactorActor, candidate: p, payload: p.payloadAtFire ?? null,
+                dCombat: director?.dCombat ?? null,
+                isPassive: true,   // honor skip_when_passive; still prompts a real choice
+              });
+            } finally { root.classList.remove("is-hidden-during-pick"); }
+            if (menuRes?.hasMenu && !menuRes.cancelled) {
+              p.chosenMenuPicks = Array.isArray(menuRes.picks) ? menuRes.picks : [];
+              p.previewEffects = Array.isArray(menuRes.effects) ? menuRes.effects : [];
+              p.previewDamageNullified = !!menuRes.damageNullified;
+            }
+          } catch (e) { warn("postActionCard: auto reaction menu preview threw", e); }
+        }
+        await recomputeTargetPreviews().catch(() => {});
+        try { applyReactionEffectPreview(); } catch (e) { warn("postActionCard: spawn effect preview threw", e); }
+      } catch (e) { warn("postActionCard: spawn auto-pass threw", e); }
+    })();
 
     // Player-driven confirm/cancel via IntentChannel. The acting actor's
     // owner sees their own copy of the card; clicking Confirm/Cancel
