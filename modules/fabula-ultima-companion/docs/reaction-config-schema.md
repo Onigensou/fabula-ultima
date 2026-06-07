@@ -566,6 +566,17 @@ the next action bypasses the budget gate.
 | `target_ref` | string (`effect_label`) | Optional. References a [`targeting`](#effect_kind-targeting--produce-a-named-token-list) row. When set, the resolved token is stashed on the free-action grant; consumers (Study macro, etc.) restrict their target picker to that token. Painful Lesson uses a row with `candidate_source: "trigger_actor"` to enforce "on that creature". |
 | `menu_pick_count` | number OR formula string | Optional, default `1`. How many **distinct** options the player chooses (clamped to the option count). A formula lets a sibling skill widen the choice without an engine edit — Warning Shot uses `"1 + HAS_SKILL_PERFECT_AIM"` so the Perfect Aim Heroic Skill makes it pick two. Resolved against the reactor + payload. Interactive mode prompts once per pick over the remaining options (cancelling the first pick aborts; cancelling a later one keeps the picks already made); passive mode auto-picks the first N (author ordering = priority); the harness consumes N entries from `harnessPicks`. Each chosen option's row is dispatched in pick order. |
 
+**Apply-click resolution (reaction pills).** When an option-menu reaction is
+applied from an Action Card pill, the menu is resolved **at Apply-click** (not at
+RESOLVE): `previewReactionMenu` walks the chain, prompts the menu, caches the
+chosen picks on the candidate (`chosenMenuPicks`, round-tripped like Protect's
+`pickedSubjectActorUuids`), and the card previews the outcome — the Damage panel
+strikes through if the chain zeroes outgoing damage (`adjust_damage ×0`), and an
+Effect panel lists the chosen statuses/costs. At RESOLVE the cached picks are
+replayed via `ctx.menuPicks` so the chain dispatches the same options without
+re-prompting. Set `skip_when_passive: true` only for a genuinely automatic
+passive that should auto-pick without any prompt.
+
 The formula bonuses are stamped into the free-action grant state at trigger
 time. Macros that don't flow through ADC (e.g. the Study macro) read the
 grant directly and apply / consume on confirm.

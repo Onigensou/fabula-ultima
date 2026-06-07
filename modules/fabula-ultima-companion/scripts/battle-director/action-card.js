@@ -459,6 +459,43 @@ export function ensureStyles() {
       color: #1e6cff;
       text-shadow: 0 0 9px rgba(30, 108, 255, 0.4);
     }
+    /* Damage zeroed by a reaction ("deal no damage" — Warning Shot): strike the
+       number, dim it, and surface a "No damage" note in the legend. */
+    .fud-bf-card .fud-bf-dmg.is-nullified .fud-bf-dmg-number {
+      text-decoration: line-through;
+      opacity: 0.4;
+      filter: grayscale(1);
+    }
+    .fud-bf-card .fud-bf-dmg.is-nullified > legend::after {
+      content: " — No damage";
+      color: #1e6cff;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    /* Reaction Effect panel — chips listing the statuses/costs an applied
+       reaction (Warning Shot, etc.) will inflict. */
+    .fud-bf-card .fud-bf-reaction-effects .fud-bf-effect-chips {
+      display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .fud-bf-card .fud-bf-effect-chip {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px;
+      border-radius: 11px;
+      font-size: 11.5px; font-weight: 800;
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
+      background: rgba(123, 90, 60, 0.12);
+      color: var(--fud-ink, #3a3228);
+    }
+    .fud-bf-card .fud-bf-effect-chip.is-status {
+      border-color: #9a3b8f;
+      background: rgba(154, 59, 143, 0.16);
+      color: #6e1f66;
+    }
+    .fud-bf-card .fud-bf-effect-chip.is-cost {
+      border-color: #1e6cff;
+      background: rgba(30, 108, 255, 0.14);
+      color: #15489c;
+    }
 
     /* Crit / Fumble float banner */
     .fud-bf-card .fud-bf-acc .float-banner {
@@ -3626,6 +3663,11 @@ export async function postActionCard({ director, kind, payload }) {
           // backward-compat with Protect's single-target.
           pickedSubjectActorUuid: p.pickedSubjectActorUuid ?? null,
           pickedSubjectActorUuids: Array.isArray(p.pickedSubjectActorUuids) ? [...p.pickedSubjectActorUuids] : null,
+          // Menu picks the player made at Apply-click (previewReactionMenu).
+          // Round-tripped so firePreAcceptedCandidate replays them at RESOLVE
+          // (ctx.menuPicks) instead of re-prompting. Same role as
+          // pickedSubjectActorUuids for Protect's target pick.
+          chosenMenuPicks: Array.isArray(p.chosenMenuPicks) ? [...p.chosenMenuPicks] : null,
           // Per-action dispatch tags (added by state-handlers' CONFIRM
           // creature_will_deal_damage aggregation). The sender-side
           // accumulator — computeSenderDamageBonuses — reads these to
@@ -3739,11 +3781,52 @@ export async function postActionCard({ director, kind, payload }) {
       }
 
       if (decision === "apply") {
-        // Run the mutation pipeline FIRST. If the chain needs a target
-        // picker (Protect on a multi-ally attack) the action card is
-        // hidden while the picker is open and revealed again on
-        // confirm/cancel. Cancellation rewinds the decision so the
-        // pill is still actionable.
+        // Resolve any option-menu in this reaction's chain NOW (at Apply-click)
+        // rather than at RESOLVE — Warning Shot's "choose a status", Hawkeye's
+        // "aim vs free attack". The picks are cached on the candidate and
+        // replayed at RESOLVE so nothing double-prompts; the chosen effects feed
+        // the card's Effect panel below. Cancelling the menu rewinds the pill.
+        const cand = (prePassives ?? []).find(
+          (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
+        );
+        if (cand) {
+          try {
+            const se = await import("./skill-effects.js?cb=" + Date.now());
+            const reactorActor = cand.reactorActorUuid
+              ? await fromUuid(cand.reactorActorUuid).catch(() => null)
+              : (payload?.attackerActor ?? null);
+            if (reactorActor) {
+              root.classList.add("is-hidden-during-pick");
+              let menuRes;
+              try {
+                menuRes = await se.previewReactionMenu({
+                  casterActor: reactorActor,
+                  candidate: cand,
+                  payload: cand.payloadAtFire ?? null,
+                  dCombat: director?.dCombat ?? null,
+                });
+              } finally {
+                root.classList.remove("is-hidden-during-pick");
+              }
+              if (menuRes?.cancelled) {
+                reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+                log(`recordPillDecision: ${rowKey}:${carrierUuid} menu cancelled — pill stays pending`);
+                return;
+              }
+              cand.chosenMenuPicks = Array.isArray(menuRes?.picks) ? menuRes.picks : [];
+              cand.previewEffects = Array.isArray(menuRes?.effects) ? menuRes.effects : [];
+              cand.previewDamageNullified = !!menuRes?.damageNullified;
+            }
+          } catch (e) {
+            warn(`recordPillDecision: previewReactionMenu threw for ${rowKey}:${carrierUuid}`, e);
+          }
+        }
+
+        // Run the mutation pipeline (zeroes damage via adjust_damage, applies
+        // redirects/accuracy overrides). If the chain needs a target picker
+        // (Protect on a multi-ally attack) the action card is hidden while the
+        // picker is open and revealed again on confirm/cancel. Cancellation
+        // rewinds the decision so the pill is still actionable.
         let cancelled = false;
         try {
           const r = await recomputeTargetPreviews();
@@ -3753,17 +3836,84 @@ export async function postActionCard({ director, kind, payload }) {
         }
         if (cancelled) {
           reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+          if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
           log(`recordPillDecision: ${rowKey}:${carrierUuid} apply cancelled — pill stays pending`);
           return;
         }
+
+        // Render the reaction's outcome on the card: strike the Damage panel if
+        // the reaction zeroes damage + show an Effect panel of the chosen
+        // statuses/costs. (Per-target rows are already flipped by recompute.)
+        try { applyReactionEffectPreview(); } catch (e) { warn("recordPillDecision: effect preview render threw", e); }
       } else {
-        // skip — no picker needed. Still re-run recompute so any prior
-        // accepted mutation (rare — skip-after-apply isn't reachable via
-        // the current click handler) is revisited.
+        // skip — clear any cached apply-click menu picks for this candidate,
+        // re-run recompute (restores damage), and re-render the Effect panel
+        // (drops chips for the now-skipped reaction).
+        const cand = (prePassives ?? []).find(
+          (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
+        );
+        if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
         try { await recomputeTargetPreviews().catch(() => {}); } catch {}
+        try { applyReactionEffectPreview(); } catch (e) { warn("recordPillDecision: effect preview render threw", e); }
       }
 
       commitPillDecisionDom(rowKey, carrierUuid, decision);
+    }
+
+    // Render (or clear) the reaction Effect-preview surface on the card from the
+    // currently-accepted candidates' apply-click previews:
+    //   • strike the Damage panel when an accepted reaction zeroes outgoing
+    //     damage ("deal no damage" — Warning Shot);
+    //   • show an Effect panel listing the chosen statuses / resource costs.
+    // Aggregates over every accepted candidate so toggling one pill in/out keeps
+    // the panel consistent. Idempotent — fully rebuilt each call.
+    function applyReactionEffectPreview() {
+      const card = root.querySelector(".fud-bf-card");
+      if (!card) return;
+      const accepted = [];
+      for (const p of prePassives ?? []) {
+        if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
+        accepted.push(p);
+      }
+      const effects = [];
+      let damageNullified = false;
+      for (const p of accepted) {
+        if (p.previewDamageNullified) damageNullified = true;
+        for (const e of (Array.isArray(p.previewEffects) ? p.previewEffects : [])) {
+          effects.push({ ...e, via: p.carrierName ?? "Reaction" });
+        }
+      }
+
+      // Damage panel strike — toggle a class (CSS strikes the number + shows a
+      // "No damage" note).
+      const dmgSection = card.querySelector(".fud-bf-dmg");
+      if (dmgSection) dmgSection.classList.toggle("is-nullified", damageNullified);
+
+      // Effect panel — rebuild from scratch (removed when no effects).
+      let panel = card.querySelector(".fud-bf-reaction-effects");
+      if (!effects.length) { if (panel) panel.remove(); return; }
+      if (!panel) {
+        panel = document.createElement("fieldset");
+        panel.className = "fud-bf-section fud-bf-reaction-effects";
+        // Place after the target list (or append to the card body).
+        const anchor = card.querySelector(".fud-bf-target-list")?.closest(".fud-bf-section")
+          ?? card.querySelector(".fud-bf-target-list");
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+        else card.appendChild(panel);
+      }
+      const chips = effects.map((e) => {
+        if (e.kind === "apply_ae") {
+          return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.statusName ?? e.label)}</span>`;
+        }
+        if (e.kind === "consume_resource") {
+          const res = String(e.resource ?? "").toUpperCase();
+          const amt = (e.amount != null) ? `−${e.amount} ${res}` : escapeHtml(e.label);
+          return `<span class="fud-bf-effect-chip is-cost">${escapeHtml(amt)}</span>`;
+        }
+        return `<span class="fud-bf-effect-chip">${escapeHtml(e.label ?? "Effect")}</span>`;
+      }).join("");
+      const viaName = effects[0]?.via ? escapeHtml(effects[0].via) : "Reaction";
+      panel.innerHTML = `<legend>${viaName}</legend><div class="fud-bf-effect-chips">${chips}</div>`;
     }
 
     // Phase 3 of the Cheap Shot integration: live damage preview update.

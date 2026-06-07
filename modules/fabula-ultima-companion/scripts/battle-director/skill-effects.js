@@ -1156,6 +1156,10 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     firePoints,
     runtimeEffectTable,
     isPassive: true,
+    // Replay menu picks the player already made at Apply-click
+    // (previewReactionMenu cached them on the candidate). With these set,
+    // open_action_menu dispatches the chosen options without re-prompting.
+    menuPicks: Array.isArray(candidate.chosenMenuPicks) ? candidate.chosenMenuPicks : null,
   });
   const r = await applyEffectByLabel(candidate.ref, ctx);
 
@@ -2877,6 +2881,236 @@ function parseEffectRefList(raw) {
 //
 // Passive paths (`ctx.isPassive === true`) auto-pick the first option
 // — passives must never prompt mid-resolution.
+
+// Build the menu's option list (refs preferred, inline fallback). Returns
+// { options: [{label, description}], optionRows: [sourceRow] } — parallel
+// arrays. Shared by the live dispatch (applyOpenActionMenuEffect) and the
+// apply-click preview (previewReactionMenu) so both see the identical menu.
+function buildMenuOptions(row, ctx) {
+  const refs = parseEffectRefList(row.menu_option_refs);
+  let options = [];
+  let optionRows = [];
+  if (refs.length) {
+    for (const label of refs) {
+      const refRow = findEffectRow(ctx, label);
+      if (!refRow) {
+        warn(`skill-effects.open_action_menu: ref "${label}" → no matching effect_table row; skipping`);
+        continue;
+      }
+      const displayLabel = String(refRow.menu_label ?? refRow.effect_label ?? label);
+      options.push({ label: displayLabel, description: refRow.menu_description ? String(refRow.menu_description) : null });
+      optionRows.push(refRow);
+    }
+  }
+  if (!options.length) {
+    // Inline form. `menu_options` may be an array or numeric-keyed object.
+    const optsRaw = row.menu_options;
+    const inline = Array.isArray(optsRaw)
+      ? optsRaw
+      : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
+    const valid = inline.filter((o) => o && typeof o === "object" && o.label);
+    options = valid.map((o) => ({ label: String(o.label), description: o.description ? String(o.description) : null }));
+    optionRows = valid;
+  }
+  return { options, optionRows };
+}
+
+// Select which option indices to dispatch from an option-menu row. Returns
+// { chosenIndices: number[], cancelled: bool }. pickCount is `menu_pick_count`
+// (default 1, formula-aware — Perfect Aim → 2 via "1 + HAS_SKILL_PERFECT_AIM").
+// Sources, in precedence: a pre-chosen queue (`ctx.harnessPicks` for tests, or
+// `ctx.menuPicks` = picks the player already made at Apply-click, replayed at
+// RESOLVE); else passive auto-pick (only when `skip_when_passive: true`); else
+// an interactive prompt per pick over the remaining options. Cancelling the
+// FIRST interactive pick → {cancelled:true}; a later cancel keeps prior picks.
+// Shared by the live dispatch + the apply-click preview so both pick identically.
+async function selectMenuPicks(row, ctx, options) {
+  let pickCount = 1;
+  const pcRaw = row.menu_pick_count;
+  if (pcRaw !== undefined && pcRaw !== null && String(pcRaw).trim() !== "") {
+    const resolver = buildSkillResolver({
+      actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+    });
+    const n = Number(evaluateFormula(String(pcRaw), resolver, 1));
+    if (Number.isFinite(n) && n >= 1) pickCount = Math.floor(n);
+  }
+  pickCount = Math.max(1, Math.min(pickCount, options.length));
+
+  const chosenIndices = [];
+  const remainingIdx = options.map((_, i) => i);
+  const takeIndex = (idx) => {
+    chosenIndices.push(idx);
+    const pos = remainingIdx.indexOf(idx);
+    if (pos !== -1) remainingIdx.splice(pos, 1);
+  };
+
+  for (let pick = 0; pick < pickCount; pick++) {
+    const queue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks
+      : (Array.isArray(ctx?.menuPicks) ? ctx.menuPicks : null);
+    let idx = -1;
+    if (queue && queue.length > (ctx._harnessPicksCursor ?? 0)) {
+      const cursor = ctx._harnessPicksCursor ?? 0;
+      ctx._harnessPicksCursor = cursor + 1;
+      const next = queue[cursor];
+      if (typeof next === "number" && Number.isFinite(next)) idx = next;
+      else if (typeof next === "string") {
+        const want = next.trim().toLowerCase();
+        idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+      } else if (next && typeof next === "object") {
+        if (Number.isFinite(next.index)) idx = next.index;
+        else if (next.menuLabel) {
+          const want = String(next.menuLabel).trim().toLowerCase();
+          idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+        }
+      }
+      if (idx < 0 || idx >= options.length || !remainingIdx.includes(idx)) {
+        warn(`skill-effects.open_action_menu: pre-chosen pick ${JSON.stringify(next)} did not match a remaining option — falling back to first remaining`);
+        idx = remainingIdx[0];
+      }
+      log(`skill-effects.open_action_menu: pre-chosen pick → "${options[idx].label}"`);
+    } else if (ctx.isPassive && row.skip_when_passive === true) {
+      // Option-menus PROMPT by default even in a passive ctx (firePreAcceptedCandidate
+      // runs Applied "ask" chains with isPassive:true). Only auto-pick when the row
+      // explicitly opts in with skip_when_passive:true. Mirrors targeting's knob.
+      idx = remainingIdx[0];
+      log(`skill-effects.open_action_menu: passive + skip_when_passive — auto-picking "${options[idx].label}"`);
+    } else {
+      const baseSubtitle = row.menu_subtitle ? String(row.menu_subtitle) : null;
+      const subtitle = pickCount > 1
+        ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
+        : baseSubtitle;
+      const remOptions = remainingIdx.map((i) => options[i]);
+      const picked = await pickOption({
+        title: String(row.menu_title ?? "Choose an option"),
+        subtitle,
+        options: remOptions,
+      });
+      if (!picked) {
+        if (pick === 0) return { chosenIndices: [], cancelled: true };
+        log(`skill-effects.open_action_menu: player stopped after ${pick} pick(s)`);
+        break;
+      }
+      idx = remainingIdx[picked.index];
+    }
+    takeIndex(idx);
+  }
+  return { chosenIndices, cancelled: false };
+}
+
+// Describe an option's effect for the action card's Effect panel preview —
+// human-readable, no commit. apply_ae → status name; consume_resource → the
+// resolved resource loss; everything else → the menu label.
+function describeMenuOptionEffect(optionRow, ctx) {
+  const kind = String(optionRow?.effect_kind ?? "").trim().toLowerCase();
+  const label = String(optionRow?.menu_label ?? optionRow?.effect_label ?? "Effect");
+  if (kind === "apply_ae") {
+    return { kind, label, statusName: String(optionRow.ae_template_ref ?? label) };
+  }
+  if (kind === "consume_resource") {
+    const resource = String(optionRow.consume_resource ?? "").toLowerCase();
+    let amount = null;
+    try {
+      const resolver = buildSkillResolver({
+        actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(String(optionRow.consume_amount ?? "0"), resolver, 0)) || 0;
+    } catch { amount = null; }
+    return { kind, label, resource, amount };
+  }
+  return { kind, label };
+}
+
+// Apply-click PREVIEW of a reaction's option-menu(s). Walks the candidate's
+// chain, prompts every open_action_menu (skipping free_mode), and returns the
+// chosen pick LABELS (to cache on the candidate + replay at RESOLVE via
+// ctx.menuPicks) plus human-readable effect descriptors (for the card's Effect
+// panel). COMMITS NOTHING — the AEs / costs apply later at RESOLVE. Returns
+// { ok, cancelled, hasMenu, picks: string[], effects: [...] }.
+export async function previewReactionMenu({ casterActor, candidate, payload, dCombat, picks = null } = {}) {
+  if (!candidate?.ref || !casterActor) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [] };
+
+  // Resolve the carrier's effect_table (mirror firePreAcceptedCandidate).
+  let runtimeEffectTable;
+  let skillForCtx = null;
+  const carrier = await fromUuid(candidate.carrierUuid).catch(() => null);
+  if (!carrier) return { ok: false, reason: "carrier-gone", cancelled: false, hasMenu: false, picks: [], effects: [] };
+  if (candidate.carrierKind === "item") {
+    const { getRuntimeSkillView } = await import("./skill-recipes.js");
+    runtimeEffectTable = getRuntimeSkillView(carrier).effect_table;
+    skillForCtx = carrier;
+  } else {
+    const cfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
+    runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
+  }
+
+  const { makeChainContext } = await import("./skill-targeting.js");
+  const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
+    ?? casterActor?.getActiveTokens?.()?.[0]?.document ?? null;
+  const ctx = makeChainContext({
+    reactorActor: casterActor,
+    reactorToken,
+    skill: skillForCtx,
+    dCombat: dCombat ?? null,
+    payload,
+    actionTargetUuids: payload?.targetTokenUuids ?? payload?.targets ?? [],
+    hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.hitTargets ?? payload?.targetTokenUuids ?? payload?.targets ?? [],
+    runtimeEffectTable,
+    isPassive: false,   // PROMPT — this is the player's apply-click choice
+    // Optional pre-supplied picks (tests / auto-callers) → selectMenuPicks
+    // consumes them instead of prompting. Omitted in real apply-click use.
+    menuPicks: Array.isArray(picks) ? picks : null,
+  });
+
+  // Collect open_action_menu rows reachable from candidate.ref (chain-aware,
+  // skipping free_mode rows which run a separate flow). Read-only walk.
+  const byLabel = new Map();
+  for (const r of Object.values(runtimeEffectTable ?? {})) {
+    if (!r || r.$deleted) continue;
+    const lbl = String(r.effect_label ?? "").trim();
+    if (lbl) byLabel.set(lbl, r);
+  }
+  const menuRows = [];
+  let damageNullified = false;   // chain zeroes outgoing damage (Warning Shot)
+  const seen = new Set();
+  (function walk(label) {
+    if (!label || seen.has(label)) return;
+    seen.add(label);
+    const r = byLabel.get(label);
+    if (!r) return;
+    const kind = String(r.effect_kind ?? "").trim().toLowerCase();
+    if (kind === "chain") {
+      for (const s of String(r.chain_steps ?? "").split(/[,\n]+/g).map((x) => x.trim()).filter(Boolean)) walk(s);
+    } else if (kind === "open_action_menu" && r.free_mode !== true) {
+      menuRows.push(r);
+    } else if (kind === "adjust_damage") {
+      const op = String(r.damage_operation ?? "").trim().toLowerCase();
+      const stage = String(r.damage_stage ?? "outgoing").trim().toLowerCase();
+      const amt = Number(r.damage_amount);
+      if (stage === "outgoing" && ((op === "multiply" && amt === 0) || (op === "set" && amt === 0))) {
+        damageNullified = true;
+      }
+    }
+  })(candidate.ref);
+
+  // No menu to resolve — still report damageNullified so the card can strike
+  // the damage panel for a no-menu "deal no damage" reaction.
+  if (!menuRows.length) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [], damageNullified };
+
+  const chosenLabels = [];
+  const effects = [];
+  for (const menuRow of menuRows) {
+    const { options, optionRows } = buildMenuOptions(menuRow, ctx);
+    if (!options.length) continue;
+    const { chosenIndices, cancelled } = await selectMenuPicks(menuRow, ctx, options);
+    if (cancelled) return { ok: true, cancelled: true, hasMenu: true, picks: [], effects: [], damageNullified };
+    for (const idx of chosenIndices) {
+      chosenLabels.push(options[idx].label);
+      effects.push(describeMenuOptionEffect(optionRows[idx], ctx));
+    }
+  }
+  return { ok: true, cancelled: false, hasMenu: true, picks: chosenLabels, effects, damageNullified };
+}
+
 async function applyOpenActionMenuEffect(row, ctx) {
   // Free-action mode (legacy reaction-grant.js parity). When `free_mode`
   // is true, the row does NOT show an inline picker; instead it
@@ -2919,135 +3153,20 @@ async function applyOpenActionMenuEffect(row, ctx) {
     return { ok: true, kind: "open_action_menu", freeMode: true, queued: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus }] };
   }
 
-  // Resolve options. Prefer refs (CSB-friendly) over inline.
-  const refs = parseEffectRefList(row.menu_option_refs);
-  let options = [];
-  let optionRows = [];  // parallel array of source effect_table rows (refs path)
-  if (refs.length) {
-    for (const label of refs) {
-      const refRow = findEffectRow(ctx, label);
-      if (!refRow) {
-        warn(`skill-effects.open_action_menu: ref "${label}" → no matching effect_table row; skipping`);
-        continue;
-      }
-      // The referenced row provides menu_label / menu_description for
-      // display, and its own effect_kind + params for dispatch.
-      const displayLabel = String(refRow.menu_label ?? refRow.effect_label ?? label);
-      options.push({
-        label: displayLabel,
-        description: refRow.menu_description ? String(refRow.menu_description) : null,
-      });
-      optionRows.push(refRow);
-    }
-  }
-  if (!options.length) {
-    // Inline form fallback. `menu_options` may be an array or an
-    // object-keyed-by-index (CSB stores arrays as numeric-keyed objects).
-    const optsRaw = row.menu_options;
-    const inline = Array.isArray(optsRaw)
-      ? optsRaw
-      : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
-    const valid = inline.filter((o) => o && typeof o === "object" && o.label);
-    options = valid.map((o) => ({
-      label: String(o.label),
-      description: o.description ? String(o.description) : null,
-    }));
-    optionRows = valid;  // inline objects already row-shaped
-  }
-
+  // Resolve options (refs preferred, inline fallback) via the shared helper —
+  // so the apply-click preview (previewReactionMenu) builds the identical list.
+  const { options, optionRows } = buildMenuOptions(row, ctx);
   if (!options.length) {
     warn(`skill-effects.open_action_menu: row "${row.effect_label}" has no usable options`);
     return { ok: false, kind: "open_action_menu", reason: "no-options" };
   }
 
-  // How many DISTINCT options to choose. Default 1. A formula lets a sibling
-  // skill widen the choice without an engine edit — Perfect Aim makes Warning
-  // Shot pick two via `menu_pick_count: "1 + HAS_SKILL_PERFECT_AIM"` (the
-  // dynamic HAS_SKILL_<NAME> identifier resolves Perfect Aim's presence on the
-  // reactor). [[feedback_skill_no_hardcode_test]].
-  let pickCount = 1;
-  {
-    const pcRaw = row.menu_pick_count;
-    if (pcRaw !== undefined && pcRaw !== null && String(pcRaw).trim() !== "") {
-      const resolver = buildSkillResolver({
-        actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
-      });
-      const n = Number(evaluateFormula(String(pcRaw), resolver, 1));
-      if (Number.isFinite(n) && n >= 1) pickCount = Math.floor(n);
-    }
-  }
-  pickCount = Math.max(1, Math.min(pickCount, options.length));
-
-  // Select `pickCount` distinct option indices. Harness consumes from the
-  // queue; passive auto-picks the first N (author ordering = default
-  // priority); interactive prompts once per pick over the REMAINING options.
-  // Cancelling the FIRST interactive pick aborts the chain; cancelling a later
-  // pick keeps the picks already made (graceful "I only wanted one").
-  // `ctx.harnessPicks` may be a frozen array, so we advance a cursor on ctx
-  // rather than shift().
-  const chosenIndices = [];
-  const remainingIdx = options.map((_, i) => i);
-  const takeIndex = (idx) => {
-    chosenIndices.push(idx);
-    const pos = remainingIdx.indexOf(idx);
-    if (pos !== -1) remainingIdx.splice(pos, 1);
-  };
-
-  for (let pick = 0; pick < pickCount; pick++) {
-    const harnessQueue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks : null;
-    let idx = -1;
-    if (harnessQueue && harnessQueue.length > (ctx._harnessPicksCursor ?? 0)) {
-      const cursor = ctx._harnessPicksCursor ?? 0;
-      ctx._harnessPicksCursor = cursor + 1;
-      const next = harnessQueue[cursor];
-      if (typeof next === "number" && Number.isFinite(next)) idx = next;
-      else if (typeof next === "string") {
-        const want = next.trim().toLowerCase();
-        idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
-      } else if (next && typeof next === "object") {
-        if (Number.isFinite(next.index)) idx = next.index;
-        else if (next.menuLabel) {
-          const want = String(next.menuLabel).trim().toLowerCase();
-          idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
-        }
-      }
-      if (idx < 0 || idx >= options.length || !remainingIdx.includes(idx)) {
-        warn(`skill-effects.open_action_menu: harnessPick ${JSON.stringify(next)} did not match a remaining option — falling back to first remaining`);
-        idx = remainingIdx[0];
-      }
-      log(`skill-effects.open_action_menu: harness pick → "${options[idx].label}"`);
-    } else if (ctx.isPassive && row.skip_when_passive === true) {
-      // An option-menu is a genuine CHOICE, so it PROMPTS by default — even in a
-      // passive ctx. firePreAcceptedCandidate runs every Applied "ask" pill's
-      // chain with isPassive:true, so without this an Applied Warning Shot /
-      // Hawkeye would silently auto-pick the first option and show no menu. Only
-      // auto-pick (no prompt) when the row explicitly opts in with
-      // `skip_when_passive: true` (author ordering = default priority). Mirrors
-      // the targeting kind's skip_when_passive knob.
-      idx = remainingIdx[0];
-      log(`skill-effects.open_action_menu: passive + skip_when_passive — auto-picking "${options[idx].label}"`);
-    } else {
-      const baseSubtitle = row.menu_subtitle ? String(row.menu_subtitle) : null;
-      const subtitle = pickCount > 1
-        ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
-        : baseSubtitle;
-      const remOptions = remainingIdx.map((i) => options[i]);
-      const picked = await pickOption({
-        title: String(row.menu_title ?? "Choose an option"),
-        subtitle,
-        options: remOptions,
-      });
-      if (!picked) {
-        if (pick === 0) {
-          log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
-          return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
-        }
-        log(`skill-effects.open_action_menu: row "${row.effect_label}" — player stopped after ${pick} pick(s)`);
-        break;
-      }
-      idx = remainingIdx[picked.index];
-    }
-    takeIndex(idx);
+  // Select the option indices (pickCount-driven; harness / cached / passive /
+  // interactive). Shared with the apply-click preview (previewReactionMenu).
+  const { chosenIndices, cancelled } = await selectMenuPicks(row, ctx, options);
+  if (cancelled) {
+    log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
+    return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
   }
 
   // Dispatch each chosen option in pick order. Refs path: the referenced row

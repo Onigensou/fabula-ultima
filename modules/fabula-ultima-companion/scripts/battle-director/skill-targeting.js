@@ -404,6 +404,12 @@ export function makeChainContext({
   // selects by ordinal; raw string is shorthand for `menuLabel`. Live
   // play never sets this. See FUCompanion.api.test.runDirectorSkillSimulate.
   harnessPicks = null,
+  // Live equivalent of harnessPicks: menu picks the player already made at
+  // Apply-click (previewReactionMenu), cached on the candidate and replayed
+  // here at RESOLVE so open_action_menu dispatches the same options without
+  // re-prompting. Same per-pick shape (label strings). harnessPicks wins if
+  // both are set. See action-card.recordPillDecision + firePreAcceptedCandidate.
+  menuPicks = null,
 } = {}) {
   return {
     reactorActor,
@@ -417,6 +423,7 @@ export function makeChainContext({
     runtimeEffectTable,
     firePoints,
     harnessPicks,
+    menuPicks,
     resolvedTargets: new Map(),
   };
 }
