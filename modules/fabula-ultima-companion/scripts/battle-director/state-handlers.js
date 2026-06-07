@@ -57,7 +57,7 @@ async function getSkillEffectsExtras() {
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
-import { computeActionProfile } from "./action-profile.js";
+import { computeActionProfile, projectProfileToActionResult } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -2578,347 +2578,40 @@ const Compute = {
         .filter((e) => tokenUuids.includes(e.tokenUuid));
       const allTargets = targetSnaps.length ? targetSnaps : (ar.targets ?? []);
 
-      // Resolve damage_bonus formula now (uses caster's SL / actor state).
-      const casterActor = await fromUuid(ar.attackerActorRef).catch(() => null);
+      // ── Single-source COMPUTE ────────────────────────────────────────────
+      // Derive the ENTIRE actionResult from computeActionProfile (the
+      // Target→Check→Effects builder) + project it back to the legacy ar shape.
+      // Replaces the former hand-built per-target / damage / heal / roll
+      // derivation (the COMPUTE-side half of the pre-roll/post-roll/recompute
+      // divergence). Proven zero-diff vs the old derivation across dmgSpell
+      // (hit/crit/miss/multi), heal, legacy item, status-only spell, pure-buff —
+      // see verify-profile-projection.mjs.
       const skill = await fromUuid(ar.skillUuid).catch(() => null);
-      const resolver = buildSkillResolver({
-        actor: casterActor,
-        payload: null,
-        skill,
-        round: director.dCombat?.round ?? 0,
-      });
-      const damageBonus = evaluateFormula(ar.damageBonus, resolver, 0);
-      const nativeDamageType = String(ar.damageType ?? "").toLowerCase();
-      // Resource the damage burns through. Default is HP (regular
-      // elemental damage); `mp` routes the same hit/crit pipeline but
-      // writes to current_mp instead and skips elemental affinity (no
-      // sheet supports "Vulnerable to MP damage"). Heal-style strings
-      // ("healing", "recovery", "hp" as a bare type, "") are still
-      // excluded from the damage path — those are recipe-driven grants.
-      const isMpDamage = nativeDamageType === "mp";
-      // Spell-damage element override — applies the caster's
-      // override_spell_damage_type (or override_all_damage_type
-      // fallback). Only flips for ELEMENTAL damage; MP / heal-style
-      // strings ignore the override since they aren't an element. See
-      // resolveDamageElementOverride in skill-effects.js.
-      const damageType = isMpDamage
-        ? nativeDamageType
-        : String(resolveDamageElementOverride({
-            actor: casterActor,
-            scope: "spell",
-            native: nativeDamageType,
-          }) ?? nativeDamageType).toLowerCase();
-      const isElementalDamage = !!damageType
-        && !["", "none", "healing", "heal", "hp", "recovery"].includes(damageType)
-        && !isMpDamage;
-      const hasDamage = isMpDamage || isElementalDamage;
-      const damageResource = isMpDamage ? "mp" : "hp";
-
-      // ── Actor-status modifier layer (shared with Attack COMPUTE) ──────
-      // Spells route accuracy/damage through the "magic"/"spell" mod
-      // families; non-Spell skills only pick up the *_all + check_mod_all
-      // families (they're neither weapon-melee/ranged nor magic). MP-burn
-      // and heal-style skills bypass the damage/reduction families.
-      const casterProps = casterActor?.system?.props ?? null;
-      const isSpellForMods = String(ar.skillType ?? "").toLowerCase() === "spell";
-      const accKind = isSpellForMods ? "magic" : null;
-      const dmgKind = isSpellForMods ? "spell" : null;
-
-      let roll = null;
+      // Roll the Check dice here (the RNG); computeActionProfile derives total /
+      // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
+      let dice = null;
       if (ar.isCheck) {
         const A1 = ar.rolledA1 || "INS";
         const A2 = ar.rolledA2 || "INS";
         const dA = attacker.attributes?.[A1] ?? 8;
         const dB = attacker.attributes?.[A2] ?? 8;
-        let checkBonus = ar.checkBonus | 0;
-        // Per-source breakdown for the Check tooltip. Skills/Spells get
-        // their bonus from `skill.system.props.check_bonus` only — no
-        // free-action grant consumer here today (see
-        // [[free-action-grant-bonus-consumers]]). When the consumer
-        // ships, append the grant entry the same way Attack/Hinder do.
-        const checkBonusParts = [];
-        if (checkBonus !== 0) {
-          checkBonusParts.push({
-            source: ar.skillName || "Skill",
-            amount: checkBonus,
-          });
-        }
-        // Accuracy modifier layer — attack_accuracy_mod_{all,magic} +
-        // check_mod_all (an offensive Check is still a Check).
-        const accuracyParts = resolveAccuracyParts({ actor: casterActor, props: casterProps, kind: accKind });
-        for (const p of accuracyParts) { checkBonus += p.amount; checkBonusParts.push(p); }
-        const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
         const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-        const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
-        const rA = dice[0] ?? 0;
-        const rB = dice[1] ?? 0;
-        const total = (rA + rB + checkBonus) | 0;
-        const hr = Math.max(rA, rB);
-        const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-        const isCrit = isCriticalHit({ rA, rB, props: casterProps, isFumble });
-        roll = { A1, A2, dA, dB, rA, rB, checkBonus, checkBonusParts, total, hr, isCrit, isFumble, opportunities: isCrit && !isFumble };
+        const d = rollObj.dice.map((x) => x.results?.[0]?.result ?? 0);
+        dice = { rA: d[0] ?? 0, rB: d[1] ?? 0 };
       }
-
-      // Defense selection — Spells always vs MDEF (RAW; the 111 live
-      // Spell items leave the CSB `defense_target_type` column at its
-      // template default of "def", so the column on Spells is unreliable
-      // and we ignore it there). Non-Spell skills can opt in to MDEF
-      // resolution via `defense_target_type: "mdef"` — needed for
-      // Skill-kind opposed Checks that resolve vs Magic Defense per RAW
-      // (Soul Steal / Pillage / Draconic Roar / Entangle roll vs MDEF
-      // despite being Skill-kind for cost/typing). Mirrors the accuracy
-      // widget's Strike-vs-Magic icon choice in action-card.js.
-      const isSpell = String(ar.skillType ?? "").toLowerCase() === "spell";
-      const dtt = String(ar.defenseTargetType ?? "").toLowerCase();
-      const vsMDef = isSpell || dtt === "mdef";
-      const pickDefStat = (e) => vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0);
-
-      // Encyclopedia studied-gate (mirrors Attack COMPUTE). A player
-      // attacker shouldn't see an enemy's MDEF / damage outcome /
-      // affinity until the party has Studied them to Identity tier
-      // (Study result ≥ 7). The card uses `studied` to mask DEF + the
-      // hit/miss verdict + the affinity tag with "???" when the player
-      // hasn't earned that knowledge yet. Friendly targets and
-      // non-friendly attackers (GM-controlled enemy spells) always
-      // pass-through — nothing to hide.
-      const skillEncApi = globalThis.FUCompanion?.api?.encyclopedia;
-      const TIER_IDENTITY = 7;
-      const attackerIsFriendly = (attacker.disposition === 1);
-      const checkStudied = (target) => {
-        if (!attackerIsFriendly) return true;
-        if (target.disposition !== -1) return true;
-        if (!skillEncApi?.getPageForActor) return true;
-        const candidates = [target.worldActorUuid, target.actorUuid].filter(Boolean);
-        for (const uuid of candidates) {
-          try {
-            const page = skillEncApi.getPageForActor(uuid);
-            if (!page) continue;
-            const flag = page.getFlag?.("fabula-ultima-companion", "encyclopedia");
-            const best = Number(flag?.bestResult ?? 0) || 0;
-            if (best >= TIER_IDENTITY) return true;
-          } catch (_) { /* try next */ }
-        }
-        return false;
-      };
-
-      // Build per-target rows for any Skill/Spell with a Check (or any
-      // damage skill). Status-only offensive spells (Torpor / Hallucination
-      // / Enrage — isCheck:true + no type_damage) get the same per-target
-      // hit/miss row layout as damage spells, just with damage fields at
-      // zero. This is what surfaces "which targets got the status" on the
-      // action card.
-      // Outgoing damage modifier layer (elemental damage only — MP-burn /
-      // heal skills bypass it). Attacker-global → computed once; folded
-      // into each target's rawDamage in the loop. weaponKey is null
-      // (spells/skills carry no weapon family).
-      const outgoingDamageParts = (hasDamage && !isMpDamage)
-        ? resolveOutgoingDamageParts({ actor: casterActor, props: casterProps, kind: dmgKind, elementType: damageType, weaponKey: null })
-        : [];
-      const outgoingDamageTotal = outgoingDamageParts.reduce((s, p) => s + p.amount, 0);
-
-      const perTargetResults = [];
-      if (hasDamage || ar.isCheck) {
-        const effectiveHr = roll?.isFumble ? 0 : (roll?.hr ?? 0);
-        for (const e of allTargets) {
-          // Skills without isCheck always hit. Skills with isCheck resolve
-          // hit vs DEF / MDEF — see vsMDef derivation above.
-          const defStat = pickDefStat(e);
-          let hit = !roll;
-          if (roll) {
-            if (roll.isFumble) hit = false;
-            else if (roll.isCrit) hit = true;
-            else hit = roll.total >= defStat;
-          }
-          let rawDamage = (hasDamage && hit) ? (effectiveHr + damageBonus + outgoingDamageTotal) : 0;
-          // Target reduction + crit damage (elemental HP damage only;
-          // MP-burn skips both). Order mirrors Attack COMPUTE /
-          // apply-damage-core: reduction (flat then %) → crit, pre-affinity.
-          let damageModParts = [];
-          if (hasDamage && hit && !isMpDamage) {
-            const liveTarget = await fromUuid(e.actorUuid).catch(() => null);
-            const red = resolveIncomingReduction({
-              actor: liveTarget,
-              elementType: damageType, range: null, raw: rawDamage,
-            });
-            rawDamage = red.value;
-            damageModParts = red.parts;
-            if (roll?.isCrit) {
-              const cd = applyCritDamage({ raw: rawDamage, actor: casterActor });
-              rawDamage = cd.value;
-              damageModParts = [...damageModParts, ...cd.parts];
-            }
-          }
-          // MP damage skips elemental affinity (no sheet declares
-          // "Vulnerable to MP damage"); everything resolves as NE.
-          // Status-only Checks also use NE since there's no damage
-          // type to route through affinity.
-          const affinityCode = (!hasDamage)
-            ? "NE"
-            : isMpDamage
-              ? "NE"
-              : (e.affinities?.[damageType] ?? "NE");
-          const damage = (hasDamage && hit) ? applyAffinityToDamage(rawDamage, affinityCode) : 0;
-          perTargetResults.push({
-            damageModParts,
-            tokenUuid: e.tokenUuid,
-            actorUuid: e.actorUuid,
-            name: e.name,
-            tokenImg: e.tokenImg,
-            disposition: e.disposition,
-            defense: defStat,
-            hit,
-            crit: !!roll?.isCrit && hit,
-            rawDamage,
-            damage,
-            affinity: affinityCode,
-            // Per-row resource hint so the action card's per-target
-            // label can read "12 MP" instead of "12 dmg" for MP-burn
-            // skills. Matches `ar.damageResource` upstream.
-            resource: damageResource,
-            // Studied gate — masks MDEF / hit / damage / affinity from
-            // the player attacker's view when the target hasn't been
-            // Studied to Identity tier yet. Same rule the Attack
-            // pipeline already uses.
-            studied: checkStudied(e),
-          });
-        }
-      }
-
-      const effectiveHr = roll?.isFumble ? 0 : (roll?.hr ?? 0);
-      const damageObj = hasDamage
-        ? {
-            // base / finalIfHit include the actor-status outgoing damage
-            // mods so the headline agrees with the per-target rows. Target
-            // reduction + crit are per-target (perTargetResults[].damageModParts).
-            base: damageBonus + outgoingDamageTotal,
-            baseParts: outgoingDamageParts,
-            element: damageType,
-            // Mark the card so the Damage panel can label it correctly
-            // ("MP" instead of an element name) and skip the +HR pill
-            // logic appropriately for MP-burn skills.
-            resource: damageResource,
-            ignoreHR: !roll,
-            finalIfHit: effectiveHr + damageBonus + outgoingDamageTotal,
-          }
-        : null;
-
-      // Hit-list for the chain ctx. Damage spells populate perTargetResults
-      // with hit/miss above and we derive from that. Status-only Check
-      // spells (Torpor / Hallucination / Enrage — offensive Spiritist
-      // spells with no `type_damage`) need the same Check resolved
-      // separately so `target_ref: "hit_action_targets"` in their
-      // effect_table can filter apply_ae to only HIT targets per RAW
-      // ("each target hit by this spell"). No-Check skills (Heal,
-      // Reinforce, Cleanse) → all targets count as hit.
-      let hitTokenUuids;
-      if (!ar.isCheck) {
-        hitTokenUuids = allTargets.map((e) => e.tokenUuid);
-      } else if (hasDamage) {
-        hitTokenUuids = perTargetResults.filter((r) => r.hit).map((r) => r.tokenUuid);
-      } else {
-        hitTokenUuids = [];
-        for (const e of allTargets) {
-          const defStat = pickDefStat(e);
-          let hit = false;
-          if (roll) {
-            if (roll.isFumble) hit = false;
-            else if (roll.isCrit) hit = true;
-            else hit = roll.total >= defStat;
-          }
-          if (hit) hitTokenUuids.push(e.tokenUuid);
-        }
-      }
-
-      // Heal / grant preview — for skills using the recipe sugar
-      // (`recipe: heal_target` etc.) where the COMPUTE branch above
-      // doesn't fire because there's no elemental/MP damage. We mirror
-      // damage's per-target row + preview-panel UX so the player sees
-      // exactly how much each target will recover.
-      let healingObj = null;
-      if (!hasDamage) {
-        const view = getRuntimeSkillView(skill);
-        // Find the first grant row in the runtime view (recipe-synthesized
-        // OR author-authored on_activate_effect_ref).
-        let grantRow = null;
-        const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
-        const tbl = view?.effect_table ?? {};
-        for (const k of Object.keys(tbl)) {
-          const row = tbl[k];
-          if (!row || row.$deleted) continue;
-          if (row.effect_kind !== "grant") continue;
-          // Prefer the row referenced by on_activate; else first grant.
-          if (fireLabel && row.effect_label === fireLabel) { grantRow = row; break; }
-          if (!grantRow) grantRow = row;
-        }
-        if (grantRow) {
-          const grantResource = String(grantRow.grant_resource ?? "").toLowerCase();
-          const grantAmount = evaluateFormula(grantRow.grant_amount, resolver, 0);
-          if (grantAmount > 0 && ["hp", "mp"].includes(grantResource)) {
-            // Build per-target rows for each action target. No Check, no
-            // affinity — every target receives the same amount (clamped
-            // at write time by max-resource).
-            for (const e of allTargets) {
-              const tActor = await fromUuid(e.actorUuid).catch(() => null);
-              const cur = Number(tActor?.system?.props?.[grantResource === "mp" ? "current_mp" : "current_hp"] ?? 0) || 0;
-              const max = Number(tActor?.system?.props?.[grantResource === "mp" ? "max_mp" : "max_hp"] ?? 0) || 0;
-              // Vismagus self-heal suppression: RAW Spiritist p.182 —
-              // "you instead recover no HP" when the caster paid HP for
-              // a healing spell. Mirrors RESOLVE's `continue` skip
-              // (state-handlers.js:343) at the display layer so the
-              // card doesn't lie about heal landing on the caster.
-              const isCasterSelf = e.actorUuid === ar.attackerActorRef;
-              const vismagusSuppress =
-                !!ar.vismagusHpPaid && isCasterSelf && grantResource === "hp";
-              perTargetResults.push({
-                tokenUuid: e.tokenUuid,
-                actorUuid: e.actorUuid,
-                name: e.name,
-                tokenImg: e.tokenImg,
-                disposition: e.disposition,
-                defense: 0,
-                hit: true,
-                crit: false,
-                grantAmount: vismagusSuppress ? 0 : grantAmount,
-                grantResource,
-                resourceCur: cur,
-                resourceMax: max,
-                affinity: "NE",
-                studied: true,
-                vismagusSuppressed: vismagusSuppress || undefined,
-              });
-            }
-            // Damage-shaped object so the card's existing damage preview
-            // panel renders correctly. `declaresHealing: true` flips the
-            // label to "Heal" + tooltip wording. Color is decided by
-            // the panel — green for HP, blue for MP.
-            healingObj = {
-              base: grantAmount,
-              element: grantResource === "mp" ? "mp" : "healing",
-              resource: grantResource,
-              ignoreHR: true,
-              finalIfHit: grantAmount,
-              declaresHealing: grantResource === "hp",
-              isHealing: true,
-            };
-          }
-        }
-      }
-
+      const profile = await computeActionProfile({
+        view: getRuntimeActionView(skill), ar, attacker, targets: allTargets, dice,
+        ctx: { round: director.dCombat?.round ?? 0 },
+      });
       director.ctx.actionResult = freezeActionResult({
         ...ar,
-        roll,
-        damageComputed: damageBonus,
-        damage: damageObj ?? healingObj,
-        hasDamage,
-        hasHealing: !!healingObj,
-        damageResource,
-        perTargetResults,
-        hitTokenUuids,
+        ...projectProfileToActionResult(profile, ar, allTargets),
         targets: allTargets,
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
+
 
     if (command === "Attack") {
       // Pop the next weapon to roll for from the ctx queue. The queue was

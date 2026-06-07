@@ -517,6 +517,90 @@ export async function computeActionProfile(input) {
   return profile;
 }
 
+// ── Projection: ActionProfile → legacy actionResult (post-roll dedup) ────────
+// Maps a computed profile back into the COMPUTE-added fields of the legacy
+// `actionResult` so a COMPUTE handler can `{...baseAr, ...delta}` instead of
+// hand-building them. Returns ONLY the COMPUTE-added fields (roll, damage,
+// perTargetResults, …); pass-through TARGET fields stay on baseAr. Phase 2/3
+// gate: the full-field diff test must be zero-diff before any caller switches.
+//
+// flattenRow rebuilds the flat perTargetResults entry from the structured row +
+// its _parity mirror, kind-aware (Attack carries pierceMiss; heal rows differ).
+function flattenRow(r, kind) {
+  const p = r._parity ?? {};
+  const t = r.target ?? {};
+  const baseFields = {
+    tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
+    disposition: t.disposition, defense: p.defense ?? t.defenseShown ?? 0,
+    hit: !!p.hit, crit: !!p.crit, affinity: p.affinity ?? "NE", studied: p.studied ?? true,
+  };
+  if (typeof p.grantAmount === "number") {
+    // Heal/grant row.
+    return {
+      ...baseFields, grantAmount: p.grantAmount, grantResource: p.grantResource,
+      resourceCur: p.resourceCur, resourceMax: p.resourceMax,
+      ...(p.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
+    };
+  }
+  // Damage row.
+  const out = {
+    damageModParts: p.damageModParts ?? [],
+    ...baseFields,
+    rawDamage: p.rawDamage ?? 0, damage: p.damage ?? 0, resource: p.resource ?? "hp",
+  };
+  if (kind === "Attack") out.pierceMiss = !!p.pierceMiss;
+  return out;
+}
+
+export function projectProfileToActionResult(profile, baseAr = {}, targets = null) {
+  const kind = profile.action?.kind ?? baseAr.kind ?? "Skill";
+  const allTargets = targets ?? baseAr.targets ?? [];
+  const check = profile.check ?? {};
+  const prim = profile._summary?.primary ?? {};
+  const healingObj = profile._summary?.healingObj ?? null;
+  const hasDamage = !!profile._summary?.hasDamage;
+
+  let roll = null;
+  if (check.required && check.total != null) {
+    roll = {
+      A1: check.attrs.A1, A2: check.attrs.A2, dA: check.attrs.dA, dB: check.attrs.dB,
+      rA: check.rA, rB: check.rB,
+      checkBonus: check.checkBonus ?? (check.bonusParts ?? []).reduce((s, p) => s + (Number(p.amount) || 0), 0),
+      checkBonusParts: check.bonusParts ?? [],
+      total: check.total, hr: check.hr, isCrit: check.isCrit, isFumble: check.isFumble,
+      opportunities: check.isCrit && !check.isFumble,
+    };
+  }
+
+  const perTargetResults = (profile.perTarget ?? []).map((r) => flattenRow(r, kind));
+  const effectiveHr = check.isFumble ? 0 : (check.hr ?? 0);
+  const damageObj = hasDamage ? {
+    base: prim.damageBonus + prim.outgoingTotal,
+    baseParts: prim.outgoingParts ?? [],
+    element: prim.element, resource: prim.resource,
+    ignoreHR: !roll,
+    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
+  } : null;
+
+  // hitTokenUuids — for a Check, the hit rows; with NO Check, ALL action
+  // targets (matches COMPUTE: no-Check skills auto-hit every target, even
+  // pure-buff skills that produce zero per-target rows).
+  const hitTokenUuids = check.required
+    ? (profile.perTarget ?? []).filter((r) => !!r._parity?.hit).map((r) => r.target.tokenUuid)
+    : allTargets.map((t) => t.tokenUuid);
+
+  return {
+    roll,
+    damageComputed: prim.damageBonus ?? 0,
+    damage: damageObj ?? healingObj,
+    hasDamage,
+    hasHealing: !!healingObj,
+    damageResource: prim.resource ?? "hp",
+    perTargetResults,
+    hitTokenUuids,
+  };
+}
+
 // ── Parity helper ────────────────────────────────────────────────────────────
 // Compare a computed profile against a live COMPUTE `actionResult`. Returns
 // { ok, diffs:[...] } focusing on the numbers that matter (check total, per-
