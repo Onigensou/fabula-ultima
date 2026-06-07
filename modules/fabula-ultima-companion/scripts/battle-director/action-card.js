@@ -3249,7 +3249,16 @@ export async function postActionCard({ director, kind, payload }) {
 
   // Despawn any prior overlay for this director.
   const prior = _overlays.get(director.combatId);
-  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
+  // Two-phase morph: a pre-roll overlay flagged `_awaitingMorph` (its Roll was
+  // clicked, overlay kept alive) is REUSED in place by the post-roll Attack card
+  // so the card visually morphs — no despawn+respawn flicker. Any other prior
+  // overlay is cleaned up as usual.
+  const morphInPlace = !!prior?._awaitingMorph && kind === "Attack" && !payload?.preRoll;
+  let reuseRoot = null;
+  if (prior) {
+    if (morphInPlace) reuseRoot = prior.root;
+    else { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
+  }
 
   // Pre-compute bonus from auto-accepted ("on"-mode) pre-passives so the
   // damage header reflects passive bonuses before the player confirms.
@@ -3358,9 +3367,7 @@ export async function postActionCard({ director, kind, payload }) {
   const reactionRowHtml = prePassives.length ? buildReactionPillRow(prePassives) : "";
   const initialPending = askPassives.length;
 
-  const root = document.createElement("div");
-  root.id = ROOT_ID;
-  root.innerHTML = `
+  const innerHTML = `
     <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
       <div class="fud-bf-header">
         <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
@@ -3376,9 +3383,23 @@ export async function postActionCard({ director, kind, payload }) {
       ${card.buttons}
     </div>
   `;
-  document.body.appendChild(root);
-
-  requestAnimationFrame(() => root.classList.add("is-visible"));
+  let root;
+  if (reuseRoot) {
+    // Morph in place: clone-replace the existing (pre-roll) element — drops its
+    // listeners — keeping the same DOM position. It's already on-screen, so skip
+    // the entrance animation; the content swap reads as the card morphing.
+    root = reuseRoot.cloneNode(false);
+    root.id = ROOT_ID;
+    root.innerHTML = innerHTML;
+    reuseRoot.replaceWith(root);
+    root.classList.add("is-visible");
+  } else {
+    root = document.createElement("div");
+    root.id = ROOT_ID;
+    root.innerHTML = innerHTML;
+    document.body.appendChild(root);
+    requestAnimationFrame(() => root.classList.add("is-visible"));
+  }
 
   log("Battlefield action card spawned", card.titleText);
 
@@ -3443,6 +3464,20 @@ export async function postActionCard({ director, kind, payload }) {
           } catch {}
         }
       } catch {}
+
+      // Two-phase morph: the pre-roll "Roll" keeps the GM overlay MOUNTED so the
+      // post-roll card (CONFIRM) can reuse + morph it in place rather than
+      // despawn+respawn. Flag the _overlays entry; lock the buttons to a
+      // resolved (non-clickable) state during the brief roll/compute gap.
+      if (outcome === "roll") {
+        for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
+        const rec = _overlays.get(director.combatId);
+        if (rec) rec._awaitingMorph = true;
+        if (keyListener) { try { window.removeEventListener("keydown", keyListener, true); } catch {} keyListener = null; }
+        try { hideDescTip(); } catch {}
+        resolve({ confirmed: false, rolled: true, reactionDecisions: snapshotReactionDecisions(), ...extras });
+        return;
+      }
 
       for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
 
