@@ -1887,6 +1887,8 @@
           "name": "Perfect Aim",
           "max_sl": 1,
           "brief": "Choose two options when using Warning Shot.",
+          "description": "When you hit one or more creatures with a ranged attack and choose to deal no damage in order to gain the benefits of the Warning Shot Skill, you may choose two options instead of one (for instance, you could inflict both shaken and slow on each creature, or inflict a status effect on each creature while also lowering their Mind Points).",
+          "requirement": "You must have mastered the Sharpshooter Class, and must have acquired the Warning Shot Skill.",
           "classes": [
             "Sharpshooter"
           ],

@@ -25,7 +25,9 @@
  *   effect_table
  *     warning_shot  chain → [ws_nullify, ws_menu]
  *     ws_nullify    adjust_damage outgoing ×0 to hit_action_targets ("no damage")
- *     ws_menu       open_action_menu → [ws_shaken, ws_slow, ws_mp]
+ *     ws_menu       open_action_menu → [ws_shaken, ws_slow, ws_mp]; menu_pick_count
+ *                   = "1 + HAS_SKILL_PERFECT_AIM" (the Perfect Aim Heroic Skill
+ *                   widens the choice to two options — RAW)
  *     ws_shaken     apply_ae Shaken to hit_action_targets
  *     ws_slow       apply_ae Slow   to hit_action_targets
  *     ws_mp         consume_resource mp = SL × 10 from hit_action_targets
@@ -91,8 +93,13 @@ const EFFECT_TABLE = {
   },
   "2": {
     effect_label: "ws_menu", effect_kind: "open_action_menu",
-    menu_title: "Warning Shot", menu_subtitle: "The attack deals no damage — choose one effect.",
+    menu_title: "Warning Shot", menu_subtitle: "The attack deals no damage — choose an effect.",
     menu_option_refs: "ws_shaken,ws_slow,ws_mp",
+    // Pick one option normally; the Perfect Aim Heroic Skill widens it to two
+    // ("you may choose two options instead of one"). HAS_SKILL_PERFECT_AIM is
+    // the dynamic cross-skill presence gate — no hardcoded name in the engine,
+    // and Perfect Aim itself stays a pure marker skill.
+    menu_pick_count: "1 + HAS_SKILL_PERFECT_AIM",
   },
   "3": {
     effect_label: "ws_shaken", effect_kind: "apply_ae", ae_template_ref: "Shaken",

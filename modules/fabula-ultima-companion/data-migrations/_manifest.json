@@ -447,6 +447,10 @@
     {
       "key": "2026-06-07-sharpshooter-crossfire",
       "path": "data-migrations/2026-06-07-sharpshooter-crossfire.js"
+    },
+    {
+      "key": "2026-06-07-sharpshooter-perfect-aim",
+      "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js"
     }
   ]
 }

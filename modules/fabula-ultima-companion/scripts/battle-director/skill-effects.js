@@ -2960,80 +2960,128 @@ async function applyOpenActionMenuEffect(row, ctx) {
     return { ok: false, kind: "open_action_menu", reason: "no-options" };
   }
 
-  let chosen = null;
-  // Test harness — consume a queued pick if present (set by
-  // FUCompanion.api.test.runDirectorSkillSimulate via harnessPicks).
-  // The shape is { menuLabel?: string, index?: number } or a plain
-  // string (alias for menuLabel). Falls through to the normal path if
-  // the queue is empty.
-  // `ctx.harnessPicks` may be a frozen array (freezeActionResult applied
-  // it recursively when the harness stamped `_harnessPicks` on the ar).
-  // We can't shift() a frozen array, so we mutate a parallel index via
-  // a counter on the ctx instead. First call initializes the cursor at 0.
-  const harnessQueue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks : null;
-  if (harnessQueue && harnessQueue.length > (ctx._harnessPicksCursor ?? 0)) {
-    const cursor = ctx._harnessPicksCursor ?? 0;
-    ctx._harnessPicksCursor = cursor + 1;
-    const next = harnessQueue[cursor];
+  // How many DISTINCT options to choose. Default 1. A formula lets a sibling
+  // skill widen the choice without an engine edit — Perfect Aim makes Warning
+  // Shot pick two via `menu_pick_count: "1 + HAS_SKILL_PERFECT_AIM"` (the
+  // dynamic HAS_SKILL_<NAME> identifier resolves Perfect Aim's presence on the
+  // reactor). [[feedback_skill_no_hardcode_test]].
+  let pickCount = 1;
+  {
+    const pcRaw = row.menu_pick_count;
+    if (pcRaw !== undefined && pcRaw !== null && String(pcRaw).trim() !== "") {
+      const resolver = buildSkillResolver({
+        actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+      });
+      const n = Number(evaluateFormula(String(pcRaw), resolver, 1));
+      if (Number.isFinite(n) && n >= 1) pickCount = Math.floor(n);
+    }
+  }
+  pickCount = Math.max(1, Math.min(pickCount, options.length));
+
+  // Select `pickCount` distinct option indices. Harness consumes from the
+  // queue; passive auto-picks the first N (author ordering = default
+  // priority); interactive prompts once per pick over the REMAINING options.
+  // Cancelling the FIRST interactive pick aborts the chain; cancelling a later
+  // pick keeps the picks already made (graceful "I only wanted one").
+  // `ctx.harnessPicks` may be a frozen array, so we advance a cursor on ctx
+  // rather than shift().
+  const chosenIndices = [];
+  const remainingIdx = options.map((_, i) => i);
+  const takeIndex = (idx) => {
+    chosenIndices.push(idx);
+    const pos = remainingIdx.indexOf(idx);
+    if (pos !== -1) remainingIdx.splice(pos, 1);
+  };
+
+  for (let pick = 0; pick < pickCount; pick++) {
+    const harnessQueue = Array.isArray(ctx?.harnessPicks) ? ctx.harnessPicks : null;
     let idx = -1;
-    if (typeof next === "number" && Number.isFinite(next)) idx = next;
-    else if (typeof next === "string") {
-      const want = next.trim().toLowerCase();
-      idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
-    } else if (next && typeof next === "object") {
-      if (Number.isFinite(next.index)) idx = next.index;
-      else if (next.menuLabel) {
-        const want = String(next.menuLabel).trim().toLowerCase();
+    if (harnessQueue && harnessQueue.length > (ctx._harnessPicksCursor ?? 0)) {
+      const cursor = ctx._harnessPicksCursor ?? 0;
+      ctx._harnessPicksCursor = cursor + 1;
+      const next = harnessQueue[cursor];
+      if (typeof next === "number" && Number.isFinite(next)) idx = next;
+      else if (typeof next === "string") {
+        const want = next.trim().toLowerCase();
         idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+      } else if (next && typeof next === "object") {
+        if (Number.isFinite(next.index)) idx = next.index;
+        else if (next.menuLabel) {
+          const want = String(next.menuLabel).trim().toLowerCase();
+          idx = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+        }
       }
+      if (idx < 0 || idx >= options.length || !remainingIdx.includes(idx)) {
+        warn(`skill-effects.open_action_menu: harnessPick ${JSON.stringify(next)} did not match a remaining option — falling back to first remaining`);
+        idx = remainingIdx[0];
+      }
+      log(`skill-effects.open_action_menu: harness pick → "${options[idx].label}"`);
+    } else if (ctx.isPassive && row.skip_when_passive === true) {
+      // An option-menu is a genuine CHOICE, so it PROMPTS by default — even in a
+      // passive ctx. firePreAcceptedCandidate runs every Applied "ask" pill's
+      // chain with isPassive:true, so without this an Applied Warning Shot /
+      // Hawkeye would silently auto-pick the first option and show no menu. Only
+      // auto-pick (no prompt) when the row explicitly opts in with
+      // `skip_when_passive: true` (author ordering = default priority). Mirrors
+      // the targeting kind's skip_when_passive knob.
+      idx = remainingIdx[0];
+      log(`skill-effects.open_action_menu: passive + skip_when_passive — auto-picking "${options[idx].label}"`);
+    } else {
+      const baseSubtitle = row.menu_subtitle ? String(row.menu_subtitle) : null;
+      const subtitle = pickCount > 1
+        ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
+        : baseSubtitle;
+      const remOptions = remainingIdx.map((i) => options[i]);
+      const picked = await pickOption({
+        title: String(row.menu_title ?? "Choose an option"),
+        subtitle,
+        options: remOptions,
+      });
+      if (!picked) {
+        if (pick === 0) {
+          log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
+          return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
+        }
+        log(`skill-effects.open_action_menu: row "${row.effect_label}" — player stopped after ${pick} pick(s)`);
+        break;
+      }
+      idx = remainingIdx[picked.index];
     }
-    if (idx < 0 || idx >= options.length) {
-      warn(`skill-effects.open_action_menu: harnessPick ${JSON.stringify(next)} did not match any of ${options.map(o => o.label).join(", ")} — falling back to index 0`);
-      idx = 0;
-    }
-    chosen = { index: idx, option: options[idx] };
-    log(`skill-effects.open_action_menu: harness pick → "${options[idx].label}"`);
-  } else if (ctx.isPassive) {
-    // Passive: no prompt — pick the first option. Author-controlled
-    // ordering means option[0] = "default" for autoresolution.
-    chosen = { index: 0, option: options[0] };
-    log(`skill-effects.open_action_menu: passive ctx — auto-picking first option "${options[0].label}"`);
-  } else {
-    chosen = await pickOption({
-      title: String(row.menu_title ?? "Choose an option"),
-      subtitle: row.menu_subtitle ? String(row.menu_subtitle) : null,
-      options,
-    });
-    if (!chosen) {
-      log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
-      return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
-    }
+    takeIndex(idx);
   }
 
-  // Build a synthetic row from the chosen option. Refs path: the
-  // referenced row IS the dispatch row (already has effect_kind +
-  // params). Inline path: the inline option object IS the dispatch row
-  // (we trust its effect_kind field).
-  const selectedRow = optionRows[chosen.index];
-  if (!selectedRow?.effect_kind) {
-    warn(`skill-effects.open_action_menu: option "${options[chosen.index].label}" missing effect_kind`);
-    return { ok: false, kind: "open_action_menu", reason: "option-missing-effect-kind" };
+  // Dispatch each chosen option in pick order. Refs path: the referenced row
+  // IS the dispatch row. Inline path: the inline option object IS the row.
+  const nestedResults = [];
+  let anyAbort = false;
+  for (const idx of chosenIndices) {
+    const selectedRow = optionRows[idx];
+    if (!selectedRow?.effect_kind) {
+      warn(`skill-effects.open_action_menu: option "${options[idx].label}" missing effect_kind`);
+      continue;
+    }
+    // Stamp a traceable label without mutating the source row.
+    const syntheticRow = {
+      ...selectedRow,
+      effect_label: `${row.effect_label ?? "menu"}:${options[idx].label}`,
+    };
+    log(`skill-effects.open_action_menu: row "${row.effect_label}" → option "${options[idx].label}" (${syntheticRow.effect_kind})`);
+    const sub = await applyEffectRow(syntheticRow, ctx);
+    nestedResults.push(sub);
+    if (sub.abort) { anyAbort = true; break; }
   }
-  // Stamp a traceable label on the synthetic row for logs without
-  // mutating the referenced source row.
-  const syntheticRow = {
-    ...selectedRow,
-    effect_label: `${row.effect_label ?? "menu"}:${options[chosen.index].label}`,
-  };
-  log(`skill-effects.open_action_menu: row "${row.effect_label}" → option "${options[chosen.index].label}" (${syntheticRow.effect_kind})`);
-  const sub = await applyEffectRow(syntheticRow, ctx);
+
   return {
-    ok: !!sub.ok,
+    ok: nestedResults.length > 0 && nestedResults.every((s) => s.ok),
     kind: "open_action_menu",
-    selectedIndex: chosen.index,
-    selectedLabel: options[chosen.index].label,
-    nestedResult: sub,
-    abort: sub.abort,
+    // Plural results for multi-pick; singular aliases kept for back-compat.
+    selectedIndices: chosenIndices,
+    selectedLabels: chosenIndices.map((i) => options[i].label),
+    nestedResults,
+    selectedIndex: chosenIndices[0] ?? -1,
+    selectedLabel: chosenIndices.length ? options[chosenIndices[0]].label : null,
+    nestedResult: nestedResults[0] ?? null,
+    abort: anyAbort,
   };
 }
 
