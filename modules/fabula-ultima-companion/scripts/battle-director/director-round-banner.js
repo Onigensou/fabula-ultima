@@ -38,23 +38,54 @@ const ICON_H_VH = 9.5;
 // adjacent icons overlap by this much so their slanted edges tessellate flush
 // (no inter-icon gap), so each icon after the first advances ICON_W_VH-SLANT_VH.
 const SLANT_VH = 1;
-// Width (vh) of the centre panel's soft edge-fade. The panel is widened by this
-// much past each side's first icon so the fade lands OUTSIDE that icon — the
-// solid black reaches the first actor before it starts fading. Shared between
-// the CSS gradient and the JS inset so they stay in sync.
-const PANEL_FADE_VH = 2.5;
-// How far the end "ray"/empty-slot gold overflows the top+bottom accent lines,
-// so it reads as icon-plus-border tall instead of a thin line-bordered cell.
+// How far the gold ray overflows the top+bottom accent lines, so it reads as
+// icon-plus-border tall instead of a thin line-bordered cell.
 const END_OVERFLOW_VH = 0;
 // Rhombus (parallelogram) icon outline — same top/bottom width, but the top
 // edge is shifted by `--slant` so both top corners sit away from the centre.
 // Base shape leans toward the RIGHT (= outward for party icons); the left
 // (enemy) group's scaleX(-1) mirror makes it lean left, so both lean outward.
 const RHOMBUS_CLIP = "polygon(var(--slant) 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%)";
-// Mirror of RHOMBUS_CLIP — leans LEFT. Used by the left (enemy) end-ray, which
-// (unlike the left icon group) is NOT scaleX(-1)-mirrored, so it needs the
-// flipped polygon to lean the same outward direction as the enemy icons.
-const LEFT_RHOMBUS = "polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, var(--slant) 100%)";
+// Active-turn spotlight (centre) dimensions (vh). The combatant currently taking
+// its turn is LIFTED out of its side row and shown here, larger than the lineup
+// icons and in a SYMMETRIC, upright frame (vs the leaning side trapezoids) so it
+// reads as the "now acting" focus. The banner docks at the screen TOP, so the
+// spotlight breaks DOWNWARD — it hangs below the bar, with a small ROUND N
+// beneath it. SPOT_SLANT is symmetric (both top corners pulled in equally),
+// giving an upright portrait-plinth silhouette distinct from the side icons.
+const SPOT_W_VH = 26;
+const SPOT_H_VH = 18;
+// Match the lineup icons' edge ANGLE so the spotlight's slanted left/right
+// borders run PARALLEL to the adjacent icon borders (one continuous angled
+// gap). The icons lean by SLANT_VH over ICON_H_VH of height; scale that same
+// angle to the spotlight's taller height: SPOT_SLANT/SPOT_H == SLANT/ICON_H.
+const SPOT_SLANT_VH = SPOT_H_VH * (SLANT_VH / ICON_H_VH);
+// Top edge is the WIDE one (top corners pushed OUT past the bottom corners) — an
+// inverted-trapezoid / keystone that flares outward at the top. The right edge
+// leans like the party (right-group) icons, the left edge mirrors the enemy
+// (left-group, scaleX-mirrored) icons.
+const SPOT_CLIP = "polygon(0 0, 100% 0, calc(100% - var(--spot-slant)) 100%, var(--spot-slant) 100%)";
+// Energetic ease-out for the banner's motion (dock glide, line sweep, text rise,
+// spotlight reveal): very high initial velocity (slope ≈ y1/x1 ≈ 10) that bursts
+// out of the gate, then a quick, crisp deceleration to rest — punchy, not a long
+// lazy drift. Shared by the WAAPI animations and the CSS transitions below.
+const EASE_ENERGETIC = "cubic-bezier(.08, .82, .17, 1)";
+// Round-number text: ONE element (the hero ROUND N) shrinks down to the small
+// docked size and is pushed into place below the spotlight — no separate
+// fade-in element. Dock scale = smallVh / heroVh (2.6 / 6.2).
+const TX_DOCK_SCALE = 2.6 / 6.2;
+// Band-local downward shift that moves the (shrunk) ROUND N from the bar centre
+// to its resting spot just below the hanging spotlight.
+const TX_DOCK_SHIFT_VH = 15.5;
+// How far ABOVE its resting top the spotlight starts its slide-in (fully above
+// the bar, so it reads as dropping in from the top and pushing the text down).
+const SPOT_SLIDE_VH = SPOT_H_VH + 2;
+// Single gold "ray" behind the whole bar (emulated background light). RAY_VH =
+// the tail length past each bar end where the gold fades to transparent; the
+// body runs SOLID gold straight through the centre.
+const RAY_VH = 13;
+const END_GOLD = "rgba(255,216,102,.42)";
+const END_GOLD_FADE = "rgba(255,216,102,.12)";
 
 let _socket = null;
 // Surface-registry id for the banner overlay while it's visible (it persists
@@ -157,7 +188,7 @@ function ensureStyle() {
 /* z-index 99 = just BELOW Foundry application windows (which float at 100+), so
    CSB sheets / dialogs render OVER the docked HUD instead of being covered by
    it, while the banner still sits above the canvas/battlefield + chrome. */
-#${LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; overflow: hidden; display: none; --slant: ${SLANT_VH}vh; }
+#${LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; overflow: hidden; display: none; --slant: ${SLANT_VH}vh; --spot-slant: ${SPOT_SLANT_VH}vh; }
 #${LAYER_ID}.active { display: block; }
 #${LAYER_ID} .fu-rb-band {
   position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%);
@@ -169,7 +200,10 @@ function ensureStyle() {
 }
 #${LAYER_ID} .fu-rb-bg {
   position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(8,8,12,.82) 8%, rgba(8,8,12,.82) 92%, transparent 100%);
+  /* No dark backdrop — the HUD (gold lines, spotlight, icons, ROUND N) floats
+     over the canvas. The element is kept (its opacity/scaleY still drive the
+     entrance/dock fade), it just paints nothing. */
+  background: none;
 }
 /* Fit-content column so the accent lines stretch to exactly the icon span. */
 #${LAYER_ID} .fu-rb-inner {
@@ -183,55 +217,52 @@ function ensureStyle() {
   background: linear-gradient(90deg, transparent, ${ACCENT} 4%, ${ACCENT} 96%, transparent);
   box-shadow: 0 0 8px ${ACCENT};
 }
-/* End "ray" — a single gold element per side covering the empty gap AND the
-   stretch just beyond the bar, as ONE continuous gradient (width / offset /
-   gradient are set inline per render from the gap size). Shows up once with the
-   icons (shoot + settle, no constant flicker). Full bar height. */
-#${LAYER_ID} .fu-rb-end {
-  /* Slightly TALLER than the bar interior (overflows the top/bottom accent
-     lines by END_OVERFLOW_VH) so the empty-slot gold reads as one glowing gold
-     region the height of an icon + its border — not a thin, line-bordered empty
-     cell. */
+/* Single gold "ray" behind the whole bar — emulated band of background light.
+   Spans the full bar width PLUS a RAY_VH tail past each end, as ONE continuous
+   horizontal gradient (set inline per render): transparent tips → gold body that
+   runs UNBROKEN through the centre (behind the spotlight). Shoots open from the
+   centre once on reveal, then settles. Full bar height. */
+#${LAYER_ID} .fu-rb-ray {
   position: absolute; top: -${END_OVERFLOW_VH}vh; bottom: -${END_OVERFLOW_VH}vh;
-  pointer-events: none; opacity: 0;
+  left: -${RAY_VH}vh; right: -${RAY_VH}vh;
+  pointer-events: none; opacity: 0; transform-origin: center center;
 }
-/* --gdir drives the glow OUTWARD (away from the ROUND text): left side glows
-   leftward (-1), right side glows rightward (+1). */
-#${LAYER_ID} .fu-rb-end.left  { transform-origin: right center; --gdir: -1; clip-path: ${LEFT_RHOMBUS}; }
-#${LAYER_ID} .fu-rb-end.right { transform-origin: left center;  --gdir:  1; clip-path: ${RHOMBUS_CLIP}; }
-#${LAYER_ID} .fu-rb-end.lit { animation: fu-rb-end-shoot 1.15s ease-out forwards; }
-@keyframes fu-rb-end-shoot {
-  /* Grows from the centre with only a VERY subtle overshoot (1.02), and pulses
-     a gold glow that — via drop-shadow (NOT box-shadow) — follows the visible
-     gold's alpha instead of the rectangular box border, then settles to none.
-     The glow grows OUTWARD only (away from the ROUND text), so its X offset is
-     signed per side by --gdir (-1 left, +1 right); a SMALL blur keeps the
-     vertical bleed tight. */
+#${LAYER_ID} .fu-rb-ray.lit { animation: fu-rb-ray-shoot 1.15s ease-out forwards; }
+@keyframes fu-rb-ray-shoot {
+  /* Grows from the centre with a subtle overshoot (1.02), pulsing a SYMMETRIC
+     gold glow (drop-shadow follows the gradient's alpha, not a box edge), then
+     settles to no glow at a steady resting opacity. */
   0%   { opacity: 0;   transform: scaleX(.08);
-         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
   35%  { opacity: 1;   transform: scaleX(1.02);
-         filter: drop-shadow(calc(var(--gdir) * 10px) 0 5px rgba(255,216,102,1)) drop-shadow(calc(var(--gdir) * 24px) 0 8px rgba(255,216,102,.7)) drop-shadow(0 0 4px rgba(255,255,255,.9)); }
+         filter: drop-shadow(0 0 13px rgba(255,216,102,.95)) drop-shadow(0 0 5px rgba(255,255,255,.85)); }
   100% { opacity: .85; transform: scaleX(1);
-         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
 }
+/* The "hero" ROUND N — big + screen-centred during the entrance cinematic. It
+   lives in the absolute .fu-rb-center overlay (not the bar row), so on dock it
+   fades out while the spotlight + small ROUND N take over below the bar. */
 #${LAYER_ID} .fu-rb-text {
-  position: relative; color: #fff; white-space: nowrap; letter-spacing: .1em;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  color: #fff; white-space: nowrap; letter-spacing: .1em;
   font: 900 6.2vh "Pixel Operator", system-ui, sans-serif;
-  text-shadow: 0 2px 12px rgba(0,0,0,.7);
+  /* Subtle black outline so ROUND N stays readable on any background (incl. the
+     gold ray now running behind it). The stroke is proportional — it scales with
+     the text, so the border looks the same at the big entrance size and the
+     small docked size; paint-order keeps the stroke behind the fill so glyphs
+     stay crisp. The blurred shadows add a soft dark halo for extra contrast. */
+  -webkit-text-stroke: 0.6px rgba(0,0,0,.9); paint-order: stroke fill;
+  text-shadow: 0 0 3px rgba(0,0,0,.85), 0 2px 10px rgba(0,0,0,.6);
 }
 /* Turn-action tracker — creature icons flanking ROUND X (enemies left, party right). */
 #${LAYER_ID} .fu-rb-row {
   /* Roomy gap so the icon clusters don't crowd the ROUND text. */
-  position: relative; display: flex; align-items: center; justify-content: center; gap: 3.5vw;
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 0;
 }
-/* Black panel behind ROUND N (left/right set inline per render so it tucks just
-   inside the first icon on each side, covering their inner triangle gaps). */
-#${LAYER_ID} .fu-rb-center-bg {
-  /* Slightly transparent black that fades out at the left/right ends over
-     PANEL_FADE_VH instead of a hard edge. */
-  position: absolute; top: 0; bottom: 0; pointer-events: none;
-  background: linear-gradient(90deg, transparent 0, rgba(0,0,0,.72) ${PANEL_FADE_VH}vh, rgba(0,0,0,.72) calc(100% - ${PANEL_FADE_VH}vh), transparent 100%);
-}
+/* Reserves horizontal room in the BAR for the centre spotlight (which hangs
+   below but whose tucked-in top overlaps the bar), so the left/right groups
+   leave a gap. Width set inline per render (= spotlight width). */
+#${LAYER_ID} .fu-rb-center-spacer { flex: 0 0 auto; height: ${ICON_H_VH}vh; }
 #${LAYER_ID} .fu-rb-ta-group { display: flex; align-items: center; gap: 0; }
 /* Both sides reserve equal width (set in JS) and align their icons toward the
    centre, so ROUND text stays screen-centred even with uneven counts; the
@@ -357,6 +388,48 @@ function ensureStyle() {
    left) and un-mirror the glyph. */
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-book-mini { right: auto; left: 0.5vh; }
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-book-mini i { transform: scaleX(-1); }
+/* ── Active-turn spotlight ──────────────────────────────────────────────────
+   Absolute overlay anchored over the bar (inner is position:relative). Holds
+   the hero ROUND N (enter), the spotlight portrait (hangs below the bar), and
+   the small docked ROUND N (below the portrait). pointer-events stay off. */
+#${LAYER_ID} .fu-rb-center { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+/* Larger, keystone-framed portrait of the current turn-taker. Anchored to the
+   TOP of the bar (top: 0) so when the banner is docked at the screen top, the
+   portrait's top edge reaches the screen top; it hangs DOWNWARD from there
+   (transform-origin top). Hidden (scaled-down) until .shown. */
+#${LAYER_ID} .fu-rb-spotlight {
+  position: absolute; left: 50%; top: 0; width: ${SPOT_W_VH}vh; height: ${SPOT_H_VH}vh;
+  transform: translate(-50%, 0); transform-origin: 50% 0;
+  opacity: 0; transition: opacity .2s ease;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.6));
+}
+/* Resting (docked) state. The slide-in DOWN from the top is played as a WAAPI
+   transform animation on dock; this just holds the final opacity + position. */
+#${LAYER_ID} .fu-rb-spotlight.shown { opacity: 1; }
+#${LAYER_ID} .fu-rb-spot-frame { position: absolute; inset: 0; background: ${ACCENT}; clip-path: ${SPOT_CLIP}; }
+#${LAYER_ID} .fu-rb-spot-wrap { position: absolute; inset: 3px; background: #0a0a0e; overflow: hidden; clip-path: ${SPOT_CLIP}; }
+#${LAYER_ID} .fu-rb-spotlight .fu-rb-ta-media {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
+  transform: scale(2); transform-origin: center top; display: block;
+}
+/* Neutral "awaiting" placeholder (no one acting / between turns / post-enter). */
+#${LAYER_ID} .fu-rb-spot-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+#${LAYER_ID} .fu-rb-spot-ph i { color: ${ACCENT}; font-size: 6vh; opacity: .5; filter: drop-shadow(0 1px 4px rgba(0,0,0,.8)); }
+/* Crisis tint (≤ half HP) on the spotlight sprite — mirrors the lineup icons. */
+#${LAYER_ID} .fu-rb-spotlight.crisis .fu-rb-spot-wrap::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  mix-blend-mode: multiply; background: rgba(225,25,20,.32);
+  animation: fu-rb-icon-crisis 2.6s ease-in-out infinite;
+}
+#${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-spot-frame { background: #6f6f77; }
+#${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-ta-media { filter: grayscale(1) brightness(.45); }
+#${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-spot-wrap::after { display: none; }
+#${LAYER_ID} .fu-rb-spotlight.defeated::before {
+  content: "💀"; position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7vh; line-height: 1; pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.95));
+}
 `.trim();
   const style = document.createElement("style");
   style.id = STYLE_ID;
@@ -379,26 +452,30 @@ function ensureLayer() {
   const lt = document.createElement("div"); lt.className = "fu-rb-line";
   const row = document.createElement("div"); row.className = "fu-rb-row";
   const leftGroup = document.createElement("div"); leftGroup.className = "fu-rb-ta-group left";
-  const tx = document.createElement("div"); tx.className = "fu-rb-text";
+  // Empty spacer holding the centre gap in the BAR (the spotlight hangs below
+  // but its tucked-in top overlaps the bar). Width set per render = spotlight w.
+  const spacer = document.createElement("div"); spacer.className = "fu-rb-center-spacer";
   const rightGroup = document.createElement("div"); rightGroup.className = "fu-rb-ta-group right";
-  // Solid black panel behind ROUND N + the inner triangle gaps of the first
-  // icon on each side. First child of row → paints behind the text + icons but
-  // (row sits after the rays in `inner`) ABOVE the gold ray, so it hides the
-  // gold that would otherwise show through those triangles. Its left/right are
-  // set per render to land just inside each side's innermost icon.
-  const centerBg = document.createElement("div"); centerBg.className = "fu-rb-center-bg";
-  row.append(centerBg, leftGroup, tx, rightGroup);
+  row.append(leftGroup, spacer, rightGroup);
   const lb = document.createElement("div"); lb.className = "fu-rb-line";
-  // End "ray" = a single gold element per side that fills the empty gap AND
-  // extends beyond the bar as one continuous gradient. Appended FIRST so it
-  // paints BEHIND the lines + icons (gold shows only in the gap + beyond).
-  const endL = document.createElement("div"); endL.className = "fu-rb-end left";
-  const endR = document.createElement("div"); endR.className = "fu-rb-end right";
-  inner.append(endL, endR, lt, row, lb);
+  // Single gold "ray" spanning the whole bar (+ a tail past each end) as one
+  // continuous gradient that fills the centre too. Appended FIRST so it paints
+  // BEHIND the lines + icons + spotlight.
+  const ray = document.createElement("div"); ray.className = "fu-rb-ray";
+  // Centre overlay (absolute over the bar). During the entrance it shows the big
+  // "hero" ROUND N; on dock that shrinks to the small docked size and is pushed
+  // below the spotlight, which drops in from the top.
+  const center = document.createElement("div"); center.className = "fu-rb-center";
+  const spotlight = document.createElement("div"); spotlight.className = "fu-rb-spotlight";
+  // ONE round-number text: big + centred for the entrance, then it shrinks to
+  // the small docked size and is pushed below the spotlight (no second element).
+  const tx = document.createElement("div"); tx.className = "fu-rb-text";
+  center.append(spotlight, tx);
+  inner.append(ray, lt, row, lb, center);
   band.append(bg, inner);
   layer.append(band);
   document.body.appendChild(layer);
-  layer.__fu = { band, bg, lt, lb, tx, row, leftGroup, rightGroup, inner, endL, endR, centerBg, turnActionKey: "" };
+  layer.__fu = { band, bg, lt, lb, tx, row, leftGroup, rightGroup, inner, ray, center, spotlight, spacer, turnActionKey: "", spotKey: "" };
   return layer;
 }
 
@@ -411,18 +488,20 @@ async function exitRoundBannerLocal({ animate = true } = {}) {
   try {
     const layer = document.getElementById(LAYER_ID);
     if (!layer || !layer.__fu || !layer.classList.contains("active")) return;
-    const { band, bg, lt, lb, tx } = layer.__fu;
+    const { band, bg, lt, lb, tx, spotlight } = layer.__fu;
     if (animate) {
       // Single-keyframe → fades from each element's CURRENT opacity to 0
-      // (the docked banner sits at reduced bg opacity, full text/lines).
+      // (the docked banner sits at reduced bg opacity, full text/lines). The
+      // spotlight fades with it so a round-change exit is clean.
       await Promise.all([
         bg.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
         lt.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
         lb.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
         tx.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
+        ...(spotlight ? [spotlight.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished] : []),
       ]);
     }
-    for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+    for (const el of [band, bg, lt, lb, tx, spotlight]) el?.getAnimations?.().forEach((a) => a.cancel());
     layer.classList.remove("active");
     if (_bannerSurfaceId) { unregisterSurface(_bannerSurfaceId); _bannerSurfaceId = null; }
   } catch (e) {
@@ -437,7 +516,7 @@ async function exitRoundBannerLocal({ animate = true } = {}) {
 // banner (→ exit) build on this. Returns the layer's element refs.
 async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
   const layer = ensureLayer();
-  const { band, bg, lt, lb, tx } = layer.__fu;
+  const { band, bg, lt, lb, tx, spotlight } = layer.__fu;
 
   // If a prior banner is still on screen (docked round indicator), fade it
   // out first so the new one enters from center cleanly (no jump from top).
@@ -446,6 +525,12 @@ async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
   for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
 
   tx.textContent = text;
+  // Centre starts in its "hero" state: the spotlight is hidden and the ROUND N
+  // is big + centred (it shrinks + gets pushed below the spotlight on dock).
+  spotlight?.classList.remove("shown");
+  // Clear any docked transform a prior instant/dock left inline, so the entrance
+  // animation's hero keyframes (translate(-50%,-50%)) are the start state.
+  tx.style.transform = "";
 
   // Move + size the band to its centred start state BEFORE revealing it, so a
   // prior docked/instant position can never flash at the top for a frame.
@@ -465,12 +550,14 @@ async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
     { duration: 240, easing: "ease-out", fill: "forwards" });
   await Promise.all([
     lt.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-      { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
+      { duration: 400, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
     lb.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-      { duration: 400, easing: "cubic-bezier(.16,.84,.36,1)", fill: "forwards" }).finished,
+      { duration: 400, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
   ]);
-  await tx.animate([{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "translateY(0)" }],
-    { duration: 300, easing: "ease-out", fill: "forwards" }).finished;
+  await tx.animate([
+    { opacity: 0, transform: "translate(-50%, -50%) translateY(16px)" },
+    { opacity: 1, transform: "translate(-50%, -50%) translateY(0)" },
+  ], { duration: 300, easing: EASE_ENERGETIC, fill: "forwards" }).finished;
 
   return layer.__fu;
 }
@@ -499,7 +586,9 @@ async function playRoundBannerLocal(payload = {}) {
       band.style.top = `${dockTopPct}%`;
       band.style.transform = `translateY(0%) scale(${dockScale})`;
       bg.style.opacity = String(dockBgOpacity);
+      // Docked state: ROUND N is the small text resting below the spotlight.
       tx.style.opacity = "1";
+      tx.style.transform = `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})`;
       lt.style.transform = "scaleX(1)";
       lb.style.transform = "scaleX(1)";
       layer.classList.add("active");
@@ -511,23 +600,58 @@ async function playRoundBannerLocal(payload = {}) {
     // Icons stay hidden through the entrance + dock; revealed staggered after.
     hideTurnActionIcons();
 
-    const { band, bg } = await enterBannerLocal({ text: `ROUND ${round}`, sfx, sfxVol });
+    const fu = await enterBannerLocal({ text: `ROUND ${round}`, sfx, sfxVol });
+    const { band, bg } = fu;
 
     await sleep(holdMs);
 
-    // Dock: shrink + glide to middle-top, then STAY (persistent indicator).
+    // ── Phase 1: the components glide to the top while ROUND N shrinks. ──
+    // Band: shrink + glide to middle-top, then STAY (persistent indicator).
     const dockAnim = band.animate(
       [
         { top: "50%", transform: "translateY(-50%) scale(1)" },
         { top: `${dockTopPct}%`, transform: `translateY(0%) scale(${dockScale})` },
       ],
-      { duration: 520, easing: "cubic-bezier(.5,0,.2,1)", fill: "forwards" }
+      { duration: 520, easing: EASE_ENERGETIC, fill: "forwards" }
     );
     bg.animate([{ opacity: 1 }, { opacity: dockBgOpacity }],
       { duration: 520, easing: "ease-in-out", fill: "forwards" });
+    // The big hero ROUND N shrinks to the small docked size as the band glides
+    // up — staying centred in the bar for now (Phase 2 pushes it down). Same
+    // element throughout, so it reads as one continuous "ROUND N shrinks".
+    fu.tx?.animate?.([
+      { transform: "translate(-50%, -50%) scale(1)" },
+      { transform: `translate(-50%, -50%) scale(${TX_DOCK_SCALE})` },
+    ], { duration: 520, easing: EASE_ENERGETIC, fill: "forwards" });
 
-    // Once docked, populate the creature icons one-by-one from the middle out.
     try { await dockAnim.finished; } catch (_e) {}
+    // BAKE the band's docked transform into inline styles and DROP only the BAND
+    // animation. A fill:forwards animation outranks inline styles in the
+    // cascade, so if it lingered, the NEXT round's centred-start reset
+    // (band.style.top = "50%" in enterBannerLocal) would be ignored and the
+    // entrance would replay from the docked top. The band is the ONLY element
+    // with no entrance animation of its own, so only it needs this. Do NOT
+    // commit/cancel the bg + text dock animations: each sits ON TOP of a
+    // still-filling ENTRANCE animation it deliberately overrides — cancelling it
+    // would let that entrance animation resurface. Those self-correct on the
+    // next round (enterBannerLocal cancels + re-animates them).
+    try { dockAnim.commitStyles(); dockAnim.cancel(); } catch (_e) {}
+
+    // ── Phase 2: the spotlight drops IN from the top (high start speed, snappy)
+    // and pushes the shrunk ROUND N down to its resting place below it. ──
+    fu.spotlight?.classList.add("shown"); // opacity 1; CSS holds the resting transform
+    fu.spotlight?.animate?.([
+      { transform: `translate(-50%, ${-SPOT_SLIDE_VH}vh)` },
+      { transform: "translate(-50%, 0)" },
+    ], { duration: 360, easing: EASE_ENERGETIC }); // no fill → CSS .shown holds the end
+    // Pushed: the text slides from the bar centre down to below the spotlight,
+    // synced with the spotlight's arrival.
+    fu.tx?.animate?.([
+      { transform: `translate(-50%, -50%) scale(${TX_DOCK_SCALE})` },
+      { transform: `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})` },
+    ], { duration: 360, easing: EASE_ENERGETIC, fill: "forwards" });
+
+    // Then populate the creature icons one-by-one from the middle out.
     revealTurnActionIconsStaggered();
     // Note: NO layer.classList.remove — the banner persists until the next
     // round (exited above) or battle end (hideRoundBanner).
@@ -758,6 +882,53 @@ function buildTurnActionIcon(c) {
   return icon;
 }
 
+// Populate the centre spotlight with the active turn-taker (lifted out of its
+// side row), or a neutral "awaiting" placeholder when no one is acting. Rebuilds
+// the inner media only when the subject changes (keyed on id+img); crisis /
+// defeated state classes toggle every call, and the focal crop re-applies so a
+// tuner change updates without a rebuild. Mirrors buildTurnActionIcon's frame.
+function setSpotlight(fu, active) {
+  const sp = fu?.spotlight;
+  if (!sp) return;
+  const hasMedia = !!(active && active.img);
+  const key = active ? `A:${active.id}:${active.img ?? ""}` : "P";
+  sp.classList.toggle("placeholder", !hasMedia);
+  sp.classList.toggle("crisis", !!active?.crisis);
+  sp.classList.toggle("defeated", !!active?.defeated);
+  if (fu.spotKey === key) {
+    // Same subject — just re-apply focus (tuner Save) without a rebuild.
+    const media = sp.querySelector(".fu-rb-ta-media");
+    if (media && active) applyIconFocusStyle(media, active.focus);
+    return;
+  }
+  fu.spotKey = key;
+  sp.replaceChildren();
+  const frame = document.createElement("div"); frame.className = "fu-rb-spot-frame";
+  const wrap = document.createElement("div"); wrap.className = "fu-rb-spot-wrap";
+  if (hasMedia) {
+    let media;
+    if (isVideoSrc(active.img)) {
+      media = document.createElement("video");
+      media.autoplay = true; media.loop = true; media.muted = true;
+      media.playsInline = true; media.setAttribute("playsinline", "");
+    } else {
+      media = document.createElement("img");
+      media.draggable = false;
+    }
+    media.className = "fu-rb-ta-media";
+    media.src = active.img;
+    applyIconFocusStyle(media, active.focus);
+    wrap.appendChild(media);
+  } else {
+    const ph = document.createElement("div");
+    ph.className = "fu-rb-spot-ph";
+    ph.innerHTML = `<i class="fas fa-hourglass-half"></i>`;
+    wrap.appendChild(ph);
+  }
+  frame.appendChild(wrap);
+  sp.appendChild(frame);
+}
+
 // Render (idempotent). Rebuilds the icon DOM only when the membership/order
 // changes (new round / combatant added or removed); otherwise just toggles
 // each icon's spent/dim state so an in-round update is a cheap class flip.
@@ -767,11 +938,23 @@ function renderTurnActionsLocal(combatants = []) {
     const { leftGroup, rightGroup } = layer.__fu;
     if (!leftGroup || !rightGroup) return;
     const list = Array.isArray(combatants) ? combatants : [];
+    // The current turn-taker is LIFTED out of its side row into the centre
+    // spotlight (or a placeholder when no one is acting). The side rows render
+    // everyone else; the active one returns to its slot when its turn ends.
+    const active = list.find((c) => c.active) ?? null;
+    setSpotlight(layer.__fu, active);
+    const sideList = list.filter((c) => !c.active);
+    // The spacer reserves the bar's centre gap for the spotlight. Narrowed by
+    // 2×SLANT (vs the spotlight's full top width) so the innermost icon on each
+    // side butts FLUSH against the spotlight's slanted edge — its inner edge
+    // becomes collinear with the spotlight border (they share the same angle),
+    // and the icon's top corner meets the spotlight's top corner with no gap.
+    if (layer.__fu.spacer) layer.__fu.spacer.style.width = `${SPOT_W_VH - 2 * SLANT_VH}vh`;
     // Reserve equal width for both sides (= the larger side's icon span) so the
-    // ROUND text stays screen-centred with uneven counts. Empty space falls on
+    // spotlight stays screen-centred with uneven counts. Empty space falls on
     // each side's OUTER edge via the group's justify-content.
-    const leftN = list.filter((c) => c.side === "enemy").length;
-    const rightN = list.length - leftN;
+    const leftN = sideList.filter((c) => c.side === "enemy").length;
+    const rightN = sideList.length - leftN;
     const maxN = Math.max(leftN, rightN);
     // Icons overlap by SLANT_VH (tessellation), so maxN icons span
     // maxN*ICON_W_VH - (maxN-1)*SLANT_VH, not maxN*ICON_W_VH.
@@ -779,25 +962,19 @@ function renderTurnActionsLocal(combatants = []) {
     const grpW = `${grpVh}vh`;
     leftGroup.style.minWidth = grpW;
     rightGroup.style.minWidth = grpW;
-    // Black centre panel: each group occupies [edge .. grpVh]. Reach SLANT_VH
-    // inside the innermost icon (cover its triangle gap), then widen by another
-    // PANEL_FADE_VH so the soft fade lands OUTSIDE that icon — solid black
-    // reaches the first actor before it starts fading.
-    if (layer.__fu.centerBg) {
-      const inset = `${Math.max(0, grpVh - SLANT_VH - PANEL_FADE_VH)}vh`;
-      layer.__fu.centerBg.style.left = inset;
-      layer.__fu.centerBg.style.right = inset;
-    }
-    // Each side's gold background spans the FULL reserved group (first creature
-    // → outer edge, covering icons + gap) plus the ray tail beyond. Same span
-    // both sides, so they read identically regardless of count.
-    setEndGeometry(layer.__fu.endL, "left", grpVh);
-    setEndGeometry(layer.__fu.endR, "right", grpVh);
+    // Single gold ray spans the FULL bar width — both reserved groups plus the
+    // centre spacer (the spotlight gap) — so the gold runs unbroken through the
+    // middle. setRayGeometry adds the RAY_VH tails + the symmetric fade.
+    const spacerVh = SPOT_W_VH - 2 * SLANT_VH;
+    const barVh = 2 * grpVh + spacerVh;
+    setRayGeometry(layer.__fu.ray, barVh);
     // Key includes img so a changed/recovered sprite forces a rebuild (the
     // update branch never swaps media) — self-heals a stale/empty icon that a
-    // transient render (e.g. mid-rewind) may have left behind. spent/active/
-    // crisis/defeated stay OUT of the key: those are cheap class toggles.
-    const key = list.map((c) => `${c.side === "enemy" ? "L" : "R"}:${c.id}:${c.img ?? ""}`).join("|");
+    // transient render (e.g. mid-rewind) may have left behind. spent/crisis/
+    // defeated stay OUT of the key: those are cheap class toggles. The active
+    // combatant is absent from sideList, so the key naturally changes when a
+    // turn passes (one icon leaves a row, the prior active returns to its slot).
+    const key = sideList.map((c) => `${c.side === "enemy" ? "L" : "R"}:${c.id}:${c.img ?? ""}`).join("|");
     // Force a rebuild if the DOM child count desynced from the snapshot, even
     // when the key matches (defensive against leftover/missing icon elements).
     const leftCount = leftGroup.children.length;
@@ -805,7 +982,7 @@ function renderTurnActionsLocal(combatants = []) {
     if (key !== layer.__fu.turnActionKey || leftCount !== leftN || rightCount !== rightN) {
       leftGroup.replaceChildren();
       rightGroup.replaceChildren();
-      for (const c of list) {
+      for (const c of sideList) {
         const grp = c.side === "enemy" ? leftGroup : rightGroup;
         const iconEl = buildTurnActionIcon(c);
         // If icons are already revealed (mid-battle membership change), show the
@@ -816,13 +993,12 @@ function renderTurnActionsLocal(combatants = []) {
       }
       layer.__fu.turnActionKey = key;
     } else {
-      for (const c of list) {
+      for (const c of sideList) {
         const grp = c.side === "enemy" ? leftGroup : rightGroup;
         const sel = `.fu-rb-ta-icon[data-cid="${(window.CSS?.escape?.(c.id)) ?? c.id}"]`;
         const icon = grp.querySelector(sel);
         if (!icon) continue;
         icon.classList.toggle("spent", !!c.spent);
-        icon.classList.toggle("active", !!c.active); // move the active-turn glow
         icon.classList.toggle("crisis", !!c.crisis); // crisis warning tint
         icon.classList.toggle("defeated", !!c.defeated); // HP-0 grey + skull
         // Re-apply focus too, so a focal-point change (tuner Save) updates the
@@ -844,7 +1020,11 @@ function clearTurnActionsLocal() {
   if (!layer?.__fu) return;
   layer.__fu.leftGroup?.replaceChildren();
   layer.__fu.rightGroup?.replaceChildren();
+  // Clear the centre spotlight too (battle end / hide).
+  layer.__fu.spotlight?.replaceChildren();
+  layer.__fu.spotlight?.classList.remove("shown", "crisis", "defeated", "placeholder");
   layer.__fu.turnActionKey = "";
+  layer.__fu.spotKey = "";
 }
 
 // ── icon reveal helpers ────────────────────────────────────────────────────
@@ -856,49 +1036,34 @@ function _allIcons() {
   return [...(fu.leftGroup?.children ?? []), ...(fu.rightGroup?.children ?? [])];
 }
 
-// Size + position + gradient for one side's gold background. It is a SINGLE
-// element that starts at the innermost icon (the first creature, next to the
-// ROUND text), runs OUTWARD behind the whole side — covering every icon and the
-// empty gap alike — then extends RAY_VH past the bar end as a tapering ray.
-// groupVh = the side's reserved icon span (maxN * ICON_W_VH, equal both sides).
-// Solid gold across the side, fading to transparent only in the outer ray tip,
-// so both sides read identically regardless of how many icons each holds.
-const RAY_VH = 13;
-const END_GOLD = "rgba(255,216,102,.42)";
-const END_GOLD_FADE = "rgba(255,216,102,.12)";
-function setEndGeometry(el, side, groupVh) {
+// Gradient for the single full-width gold ray. The element is positioned by CSS
+// (left/right: -RAY_VH), so its rendered width is barVh + 2*RAY_VH. The gradient
+// is SYMMETRIC: transparent at both outer tips, fading up to solid gold over the
+// RAY_VH tails, then solid gold across the whole body — INCLUDING the centre,
+// where it used to be masked. barVh = the bar's content width (both groups + the
+// centre spacer).
+function setRayGeometry(el, barVh) {
   if (!el) return;
-  const total = groupVh + RAY_VH;
-  // The ray tail (outer RAY_VH) is where the gold fades out; the inner groupVh
-  // (behind the icons + gap) stays solid. rayPct = how much of the strip, from
-  // the OUTER tip, is the fading tail.
-  const rayPct = total > 0 ? Math.round((RAY_VH / total) * 100) : 100;
-  const midPct = Math.round(rayPct * 0.55); // soft mid-stop inside the tail
-  // Gradient runs from the OUTER tip (transparent) inward to the centre (solid).
-  const dir = side === "left" ? "to right" : "to left";
-  el.style.width = `${total}vh`;
+  const total = barVh + 2 * RAY_VH;
+  // Fraction of the strip (from each outer tip) that is the fading tail.
+  const tailPct = total > 0 ? Math.round((RAY_VH / total) * 100) : 0;
+  const midPct = Math.round(tailPct * 0.55); // soft mid-stop inside each tail
   el.style.background =
-    `linear-gradient(${dir}, transparent 0%, ${END_GOLD_FADE} ${midPct}%, ${END_GOLD} ${rayPct}%, ${END_GOLD} 100%)`;
-  if (side === "left") { el.style.left = `-${RAY_VH}vh`; el.style.right = "auto"; }
-  else { el.style.right = `-${RAY_VH}vh`; el.style.left = "auto"; }
+    `linear-gradient(90deg, transparent 0%, ${END_GOLD_FADE} ${midPct}%, ${END_GOLD} ${tailPct}%, ` +
+    `${END_GOLD} ${100 - tailPct}%, ${END_GOLD_FADE} ${100 - midPct}%, transparent 100%)`;
 }
 
-// Fire the end-of-bar rays once (shoot out + settle, then stay static). Remove
-// + re-add `.lit` with a reflow so the entrance restarts each round.
+// Fire the ray once (shoot open from the centre + settle, then stay static).
+// Remove + re-add `.lit` with a reflow so the entrance restarts each round.
 function lightEnds() {
-  const fu = document.getElementById(LAYER_ID)?.__fu;
-  if (!fu) return;
-  for (const el of [fu.endL, fu.endR]) {
-    if (!el) continue;
-    el.classList.remove("lit");
-    void el.offsetWidth; // force reflow so re-adding restarts the animation
-    el.classList.add("lit");
-  }
+  const el = document.getElementById(LAYER_ID)?.__fu?.ray;
+  if (!el) return;
+  el.classList.remove("lit");
+  void el.offsetWidth; // force reflow so re-adding restarts the animation
+  el.classList.add("lit");
 }
 function unlightEnds() {
-  const fu = document.getElementById(LAYER_ID)?.__fu;
-  if (!fu) return;
-  for (const el of [fu.endL, fu.endR]) el?.classList.remove("lit");
+  document.getElementById(LAYER_ID)?.__fu?.ray?.classList.remove("lit");
 }
 
 
@@ -908,6 +1073,9 @@ function hideTurnActionIcons() {
   _iconsRevealed = false;
   _revealGen++;
   for (const ic of _allIcons()) ic.classList.remove("shown", "glow");
+  // Reset the centre to its "hero" state — spotlight hidden.
+  const fu = document.getElementById(LAYER_ID)?.__fu;
+  fu?.spotlight?.classList.remove("shown");
   unlightEnds();
 }
 
@@ -916,6 +1084,13 @@ function showAllTurnActionIcons() {
   _revealGen++;
   _iconsRevealed = true;
   for (const ic of _allIcons()) ic.classList.add("shown");
+  // Docked centre: spotlight shown + ROUND N at its small resting transform.
+  const fu = document.getElementById(LAYER_ID)?.__fu;
+  if (fu?.tx) {
+    fu.tx.style.opacity = "1";
+    fu.tx.style.transform = `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})`;
+  }
+  fu?.spotlight?.classList.add("shown");
   lightEnds();
 }
 
