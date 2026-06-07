@@ -637,9 +637,12 @@
     label: "Shop NPC Inventory",
 
     async extract() {
+      const npcTemplateId = SS.Storage.getNpcTemplateId();
       const result = {};
       for (const actor of game.actors.contents) {
         if (actor.system?.props?.isShop !== true) continue;
+        // npcData (#4) already covers linked NPC template actors — skip to avoid double-apply.
+        if (actor.system?.template === npcTemplateId && actor.prototypeToken?.actorLink) continue;
         result[actor.uuid] = {
           name:    actor.name,
           system:  foundry.utils.deepClone(actor.system  ?? {}),
