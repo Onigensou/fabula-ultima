@@ -1812,6 +1812,154 @@ export const EFFECT_KIND_LABELS = {
   adjust_accuracy:     "Adjust Accuracy",
 };
 
+// ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
+// The COMPUTE-side twin of EFFECT_KIND_DISPATCH. Each entry is a PURE function
+// `(row, pctx) => EffectPreview | null` that describes what the row WILL do
+// (for the card) without writing anything. `computeActionProfile` walks effects
+// in preview; `resolveAction` walks the SAME rows in apply (EFFECT_KIND_DISPATCH).
+// Card and commit cannot disagree because both read the same row fields.
+//
+// pctx (preview context) carries (all optional):
+//   resolver   — a buildSkillResolver() result; when present, formula amounts
+//                are evaluated to concrete numbers (per-target callers pass a
+//                per-target resolver so MAX_HP/CUR_HP read the victim's sheet).
+//   targetRef  — the row's resolved target_ref (provenance only).
+//   defaultValence — fallback valence when the kind can't infer one.
+//
+// EffectPreview shape: see docs/battle-director-action-profile-contract.md.
+// A null return = "nothing to show on the card" (pure plumbing rows like
+// `targeting`, or host-mutation rows handled at the reaction layer).
+
+function _previewAmount(formula, pctx) {
+  // Concrete number when a resolver is available; else the raw formula string
+  // so the card can render "?"/a range placeholder. Mirrors the apply path's
+  // evaluateFormula(..., 0) default.
+  if (formula == null || formula === "") return 0;
+  if (pctx?.resolver) return evaluateFormula(formula, pctx.resolver, 0);
+  return String(formula);
+}
+
+function _valenceForResource(resource, amount) {
+  // hp/mp grant: positive = beneficial (heal/restore), negative = harmful (drain).
+  if (typeof amount === "number") return amount >= 0 ? "beneficial" : "harmful";
+  return "neutral";
+}
+
+const EFFECT_KIND_PREVIEW = {
+  // Pure plumbing — produces a token list, nothing visible on the card.
+  targeting: () => null,
+
+  // add_target augments the action's target set; the host (Barrage) renders the
+  // extra rows. Surface a neutral marker so a chain audit can list it.
+  add_target: (row) => ({ type: "grant", what: "target", amount: 1,
+    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? null }),
+
+  grant: (row, pctx) => {
+    const resource = String(row.grant_resource ?? "").trim().toLowerCase();
+    const amount = _previewAmount(row.grant_amount, pctx);
+    // hp/mp grants render as heal; other resources (fp/ip/shield/charge) as grant.
+    if (resource === "hp" || resource === "mp") {
+      return { type: "heal", resource, value: amount,
+        valence: _valenceForResource(resource, amount), source: row.effect_label,
+        targetRef: row.target_ref ?? null };
+    }
+    return { type: "grant", what: resource, amount,
+      valence: _valenceForResource(resource, amount), source: row.effect_label,
+      targetRef: row.target_ref ?? null };
+  },
+
+  set_resource: (row, pctx) => {
+    const resource = String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase();
+    const value = _previewAmount(row.grant_amount ?? row.set_amount, pctx);
+    return { type: (resource === "hp" || resource === "mp") ? "heal" : "grant",
+      resource, what: resource, value, amount: value, valence: "beneficial",
+      source: row.effect_label, targetRef: row.target_ref ?? null };
+  },
+
+  deal_damage: (row, pctx) => ({
+    type: "damage",
+    element: String(row.damage_element ?? row.element ?? "elementless").trim().toLowerCase(),
+    resource: "hp",
+    damageClass: "effect",
+    value: _previewAmount(row.damage_amount ?? row.amount, pctx),
+    valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "self",
+  }),
+
+  consume_resource: (row, pctx) => ({
+    type: "cost",
+    resource: String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase(),
+    amount: _previewAmount(row.consume_amount ?? row.grant_amount, pctx),
+    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self",
+  }),
+
+  consume_charge: (row) => ({
+    type: "cost", resource: `charge:${String(row.charge_key ?? "").trim()}`,
+    amount: Math.max(1, Math.floor(Number(row.count ?? 1) || 1)),
+    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self",
+  }),
+
+  apply_ae: (row) => ({
+    type: "status",
+    status: String(row.ae_template_ref ?? "").trim(),
+    dupMode: String(row.ae_duplicate_mode ?? "replace").trim().toLowerCase(),
+    valence: "neutral",   // refined by the profile builder from the AE's tags
+    source: row.effect_label, targetRef: row.target_ref ?? null,
+  }),
+
+  remove_tagged_ae: (row) => ({
+    type: "cleanse", filter: String(row.filter_tag ?? "").trim().toLowerCase() || null,
+    valence: "beneficial", source: row.effect_label, targetRef: row.target_ref ?? null,
+  }),
+
+  encyclopedia_record: (row) => ({
+    type: "reveal", aspect: "encyclopedia", tier: null,
+    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? null,
+  }),
+
+  equip_swap: (row) => ({
+    type: "equip", change: null,
+    valence: "neutral", source: row.effect_label, targetRef: "self",
+  }),
+
+  roll_loot_table: (row) => ({
+    type: "random", label: String(row.effect_label ?? "Random"), possibilities: [],
+    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self",
+  }),
+
+  // open_action_menu surfaces as a Decision node, not an inline EffectPreview —
+  // the profile builder handles it separately. Return null here.
+  open_action_menu: () => null,
+
+  // chain recurses; the profile builder expands sub-steps. No standalone card row.
+  chain: () => null,
+
+  // Host-mutation / data-only kinds: their effect is on the in-flight action
+  // (handled at the reaction / card-mutation layer), not a target-facing row.
+  substitute_cost: () => null,
+  adjust_damage: () => null,
+  redirect_target: () => null,
+  adjust_accuracy: () => null,
+};
+
+// Preview a single effect row. Returns an EffectPreview or null (nothing to
+// render). Defensive: an unknown kind returns null rather than throwing.
+export function previewEffectRow(row, pctx = {}) {
+  if (!row) return null;
+  const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+  const fn = EFFECT_KIND_PREVIEW[kind];
+  if (!fn) return null;
+  try {
+    const out = fn(row, pctx);
+    if (out && out.id == null) out.id = `${kind}:${row.effect_label ?? ""}`;
+    return out;
+  } catch (e) {
+    warn(`skill-effects.previewEffectRow: "${kind}" threw on row "${row.effect_label}"`, e);
+    return null;
+  }
+}
+
+export { EFFECT_KIND_PREVIEW };
+
 // Dispatch a single effect row. Callers that already have the row
 // (e.g. chain steps) call this directly.
 export async function applyEffectRow(row, ctx) {
