@@ -412,6 +412,47 @@ Hooks.once("ready", () => {
     return entry?.bucket ?? triggerKey ?? null;
   }
 
+  // ---------------------------------------------------------------------------
+  // Roll-phase classification (two-phase Action Card)
+  // ---------------------------------------------------------------------------
+  // Each trigger fires in one of three windows relative to the attack roll:
+  //   "pre"       — BEFORE the dice. The decision is a pre-commit and no result
+  //                 exists yet (performer-side: about-to-act). Declarative
+  //                 Barrage lives here (creature_performs_action).
+  //   "post"      — AFTER the dice (today's CONFIRM window). The decision needs
+  //                 the roll outcome: hit/miss/crit/damage, fumble, outcome-flip,
+  //                 and creature_targeted_by_action (Protect — kept informed so
+  //                 it isn't wasted on an attack that would have missed).
+  //                 creature_performs_check is also "post" here: the legacy
+  //                 reaction bridge already fires it post-resolve
+  //                 (director-triggers.js TRIGGER_PHASE), so calling it "pre"
+  //                 would misrepresent where it actually runs.
+  //   "lifecycle" — not part of an action card at all (conflict/round/turn).
+  //
+  // Classification is a property of the TRIGGER (its roll-dependence), not a
+  // per-skill author choice — so no existing skill needs a data migration; the
+  // trigger it already declares determines its window. Only creature_performs_action
+  // is "pre" today: it has no live emitter, so the pre-roll window is its first
+  // consumer (Barrage) and the change is purely additive.
+  const PRE_ROLL_KEYS = new Set([
+    "creature_performs_action"
+  ]);
+  const LIFECYCLE_BUCKETS = new Set([
+    "conflict_start", "conflict_end",
+    "round_start", "round_end",
+    "turn_start", "turn_end"
+  ]);
+
+  /** Roll-phase window for `triggerKey`: "pre" | "post" | "lifecycle". */
+  function rollPhaseFor(triggerKey) {
+    const key = resolveKey(triggerKey);
+    const entry = getTrigger(key);
+    if (!entry) return "post";
+    if (LIFECYCLE_BUCKETS.has(entry.bucket)) return "lifecycle";
+    if (PRE_ROLL_KEYS.has(key)) return "pre";
+    return "post";
+  }
+
   /** Filter set for `triggerKey` ([] if unknown). */
   function filtersFor(triggerKey) {
     const entry = getTrigger(resolveKey(triggerKey));
@@ -447,6 +488,7 @@ Hooks.once("ready", () => {
     resolveKey,
     isValidKey,
     bucketFor,
+    rollPhaseFor,
     filtersFor,
     subjectShapeFor,
     damageSourceShapeFor

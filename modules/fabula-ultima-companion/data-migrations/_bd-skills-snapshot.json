@@ -1,5 +1,298 @@
 [
   {
+    "name": "Equipment",
+    "type": "equippableItem",
+    "img": "icons/svg/upgrade.svg",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3777687116,
+      "props": {
+        "name": "Equipment",
+        "skill_type": "Active",
+        "isCheck": false,
+        "isReaction": false,
+        "skill_target": "Self",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "equipment_swap",
+        "description": "<p>Store equipped items in your backpack and equip items from it (armor excepted). No roll.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "equipment_swap",
+            "effect_kind": "equip_swap",
+            "target_ref": "self"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "aUD8pniI0w86w1HA"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "equipment"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Guard",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3777687116,
+      "props": {
+        "name": "Guard",
+        "skill_type": "Active",
+        "isCheck": false,
+        "isReaction": false,
+        "skill_target": "Self",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "guard_activate",
+        "description": "<p>Until the start of your next turn you have Resistance to all damage types and a +2 bonus to Opposed Checks. You may also Cover one ally, who cannot be targeted by melee attacks until then.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "guard_activate",
+            "effect_kind": "chain",
+            "chain_steps": "guard_self,guard_cover"
+          },
+          "1": {
+            "effect_label": "guard_self",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Guard",
+            "target_ref": "self",
+            "ae_duplicate_mode": "replace"
+          },
+          "2": {
+            "effect_label": "guard_cover",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Covered",
+            "target_ref": "cover_target",
+            "ae_duplicate_mode": "replace"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "nNmdYuOvyNcBjpjb"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "guard"
+      }
+    },
+    "effects": [
+      {
+        "name": "Guard",
+        "description": "<p><em>Guard:</em> Resistance to all damage + 2 to Opposed Checks until your next turn.</p>",
+        "transfer": false,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": 1,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [
+          "guard"
+        ],
+        "changes": [],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff"
+          },
+          "core": {
+            "statusId": "guard"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "nNmdYuOvyNcBjpjb",
+            "originalId": "SScnL9efkIzMzApL",
+            "originalUuid": "Item.nNmdYuOvyNcBjpjb.ActiveEffect.SScnL9efkIzMzApL",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      },
+      {
+        "name": "Covered",
+        "description": "<p><em>Covered:</em> Cannot be targeted by melee attacks until the guard's next turn.</p>",
+        "transfer": false,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": 1,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [
+          "covered"
+        ],
+        "changes": [
+          {
+            "key": "cannot_be_targeted_by",
+            "value": "melee",
+            "mode": 5,
+            "priority": 0
+          }
+        ],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff"
+          },
+          "core": {
+            "statusId": "covered"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "nNmdYuOvyNcBjpjb",
+            "originalId": "b5UkuU8tDqnj7TZG",
+            "originalUuid": "Item.nNmdYuOvyNcBjpjb.ActiveEffect.b5UkuU8tDqnj7TZG",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/intervene.png",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Hinder",
+    "type": "equippableItem",
+    "img": "icons/svg/net.svg",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3777687116,
+      "props": {
+        "name": "Hinder",
+        "skill_type": "Active",
+        "isCheck": true,
+        "isReaction": false,
+        "skill_target": "One Enemy",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "hinder_apply",
+        "description": "<p>Make an attribute Check against a creature. On a success, it suffers a status of your choice (Dazed, Shaken, Slow, or Weak).</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "hinder_apply",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "status_value",
+            "target_ref": "action_targets",
+            "ae_duplicate_mode": "replace_same_status"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "FjwC9WmxPnKYDT3C"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "hinder"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Study",
+    "type": "equippableItem",
+    "img": "icons/svg/eye.svg",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3777687116,
+      "props": {
+        "name": "Study",
+        "skill_type": "Active",
+        "isCheck": true,
+        "isReaction": false,
+        "rolled_atr1": "INS",
+        "rolled_atr2": "INS",
+        "skill_target": "One Enemy",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "study_record",
+        "description": "<p>Make an Open Check (【INS + INS】) to learn about a creature. The higher the result, the more its Monster Encyclopedia entry reveals.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "study_record",
+            "effect_kind": "encyclopedia_record"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "07LyIguZFDhEh3Wk"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "study"
+      }
+    },
+    "effects": []
+  },
+  {
     "name": "Rampart",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
@@ -10,7 +303,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -29,10 +322,6 @@
         "isReaction": true,
         "on_activate_effect_ref": "",
         "name": "Rampart",
-        "uuid": "Item.Xc2ngRpn0v85GjIB",
-        "id": "Xc2ngRpn0v85GjIB",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
-        "details_roller": "Show",
         "isOffensiveSpell": false,
         "ignore_hr": false,
         "use_optional_params": false,
@@ -139,7 +428,7 @@
         }
       },
       "unique": false,
-      "uniqueId": "Xc2ngRpn0v85GjIB"
+      "uniqueId": "3kBlL1O7rULlGKWg"
     },
     "flags": {
       "custom-system-builder": {
@@ -539,7 +828,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -575,10 +864,11 @@
             "target_ref": "self",
             "ae_duplicate_mode": "replace"
           }
-        }
+        },
+        "name": "Unbreakable"
       },
       "unique": false,
-      "uniqueId": "fvXs5bfYxD2On0Ns"
+      "uniqueId": "Dy25jPf0Mx1xFyy2"
     },
     "flags": {
       "custom-system-builder": {
@@ -624,10 +914,13 @@
               "effect_table": {
                 "0": {
                   "effect_label": "unbreakable_clamp",
-                  "effect_kind": "modify_damage_taken",
+                  "effect_kind": "adjust_damage",
                   "modify_mode": "set_hp_floor",
                   "modify_value": 1,
-                  "consume_self": true
+                  "consume_self": true,
+                  "damage_stage": "incoming",
+                  "damage_operation": "cap",
+                  "damage_amount": "CUR_HP - 1"
                 }
               }
             }
@@ -670,7 +963,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280178,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -739,7 +1032,7 @@
         }
       },
       "unique": false,
-      "uniqueId": "NRLGryqXl41qBpt6"
+      "uniqueId": "HjKhiCj4GAKvKWkU"
     },
     "flags": {
       "custom-system-builder": {
@@ -864,7 +1157,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -879,10 +1172,11 @@
         "level": 1,
         "max_level": 5,
         "defense_target_type": "def",
-        "class": "Guardian"
+        "class": "Guardian",
+        "name": "Defensive Mastery"
       },
       "unique": false,
-      "uniqueId": "f3u1jx9YbCW55u7J"
+      "uniqueId": "cuogI34amIfQE3D5"
     },
     "flags": {
       "custom-system-builder": {
@@ -942,7 +1236,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -960,10 +1254,11 @@
         "class": "Guardian",
         "isReaction": false,
         "isHeroic": false,
-        "on_activate_effect_ref": ""
+        "on_activate_effect_ref": "",
+        "name": "Dual Shieldbearer"
       },
       "unique": false,
-      "uniqueId": "9E6l5ufpG2syhyOq"
+      "uniqueId": "9ux8AUhkWchQMzWX"
     },
     "flags": {
       "custom-system-builder": {
@@ -1043,7 +1338,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1058,10 +1353,11 @@
         "level": 1,
         "max_level": 4,
         "defense_target_type": "def",
-        "class": "Guardian"
+        "class": "Guardian",
+        "name": "Fortress"
       },
       "unique": false,
-      "uniqueId": "ZWmMbfp5mVGT3OKm"
+      "uniqueId": "9lA0CTakvrMenahO"
     },
     "flags": {
       "custom-system-builder": {
@@ -1121,7 +1417,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Active",
         "isCheck": false,
@@ -1255,10 +1551,6 @@
         },
         "class": "Guardian",
         "name": "Protect",
-        "uuid": "Item.nI1RszocnFqhPSYW",
-        "id": "nI1RszocnFqhPSYW",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
-        "details_roller": "Show",
         "isOffensiveSpell": false,
         "ignore_hr": false,
         "use_optional_params": false,
@@ -1278,7 +1570,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "nI1RszocnFqhPSYW"
+      "uniqueId": "MZXmnywINICmx7Ua"
     },
     "flags": {
       "custom-system-builder": {
@@ -1329,11 +1621,11 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
-        "level": "1",
+        "level": 1,
         "max_level": "1",
         "skill_target": "-",
         "skill_range": "-",
@@ -1343,36 +1635,10 @@
         "on_activate_effect_ref": "",
         "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
         "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
-        "name": "Hoplite",
-        "uuid": "Item.Qvx8P9BV4HvsZKNM",
-        "id": "Qvx8P9BV4HvsZKNM",
-        "img": "icons/equipment/shield/heater-steel-gray.webp",
-        "details_roller": "Show",
-        "isOffensiveSpell": false,
-        "ignore_hr": false,
-        "use_optional_params": false,
-        "optional_params": {},
-        "active_effect_config_table": {},
-        "effect_table": {},
-        "reaction_config_table": {},
-        "class": "",
-        "duration": "-",
-        "rolled_atr1": "-",
-        "rolled_atr2": "-",
-        "check_bonus": "0",
-        "damage_bonus": "",
-        "type_damage": "",
-        "defense_target_type": "def",
-        "skill_information": "",
-        "isFacet": false,
-        "isZeroPower": false,
-        "skill_animation_mode": "default",
-        "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        "name": "Hoplite"
       },
       "unique": false,
-      "uniqueId": "Qvx8P9BV4HvsZKNM"
+      "uniqueId": "pvKt1FytqaqCkR0d"
     },
     "flags": {
       "custom-system-builder": {
@@ -1422,9 +1688,9 @@
             "visible": false
           },
           "custom-system-builder": {
-            "originalParentId": "Qvx8P9BV4HvsZKNM",
-            "originalId": "3dj2epJOXYQpLz31",
-            "originalUuid": "Item.Qvx8P9BV4HvsZKNM.ActiveEffect.3dj2epJOXYQpLz31",
+            "originalParentId": "pvKt1FytqaqCkR0d",
+            "originalId": "RtcA0tWMGekdpnmg",
+            "originalUuid": "Item.pvKt1FytqaqCkR0d.ActiveEffect.RtcA0tWMGekdpnmg",
             "isFromTemplate": false
           }
         },
@@ -1450,12 +1716,12 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
         "isReaction": true,
-        "level": "1",
+        "level": 1,
         "max_level": "1",
         "skill_target": "-",
         "skill_range": "-",
@@ -1464,27 +1730,6 @@
         "on_activate_effect_ref": "",
         "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
         "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
-        "name": "Prophetic Defender",
-        "isOffensiveSpell": false,
-        "ignore_hr": false,
-        "use_optional_params": false,
-        "optional_params": {},
-        "active_effect_config_table": {},
-        "isFacet": false,
-        "isZeroPower": false,
-        "class": "",
-        "duration": "-",
-        "rolled_atr1": "-",
-        "rolled_atr2": "-",
-        "check_bonus": "0",
-        "damage_bonus": "",
-        "type_damage": "",
-        "defense_target_type": "def",
-        "skill_information": "",
-        "skill_animation_mode": "default",
-        "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "conflict_start",
@@ -1560,10 +1805,11 @@
             "effect_kind": "chain",
             "chain_steps": "pds_consume,pds_redirect"
           }
-        }
+        },
+        "name": "Prophetic Defender"
       },
       "unique": false,
-      "uniqueId": "BjTRcnIqNNUJ2ypW"
+      "uniqueId": "ZySnR7edyoUvFZM3"
     },
     "flags": {
       "custom-system-builder": {
@@ -1606,9 +1852,9 @@
             "visible": false
           },
           "custom-system-builder": {
-            "originalParentId": "BjTRcnIqNNUJ2ypW",
-            "originalId": "J6DDlC59mZkyS38N",
-            "originalUuid": "Item.BjTRcnIqNNUJ2ypW.ActiveEffect.J6DDlC59mZkyS38N",
+            "originalParentId": "ZySnR7edyoUvFZM3",
+            "originalId": "FdV5AMuyIEzqTIaV",
+            "originalUuid": "Item.ZySnR7edyoUvFZM3.ActiveEffect.FdV5AMuyIEzqTIaV",
             "isFromTemplate": false
           }
         },
@@ -1658,9 +1904,9 @@
             "visible": false
           },
           "custom-system-builder": {
-            "originalParentId": "BjTRcnIqNNUJ2ypW",
-            "originalId": "Vgj4ywIN0GFZXu5d",
-            "originalUuid": "Item.BjTRcnIqNNUJ2ypW.ActiveEffect.Vgj4ywIN0GFZXu5d",
+            "originalParentId": "ZySnR7edyoUvFZM3",
+            "originalId": "B5MD3egCKp0ygmKU",
+            "originalUuid": "Item.ZySnR7edyoUvFZM3.ActiveEffect.B5MD3egCKp0ygmKU",
             "isFromTemplate": false
           }
         },
@@ -1686,14 +1932,14 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "skill_type": "Active",
         "isHeroic": true,
-        "level": "1",
+        "level": 1,
         "max_level": "1",
         "skill_target": "Each enemy you can see",
-        "skill_range": "",
+        "skill_range": "Scene",
         "cost": "30 MP",
         "isCheck": false,
         "isReaction": false,
@@ -1703,49 +1949,24 @@
         "on_activate_effect_ref": "qt_activate",
         "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>During a conflict, if you have a <strong>martial armor</strong> or <strong>martial armor module</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>+10 damage</strong> if you are driving a personal vehicle with a mech frame and/or have <strong>two shields equipped</strong>, and also deals <strong>+10 damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
         "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
-        "name": "Quaking Titan",
-        "ignore_hr": false,
-        "use_optional_params": false,
-        "optional_params": {},
-        "active_effect_config_table": {},
-        "reaction_config_table": {},
-        "class": "",
-        "duration": "-",
-        "rolled_atr1": "-",
-        "rolled_atr2": "-",
-        "check_bonus": "0",
-        "defense_target_type": "def",
-        "skill_information": "",
-        "isFacet": false,
-        "isZeroPower": false,
-        "skill_animation_mode": "default",
-        "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
         "effect_table": {
           "0": {
             "effect_label": "qt_activate",
             "effect_kind": "chain",
             "chain_steps": "qt_gate,qt_apply_status",
-            "condition_formula": "HAS_MARTIAL_ARMOR == 1",
-            "menu_label": "",
-            "menu_description": ""
+            "condition_formula": "HAS_MARTIAL_ARMOR == 1"
           },
           "1": {
             "effect_label": "qt_gate",
             "effect_kind": "chain",
-            "chain_steps": "",
-            "menu_label": "",
-            "menu_description": ""
+            "chain_steps": ""
           },
           "2": {
             "effect_label": "qt_apply_status",
             "effect_kind": "apply_ae",
             "ae_template_ref": "No Free Attack",
             "target_ref": "qt_visible_enemies",
-            "ae_duplicate_mode": "replace_per_caster",
-            "menu_label": "",
-            "menu_description": ""
+            "ae_duplicate_mode": "replace_per_caster"
           },
           "3": {
             "effect_label": "qt_visible_enemies",
@@ -1757,19 +1978,13 @@
             "exclude_self": true,
             "auto_confirm_when_obvious": true,
             "skip_when_passive": false,
-            "iteration_mode": "together",
-            "target_prompt": "",
-            "menu_label": "",
-            "menu_description": ""
+            "iteration_mode": "together"
           }
         },
-        "uuid": "Item.xhK7sRXDVql4OxuW",
-        "id": "xhK7sRXDVql4OxuW",
-        "img": "icons/skills/melee/strike-hammer-fire-orange.webp",
-        "details_roller": "Show"
+        "name": "Quaking Titan"
       },
       "unique": false,
-      "uniqueId": "xhK7sRXDVql4OxuW"
+      "uniqueId": "hQDYZDND3Tnmjdc6"
     },
     "flags": {
       "custom-system-builder": {
@@ -1810,9 +2025,9 @@
             "visible": false
           },
           "custom-system-builder": {
-            "originalParentId": "xhK7sRXDVql4OxuW",
-            "originalId": "ZKU7ssljmPHuglEK",
-            "originalUuid": "Item.xhK7sRXDVql4OxuW.ActiveEffect.ZKU7ssljmPHuglEK",
+            "originalParentId": "hQDYZDND3Tnmjdc6",
+            "originalId": "dqPz7nlG4hobVxR0",
+            "originalUuid": "Item.hQDYZDND3Tnmjdc6.ActiveEffect.dqPz7nlG4hobVxR0",
             "isFromTemplate": false
           }
         },
@@ -1839,7 +2054,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Elegance Showmanship",
         "isOffensiveSpell": false,
@@ -1873,15 +2088,10 @@
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
         "animation_damage_timing_offset": "0",
-        "description": "<p><strong>Double </strong>the bonus <strong>DEF </strong>you gained from 【📜Grace Under Pressure】</p><p>Additionally, if you would <strong>Fill any number of section </strong>on your <strong>Adoration Clock, Fill that many plus 1 instead</strong></p>",
-        "uuid": "Item.d3MLcotE69Z9TUWh",
-        "id": "d3MLcotE69Z9TUWh",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/reverse_cascade.png",
-        "details_roller": "Show",
-        "reaction_effect_table": {}
+        "description": "<p><strong>Double </strong>the bonus <strong>DEF </strong>you gained from 【📜Grace Under Pressure】</p><p>Additionally, if you would <strong>Fill any number of section </strong>on your <strong>Adoration Clock, Fill that many plus 1 instead</strong></p>"
       },
       "unique": false,
-      "uniqueId": "d3MLcotE69Z9TUWh"
+      "uniqueId": "DtPQJJvCVSYfFWLF"
     },
     "flags": {
       "custom-system-builder": {
@@ -1901,13 +2111,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Pillage",
-        "uuid": "Item.UHg1YYg754Apvy0w",
-        "id": "UHg1YYg754Apvy0w",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvaricePassive1.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -1944,7 +2150,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "UHg1YYg754Apvy0w"
+      "uniqueId": "PoLYIlvymFFOnpTC"
     },
     "flags": {
       "custom-system-builder": {
@@ -1964,13 +2170,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Vanish",
-        "uuid": "Item.vtT64Ckf6LoQu1Lh",
-        "id": "vtT64Ckf6LoQu1Lh",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2052,7 +2254,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "vtT64Ckf6LoQu1Lh"
+      "uniqueId": "Q7LRl9Vb1LcccX8R"
     },
     "flags": {
       "custom-system-builder": {
@@ -2128,13 +2330,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Cheap Shot",
-        "uuid": "Item.DftrzonFbKqyQTBn",
-        "id": "DftrzonFbKqyQTBn",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Serpent%27s_Ire.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2157,20 +2355,22 @@
             "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0"
           }
         },
+        "level": 1,
+        "max_level": "5",
+        "class": "Rogue",
         "effect_table": {
           "0": {
             "effect_label": "cheap_shot_bonus",
-            "effect_kind": "add_damage",
+            "effect_kind": "adjust_damage",
             "target_ref": "trigger_subject",
-            "damage_amount": "SL + TARGET_STATUS_COUNT"
+            "damage_amount": "SL + TARGET_STATUS_COUNT",
+            "damage_operation": "add",
+            "damage_stage": "outgoing"
           }
-        },
-        "level": 1,
-        "max_level": "5",
-        "class": "Rogue"
+        }
       },
       "unique": true,
-      "uniqueId": "DftrzonFbKqyQTBn"
+      "uniqueId": "9cHSgi4ag97uKGW7"
     },
     "flags": {
       "custom-system-builder": {
@@ -2190,13 +2390,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Dodge",
-        "uuid": "Item.rFJiRsbiOPPImwdm",
-        "id": "rFJiRsbiOPPImwdm",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2233,7 +2429,7 @@
         "effect_table": {}
       },
       "unique": true,
-      "uniqueId": "rFJiRsbiOPPImwdm"
+      "uniqueId": "3Un5X30CM2z5J1pl"
     },
     "flags": {
       "custom-system-builder": {
@@ -2307,13 +2503,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "High Speed",
-        "uuid": "Item.FGZJ8WDmHVTKrs7K",
-        "id": "FGZJ8WDmHVTKrs7K",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/fleet_of_foot.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2391,7 +2583,7 @@
         "class": "Rogue"
       },
       "unique": true,
-      "uniqueId": "FGZJ8WDmHVTKrs7K"
+      "uniqueId": "FZX0P5HD6UfIIk9i"
     },
     "flags": {
       "custom-system-builder": {
@@ -2411,13 +2603,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "See You Later",
-        "uuid": "Item.RdhQVUhKF6bfsPYC",
-        "id": "RdhQVUhKF6bfsPYC",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
-        "details_roller": "Show",
         "skill_type": "Active",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2433,7 +2621,7 @@
         "class": "Rogue"
       },
       "unique": true,
-      "uniqueId": "RdhQVUhKF6bfsPYC"
+      "uniqueId": "CdA9zDRXktPzaaEI"
     },
     "flags": {
       "custom-system-builder": {
@@ -2453,16 +2641,11 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Soul Steal",
-        "uuid": "Item.3F3UNfpBLxbbBBxl",
-        "id": "3F3UNfpBLxbbBBxl",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
-        "details_roller": "Show",
         "skill_type": "Active",
         "isCheck": true,
-        "isOffensive": true,
         "rolled_atr1": "DEX",
         "rolled_atr2": "WLP",
         "cost": "",
@@ -2521,7 +2704,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "3F3UNfpBLxbbBBxl"
+      "uniqueId": "aTce11W2dmw2lKtR"
     },
     "flags": {
       "custom-system-builder": {
@@ -2529,6 +2712,268 @@
       }
     },
     "effects": []
+  },
+  {
+    "name": "Barrage",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/arrows-flying-salvo-blue.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268155,
+      "props": {
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "isCheck": false,
+        "isReaction": true,
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "class": "Sharpshooter",
+        "cost": "10 MP",
+        "skill_target": "-",
+        "skill_range": "",
+        "type_damage": "",
+        "damage_bonus": "0",
+        "check_bonus": "0",
+        "defense_target_type": "def",
+        "duration": "-",
+        "on_activate_effect_ref": "",
+        "post_damage_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_isPassive": true,
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "barrage_do",
+            "condition_formula": "HAS_RANGED_WEAPON"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "barrage_do",
+            "effect_kind": "chain",
+            "chain_steps": "barrage_add,barrage_cost"
+          },
+          "1": {
+            "effect_label": "barrage_add",
+            "effect_kind": "add_target",
+            "target_ref": "barrage_pick",
+            "menu_label": "Barrage",
+            "menu_description": "Spend 10 MP to target one additional creature."
+          },
+          "2": {
+            "effect_label": "barrage_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "10",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "3": {
+            "effect_label": "barrage_pick",
+            "effect_kind": "targeting",
+            "candidate_source": "combat",
+            "category": "enemy",
+            "exclude_action_targets": true,
+            "mode": "exact",
+            "count": 1,
+            "skip_when_passive": false,
+            "auto_confirm_when_obvious": false
+          }
+        },
+        "active_effect_config_table": {},
+        "skill_type": "Passive",
+        "level": "1",
+        "max_level": "1",
+        "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
+        "name": "Barrage",
+        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
+      },
+      "unique": false,
+      "uniqueId": "52VzMivQ0jClbxFZ"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Hawkeye",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/target-eye-orange.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3777687116,
+      "props": {
+        "skill_type": "Passive",
+        "isReaction": true,
+        "level": "1",
+        "max_level": "5",
+        "isCheck": false,
+        "isHeroic": false,
+        "cost": "",
+        "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you may choose one option:</p><ul><li>the next <strong>ranged attack</strong> you perform before the end of the current scene will deal <strong>【SL】× 2</strong> extra damage; or</li><li>you may immediately perform a <strong>free attack</strong> with a bow or firearm you have equipped, treating your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</li></ul>",
+        "on_activate_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_guards",
+            "reaction_source": "self",
+            "condition_formula": "DID_COVER_ALLY == 0",
+            "reaction_effect_ref": "hawkeye_choose",
+            "reaction_isPassive": false,
+            "reaction_passive_mode": "ask"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "hawkeye_choose",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Hawkeye",
+            "menu_subtitle": "You guarded without providing cover — choose:",
+            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack"
+          },
+          "1": {
+            "effect_label": "hawkeye_opt_aim",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Hawkeye",
+            "target_ref": "hawkeye_self_skill",
+            "ae_duplicate_mode": "replace",
+            "menu_label": "Take aim — your next ranged attack deals +SL×2 extra damage",
+            "menu_description": "Lasts until you make a ranged attack, or the scene ends."
+          },
+          "2": {
+            "effect_label": "hawkeye_opt_attack",
+            "effect_kind": "open_action_menu",
+            "free_mode": true,
+            "allowed_types": "Attack",
+            "menu_label": "Free attack — bow or firearm (High Roll treated as 0)",
+            "menu_description": "Immediately perform a free bow/firearm attack."
+          },
+          "3": {
+            "effect_label": "hawkeye_self_skill",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          }
+        },
+        "name": "Hawkeye"
+      },
+      "unique": false,
+      "uniqueId": "3A2B1LrKT09AwCiL"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Hawkeye",
+        "description": "<p><em>Hawkeye:</em> your next ranged attack this scene deals extra damage.</p>",
+        "transfer": false,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [
+          "fud-hawkeye-aim"
+        ],
+        "changes": [],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff",
+            "directorPermanent": true,
+            "charges": 1,
+            "chargesMax": 1,
+            "chargeKey": "hawkeye_aim",
+            "reactionConfig": {
+              "reaction_config_table": {
+                "0": {
+                  "reaction_trigger": "creature_will_deal_damage",
+                  "reaction_source": "self",
+                  "condition_formula": "ATTACK_IS_RANGED == 1",
+                  "reaction_effect_ref": "hawkeye_fire",
+                  "reaction_isPassive": true,
+                  "reaction_passive_target": "self",
+                  "reaction_passive_mode": "on"
+                }
+              },
+              "effect_table": {
+                "0": {
+                  "effect_label": "hawkeye_fire",
+                  "effect_kind": "chain",
+                  "chain_steps": "hawkeye_add, hawkeye_consume"
+                },
+                "1": {
+                  "effect_label": "hawkeye_add",
+                  "effect_kind": "adjust_damage",
+                  "damage_amount": "SL * 2",
+                  "damage_operation": "add",
+                  "damage_stage": "outgoing"
+                },
+                "2": {
+                  "effect_label": "hawkeye_consume",
+                  "effect_kind": "consume_charge",
+                  "charge_key": "hawkeye_aim",
+                  "on_empty": "skip",
+                  "count": 1,
+                  "target_ref": "hawkeye_self_ae"
+                },
+                "3": {
+                  "effect_label": "hawkeye_self_ae",
+                  "effect_kind": "targeting",
+                  "candidate_source": "self"
+                }
+              }
+            },
+            "lifetimeMode": "on_activation"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "3A2B1LrKT09AwCiL",
+            "originalId": "Ik636jiSfL7XPWhy",
+            "originalUuid": "Item.3A2B1LrKT09AwCiL.ActiveEffect.Ik636jiSfL7XPWhy",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": "icons/skills/ranged/target-eye-orange.webp",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
   },
   {
     "name": "Perfect Aim",
@@ -2541,13 +2986,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Perfect Aim",
-        "uuid": "Item.cm4RgYRqf1XtuDaq",
-        "id": "cm4RgYRqf1XtuDaq",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill8.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2563,7 +3004,208 @@
         "class": "Sharpshooter"
       },
       "unique": true,
-      "uniqueId": "cm4RgYRqf1XtuDaq"
+      "uniqueId": "YiQpn6s2FCSKUOmo"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Ranged Weapon Mastery",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268155,
+      "props": {
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "isCheck": false,
+        "isReaction": false,
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "class": "Sharpshooter",
+        "cost": "",
+        "skill_target": "-",
+        "skill_range": "",
+        "type_damage": "",
+        "damage_bonus": "0",
+        "check_bonus": "0",
+        "defense_target_type": "def",
+        "duration": "-",
+        "on_activate_effect_ref": "",
+        "reaction_config_table": {},
+        "effect_table": {},
+        "active_effect_config_table": {},
+        "skill_type": "Passive",
+        "level": "1",
+        "max_level": "4",
+        "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
+        "name": "Ranged Weapon Mastery",
+        "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp"
+      },
+      "unique": false,
+      "uniqueId": "ykleffiOg9Mygaok"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Ranged Weapon Mastery",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [],
+        "changes": [
+          {
+            "key": "attack_accuracy_mod_ranged",
+            "value": "${level}$",
+            "mode": 2,
+            "priority": 1
+          }
+        ],
+        "flags": {
+          "fabula-ultima-companion": {
+            "directorPermanent": false,
+            "crossScene": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": null,
+        "type": "base",
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Warning Shot",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268155,
+      "props": {
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "isCheck": false,
+        "isReaction": true,
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "class": "Sharpshooter",
+        "cost": "",
+        "skill_target": "-",
+        "skill_range": "",
+        "type_damage": "",
+        "damage_bonus": "0",
+        "check_bonus": "0",
+        "defense_target_type": "def",
+        "duration": "-",
+        "on_activate_effect_ref": "",
+        "post_damage_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_isPassive": true,
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "warning_shot",
+            "condition_formula": "HAS_RANGED_WEAPON"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "warning_shot",
+            "effect_kind": "chain",
+            "chain_steps": "ws_nullify,ws_menu"
+          },
+          "1": {
+            "effect_label": "ws_nullify",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "multiply",
+            "damage_amount": "0",
+            "damage_stage": "outgoing",
+            "target_ref": "hit_action_targets"
+          },
+          "2": {
+            "effect_label": "ws_menu",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Warning Shot",
+            "menu_subtitle": "The attack deals no damage — choose one effect.",
+            "menu_option_refs": "ws_shaken,ws_slow,ws_mp"
+          },
+          "3": {
+            "effect_label": "ws_shaken",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Shaken",
+            "target_ref": "hit_action_targets",
+            "menu_label": "Inflict Shaken",
+            "menu_description": "Each target hit by the attack becomes Shaken."
+          },
+          "4": {
+            "effect_label": "ws_slow",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Slow",
+            "target_ref": "hit_action_targets",
+            "menu_label": "Inflict Slow",
+            "menu_description": "Each target hit by the attack becomes Slow."
+          },
+          "5": {
+            "effect_label": "ws_mp",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "SL * 10",
+            "target_ref": "hit_action_targets",
+            "on_empty": "skip",
+            "menu_label": "Drain Mind Points",
+            "menu_description": "Each target hit loses SL × 10 Mind Points."
+          }
+        },
+        "active_effect_config_table": {},
+        "skill_type": "Passive",
+        "level": "1",
+        "max_level": "4",
+        "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict <strong>slow</strong> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10</strong> Mind Points. Describe your maneuver!</p>",
+        "name": "Warning Shot",
+        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
+      },
+      "unique": false,
+      "uniqueId": "OUQ2e6KO9IxwVKOF"
     },
     "flags": {
       "custom-system-builder": {
@@ -2583,7 +3225,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280178,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Bimagus",
         "skill_type": "Passive",
@@ -2602,7 +3244,7 @@
         "class": "Spiritist"
       },
       "unique": true,
-      "uniqueId": "T2kkM6NaYR5PCaud"
+      "uniqueId": "HjNImvzXOvZw1mGF"
     },
     "flags": {
       "custom-system-builder": {
@@ -2622,7 +3264,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Healing Power",
         "level": "1",
@@ -2689,14 +3331,10 @@
         "on_activate_effect_ref": "",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
-        "uuid": "Item.VwJHtWmjBjF0Pj31",
-        "id": "VwJHtWmjBjF0Pj31",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
-        "details_roller": "Show"
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "VwJHtWmjBjF0Pj31"
+      "uniqueId": "B7iUxJTSvR12dwEr"
     },
     "flags": {
       "custom-system-builder": {
@@ -2716,7 +3354,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Ritual Spiritism",
         "level": "1",
@@ -2752,7 +3390,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "HSiWYkTSItEIbXig"
+      "uniqueId": "JL9xPk3EXxh16ooY"
     },
     "flags": {
       "custom-system-builder": {
@@ -2772,13 +3410,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Spiritual Magic",
-        "uuid": "Item.1Wb67PyWEi9bCKM1",
-        "id": "1Wb67PyWEi9bCKM1",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
-        "details_roller": "Show",
         "skill_type": "Other",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -2792,7 +3426,7 @@
         "class": "Spiritist"
       },
       "unique": true,
-      "uniqueId": "1Wb67PyWEi9bCKM1"
+      "uniqueId": "WZ0LtCp3xwiAAa3x"
     },
     "flags": {
       "custom-system-builder": {
@@ -2812,7 +3446,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Support Magic",
         "level": "1",
@@ -2837,11 +3471,6 @@
         "type_damage": "",
         "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
         "skill_animation_mode": "default",
-        "passive_trigger": "",
-        "passive_trigger_filter": "any",
-        "passive_condition_formula": "",
-        "passive_optional": false,
-        "on_passive_trigger_effect_ref": "",
         "effect_table": {
           "0": {
             "effect_label": "support_magic_apply",
@@ -2853,7 +3482,6 @@
             "menu_description": ""
           }
         },
-        "passive_mode": "on",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_completes_spell",
@@ -2882,20 +3510,13 @@
         "isZeroPower": false,
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
         "on_activate_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
-        "uuid": "Item.9aOTCoRiI7e0FB04",
-        "id": "9aOTCoRiI7e0FB04",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
-        "details_roller": "Show"
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "9aOTCoRiI7e0FB04"
+      "uniqueId": "A2w8xO1DvldC53X6"
     },
     "flags": {
       "custom-system-builder": {
@@ -2950,7 +3571,8 @@
                 }
               },
               "effect_table": {}
-            }
+            },
+            "lifetimeMode": "on_activation"
           },
           "statuscounter": {
             "config": {
@@ -2986,7 +3608,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Vismagus",
         "level": "1",
@@ -3011,7 +3633,6 @@
         "type_damage": "",
         "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
         "skill_animation_mode": "default",
-        "passive_mode": "",
         "ignore_hr": false,
         "active_effect_config_table": {},
         "reaction_config_table": {
@@ -3052,23 +3673,15 @@
             "menu_description": ""
           }
         },
-        "passive_optional": true,
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
         "on_activate_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
-        "passive_trigger": "",
-        "passive_trigger_filter": "any",
-        "passive_condition_formula": "",
-        "on_passive_trigger_effect_ref": "",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
         "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "02dhMRTz6VhzYQC1"
+      "uniqueId": "eW2d3HmbS2ur9hax"
     },
     "flags": {
       "custom-system-builder": {
@@ -3088,7 +3701,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280178,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Aura",
         "skill_type": "Spell",
@@ -3115,7 +3728,7 @@
         "class": "Spiritist"
       },
       "unique": true,
-      "uniqueId": "3P2TjO0bX7ZGV1ih"
+      "uniqueId": "JcEWbbeZmwj7VmnD"
     },
     "flags": {
       "custom-system-builder": {
@@ -3191,7 +3804,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280178,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Awaken",
         "skill_type": "Spell",
@@ -3254,7 +3867,7 @@
         "class": "Spiritist"
       },
       "unique": true,
-      "uniqueId": "MkEgjP5mWrc5KFIq"
+      "uniqueId": "BQiqsqB47TV7hhQ2"
     },
     "flags": {
       "custom-system-builder": {
@@ -3274,7 +3887,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280178,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Barrier",
         "level": "1",
@@ -3316,7 +3929,7 @@
         "on_activate_effect_ref": "barrier_apply"
       },
       "unique": false,
-      "uniqueId": "6FgU7QfIlkTHZRYi"
+      "uniqueId": "EdMq4dzkPO81SR5v"
     },
     "flags": {
       "custom-system-builder": {
@@ -3392,15 +4005,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Cleanse",
-        "uuid": "Item.gVgeMWX7HbYvDXuX",
-        "id": "gVgeMWX7HbYvDXuX",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": false,
         "isCheck": false,
         "rolled_atr1": "-",
@@ -3426,7 +4034,7 @@
         "class": "Spiritist"
       },
       "unique": true,
-      "uniqueId": "gVgeMWX7HbYvDXuX"
+      "uniqueId": "C3KMINBBXGYPZ5oj"
     },
     "flags": {
       "custom-system-builder": {
@@ -3446,15 +4054,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Enrage",
-        "uuid": "Item.j6377gQAUhpv8M7N",
-        "id": "j6377gQAUhpv8M7N",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_beast.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": true,
         "isCheck": true,
         "rolled_atr1": "INS",
@@ -3490,9 +4093,6 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -3503,7 +4103,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "j6377gQAUhpv8M7N"
+      "uniqueId": "54b9pwqBzESYdeuP"
     },
     "flags": {
       "custom-system-builder": {
@@ -3523,7 +4123,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "class": "Spiritist",
         "cost": "5 x T MP",
@@ -3553,7 +4153,6 @@
         "skill_information": "",
         "isReaction": false,
         "skill_animation_default": "",
-        "isSpell": true,
         "effect_table": {
           "0": {
             "effect_label": "hallu_pick",
@@ -3584,7 +4183,7 @@
         "on_activate_effect_ref": "hallu_pick"
       },
       "unique": false,
-      "uniqueId": "4VbPDK7tmZyKjDMQ"
+      "uniqueId": "6GNiLg0KWdxdHEhv"
     },
     "flags": {
       "custom-system-builder": {
@@ -3604,15 +4203,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Heal",
-        "uuid": "Item.BIIMDXdWd2Y8OOYM",
-        "id": "BIIMDXdWd2Y8OOYM",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": false,
         "isCheck": false,
         "rolled_atr1": "-",
@@ -3623,10 +4217,6 @@
         "damage_bonus": "0",
         "type_damage": "healing",
         "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-        "recipe": "heal_target",
-        "recipe_resource": "hp",
-        "recipe_amount": "40 + (CHAR_LEVEL >= 20) * 10 + (CHAR_LEVEL >= 40) * 10",
-        "recipe_target": "action_targets",
         "ignore_hr": false,
         "use_optional_params": false,
         "optional_params": {},
@@ -3641,10 +4231,7 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
         "on_activate_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -3655,7 +4242,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "BIIMDXdWd2Y8OOYM"
+      "uniqueId": "7ApZzLcwZfDZz0nE"
     },
     "flags": {
       "custom-system-builder": {
@@ -3675,15 +4262,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Lux",
-        "uuid": "Item.nfMxZJhf74Qultyu",
-        "id": "nfMxZJhf74Qultyu",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/glare.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": true,
         "isCheck": true,
         "rolled_atr1": "INS",
@@ -3708,10 +4290,7 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
         "on_activate_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -3722,7 +4301,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "nfMxZJhf74Qultyu"
+      "uniqueId": "34ez7vLQAJh30jS3"
     },
     "flags": {
       "custom-system-builder": {
@@ -3742,7 +4321,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Mercy",
         "level": "1",
@@ -3788,23 +4367,10 @@
         "reaction_config_table": {},
         "isZeroPower": false,
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
-        "uuid": "Item.1MKAmY4pPdhkLSRt",
-        "id": "1MKAmY4pPdhkLSRt",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
-        "details_roller": "Show",
-        "passive_optional": true,
-        "post_damage_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
-        "passive_trigger": "",
-        "passive_trigger_filter": "any",
-        "passive_condition_formula": "",
-        "passive_mode": "ask",
-        "on_passive_trigger_effect_ref": ""
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
-      "uniqueId": "1MKAmY4pPdhkLSRt"
+      "uniqueId": "1B4DL1K7xYaEdhPu"
     },
     "flags": {
       "custom-system-builder": {
@@ -3852,10 +4418,13 @@
               "effect_table": {
                 "0": {
                   "effect_label": "mercy_clamp",
-                  "effect_kind": "modify_damage_taken",
+                  "effect_kind": "adjust_damage",
                   "modify_mode": "set_hp_floor",
                   "modify_value": 1,
-                  "consume_self": true
+                  "consume_self": true,
+                  "damage_stage": "incoming",
+                  "damage_operation": "cap",
+                  "damage_amount": "CUR_HP - 1"
                 }
               }
             }
@@ -3894,7 +4463,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Reinforce",
         "skill_type": "Spell",
@@ -4004,10 +4573,6 @@
         "isFacet": false,
         "isHeroic": false,
         "isZeroPower": false,
-        "uuid": "Item.mMtCOqDTDWXu9ZOi",
-        "id": "mMtCOqDTDWXu9ZOi",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
-        "details_roller": "Show",
         "class": "Spiritist",
         "duration": "-",
         "level": "1",
@@ -4016,16 +4581,13 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "skill_animation_mode": "default",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "mMtCOqDTDWXu9ZOi"
+      "uniqueId": "ENH0AYNeBYoScQ99"
     },
     "flags": {
       "custom-system-builder": {
@@ -4238,15 +4800,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Soul Weapon",
-        "uuid": "Item.JyqC3yuKdQSOliWn",
-        "id": "JyqC3yuKdQSOliWn",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": false,
         "isCheck": false,
         "rolled_atr1": "-",
@@ -4282,9 +4839,6 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -4295,7 +4849,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "JyqC3yuKdQSOliWn"
+      "uniqueId": "Cb6Oe233Zr3PmlFH"
     },
     "flags": {
       "custom-system-builder": {
@@ -4371,15 +4925,10 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Torpor",
-        "uuid": "Item.8woMS6yrdesM8XxU",
-        "id": "8woMS6yrdesM8XxU",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/medica.png",
-        "details_roller": "Show",
         "skill_type": "Spell",
-        "isSpell": true,
         "isOffensiveSpell": true,
         "isCheck": true,
         "rolled_atr1": "INS",
@@ -4439,9 +4988,6 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "post_damage_effect_ref": "",
-        "passive_check_bonus_formula": "",
-        "passive_damage_bonus_formula": "",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -4452,7 +4998,7 @@
         "animation_damage_timing_offset": "0"
       },
       "unique": true,
-      "uniqueId": "8woMS6yrdesM8XxU"
+      "uniqueId": "1zeoqLsOYb9n85rM"
     },
     "flags": {
       "custom-system-builder": {
@@ -4472,13 +5018,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Deep Pockets",
-        "uuid": "Item.7kMa9RcUXpkiusNz",
-        "id": "7kMa9RcUXpkiusNz",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -4494,7 +5036,7 @@
         "class": "Tinkerer"
       },
       "unique": true,
-      "uniqueId": "7kMa9RcUXpkiusNz"
+      "uniqueId": "04XUHlRJhyvJIaGb"
     },
     "flags": {
       "custom-system-builder": {
@@ -4514,13 +5056,9 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": -517280179,
+      "templateSystemUniqueVersion": 3777687116,
       "props": {
         "name": "Status Immunity",
-        "uuid": "Item.X86VhHW4Y54NXE5g",
-        "id": "X86VhHW4Y54NXE5g",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans3.png",
-        "details_roller": "Show",
         "skill_type": "Passive",
         "isCheck": false,
         "rolled_atr1": "-",
@@ -4536,7 +5074,7 @@
         "class": "Wayfarer"
       },
       "unique": true,
-      "uniqueId": "X86VhHW4Y54NXE5g"
+      "uniqueId": "AwsFia1QQRoedLw4"
     },
     "flags": {
       "custom-system-builder": {

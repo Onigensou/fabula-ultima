@@ -25,6 +25,7 @@
 
 import { log, warn } from "./logger.js";
 import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "./dev-tools-menu.js";
+import { applyEquipmentSwap } from "./equipment-swap.js";
 
 const PANEL_ID = "fud-testbattle-panel";
 const STYLE_ID = "fud-testbattle-style";
@@ -182,12 +183,48 @@ function folderPathNames(item) {
 const SKILL_LEAVES = new Set(["Skill", "Heroic Skill", "Spell"]);
 
 // All implemented BD skill Items for a class, scanned from the world Item
-// folders `Battle Director / <Class> / {Skill|Heroic Skill|Spell}`.
+// folders `Battle Director / <Class> / {Skill|Heroic Skill|Spell}`. ONLY the
+// BD-folder masters — never the CSB `💥 Skill` legacy copies — so a generated
+// actor always gets the canonical (current) version of each skill. Deduped by
+// name (a stray duplicate master in the BD tree would otherwise grant twice).
 function collectClassSkillItems(cls) {
-  return (game.items?.contents ?? []).filter((i) => {
+  const matches = (game.items?.contents ?? []).filter((i) => {
     const p = folderPathNames(i);
     return p[0] === "Battle Director" && p[1] === cls && SKILL_LEAVES.has(p[2]);
   });
+  const byName = new Map();
+  for (const i of matches) if (!byName.has(i.name)) byName.set(i.name, i);
+  return [...byName.values()];
+}
+
+// Which weapon family a class's skills GATE on, so a generated test actor gets
+// a usable weapon equipped (Sharpshooter's Barrage/RWM/Warning Shot all gate on
+// HAS_RANGED_WEAPON; an unequipped backpack weapon leaves them inert). Scans the
+// raw skill data for the formula identifiers. Returns "ranged"|"melee"|"arcane"
+// |null.
+function weaponHintFromSkillData(skillDatas) {
+  const txt = JSON.stringify(skillDatas ?? []).toUpperCase();
+  if (txt.includes("HAS_RANGED_WEAPON")) return "ranged";
+  if (txt.includes("HAS_MELEE_WEAPON"))  return "melee";
+  if (txt.includes("HAS_ARCANE_WEAPON")) return "arcane";
+  return null;
+}
+
+// Choose a weapon from the actor's inventory to equip — one matching the class's
+// gate hint when possible, else the first weapon. Returns the live item or null.
+function pickWeaponToEquip(actor, hint) {
+  const weapons = (actor.items ?? []).filter(
+    (i) => String(i.system?.props?.item_type ?? "").toLowerCase() === "weapon");
+  if (!weapons.length) return null;
+  if (hint === "ranged" || hint === "melee") {
+    const m = weapons.find((w) => new RegExp(hint, "i").test(String(w.system?.props?.weapon_range ?? "")));
+    if (m) return m;
+  }
+  if (hint === "arcane") {
+    const m = weapons.find((w) => /arcane/i.test(String(w.system?.props?.category ?? w.system?.props?.weapon_type ?? "")));
+    if (m) return m;
+  }
+  return weapons[0];
 }
 
 // All basic weapons + basic shields (the world's RAW basic-equipment set),
@@ -302,6 +339,21 @@ async function genClassActor(className, { withBasicGear = true } = {}) {
   }) : [];
   const toAdd = [...skillItems, ...gearItems];
   if (toAdd.length) await actor.createEmbeddedDocuments("Item", toAdd);
+
+  // Auto-equip a weapon the class can actually USE. Basic gear is added
+  // unequipped (backpack), but most class skills/attacks need an equipped
+  // weapon — and weapon-gated passives (Sharpshooter's Barrage/RWM/Warning
+  // Shot → HAS_RANGED_WEAPON) stay inert without one. Equip a weapon matching
+  // the class's gate hint (ranged/melee/arcane) via the real equip path so
+  // main_hand + isEquipped + derived props all persist.
+  try {
+    const hint = weaponHintFromSkillData(skillItems);
+    const weapon = pickWeaponToEquip(actor, hint);
+    if (weapon) {
+      await applyEquipmentSwap(actor, { main: weapon.id });
+      log(`test-battle: equipped "${weapon.name}" (${hint ?? "default"}) in ${name}'s main hand`);
+    }
+  } catch (e) { warn("test-battle: auto-equip threw", e); }
 
   // Start at full HP (the cloned shell carries the template's default stats),
   // and rename the prototype token so spawned tokens read as the test actor,

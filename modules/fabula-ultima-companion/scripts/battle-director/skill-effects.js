@@ -1759,6 +1759,7 @@ export async function applyEffectRow(row, ctx) {
     case "remove_tagged_ae": return applyRemoveTaggedAeEffect(row, ctx);
     case "substitute_cost":  return applySubstituteCostEffect(row, ctx);
     case "consume_resource": return applyConsumeResourceEffect(row, ctx);
+    case "add_target":       return applyAddTargetEffect(row, ctx);
     case "roll_loot_table":  return applyRollLootTableEffect(row, ctx);
     case "deal_damage":      return applyDealDamageEffect(row, ctx);
     // resolveAction-unification: built-in action commits expressed as effect
@@ -1855,6 +1856,49 @@ function findEffectRow(ctxOrSkill, label) {
 async function applyTargetingEffect(row, ctx) {
   const result = await resolveTargetRef(row.effect_label, ctx);
   return { ok: !!result.ok, kind: "targeting", applied: result.tokens ?? [], reason: result.reason };
+}
+
+// ── add_target ───────────────────────────────────────────────────────────
+// Pre-roll target augmentation (two-phase Action Card). Resolves a `target_ref`
+// targeting row — typically "pick 1 enemy not already targeted" (category:
+// enemy, exclude_action_targets: true, skip_when_passive: false so it prompts
+// even inside the passive reaction chain) — and stashes the picked token uuids
+// on the mutable pre-roll side-channel `ctx.payload._preRoll.addedTokenUuids`.
+// The COMPUTE handler reads them back and splices them into the action's target
+// list BEFORE the roll, so the extra target shares the single accuracy roll.
+//
+// Returns abort when nothing was picked (empty pool / all already targeted /
+// player cancelled) so a downstream consume_resource cost is skipped — the
+// player pays only when a target is actually added ([[consume-last-in-chain]]:
+// place the cost AFTER add_target in the chain).
+async function applyAddTargetEffect(row, ctx) {
+  const ref = row.target_ref;
+  if (!ref) {
+    warn(`skill-effects.add_target: row "${row.effect_label}" missing target_ref`);
+    return { ok: false, kind: "add_target", reason: "no-target-ref", abort: true };
+  }
+  const res = await resolveTargetRef(ref, ctx);
+  const tokens = res?.tokens ?? [];
+  if (!res?.ok || !tokens.length) {
+    return {
+      ok: false, kind: "add_target",
+      reason: res?.reason ?? "no-target",
+      cancelled: !!res?.cancelled,
+      abort: true,
+    };
+  }
+  const sink = ctx?.payload?._preRoll;
+  if (!sink || !Array.isArray(sink.addedTokenUuids)) {
+    warn("skill-effects.add_target: no pre-roll sink on payload — fired outside a pre-roll window?");
+    return { ok: false, kind: "add_target", reason: "no-sink", abort: true };
+  }
+  const added = [];
+  for (const t of tokens) {
+    const uuid = t?.uuid ?? t?.document?.uuid ?? null;
+    if (uuid) { sink.addedTokenUuids.push(uuid); added.push(uuid); }
+  }
+  log(`skill-effects.add_target: queued ${added.length} extra target(s) for the pre-roll window`);
+  return { ok: true, kind: "add_target", applied: added };
 }
 
 // ── grant ──────────────────────────────────────────────────────────────

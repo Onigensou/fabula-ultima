@@ -41,7 +41,7 @@ import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, 
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
-import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
+import { dispatchStandaloneTrigger, clearAllStandaloneMenus, dispatchReactionMenu } from "./standalone-reactions.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
@@ -2325,6 +2325,69 @@ const Target = {
   },
 };
 
+// ── Pre-roll reaction window (two-phase Action Card) ─────────────────────
+// Fires BEFORE the attack/skill roll for performer-side reactions that must
+// COMMIT before the result is known (rollPhase "pre" — today only the
+// `creature_performs_action` trigger; declarative Barrage). This is the
+// pre-roll half of the two-phase card: no dice exist yet, so nothing can leak
+// the (studied-masked) verdict, and a pre-roll commitment can't be deferred
+// until after the player sees the result.
+//
+// Auto-skip: dispatchReactionMenu returns immediately on an empty candidate
+// list (or all-unavailable), so a plain attack with no eligible pre-roll
+// reaction gains zero clicks and rolls straight through.
+//
+// Target augmentation: the `add_target` effect_kind pushes its picked token
+// uuids onto the mutable `payload._preRoll.addedTokenUuids` side-channel
+// (payload is passed by reference through firePreAcceptedCandidate →
+// makeChainContext). COMPUTE reads them back and appends to the target list
+// BEFORE rolling, so the extra target is included in the single shared
+// accuracy roll — exactly as if it had been picked at TARGET.
+async function runPreRollWindow(director, {
+  performerActor,
+  performerToken,
+  currentTargetTokenUuids = [],
+  actionKind = "Attack",
+  actionName = null,
+  weaponUuid = null,
+} = {}) {
+  const empty = { addedTokenUuids: [] };
+  if (!director || !performerActor || !performerToken) return empty;
+  const preRoll = { addedTokenUuids: [] };
+  const payload = {
+    // creature_performs_action subject = the performer (reaction_source "self").
+    sourceActorUuid: performerActor.uuid,
+    subjectActorUuid: performerActor.uuid,
+    sourceTokenUuid: performerToken.document?.uuid ?? performerToken.uuid ?? null,
+    targets: [...currentTargetTokenUuids],
+    targetTokenUuids: [...currentTargetTokenUuids],
+    actionIntent: actionKind === "Attack" ? "harmful" : null,
+    actionKind,
+    actionName,
+    weaponUuid,
+    _preRoll: preRoll,   // mutable side-channel for add_target → COMPUTE
+  };
+  try {
+    await dispatchReactionMenu({
+      director,
+      reactor: performerActor,
+      token: performerToken,
+      trigger: "creature_performs_action",
+      payload,
+      label: "Before the Roll",
+      passLabel: "Skip",
+      includeManual: true,
+    });
+  } catch (e) {
+    warn("runPreRollWindow: dispatch threw", e);
+  }
+  return {
+    addedTokenUuids: Array.isArray(preRoll.addedTokenUuids)
+      ? [...new Set(preRoll.addedTokenUuids.filter(Boolean))]
+      : [],
+  };
+}
+
 // ─── COMPUTE ───────────────────────────────────────────────────────────
 // Roll accuracy + damage. Build an immutable actionResult.
 const Compute = {
@@ -2767,6 +2830,47 @@ const Compute = {
       if (targetSnapshots.length === 0 && tokenUuids.length > 0) {
         warn("COMPUTE Attack: tokenUuids provided but no matches in eligibleTargets",
              { tokenUuids, eligibleCount: (director.ctx.eligibleTargets ?? []).length });
+      }
+
+      // ── Pre-roll reaction window (Barrage et al.) ─────────────────────
+      // Performer-side "before the roll" reactions fire here — once per
+      // ACTION, so only on the first weapon pass (two-weapon's second
+      // COMPUTE re-enters with passIndex > 1 and must not re-offer). A
+      // pre-roll reaction may append extra targets (add_target); we splice
+      // their eligibleTargets snapshots into targetSnapshots BEFORE the
+      // roll so they share the same accuracy roll, and persist them onto
+      // pickedTargetUuids so reload-survival + the second weapon pass keep
+      // the augmented target list.
+      if ((director.ctx.passIndex ?? 1) === 1) {
+        const perfActor = await fromUuid(attacker.actorUuid).catch(() => null);
+        const perfToken = perfActor
+          ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
+             ?? perfActor.getActiveTokens?.()?.[0] ?? null)
+          : null;
+        if (perfActor && perfToken) {
+          const { addedTokenUuids } = await runPreRollWindow(director, {
+            performerActor: perfActor,
+            performerToken: perfToken,
+            currentTargetTokenUuids: tokenUuids,
+            actionKind: "Attack",
+            actionName: weapon?.name ?? "Attack",
+            weaponUuid: weapon?.uuid ?? null,
+          });
+          for (const addUuid of addedTokenUuids) {
+            if (tokenUuids.includes(addUuid)) continue;          // already a target
+            if (targetSnapshots.some((s) => s.tokenUuid === addUuid)) continue;
+            const snap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === addUuid);
+            if (!snap) {
+              warn("COMPUTE Attack: pre-roll added target not in eligibleTargets — skipped", addUuid);
+              continue;
+            }
+            targetSnapshots.push(snap);
+            log(`COMPUTE Attack: pre-roll window added target ${snap.name ?? addUuid}`);
+          }
+          if (targetSnapshots.length) {
+            director.ctx.pickedTargetUuids = targetSnapshots.map((s) => s.tokenUuid);
+          }
+        }
       }
 
       // Single-pass roll for the weapon we just shifted from the queue.

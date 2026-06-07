@@ -134,6 +134,19 @@ async function resolveTargetingRow(row, ctx) {
     pool = pool.filter((t) => t.uuid !== ctx.reactorToken.uuid);
   }
 
+  // 3b. exclude_action_targets — drop tokens already in the action's target
+  // list. Used by pre-roll augments (Barrage's add_target) that must pick an
+  // ADDITIONAL target, never one already being attacked.
+  if (row.exclude_action_targets) {
+    const already = new Set(
+      ctx.actionTargetUuids
+      ?? ctx.payload?.targetTokenUuids
+      ?? ctx.payload?.targets
+      ?? []
+    );
+    if (already.size) pool = pool.filter((t) => !already.has(t.uuid));
+  }
+
   if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
 
   // 4. Apply mode.

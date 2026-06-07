@@ -439,6 +439,10 @@
     {
       "key": "2026-06-07-sharpshooter-warning-shot",
       "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js"
+    },
+    {
+      "key": "2026-06-07-sharpshooter-barrage",
+      "path": "data-migrations/2026-06-07-sharpshooter-barrage.js"
     }
   ]
 }
