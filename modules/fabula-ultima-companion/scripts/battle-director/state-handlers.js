@@ -459,6 +459,18 @@ async function resolveAction(director, ar, opts = {}) {
     const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
     for (const cand of accepted) {
       try {
+        // Hit-gated reactions (creature_will_deal_damage: Warning Shot, Cheap
+        // Shot, …) carry `appliesToTargetUuids` = the targets actually hit.
+        // When that's empty, the attack connected with nobody this reaction
+        // applies to, so skip firing entirely — no chain, no cost, no effect.
+        // RAW: Warning Shot only "counts" on a hit; ≥1 hit fires once for all
+        // hit targets via the chain's hit_action_targets refs. (Other reaction
+        // families — Protect, completes_spell — never set this field, so they
+        // are unaffected.)
+        if (Array.isArray(cand?.appliesToTargetUuids) && cand.appliesToTargetUuids.length === 0) {
+          log(`resolveAction: prePassive "${cand?.carrierName}" not fired — 0 hit targets (no cost/effect)`);
+          continue;
+        }
         // Third-party reactions (Protect on an Attack(ally) card) carry
         // `reactorActorUuid` identifying whose chain this is. Route the
         // firing to the reactor's actor and use the per-candidate
@@ -3332,9 +3344,16 @@ const Confirm = {
         const byKey = new Map();
         for (let i = 0; i < ar.perTargetResults.length; i++) {
           const entry = ar.perTargetResults[i];
-          if (!entry?.hit) continue;  // misses never reach the damage stage
-          const subjectActorUuid = entry.actorUuid;
+          const subjectActorUuid = entry?.actorUuid;
           if (!subjectActorUuid) continue;
+          // Scan EVERY target — hit or miss — for SURFACING. The pill's mere
+          // presence must never reveal the (studied-gate-masked) hit/miss
+          // verdict to the attacker, so it appears regardless of outcome.
+          // Only HIT targets are added to appliesToTargetUuids below, so the
+          // effect + any cost land solely on a hit (RAW: Warning Shot only
+          // "counts" when it connects). ≥1 hit → fires ONCE for all hit
+          // targets; full miss → pill shows but the chain is skipped at apply
+          // (see acceptedPrePassives gate in resolveAction).
           const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
           const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
 
@@ -3373,24 +3392,31 @@ const Confirm = {
             let agg = byKey.get(key);
             if (!agg) {
               // First match — keep this candidate as the aggregate.
-              // payloadAtFire references the FIRST matching target's
-              // payload; action-level fields (damageType, hitTargets,
-              // damage_amount formula context) are identical across
-              // targets, so first-target is a safe reference for the
-              // accumulator's formula resolver.
+              // payloadAtFire prefers a HIT target's payload (set/upgraded
+              // below) so per-target damage_amount formulas resolve against a
+              // real recipient; action-level fields (damageType, hitTargets)
+              // are identical across targets anyway.
               agg = {
                 ...cand,
                 appliesToTargetUuids: [],
                 appliesToTokenUuids: [],
                 payloadAtFire: payloadForTrigger,
+                _payloadFromHit: !!entry.hit,
               };
               byKey.set(key, agg);
+            } else if (entry.hit && !agg._payloadFromHit) {
+              agg.payloadAtFire = payloadForTrigger;
+              agg._payloadFromHit = true;
             }
-            agg.appliesToTargetUuids.push(subjectActorUuid);
-            if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
+            // Only HIT targets receive the effect / count toward the cost.
+            if (entry.hit) {
+              agg.appliesToTargetUuids.push(subjectActorUuid);
+              if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
+            }
           }
         }
         for (const cand of byKey.values()) {
+          delete cand._payloadFromHit;
           prePassives.push(cand);
         }
       } catch (e) {

@@ -981,8 +981,17 @@ function weaponReactionInPlay(item, payload, casterActor) {
 // When payload has neither (lifecycle triggers like round_start), all pass.
 function skillActionPassiveApplies(item, payload) {
   const props = item?.system?.props ?? {};
-  const skillType = String(props.skill_type ?? "").trim();
+  const skillType = String(props.skill_type ?? "").trim().toLowerCase();
   if (!skillType) return true;
+  // Pure reaction skills (skill_type "Passive": Cheap Shot, Warning Shot, …)
+  // react to the EVENT, not to being the acting item — they fire on any
+  // matching trigger. Only INVOKABLE skills are gated, so an active skill's
+  // will_deal_damage rider (e.g. Fiery Onslaught's blaze_chain) doesn't leak
+  // into other actions. Without this exemption, weapons-as-skill-shaped (which
+  // gave weapons embedded uuids) makes every Passive reaction fail the
+  // weaponUuid comparison below on a basic attack — the bug that hid Cheap
+  // Shot / Warning Shot on embedded-weapon attacks.
+  if (skillType === "passive") return true;
   const usedUuid = payload?.skillUuid ?? payload?.weaponUuid ?? null;
   if (!usedUuid) return true;
   return item.uuid === usedUuid;

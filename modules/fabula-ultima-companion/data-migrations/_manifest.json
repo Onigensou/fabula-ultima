@@ -435,6 +435,10 @@
     {
       "key": "2026-06-07-unify-adjust-damage",
       "path": "data-migrations/2026-06-07-unify-adjust-damage.js"
+    },
+    {
+      "key": "2026-06-07-sharpshooter-warning-shot",
+      "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js"
     }
   ]
 }

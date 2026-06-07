@@ -100,8 +100,11 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
     .filter(Boolean);
   const byKey = new Map();
   for (const entry of ar.perTargetResults) {
-    if (!entry?.hit) continue;
-    const subjectActorUuid = entry.actorUuid;
+    // Mirrors state-handlers CONFIRM: scan every target (hit or miss) so the
+    // reaction surfaces regardless of outcome; only HIT targets are recorded
+    // as recipients (appliesToTargetUuids), so the effect/cost land only on a
+    // hit. A full-miss candidate surfaces with appliesToTargetUuids = [].
+    const subjectActorUuid = entry?.actorUuid;
     if (!subjectActorUuid) continue;
     const matchedTarget = (ar.targets ?? []).find((t) => t?.actorUuid === subjectActorUuid);
     const subjectTokenUuid = entry.tokenUuid ?? matchedTarget?.tokenUuid ?? null;
@@ -143,13 +146,19 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
       const key = `${cand.rowKey}::${cand.carrierUuid}`;
       let agg = byKey.get(key);
       if (!agg) {
-        agg = { ...cand, appliesToTargetUuids: [], appliesToTokenUuids: [], payloadAtFire: payloadForTrigger };
+        agg = { ...cand, appliesToTargetUuids: [], appliesToTokenUuids: [], payloadAtFire: payloadForTrigger, _payloadFromHit: !!entry.hit };
         byKey.set(key, agg);
+      } else if (entry.hit && !agg._payloadFromHit) {
+        agg.payloadAtFire = payloadForTrigger;
+        agg._payloadFromHit = true;
       }
-      agg.appliesToTargetUuids.push(subjectActorUuid);
-      if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
+      if (entry.hit) {
+        agg.appliesToTargetUuids.push(subjectActorUuid);
+        if (subjectTokenUuid) agg.appliesToTokenUuids.push(subjectTokenUuid);
+      }
     }
   }
+  for (const c of byKey.values()) delete c._payloadFromHit;
   const applied = [...byKey.values()];
   if (!applied.length) return ar;
   let recomputed = ar.perTargetResults;

@@ -625,8 +625,14 @@ function hasEquippedWeaponOfType(actor, weaponType) {
     const p = item?.system?.props ?? {};
     if (String(p.item_type ?? "").toLowerCase() !== "weapon") continue;
     if (!p.isEquipped) continue;
+    // `category`/`weapon_type` hold the weapon FAMILY (sword, bow, arcane, …)
+    // while `weapon_range` holds melee/ranged. "ranged"/"melee" are ranges,
+    // not families — so match against BOTH so HAS_RANGED_WEAPON /
+    // HAS_MELEE_WEAPON work (via weapon_range) alongside HAS_ARCANE_WEAPON
+    // and other family gates (via category).
     const cat = String(p.category ?? p.weapon_type ?? p.type ?? "").toLowerCase();
-    if (cat === wanted) return true;
+    const range = String(p.weapon_range ?? "").toLowerCase();
+    if (cat === wanted || range === wanted) return true;
   }
   return false;
 }
