@@ -408,10 +408,10 @@ async function genDummyEnemy() {
   await dummy.update({ "system.props.current_hp": MASSIVE_HP, "prototypeToken.name": name });
   // Best-effort max_hp bump (likely derived & ignored — harmless if so).
   try { await dummy.update({ "system.props.max_hp": MASSIVE_HP }); } catch (_e) {}
-  // A dummy is a punching bag — bake in 0 actions at creation via the AE so it
-  // never takes a turn (and its activation bar reads 0).
-  await applyNoActionsAE(dummy);
-  log(`test-battle: dummy enemy "${name}" ready (current_hp=${MASSIVE_HP}, 0 actions, blank shell)`);
+  // The "No Actions" AE is NOT baked in here. It's applied to the chosen enemy
+  // (dummy OR real) only in solo mode ("Only main player acts"), so when that's
+  // unchecked the dummy takes turns like any other unit. See launchTestBattle.
+  log(`test-battle: dummy enemy "${name}" ready (current_hp=${MASSIVE_HP}, blank shell)`);
   return dummy;
 }
 
@@ -517,9 +517,10 @@ async function launchTestBattle({ playerActorUuid, enemyActorUuid, allyActorUuid
   const members = [{ actorUuid: pc.uuid, actorId: pc.id, name: pc.name, slot: 1, img: pc.img }];
   if (allyActor) members.push({ actorUuid: allyActor.uuid, actorId: allyActor.id, name: allyActor.name, slot: 2, img: allyActor.img });
 
-  // Solo mode: give the non-player combatants 0 actions via the No Actions AE
-  // (the dummy already has it from creation; this also covers a real main enemy
-  // and the ally). Tracked so live-added combatants get it too.
+  // Solo mode ("Only main player acts"): give the non-player combatants 0 actions
+  // via the No Actions AE — the chosen enemy (dummy OR real) and the ally. When
+  // it's unchecked, nobody gets it, so every unit takes turns. Tracked so
+  // live-added combatants get it too.
   _soloMode = !!soloPlayer;
   if (soloPlayer) {
     await applyNoActionsAE(enemy);
