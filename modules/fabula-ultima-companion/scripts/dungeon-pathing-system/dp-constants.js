@@ -65,22 +65,26 @@
     CAMP:           "camp",
     ALERT:          "alert",
     DOOR:           "door",
+    GUSTY:          "gusty",
     UNKNOWN:        "unknown",
   });
 
   // 8-directional compass keys (screen space: Y increases downward)
-  // SLIPPERY is a special sentinel: "continue in entry direction" — handled by the force-move handler.
+  // SLIPPERY  — continue in entry direction (handled by force-move handler)
+  // PUSH_BACK — reverse entry direction; ejects the token back the way it came
+  // RANDOM    — pick any connected neighbor at random
   DP.DIRECTIONS = Object.freeze({
-    N:        "N",
-    NE:       "NE",
-    E:        "E",
-    SE:       "SE",
-    S:        "S",
-    SW:       "SW",
-    W:        "W",
-    NW:       "NW",
-    SLIPPERY: "SLIPPERY",
-    RANDOM:   "RANDOM",
+    N:         "N",
+    NE:        "NE",
+    E:         "E",
+    SE:        "SE",
+    S:         "S",
+    SW:        "SW",
+    W:         "W",
+    NW:        "NW",
+    SLIPPERY:  "SLIPPERY",
+    PUSH_BACK: "PUSH_BACK",
+    RANDOM:    "RANDOM",
   });
 
   // Animation timing

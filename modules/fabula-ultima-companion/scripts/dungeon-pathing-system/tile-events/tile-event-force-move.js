@@ -82,6 +82,40 @@
         // chained Slippery tile knows which way the token was travelling.
         DP.Direction.lastEntryDirection = lastHopDir;
         console.debug(TAG, `Random | "${forceMoveNode.name}" → "${destNode.name}"`);
+      } else if (direction === DP.DIRECTIONS.PUSH_BACK) {
+        // Push Back: eject the token in the reverse of the direction it entered from.
+        const entryDir = DP.Direction.lastEntryDirection;
+        if (!entryDir || !DP.Direction.DIRS[entryDir]) {
+          ui.notifications?.warn(
+            `Push Back | "${forceMoveNode.name}": no entry direction known. ` +
+            "Was the token moved via the dungeon system?"
+          );
+          return;
+        }
+
+        const reverseDir = DP.Direction.reverseDirection(entryDir);
+        if (!reverseDir) {
+          ui.notifications?.warn(
+            `Push Back | "${forceMoveNode.name}": cannot reverse sentinel direction "${entryDir}".`
+          );
+          return;
+        }
+
+        let node = forceMoveNode;
+        for (let i = 0; i < steps; i++) {
+          const candidates = DP.Direction.getNeighborsInDirection(node, reverseDir, graph);
+          if (!candidates.length) break;
+          node = candidates[Math.floor(Math.random() * candidates.length)];
+        }
+
+        if (node.nodeId === forceMoveNode.nodeId) {
+          console.debug(TAG, `Push Back | "${forceMoveNode.name}" — no neighbor ${DP.Direction.label(reverseDir)}, token stays.`);
+          return;
+        }
+        destNode = node;
+        DP.Direction.lastEntryDirection = reverseDir;
+        console.debug(TAG, `Push Back | "${forceMoveNode.name}" → "${destNode.name}" (${DP.Direction.label(reverseDir)} ×${steps})`);
+
       } else if (direction === DP.DIRECTIONS.SLIPPERY) {
         // Slippery: continue in the direction the token entered from.
         const entryDir = DP.Direction.lastEntryDirection;
@@ -125,7 +159,7 @@
       // Track direction for subsequent tiles (e.g. chained Slippery).
       // RANDOM and SLIPPERY already set lastEntryDirection during resolution;
       // for fixed directions, set it now.
-      if (direction !== DP.DIRECTIONS.RANDOM && direction !== DP.DIRECTIONS.SLIPPERY) {
+      if (direction !== DP.DIRECTIONS.RANDOM && direction !== DP.DIRECTIONS.SLIPPERY && direction !== DP.DIRECTIONS.PUSH_BACK) {
         DP.Direction.lastEntryDirection = direction;
       }
 
