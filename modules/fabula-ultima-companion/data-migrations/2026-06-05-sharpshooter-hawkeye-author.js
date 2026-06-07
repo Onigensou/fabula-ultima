@@ -24,7 +24,7 @@
  *       trigger `creature_will_deal_damage`, `reaction_source: self`,
  *       gated `ATTACK_IS_RANGED == 1` (the new in-flight-weapon-class gate —
  *       so the buff is spent only on a RANGED attack, surviving melee swings),
- *       firing chain [add_damage "SL*2", consume_charge]. One charge → fires
+ *       firing chain [adjust_damage outgoing/add "SL*2", consume_charge]. One charge → fires
  *       once then self-deletes. `directorPermanent` skips turn-ticking so it
  *       lasts until consumed OR the scene-end sweep ("before the end of the
  *       current scene").
@@ -38,11 +38,10 @@
  *     AE's reactionConfig at apply-time (skill-effects.js) — so "SL*2" records
  *     Hawkeye's SL at the moment of the Guard, not the AE's (level-less) self.
  *
- * KNOWN v1 LIMITATION (documented; not enforced): option (b)'s "treat HR as 0
- * for damage" is NOT applied — the free-action grant has no HR-override hook
- * yet, so the free attack uses its rolled HR. The free attack itself fires
- * correctly; the GM should treat HR as 0 for its damage until the override
- * lands. (Tracked in the resolveaction-unification plan doc.)
+ * Option (b)'s "treat HR as 0 for damage" is implemented via the declarative
+ * `free_hr_as_zero: true` on the hawkeye_opt_attack row → threaded to the
+ * free-action grant (skill-effects free_mode → freeActions grant → Attack
+ * COMPUTE `ignoreHR`). Any free_mode row can opt in the same way.
  *
  * IDEMPOTENT — patches the BD-tree master + every actor copy; wholesale-
  * replaces reaction_config_table / effect_table; ensures the embedded buff AE.
@@ -119,7 +118,6 @@ const REACTION_CONFIG_TABLE = {
     reaction_source:     "self",
     condition_formula:   "DID_COVER_ALLY == 0",
     reaction_effect_ref: "hawkeye_choose",
-    reaction_isPassive:  false,
     reaction_passive_mode: "ask",
   },
 };
@@ -146,6 +144,7 @@ const EFFECT_TABLE = {
     effect_kind:     "open_action_menu",
     free_mode:       true,
     allowed_types:   "Attack",
+    free_hr_as_zero: true,   // RAW: "treating your High Roll (HR) as 0" for damage
     menu_label:      "Free attack — bow or firearm (High Roll treated as 0)",
     menu_description: "Immediately perform a free bow/firearm attack.",
   },
@@ -193,7 +192,6 @@ function makeHawkeyeBuffAe() {
               reaction_source:       "self",
               condition_formula:     "ATTACK_IS_RANGED == 1",
               reaction_effect_ref:   "hawkeye_fire",
-              reaction_isPassive:    true,
               reaction_passive_target: "self",
               reaction_passive_mode: "on",
             },
@@ -202,7 +200,11 @@ function makeHawkeyeBuffAe() {
             "0": { effect_label: "hawkeye_fire", effect_kind: "chain", chain_steps: "hawkeye_add, hawkeye_consume" },
             // SL*2 — baked to Hawkeye's SL at apply-time by apply_ae's
             // reactionConfig formula bake (the carrier AE has no level).
-            "1": { effect_label: "hawkeye_add", effect_kind: "add_damage", damage_amount: "SL * 2" },
+            // Unified `adjust_damage` shape (outgoing/add) — the former
+            // `add_damage` kind was folded into adjust_damage by
+            // 2026-06-07-unify-adjust-damage. Keep this in sync so an
+            // idempotent re-run doesn't revert the live data to the dead kind.
+            "1": { effect_label: "hawkeye_add", effect_kind: "adjust_damage", damage_operation: "add", damage_stage: "outgoing", damage_amount: "SL * 2" },
             "2": { effect_label: "hawkeye_consume", effect_kind: "consume_charge", charge_key: "hawkeye_aim", on_empty: "skip", count: 1, target_ref: "hawkeye_self_ae" },
             "3": { effect_label: "hawkeye_self_ae", effect_kind: "targeting", candidate_source: "self" },
           },

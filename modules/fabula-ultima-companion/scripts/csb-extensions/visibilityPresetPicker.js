@@ -72,9 +72,9 @@ Hooks.once("ready", () => {
     });
 
     groups.push({
-      label: "Same-row checkbox checks",
+      label: "Same-row value checks",
       items: [
-        { label: 'Show when "reaction_isPassive" is checked', formula: 'sameRow("reaction_isPassive")' }
+        { label: 'Show when firing mode auto-fires (on/force)', formula: 'equalText(sameRow("reaction_passive_mode",\'\'), "on") || equalText(sameRow("reaction_passive_mode",\'\'), "force")' }
       ]
     });
 

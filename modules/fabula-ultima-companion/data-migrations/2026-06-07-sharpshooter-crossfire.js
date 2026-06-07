@@ -90,7 +90,7 @@ const REACTION_CONFIG_TABLE = {
     reaction_trigger: "creature_targeted_by_action",
     reaction_source: "all",
     reaction_action_intent: "harmful",
-    reaction_isPassive: false,
+    reaction_passive_mode: "ask",
     reaction_effect_ref: "crossfire_do",
     // Post-roll bystander gate. ATTACK_IS_RANGED reads the *incoming* attack
     // weapon's range (payload.weaponRange); HAS_RANGED_WEAPON checks the

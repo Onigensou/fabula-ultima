@@ -172,21 +172,23 @@ function stripHtml(html) {
   } catch { return String(html).replace(/<[^>]*>/g, "").trim(); }
 }
 
-// Return the first toggleable (non-force) row in the item's
-// reaction_config_table marked `reaction_isPassive: true`, with its
-// dict-key. Used to read/write the canonical `reaction_passive_mode`
-// field. Returns null if the item has no toggleable passive row —
-// either (a) no passive rows at all (legacy props-level skills), or
-// (b) every passive row is mode="force" (engine-mandatory; not the
-// user's call). See [[force-mode-for-engine-mandatory-reactions]].
+// Return the first toggleable (non-force) reaction row in the item's
+// reaction_config_table, with its dict-key. Used to read/write the
+// canonical `reaction_passive_mode` field. Returns null if the item has
+// no toggleable reaction row — either (a) no reaction rows at all (legacy
+// props-level skills), or (b) every row is mode="force" (engine-mandatory;
+// not the user's call). The reaction_isPassive boolean was retired
+// 2026-06-07 — every reaction row now carries a mode, so RAW "may"
+// reactions (formerly "manual") are toggleable here too.
+// See [[force-mode-for-engine-mandatory-reactions]], [[reaction-passive-mode-single-field]].
 function findPassiveRow(item) {
   const rc = item.system?.props?.reaction_config_table;
   if (!rc || typeof rc !== "object") return null;
   for (const key of Object.keys(rc)) {
     const row = rc[key];
     if (!row || row.$deleted) continue;
-    if (row.reaction_isPassive !== true) continue;
-    const mode = String(row.reaction_passive_mode ?? "").trim().toLowerCase();
+    if (!String(row.reaction_trigger ?? "").trim()) continue;  // not a real reaction row
+    const mode = String(row.reaction_passive_mode ?? "ask").trim().toLowerCase();
     if (mode === "force") continue;  // engine-mandatory — invisible to UI
     return { key, row };
   }

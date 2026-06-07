@@ -73,7 +73,6 @@ const REACTION_CONFIG_TABLE = {
   "0": {
     reaction_trigger: "creature_will_deal_damage",
     reaction_source: "self",
-    reaction_isPassive: true,
     reaction_passive_mode: "ask",
     reaction_effect_ref: "warning_shot",
     // ATTACK_IS_RANGED (the attack weapon's range) — not HAS_RANGED_WEAPON,

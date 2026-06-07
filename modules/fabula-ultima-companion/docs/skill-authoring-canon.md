@@ -38,7 +38,8 @@ behavior goes:
    did. There's no engine-side guard today.
 
    **Informational-only cost on reactions**: a skill with
-   `isReaction: true` (or `reaction_isPassive: true`) never reaches
+   `isReaction: true` (or any `reaction_config_table` row, regardless of
+   its `reaction_passive_mode`) never reaches
    the action-card cost-debit phase — reactions dispatch through the
    chain instead. A `cost` field on such a skill is purely display
    (shows on the skill description / picker tooltip). The actual debit

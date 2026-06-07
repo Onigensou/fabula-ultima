@@ -4,8 +4,9 @@
 //
 // Per [[reaction-menu-on-token]]: these are the canonical "no host card"
 // triggers. For each reactor in the active combat we ask
-// findPassiveCandidates for matching rows (BOTH passive and manual —
-// `includeManual: true`), then spawn the token-anchored reaction menu
+// findPassiveCandidates for every matching non-deleted row (the
+// reaction_isPassive/includeManual split was retired 2026-06-07 — each
+// row's reaction_passive_mode decides surfacing), then spawn the token menu
 // over the reactor's token. A blade click fires the reaction via
 // firePreAcceptedCandidate; the Pass blade just closes the menu.
 //
@@ -294,7 +295,6 @@ export async function dispatchReactionMenu({
   payload,
   label = null,
   passLabel = "Pass",
-  includeManual = true,
   scope = null,
   scene = null,
   // skipEvaluated: [{ carrierUuid, rowKey }] entries the caller has
@@ -351,7 +351,6 @@ export async function dispatchReactionMenu({
       casterActor: reactor,
       trigger,
       payload,
-      includeManual,
       includeUnavailable: true,
     });
   } catch (e) {
@@ -388,7 +387,7 @@ export async function dispatchReactionMenu({
   const askable = [];
   const harnessSkipped = [];
   for (const c of candidates) {
-    const isAutoMode = c.kind === "passive" && (c.mode === "on" || c.mode === "force");
+    const isAutoMode = c.mode === "on" || c.mode === "force";
     const wasUsed = firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid));
     if (isAutoMode && c.available && !wasUsed) {
       autoFire.push(c);
@@ -889,7 +888,6 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
       payload,
       label: triggerLabel,
       passLabel: "Pass",
-      includeManual: true,
       scope,
       scene,
     }).catch((e) => {

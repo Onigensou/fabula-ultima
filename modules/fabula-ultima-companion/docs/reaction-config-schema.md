@@ -126,9 +126,9 @@ Damage Card emits per-target, so the hook fires per-target).
 | `reaction_bond_presence` | `"" \| "present" \| "absent"` | no | Bond gate against the trigger's subject creature. `present` matches when at least one of the reactor's `bond_N` slots (1–6 + `bond_temp`) holds a name equal to a subject's `actor.name` or `token.name` (case-insensitive). `absent` is the inverse — "no bond toward any subject." Blank disables the filter. Available on any trigger with a creature subject; inert on lifecycle triggers. |
 | `reaction_bond_emotion` | `"" \| "admiration" \| "inferiority" \| "loyalty" \| "mistrust" \| "affection" \| "hatred"` | no | Specific-emotion filter on the Bond toward the subject. Maps to the three RAW pairings (Admiration/Inferiority, Loyalty/Mistrust, Affection/Hatred) stored on the actor as `emotion_N_1` / `emotion_N_2` / `emotion_N_3` respectively. Implies presence (the matched Bond must exist) and is checked case-insensitively. Blank disables. |
 | `reaction_effect_ref` | string (an `effect_label` from `effect_table`) | no | Pick a declarative effect to fire on match. Blank = no declarative effect (the row still surfaces the skill in the reaction picker; chosen-skill execution proceeds normally). |
-| `reaction_isPassive` | boolean | no | If true, this row auto-fires when the trigger matches (no user pick required). |
-| `reaction_passive_target` | `"self"` | when `reaction_isPassive: true` | Currently only `"self"` is implemented. |
-| `reaction_passive_mode` | `"on" \| "ask" \| "off" \| "force"` | when `reaction_isPassive: true` | Four-state firing mode for passives. `on` = auto-fire on match, visible to player (Auto chip in menu / pill). `ask` = GM/player gets Apply/Skip choice (RAW "may" wording). `off` = disabled. `force` = engine-mandatory auto-fire — UI-invisible (no pill, no menu blade, no Passive Manager toggle). Use `force` for system housekeeping like Protect's charge-refresh; use `on` for player-facing auto passives like Healing Power. Default `ask`. |
+| `reaction_isPassive` | ~~boolean~~ | **RETIRED 2026-06-07** | Removed. Every row's behavior now comes from `reaction_passive_mode` alone (see next row). The former "manual" reaction (a RAW "may" the player clicks) is simply `reaction_passive_mode: "ask"` — the engine default. Migration `2026-06-07-retire-reaction-ispassive` converts all data + strips the field + the template column. |
+| `reaction_passive_target` | `"self"` | when mode is `on`/`force` | Where an auto-fired reaction applies its effect. Currently only `"self"` is implemented. For `ask` rows the player picks via the menu, so this is unused. |
+| `reaction_passive_mode` | `"on" \| "ask" \| "off" \| "force"` | no (default `ask`) | **THE single firing-mode field.** `ask` = player decides via a clickable pill / menu blade (RAW "may" wording — this is the former `reaction_isPassive: false` "manual" behavior). `on` = auto-fire on match, visible to player (Auto chip in menu / pill). `off` = disabled (toggle-off for intrusive passives). `force` = engine-mandatory auto-fire, UI-invisible (no pill, no menu blade, no Passive Manager toggle). Use `force` for system housekeeping like Protect's charge-refresh; `on` for player-facing auto passives like Healing Power; `ask` for elective "may" reactions like Protect / Crossfire / Hawkeye. Default `ask`. Every dispatch surface (action-card CONFIRM/PRE_ROLL pills + post-resolve token menu) shows every non-`off` row for the trigger — there is no longer an `includeManual` filter. |
 | `reaction_action_target` | `"" \| "ally" \| "enemy" \| "neutral"` | no | Action-target disposition filter. Fires only when the subject's action targeted at least one creature with the given disposition relative to the reactor. Used by passives like Healing Power that should only fire when an ally was targeted. Blank disables. Available on triggers whose subject performs an action (`creature_performs_action`, `creature_completes_spell`, `creature_deals_damage`, etc.). |
 | `condition_formula` | formula string | no | Universal gate. When non-blank, the trigger matcher evaluates this via `window["oni.ReactionFormula"].evaluate` and only fires the row when the result is truthy. The grammar supports arithmetic (`+ - * /`), modulo (`%`), comparison (`== != < > <= >=`), and logical operators (`&& || !`). Identifier list under [Formula identifiers](#formula-identifiers-resolved-against-the-reactor--trigger-payload) — `ROUND` and `ACTION_TARGET_COUNT` are common gates. Blank disables. Example: `"ROUND % 2 == 0"` (only even rounds); `"ACTION_TARGET_COUNT >= 2"` (only multi-target dangers); `"HAS_ARCANE_WEAPON"` (Spiritist arcane-weapon gate). |
 | `requires_skill` | string (skill master `uniqueId`) | no | Prerequisite-skill gate. When non-blank, the reactor's actor must own an item whose `system.uniqueId` equals this value (i.e. has learned the named skill master). Use the master's `uniqueId`, not the actor-copy id. Blank disables. Example: Hina's Prophetic Defender Style gates its even-round PP gain on `BmgIHS4DdDAT1rUc` (Divination's master uniqueId) so the gain only fires when she actually knows Divination. |
@@ -654,7 +654,7 @@ AE-sheet Reactions panel):
       "reaction_source":          "self",
       "reaction_damage_outcome":  "would_reduce_to_zero",
       "reaction_effect_ref":      "mercy_clamp",
-      "reaction_isPassive":       true
+      "reaction_passive_mode":    "on"
     }
   },
   "effect_table": {
@@ -721,7 +721,7 @@ as a reactor.
     "reaction_trigger":      "creature_targeted_by_action",
     "reaction_source":       "all",
     "reaction_action_intent": "harmful",
-    "reaction_isPassive":    false,            // "may" → clickable pill
+    "reaction_passive_mode": "ask",            // "may" → clickable pill
     "reaction_effect_ref":   "crossfire_do",
     "condition_formula":
       "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT"
@@ -774,7 +774,7 @@ or other danger" qualifies.
     "reaction_damage_type": "",
     "reaction_action_intent": "harmful",
     "reaction_effect_ref": "do_protect",
-    "reaction_isPassive": false
+    "reaction_passive_mode": "ask"
   }
 },
 "effect_table": {
@@ -839,7 +839,7 @@ for free. If you do, gain a bonus equal to SL to your Check."
     "reaction_damage_source": "enemy",      // damage came from an enemy
     "reaction_action_intent": "harmful",
     "reaction_effect_ref":    "pl_free_study",
-    "reaction_isPassive":     false         // player picks from the picker
+    "reaction_passive_mode":  "ask"          // player picks from the picker
   }
 },
 "system.props.effect_table": {
@@ -881,7 +881,7 @@ Phantasms is defeated. Uses the universal `reaction_subject_kind` /
     "reaction_subject_kind": "isPhantasm",   // subject.actor.system.props.isPhantasm == true
     "reaction_ownership":    "own_summon",   // subject token's summonedBy flag == reactor.actor.uuid
     "reaction_effect_ref":   "",             // skill body itself runs the MP restore
-    "reaction_isPassive":    true,
+    "reaction_passive_mode": "on",
     "reaction_passive_target": "self"
   }
 }

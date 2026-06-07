@@ -252,3 +252,90 @@ Hooks.once("ready", async () => {
     console.error(`${FU_BOOT_TAG} Dropdown-options sync failed:`, e);
   }
 });
+
+// ---------------------------------------------------------------------------
+// (3b) Template COLUMN sync — ensure every declarative row-field the engine
+// reads has a rowLayout COLUMN. Companion to (3): (3) backfills missing option
+// VALUES into existing select columns; (3b) backfills missing COLUMNS entirely.
+// Driven by template-field-registry.js, so adding a declarative field = ONE
+// registry line + an engine read — the column self-heals onto every template on
+// boot. Closes the "data-only field stripped/uneditable" gap that (3) couldn't
+// (a missing column has no options to sync). See [[feedback_csb_template_gating]].
+//
+// Edits only TRUE template items (system.template empty); instances re-derive
+// from their template, so we version-sync them instead. Steady state (all
+// columns present) does ZERO writes — safe to run every boot.
+Hooks.once("ready", async () => {
+  if (!game.user?.isGM) return;
+  if (globalThis.__FU_DISABLE_DROPDOWN_SYNC__) return;
+  const MODULE_ID = "fabula-ultima-companion";
+  try {
+    const reg = await import(`${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/template-field-registry.js?t=${Date.now()}`);
+    const byTable = reg.REQUIRED_COLUMNS_BY_TABLE ?? {};
+    if (!Object.keys(byTable).length) return;
+
+    const findTable = (node, key, d = 0) => {
+      if (d > 18 || !node || typeof node !== "object") return null;
+      if (node.key === key && Array.isArray(node.rowLayout)) return node;
+      if (Array.isArray(node)) { for (const c of node) { const r = findTable(c, key, d + 1); if (r) return r; } return null; }
+      for (const k of Object.keys(node)) { const r = findTable(node[k], key, d + 1); if (r) return r; }
+      return null;
+    };
+
+    const touched = new Set();
+    const detail = [];
+    for (const item of game.items.contents) {
+      if (item.system?.template) continue; // instance — re-derives from its template
+      const sys = foundry.utils.deepClone(item.toObject(false).system ?? {});
+      let changed = false;
+      for (const [tableKey, cols] of Object.entries(byTable)) {
+        const node = findTable(sys, tableKey);
+        if (!node) continue;
+        const have = new Set(node.rowLayout.map((c) => c?.key));
+        for (const col of cols) {
+          if (!col?.key || have.has(col.key)) continue;
+          node.rowLayout.push({ ...col });
+          have.add(col.key);
+          changed = true;
+          detail.push(`${item.name}/${tableKey}:${col.key}`);
+        }
+      }
+      if (changed) { await item.update({ system: sys }); touched.add(item.id); }
+    }
+
+    if (touched.size) {
+      // Version-sync instances of touched templates so sheets re-derive.
+      const wantById = new Map();
+      for (const id of touched) {
+        const tpl = game.items.get(id);
+        const v = tpl?.system?.templateSystemUniqueVersion;
+        if (v !== undefined && v !== null) wantById.set(id, v);
+      }
+      const cls = CONFIG.Item.documentClass;
+      const worldUpdates = [];
+      for (const item of game.items.contents) {
+        const tid = String(item.system?.template ?? "");
+        if (wantById.has(tid) && item.system?.templateSystemUniqueVersion !== wantById.get(tid)) {
+          worldUpdates.push({ _id: item.id, "system.templateSystemUniqueVersion": wantById.get(tid) });
+        }
+      }
+      if (worldUpdates.length) await cls.updateDocuments(worldUpdates);
+      for (const actor of game.actors.contents) {
+        const ups = [];
+        for (const item of actor.items.contents) {
+          const tid = String(item.system?.template ?? "");
+          if (wantById.has(tid) && item.system?.templateSystemUniqueVersion !== wantById.get(tid)) {
+            ups.push({ _id: item.id, "system.templateSystemUniqueVersion": wantById.get(tid) });
+          }
+        }
+        if (ups.length) await actor.updateEmbeddedDocuments("Item", ups);
+      }
+      console.info(`${FU_BOOT_TAG} Column sync: added ${detail.length} column(s) across ${touched.size} template(s): ${detail.join(", ")}`);
+      ui.notifications?.info(`Template columns: added ${detail.length} missing column(s) — see console`);
+    } else {
+      console.info(`${FU_BOOT_TAG} Column sync: all registry columns present.`);
+    }
+  } catch (e) {
+    console.error(`${FU_BOOT_TAG} Template column sync failed:`, e);
+  }
+});

@@ -69,7 +69,6 @@ const REACTION_CONFIG_TABLE = {
   "0": {
     reaction_trigger: "creature_performs_action",
     reaction_source: "self",
-    reaction_isPassive: true,
     reaction_passive_mode: "ask",
     reaction_effect_ref: "barrage_do",
     // Gate on the RANGE of the weapon being attacked WITH (ATTACK_IS_RANGED),

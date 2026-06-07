@@ -943,16 +943,27 @@ function renderTurnActionsLocal(combatants = []) {
     // everyone else; the active one returns to its slot when its turn ends.
     const active = list.find((c) => c.active) ?? null;
     setSpotlight(layer.__fu, active);
-    const sideList = list.filter((c) => !c.active);
+    // ONE lineup icon per PENDING activation (not per creature): a creature with
+    // multiple activations (a champion) shows that many icons, and each is
+    // REMOVED as its activation is taken. turnsRemaining counts a creature's
+    // remaining activations this round; the active creature's CURRENT activation
+    // is shown in the spotlight, so it contributes (turnsRemaining - 1) lineup
+    // icons. Fully-spent creatures contribute none. `_act` makes each icon's id
+    // unique (id#i) for the diff key + per-icon DOM lookup.
+    const sideList = [];
+    for (const c of list) {
+      let n = Math.max(0, (Number(c.turnsRemaining) || 0) - (c.active ? 1 : 0));
+      for (let i = 0; i < n; i++) sideList.push({ ...c, _act: i });
+    }
     // The spacer reserves the bar's centre gap for the spotlight. Narrowed by
     // 2×SLANT (vs the spotlight's full top width) so the innermost icon on each
     // side butts FLUSH against the spotlight's slanted edge — its inner edge
     // becomes collinear with the spotlight border (they share the same angle),
     // and the icon's top corner meets the spotlight's top corner with no gap.
     if (layer.__fu.spacer) layer.__fu.spacer.style.width = `${SPOT_W_VH - 2 * SLANT_VH}vh`;
-    // Reserve equal width for both sides (= the larger side's icon span) so the
-    // spotlight stays screen-centred with uneven counts. Empty space falls on
-    // each side's OUTER edge via the group's justify-content.
+    // Reserve equal width for both sides (= the larger side's activation-icon
+    // span) so the spotlight stays screen-centred with uneven counts. Empty
+    // space falls on each side's OUTER edge via the group's justify-content.
     const leftN = sideList.filter((c) => c.side === "enemy").length;
     const rightN = sideList.length - leftN;
     const maxN = Math.max(leftN, rightN);

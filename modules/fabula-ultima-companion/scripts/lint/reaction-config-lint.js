@@ -49,10 +49,10 @@
  *     DESTINATION_REF_MISSING redirect_target without destination_ref
  *
  *   AE-bound passive (one-shot enforcement):
- *     AE_ONESHOT_MISSING      AE-bound reaction_isPassive:true row with
- *                             no consume_self field AND no charges flag
- *                             on the AE — dispatcher won't auto-remove,
- *                             passive re-fires every trigger match.
+ *     AE_ONESHOT_MISSING      AE-bound auto-fire row (reaction_passive_mode
+ *                             on/force) with no consume_self field AND no
+ *                             charges flag on the AE — dispatcher won't
+ *                             auto-remove, passive re-fires every trigger match.
  *                             Skipped when AE flag directorPermanent or
  *                             crossScene is set (explicit opt-in).
  *
@@ -828,8 +828,9 @@
         out.push(i);
       }
       // AE one-shot enforcement (Gap 3 from canon hardening retrospective).
-      // AE-bound reactionConfig rows with reaction_isPassive:true fire on
-      // EVERY trigger match for the AE's lifetime. Without consume_self or
+      // AE-bound reactionConfig rows that auto-fire (reaction_passive_mode
+      // on/force) fire on EVERY trigger match for the AE's lifetime.
+      // Without consume_self or
       // a charges flag, the dispatcher has no built-in deactivation — only
       // the AE's duration / scene-end sweep ends it. Most one-shots want
       // explicit termination so the passive doesn't double-fire on a
@@ -928,7 +929,11 @@
       aeFlags.directorPermanent === true || aeFlags.crossScene === true;
     if (isPermanent) return issues;
     for (const row of rows) {
-      if (row?.reaction_isPassive !== true) continue;
+      // Only auto-fire modes silently re-fire on every trigger match; ask
+      // rows fire on explicit player click, off never fires. (reaction_isPassive
+      // retired 2026-06-07 — gate on reaction_passive_mode.)
+      const mode = String(row?.reaction_passive_mode ?? "ask").trim().toLowerCase();
+      if (mode !== "on" && mode !== "force") continue;
       if (row?.consume_self === true) continue;
       const ref = String(row?.reaction_effect_ref ?? "").trim();
       const effRow = ref ? labelToEff.get(ref) : null;
@@ -939,7 +944,7 @@
         code: "AE_ONESHOT_MISSING",
         location: `AE["${ae.name}"].reaction_config_table[${row.$key}]`,
         message:
-          `AE-bound passive row (reaction_isPassive:true) has no ` +
+          `AE-bound auto-fire row (mode "${mode}") has no ` +
           `consume_self field and the AE has no charges/chargesMax flag. ` +
           `The dispatcher won't auto-remove this AE — it will re-fire on ` +
           `every trigger match until the AE itself expires. If that's ` +
@@ -968,7 +973,6 @@
     "reaction_source",
     "reaction_action_target",
     "reaction_condition",
-    "reaction_isPassive",
     "reaction_passive_mode",
     "reaction_effect_ref",
     "reaction_damage_source",

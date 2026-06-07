@@ -458,7 +458,11 @@ export function ensureStyles() {
       text-transform: uppercase;
       color: #1e6cff;
       text-shadow: 0 0 9px rgba(30, 108, 255, 0.4);
+      white-space: nowrap;
     }
+    /* "Blocked" is wider than the numeric total it replaces; reclaim the
+       strike-icon's width so the word stays inside the card. */
+    .fud-bf-card .fud-bf-acc.is-blocked .strike-icon { display: none; }
     /* Damage zeroed by a reaction ("deal no damage" — Warning Shot): strike the
        number, dim it, and surface a "No damage" note in the legend. */
     .fud-bf-card .fud-bf-dmg.is-nullified .fud-bf-dmg-number {
@@ -468,6 +472,21 @@ export function ensureStyles() {
     }
     .fud-bf-card .fud-bf-dmg.is-nullified > legend::after {
       content: " — No damage";
+      color: #1e6cff;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    /* Damage struck because the whole attack was blocked (Crossfire accuracy
+       override). Same visual as Warning Shot's strike but a distinct class so
+       the post-roll mutation path and the apply-click menu path don't clobber
+       each other's toggle. Legend reads "Blocked", not "No damage". */
+    .fud-bf-card .fud-bf-dmg.is-blocked-dmg .fud-bf-dmg-number {
+      text-decoration: line-through;
+      opacity: 0.4;
+      filter: grayscale(1);
+    }
+    .fud-bf-card .fud-bf-dmg.is-blocked-dmg > legend::after {
+      content: " — Blocked";
       color: #1e6cff;
       font-weight: 800;
       font-size: 11px;
@@ -2129,6 +2148,12 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       resultSpan.textContent = "MISS";
     }
   }
+  // Strike the damage preview when the attack is blocked — mirrors Warning
+  // Shot's "deal no damage" strike so a blocked attack reads as dealing none.
+  // Uses its own class (see CSS) to stay independent of the apply-click
+  // menu nullify path.
+  const dmgEl = rootEl.querySelector(".fud-bf-dmg");
+  if (dmgEl) dmgEl.classList.toggle("is-blocked-dmg", blocked);
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
@@ -3900,11 +3925,20 @@ export async function postActionCard({ director, kind, payload }) {
       if (!panel) {
         panel = document.createElement("fieldset");
         panel.className = "fud-bf-section fud-bf-reaction-effects";
-        // Place after the target list (or append to the card body).
-        const anchor = card.querySelector(".fud-bf-target-list")?.closest(".fud-bf-section")
+        // Place after the target list when present; otherwise insert just
+        // BEFORE the button row(s) so the panel never lands below CONFIRM.
+        // (Guard / no-target cards have no `.fud-bf-target-list`, which used to
+        // fall through to appendChild → panel rendered under the buttons.)
+        const afterTargets = card.querySelector(".fud-bf-target-list")?.closest(".fud-bf-section")
           ?? card.querySelector(".fud-bf-target-list");
-        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
-        else card.appendChild(panel);
+        const firstBtnRow = card.querySelector(".fud-bf-btn-row");
+        if (afterTargets && afterTargets.parentNode) {
+          afterTargets.parentNode.insertBefore(panel, afterTargets.nextSibling);
+        } else if (firstBtnRow && firstBtnRow.parentNode) {
+          firstBtnRow.parentNode.insertBefore(panel, firstBtnRow);
+        } else {
+          card.appendChild(panel);
+        }
       }
       const chips = effects.map((e) => {
         if (e.kind === "apply_ae") {
@@ -4093,6 +4127,29 @@ export async function postActionCard({ director, kind, payload }) {
               }
               resultSpan.className = `t-result ${cls}`;
               resultSpan.textContent = label;
+            }
+
+            // Headline damage number — the prominent `.fud-bf-dmg-number` shows
+            // the weapon's base (finalIfHit) and is NOT recomputed by the
+            // per-target loop, so an outgoing reaction bonus (on/force buffs
+            // like Hawkeye, accepted ask buffs like Cheap Shot) wouldn't show
+            // there. Pre-affinity base is uniform across hit targets, so patch
+            // it to the first hit target's recomputed rawDamage. Preserve the
+            // trailing HR pill. Idempotent: no bonus → equals the original.
+            const numEl = root.querySelector(".fud-bf-dmg .fud-bf-dmg-number");
+            if (numEl) {
+              let repBase = null;
+              for (let i = 0; i < recomputed.length; i++) {
+                const e = recomputed[i];
+                if (e?.hit && typeof e.rawDamage === "number" && typeof e.grantAmount !== "number") {
+                  repBase = Math.max(0, Math.floor(e.rawDamage));
+                  break;
+                }
+              }
+              if (repBase != null) {
+                const pill = numEl.querySelector(".hr-pill");
+                numEl.innerHTML = `${repBase}${pill ? pill.outerHTML : ""}`;
+              }
             }
           }
           return { cancelled: false };

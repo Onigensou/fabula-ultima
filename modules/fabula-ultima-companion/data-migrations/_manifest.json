@@ -455,6 +455,10 @@
     {
       "key": "2026-06-07-menu-text-on-menu-row",
       "path": "data-migrations/2026-06-07-menu-text-on-menu-row.js"
+    },
+    {
+      "key": "2026-06-07-retire-reaction-ispassive",
+      "path": "data-migrations/2026-06-07-retire-reaction-ispassive.js"
     }
   ]
 }

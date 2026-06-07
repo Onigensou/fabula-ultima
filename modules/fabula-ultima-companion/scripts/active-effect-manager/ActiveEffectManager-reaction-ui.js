@@ -64,6 +64,14 @@
   ];
   const ON_EMPTY_OPTIONS         = ["abort", "skip"];
   const TARGET_SELECT_OPTIONS    = ["first"];
+  // Single 4-state firing mode (reaction_isPassive retired 2026-06-07).
+  const REACTION_PASSIVE_MODE_OPTIONS = ["ask", "on", "off", "force"];
+  const REACTION_PASSIVE_MODE_LABELS  = {
+    ask:   "Ask — player decides (clickable pill)",
+    on:    "On — auto-fires, visible",
+    off:   "Off — disabled",
+    force: "Force — auto-fires, UI-invisible (engine-mandatory)",
+  };
 
   // ---------------------------------------------------------------------------
   // Component state — module-level, keyed by ActiveEffect uuid.
@@ -161,7 +169,7 @@
       reaction_bond_presence: "",
       reaction_bond_emotion: "",
       reaction_effect_ref: "",
-      reaction_isPassive: false,
+      reaction_passive_mode: "ask",
       reaction_passive_target: ""
     };
   }
@@ -184,6 +192,7 @@
       chain_steps: "",
       allowed_types: "",
       free_mode: false,
+      free_hr_as_zero: false,
       max_mp_cost: ""
     };
   }
@@ -218,7 +227,7 @@
     consume_charge:   ["charge_key", "grant_target", "on_empty", "count"],
     redirect_target:  ["target_select", "rebuild_card"],
     chain:            ["chain_steps"],
-    open_action_menu: ["allowed_types", "free_mode", "max_mp_cost"],
+    open_action_menu: ["allowed_types", "free_mode", "free_hr_as_zero", "max_mp_cost"],
     // Unified damage adjustment (replaced add_damage + modify_damage_taken).
     adjust_damage:    ["damage_operation", "damage_amount", "damage_stage"],
   });
@@ -318,7 +327,7 @@
         ${formRow("Bond Presence", selectHtml("reaction_bond_presence", row.reaction_bond_presence ?? "", BOND_PRESENCE_OPTIONS, { labels: { "": "(any)", "present": "Bond exists toward subject", "absent": "No bond toward subject" } }), "reaction_bond_presence", "Gates on whether the reactor has a Bond toward the trigger's subject (bond_N + bond_temp).")}
         ${formRow("Bond Emotion", selectHtml("reaction_bond_emotion", row.reaction_bond_emotion ?? "", BOND_EMOTION_OPTIONS, { labels: { "": "(any)", "admiration": "Admiration", "inferiority": "Inferiority", "loyalty": "Loyalty", "mistrust": "Mistrust", "affection": "Affection", "hatred": "Hatred" } }), "reaction_bond_emotion", "Requires the Bond toward subject to include this emotion. Implies presence.")}
         ${formRow("Effect Ref", inputHtml("reaction_effect_ref", row.reaction_effect_ref ?? "", { list: effectLabelDatalistId, placeholder: "(none — picker only)" }), "reaction_effect_ref", "Matches an effect_label in the effects table below")}
-        ${formRow("Passive (auto-fire)", checkboxHtml("reaction_isPassive", !!row.reaction_isPassive), "reaction_isPassive")}
+        ${formRow("Firing Mode", selectHtml("reaction_passive_mode", row.reaction_passive_mode ?? "ask", REACTION_PASSIVE_MODE_OPTIONS, { labels: REACTION_PASSIVE_MODE_LABELS }), "reaction_passive_mode", "ask = clickable pill · on = auto-fire visible · off = disabled · force = auto-fire, engine-only")}
         ${formRow("Passive Target", selectHtml("reaction_passive_target", row.reaction_passive_target ?? "", PASSIVE_TARGET_OPTIONS, { includeBlank: true, labelForBlank: "(none)" }), "reaction_passive_target")}
       </div>
     `;
@@ -371,6 +380,7 @@
 
         ${formRow("Allowed Action Types", inputHtml("allowed_types", row.allowed_types ?? "", { placeholder: "Attack,Spell" }), "allowed_types", "Comma-separated TurnUI labels")}
         ${formRow("Free Mode", checkboxHtml("free_mode", !!row.free_mode), "free_mode")}
+        ${formRow("Free: HR as 0", checkboxHtml("free_hr_as_zero", !!row.free_hr_as_zero), "free_hr_as_zero", "Granted free attack treats High Roll as 0 for damage (Hawkeye option b).")}
         ${formRow("Max MP Cost", inputHtml("max_mp_cost", row.max_mp_cost ?? "", { type: "number", min: 0, step: 1, placeholder: "(no cap)" }), "max_mp_cost")}
       </div>
     `;
@@ -384,7 +394,10 @@
     const hasDamageType  = triggerNeeds(triggerKey, "damage_type");
     const hasDamageAmt   = triggerNeeds(triggerKey, "damage_amount");
     const hasDebuffCount = triggerNeeds(triggerKey, "debuff_count");
-    const isPassive = !!rowEl.querySelector('[data-field="reaction_isPassive"]')?.checked;
+    // passive_target routes the auto-applied effect; only meaningful for the
+    // auto-fire modes (on/force). For ask the player picks via the menu.
+    const mode = String(rowEl.querySelector('[data-field="reaction_passive_mode"]')?.value ?? "ask").toLowerCase();
+    const autoFires = mode === "on" || mode === "force";
 
     const visibility = {
       reaction_source:               hasSubject,
@@ -397,7 +410,7 @@
       reaction_action_intent:        hasSubject,
       reaction_bond_presence:        hasSubject,
       reaction_bond_emotion:         hasSubject,
-      reaction_passive_target:       isPassive
+      reaction_passive_target:       autoFires
     };
 
     for (const [field, show] of Object.entries(visibility)) {
@@ -415,7 +428,7 @@
       "charge_key", "on_empty", "count",
       "target_select", "rebuild_card",
       "chain_steps",
-      "allowed_types", "free_mode", "max_mp_cost"
+      "allowed_types", "free_mode", "free_hr_as_zero", "max_mp_cost"
     ]);
     for (const f of allFields) {
       const cell = rowEl.querySelector(`[data-row-field="${f}"]`);
@@ -444,8 +457,9 @@
       if (ref && !labelSet.has(ref)) {
         warnings.push(`Trigger #${key} references effect_label "${ref}" which doesn't exist.`);
       }
-      if (row.reaction_isPassive && !String(row.reaction_passive_target ?? "").trim()) {
-        warnings.push(`Trigger #${key} is passive but has no reaction_passive_target set.`);
+      const mode = String(row.reaction_passive_mode ?? "ask").trim().toLowerCase();
+      if ((mode === "on" || mode === "force") && !String(row.reaction_passive_target ?? "").trim()) {
+        warnings.push(`Trigger #${key} auto-fires (mode "${mode}") but has no reaction_passive_target set.`);
       }
     }
 
@@ -631,7 +645,7 @@
       const rowEl = target.closest(".oni-trigger-row, .oni-effect-row");
 
       if (rowEl?.classList.contains("oni-trigger-row")) {
-        if (field === "reaction_trigger" || field === "reaction_isPassive") {
+        if (field === "reaction_trigger" || field === "reaction_passive_mode") {
           const trig = rowEl.querySelector('[data-field="reaction_trigger"]')?.value ?? "";
           applyTriggerRowVisibility(rowEl, trig);
         }

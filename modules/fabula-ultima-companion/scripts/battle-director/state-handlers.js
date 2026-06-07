@@ -2374,7 +2374,7 @@ const PreRoll = {
       try {
         cands = await findPassiveCandidates({
           casterActor: perfActor, trigger: "creature_performs_action",
-          payload: probePayload, includeManual: true, includeUnavailable: true,
+          payload: probePayload, includeUnavailable: true,
         }) ?? [];
       } catch (e) { warn("PRE_ROLL: findPassiveCandidates threw", e); }
       // Split by passive mode. off → dropped. on/force → AUTO-FIRE now (they
@@ -2966,9 +2966,13 @@ const Compute = {
       // +SL bonus". See [[free-actions]].
       const attackerActorIdForGrant = attacker?.actorId ?? null;
       const attackGrant = attackerActorIdForGrant ? freeActions.get(attackerActorIdForGrant) : null;
+      // Captured before the grant is cleared below — drives the HR-as-0 damage
+      // override (Hawkeye option b: "treating your High Roll as 0").
+      let grantHrAsZero = false;
       if (attackGrant) {
         const grantCb = Number(attackGrant.checkBonus) || 0;
         const grantDb = Number(attackGrant.damageBonus) || 0;
+        grantHrAsZero = attackGrant.hrAsZero === true;
         checkBonus += grantCb;
         damageBonus += grantDb;
         if (grantCb !== 0) {
@@ -3010,8 +3014,9 @@ const Compute = {
       // (minimum_critical_dice / critical_dice_range). Sheet defaults
       // (6 / 0) reproduce the classic "matching dice both >= 6".
       const isCrit = isCriticalHit({ rA, rB, props: attackerProps, isFumble });
-      // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69).
-      const ignoreHR = isTwoWeapon;
+      // Two-Weapon Fighting: HR=0 for both passes (RAW Core p.69). Also HR=0
+      // when a free-action grant set hrAsZero (Hawkeye option b / Soaring Strike).
+      const ignoreHR = isTwoWeapon || grantHrAsZero;
       const effectiveHr = ignoreHR ? 0 : hr;
       // Damage-element override (3 scopes; see
       // resolveDamageElementOverride in skill-effects.js):
@@ -3685,7 +3690,6 @@ const Confirm = {
                 casterActor: reactor,
                 trigger: "creature_targeted_by_action",
                 payload: payloadForTrigger,
-                includeManual: true,    // Protect is `isPassive: false` (manual)
                 includeUnavailable: false,
               });
             } catch (e) {
@@ -4593,6 +4597,7 @@ const FreeActionWindow = {
       enabledLabels:    req.enabledLabels,
       checkBonus:       req.checkBonus,
       damageBonus:      req.damageBonus,
+      hrAsZero:         req.hrAsZero === true,
       sourceLabel:      req.sourceLabel,
       sourceItemUuid:   req.sourceItemUuid,
     });

@@ -338,30 +338,6 @@
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
         "animation_damage_timing_offset": "0",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "condition_formula": "",
-            "reaction_effect_ref": "rampart_arm",
-            "reaction_passive_target": "",
-            "requires_skill": ""
-          },
-          "1": {
-            "reaction_trigger": "round_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "ask",
-            "condition_formula": "HAS_MARTIAL_ARMOR == 1 || HAS_SHIELD == 1",
-            "reaction_effect_ref": "rampart_fire",
-            "reaction_debuff_count_target": "",
-            "reaction_debuff_count_min": "",
-            "reaction_passive_target": "",
-            "requires_skill": ""
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "rampart_arm",
@@ -424,6 +400,28 @@
             "target_prompt": "",
             "menu_label": "",
             "menu_description": ""
+          }
+        },
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "condition_formula": "",
+            "reaction_effect_ref": "rampart_arm",
+            "reaction_passive_target": "",
+            "requires_skill": ""
+          },
+          "1": {
+            "reaction_trigger": "round_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "ask",
+            "condition_formula": "HAS_MARTIAL_ARMOR == 1 || HAS_SHIELD == 1",
+            "reaction_effect_ref": "rampart_fire",
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": "",
+            "reaction_passive_target": "",
+            "requires_skill": ""
           }
         }
       },
@@ -846,16 +844,6 @@
         "max_level": "1",
         "class": "Guardian",
         "on_activate_effect_ref": "",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "condition_formula": "",
-            "reaction_effect_ref": "unbreakable_arm"
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "unbreakable_arm",
@@ -865,7 +853,16 @@
             "ae_duplicate_mode": "replace"
           }
         },
-        "name": "Unbreakable"
+        "name": "Unbreakable",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "condition_formula": "",
+            "reaction_effect_ref": "unbreakable_arm"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "Dy25jPf0Mx1xFyy2"
@@ -906,7 +903,6 @@
                   "reaction_trigger": "creature_takes_damage",
                   "reaction_source": "self",
                   "reaction_damage_outcome": "would_reduce_to_zero",
-                  "reaction_isPassive": true,
                   "reaction_passive_mode": "ask",
                   "reaction_effect_ref": "unbreakable_clamp"
                 }
@@ -1013,7 +1009,6 @@
           "0": {
             "reaction_trigger": "creature_guards",
             "reaction_source": "self",
-            "reaction_isPassive": true,
             "reaction_passive_mode": "force",
             "condition_formula": "DID_COVER_ALLY == 1",
             "reaction_effect_ref": "bodyguard_apply",
@@ -1433,50 +1428,6 @@
         "level": "1",
         "max_level": "1",
         "defense_target_type": "def",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_targeted_by_action",
-            "reaction_source": "ally",
-            "reaction_isPassive": false,
-            "reaction_passive_mode": "ask",
-            "reaction_action_intent": "harmful",
-            "reaction_effect_ref": "protect_react",
-            "reaction_damage_source": "",
-            "reaction_damage_type": "",
-            "reaction_subject_kind": "",
-            "reaction_ownership": "",
-            "reaction_action_target": "",
-            "condition_formula": "",
-            "requires_skill": ""
-          },
-          "1": {
-            "reaction_trigger": "turn_start",
-            "reaction_source": "self",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "reaction_effect_ref": "protect_refill",
-            "reaction_passive_target": "self",
-            "reaction_damage_source": "",
-            "reaction_debuff_count_target": "",
-            "reaction_debuff_count_min": "",
-            "reaction_subject_kind": "",
-            "reaction_ownership": "",
-            "reaction_action_intent": "",
-            "reaction_action_target": "",
-            "condition_formula": "",
-            "requires_skill": ""
-          },
-          "2": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "reaction_effect_ref": "protect_refill",
-            "reaction_passive_target": "",
-            "condition_formula": "",
-            "requires_skill": ""
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "protect_gate",
@@ -1567,7 +1518,48 @@
         "skill_animation_mode": "default",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        "animation_damage_timing_offset": "0",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_targeted_by_action",
+            "reaction_source": "ally",
+            "reaction_passive_mode": "ask",
+            "reaction_action_intent": "harmful",
+            "reaction_effect_ref": "protect_react",
+            "reaction_damage_source": "",
+            "reaction_damage_type": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_target": "",
+            "condition_formula": "",
+            "requires_skill": ""
+          },
+          "1": {
+            "reaction_trigger": "turn_start",
+            "reaction_source": "self",
+            "reaction_passive_mode": "force",
+            "reaction_effect_ref": "protect_refill",
+            "reaction_passive_target": "self",
+            "reaction_damage_source": "",
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_intent": "",
+            "reaction_action_target": "",
+            "condition_formula": "",
+            "requires_skill": ""
+          },
+          "2": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "reaction_effect_ref": "protect_refill",
+            "reaction_passive_target": "",
+            "condition_formula": "",
+            "requires_skill": ""
+          }
+        }
       },
       "unique": false,
       "uniqueId": "MZXmnywINICmx7Ua"
@@ -1730,32 +1722,6 @@
         "on_activate_effect_ref": "",
         "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
         "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "condition_formula": "HAS_SKILL_DIVINATION == 1",
-            "reaction_effect_ref": "pds_gain"
-          },
-          "1": {
-            "reaction_trigger": "round_start",
-            "reaction_source": "",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "force",
-            "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
-            "reaction_effect_ref": "pds_gain"
-          },
-          "2": {
-            "reaction_trigger": "creature_targeted_by_action",
-            "reaction_source": "ally",
-            "reaction_action_intent": "harmful",
-            "reaction_isPassive": false,
-            "condition_formula": "",
-            "reaction_effect_ref": "pds_reaction"
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "pds_self",
@@ -1806,7 +1772,31 @@
             "chain_steps": "pds_consume,pds_redirect"
           }
         },
-        "name": "Prophetic Defender"
+        "name": "Prophetic Defender",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "condition_formula": "HAS_SKILL_DIVINATION == 1",
+            "reaction_effect_ref": "pds_gain"
+          },
+          "1": {
+            "reaction_trigger": "round_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
+            "reaction_effect_ref": "pds_gain"
+          },
+          "2": {
+            "reaction_trigger": "creature_targeted_by_action",
+            "reaction_source": "ally",
+            "reaction_action_intent": "harmful",
+            "condition_formula": "",
+            "reaction_effect_ref": "pds_reaction",
+            "reaction_passive_mode": "ask"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "ZySnR7edyoUvFZM3"
@@ -2187,25 +2177,6 @@
         "isHeroic": true,
         "description": "<p>When you hit one or more creatures with an attack, you may spend <strong>1 Fabula Point.</strong> If you do, each of those creatures will be unable to perform any action that requires them to be able to see you until the start of your next turn.</p>",
         "isReaction": true,
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_deals_damage",
-            "reaction_source": "self",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "vanish_apply",
-            "reaction_damage_source": "",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_subject_kind": "",
-            "reaction_ownership": "",
-            "reaction_action_intent": "",
-            "reaction_action_target": "",
-            "reaction_passive_target": "",
-            "condition_formula": "",
-            "requires_skill": ""
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "vanish_apply",
@@ -2251,7 +2222,25 @@
         "skill_animation_mode": "default",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        "animation_damage_timing_offset": "0",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_deals_damage",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "vanish_apply",
+            "reaction_damage_source": "",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_intent": "",
+            "reaction_action_target": "",
+            "reaction_passive_target": "",
+            "condition_formula": "",
+            "requires_skill": ""
+          }
+        }
       },
       "unique": true,
       "uniqueId": "Q7LRl9Vb1LcccX8R"
@@ -2344,17 +2333,6 @@
         "damage_bonus": "0",
         "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
         "isReaction": true,
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_will_deal_damage",
-            "reaction_source": "self",
-            "reaction_action_target": "enemy",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "cheap_shot_bonus",
-            "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0"
-          }
-        },
         "level": 1,
         "max_level": "5",
         "class": "Rogue",
@@ -2366,6 +2344,16 @@
             "damage_amount": "SL + TARGET_STATUS_COUNT",
             "damage_operation": "add",
             "damage_stage": "outgoing"
+          }
+        },
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_action_target": "enemy",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "cheap_shot_bonus",
+            "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0"
           }
         }
       },
@@ -2519,33 +2507,6 @@
         "max_level": 3,
         "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul>",
         "isReaction": true,
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": false,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "hs_react",
-            "$deleted": true
-          },
-          "99": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": false,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "hs_react",
-            "$deleted": true,
-            "condition_formula": "CUR_MP >= 10"
-          },
-          "100": {
-            "reaction_trigger": "conflict_start",
-            "reaction_source": "",
-            "reaction_isPassive": false,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "hs_react",
-            "$deleted": false
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "hs_self",
@@ -2580,7 +2541,31 @@
             "chain_steps": "hs_mp_cost, hs_free_action"
           }
         },
-        "class": "Rogue"
+        "class": "Rogue",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "hs_react",
+            "$deleted": true
+          },
+          "99": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "hs_react",
+            "$deleted": true,
+            "condition_formula": "CUR_MP >= 10"
+          },
+          "100": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "hs_react",
+            "$deleted": false
+          }
+        }
       },
       "unique": true,
       "uniqueId": "FZX0P5HD6UfIIk9i"
@@ -2746,16 +2731,6 @@
         "duration": "-",
         "on_activate_effect_ref": "",
         "post_damage_effect_ref": "",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_performs_action",
-            "reaction_source": "self",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "barrage_do",
-            "condition_formula": "ATTACK_IS_RANGED == 1"
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "barrage_do",
@@ -2795,7 +2770,16 @@
         "max_level": "1",
         "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
         "name": "Barrage",
-        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
+        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "barrage_do",
+            "condition_formula": "ATTACK_IS_RANGED == 1"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "52VzMivQ0jClbxFZ"
@@ -2840,16 +2824,6 @@
         "duration": "-",
         "on_activate_effect_ref": "",
         "post_damage_effect_ref": "",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_targeted_by_action",
-            "reaction_source": "all",
-            "reaction_action_intent": "harmful",
-            "reaction_isPassive": false,
-            "reaction_effect_ref": "crossfire_do",
-            "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT"
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "crossfire_do",
@@ -2879,7 +2853,17 @@
         "max_level": "1",
         "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
         "name": "Crossfire",
-        "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp"
+        "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_targeted_by_action",
+            "reaction_source": "all",
+            "reaction_action_intent": "harmful",
+            "reaction_effect_ref": "crossfire_do",
+            "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
+            "reaction_passive_mode": "ask"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "0yilViGrOcWuhZqt"
@@ -2913,38 +2897,31 @@
         "cost": "",
         "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you may choose one option:</p><ul><li>the next <strong>ranged attack</strong> you perform before the end of the current scene will deal <strong>【SL】× 2</strong> extra damage; or</li><li>you may immediately perform a <strong>free attack</strong> with a bow or firearm you have equipped, treating your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</li></ul>",
         "on_activate_effect_ref": "",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_guards",
-            "reaction_source": "self",
-            "condition_formula": "DID_COVER_ALLY == 0",
-            "reaction_effect_ref": "hawkeye_choose",
-            "reaction_isPassive": false,
-            "reaction_passive_mode": "ask"
-          }
-        },
+        "name": "Hawkeye",
         "effect_table": {
           "0": {
             "effect_label": "hawkeye_choose",
             "effect_kind": "open_action_menu",
             "menu_title": "Hawkeye",
             "menu_subtitle": "You guarded without providing cover — choose:",
-            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack",
-            "menu_option_labels": "Take aim — your next ranged attack deals +SL×2 extra damage | Free attack — bow or firearm (High Roll treated as 0)",
-            "menu_option_descriptions": "Lasts until you make a ranged attack, or the scene ends. | Immediately perform a free bow/firearm attack."
+            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack"
           },
           "1": {
             "effect_label": "hawkeye_opt_aim",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Hawkeye",
             "target_ref": "hawkeye_self_skill",
-            "ae_duplicate_mode": "replace"
+            "ae_duplicate_mode": "replace",
+            "menu_label": "Take aim — your next ranged attack deals +SL×2 extra damage",
+            "menu_description": "Lasts until you make a ranged attack, or the scene ends."
           },
           "2": {
             "effect_label": "hawkeye_opt_attack",
             "effect_kind": "open_action_menu",
             "free_mode": true,
-            "allowed_types": "Attack"
+            "allowed_types": "Attack",
+            "menu_label": "Free attack — bow or firearm (High Roll treated as 0)",
+            "menu_description": "Immediately perform a free bow/firearm attack."
           },
           "3": {
             "effect_label": "hawkeye_self_skill",
@@ -2952,7 +2929,15 @@
             "candidate_source": "self"
           }
         },
-        "name": "Hawkeye"
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_guards",
+            "reaction_source": "self",
+            "condition_formula": "DID_COVER_ALLY == 0",
+            "reaction_effect_ref": "hawkeye_choose",
+            "reaction_passive_mode": "ask"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "3A2B1LrKT09AwCiL"
@@ -2988,6 +2973,7 @@
             "charges": 1,
             "chargesMax": 1,
             "chargeKey": "hawkeye_aim",
+            "lifetimeMode": "on_activation",
             "reactionConfig": {
               "reaction_config_table": {
                 "0": {
@@ -2995,7 +2981,6 @@
                   "reaction_source": "self",
                   "condition_formula": "ATTACK_IS_RANGED == 1",
                   "reaction_effect_ref": "hawkeye_fire",
-                  "reaction_isPassive": true,
                   "reaction_passive_target": "self",
                   "reaction_passive_mode": "on"
                 }
@@ -3027,8 +3012,7 @@
                   "candidate_source": "self"
                 }
               }
-            },
-            "lifetimeMode": "on_activation"
+            }
           },
           "statuscounter": {
             "config": {
@@ -3234,16 +3218,6 @@
         "duration": "-",
         "on_activate_effect_ref": "",
         "post_damage_effect_ref": "",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_will_deal_damage",
-            "reaction_source": "self",
-            "reaction_isPassive": true,
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "warning_shot",
-            "condition_formula": "ATTACK_IS_RANGED == 1"
-          }
-        },
         "effect_table": {
           "0": {
             "effect_label": "warning_shot",
@@ -3295,7 +3269,16 @@
         "max_level": "4",
         "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict <strong>slow</strong> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10</strong> Mind Points. Describe your maneuver!</p>",
         "name": "Warning Shot",
-        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
+        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "warning_shot",
+            "condition_formula": "ATTACK_IS_RANGED == 1"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "OUQ2e6KO9IxwVKOF"
@@ -3395,6 +3378,14 @@
         },
         "ignore_hr": false,
         "active_effect_config_table": {},
+        "isReaction": true,
+        "isZeroPower": false,
+        "defense_target_type": "def",
+        "skill_information": "",
+        "on_activate_effect_ref": "",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_completes_spell",
@@ -3409,22 +3400,13 @@
             "reaction_action_intent": "",
             "reaction_action_target": "ally",
             "reaction_effect_ref": "healing_power_grant",
-            "reaction_isPassive": true,
             "reaction_passive_target": "self",
             "reaction_passive_mode": "ask",
             "condition_formula": "HAS_ARCANE_WEAPON",
             "requires_skill": "",
             "$deleted": false
           }
-        },
-        "isReaction": true,
-        "isZeroPower": false,
-        "defense_target_type": "def",
-        "skill_information": "",
-        "on_activate_effect_ref": "",
-        "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        }
       },
       "unique": false,
       "uniqueId": "B7iUxJTSvR12dwEr"
@@ -3575,6 +3557,16 @@
             "menu_description": ""
           }
         },
+        "ignore_hr": false,
+        "active_effect_config_table": {},
+        "isReaction": true,
+        "isZeroPower": false,
+        "defense_target_type": "def",
+        "skill_information": "",
+        "on_activate_effect_ref": "",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_completes_spell",
@@ -3589,24 +3581,13 @@
             "reaction_action_intent": "",
             "reaction_action_target": "ally",
             "reaction_effect_ref": "support_magic_apply",
-            "reaction_isPassive": true,
             "reaction_passive_target": "self",
             "reaction_passive_mode": "ask",
             "condition_formula": "HAS_ARCANE_WEAPON",
             "requires_skill": "",
             "$deleted": false
           }
-        },
-        "ignore_hr": false,
-        "active_effect_config_table": {},
-        "isReaction": true,
-        "isZeroPower": false,
-        "defense_target_type": "def",
-        "skill_information": "",
-        "on_activate_effect_ref": "",
-        "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        }
       },
       "unique": false,
       "uniqueId": "A2w8xO1DvldC53X6"
@@ -3653,19 +3634,18 @@
             "charges": 1,
             "chargesMax": 1,
             "chargeKey": "support-magic",
+            "lifetimeMode": "on_activation",
             "reactionConfig": {
               "reaction_config_table": {
                 "0": {
                   "reaction_trigger": "creature_performs_check",
                   "reaction_source": "self",
-                  "reaction_isPassive": true,
                   "reaction_passive_mode": "on",
                   "reaction_effect_ref": ""
                 }
               },
               "effect_table": {}
-            },
-            "lifetimeMode": "on_activation"
+            }
           },
           "statuscounter": {
             "config": {
@@ -3728,28 +3708,6 @@
         "skill_animation_mode": "default",
         "ignore_hr": false,
         "active_effect_config_table": {},
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "caster_short_on_mp",
-            "reaction_source": "self",
-            "reaction_damage_source": "",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_debuff_count_target": "",
-            "reaction_debuff_count_min": "",
-            "reaction_subject_kind": "",
-            "reaction_ownership": "",
-            "reaction_action_intent": "",
-            "reaction_action_target": "",
-            "reaction_effect_ref": "vismagus_swap",
-            "reaction_isPassive": true,
-            "reaction_passive_target": "self",
-            "reaction_passive_mode": "ask",
-            "condition_formula": "",
-            "requires_skill": "",
-            "$deleted": false
-          }
-        },
         "isReaction": true,
         "isZeroPower": false,
         "effect_table": {
@@ -3771,7 +3729,28 @@
         "on_activate_effect_ref": "",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        "animation_damage_timing_offset": "0",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "caster_short_on_mp",
+            "reaction_source": "self",
+            "reaction_damage_source": "",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_intent": "",
+            "reaction_action_target": "",
+            "reaction_effect_ref": "vismagus_swap",
+            "reaction_passive_target": "self",
+            "reaction_passive_mode": "ask",
+            "condition_formula": "",
+            "requires_skill": "",
+            "$deleted": false
+          }
+        }
       },
       "unique": false,
       "uniqueId": "eW2d3HmbS2ur9hax"
@@ -4497,7 +4476,7 @@
                   "reaction_source": "self",
                   "reaction_damage_outcome": "would_reduce_to_zero",
                   "reaction_effect_ref": "mercy_clamp",
-                  "reaction_isPassive": true
+                  "reaction_passive_mode": "ask"
                 }
               },
               "effect_table": {

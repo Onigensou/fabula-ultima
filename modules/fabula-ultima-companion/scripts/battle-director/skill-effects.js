@@ -482,16 +482,16 @@ export const applySoulWeaponElementOverride = applyDamageTypeOverride;
 
 // ── Passive trigger layer (reaction_config_table-driven) ───────────────
 //
-// Passive behaviors live in any item's `system.props.reaction_config_table`
-// as rows with `reaction_isPassive: true`. The dispatcher walks every item
-// on the caster (not just skill_type==="Passive" — buffs / equipment with
-// reactionConfig blobs work the same way), matches rows by `reaction_trigger`
-// + filters, and fires the linked `reaction_effect_ref` against the item's
-// `effect_table`.
+// Reaction behaviors live in any item's `system.props.reaction_config_table`.
+// The dispatcher walks every item on the caster (not just skill_type==="Passive"
+// — buffs / equipment with reactionConfig blobs work the same way), matches rows
+// by `reaction_trigger` + filters, and fires the linked `reaction_effect_ref`
+// against the item's `effect_table` per the row's `reaction_passive_mode`.
 //
 // Row fields honored by this dispatcher:
 //   reaction_trigger          — must equal the event key (e.g. "creature_completes_spell")
-//   reaction_isPassive        — must be true (manual reactions don't auto-fire here)
+//   reaction_passive_mode     — force/on auto-fire, ask = clickable, off = skip
+//                               (the reaction_isPassive boolean was retired 2026-06-07)
 //   reaction_source           — "self" / "ally" / "enemy" filters the SUBJECT's disposition vs reactor
 //   reaction_action_target    — "ally" / "enemy" / "neutral" requires at least 1 such target in payload
 //   condition_formula         — optional formula gate, evaluated against the reactor
@@ -837,13 +837,12 @@ async function promptPassiveOptin(itemName, reactorActor, description) {
 //   "ask" → caller renders as clickable; pending player decision
 //   "off" → caller auto-rejects (not rendered, not applied)
 //
-// Kinds:
-//   "passive" → row has reaction_isPassive === true. Dispatcher fires
-//               automatically per mode tri-state above.
-//   "manual"  → row has reaction_isPassive === false / undefined. ALWAYS
-//               requires the player to click — no mode bypass. Surfaces
-//               in the menu as an active blade; the caller is expected
-//               to treat its mode as "ask" regardless of the row value.
+// Kinds (DERIVED from `reaction_passive_mode` — the reaction_isPassive
+// boolean was retired 2026-06-07):
+//   "passive" → mode on/force/off. on/force auto-fire; off auto-rejected.
+//   "manual"  → mode ask. Requires the player to click; surfaces in the
+//               menu as an active blade. (Kept as a label for downstream
+//               readers; it is purely `mode === "ask"`.)
 //
 // Classify a reaction row as "action-creating" or "state-only" by
 // walking its effect chain from `reaction_effect_ref` through any
@@ -930,11 +929,10 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
   return isActionCreatingReaction(fakeItem, reactionRow);
 }
 
-// Default behavior (no opts) preserves the legacy pre-resolve pill flow:
-// only passive rows are returned. Pass `includeManual: true` (used by
-// the token-anchored reaction menu for standalone trigger sites where
-// High Speed-style manual reactions also live) to surface manual rows
-// alongside passives.
+// Single-mode model (2026-06-07): every matching non-deleted row is
+// returned regardless of mode — the caller surfaces it per its
+// `reaction_passive_mode` (off = auto-reject, ask = clickable, on/force =
+// auto). The old `includeManual` filter (which dropped manual rows) is gone.
 //
 // `includeUnavailable` (default false) controls whether reactions that
 // pass the hard match gates BUT fail their condition_formula or chain
@@ -997,25 +995,27 @@ function skillActionPassiveApplies(item, payload) {
   return item.uuid === usedUuid;
 }
 
-export async function findPassiveCandidates({ casterActor, trigger, payload, includeManual = false, includeUnavailable = false }) {
+export async function findPassiveCandidates({ casterActor, trigger, payload, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
 
-  function classifyRow(row) {
-    return row?.reaction_isPassive === true ? "passive" : "manual";
-  }
+  // Single-mode model (reaction_isPassive retired 2026-06-07): every row's
+  // behavior comes from `reaction_passive_mode` ∈ {force, on, ask, off}.
+  // `kind` is derived (ask → "manual" pill, on/force/off → "passive") only
+  // for back-compat with downstream readers; the auth-time manual/passive
+  // split and the `includeManual` filter are gone — every matching non-deleted
+  // row surfaces here, and the mode decides how (off is auto-rejected by the
+  // caller). See [[reaction-passive-mode-single-field]].
   function shouldKeep(row) {
     if (!row || row.$deleted) return false;
     if (String(row.reaction_trigger ?? "").trim() !== trigger) return false;
-    const isPassive = row.reaction_isPassive === true;
-    if (!isPassive && !includeManual) return false;
     return true;
   }
-  function modeFor(row, kind) {
-    // Manual rows are always "ask" — the player has to click. Passive
-    // rows respect the configured tri-state (on/ask/off).
-    if (kind === "manual") return "ask";
+  function modeFor(row) {
     return resolveReactionPassiveMode(row);
+  }
+  function kindForMode(mode) {
+    return mode === "ask" ? "manual" : "passive";
   }
 
   // Evaluate availability for a row that already passed the hard match
@@ -1050,7 +1050,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       const { available, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, item);
       if (!includeUnavailable && !available) continue;
-      const kind = classifyRow(row);
+      const mode = modeFor(row);
       out.push({
         carrierKind: "item",
         carrierUuid: item.uuid,
@@ -1058,8 +1058,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         carrierImg:  item.img,
         carrierDescription: item.system?.props?.description ?? "",
         rowKey: key,
-        kind,
-        mode: modeFor(row, kind),
+        kind: kindForMode(mode),
+        mode,
         ref: refLabel,
         available,
         unavailableReason,
@@ -1082,7 +1082,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       const { available, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, fakeItem);
       if (!includeUnavailable && !available) continue;
-      const kind = classifyRow(row);
+      const mode = modeFor(row);
       out.push({
         carrierKind: "ae",
         carrierUuid: ae.uuid,
@@ -1090,8 +1090,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         carrierImg:  ae.icon ?? ae.img,
         carrierDescription: ae.description ?? "",
         rowKey: key,
-        kind,
-        mode: modeFor(row, kind),
+        kind: kindForMode(mode),
+        mode,
         ref: refLabel,
         available,
         unavailableReason,
@@ -1442,10 +1442,11 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
     trigger,
     payload,
     skipEvaluated,
-    // Post-resolve triggers only consider rows authored as `reaction_isPassive`.
-    // Manual rows are surfaced through other UI (turn-UI / action card), so
-    // explicitly opt out here to match the legacy firePassiveTriggers shape.
-    includeManual: false,
+    // Single-mode model: every non-off row for this trigger surfaces here.
+    // `ask` rows render as clickable blades in the token reaction menu;
+    // `on`/`force` auto-fire. (Previously `includeManual: false` excluded
+    // manual rows, leaving "may"-on-post-resolve skills — Consume, Painful
+    // Lesson, Life Transference — dormant.) See [[reaction-passive-mode-single-field]].
     // No scope/scene — post-resolve trigger events are not persistent
     // across actions. Each new event prompts fresh; firedSet stays empty.
   });
@@ -3177,12 +3178,16 @@ async function applyOpenActionMenuEffect(row, ctx) {
     });
     const checkBonus  = evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0;
     const damageBonus = evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0;
+    // free_hr_as_zero: the granted free attack treats High Roll as 0 for damage
+    // (Hawkeye option b, Soaring Strike-style). Declarative — any free_mode row
+    // can set it; threaded to the grant → consumed at Attack COMPUTE.
+    const hrAsZero = row.free_hr_as_zero === true || String(row.free_hr_as_zero ?? "").toLowerCase() === "true";
     const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
     freeActionQueue.enqueue({
       reactorActorId:   reactor.id,
       reactorActorUuid: reactor.uuid,
       reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
-      enabledLabels, checkBonus, damageBonus,
+      enabledLabels, checkBonus, damageBonus, hrAsZero,
       sourceLabel,
       sourceItemUuid: ctx.skill?.uuid ?? null,
       maxMpCost:             null,    // future: row.max_mp_cost
