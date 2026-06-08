@@ -27,6 +27,7 @@
   const RAW_CH    = `module.${DP.MODULE_ID ?? "fabula-ultima-companion"}`;
   const MSG_MV    = "DP_MARK_VISITED";
   const MSG_AS    = "DP_ACTIVATE_SCENE";
+  const MSG_TAE   = "DP_TICK_PARTY_AES";
   const MV_GUARD  = "__ONI_DP_MV_SOCKET__";
 
   DP.Socket = {
@@ -64,9 +65,16 @@
             .catch(e => console.warn(TAG, "raw activateScene failed:", e));
           return;
         }
+
+        if (msg?.type === MSG_TAE) {
+          // Player client finished a dungeon turn — tick party AEs as GM.
+          await DP.AELifecycle?.tickPartyAEs?.()
+            .catch(e => console.warn(TAG, "raw tickPartyAEs failed:", e));
+          return;
+        }
       });
 
-      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene).");
+      console.debug(TAG, "Raw socket listener installed (markVisited, activateScene, tickPartyAEs).");
     },
 
     /** Called from dp-bootstrap once socketlib is ready. */
@@ -249,6 +257,18 @@
       // handles it.  This avoids the socketlib.ready timing race (same fix as markVisited).
       game.socket.emit(RAW_CH, { type: MSG_AS, payload: { sceneUuid } });
       return { ok: true };
+    },
+
+    /**
+     * Tick party AEs for a completed dungeon turn.
+     * GM calls directly; player emits raw socket so the GM's listener handles it.
+     * Same pattern as markVisited — bypasses socketlib to avoid the ready-hook race.
+     */
+    async tickPartyAEs() {
+      if (game.user?.isGM) {
+        return DP.AELifecycle?.tickPartyAEs?.();
+      }
+      game.socket.emit(RAW_CH, { type: MSG_TAE, payload: {} });
     },
 
     async triggerTreasure(scene, tileId, tokenId, tileType) {

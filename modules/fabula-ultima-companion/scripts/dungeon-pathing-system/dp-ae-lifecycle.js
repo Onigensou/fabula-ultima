@@ -23,7 +23,9 @@
 //   lifetimeMode "on_activation" — charge-governed; expires via consume_charge
 //   lifetimeMode "round_end"     — group-round mechanic, not per-character-step
 //
-// Only the GM client executes writes; other clients return early.
+// Only the GM client executes writes. Because Hooks.callAll is local-only,
+// the TURN_END hook fires on the player's client; dp-socket tickPartyAEs()
+// routes the write to the GM via raw game.socket (same pattern as markVisited).
 // ============================================================================
 (() => {
   const DP        = globalThis.DungeonPathing ??= {};
@@ -129,10 +131,13 @@
   }
 
   // ── Hook registration ──────────────────────────────────────────────────────
+  // Hooks.callAll is LOCAL — turnEnd only fires on the client running the turn
+  // loop (the player who owns the dungeon UI, not the GM). We must not guard
+  // with isGM here; instead, delegate to DP.Socket.tickPartyAEs() which calls
+  // directly if GM and emits a raw socket message to the GM if not.
 
   Hooks.on(DP.HOOKS.TURN_END, async () => {
-    if (!game.user?.isGM) return;   // only GM writes; Hooks.callAll fires on all clients
-    await tickPartyAEs();
+    await DP.Socket.tickPartyAEs();
   });
 
   // Expose for manual testing via evalGM / test bridge
