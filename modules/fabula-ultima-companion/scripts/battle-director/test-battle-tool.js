@@ -59,10 +59,20 @@ export function initTestBattleTool() {
     if (!game.user?.isGM) return;
     ensureStyle();
     registerDevTool({ id: "test-battle", icon: "⚔️", label: "Test Battle", onClick: openPanel });
-    // Ephemeral cleanup: when a battle ends, delete the scratch test actors so
+    // Ephemeral cleanup: when a battle ENDS, delete the scratch test actors so
     // nothing accumulates and no test data lingers. The director sweeps its
     // spawned tokens before firing this, so the actors are safe to delete.
-    Hooks.on("fu-director-stopped", () => {
+    //
+    // CRITICAL: skip this on the rewind path. `rewindTo` calls
+    // stop({ reason: "rewind" }) purely to tear the live instance down before
+    // reconstructing it a beat later — the battle is NOT over. Deleting the
+    // generated player/dummy actors here would orphan their tokens (the
+    // reconstruct step re-resolves combatant actors via fromUuid and finds
+    // nothing), so the rewound combatants lose their actor → targets become
+    // un-targetable and the turn breaks. Same re-mount gate `stop()` uses for
+    // its own token/AE sweeps (cleanupTokens=false on rewind).
+    Hooks.on("fu-director-stopped", ({ reason } = {}) => {
+      if (reason === "rewind") return;
       _soloMode = false;
       removeNoActionsAEs().catch((e) => warn("no-actions AE cleanup threw", e));
       cleanupScratchActors().catch((e) => warn("scratch cleanup threw", e));

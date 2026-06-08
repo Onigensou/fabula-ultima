@@ -415,6 +415,15 @@ async function snapshotCombatantActors(dCombat) {
     if (!actor && c.actorUuid) {
       try { actor = await fromUuid(c.actorUuid); } catch {}
     }
+    // Last resort: resolve through the token. Unlinked tokens carry their
+    // live state on a token-scoped synthetic actor (token delta); reaching
+    // it via the token is the only reliable handle when the combatant lost
+    // its actorDoc reference. We also persist the token uuid so the rewind
+    // restore has a stable fallback key (the synthetic actor uuid is
+    // token-scoped and can be brittle; the token uuid is not).
+    if (!actor && c.tokenUuid) {
+      try { actor = (await fromUuid(c.tokenUuid))?.actor ?? null; } catch {}
+    }
     if (!actor) {
       warn(`snapshotCombatantActors: actor not resolvable for ${c.name} (${c.actorUuid})`);
       continue;
@@ -423,6 +432,7 @@ async function snapshotCombatantActors(dCombat) {
     out.push({
       actorUuid: actor.uuid,
       actorId: actor.id,
+      tokenUuid: c.tokenUuid ?? actor.token?.uuid ?? null,
       name: actor.name ?? c.name ?? "?",
       props: {
         // Resources
@@ -766,6 +776,14 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
   for (const actorSnap of snapshot.actors) {
     let actor = null;
     try { actor = await fromUuid(actorSnap.actorUuid); } catch {}
+    // Fallback for tokens without their own concrete (linked) actor: the
+    // synthetic actor uuid is token-scoped and can fail to resolve after a
+    // stop→reconstruct cycle, but the token uuid is stable. Resolve the
+    // token's own (delta) actor so the restore writes to the SAME isolated
+    // actor the snapshot was taken from — never the shared base world actor.
+    if (!actor && actorSnap.tokenUuid) {
+      try { actor = (await fromUuid(actorSnap.tokenUuid))?.actor ?? null; } catch {}
+    }
     if (!actor) {
       warn(`restore: actor ${actorSnap.actorUuid} (${actorSnap.name}) not found, skipping`);
       continue;

@@ -878,7 +878,15 @@ Hooks.once("ready", () => {
       try {
         const [tokenDoc] = await spawnLiveDirectorTokens({ scene: dc.scene, actorUuids: [actor.uuid], disposition });
         if (!tokenDoc) return { ok: false, error: "token spawn failed" };
-        const c = dc.addCombatant({ tokenDoc, actorDoc: actor, side: sd, disposition });
+        // Use the TOKEN's own actor, not the base world actor we resolved
+        // above. Enemy tokens spawn UNLINKED (director-init: actorLink=false),
+        // so their live state lives in the token delta (synthetic actor). The
+        // base world actor is shared across every unlinked copy. Keying the
+        // combatant off the base actor makes the rewind snapshot/restore mutate
+        // that shared actor — corrupting every token derived from it. This
+        // mirrors buildDirectorCombat, which omits actorDoc so the constructor
+        // defaults to tokenDoc.actor. For linked PCs tokenDoc.actor === actor.
+        const c = dc.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor ?? actor, side: sd, disposition });
         try { bannerRefreshTurnActions(dc); } catch (_e) {}
         try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add", combatantId: c.id }); } catch (_e) {}
         log(`live addCombatant: ${c.name} (${sd})`);
