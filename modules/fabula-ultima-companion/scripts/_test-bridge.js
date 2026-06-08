@@ -47,19 +47,19 @@
  * rate (2s) after IDLE_AFTER_MS of quiet. This prevents the bridge from
  * hammering FilePicker.browse during long idle sessions.
  *
- * Activation: the bridge is DORMANT on boot unless `bridge-activate.txt`
- * exists in the world dir. Sentinel is consumed on read (overwritten empty),
- * so a one-shot activation only covers the next boot. The reload command
- * re-arms the sentinel before reloading, so a Claude-driven reload chain
- * keeps the bridge running. A normal user reload finds no sentinel and the
- * bridge stays asleep — no polling, no heartbeats, no FilePicker traffic.
+ * Activation: two independent ways to boot, both GM-only (a non-GM session
+ * never starts the watcher, so multiple browsers don't race on the same inbox):
+ *   1. The CLIENT-scoped "Test Bridge: auto-start on boot" setting. When on,
+ *      the bridge boots on every reload with no sentinel. Ships OFF, so a fresh
+ *      install / co-dev stays dormant. Client scope keeps it out of any worlds/
+ *      snapshot — enabling it can't leak to someone who pulls the world.
+ *   2. The `bridge-activate.txt` sentinel. Consumed on read (overwritten
+ *      empty); a sentinel-driven boot re-arms itself so a Claude-driven reload
+ *      chain keeps the bridge alive even with the setting off.
  *
- * To wake a dormant bridge from a Claude session: write a non-empty
- * `bridge-activate.txt` to the world dir from disk, then reload Foundry.
- * From inside Foundry: `FUCompanion.api.testBridge.activate()` arms the
- * sentinel and triggers a reload; `FUCompanion.api.testBridge.start()`
- * activates in-place without reloading (use if the page is responsive but
- * you want to skip the reload).
+ * `FUCompanion.api.testBridge.activate()` arms the sentinel + reloads;
+ * `.start()` activates in-place without reloading (use if the bridge was
+ * stopped and you want it back without a reload).
  *
  * GM only. Watcher self-disables for non-GM users so multiple browsers
  * don't race on the same inbox.
@@ -67,6 +67,13 @@
 (() => {
   const TAG = "[FUCompanion][TestBridge]";
   const SOURCE = "data";
+  // Default-on is gated behind a CLIENT-scoped setting so it ships dormant for
+  // everyone and only this developer's browser opts in. Client scope (not
+  // world) deliberately keeps it OUT of any worlds/ snapshot — flipping it on
+  // can't leak to a co-dev who pulls the world. The sentinel/activate() path
+  // still boots the bridge regardless of this setting.
+  const MODULE_ID = "fabula-ultima-companion";
+  const SETTING_AUTOSTART = "testBridgeAutoStart";
   // Adaptive polling: hit FilePicker.browse fast (500ms) only while requests
   // are actively arriving; back off to 2s after IDLE_AFTER_MS of quiet so an
   // unattended GM session doesn't hammer the server.
@@ -658,36 +665,42 @@
     }
   }
 
-  // Gate the bridge boot on the activation sentinel so a normal world reload
-  // doesn't spin up file-polling / heartbeats unless Claude explicitly armed it.
-  async function bootIfActivated() {
+  // Opt-in default-on: when the "auto-start" client setting is enabled, the
+  // bridge boots on every GM reload with no sentinel required. The setting
+  // ships OFF, so a fresh install / co-dev stays dormant. Independently, an
+  // armed activation sentinel still boots the bridge (Claude-driven reload
+  // keepalive), regardless of the setting.
+  async function bootBridge() {
     if (!game.user?.isGM) {
       console.info(`${TAG} bridge inactive (not GM).`);
       return;
     }
-    // Ensure the world dir exists so we can read the sentinel from a known path.
-    // We deliberately DON'T ensure inbox/outbox here — those only get created
-    // when the bridge actually activates (and only the bridge writes there).
+    // Ensure the world dir exists before boot() creates inbox/outbox under it.
     await ensureDir(worldDir());
-    const token = await consumeActivationSentinel();
-    if (!token) {
+    const sentinel = await consumeActivationSentinel().catch(() => null);
+    let autoStart = false;
+    try { autoStart = !!game.settings.get(MODULE_ID, SETTING_AUTOSTART); }
+    catch { /* unregistered (shouldn't happen post-init) — treat as off */ }
+
+    if (!autoStart && !sentinel) {
       console.info(
-        `${TAG} dormant. To activate the next boot, write a non-empty ` +
-        `bridge-activate.txt to the world dir, or call ` +
+        `${TAG} dormant. Enable "Test Bridge: auto-start" in settings, write a ` +
+        `non-empty bridge-activate.txt to the world dir, or call ` +
         `FUCompanion.api.testBridge.activate() / .start().`
       );
       return;
     }
-    console.info(`${TAG} activation sentinel consumed (${token.slice(0, 24)}...). Starting bridge.`);
-    // Auto-re-arm: keep the bridge alive across reloads automatically. To
-    // disable, comment out this re-arm and the next boot will be dormant
-    // unless explicitly activated.
-    try {
-      await armActivationSentinel("auto-re-arm-on-boot");
-      console.info(`${TAG} sentinel re-armed for next boot (auto-keepalive).`);
-    } catch (e) {
-      console.warn(`${TAG} auto-re-arm failed (non-fatal)`, e);
+    // Sentinel-driven boot (setting off): re-arm to keep alive across reloads,
+    // matching the original Claude-driven keepalive. When the setting is on we
+    // don't need the sentinel at all.
+    if (sentinel && !autoStart) {
+      await armActivationSentinel("auto-re-arm-on-boot").catch(
+        e => console.warn(`${TAG} auto-re-arm failed (non-fatal)`, e)
+      );
     }
+    console.info(
+      `${TAG} starting bridge (${autoStart ? "auto-start setting on" : "activation sentinel"}).`
+    );
     await boot();
   }
 
@@ -762,8 +775,24 @@
     }, WATCHDOG_INTERVAL_MS);
   }
 
+  Hooks.once("init", () => {
+    try {
+      game.settings.register(MODULE_ID, SETTING_AUTOSTART, {
+        name: "Test Bridge: auto-start on boot",
+        hint: "When on, the file-based test bridge (GM only) starts on every " +
+          "reload without needing an activation sentinel. Client-scoped — " +
+          "follows this browser, never travels with the world. Leave off for " +
+          "normal play; the bridge adds background file-polling + heartbeats.",
+        scope: "client",
+        config: true,
+        type: Boolean,
+        default: false
+      });
+    } catch (e) { /* already registered — fine */ }
+  });
+
   Hooks.once("ready", () => {
-    bootIfActivated().catch(e => console.error(`${TAG} boot failed`, e));
+    bootBridge().catch(e => console.error(`${TAG} boot failed`, e));
   });
 
   // Stop the poller as early as possible during shutdown so in-flight
