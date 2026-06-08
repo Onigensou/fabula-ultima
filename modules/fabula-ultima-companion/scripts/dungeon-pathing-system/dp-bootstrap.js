@@ -565,6 +565,7 @@
     installHoverHandler();
     DP.HelperMode.activate();
     DP.ScanMode?.attachTicker();
+    DP.StatusHUD?.show();
     await rebuild();
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
@@ -587,6 +588,7 @@
     DP.ScanMode?.hideTravelBtn?.();
     DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
+    DP.StatusHUD?.hide();
     console.debug(TAG, "Deactivated.");
   }
 
