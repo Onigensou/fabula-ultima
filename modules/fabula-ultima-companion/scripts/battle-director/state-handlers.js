@@ -44,6 +44,8 @@ import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, 
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
 import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
+// Grappled (Advanced Debuff) — turn-start break-free helpers.
+import { isGrappled, breakFree } from "./grappled.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
 // imported (with one-shot cache-bust on first call) so this module
@@ -874,6 +876,94 @@ const RoundStart = {
   },
 };
 
+// Grappled break-free — free action at the start of a Grappled unit's turn
+// (RAW in-world Journal "Grappled", mechanic #3). The unit may make a DL 10
+// Check using any attribute pair that contains at least one MIG or DEX die;
+// success removes Grappled. Mirrors the Hinder check flow: the GM picks the
+// pair + DL via pickAttributePair, we roll 1dA+1dB with the same crit/fumble
+// semantics, and the dice land in chat (a free check has no action card).
+//
+// Optional: Cancel on the picker = the unit declines the attempt. The DL 10
+// check stays free — it does NOT consume a turn action. The Objective-action
+// reattempt (mechanic #4) is deferred until the Objective action ships.
+// Grappler stamp + helpers live in grappled.js; see [[project_grappled_advanced_debuff]].
+async function maybeRunBreakFree(director, snap) {
+  try {
+    if (!snap?.actorUuid && !snap?.tokenUuid) return;
+    // Token-first resolution: unlinked NPC tokens carry their Grappled AE on
+    // the token-delta (synthetic) actor; the token uuid is the stable handle
+    // (the synthetic actor uuid can be brittle). Falls back to actorUuid for
+    // linked PCs. Mirrors the persistence/rewind actor-resolution order.
+    let actor = null;
+    if (snap.tokenUuid) actor = (await fromUuid(snap.tokenUuid).catch(() => null))?.actor ?? null;
+    if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
+    if (!actor || !isGrappled(actor)) return;
+
+    const cfg = await pickAttributePair({
+      director,
+      titleText: `${snap.name}: Break Free?`,
+      subtitle: `Free action. DL 10 Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
+      defaults: { A1: "MIG", A2: "DEX" },
+      includeDL: true,
+      defaultDL: 10,
+    });
+    if (!cfg.ok) { log(`Break Free: ${snap.name} declined the attempt`); return; }
+
+    const A1 = cfg.A1;
+    const A2 = cfg.A2;
+    const DL = Math.max(1, Number(cfg.dl) || 10);
+    const dA = snap.attributes?.[A1] ?? 8;
+    const dB = snap.attributes?.[A2] ?? 8;
+    const fumbleThr = Math.max(1, snap.fumbleThreshold ?? 1);
+
+    const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
+    const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
+    const rA = dice[0] ?? 0;
+    const rB = dice[1] ?? 0;
+    const total = (rA + rB) | 0;
+    const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
+    const isCrit = (rA === rB) && !isFumble && rA >= 6;
+    // Same rule as Hinder: crit always succeeds, fumble always fails.
+    const success = isCrit ? true : isFumble ? false : (total >= DL);
+
+    let removed = 0;
+    if (success) {
+      removed = await breakFree(actor, { reason: "turn-start check" });
+    }
+    log(`Break Free: ${snap.name} ${success ? "SUCCEEDED" : "FAILED"} ` +
+        `(${A1} d${dA}=${rA} + ${A2} d${dB}=${rB} = ${total} vs DL ${DL}` +
+        `${isCrit ? ", CRIT" : isFumble ? ", FUMBLE" : ""}) — removed ${removed} Grappled AE(s)`);
+
+    // Surface the check to chat. The director resolves actions through its own
+    // cards and normally stays out of chat, but a free turn-start check has no
+    // card — chat gives the table the dice (Dice So Nice) + a clear outcome.
+    const outcome = isCrit ? "Critical success — breaks free!"
+      : isFumble ? "Fumble — still Grappled."
+      : success ? "Breaks free!"
+      : "Fails — still Grappled.";
+    const flavor =
+      `<strong>Break Free</strong> — ${escapeHtmlMin(snap.name)}<br>` +
+      `${A1} (d${dA}) + ${A2} (d${dB}) = <strong>${total}</strong> vs DL ${DL}<br>` +
+      `<em>${outcome}</em>`;
+    try {
+      await rollObj.toMessage(
+        { speaker: ChatMessage.getSpeaker?.({ actor }) ?? undefined, flavor },
+        { rollMode: game.settings?.get?.("core", "rollMode") },
+      );
+    } catch (e) { warn("Break Free: toMessage failed", e); }
+  } catch (e) {
+    warn("Break Free: maybeRunBreakFree threw", e);
+  }
+}
+
+// Minimal HTML escape for chat flavor (actor names are trusted-ish but
+// keep them inert in markup).
+function escapeHtmlMin(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[m]));
+}
+
 // ─── TURN_START ────────────────────────────────────────────────────────
 // In Phase 2 this state is responsible for *resolving who acts* on the
 // current side via the turn picker. nextTurn() (in TURN_END) only flips the
@@ -1137,6 +1227,13 @@ const TurnStart = {
       label: `Round ${tsDc?.round ?? 0} · ${tsName}'s Turn`,
       description: `${tsSide} acting — pick action`,
     }).catch((e) => warn("TURN_START: saveDirectorState failed", e));
+
+    // Grappled break-free (free action) — RAW Journal "Grappled" mechanic #3.
+    // If the acting combatant is Grappled, offer the DL 10 break-free Check
+    // before they declare their action. Runs after the Guard release + save
+    // checkpoint so a mid-prompt F5 rewinds to this TURN_START and re-offers
+    // it (idempotent: a successful break already removed the AE → no re-prompt).
+    await maybeRunBreakFree(director, snap);
 
     // Hand off to STANDALONE_REACTION_WINDOW for turn_start. Dispatched
     // across every combatant — reactions like "when ANY turn starts"

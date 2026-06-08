@@ -30,6 +30,7 @@
 
 import { log, warn } from "./logger.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
+import { isGrappled } from "./grappled.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -304,9 +305,25 @@ async function collectTriggerSubject(ctx) {
 // Guard's optional covered ally. The Guard action stamps the picked ally on
 // the action result (ar.coverTarget) — threaded onto ctx by resolveAction.
 // Empty (no ally covered) → no tokens, so the Covered-AE row simply no-ops.
+//
+// Grappled rule (RAW in-world Journal "Grappled", mechanic #2): if the
+// guarder is Grappled, the cover "ends immediately" — they still gain the
+// self-Guard benefit (the separate `guard_self` row), but the Covered AE is
+// never applied to the ally. We enforce that here by returning no tokens, so
+// the `guard_cover` apply_ae row no-ops. Gating at the cover-target collector
+// (apply time) keeps it in one place, rewind-safe, and leaves guard_self
+// untouched. See [[project_grappled_advanced_debuff]].
 async function collectCoverTarget(ctx) {
   const uuid = ctx.actionResult?.coverTarget?.tokenUuid ?? null;
-  return await uuidsToTokens(uuid ? [uuid] : []);
+  if (!uuid) return [];
+  const guarder = ctx.reactorActor;
+  if (guarder && isGrappled(guarder)) {
+    const name = guarder.name ?? "The Grappled unit";
+    log(`Guard cover suppressed — ${name} is Grappled (cover ends immediately; self-Guard still applies)`);
+    try { ui.notifications?.info(`${name} is Grappled — Guard cover ends immediately (still guards self).`); } catch {}
+    return [];
+  }
+  return await uuidsToTokens([uuid]);
 }
 
 function collectCombatTokens(ctx) {
