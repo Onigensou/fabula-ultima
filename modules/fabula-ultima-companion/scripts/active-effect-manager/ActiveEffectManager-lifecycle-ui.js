@@ -15,9 +15,10 @@
  *
  *   Default (lifetimeMode = "")
  *     tickDirectorAEsForApplier decrements turnsRemaining at the
- *     applier's TurnStart (3 turns by default; override via
- *     duration.rounds on the template). Cleared at scene end UNLESS
- *     crossScene = true.
+ *     applier's TurnStart in battle (3 turns by default; override via
+ *     duration.rounds on the template). In Dungeon Mode the AE ticks
+ *     on the bearer's dungeon step instead (dp-ae-lifecycle.js).
+ *     Cleared at scene end UNLESS crossScene = true.
  *
  *   "round_end"
  *     tickDirectorAEsAtRoundEnd sweeps the AE at the next ROUND_END
@@ -71,7 +72,7 @@
         <legend>Lifecycle (Fabula Ultima)</legend>
 
         <div class="form-group" style="display:grid; grid-template-columns: 100px 1fr; gap: 4px 8px; align-items: center;">
-          <label title="How this AE expires. Per turn ticks at the applier's TurnStart (3 turns by default, or duration.rounds). End of round is swept at the next ROUND_END (Rampart-style). After effect activation is charge-governed: the AE is NOT turn-ticked — each time its effect fires it consumes one charge and is removed at 0 (Burn / Hawkeye / Protect-refill). Needs a Charge value set above.">Expiry</label>
+          <label title="How this AE expires. Per turn ticks at the applier's TurnStart in battle (3 turns by default, or duration.rounds); also ticks on the bearer's dungeon step in Dungeon Mode. End of round is swept at the next ROUND_END (Rampart-style). After effect activation is charge-governed: the AE is NOT turn-ticked — each time its effect fires it consumes one charge and is removed at 0 (Burn / Hawkeye / Protect-refill). Needs a Charge value set above.">Expiry</label>
           <select name="flags.${MODULE_ID}.lifetimeMode" data-dtype="String">
             <option value=""              ${sel("")}>Per turn (default — 3 turns)</option>
             <option value="round_end"     ${sel("round_end")}>End of round</option>

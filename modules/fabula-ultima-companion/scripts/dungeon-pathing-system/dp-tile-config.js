@@ -290,6 +290,17 @@
       const forceMoveDir   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveDirection`) ?? "";
       const forceMoveSteps = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.forceMoveSteps`) ?? 1));
 
+      // ── Check Gate config ───────────────────────────────────────────────────
+      const cgKey         = `${pathingKey}.checkGate`;
+      const cgEnabled     = (() => { const v = tileDoc?.getFlag(MODULE_ID, `${cgKey}.enabled`); return v === true || v === "true"; })();
+      const cgMode        = tileDoc?.getFlag(MODULE_ID, `${cgKey}.mode`)        ?? "group";
+      const cgLeaderMode  = tileDoc?.getFlag(MODULE_ID, `${cgKey}.leaderMode`)  ?? "players_choose";
+      const cgAttrA       = tileDoc?.getFlag(MODULE_ID, `${cgKey}.attrA`)       ?? "DEX";
+      const cgAttrB       = tileDoc?.getFlag(MODULE_ID, `${cgKey}.attrB`)       ?? "MIG";
+      const cgDl          = Math.max(1, Number(tileDoc?.getFlag(MODULE_ID, `${cgKey}.dl`) ?? 10));
+      const cgTriggerOn   = tileDoc?.getFlag(MODULE_ID, `${cgKey}.triggerOn`)   ?? "failure";
+      const cgLabel       = tileDoc?.getFlag(MODULE_ID, `${cgKey}.label`)       ?? "";
+
       // eligibleForFastTravel: explicit tile flag, or type-based default when unset
       const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
       const isEligible  = (rawEligible === null || rawEligible === undefined)
@@ -410,13 +421,15 @@
               <option value="SW"       ${forceMoveDir === "SW"          ? "selected" : ""}>↙ South-West</option>
               <option value="W"        ${forceMoveDir === "W"           ? "selected" : ""}>← West</option>
               <option value="NW"       ${forceMoveDir === "NW"          ? "selected" : ""}>↖ North-West</option>
-              <option value="SLIPPERY" ${forceMoveDir === "SLIPPERY"    ? "selected" : ""}>~ Slippery (continue entry direction)</option>
-              <option value="RANDOM"   ${forceMoveDir === "RANDOM"      ? "selected" : ""}>? Random (pick any eligible path)</option>
+              <option value="SLIPPERY"  ${forceMoveDir === "SLIPPERY"   ? "selected" : ""}>~ Slippery (continue entry direction)</option>
+              <option value="PUSH_BACK" ${forceMoveDir === "PUSH_BACK" ? "selected" : ""}>↩ Push Back (reverse entry direction)</option>
+              <option value="RANDOM"    ${forceMoveDir === "RANDOM"    ? "selected" : ""}>? Random (pick any eligible path)</option>
             </select>
           </div>
           <p class="notes">
             Direction to push the token.
             <b>Slippery</b> continues the token in whichever direction it entered from (random if paths branch).
+            <b>Push Back</b> ejects the token in the exact opposite direction it entered from.
             <b>Random</b> picks any connected neighbor at random, ignoring direction.
           </p>
         </div>
@@ -431,6 +444,108 @@
                    min="1" max="10" step="1" />
           </div>
           <p class="notes">Number of tiles to push the token in the chosen direction.</p>
+        </div>
+
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-dice"></i> Check Gate</h3>
+        <p class="notes" style="margin: 0 0 8px; font-style: italic;">
+          When enabled, a check runs when the party lands on this tile.
+          The tile's event fires only on the configured outcome.
+        </p>
+
+        <div class="form-group">
+          <label>Enable</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${cgKey}.enabled"
+                   data-dtype="Boolean"
+                   ${cgEnabled ? "checked" : ""} />
+          </div>
+          <p class="notes">When ON, a check must be resolved before the tile event can trigger.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Check Mode</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${cgKey}.mode" data-dtype="String">
+              <option value="group"      ${cgMode === "group"      ? "selected" : ""}>Group Check (with Leader)</option>
+              <option value="individual" ${cgMode === "individual" ? "selected" : ""}>Individual (any actor)</option>
+              <option value="all_party"  ${cgMode === "all_party"  ? "selected" : ""}>All Party (everyone must pass/fail)</option>
+            </select>
+          </div>
+          <p class="notes">
+            <b>Group:</b> helpers roll first, leader rolls last with a bonus for each helper success.<br>
+            <b>Individual:</b> every actor rolls; the first pass or fail determines the outcome.<br>
+            <b>All Party:</b> every actor rolls; all must pass (or fail) to trigger.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Leader Selection</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${cgKey}.leaderMode" data-dtype="String">
+              <option value="players_choose" ${cgLeaderMode === "players_choose" ? "selected" : ""}>Players Choose</option>
+              <option value="gm_designates"  ${cgLeaderMode === "gm_designates"  ? "selected" : ""}>GM Designates</option>
+            </select>
+          </div>
+          <p class="notes">Only used in Group Check mode. <b>GM Designates</b> skips the lobby — the GM picks the leader before the check begins.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Attribute A</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${cgKey}.attrA" data-dtype="String">
+              <option value="DEX" ${cgAttrA === "DEX" ? "selected" : ""}>DEX (Dexterity)</option>
+              <option value="MIG" ${cgAttrA === "MIG" ? "selected" : ""}>MIG (Might)</option>
+              <option value="INS" ${cgAttrA === "INS" ? "selected" : ""}>INS (Insight)</option>
+              <option value="WLP" ${cgAttrA === "WLP" ? "selected" : ""}>WLP (Willpower)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Attribute B</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${cgKey}.attrB" data-dtype="String">
+              <option value="DEX" ${cgAttrB === "DEX" ? "selected" : ""}>DEX (Dexterity)</option>
+              <option value="MIG" ${cgAttrB === "MIG" ? "selected" : ""}>MIG (Might)</option>
+              <option value="INS" ${cgAttrB === "INS" ? "selected" : ""}>INS (Insight)</option>
+              <option value="WLP" ${cgAttrB === "WLP" ? "selected" : ""}>WLP (Willpower)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Difficulty (DL)</label>
+          <div class="form-fields">
+            <input type="number"
+                   name="flags.${MODULE_ID}.${cgKey}.dl"
+                   data-dtype="Number"
+                   value="${cgDl}"
+                   min="1" max="30" step="1" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Trigger On</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${cgKey}.triggerOn" data-dtype="String">
+              <option value="failure" ${cgTriggerOn === "failure" ? "selected" : ""}>Failure — event fires on failure</option>
+              <option value="success" ${cgTriggerOn === "success" ? "selected" : ""}>Success — event fires on success</option>
+            </select>
+          </div>
+          <p class="notes">Controls which outcome activates the tile effect. Most hazard tiles trigger on <b>Failure</b>.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Check Label</label>
+          <div class="form-fields">
+            <input type="text"
+                   name="flags.${MODULE_ID}.${cgKey}.label"
+                   value="${cgLabel}"
+                   placeholder="e.g. Resist the Wind" />
+          </div>
+          <p class="notes">Optional title shown in the Check UI. Leave blank to use the tile's name.</p>
         </div>
 
         <hr class="oni-fabula-section-divider" />

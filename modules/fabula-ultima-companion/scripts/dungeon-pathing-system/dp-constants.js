@@ -19,6 +19,16 @@
     CONFLICT:    "conflict",
   });
 
+  // Turn phase — tracks the current stage of the dungeon turn lifecycle.
+  // Read via DungeonPathing.turnPhase or window.__ONI_DUNGEON_PATHING__.turnPhase.
+  DP.TURN_PHASE = Object.freeze({
+    IDLE:         "idle",          // dungeon mode inactive or between turns
+    ACTION_PHASE: "action_phase",  // graph ready, waiting for player tile choice
+    TURN_START:   "turn_start",    // player chose tile; movement + confirm dialog
+    RESOLUTION:   "resolution",    // move confirmed; tile events being processed
+    TURN_END:     "turn_end",      // tile events done; cleanup + rebuild pending
+  });
+
   DP.HOOKS = Object.freeze({
     STANDBY_START:   "dungeonPathing.standbyStart",
     STANDBY_END:     "dungeonPathing.standbyEnd",
@@ -65,22 +75,26 @@
     CAMP:           "camp",
     ALERT:          "alert",
     DOOR:           "door",
+    GUSTY:          "gusty",
     UNKNOWN:        "unknown",
   });
 
   // 8-directional compass keys (screen space: Y increases downward)
-  // SLIPPERY is a special sentinel: "continue in entry direction" — handled by the force-move handler.
+  // SLIPPERY  — continue in entry direction (handled by force-move handler)
+  // PUSH_BACK — reverse entry direction; ejects the token back the way it came
+  // RANDOM    — pick any connected neighbor at random
   DP.DIRECTIONS = Object.freeze({
-    N:        "N",
-    NE:       "NE",
-    E:        "E",
-    SE:       "SE",
-    S:        "S",
-    SW:       "SW",
-    W:        "W",
-    NW:       "NW",
-    SLIPPERY: "SLIPPERY",
-    RANDOM:   "RANDOM",
+    N:         "N",
+    NE:        "NE",
+    E:         "E",
+    SE:        "SE",
+    S:         "S",
+    SW:        "SW",
+    W:         "W",
+    NW:        "NW",
+    SLIPPERY:  "SLIPPERY",
+    PUSH_BACK: "PUSH_BACK",
+    RANDOM:    "RANDOM",
   });
 
   // Animation timing

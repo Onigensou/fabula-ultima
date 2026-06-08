@@ -166,6 +166,19 @@
     },
 
     /**
+     * Return the compass direction exactly opposite to the given one.
+     * Used by Push Back tiles to eject the token back the way it entered.
+     * Sentinels (SLIPPERY, PUSH_BACK, RANDOM) return null.
+     *
+     * @param {string} direction - e.g. "NW"
+     * @returns {string|null} Opposite direction key, or null for sentinels.
+     */
+    reverseDirection(direction) {
+      const MAP = { N: "S", NE: "SW", E: "W", SE: "NW", S: "N", SW: "NE", W: "E", NW: "SE" };
+      return MAP[direction] ?? null;
+    },
+
+    /**
      * Human-readable label for a direction key.
      * @param {string} direction - e.g. "NW"
      * @returns {string} e.g. "North-West ↖"

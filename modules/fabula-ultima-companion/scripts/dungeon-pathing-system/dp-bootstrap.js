@@ -41,6 +41,7 @@
     installed:    true,
     active:       false,
     busy:         false,
+    turnPhase:    null,  // DP.TURN_PHASE — set by bootstrap; null before first activation
     graph:        null,
     partyToken:   null,
     currentNode:  null,
@@ -121,8 +122,10 @@
     const dtToken = performance.now() - tToken;
 
     if (!token) {
+      state.turnPhase = DP.TURN_PHASE.IDLE;
       DP.HelperMode.hide();
-      ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
+      if (!game.user.isGM) ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
+      else console.warn(TAG, "rebuild: no party token (GM setup mode)");
       perf(`rebuild #${idx} ABORTED (no token) | graph ${dtGraph.toFixed(1)}ms | total ${(performance.now()-t0).toFixed(1)}ms`);
       return false;
     }
@@ -153,6 +156,7 @@
     const dtLocate = performance.now() - tLocate;
 
     if (!currentNode) {
+      state.turnPhase = DP.TURN_PHASE.IDLE;
       DP.HelperMode.hide();
       ui.notifications?.warn?.("Dungeon Pathing: party token is not on a recognised tile node.");
       perf(`rebuild #${idx} ABORTED (no node) | graph ${dtGraph.toFixed(1)}ms | total ${(performance.now()-t0).toFixed(1)}ms`);
@@ -171,6 +175,7 @@
     DP.Events.graphRebuilt(graph, token);
 
     // Enter standby: system is ready, waiting for the player to pick a tile.
+    state.turnPhase = DP.TURN_PHASE.ACTION_PHASE;
     DP.Events.standbyStart(token.document, currentNode, neighbors);
     DP.ScanMode?.show();
     DP.ScanMode?.showTravelBtn?.("dungeon");
@@ -349,6 +354,7 @@
   // ---------------------------------------------------------------------------
   async function handleClick(ev) {
     if (!state.active) return;
+    if (game.paused) { ui.notifications?.info?.("The game is paused."); return; }
     if (DP.FastTravel?.active) return; // FT mode owns the canvas while active
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
     if (ev.button !== 0) return;
@@ -385,11 +391,13 @@
 
     const fromNode  = state.currentNode;
     const token     = state.partyToken;
+    if (!token) return;
     const scene     = canvas.scene;
     const tTurnStart = performance.now();
 
     try {
       // — Turn Start —
+      state.turnPhase = DP.TURN_PHASE.TURN_START;
       DP.Events.turnStart(token.document, fromNode);
 
       // — Save position for revert —
@@ -456,6 +464,7 @@
       }
 
       // — Confirmed (land + optionally use) —
+      state.turnPhase = DP.TURN_PHASE.RESOLUTION;
       DP.Events.turnConfirmed(freshToken.document, fromNode, clicked, tileDoc);
 
       const _storedType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
@@ -501,6 +510,7 @@
       }
 
       // — Turn End —
+      state.turnPhase = DP.TURN_PHASE.TURN_END;
       DP.Events.turnEnd(freshToken.document, clicked);
 
     } catch (e) {
@@ -558,6 +568,7 @@
     installHoverHandler();
     DP.HelperMode.activate();
     DP.ScanMode?.attachTicker();
+    DP.StatusHUD?.show();
     await rebuild();
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
@@ -565,6 +576,7 @@
   function deactivate() {
     state.active      = false;
     state.busy        = false;
+    state.turnPhase   = DP.TURN_PHASE.IDLE;
     state.graph       = null;
     state.partyToken  = null;
     state.currentNode = null;
@@ -579,6 +591,7 @@
     DP.ScanMode?.hideTravelBtn?.();
     DP.ScanMode?.detachTicker();
     DP.ConfirmDialog?.forceClose?.();
+    DP.StatusHUD?.hide();
     console.debug(TAG, "Deactivated.");
   }
 
@@ -717,8 +730,16 @@
     },
 
     get graph()       { return state.graph; },
-    get currentNode() { return state.currentNode; }
+    get currentNode() { return state.currentNode; },
+    get turnPhase()   { return state.turnPhase; },
   };
+
+  // Mirror turnPhase on DungeonPathing so external code can read
+  // DungeonPathing.turnPhase without importing the bootstrap state directly.
+  Object.defineProperty(DP, "turnPhase", {
+    get() { return state.turnPhase; },
+    configurable: true,
+  });
 
   Hooks.once("ready", () => {
     installHooks();

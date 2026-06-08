@@ -56,6 +56,11 @@
       } catch {}
     }
 
+    let removeEffects = [];
+    if (raw.removeEffectsJson) {
+      try { removeEffects = JSON.parse(raw.removeEffectsJson); } catch {}
+    }
+
     return {
       enabled:           bool(raw.enabled),
       useResourceChange: bool(raw.useResourceChange),
@@ -66,6 +71,8 @@
       ignoreReduction:   bool(raw.ignoreReduction),
       useActiveEffect:   bool(raw.useActiveEffect),
       activeEffects,
+      useRemoveEffect:   bool(raw.useRemoveEffect),
+      removeEffects,
       targetMode:        String(raw.targetMode         ?? "all"),
       silent:            bool(raw.silent),
       vfxType:           String(raw.vfxType            ?? "none"),
@@ -169,53 +176,126 @@
     return { rt, previous: current, delta: actual, newValue: newVal, max };
   }
 
-  // ── Active Effects (array, one actor) ─────────────────────────────────────
-  async function applyActiveEffects(actor, activeEffects) {
-    const aeApi = window.FUCompanion?.api?.activeEffectManager;
-    if (!aeApi?.applyEffects) { console.warn(TAG, "AEM API not available."); return []; }
+  // ── Effect ref builder ─────────────────────────────────────────────────────
+  // Pre-stamps dungeonTurnsRemaining into each AE's flags so the HUD counter
+  // shows the correct value immediately on application — no extra setFlag
+  // roundtrip needed.  AEM merges overrides.flags into the AE data before
+  // createEmbeddedDocuments, so the stamp arrives in the initial DB write.
+  //
+  // Default duration mirrors dp-ae-lifecycle.js DEFAULT_DURATION = 3.
+  // Custom AEs that declare their own duration.rounds use that instead.
+  const DUNGEON_DEFAULT_DURATION = 3;
 
-    const effectRefs = [];
-    for (const entry of activeEffects) {
+  function buildEffectRefs(entries) {
+    const refs = [];
+    for (const entry of entries) {
       if (entry.source === "registry" && entry.id) {
-        effectRefs.push(entry.id);
+        refs.push({
+          registryId: entry.id,
+          overrides: {
+            flags: { [MODULE_ID]: { dungeonTurnsRemaining: DUNGEON_DEFAULT_DURATION } },
+          },
+        });
       } else if (entry.source === "custom" && entry.json) {
-        try { effectRefs.push(JSON.parse(entry.json)); } catch {}
+        try {
+          const data = JSON.parse(entry.json);
+          data.flags ??= {};
+          data.flags[MODULE_ID] ??= {};
+          if (data.flags[MODULE_ID].dungeonTurnsRemaining == null) {
+            const explicit = Number(data.duration?.rounds);
+            data.flags[MODULE_ID].dungeonTurnsRemaining =
+              (Number.isFinite(explicit) && explicit > 0) ? explicit : DUNGEON_DEFAULT_DURATION;
+          }
+          refs.push(data);
+        } catch {}
       }
     }
-    if (!effectRefs.length) return [];
-
-    try {
-      const res = await aeApi.applyEffects({ actors: [actor], effects: effectRefs });
-      return activeEffects.map(e => ({ label: e.label ?? "Effect", ok: res?.ok ?? true }));
-    } catch (e) {
-      console.error(TAG, `AE apply failed for ${actor.name}:`, e);
-      return activeEffects.map(e => ({ label: e.label ?? "Effect", ok: false }));
-    }
+    return refs;
   }
 
   // ── Apply to a list of actors ──────────────────────────────────────────────
+  // AE operations are batched: one applyEffects / removeEffects call for ALL
+  // actors instead of N separate calls. This cuts AEM event emissions (and
+  // associated socket traffic) from N×2 down to 2, preventing socket floods
+  // when all 4 party members are targeted simultaneously.
+  //
+  // Resource changes remain per-actor because each is an independent HP/MP/IP
+  // operation on a different actor; there is no batch API for those.
   async function applyToActors(actors, cfg) {
-    const results = [];
-    for (const actor of actors) {
-      const row = { actorName: actor.name, resource: null, ae: [] };
-      if (cfg.useResourceChange) {
+    const rowMap = new Map(actors.map(a => [
+      a.uuid, { actorName: a.name, resource: null, ae: [], aeRemoved: [] }
+    ]));
+
+    if (cfg.useResourceChange) {
+      for (const actor of actors) {
+        const row = rowMap.get(actor.uuid);
         row.resource = await applyResourceDelta(actor, cfg).catch(e => {
           console.error(TAG, `resource delta failed for ${actor.name}:`, e); return null;
         });
       }
-      if (cfg.useActiveEffect && cfg.activeEffects?.length) {
-        row.ae = await applyActiveEffects(actor, cfg.activeEffects).catch(e => {
-          console.error(TAG, `AE failed for ${actor.name}:`, e); return [];
-        });
-      }
-      results.push(row);
     }
-    return results;
+
+    const aeApi = window.FUCompanion?.api?.activeEffectManager;
+
+    if (cfg.useActiveEffect && cfg.activeEffects?.length) {
+      const effectRefs = buildEffectRefs(cfg.activeEffects);
+      if (effectRefs.length) {
+        if (!aeApi?.applyEffects) {
+          console.warn(TAG, "AEM applyEffects not available.");
+        } else {
+          try {
+            const report = await aeApi.applyEffects({
+              actorUuids: actors.map(a => a.uuid).filter(Boolean),
+              effects: effectRefs,
+              silent: true,
+            });
+            for (const r of report?.results ?? []) {
+              const row = rowMap.get(r.actor?.uuid);
+              if (row) row.ae.push({ label: r.effect?.name ?? "Effect", ok: r.ok === true });
+            }
+          } catch (e) {
+            console.error(TAG, "AE batch apply failed:", e);
+            for (const row of rowMap.values())
+              row.ae = cfg.activeEffects.map(e => ({ label: e.label ?? "Effect", ok: false }));
+          }
+        }
+      }
+    }
+
+    if (cfg.useRemoveEffect && cfg.removeEffects?.length) {
+      const effectRefs = buildEffectRefs(cfg.removeEffects);
+      if (effectRefs.length) {
+        if (!aeApi?.removeEffects) {
+          console.warn(TAG, "AEM removeEffects not available.");
+        } else {
+          try {
+            const report = await aeApi.removeEffects({
+              actorUuids: actors.map(a => a.uuid).filter(Boolean),
+              effects: effectRefs,
+              silent: true,
+            });
+            for (const r of report?.results ?? []) {
+              const row = rowMap.get(r.actor?.uuid);
+              if (row) {
+                const ok = r.ok === true && r.status !== "failed";
+                row.aeRemoved = cfg.removeEffects.map(e => ({ label: e.label ?? "Effect", ok }));
+              }
+            }
+          } catch (e) {
+            console.error(TAG, "AE batch remove failed:", e);
+            for (const row of rowMap.values())
+              row.aeRemoved = cfg.removeEffects.map(e => ({ label: e.label ?? "Effect", ok: false }));
+          }
+        }
+      }
+    }
+
+    return actors.map(a => rowMap.get(a.uuid));
   }
 
   // ── Chat card ──────────────────────────────────────────────────────────────
   async function createChatCard(results, cfg, tileLabel) {
-    const lines = results.map(({ actorName, resource, ae }) => {
+    const lines = results.map(({ actorName, resource, ae, aeRemoved }) => {
       const parts = [];
       if (resource) {
         const { rt, delta, newValue, max } = resource;
@@ -229,6 +309,9 @@
       }
       for (const { label, ok } of ae) {
         parts.push(ok ? `afflicted by <b>${label}</b>` : `could not apply <b>${label}</b>`);
+      }
+      for (const { label, ok } of (aeRemoved ?? [])) {
+        parts.push(ok ? `lost <b>${label}</b>` : `could not remove <b>${label}</b>`);
       }
       if (!parts.length) parts.push("is unaffected");
       return `<li style="margin-bottom:3px"><b>${actorName}</b> ${parts.join("; ")}.</li>`;
@@ -300,12 +383,21 @@
   }
 
   // ── Broadcast VFX/SFX to all other clients ────────────────────────────────
+  // Only send VFX-relevant fields — not the full cfg (which embeds AE JSON blobs).
   function broadcastVfx(cfg, tokenDoc, sceneId) {
     if (cfg.silent) return;
     if (cfg.vfxType === "none" && !cfg.sfxUrl) return;
+    const vfx = {
+      silent:       cfg.silent,
+      vfxType:      cfg.vfxType,
+      vfxFile:      cfg.vfxFile,
+      vfxFlashTint: cfg.vfxFlashTint,
+      vfxFlashAlpha: cfg.vfxFlashAlpha,
+      sfxUrl:       cfg.sfxUrl,
+    };
     game.socket.emit(SOCKET_CH, {
       type: MSG_VFX,
-      payload: { cfg, tokenId: tokenDoc?.id ?? null, sceneId: sceneId ?? null },
+      payload: { vfx, tokenId: tokenDoc?.id ?? null, sceneId: sceneId ?? null },
     });
   }
 
@@ -319,30 +411,34 @@
     game.socket.on(SOCKET_CH, async (msg) => {
       // ── GM: apply resource/AE changes, create chat card, re-broadcast VFX ──
       if (msg?.type === MSG_APPLY && game.user?.isGM) {
-        const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
-        const actors = [];
-        for (const uuid of (actorUuids ?? [])) {
-          const a = await fromUuid(uuid).catch(() => null);
-          if (a) actors.push(a);
+        try {
+          const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
+          const actors = [];
+          for (const uuid of (actorUuids ?? [])) {
+            const a = await fromUuid(uuid).catch(() => null);
+            if (a) actors.push(a);
+          }
+          if (!actors.length) { console.warn(TAG, "GM: no actors resolved."); return; }
+
+          const results = await applyToActors(actors, cfg);
+          if (!cfg.silent) await createChatCard(results, cfg, tileLabel);
+
+          // Broadcast VFX so the triggering player (and any spectators) all see it.
+          // The player who emitted MSG_APPLY already played VFX locally, but other
+          // clients haven't — this covers everyone else.
+          broadcastVfx(cfg, { id: tokenId }, sceneId);
+        } catch (e) {
+          console.error(TAG, "MSG_APPLY handler failed:", e);
         }
-        if (!actors.length) { console.warn(TAG, "GM: no actors resolved."); return; }
-
-        const results = await applyToActors(actors, cfg);
-        if (!cfg.silent) await createChatCard(results, cfg, tileLabel);
-
-        // Broadcast VFX so the triggering player (and any spectators) all see it.
-        // The player who emitted MSG_APPLY already played VFX locally, but other
-        // clients haven't — this covers everyone else.
-        broadcastVfx(cfg, { id: tokenId }, sceneId);
         return;
       }
 
       // ── All clients: play VFX/SFX ──────────────────────────────────────────
       if (msg?.type === MSG_VFX) {
-        const { cfg, tokenId, sceneId } = msg.payload ?? {};
+        const { vfx, tokenId, sceneId } = msg.payload ?? {};
         if (sceneId && canvas.scene?.id !== sceneId) return;
         const tokenDoc = canvas.tokens.get(tokenId)?.document ?? { id: tokenId };
-        if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
+        if (!vfx?.silent) { playVfx(vfx, tokenDoc); playSfx(vfx); }
       }
     });
 
@@ -352,7 +448,7 @@
   // ── Main run() ─────────────────────────────────────────────────────────────
   async function run(cfg, tileDoc, tokenDoc, scene) {
     if (!cfg.enabled) return;
-    if (!cfg.useResourceChange && !cfg.useActiveEffect
+    if (!cfg.useResourceChange && !cfg.useActiveEffect && !cfg.useRemoveEffect
         && cfg.vfxType === "none" && !cfg.sfxUrl) return;
 
     const allMembers = await resolvePartyMembers();
@@ -363,7 +459,7 @@
     // VFX/SFX plays locally on the triggering client immediately.
     if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
 
-    if (!cfg.useResourceChange && !cfg.useActiveEffect) return;
+    if (!cfg.useResourceChange && !cfg.useActiveEffect && !cfg.useRemoveEffect) return;
 
     if (!targets.length) {
       console.warn(TAG, "No party members resolved; skipping resource/AE application.");

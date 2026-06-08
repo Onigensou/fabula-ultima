@@ -642,6 +642,12 @@
         getProperty(raw, "flags.core.description") ??
         "",
 
+      // Preserve the full system object so fields like system.tags survive
+      // through to the created ActiveEffect document. Without this, CSB tags
+      // (e.g. ["debuff"]) would be dropped and tag-based HUD filtering would
+      // not see the effect.
+      system: clone(raw?.system ?? {}, {}),
+
       flags: clone(raw?.flags ?? {}, {})
     };
 
