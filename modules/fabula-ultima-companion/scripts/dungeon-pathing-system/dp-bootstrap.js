@@ -124,7 +124,8 @@
     if (!token) {
       state.turnPhase = DP.TURN_PHASE.IDLE;
       DP.HelperMode.hide();
-      ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
+      if (!game.user.isGM) ui.notifications?.warn?.("Dungeon Pathing: party token not found.");
+      else console.warn(TAG, "rebuild: no party token (GM setup mode)");
       perf(`rebuild #${idx} ABORTED (no token) | graph ${dtGraph.toFixed(1)}ms | total ${(performance.now()-t0).toFixed(1)}ms`);
       return false;
     }
@@ -390,6 +391,7 @@
 
     const fromNode  = state.currentNode;
     const token     = state.partyToken;
+    if (!token) return;
     const scene     = canvas.scene;
     const tTurnStart = performance.now();
 
