@@ -2425,230 +2425,6 @@ const Target = {
   },
 };
 
-// ─── PRE_ROLL ──────────────────────────────────────────────────────────
-// Pre-roll half of the two-phase Action Card. Runs the performer-side pre-roll
-// reaction window (Barrage) BEFORE the dice, then flows to COMPUTE. Any extra
-// targets a pre-roll reaction added are merged into ctx.pickedTargetUuids so
-// COMPUTE rolls them into the single shared accuracy roll.
-//
-// Scope: Attack only (the only kind with a pre-roll reaction today), first pass
-// only — two-weapon's second pass re-enters TARGET→PRE_ROLL and must not
-// re-offer (passIndex is incremented in COMPUTE, so it's 0 on the first
-// pre-roll and ≥1 on subsequent passes). Everything else passes straight to
-// COMPUTE. The window itself auto-skips when no pre-roll reaction is eligible.
-const PreRoll = {
-  async onEnter(director) {
-    const command = director.ctx.declaredCommand;
-    // Pre-roll card only for the first pass of an Attack. Everything else
-    // (other commands, two-weapon's 2nd pass) flows straight to COMPUTE.
-    if (command !== "Attack" || (director.ctx.passIndex ?? 0) !== 0) {
-      director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      return;
-    }
-    try {
-      const attacker = director.ctx.turnSnapshot;
-      const tokenUuids = director.ctx.pickedTargetUuids ?? [];
-      const perfActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
-      const perfToken = perfActor
-        ? (canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === perfActor.uuid)
-           ?? perfActor.getActiveTokens?.()?.[0] ?? null)
-        : null;
-      const weapon = director.ctx.pendingPasses?.[0] ?? attacker.weapon ?? null;
-      if (!perfActor || !perfToken || !weapon) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }
-
-      // Discover available pre-roll reactions (creature_performs_action — Barrage).
-      // The mutable `_preRoll` sink is how add_target hands picked tokens back.
-      const sink = { addedTokenUuids: [] };
-      const probePayload = {
-        sourceActorUuid: perfActor.uuid, subjectActorUuid: perfActor.uuid,
-        sourceTokenUuid: perfToken.document?.uuid ?? perfToken.uuid ?? null,
-        targets: [...tokenUuids], targetTokenUuids: [...tokenUuids],
-        actionIntent: "harmful", actionKind: "Attack",
-        actionName: weapon?.name ?? "Attack", weaponUuid: weapon?.uuid ?? null,
-        weaponRange: weapon?.range ?? weapon?.weapon_range ?? null,
-        _preRoll: sink,
-      };
-      const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
-      let cands = [];
-      try {
-        cands = await findPassiveCandidates({
-          casterActor: perfActor, trigger: "creature_performs_action",
-          payload: probePayload, includeUnavailable: true,
-        }) ?? [];
-      } catch (e) { warn("PRE_ROLL: findPassiveCandidates threw", e); }
-      // Split by passive mode. off → dropped. on/force → AUTO-FIRE now (they
-      // auto-apply, so their chain — add_target → cost — runs immediately and
-      // its targeting picker surfaces here at pre-roll). ask/manual → clickable
-      // pills. Unavailable → dropped (would only render disabled). Bug before:
-      // force was dropped outright and "on" rendered as a non-clickable pill
-      // whose add_target chain never ran, so neither auto-mode worked.
-      const usable = cands.filter((c) => c.available && !(c.kind === "passive" && c.mode === "off"));
-      if (!usable.length) { director.enqueue({ type: INTENTS.INTERNAL_DONE }); return; }
-      const autoCands = usable.filter((c) => c.kind === "passive" && (c.mode === "on" || c.mode === "force"));
-      const askable = usable.filter((c) => !autoCands.includes(c));
-
-      // Eligible-target snapshots + the studied-mask gate (used for auto-added
-      // rows + the card).
-      const eligible = director.ctx.eligibleTargets ?? [];
-      const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-      const attackerFriendly = attacker.disposition === 1;
-      const isStudied = (t) => {
-        if (!attackerFriendly || t.disposition !== -1 || !encApi?.getPageForActor) return true;
-        for (const uuid of [t.worldActorUuid, t.actorUuid].filter(Boolean)) {
-          try {
-            const best = Number(encApi.getPageForActor(uuid)?.getFlag?.("fabula-ultima-companion", "encyclopedia")?.bestResult ?? 0) || 0;
-            if (best >= 7) return true;
-          } catch (_) { /* next */ }
-        }
-        return false;
-      };
-
-      // Fire one pre-roll reaction's chain (add_target → cost) and collect any
-      // newly-added target tokens into addedAll. Shared by the auto-fire loop
-      // and the ask-pill Apply callback.
-      const addedAll = [];
-      const fireReaction = async (cand) => {
-        if (!cand) return { ok: false };
-        sink.addedTokenUuids = [];
-        let res = null;
-        try { res = await firePreAcceptedCandidate({ director, casterActor: perfActor, candidate: cand, payload: probePayload }); }
-        catch (e) { warn("PRE_ROLL: firePreAcceptedCandidate threw", e); return { ok: false }; }
-        if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
-        const added = [];
-        for (const u of sink.addedTokenUuids) {
-          if (addedAll.includes(u)) continue;
-          const snap = eligible.find((e) => e.tokenUuid === u);
-          if (snap) { addedAll.push(u); added.push({ name: snap.name, actorUuid: snap.actorUuid, defense: snap.defense, studied: isStudied(snap) }); }
-        }
-        return { ok: true, addedTargets: added };
-      };
-
-      // Auto-apply on/force reactions immediately (prompts their add_target
-      // targeting via skip_when_passive). A cancelled picker just adds nothing.
-      for (const cand of autoCands) { await fireReaction(cand); }
-
-      // No clickable reactions left → skip the card; merge auto-added targets
-      // and roll. (Zero extra clicks beyond any targeting picker auto-fire ran.)
-      if (!askable.length) {
-        if (addedAll.length) {
-          const merged = [...tokenUuids];
-          for (const u of addedAll) if (!merged.includes(u)) merged.push(u);
-          director.ctx.pickedTargetUuids = merged;
-          log(`PRE_ROLL: auto reaction(s) added ${addedAll.length} target(s) → ${merged.length} total`);
-        }
-        director.enqueue({ type: INTENTS.INTERNAL_DONE });
-        return;
-      }
-
-      // Build the pre-roll card from TARGET snapshots — include any targets the
-      // auto-fired reactions already added so they show as rows.
-      const shownUuids = [...tokenUuids];
-      for (const u of addedAll) if (!shownUuids.includes(u)) shownUuids.push(u);
-      const targetSnaps = eligible.filter((e) => shownUuids.includes(e.tokenUuid));
-      const dA = attacker.attributes?.[weapon.A1] ?? 8;
-      const dB = attacker.attributes?.[weapon.A2] ?? 8;
-
-      // Damage RANGE + accuracy for the pre-roll panel (no roll yet). HR (High
-      // Roll) spans 1…max(dA,dB); HR is forced to 0 — min=max=base — by
-      // Two-Weapon OR a free-action grant with hrAsZero (Hawkeye option b).
-      const preRollGrantHrAsZero = !!freeActions.get(attacker?.actorId ?? null)?.hrAsZero;
-      const ignoreHR = String(director.ctx.attackMode ?? "").startsWith("two-weapon") || preRollGrantHrAsZero;
-      const maxHR = Math.max(Number(dA) || 0, Number(dB) || 0);
-      // Fallback values (used if the profile build fails). These DON'T include
-      // actor-status accuracy mods (RWM) or auto-fired outgoing damage reactions.
-      let dmgBase = weapon.damageBonus ?? 0;
-      let checkBonusShown = weapon.checkBonus ?? 0;
-      let hrZeroReason = ignoreHR
-        ? (String(director.ctx.attackMode ?? "").startsWith("two-weapon")
-            ? "Two-Weapon Fighting forces HR=0"
-            : `${freeActions.get(attacker?.actorId ?? null)?.sourceLabel || "Free action"} treats HR as 0`)
-        : null;
-      let preRollRange = ignoreHR
-        ? { min: dmgBase, max: dmgBase, maxHR: 0 }
-        : { min: dmgBase + 1, max: dmgBase + maxHR, maxHR };
-
-      // Single-source pre-roll: route the numbers through computeActionProfile so
-      // RWM (actor-status accuracy), Hawkeye take-aim (auto-fired
-      // creature_will_deal_damage outgoing add), and HR-as-0 grants all surface
-      // in the PREVIEW — the three derivations that diverged before. Defensive:
-      // any failure falls back to the weapon-only values above (no regression).
-      try {
-        // Discover the on/force creature_will_deal_damage reactions that WILL
-        // auto-fire on this attack (Hawkeye etc.) so the preview anticipates them.
-        const targetActorUuids = targetSnaps.map((e) => e.actorUuid);
-        const dmgPayload = {
-          subjectActorUuid: targetActorUuids[0] ?? null, targets: shownUuids, hitTargets: shownUuids,
-          rawDamage: weapon.damageBonus ?? 0, hr: 0,
-          damageType: weapon.damageType ?? null, weaponType: weapon.weaponType ?? null,
-          weaponRange: weapon.range ?? null,
-          sourceActorUuid: perfActor.uuid, sourceTokenUuid: perfToken.document?.uuid ?? perfToken.uuid ?? null,
-          actionIntent: "harmful", targetTokenUuids: shownUuids, hitTargetTokenUuids: shownUuids,
-          weaponUuid: weapon.uuid ?? null,
-        };
-        let acceptedReactions = [];
-        try {
-          const { findPassiveCandidates } = await getSkillEffectsExtras();
-          const dmgCands = await findPassiveCandidates({
-            casterActor: perfActor, trigger: "creature_will_deal_damage", payload: dmgPayload,
-          }) ?? [];
-          acceptedReactions = dmgCands
-            .filter((c) => c.available && c.kind === "passive" && (c.mode === "on" || c.mode === "force"))
-            .map((c) => ({ ...c, appliesToTargetUuids: targetActorUuids, payloadAtFire: dmgPayload }));
-        } catch (e) { warn("PRE_ROLL: will_deal_damage discovery threw", e); }
-
-        const grant = freeActions.get(attacker?.actorId ?? null) ?? null;
-        const profile = await computeActionProfile({
-          view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
-          attacker, weapon, targets: targetSnaps, dice: null,
-          ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant },
-          acceptedReactions,
-        });
-        if (profile?._summary) {
-          if (typeof profile._summary.checkBonusTotal === "number") checkBonusShown = profile._summary.checkBonusTotal;
-          if (profile._summary.hrZeroReason) hrZeroReason = profile._summary.hrZeroReason;
-          const hr = profile._summary.headlineRange;
-          if (hr) {
-            preRollRange = { min: hr.min, max: hr.max, maxHR: hr.maxHR };
-            if (typeof hr.base === "number") dmgBase = hr.base;
-          }
-        }
-      } catch (e) { warn("PRE_ROLL: profile enhancement failed; using weapon-only fallback", e); }
-
-      const cardPayload = {
-        preRoll: true,
-        attacker: { name: attacker.name, actorUuid: attacker.actorUuid, tokenImg: attacker.tokenImg, disposition: attacker.disposition },
-        weapon: { name: weapon.name, range: weapon.range, weaponType: weapon.weaponType, damageType: weapon.damageType, imageUrl: weapon.imageUrl, A1: weapon.A1, A2: weapon.A2 },
-        targets: targetSnaps.map((e) => ({ name: e.name, actorUuid: e.actorUuid, tokenImg: e.tokenImg, disposition: e.disposition, defense: e.defense, studied: isStudied(e) })),
-        checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: checkBonusShown },
-        damage: { base: dmgBase, element: weapon.damageType, ignoreHR, preRollRange, ...(hrZeroReason ? { hrZeroReason } : {}) },
-        attackMode: director.ctx.attackMode ?? "main",
-        prePassives: askable,
-        // GM-side callback the card pill's "Apply" runs for a pre-roll reaction:
-        // fire its chain (add_target → cost). Returns added target snapshots so
-        // the card can append rows; cancels leave the pill actionable.
-        onReactionApply: (cand) => fireReaction(cand),
-      };
-
-      const result = await postActionCard({ director, kind: "Attack", payload: cardPayload });
-      if (result?.rolled) {
-        if (addedAll.length) {
-          const merged = [...tokenUuids];
-          for (const u of addedAll) if (!merged.includes(u)) merged.push(u);
-          director.ctx.pickedTargetUuids = merged;
-          log(`PRE_ROLL: card added ${addedAll.length} target(s) → ${merged.length} total`);
-        }
-        director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      } else {
-        // Back / cancel → return to the action picker.
-        director.enqueue({ type: INTENTS.CANCEL_ACTION });
-      }
-    } catch (e) {
-      warn("PRE_ROLL onEnter threw", e);
-      director.enqueue({ type: INTENTS.INTERNAL_DONE });
-    }
-  },
-};
-
 // ─── COMPUTE ───────────────────────────────────────────────────────────
 // Roll accuracy + damage. Build an immutable actionResult.
 const Compute = {
@@ -2748,10 +2524,6 @@ const Compute = {
         warn("COMPUTE Attack: tokenUuids provided but no matches in eligibleTargets",
              { tokenUuids, eligibleCount: (director.ctx.eligibleTargets ?? []).length });
       }
-
-      // (Pre-roll reaction window — Barrage et al. — runs in the PRE_ROLL
-      // state before COMPUTE; any added targets are already merged into
-      // ctx.pickedTargetUuids, so targetSnapshots above includes them.)
 
       // ── Single-source COMPUTE (Attack) ───────────────────────────────────
       // Roll the accuracy dice here (RNG); computeActionProfile derives total /
@@ -3212,6 +2984,48 @@ const Confirm = {
       }
     }
 
+    // Performer-side scan — creature_performs_action (Barrage). Formerly hosted
+    // in the deleted PRE_ROLL window; now a normal pill on the post-roll card.
+    // Action-level (offered once), first-pass Attack only. On Apply, the pill
+    // runs the reaction's add_target chain and the picked target(s) share THIS
+    // action's already-rolled accuracy total (see onAddTargetApply below) —
+    // "shared roll, post-roll pick". Tagged `_addTarget` so the card recognizes
+    // the add-target apply path and RESOLVE excludes it from the re-fire (it
+    // commits its MP cost + targets at Apply, not at RESOLVE).
+    const firePerformsAction =
+      attackerActor && ar.kind === "Attack" && (ar.passIndex ?? 1) <= 1;
+    if (firePerformsAction) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+        const cands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_performs_action",
+          payload: {
+            sourceActorUuid: ar.attackerActorRef,
+            subjectActorUuid: ar.attackerActorRef,
+            sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+            targets: allTargetUuids,
+            targetTokenUuids: allTargetUuids,
+            actionIntent: "harmful",
+            actionKind: "Attack",
+            actionName: ar.weapon?.name ?? "Attack",
+            weaponUuid: ar.weapon?.uuid ?? null,
+            // ATTACK_IS_RANGED gate reads this.
+            weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+          },
+          includeUnavailable: true,
+        }) ?? [];
+        for (const cand of cands) {
+          if (cand.kind === "passive" && cand.mode === "off") continue;
+          cand._addTarget = true;
+          prePassives.push(cand);
+        }
+      } catch (e) {
+        warn("CONFIRM: creature_performs_action dispatch threw", e);
+      }
+    }
+
     // Third-party scan — creature_targeted_by_action. Card-modifying
     // reactions whose REACTOR is NOT the action-taker surface here
     // (Protect, Cover, future Mercy-style intercepts). Each candidate
@@ -3392,6 +3206,77 @@ const Confirm = {
         passIndex: ar.passIndex,
         totalPasses: ar.totalPasses,
         prePassives,
+        // GM-side callback the Barrage (creature_performs_action) pill's "Apply"
+        // runs on the POST-ROLL card. Fires the reaction's add_target chain
+        // (JRPG picker + MP cost), then projects the picked target(s) against
+        // THIS action's already-rolled accuracy dice so they share the same
+        // total ("shared roll, post-roll pick"). Splices the new target rows
+        // into the live actionResult (RESOLVE applies damage from
+        // perTargetResults) and returns them so the card appends rows.
+        // Cancel / empty pick / unaffordable → { ok:false } leaves the pill
+        // actionable (cost-last-in-chain means nothing was spent).
+        onAddTargetApply: async (cand) => {
+          try {
+            const fullAttacker = director.ctx.turnSnapshot;
+            const fullWeapon = director.ctx.currentWeapon;
+            if (!fullAttacker || !fullWeapon || !ar.roll) return { ok: false };
+            const baseAr = director.ctx.actionResult ?? ar;
+            const existingUuids = new Set((baseAr.targets ?? []).map((t) => t.tokenUuid));
+
+            const sink = { addedTokenUuids: [] };
+            const probePayload = {
+              sourceActorUuid: fullAttacker.actorUuid, subjectActorUuid: fullAttacker.actorUuid,
+              sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+              targets: [...existingUuids], targetTokenUuids: [...existingUuids],
+              actionIntent: "harmful", actionKind: "Attack",
+              actionName: fullWeapon?.name ?? "Attack", weaponUuid: fullWeapon?.uuid ?? null,
+              weaponRange: fullWeapon?.range ?? fullWeapon?.weapon_range ?? null,
+              _preRoll: sink,
+            };
+            const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+            let res = null;
+            try { res = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probePayload }); }
+            catch (e) { warn("CONFIRM onAddTargetApply: firePreAcceptedCandidate threw", e); return { ok: false }; }
+            if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
+
+            // New, not-already-targeted snapshots.
+            const eligible = director.ctx.eligibleTargets ?? [];
+            const newSnaps = [];
+            for (const u of sink.addedTokenUuids) {
+              if (existingUuids.has(u)) continue;
+              const snap = eligible.find((e) => e.tokenUuid === u);
+              if (snap && !newSnaps.includes(snap)) newSnaps.push(snap);
+            }
+            if (!newSnaps.length) return { ok: false, cancelled: true };
+
+            // Reconstruct the consumed grant (if any) so the recomputed check
+            // total reproduces ar.roll.total exactly — the new target shares the
+            // SAME roll, compared against its own DEF.
+            const grant = ar.freeActionGrant
+              ? { sourceLabel: ar.freeActionGrant.sourceLabel, checkBonus: ar.freeActionGrant.checkBonus ?? 0, damageBonus: ar.freeActionGrant.damageBonus ?? 0 }
+              : null;
+            const profile = await computeActionProfile({
+              view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
+              attacker: fullAttacker, weapon: fullWeapon, targets: newSnaps,
+              dice: { rA: ar.roll.rA, rB: ar.roll.rB },
+              ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant },
+            });
+            const delta = projectProfileToActionResult(profile, null, newSnaps);
+            const addedRows = delta.perTargetResults ?? [];
+
+            director.ctx.actionResult = freezeActionResult({
+              ...baseAr,
+              targets: [...(baseAr.targets ?? []), ...newSnaps],
+              perTargetResults: [...(baseAr.perTargetResults ?? []), ...addedRows],
+              hitTokenUuids: [...(baseAr.hitTokenUuids ?? []), ...(delta.hitTokenUuids ?? [])],
+            });
+            log(`CONFIRM onAddTargetApply: spliced ${newSnaps.length} Barrage target(s) sharing roll total ${ar.roll.total}`);
+            return { ok: true, addedRows };
+          } catch (e) {
+            warn("CONFIRM onAddTargetApply threw", e);
+            return { ok: false };
+          }
+        },
         // Guard-specific:
         coverTarget: ar.coverTarget,
         // Study-specific:
@@ -3461,7 +3346,20 @@ const Confirm = {
     // affinity multiply once over the combined total — the user's
     // "base damage, affinity applied once" rule.
     if (Array.isArray(result.reactionDecisions) && result.reactionDecisions.length) {
-      const applied = result.reactionDecisions.filter((d) => d?.decision === "apply");
+      // Read the LATEST actionResult — a Barrage (_addTarget) pill applied
+      // earlier this window may have already spliced extra targets into it.
+      // Basing the recompute on the stale captured `ar` would drop them.
+      const liveAr = director.ctx.actionResult ?? ar;
+      const applied = result.reactionDecisions
+        .filter((d) => d?.decision === "apply")
+        // Barrage (_addTarget) commits its MP cost + spliced targets at
+        // Apply-click, not at RESOLVE. Exclude it so RESOLVE's re-fire
+        // (firePreAcceptedCandidate) doesn't re-prompt the picker or
+        // double-charge MP — its damage is already in perTargetResults.
+        .filter((d) => {
+          const c = (prePassives ?? []).find((p) => p.rowKey === d.rowKey && p.carrierUuid === d.carrierUuid);
+          return !c?._addTarget;
+        });
       const evaluated = result.reactionDecisions.map((d) => ({
         carrierUuid: d.carrierUuid,
         rowKey: d.rowKey,
@@ -3471,12 +3369,12 @@ const Confirm = {
       // replace_damage etc. as future work). These rewrite WHICH actor
       // is in each target slot, so they run BEFORE add_damage recompute
       // so the damage-bonus accumulator sees the redirected target.
-      let mutatedTargets = ar.targets ?? null;
-      let mutatedPerTargets = ar.perTargetResults ?? null;
+      let mutatedTargets = liveAr.targets ?? null;
+      let mutatedPerTargets = liveAr.perTargetResults ?? null;
       let accuracyOverride = null;
       try {
         const { applyAcceptedCardMutations } = await import("./card-mutations.js?cb=" + Date.now());
-        const r = await applyAcceptedCardMutations(ar, applied);
+        const r = await applyAcceptedCardMutations(liveAr, applied);
         if (r.mutationsApplied > 0) {
           mutatedTargets = r.targets;
           mutatedPerTargets = r.perTargetResults;
@@ -4283,7 +4181,6 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.TURN_START]:      TurnStart,
   [STATES.DECLARE]:         Declare,
   [STATES.TARGET]:          Target,
-  [STATES.PRE_ROLL]:        PreRoll,
   [STATES.COMPUTE]:         Compute,
   [STATES.CONFIRM]:         Confirm,
   [STATES.RESOLVE]:           Resolve,

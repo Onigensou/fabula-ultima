@@ -136,8 +136,8 @@ async function resolveTargetingRow(row, ctx) {
   }
 
   // 3b. exclude_action_targets — drop tokens already in the action's target
-  // list. Used by pre-roll augments (Barrage's add_target) that must pick an
-  // ADDITIONAL target, never one already being attacked.
+  // list. Used by add_target augments (Barrage) that must pick an ADDITIONAL
+  // target, never one already being attacked.
   if (row.exclude_action_targets) {
     const already = new Set(
       ctx.actionTargetUuids

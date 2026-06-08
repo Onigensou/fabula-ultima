@@ -1517,18 +1517,9 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
       ? "rgba(30,108,255,0.45)"
       : (ELEMENT_GLOW[elemKey]  ?? ELEMENT_GLOW.physical);
 
-  // Final shown is HR + base. If the roll is a fumble, show "—". Pre-roll cards
-  // (no roll yet) show a min–max RANGE (base + the HR span) instead of a single
-  // number — the +HR pill is dropped since the range already folds HR in.
-  const preRollRange = (!roll && damage.preRollRange) ? damage.preRollRange : null;
-  const shown = roll?.isFumble
-    ? "—"
-    : preRollRange
-      ? (preRollRange.min === preRollRange.max
-          ? `${preRollRange.min}`                              // no spread (e.g. Two-Weapon HR=0) → single number
-          : `${preRollRange.min}&nbsp;–&nbsp;${preRollRange.max}`)
-      : (damage.finalIfHit ?? 0);
-  const hrPill = (damage.ignoreHR || roll?.isFumble || preRollRange) ? "" : `<span class="hr-pill">+HR</span>`;
+  // Final shown is HR + base. If the roll is a fumble, show "—".
+  const shown = roll?.isFumble ? "—" : (damage.finalIfHit ?? 0);
+  const hrPill = (damage.ignoreHR || roll?.isFumble) ? "" : `<span class="hr-pill">+HR</span>`;
   const label = isHpHeal
     ? "Heal"
     : isMpHeal
@@ -1559,13 +1550,9 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   const prePassiveBonus = Number(damage.prePassiveBonus ?? 0) || 0;
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`
-    : preRollRange
-      ? (preRollRange.min === preRollRange.max
-          ? `<p style="margin-top:6px;"><b>Damage:</b> <b>${preRollRange.min}</b> <span style="opacity:0.7;">(before affinity)</span></p>`
-          : `<p style="margin-top:6px;"><b>Damage range:</b> ${baseVal} + HR(1–${preRollRange.maxHR ?? "?"}) = <b>${preRollRange.min} – ${preRollRange.max}</b> <span style="opacity:0.7;">(before affinity)</span></p>`)
-      : prePassiveBonus > 0
-        ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
-        : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
+    : prePassiveBonus > 0
+      ? `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} + ${prePassiveBonus} (passive) = <b>${damage.finalIfHit ?? 0}</b></p>`
+      : `<p style="margin-top:6px;"><b>Final on hit:</b> ${hrVal} + ${baseVal} = <b>${damage.finalIfHit ?? 0}</b></p>`;
 
   // Per-source breakdown of where the base damage bonus came from. Same
   // shape as the Accuracy panel's checkBonusParts breakdown — set by
@@ -1827,19 +1814,48 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
   `;
 }
 
-function buildButtonsHTML({ isFumble = false, hasRoll = true, preRoll = false }) {
-  // Pre-roll card (two-phase Action Card): the dice aren't rolled yet, so the
-  // only button is "Roll" (commits the pre-roll reactions + rolls). Reactable
-  // cards are Confirm-only (no Cancel) — [[director-skill-no-cancel-rule]] — so
-  // there's no Back button; data-fud-action="roll" routes to the PRE_ROLL
-  // handler's await.
-  if (preRoll) {
-    return `
-    <div class="fud-bf-btn-row">
-      <div class="fud-btn fud-btn-confirm fud-btn-roll" data-fud-action="roll" role="button" tabindex="0">Roll <i class="fa-solid fa-dice-d20"></i></div>
-    </div>
-  `;
-  }
+// Append ONE per-target result row to a live (already-rendered) Action Card —
+// used by the Barrage (_addTarget) pill on the post-roll card. `r` is a
+// projected perTargetResults row sharing the action's accuracy roll. Mirrors
+// the single-row markup of buildPerTargetHTML (studied-mask + affinity + result
+// class/label) and keeps payload.perTargetResults / payload.targets consistent
+// so a later recomputeTargetPreviews toggle sees the new row.
+function appendTargetRow(root, r, kind, payload) {
+  try {
+    const list = root.querySelector(".fud-bf-target-list");
+    if (!list || !r) return;
+    const hasDamage = !!payload?.hasDamage || kind === "Attack";
+    const isSpellish = String(payload?.skillType ?? "").toLowerCase() === "spell";
+    const defLabelTag = isSpellish ? "MDEF" : "DEF";
+    const div = document.createElement("div");
+    div.className = "fud-bf-target-row is-added";
+    div.setAttribute("data-fud-target-actor-uuid", String(r.actorUuid ?? ""));
+    if (r.studied === false) {
+      div.innerHTML =
+        `<span class="t-name">${escapeHtml(r.name ?? "?")}</span>`
+        + `<span class="t-def">${defLabelTag} ???</span>`
+        + `<span class="t-result">???</span>`;
+    } else {
+      const cls = resultClsFor(r);
+      const label = resultLabelFor(r, { hasDamage });
+      const aff = buildAffinityTagHTML({ affinity: r.affinity, hit: r.hit, studied: r.studied });
+      div.innerHTML =
+        `<span class="t-name">${escapeHtml(r.name ?? "?")}${aff ? ` ${aff}` : ""}</span>`
+        + `<span class="t-def">${defLabelTag} ${r.defense}</span>`
+        + `<span class="t-result ${cls}">${label}</span>`;
+    }
+    list.appendChild(div);
+    if (Array.isArray(payload?.perTargetResults)) payload.perTargetResults.push(r);
+    if (Array.isArray(payload?.targets)) {
+      payload.targets.push({
+        name: r.name, actorUuid: r.actorUuid, tokenImg: r.tokenImg,
+        disposition: r.disposition, defense: r.defense, studied: r.studied,
+      });
+    }
+  } catch (e) { warn("appendTargetRow threw", e); }
+}
+
+function buildButtonsHTML({ isFumble = false, hasRoll = true }) {
   const lockedAttrs = isFumble
     ? `class="fud-btn fud-btn-invoke is-locked" title="Locked: Invoke cannot be used on a Fumble."`
     : `class="fud-btn fud-btn-invoke is-locked" title="Invoke Trait / Bond — coming in Phase E"`;
@@ -2208,107 +2224,6 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
     `,
     buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble }),
   };
-}
-
-// ── Pre-roll attack card (two-phase Action Card) ─────────────────────────
-// Informative pre-roll variant: shows the check FORMULA (attribute dice + bonus),
-// the damage formula, and each target's DEF (masked ??? for un-studied enemies)
-// — but NO roll result (no rA/rB/total, no hit/damage). Surfaces a "Roll" button.
-// After pre-roll reactions are committed + Roll clicked, the card morphs into the
-// post-roll card (increment 3). `targets` are TARGET-state snapshots
-// ({name, actorUuid, tokenImg, disposition, defense, studied}); `checkFormula`
-// is {A1, A2, dA, dB, checkBonus, checkBonusParts}.
-function buildAttackCardPreRoll({ attacker, weapon, targets, checkFormula, damage, attackMode, passIndex, totalPasses }) {
-  const titleText = weapon?.name ?? "Attack";
-  const safeWeaponUrl = safeImgUrl(weapon?.imageUrl);
-  const titleIcon = safeWeaponUrl
-    ? `<img class="fud-bf-title-icon" src="${escapeHtml(safeWeaponUrl)}" alt="">`
-    : "";
-  const subtitle = tryBuild("subtitle", () => buildSubtitleHTML({
-    weapon, attackMode: attackMode ?? "main", passIndex: passIndex ?? 0, totalPasses: totalPasses ?? 0,
-  }));
-  return {
-    titleIcon,
-    titleText,
-    subtitle,
-    // No perTargetResults → portraits render attacker + targets with no result tint.
-    portraits: tryBuild("portraits", () => buildPortraitsHTML({
-      attacker,
-      perTargetResults: (targets ?? []).map((t) => ({ name: t.name, actorUuid: t.actorUuid, tokenImg: t.tokenImg, disposition: t.disposition })),
-    })),
-    body: `
-      ${tryBuild("attacker", () => buildAttackerHTML({ attacker, targets }))}
-      ${tryBuild("accuracy", () => buildAccuracyFormulaHTML({ formula: checkFormula }))}
-      ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll: null }))}
-      ${tryBuild("perTarget", () => buildPerTargetPreRollHTML({ targets, weapon, element: damage?.element }))}
-    `,
-    buttons: buildButtonsHTML({ preRoll: true }),
-  };
-}
-
-// Accuracy FORMULA (no result) for the pre-roll card: "DEX d8 + INS d8 (+N) vs DEF".
-function buildAccuracyFormulaHTML({ formula, isSpellish = false }) {
-  if (!formula) return "";
-  const { A1, A2, dA, dB, checkBonus = 0, checkBonusParts } = formula;
-  const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span></span>`;
-  const dieB = `<span class="die-block">${attrIconHTML(A2)} <span class="attr">${escapeHtml(A2)}</span> <span class="die-size">d${dB}</span></span>`;
-  const cbVal = Number(checkBonus) || 0;
-  const bonusPart = cbVal !== 0 ? `<span class="bonus">${cbVal >= 0 ? "+" : ""}${cbVal}</span>` : "";
-  const iconUrl = isSpellish ? MAGIC_ICON_URL : STRIKE_ICON_URL;
-  const iconAlt = isSpellish ? "Magic" : "Strike";
-  const parts = Array.isArray(checkBonusParts) ? checkBonusParts.filter((p) => p && Number(p.amount) !== 0) : [];
-  const breakdownHTML = parts.length
-    ? `<ul style="margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;">`
-      + parts.map((p) => { const a = Number(p.amount) || 0; return `<li><b>${escapeHtml(String(p.source ?? "Unknown"))}:</b> ${a >= 0 ? "+" : "−"}${Math.abs(a)}</li>`; }).join("")
-      + `</ul>`
-    : "";
-  const tipBody = [
-    `<p><b>${escapeHtml(A1)}:</b> 1d${dA}</p>`,
-    `<p><b>${escapeHtml(A2)}:</b> 1d${dB}</p>`,
-    `<p style="margin-bottom:0;"><b>Check Bonus:</b> ${cbVal === 0 ? "—" : (cbVal >= 0 ? `+${cbVal}` : cbVal)}</p>${breakdownHTML}`,
-    `<p style="opacity:0.75; margin-top:6px;">Not rolled yet — compares vs target's <b>${isSpellish ? "Magic Defense" : "Defense"}</b> on Roll.</p>`,
-  ].join("");
-  const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="Accuracy Check"`;
-  return `
-    <fieldset class="fud-bf-section"${tipAttrs}>
-      <legend>Accuracy Check <span style="opacity:0.7; font-weight:700;">— before roll</span></legend>
-      <div class="fud-bf-acc">
-        <div class="fud-bf-acc-row">
-          ${dieA}<span class="plus">+</span>${dieB}${bonusPart}
-          <span class="spacer"></span>
-          <span class="total-wrap"><img class="strike-icon" src="${iconUrl}" alt="${iconAlt}" title="${iconAlt}"><span class="total" style="opacity:0.5;">?</span></span>
-        </div>
-      </div>
-    </fieldset>
-  `;
-}
-
-// Per-target list for the pre-roll card: name + DEF (masked ??? for un-studied),
-// no hit/result column (just a dash placeholder).
-function buildPerTargetPreRollHTML({ targets, weapon = null, element = null, isSpellish = false }) {
-  const defLabelTag = isSpellish ? "MDEF" : "DEF";
-  const rows = (targets ?? []).map((t) => {
-    const uuidAttr = ` data-fud-target-actor-uuid="${escapeHtml(String(t.actorUuid ?? ""))}"`;
-    if (t.studied === false) {
-      const maskedTip = `<p>Study this target to identity tier (≥7) to reveal defense + affinity.</p>`;
-      return `<div class="fud-bf-target-row" data-fud-equip-desc="${escapeHtml(maskedTip)}" data-fud-equip-desc-name="${escapeHtml(t.name)}"${uuidAttr}>
-        <span class="t-name">${escapeHtml(t.name)}</span>
-        <span class="t-def">${defLabelTag} ???</span>
-        <span class="t-result" style="opacity:0.5;">—</span>
-      </div>`;
-    }
-    return `<div class="fud-bf-target-row"${uuidAttr}>
-      <span class="t-name">${escapeHtml(t.name)}</span>
-      <span class="t-def">${defLabelTag} ${t.defense ?? t.def ?? "?"}</span>
-      <span class="t-result" style="opacity:0.5;">—</span>
-    </div>`;
-  }).join("");
-  return `
-    <fieldset class="fud-bf-section">
-      <legend>Targets <span style="opacity:0.7; font-weight:700;">— before roll</span></legend>
-      <div class="fud-bf-target-list">${rows || `<div style="opacity:0.6;font-size:12px;">No targets.</div>`}</div>
-    </fieldset>
-  `;
 }
 
 function buildGuardCard({ attacker, coverTarget }) {
@@ -3353,16 +3268,7 @@ export async function postActionCard({ director, kind, payload }) {
 
   // Despawn any prior overlay for this director.
   const prior = _overlays.get(director.combatId);
-  // Two-phase morph: a pre-roll overlay flagged `_awaitingMorph` (its Roll was
-  // clicked, overlay kept alive) is REUSED in place by the post-roll Attack card
-  // so the card visually morphs — no despawn+respawn flicker. Any other prior
-  // overlay is cleaned up as usual.
-  const morphInPlace = !!prior?._awaitingMorph && kind === "Attack" && !payload?.preRoll;
-  let reuseRoot = null;
-  if (prior) {
-    if (morphInPlace) reuseRoot = prior.root;
-    else { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
-  }
+  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
 
   // Pre-compute bonus from auto-accepted ("on"-mode) pre-passives so the
   // damage header reflects passive bonuses before the player confirms.
@@ -3404,11 +3310,7 @@ export async function postActionCard({ director, kind, payload }) {
   // by tryBuild() inside the builders.
   let card = null;
   try {
-    if (kind === "Attack" && effectivePayload?.preRoll) {
-      // Two-phase Action Card: pre-roll variant (formula + masked DEF, no result,
-      // Roll button). Posted by the PRE_ROLL handler before the dice.
-      card = buildAttackCardPreRoll(effectivePayload);
-    } else if (kind === "Attack") {
+    if (kind === "Attack") {
       card = buildAttackCard(effectivePayload);
     } else if (kind === "Guard") {
       card = buildGuardCard(effectivePayload);
@@ -3487,43 +3389,11 @@ export async function postActionCard({ director, kind, payload }) {
       ${card.buttons}
     </div>
   `;
-  let root;
-  if (reuseRoot) {
-    // Morph in place: clone-replace the existing (pre-roll) element — drops its
-    // listeners — keeping the same DOM position. It's already on-screen, so skip
-    // the entrance animation; the content swap reads as the card morphing.
-    // FLIP the inner card's height so the size change animates instead of
-    // snapping (the pre-roll card is shorter than the post-roll results card).
-    const prevCard = reuseRoot.querySelector(".fud-bf-card");
-    const oldH = prevCard ? prevCard.getBoundingClientRect().height : 0;
-    root = reuseRoot.cloneNode(false);
-    root.id = ROOT_ID;
-    root.innerHTML = innerHTML;
-    reuseRoot.replaceWith(root);
-    root.classList.add("is-visible");
-    const newCard = root.querySelector(".fud-bf-card");
-    const newH = newCard ? newCard.getBoundingClientRect().height : 0;
-    if (newCard && oldH && newH && Math.abs(oldH - newH) > 1) {
-      newCard.style.height = `${oldH}px`;
-      newCard.style.overflow = "hidden";
-      newCard.style.transition = "height 240ms cubic-bezier(.2,.7,.2,1)";
-      requestAnimationFrame(() => { newCard.style.height = `${newH}px`; });
-      const onMorphEnd = (e) => {
-        if (e.target !== newCard || e.propertyName !== "height") return;
-        newCard.style.height = "";
-        newCard.style.overflow = "";
-        newCard.style.transition = "";
-        newCard.removeEventListener("transitionend", onMorphEnd);
-      };
-      newCard.addEventListener("transitionend", onMorphEnd);
-    }
-  } else {
-    root = document.createElement("div");
-    root.id = ROOT_ID;
-    root.innerHTML = innerHTML;
-    document.body.appendChild(root);
-    requestAnimationFrame(() => root.classList.add("is-visible"));
-  }
+  const root = document.createElement("div");
+  root.id = ROOT_ID;
+  root.innerHTML = innerHTML;
+  document.body.appendChild(root);
+  requestAnimationFrame(() => root.classList.add("is-visible"));
 
   log("Battlefield action card spawned", card.titleText);
 
@@ -3589,20 +3459,6 @@ export async function postActionCard({ director, kind, payload }) {
         }
       } catch {}
 
-      // Two-phase morph: the pre-roll "Roll" keeps the GM overlay MOUNTED so the
-      // post-roll card (CONFIRM) can reuse + morph it in place rather than
-      // despawn+respawn. Flag the _overlays entry; lock the buttons to a
-      // resolved (non-clickable) state during the brief roll/compute gap.
-      if (outcome === "roll") {
-        for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
-        const rec = _overlays.get(director.combatId);
-        if (rec) rec._awaitingMorph = true;
-        if (keyListener) { try { window.removeEventListener("keydown", keyListener, true); } catch {} keyListener = null; }
-        try { hideDescTip(); } catch {}
-        resolve({ confirmed: false, rolled: true, reactionDecisions: snapshotReactionDecisions(), ...extras });
-        return;
-      }
-
       for (const b of root.querySelectorAll(".fud-btn")) b.classList.add("is-resolved");
 
       root.classList.remove("is-visible");
@@ -3630,10 +3486,6 @@ export async function postActionCard({ director, kind, payload }) {
       // reaction-pill decisions so resolve can apply pre-accepted passives.
       resolve({
         confirmed: outcome === "confirm",
-        // Pre-roll card (two-phase): the "Roll" button resolves with rolled:true
-        // (and confirmed:false) so the PRE_ROLL handler knows to proceed to the
-        // dice + COMPUTE rather than treating it as a final Confirm.
-        rolled: outcome === "roll",
         reactionDecisions: snapshotReactionDecisions(),
         ...extras,
       });
@@ -3773,44 +3625,39 @@ export async function postActionCard({ director, kind, payload }) {
       // before committing the DOM so the pill stays in pending state.
       reactionDecisionMap.set(`${rowKey}:${carrierUuid}`, decision);
 
-      // Pre-roll card (two-phase): the pill's Apply runs the reaction's OWN
-      // chain (add_target → cost) via the PRE_ROLL handler's onReactionApply
-      // callback — the post-roll mutation pipeline (recomputeTargetPreviews)
-      // doesn't apply here (no perTargetResults exist yet). Added targets are
-      // appended as rows. A cancelled pick leaves the pill actionable.
-      if (payload?.preRoll) {
-        if (decision === "apply" && typeof payload.onReactionApply === "function") {
-          const cand = (prePassives ?? []).find(
-            (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
-          );
-          // Hide the pre-roll card while the reaction's targeting picker
-          // (Barrage's add_target) is up, so it doesn't overlap the JRPG
-          // targeting UI — same as every other picker site.
+      // Barrage (creature_performs_action, tagged `_addTarget`): the pill's
+      // Apply runs the reaction's add_target chain (JRPG picker + MP cost) via
+      // the CONFIRM onAddTargetApply callback, which splices the picked
+      // target(s) into THIS action sharing the already-rolled accuracy total
+      // ("shared roll, post-roll pick") and returns their result rows. The rows
+      // are appended to the result list. A cancelled / empty / unaffordable
+      // pick leaves the pill actionable (cost-last-in-chain → nothing spent).
+      const addTargetCand = (prePassives ?? []).find(
+        (p) => String(p.rowKey) === String(rowKey)
+          && String(p.carrierUuid) === String(carrierUuid)
+          && p._addTarget
+      );
+      if (addTargetCand) {
+        if (decision === "apply") {
+          if (typeof payload.onAddTargetApply !== "function") {
+            reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+            return;
+          }
+          // Hide the card while the targeting picker is up so it doesn't
+          // overlap the JRPG targeting UI — same as every other picker site.
           let res = null;
           root.classList.add("is-hidden-during-pick");
-          try { res = await payload.onReactionApply(cand); }
-          catch (e) { warn("recordPillDecision: preRoll onReactionApply threw", e); }
+          try { res = await payload.onAddTargetApply(addTargetCand); }
+          catch (e) { warn("recordPillDecision: onAddTargetApply threw", e); }
           finally { root.classList.remove("is-hidden-during-pick"); }
           if (!res?.ok) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
-            log(`recordPillDecision: preRoll apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
+            log(`recordPillDecision: add_target apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
             return;
           }
-          const added = Array.isArray(res.addedTargets) ? res.addedTargets : [];
-          if (added.length) {
-            const list = root.querySelector(".fud-bf-target-list");
-            if (list) {
-              for (const t of added) {
-                const div = document.createElement("div");
-                div.className = "fud-bf-target-row is-added";
-                div.setAttribute("data-fud-target-actor-uuid", String(t.actorUuid ?? ""));
-                const defHtml = t.studied === false ? "DEF ???" : `DEF ${t.defense ?? "?"}`;
-                div.innerHTML = `<span class="t-name">${escapeHtml(t.name ?? "?")}</span><span class="t-def">${defHtml}</span><span class="t-result" style="opacity:0.6;">+ target</span>`;
-                list.appendChild(div);
-              }
-            }
-          }
+          for (const r of (res.addedRows ?? [])) appendTargetRow(root, r, kind, payload);
         }
+        // skip → no row added; just commit the decision.
         commitPillDecisionDom(rowKey, carrierUuid, decision);
         return;
       }

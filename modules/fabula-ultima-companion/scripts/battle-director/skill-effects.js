@@ -2044,13 +2044,14 @@ async function applyTargetingEffect(row, ctx) {
 }
 
 // ── add_target ───────────────────────────────────────────────────────────
-// Pre-roll target augmentation (two-phase Action Card). Resolves a `target_ref`
-// targeting row — typically "pick 1 enemy not already targeted" (category:
-// enemy, exclude_action_targets: true, skip_when_passive: false so it prompts
-// even inside the passive reaction chain) — and stashes the picked token uuids
-// on the mutable pre-roll side-channel `ctx.payload._preRoll.addedTokenUuids`.
-// The COMPUTE handler reads them back and splices them into the action's target
-// list BEFORE the roll, so the extra target shares the single accuracy roll.
+// Target augmentation (Barrage). Resolves a `target_ref` targeting row —
+// typically "pick 1 enemy not already targeted" (category: enemy,
+// exclude_action_targets: true, skip_when_passive: false so it prompts even
+// inside the passive reaction chain) — and stashes the picked token uuids on
+// the mutable side-channel `ctx.payload._preRoll.addedTokenUuids`. The CONFIRM
+// onAddTargetApply callback reads them back and splices them into the action,
+// projecting the new target(s) against the already-rolled accuracy total so
+// they share the single accuracy roll ("shared roll, post-roll pick").
 //
 // Returns abort when nothing was picked (empty pool / all already targeted /
 // player cancelled) so a downstream consume_resource cost is skipped — the
@@ -2074,7 +2075,7 @@ async function applyAddTargetEffect(row, ctx) {
   }
   const sink = ctx?.payload?._preRoll;
   if (!sink || !Array.isArray(sink.addedTokenUuids)) {
-    warn("skill-effects.add_target: no pre-roll sink on payload — fired outside a pre-roll window?");
+    warn("skill-effects.add_target: no add-target sink on payload — fired outside an add_target window?");
     return { ok: false, kind: "add_target", reason: "no-sink", abort: true };
   }
   const added = [];
@@ -2082,7 +2083,7 @@ async function applyAddTargetEffect(row, ctx) {
     const uuid = t?.uuid ?? t?.document?.uuid ?? null;
     if (uuid) { sink.addedTokenUuids.push(uuid); added.push(uuid); }
   }
-  log(`skill-effects.add_target: queued ${added.length} extra target(s) for the pre-roll window`);
+  log(`skill-effects.add_target: queued ${added.length} extra target(s) for the add_target window`);
   return { ok: true, kind: "add_target", applied: added };
 }
 
@@ -2737,6 +2738,15 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining,
       ...(lifetimeMode ? { lifetimeMode } : {}),
     };
+    // Guard-cover marker (Grappled rule #2 — [[project_grappled_advanced_debuff]]).
+    // The Covered AE is the canonical "this ally is being covered by X" effect;
+    // `target_ref: "cover_target"` is the generic signal (only Guard's
+    // guard_cover row targets it). Stamp the guarder so endGuardCoverProvidedBy
+    // can find + remove this cover (and its riders) when the guarder becomes
+    // Grappled. The guarder keeps its own self-Guard (a separate AE on itself).
+    if (row?.target_ref === "cover_target" && ctx.reactorActor?.uuid) {
+      data.flags[FLAG_NS].guardCoverBy = ctx.reactorActor.uuid;
+    }
     // Affinity-override protection: an AE that OVERRIDES element-affinity props
     // (affinity_1..9 — e.g. Guard's "Resistance to all") must NOT downgrade an
     // element the target is natively Immune/Absorbing to. Drop those specific
