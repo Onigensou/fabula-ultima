@@ -43,6 +43,16 @@
  *          CHARGES read happened to work (the status carries charges:1) but
  *          checked mere presence, ignoring who did the grappling.
  *
+ *   4. Flame Breath's embedded "Burn" template missing its charge count. The
+ *      skill carries its OWN "Burn" ActiveEffect, and resolveAeTemplate prefers
+ *      a skill-local effect over the world "Debuff" master — so THIS copy is what
+ *      gets cloned onto the target. Without `charges`, the applied Burn lands
+ *      with no stacks: it can't tick its 10%-Max-HP fire down to 0, and shows no
+ *      count badge on the token. Stamp the canonical `charges: 3` (matching the
+ *      master) and clear any badge-suppressing `chargesMax: 1`. This is world
+ *      data (worlds/ is never committed), so the migration is the only way it
+ *      reaches a co-dev's Hellhound.
+ *
  * IDEMPOTENT: each patch is checked against the desired value and only writes
  * on drift; a fully-migrated Hellhound re-runs as a no-op. Tagged
  * `"idempotent": true` in _manifest.json so a pulled co-dev world self-heals
@@ -58,9 +68,11 @@ export const description =
   "Fix Hellhound dungeon skills: retype Pounce's no-op grant to deal_damage; " +
   "rebuild On the Hunt as a free-action grant (free Attack, HR as 0); scope " +
   "on-hit riders (Flame Breath Burn, Bite grappled bonus) to their own skill " +
-  "via TRIGGER_IS_SELF.";
+  "via TRIGGER_IS_SELF; stamp the canonical charges:3 on Flame Breath's embedded " +
+  "Burn template so applied Burns carry stacks (tick + count badge).";
 
 const ACTOR_NAME = "Hellhound";
+const NS = "fabula-ultima-companion";
 
 // Per-skill patch spec.
 //   `effect_kind`          — retype rows matched by effect_label (+ optional
@@ -96,6 +108,14 @@ const PATCHES = {
   },
   "Flame Breath": {
     reaction_cond: [{ ref: "apply_burn", cond: "TRIGGER_IS_SELF == 1 && chance(50)" }],
+    // Flame Breath carries its OWN embedded "Burn" template, and a skill-local
+    // effect WINS over the world "Debuff" master in resolveAeTemplate — so this
+    // embedded copy is what gets cloned onto the target. It must carry the
+    // canonical Burn charge count (charges:3, matching the master) or the applied
+    // Burn lands with no stacks: it can't tick down and shows no count badge on
+    // the token. chargesMax stays unset (Burn stacks uncapped); a stray
+    // chargesMax:1 is cleared because it ALSO suppresses the badge.
+    embedded_ae: [{ name: "Burn", set: { charges: 3 }, clearIfSuppressingMax: true }],
   },
   "Bite": {
     // "deals 50% more damage on a creature Grappled BY YOU" — grappled-by-self,
@@ -197,6 +217,35 @@ async function patchActor(actor, log) {
           touched = true;
         } else {
           log(`  [${actor.name}] "${skillName}".effect_table: already free-action grant`);
+        }
+      }
+      // Embedded status-template charge flags. A skill-local AE (e.g. Flame
+      // Breath's own "Burn") is the template resolveAeTemplate clones onto
+      // targets, so its charge count must be canonical. Idempotent: writes only
+      // the flags that drift.
+      if (spec.embedded_ae) {
+        for (const aeSpec of spec.embedded_ae) {
+          const ae = item.effects.find((e) => e.name === aeSpec.name);
+          if (!ae) { log(`  [${actor.name}] "${skillName}"/${aeSpec.name}: embedded AE NOT FOUND`); continue; }
+          const cur = ae.flags?.[NS] ?? {};
+          const aeUpdate = {};
+          for (const [k, v] of Object.entries(aeSpec.set ?? {})) {
+            if (cur[k] !== v) aeUpdate[`flags.${NS}.${k}`] = v;
+          }
+          // Clear a chargesMax of exactly 1 — it suppresses the on-token stack
+          // badge (a "1" reads as a pure on/off effect). Burn is uncapped, so
+          // unset is canonical; leave any other max untouched.
+          if (aeSpec.clearIfSuppressingMax && cur.chargesMax === 1) {
+            aeUpdate[`flags.${NS}.-=chargesMax`] = null;
+          }
+          const changedKeys = Object.keys(aeUpdate);
+          if (changedKeys.length) {
+            await ae.update(aeUpdate);
+            log(`  [${actor.name}] "${skillName}"/${aeSpec.name}: set ${changedKeys.join(", ")}`);
+            touched = true;
+          } else {
+            log(`  [${actor.name}] "${skillName}"/${aeSpec.name}: charge flags already canonical`);
+          }
         }
       }
       if (touched) {
