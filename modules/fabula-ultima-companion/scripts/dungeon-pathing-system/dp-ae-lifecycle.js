@@ -1,26 +1,29 @@
 // ============================================================================
 // Dungeon Pathing System — Active Effect Lifecycle
 //
-// Ticks down per-turn AEs on the moving actor each dungeon turn.
-// Mirrors the battle director's tickDirectorAEsForApplier logic but works
-// bearer-side: AEs tick when the character who *carries* them takes a step,
-// not when the applier acts (there is no applier turn in dungeon mode).
+// Ticks down per-turn AEs on every party member each dungeon turn.
+//
+// Why party-wide: the party moves as a single token representing all members.
+// One step = one turn for everyone in the party, so all members' AEs advance
+// together. Individual actors can still be ticked via tickAEsOnActor().
+//
+// Party resolution: CampSystem.Party.resolve() reads member_id_1..4 from the
+// DB actor, the same source used by the camp and rest systems.
 //
 // Two AE categories handled:
 //   Director-stamped  — has `directorAppliedBy` with `turnsRemaining`.
-//                       We decrement that same field so the AE stays
-//                       consistent if the character re-enters battle.
-//   Non-stamped       — no `directorAppliedBy` (manually applied, camp
-//                       activities, tile effects). We lazy-init
-//                       `flags.<MODULE>.dungeonTurnsRemaining` from
+//                       Decrement that field so the AE stays consistent
+//                       if the member re-enters battle.
+//   Non-stamped       — no `directorAppliedBy` (manual, camp, tile effects).
+//                       Lazy-init `flags.<MODULE>.dungeonTurnsRemaining` from
 //                       `duration.rounds`, falling back to DEFAULT_DURATION.
 //
-// Skip conditions (same as battle director):
-//   directorPermanent === true  — permanent; never auto-expires
-//   lifetimeMode "on_activation"— charge-governed; expires by consume_charge
-//   lifetimeMode "round_end"   — group-round mechanic; not per-character-turn
+// Skip conditions (matching battle director behaviour):
+//   directorPermanent === true   — permanent; never auto-expires
+//   lifetimeMode "on_activation" — charge-governed; expires via consume_charge
+//   lifetimeMode "round_end"     — group-round mechanic, not per-character-step
 //
-// Only the GM client executes writes; all other clients return early.
+// Only the GM client executes writes; other clients return early.
 // ============================================================================
 (() => {
   const DP        = globalThis.DungeonPathing ??= {};
@@ -29,7 +32,8 @@
   const TAG       = "[DungeonPathing][AELifecycle]";
   const DEFAULT_DURATION = 3;
 
-  // ── Core tick function ─────────────────────────────────────────────────────
+  // ── Single-actor tick ──────────────────────────────────────────────────────
+  // Can also be called manually for testing or custom scenarios.
 
   async function tickAEsOnActor(actor) {
     if (!actor) return { ticked: 0, expired: [] };
@@ -95,19 +99,44 @@
     return { ticked, expired };
   }
 
+  // ── Party-wide tick ────────────────────────────────────────────────────────
+  // Default entry point: resolves all party members and ticks each in parallel.
+
+  async function tickPartyAEs() {
+    let members;
+    try {
+      members = await CampSystem?.Party?.resolve?.() ?? [];
+    } catch (e) {
+      console.warn(TAG, "party resolve failed", e);
+      members = [];
+    }
+
+    if (!members.length) {
+      console.warn(TAG, "no party members found — skipping AE tick");
+      return;
+    }
+
+    const results = await Promise.all(members.map(({ actor }) => tickAEsOnActor(actor)));
+    const totals = results.reduce(
+      (acc, r) => { acc.ticked += r.ticked; acc.expired.push(...r.expired); return acc; },
+      { ticked: 0, expired: [] }
+    );
+
+    if (totals.ticked) {
+      console.log(TAG, `dungeon turn: ticked ${totals.ticked} AE(s) across ${members.length} member(s); expired: [${totals.expired.join(", ")}]`);
+    }
+    return totals;
+  }
+
   // ── Hook registration ──────────────────────────────────────────────────────
 
-  Hooks.on(DP.HOOKS.TURN_END, async ({ tokenDoc }) => {
+  Hooks.on(DP.HOOKS.TURN_END, async () => {
     if (!game.user?.isGM) return;   // only GM writes; Hooks.callAll fires on all clients
-
-    const actor = tokenDoc?.actor;
-    if (!actor) return;
-
-    await tickAEsOnActor(actor);
+    await tickPartyAEs();
   });
 
   // Expose for manual testing via evalGM / test bridge
-  DP.AELifecycle = { tickAEsOnActor };
+  DP.AELifecycle = { tickAEsOnActor, tickPartyAEs };
 
   console.debug(TAG, "Installed; listening on", DP.HOOKS.TURN_END);
 })();

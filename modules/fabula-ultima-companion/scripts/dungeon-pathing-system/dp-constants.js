@@ -19,6 +19,16 @@
     CONFLICT:    "conflict",
   });
 
+  // Turn phase — tracks the current stage of the dungeon turn lifecycle.
+  // Read via DungeonPathing.turnPhase or window.__ONI_DUNGEON_PATHING__.turnPhase.
+  DP.TURN_PHASE = Object.freeze({
+    IDLE:         "idle",          // dungeon mode inactive or between turns
+    ACTION_PHASE: "action_phase",  // graph ready, waiting for player tile choice
+    TURN_START:   "turn_start",    // player chose tile; movement + confirm dialog
+    RESOLUTION:   "resolution",    // move confirmed; tile events being processed
+    TURN_END:     "turn_end",      // tile events done; cleanup + rebuild pending
+  });
+
   DP.HOOKS = Object.freeze({
     STANDBY_START:   "dungeonPathing.standbyStart",
     STANDBY_END:     "dungeonPathing.standbyEnd",
