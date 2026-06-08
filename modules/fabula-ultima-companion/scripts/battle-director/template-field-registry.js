@@ -25,6 +25,10 @@
 // always visible. Helper builders below cover the common shapes.
 
 const OAM_VIS = `equalText(sameRow("effect_kind",''), "open_action_menu")`;
+// Damage-effect visibility gates.
+const DEAL_VIS = `equalText(sameRow("effect_kind",''), "deal_damage")`;
+const ADJUST_VIS = `equalText(sameRow("effect_kind",''), "adjust_damage")`;
+const DEAL_OR_ADJUST_VIS = `or(equalText(sameRow("effect_kind",''), "deal_damage"), equalText(sameRow("effect_kind",''), "adjust_damage"))`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -65,6 +69,26 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("menu_option_descriptions", "Option Descriptions", { tooltip: "Pipe (|)-separated descriptions, paired with Option Refs.", vis: OAM_VIS }),
   // free-action grant config
   checkboxCol("free_hr_as_zero", "Free: HR as 0", { tooltip: "Granted free attack treats High Roll as 0 for damage (Hawkeye option b / Soaring Strike). Pairs with Free Mode.", vis: OAM_VIS }),
+  // deal_damage / adjust_damage config — these kinds were added (deal_damage;
+  // adjust_damage from the add_damage+modify_damage_taken unify) without any
+  // effect_table columns, so their rows showed only the Kind dropdown and the
+  // damage values were data-only / uneditable in the sheet. See
+  // [[feedback_csb_template_gating]].
+  textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
+  checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
+  textCol("damage_amount", "Damage Amount", { tooltip: "Damage formula. deal_damage: amount dealt per target. adjust_damage: the operand.", vis: DEAL_OR_ADJUST_VIS }),
+  selectCol("damage_operation", "Damage Op", [
+    { key: "add",      value: "Add" },
+    { key: "subtract", value: "Subtract" },
+    { key: "multiply", value: "Multiply" },
+    { key: "set",      value: "Set" },
+    { key: "cap",      value: "Cap (upper bound)" },
+    { key: "floor",    value: "Floor (lower bound)" },
+  ], { tooltip: "How adjust_damage combines its amount with the in-flight damage.", vis: ADJUST_VIS, defaultValue: "add" }),
+  selectCol("damage_stage", "Damage Stage", [
+    { key: "outgoing", value: "Outgoing (attacker, pre-resolve)" },
+    { key: "incoming", value: "Incoming (victim, at HP-write)" },
+  ], { tooltip: "Which side adjust_damage modifies.", vis: ADJUST_VIS, defaultValue: "outgoing" }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

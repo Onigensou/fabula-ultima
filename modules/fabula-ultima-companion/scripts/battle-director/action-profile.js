@@ -260,10 +260,17 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     const effects = [];
     let damageVal = 0, rawDamage = 0, affinityCode = "NE", damageRange = null;
     const damageModParts = [];
+    // In-flight reaction damage ops attributed to their carrier, so the card
+    // breakdown can itemize them (e.g. Bite's grappled +50%) rather than hiding
+    // the delta inside the per-target total.
+    const reactionParts = [];
     const targetOps = opsMap?.get?.(e.actorUuid) ?? [];
 
-    // Affinity helper (MP damage / status-only → NE). Forced-VU + Guard-RS are
-    // ATTACK-only in COMPUTE today; gate to kind==="Attack" (see state-handlers).
+    // Affinity helper (MP damage / status-only → NE). Forced-VU is ATTACK-only
+    // in COMPUTE today; gate to kind==="Attack". Guard's "RS to all" is NO LONGER
+    // special-cased here — the Guard AE overrides the affinity props directly
+    // (see 2026-06-09-guard-affinity-rs migration), so `e.affinities` already
+    // reflects it. Single source of truth = the actor's affinity data.
     const computeAffinity = () => {
       if (primary.isMpDamage) return "NE";
       let aff = e.affinities?.[primary.element] ?? "NE";
@@ -271,7 +278,6 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         for (const cond of (e.conditions ?? [])) {
           if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
         }
-        if ((e.conditions ?? []).includes("Guard") && aff !== "IM" && aff !== "AB") aff = "RS";
       }
       return aff;
     };
@@ -316,10 +322,19 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         }
       }
 
-      // Fold accepted-reaction outgoing damage ops (Hawkeye add, Cheap Shot…)
-      // AFTER reduction/crit, on a hit only — mirrors recomputePerTargetDamages.
+      // Fold accepted-reaction outgoing damage ops (Hawkeye add, Cheap Shot,
+      // Bite's grappled +50%…) AFTER reduction/crit, on a hit only — mirrors
+      // recomputePerTargetDamages. Capture each op's integer contribution +
+      // source so the card can itemize it.
       if (hit && targetOps.length) {
-        rawDamage = Math.max(0, Math.floor(foldOps(rawDamage, targetOps)));
+        let d = rawDamage;
+        for (const o of targetOps) {
+          const next = applyDamageOp(d, o.op, o.amount);
+          const delta = Math.floor(next) - Math.floor(d);
+          if (delta !== 0) reactionParts.push({ source: o.source ?? "Reaction", amount: delta });
+          d = next;
+        }
+        rawDamage = Math.max(0, Math.floor(d));
       }
 
       affinityCode = computeAffinity();
@@ -352,7 +367,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       _parity: {
         defense: defStat, hit, crit: !!check.isCrit && hit, rawDamage, damage: damageVal,
         affinity: affinityCode, pierceMiss, resource: primary.resource,
-        studied: studiedGate(e), damageModParts,
+        studied: studiedGate(e), damageModParts, reactionParts,
       },
     });
   }
@@ -608,19 +623,32 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   const effectiveHr = (kind === "Attack")
     ? (attackIgnoreHR || check.isFumble ? 0 : (check.hr ?? 0))
     : (check.isFumble ? 0 : (check.hr ?? 0));
+  // Representative in-flight reaction bonus for the headline breakdown — the
+  // first hit target's per-target ops (e.g. Bite's grappled +50%). Folded into
+  // base / baseParts / finalIfHit so the Damage Preview tooltip itemizes the
+  // bonus and its "Final on hit" matches the actual per-target total instead of
+  // omitting it. Per-target rows still carry their own exact numbers.
+  const repReactionParts = (() => {
+    for (const r of (profile.perTarget ?? [])) {
+      const p = r._parity ?? {};
+      if (p.hit && Array.isArray(p.reactionParts) && p.reactionParts.length) return p.reactionParts;
+    }
+    return [];
+  })();
+  const reactionDelta = repReactionParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
   const damageObj = hasDamage ? (kind === "Attack" ? {
-    base: prim.damageBonus + prim.outgoingTotal,
-    baseParts: prim.baseParts ?? prim.outgoingParts ?? [],
+    base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    baseParts: [...(prim.baseParts ?? prim.outgoingParts ?? []), ...repReactionParts],
     element: prim.overriddenElement ?? prim.nativeElement ?? prim.element,
     ignoreHR: attackIgnoreHR,
     ...(profile._summary?.hrZeroReason ? { hrZeroReason: profile._summary.hrZeroReason } : {}),
-    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
+    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
   } : {
-    base: prim.damageBonus + prim.outgoingTotal,
-    baseParts: prim.outgoingParts ?? [],
+    base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
+    baseParts: [...(prim.outgoingParts ?? []), ...repReactionParts],
     element: prim.element, resource: prim.resource,
     ignoreHR: !roll,
-    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
+    finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
   }) : null;
 
   // hitTokenUuids — for a Check, the hit rows; with NO Check, ALL action

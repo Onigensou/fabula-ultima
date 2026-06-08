@@ -120,12 +120,20 @@ export function readPropNum(actor, keys, fallback = 0) {
 export function attrDieSize(actor, key) {
   if (!actor) return 8;
   const A = String(key || "").toUpperCase();
+  const a = A.toLowerCase();
   const props = actor?.system?.props ?? actor?.system ?? {};
   const candidates = [
     props[`${A}_die_size`],
     props[`${A}_die`],
     props[`current_${A}_die`],
     props[`current_${A}`],
+    // Canonical CSB attribute-die props (used by NPCs + the skill-formulas
+    // INS_CURRENT_DIE / INS_BASE_DIE identifiers): lowercase `<attr>_current`
+    // (post-reduction) then `<attr>_base`. Without these, NPCs — which store
+    // their die ONLY in `dex_base` etc. — fell through to the d8 default, so
+    // every NPC check/attack rolled d8 regardless of its real attributes.
+    props[`${a}_current`],
+    props[`${a}_base`],
     props[A],
   ];
   for (const c of candidates) {

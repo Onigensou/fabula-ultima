@@ -4134,26 +4134,78 @@ export async function postActionCard({ director, kind, payload }) {
               resultSpan.textContent = label;
             }
 
-            // Headline damage number — the prominent `.fud-bf-dmg-number` shows
-            // the weapon's base (finalIfHit) and is NOT recomputed by the
+            // Headline damage preview — the prominent `.fud-bf-dmg` fieldset
+            // shows the weapon's base (finalIfHit) and its hover tooltip
+            // itemizes where that damage came from. NEITHER is touched by the
             // per-target loop, so an outgoing reaction bonus (on/force buffs
-            // like Hawkeye, accepted ask buffs like Cheap Shot) wouldn't show
-            // there. Pre-affinity base is uniform across hit targets, so patch
-            // it to the first hit target's recomputed rawDamage. Preserve the
-            // trailing HR pill. Idempotent: no bonus → equals the original.
-            const numEl = root.querySelector(".fud-bf-dmg .fud-bf-dmg-number");
-            if (numEl) {
-              let repBase = null;
+            // like Hawkeye, accepted ask buffs like Cheap Shot, Bite's grappled
+            // +50% adjust_damage) would show up in the per-target totals but be
+            // missing from BOTH the headline number AND the tooltip breakdown.
+            //
+            // Find the representative hit target (pre-affinity base is uniform
+            // across hit targets) and fold its reaction ops — captured by
+            // recomputePerTargetDamages as `bonusBreakdown.ops` — back into a
+            // patched `damage` object so the regenerated fieldset itemizes each
+            // op by its carrier (e.g. "Bite: +24"). The headline number is then
+            // re-pinned to the recomputed rawDamage to preserve the existing
+            // post-reduction semantics. Idempotent: no bonus (e.g. a toggled-off
+            // reaction) → byte-identical to the COMPUTE-time preview, since we
+            // always rebuild from the immutable `payload.damage`.
+            const dmgFieldset = root.querySelector(".fud-bf-dmg");
+            if (dmgFieldset && payload?.damage) {
+              let repEntry = null;
               for (let i = 0; i < recomputed.length; i++) {
                 const e = recomputed[i];
                 if (e?.hit && typeof e.rawDamage === "number" && typeof e.grantAmount !== "number") {
-                  repBase = Math.max(0, Math.floor(e.rawDamage));
+                  repEntry = e;
                   break;
                 }
               }
-              if (repBase != null) {
-                const pill = numEl.querySelector(".hr-pill");
-                numEl.innerHTML = `${repBase}${pill ? pill.outerHTML : ""}`;
+              // Per-source reaction deltas for the representative target — walk
+              // its ops the same way action-profile's buildPerTarget does, so a
+              // multiply/percentage op (Bite's ×1.5) surfaces as its integer
+              // contribution attributed to the carrier skill, not a raw factor.
+              const reactionParts = [];
+              const ops = repEntry?.bonusBreakdown?.ops ?? [];
+              if (ops.length) {
+                let d = Number(repEntry.bonusBreakdown.from) || 0;
+                for (const o of ops) {
+                  const next = sk.applyDamageOp(d, o.op, o.amount);
+                  const delta = Math.floor(next) - Math.floor(d);
+                  if (delta !== 0) reactionParts.push({ source: o.source ?? "Reaction", amount: delta });
+                  d = next;
+                }
+              }
+              const reactionDelta = reactionParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+              const baseDamage = payload.damage;
+              const patchedDamage = reactionDelta !== 0
+                ? {
+                    ...baseDamage,
+                    base: (Number(baseDamage.base) || 0) + reactionDelta,
+                    baseParts: [
+                      ...(Array.isArray(baseDamage.baseParts) ? baseDamage.baseParts : []),
+                      ...reactionParts,
+                    ],
+                    finalIfHit: (Number(baseDamage.finalIfHit) || 0) + reactionDelta,
+                  }
+                : baseDamage;
+              const wasBlocked = dmgFieldset.classList.contains("is-blocked-dmg");
+              const newHTML = buildDamagePreviewHTML({ damage: patchedDamage, roll: payload?.roll ?? null });
+              if (newHTML) {
+                dmgFieldset.outerHTML = newHTML;
+                const refreshed = root.querySelector(".fud-bf-dmg");
+                if (refreshed) {
+                  if (wasBlocked) refreshed.classList.add("is-blocked-dmg");
+                  // Re-pin the headline number to the recomputed rawDamage
+                  // (post-reduction), matching the prior behaviour. Preserve
+                  // the HR pill.
+                  const numEl = refreshed.querySelector(".fud-bf-dmg-number");
+                  if (numEl && repEntry && typeof repEntry.rawDamage === "number") {
+                    const repBase = Math.max(0, Math.floor(repEntry.rawDamage));
+                    const pill = numEl.querySelector(".hr-pill");
+                    numEl.innerHTML = `${repBase}${pill ? pill.outerHTML : ""}`;
+                  }
+                }
               }
             }
           }

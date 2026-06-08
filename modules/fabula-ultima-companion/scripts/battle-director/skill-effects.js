@@ -1329,7 +1329,11 @@ export async function computeSenderDamageBonuses({
           const { op, amountFormula, stage } = readAdjustRow(row);
           if (stage !== "outgoing" || !DAMAGE_OPS.has(op)) return; // incoming handled receiver-side
           const amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
-          ops.push({ op, amount });
+          // `source` lets the action-card damage breakdown attribute this
+          // in-flight bonus to its carrier (e.g. Bite's +50%-vs-Grappled) instead
+          // of silently folding it into the per-target total. See action-profile
+          // projectProfileToActionResult / buildPerTarget.
+          ops.push({ op, amount, source: cand.carrierName || carrierSkill?.name || "Reaction" });
         } else if (kind === "chain") {
           const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
           for (const s of steps) walkDamage(s);
@@ -2219,6 +2223,11 @@ async function applyDealDamageEffect(row, ctx) {
   const targetRef = row.target_ref || "self";
   const verbosity = String(row.damage_verbosity ?? "full").trim().toLowerCase();
   const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
+  // Opt-out of affinity (RS/VU/IM/AB) for flat/"true" effect damage — e.g. a
+  // fixed opposed-check consequence (Pounce's 20) that should land regardless of
+  // the target's resistances. Default off, so elemental ticks (Burn) still
+  // respect affinity. Reads the declarative `damage_ignore_affinity` checkbox.
+  const ignoreAffinity = row.damage_ignore_affinity === true || String(row.damage_ignore_affinity).toLowerCase() === "true";
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
@@ -2253,6 +2262,7 @@ async function applyDealDamageEffect(row, ctx) {
         targetActor: actor,
         targetToken: token,
         attackerName,
+        ignoreAffinity,
         verbosity,
       });
       applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalDamage ?? res?.applied ?? null });
@@ -2717,11 +2727,34 @@ async function applyApplyAeEffect(row, ctx) {
     data.flags[FLAG_NS].directorAppliedBy = {
       skillUuid: ctx.skill?.uuid ?? null,
       reactorActorUuid: ctx.reactorActor?.uuid ?? null,
+      // Applier's TOKEN — needed by relationship statuses that must resolve the
+      // SPECIFIC token (not just the world actor), e.g. Grappled tracks the
+      // grappler's token for its "same space" / redirect-targeting rule and for
+      // unlinked NPC tokens that share one base actor. See [[project_grappled_advanced_debuff]].
+      reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
       effectLabel: row.effect_label,
       appliedAtRound: ctx.dCombat?.round ?? 0,
       turnsRemaining,
       ...(lifetimeMode ? { lifetimeMode } : {}),
     };
+    // Affinity-override protection: an AE that OVERRIDES element-affinity props
+    // (affinity_1..9 — e.g. Guard's "Resistance to all") must NOT downgrade an
+    // element the target is natively Immune/Absorbing to. Drop those specific
+    // override changes per target so IM/AB are preserved. Generic — applies to
+    // any affinity-buff AE, keeping the affinity props the single source of truth.
+    if (Array.isArray(data.changes) && data.changes.length) {
+      const nativeProps = actor.system?.props ?? {};
+      data.changes = data.changes.filter((c) => {
+        const m = /^(?:system\.props\.)?(affinity_\d+)$/.exec(String(c?.key ?? ""));
+        if (!m) return true; // non-affinity change — keep
+        const native = String(nativeProps[m[1]] ?? "").trim().toUpperCase();
+        if (native === "IM" || native === "AB") {
+          log(`apply_ae: ${actor.name} natively ${native} on ${m[1]} — dropping "${data.name}" affinity override (preserve IM/AB)`);
+          return false;
+        }
+        return true;
+      });
+    }
     try {
       const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);
       applied.push({ actorUuid: actor.uuid, aeId: created?.id ?? null, name: data.name });

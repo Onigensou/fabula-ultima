@@ -449,6 +449,11 @@
     targetToken        = null,
     ignoreDR           = false,
     ignoreShield       = false,
+    // Skip element + damage-class affinity (RS/VU/IM/AB) and condition-forced
+    // vulnerability — the damage lands as a flat amount. For fixed/"true" effect
+    // damage that should not be halved/doubled by the target's affinities (e.g.
+    // an opposed-check consequence like Pounce's 20). DR/shield still apply.
+    ignoreAffinity     = false,
     actionBonusFlat    = 0,
     actionOutgoingMult = 1,
     actionReductionFlat = 0,
@@ -513,15 +518,23 @@
       weaponEfficiencyUsed = _num(props[weaponType], 100);
       finalValue = Math.ceil(finalValue * (weaponEfficiencyUsed / 100));
 
-      // Step 9b: Element affinity
+      // Step 9b: Element affinity (skipped entirely when ignoreAffinity — the
+      // damage lands flat regardless of RS/VU/IM/AB or condition-forced VU).
       const affinityKey = ELEMENT_AFFINITY_KEY[elementType] ?? null;
-      affinity = affinityKey ? (props[affinityKey] ?? null) : null;
+      affinity = (!ignoreAffinity && affinityKey) ? (props[affinityKey] ?? null) : null;
 
-      // Condition-forced vulnerability
-      const activeActor = targetToken?.actor ?? targetActor;
-      const conditions  = Array.from(activeActor.effects ?? []).map(e => e.label);
-      for (const [cond, el] of Object.entries(CONDITION_VULNERABLE)) {
-        if (conditions.includes(cond) && elementType === el) affinity = "VU";
+      if (!ignoreAffinity) {
+        const activeActor = targetToken?.actor ?? targetActor;
+        const conditions  = Array.from(activeActor.effects ?? []).map((e) => e.label ?? e.name);
+        // Condition-forced vulnerability
+        for (const [cond, el] of Object.entries(CONDITION_VULNERABLE)) {
+          if (conditions.includes(cond) && elementType === el) affinity = "VU";
+        }
+        // NOTE: Guard's "Resistance to all" is NOT special-cased here. The Guard
+        // AE overrides the affinity props (affinity_1..9 → RS, except where the
+        // target is natively IM/AB; see 2026-06-09-guard-affinity-rs), so the
+        // `props[affinityKey]` read above already reflects it. Single source of
+        // truth = the actor's affinity data.
       }
 
       switch (affinity) {
@@ -536,7 +549,7 @@
       //   States: "" | "RS" | "VU" | "IM" | "AB"  (same semantics as element)
       //   Stored as a flag (not a system.props field) so AEs can write to it
       //   without requiring an extension to the CSB character template.
-      if (currentChangeKey === "hpReduction" && resolvedDamageClass) {
+      if (!ignoreAffinity && currentChangeKey === "hpReduction" && resolvedDamageClass) {
         const flagKey = resolvedDamageClass === "strike"
           ? "affinity_class_strike"
           : "affinity_class_magic";

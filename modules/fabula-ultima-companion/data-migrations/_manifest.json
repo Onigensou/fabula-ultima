@@ -465,6 +465,21 @@
     {
       "key": "2026-06-07-retire-reaction-ispassive",
       "path": "data-migrations/2026-06-07-retire-reaction-ispassive.js"
+    },
+    {
+      "key": "2026-06-09-dungeon-hellhound-author",
+      "path": "data-migrations/2026-06-09-dungeon-hellhound-author.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-06-09-grappled-status-author",
+      "path": "data-migrations/2026-06-09-grappled-status-author.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-06-09-guard-affinity-rs",
+      "path": "data-migrations/2026-06-09-guard-affinity-rs.js",
+      "idempotent": true
     }
   ]
 }

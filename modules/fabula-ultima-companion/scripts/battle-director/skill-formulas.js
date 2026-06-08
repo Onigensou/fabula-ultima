@@ -517,6 +517,26 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // roll info is threaded, so a `== 0` gate passes by default.
       case "ATTACK_IS_CRIT": return payload?.isCrit ? 1 : 0;
       case "ATTACK_IS_FUMBLE": return payload?.isFumble ? 1 : 0;
+      // TRIGGER_IS_SELF — 1 when the action that fired this trigger IS this
+      // reaction's own carrier skill, else 0. Scopes on-hit riders (Bite's
+      // grappled bonus, Flame Breath's Burn, Sting's Oil) to the skill that
+      // owns them so they don't cross-fire on every OTHER damaging action the
+      // monster takes (the unscoped-rider cross-contamination bug). The
+      // carrier item is `skill` — evaluateConditionFormula passes the
+      // reaction's source item as the resolver's `skill`. The triggering
+      // action's item uuid is threaded onto the payload as `weaponUuid`
+      // (Attack path), `spellUuid` (Skill/Spell path), or `skillUuid`. For an
+      // NPC attack the pseudo-weapon's uuid IS the attack skill's item uuid,
+      // so `weaponUuid` matches. Author as `condition_formula:
+      // "TRIGGER_IS_SELF == 1 && chance(50)"` to keep the working chance/status
+      // gate AND scope it. Returns 0 when no carrier or no action uuid is
+      // threaded → a `== 1` gate fails closed (rider simply won't fire).
+      case "TRIGGER_IS_SELF": {
+        const carrierUuid = String(skill?.uuid ?? "").trim();
+        if (!carrierUuid) return 0;
+        const ids = [payload?.weaponUuid, payload?.spellUuid, payload?.skillUuid];
+        return ids.some((u) => u && String(u).trim() === carrierUuid) ? 1 : 0;
+      }
       default:
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer
@@ -603,6 +623,55 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           return effects
             .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
             .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
+        }
+        // Dynamic TARGET_AE_COUNT_<NAME> — counts non-disabled AEs with the
+        // given name on the trigger's SUBJECT (the attack target), the
+        // subject-side twin of AE_COUNT_<NAME>. Unlike TARGET_AE_CHARGES_<NAME>
+        // (which sums the charges flag and returns 0 for a chargeless AE), this
+        // is a pure PRESENCE check — correct for status conditions that don't
+        // carry charges (e.g. Grappled). Used by Bite's "deals 50% more on a
+        // Grappled creature" gate: `TARGET_AE_COUNT_GRAPPLED > 0`.
+        //   TARGET_AE_COUNT_GRAPPLED → number of "Grappled" AEs on the target
+        if (name.startsWith("TARGET_AE_COUNT_")) {
+          const needle = name
+            .slice("TARGET_AE_COUNT_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
+          return effects.filter(
+            (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
+          ).length;
+        }
+        // TARGET_GRAPPLED_BY_SELF — 1 when the trigger SUBJECT (the target) has a
+        // "Grappled" AE whose grappler is THIS reactor (the acting creature),
+        // else 0. Implements "deals more damage on a creature Grappled BY YOU"
+        // (Bite) — not merely "Grappled by anyone" (which TARGET_AE_COUNT_GRAPPLED
+        // covers). The grappler is stamped on the Grappled AE's
+        // directorAppliedBy.reactorTokenUuid / reactorActorUuid at apply time
+        // (see [[project_grappled_advanced_debuff]] P0). Matches TOKEN-first
+        // (so one NPC token's grapple doesn't buff a sibling token sharing the
+        // same base actor), with an actor-uuid fallback for linked tokens.
+        if (name === "TARGET_GRAPPLED_BY_SELF") {
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const selfTokenUuid = String(payload?.sourceTokenUuid ?? "").trim();
+          const selfActorUuid = String(actor?.uuid ?? "").trim();
+          const effects = subject?.effects?.contents ?? Array.from(subject?.effects ?? []);
+          for (const e of effects) {
+            if (e.disabled || String(e?.name ?? "").trim().toLowerCase() !== "grappled") continue;
+            const by = e.flags?.["fabula-ultima-companion"]?.directorAppliedBy;
+            if (!by) continue;
+            if (selfTokenUuid && by.reactorTokenUuid === selfTokenUuid) return 1;
+            if (selfActorUuid && by.reactorActorUuid === selfActorUuid) return 1;
+          }
+          return 0;
         }
         return null;  // unknown → fold to 0 in evalNode
     }
@@ -771,11 +840,14 @@ export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGran
       weaponName = item.name;
     }
   }
-  // NPCs (no weapon_list / no main_hand) — surface weapon name + base 0;
-  // the discrepancy reconciliation below will assign the full damage to
-  // the NPC attack item line.
+  // NPCs (no weapon_list / no main_hand): the pseudo-weapon's damageBonus IS
+  // the attack's base damage, so attribute it to a named line (the attack name)
+  // instead of letting it fall through to "Other (unattributed)" below.
+  if (!handName && weapon) {
+    weaponBase = aggregateTarget; // = weapon.damageBonus − grant
+  }
   if (weaponBase !== 0 || handName) {
-    parts.push({ source: `Weapon (${weaponName})`, amount: weaponBase });
+    parts.push({ source: handName ? `Weapon (${weaponName})` : weaponName, amount: weaponBase });
   }
 
   // 2. Actor AE contributions to the target prop key.
