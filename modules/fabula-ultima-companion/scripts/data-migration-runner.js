@@ -18,7 +18,10 @@
  *   modules/fabula-ultima-companion/data-migrations/_manifest.json
  *     { "migrations": [
  *         { "key": "2026-05-17-reaction-action-intent",
- *           "path": "data-migrations/2026-05-17-reaction-action-intent.js" }
+ *           "path": "data-migrations/2026-05-17-reaction-action-intent.js" },
+ *         { "key": "2026-06-05-sharpshooter-hawkeye-author",
+ *           "path": "...",
+ *           "idempotent": true }   // re-runs on source change (see TIERS)
  *     ] }
  *
  *   modules/fabula-ultima-companion/data-migrations/<key>.js
@@ -31,7 +34,19 @@
  *
  *   Per-world ledger (Foundry world setting):
  *     game.settings.get("fabula-ultima-companion", "appliedMigrations")
- *       = ["<key>", ...]
+ *       = [ "<one-time-key>", { "k": "<idempotent-key>", "h": "<srcHash>" }, ... ]
+ *
+ * TIERS
+ * -----
+ * - One-time (DEFAULT): runs once; the key is recorded; never runs again. Use
+ *   for structural / template / dedup / superseded / historical-delta migrations.
+ * - Idempotent (`"idempotent": true`): re-runs whenever the migration's SOURCE
+ *   changes (hash-gated). Use ONLY for current, self-replacing CONTENT authors
+ *   that fully (re)assert their target state and have NO later migration
+ *   superseding them. This is what lets a freshly-pulled co-dev world self-heal
+ *   skills on boot ([[feedback_pulled_world_stale_author_migration]]).
+ *   ⚠ NEVER tag a base author that a later "-fix"/"-v2"/"-polish" migration
+ *   patches — re-running it would revert that later work.
  *
  * RUNTIME
  * -------
@@ -101,34 +116,73 @@ Hooks.once("ready", async () => {
     return;
   }
 
-  // Read the per-world ledger of already-applied migration keys.
-  let ledger;
+  // ── Two-tier ledger ───────────────────────────────────────────────────────
+  // Ledger entries are EITHER a bare "key" (one-time migration: runs once, then
+  // never again) OR { k:"key", h:"hash" } (idempotent migration: stores the
+  // source hash it last ran against). One-time is the DEFAULT; a migration opts
+  // into idempotent re-run with `"idempotent": true` on its manifest entry.
+  //
+  // Idempotent migrations RE-RUN whenever their source hash changes — so a
+  // freshly-PULLED world (whose ledger lists the key from an OLDER version of
+  // the migration) self-heals on the next boot, then stays quiet until the
+  // migration source actually changes again. One-time migrations NEVER re-run,
+  // so historical/superseded migrations can't revert later work.
+  // See [[feedback_pulled_world_stale_author_migration]].
+  let ledgerRaw;
   try {
-    ledger = game.settings.get(MODULE_ID, LEDGER_SETTING);
+    ledgerRaw = game.settings.get(MODULE_ID, LEDGER_SETTING);
   } catch (e) {
     console.warn(`${FU_MIG_TAG} ledger setting unavailable; treating as empty:`, e?.message ?? e);
-    ledger = [];
+    ledgerRaw = [];
   }
-  const applied = new Set(Array.isArray(ledger) ? ledger : []);
+  const ledger = new Map();   // key -> last-run source hash (null for one-time / legacy string entries)
+  for (const ent of (Array.isArray(ledgerRaw) ? ledgerRaw : [])) {
+    if (typeof ent === "string") ledger.set(ent, null);
+    else if (ent && ent.k) ledger.set(ent.k, ent.h ?? null);
+  }
 
-  const pending = entries.filter(e => e?.key && !applied.has(e.key));
-  if (!pending.length) {
-    console.info(`${FU_MIG_TAG} all ${entries.length} migration(s) already applied.`);
+  // Cheap, dependency-free source-change detector (djb2). We hash the migration
+  // file's text so ANY output change forces idempotent migrations to re-run —
+  // no version-bump discipline required.
+  const djb2 = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0; return h.toString(16); };
+  const srcUrl = (path) => `${window.location.origin}/modules/${MODULE_ID}/${path}`;
+
+  // Build the run plan. One-time: run iff key absent. Idempotent: run iff key
+  // absent, hash unknown (fetch failed → run to be safe), or source changed.
+  const plan = [];
+  for (const entry of entries) {
+    if (!entry?.key) continue;
+    const idempotent = entry.idempotent === true;
+    if (!idempotent) {
+      if (!ledger.has(entry.key)) plan.push({ entry, idempotent: false, hash: null, reason: "new" });
+      continue;
+    }
+    let hash = null;
+    try { hash = djb2(await (await fetch(`${srcUrl(entry.path)}?t=${cacheBust}`)).text()); }
+    catch (e) { console.warn(`${FU_MIG_TAG} [${entry.key}] source hash fetch failed; will run:`, e?.message ?? e); }
+    const known = ledger.has(entry.key);
+    const prev = known ? ledger.get(entry.key) : undefined;
+    if (!known) plan.push({ entry, idempotent: true, hash, reason: "new" });
+    else if (hash === null) plan.push({ entry, idempotent: true, hash, reason: "hash-unavailable" });
+    else if (prev !== hash) plan.push({ entry, idempotent: true, hash, reason: prev === null ? "stale-heal" : "source-changed" });
+    // else: up to date → skip
+  }
+
+  if (!plan.length) {
+    console.info(`${FU_MIG_TAG} all ${entries.length} migration(s) up to date.`);
     return;
   }
+  console.info(`${FU_MIG_TAG} ${plan.length} migration(s) to run:`,
+    plan.map(p => `${p.entry.key}${p.idempotent ? ` (idempotent:${p.reason})` : ""}`));
 
-  console.info(`${FU_MIG_TAG} ${pending.length} pending migration(s):`,
-    pending.map(p => p.key));
-
-  const newlyApplied = [];
   const failed = [];
+  let ranCount = 0;
 
-  for (const entry of pending) {
+  for (const { entry, idempotent, hash } of plan) {
     const { key, path } = entry;
     // Browser `import()` needs a root-relative or fully-qualified URL —
     // a bare "modules/..." string throws "failed to resolve specifier."
-    // Use origin + leading slash so it resolves against the world root.
-    const url = `${window.location.origin}/modules/${MODULE_ID}/${path}?t=${cacheBust}`;
+    const url = `${srcUrl(path)}?t=${cacheBust}`;
     const log = (msg, data) => console.info(`${FU_MIG_TAG} [${key}] ${msg}`, data ?? "");
     try {
       const mod = await import(url);
@@ -138,37 +192,38 @@ Hooks.once("ready", async () => {
       if (typeof mod.migrate !== "function") {
         throw new Error(`module exports no migrate() function`);
       }
-      log(`running: ${mod.description ?? "(no description)"}`);
+      log(`running${idempotent ? " (idempotent)" : ""}: ${mod.description ?? "(no description)"}`);
       const result = await mod.migrate(game, log);
       if (result?.applied === false) {
         log("migration deferred (returned applied:false) — will retry next boot");
         continue;
       }
       log(`done: ${result?.summary ?? "(no summary)"}`);
-      newlyApplied.push(key);
+      // Record: idempotent → store the source hash; one-time → null marker.
+      ledger.set(key, idempotent ? (hash ?? null) : null);
+      ranCount += 1;
     } catch (e) {
       console.error(`${FU_MIG_TAG} [${key}] failed:`, e);
       failed.push({ key, error: e?.message ?? String(e) });
     }
   }
 
-  if (newlyApplied.length) {
-    const next = Array.from(new Set([...applied, ...newlyApplied]));
+  if (ranCount) {
+    // Serialize: null hash → bare "key" string (one-time / legacy); else {k,h}.
+    const serial = Array.from(ledger.entries()).map(([k, h]) => (h === null ? k : { k, h }));
     try {
-      await game.settings.set(MODULE_ID, LEDGER_SETTING, next);
+      await game.settings.set(MODULE_ID, LEDGER_SETTING, serial);
     } catch (e) {
       console.error(`${FU_MIG_TAG} failed to update ledger setting; migrations may re-run next boot:`, e);
     }
   }
 
-  const summary =
-    `${newlyApplied.length} applied, ${failed.length} failed, ` +
-    `${applied.size + newlyApplied.length}/${entries.length} total recorded`;
+  const summary = `${ranCount} ran, ${failed.length} failed, ${entries.length} total`;
   if (failed.length) {
     console.warn(`${FU_MIG_TAG} complete — ${summary}`, { failed });
     ui.notifications?.warn(`Data migrations: ${summary} — see console for failures`);
-  } else if (newlyApplied.length) {
-    console.info(`${FU_MIG_TAG} complete — ${summary}`, { applied: newlyApplied });
+  } else if (ranCount) {
+    console.info(`${FU_MIG_TAG} complete — ${summary}`);
     ui.notifications?.info(`Data migrations: ${summary}`);
   } else {
     console.info(`${FU_MIG_TAG} complete — ${summary}`);

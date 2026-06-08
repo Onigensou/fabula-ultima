@@ -354,7 +354,8 @@
     },
     {
       "key": "2026-06-05-sharpshooter-hawkeye-author",
-      "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js"
+      "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-05-sharpshooter-stub-desc-clean",
@@ -418,7 +419,8 @@
     },
     {
       "key": "2026-06-07-sharpshooter-rwm-bd-and-dummy",
-      "path": "data-migrations/2026-06-07-sharpshooter-rwm-bd-and-dummy.js"
+      "path": "data-migrations/2026-06-07-sharpshooter-rwm-bd-and-dummy.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-07-fix-pds-dup-and-zero-strategy",
@@ -438,19 +440,23 @@
     },
     {
       "key": "2026-06-07-sharpshooter-warning-shot",
-      "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js"
+      "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-07-sharpshooter-barrage",
-      "path": "data-migrations/2026-06-07-sharpshooter-barrage.js"
+      "path": "data-migrations/2026-06-07-sharpshooter-barrage.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-07-sharpshooter-crossfire",
-      "path": "data-migrations/2026-06-07-sharpshooter-crossfire.js"
+      "path": "data-migrations/2026-06-07-sharpshooter-crossfire.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-07-sharpshooter-perfect-aim",
-      "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js"
+      "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-07-menu-text-on-menu-row",
