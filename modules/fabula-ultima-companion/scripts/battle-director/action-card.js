@@ -1546,11 +1546,16 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   const baseVal = Number(damage.base ?? 0) || 0;
   const baseStr = baseVal >= 0 ? `+${baseVal}` : `${baseVal}`;
   const hrVal = roll?.isFumble ? 0 : (roll?.hr ?? 0);
-  const hrLine = damage.ignoreHR
-    ? `<p><b>HR:</b> — (Two-Weapon Fighting forces HR=0)</p>`
-    : (roll
-        ? `<p><b>HR:</b> ${hrVal} (from accuracy roll)</p>`
-        : `<p><b>HR:</b> — (no Check rolled)</p>`);
+  // HR line — when HR is forced to 0, name the ACTUAL source (Two-Weapon vs a
+  // free-action grant like Hawkeye take-aim / Soaring Strike) via
+  // damage.hrZeroReason; fall back to "no Check rolled" for a no-Check action.
+  const hrLine = (!damage.ignoreHR && roll)
+    ? `<p><b>HR:</b> ${hrVal} (from accuracy roll)</p>`
+    : damage.hrZeroReason
+      ? `<p><b>HR:</b> — (${escapeHtml(damage.hrZeroReason)})</p>`
+      : roll
+        ? `<p><b>HR:</b> — (HR treated as 0)</p>`
+        : `<p><b>HR:</b> — (no Check rolled)</p>`;
   const prePassiveBonus = Number(damage.prePassiveBonus ?? 0) || 0;
   const formula = roll?.isFumble
     ? `<p><b>Final:</b> — (fumble auto-misses)</p>`

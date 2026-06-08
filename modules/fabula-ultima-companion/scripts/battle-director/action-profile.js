@@ -518,6 +518,13 @@ export async function computeActionProfile(input) {
       damageResource: primary.resource,
       // Attack-only HR-as-0 (two-weapon OR a free-action grant with hrAsZero).
       ignoreHR: kind === "Attack" && (check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")),
+      // Human-readable WHY HR is 0 — two-weapon vs the actual grant source
+      // (Hawkeye take-aim / Soaring Strike), so the card stops blaming
+      // Two-Weapon Fighting for every HR-as-0.
+      hrZeroReason: kind !== "Attack" ? null
+        : String(ctx?.attackMode ?? "").startsWith("two-weapon") ? "Two-Weapon Fighting forces HR=0"
+        : check.grantHrAsZero ? `${ctx?.grant?.sourceLabel || "Free action"} treats HR as 0`
+        : null,
       primary, healingObj,
       // Headline check bonus (weapon/skill base + actor-status accuracy mods +
       // grant + accuracy reactions) — pre-roll card reads this so RWM etc. show.
@@ -606,6 +613,7 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     baseParts: prim.baseParts ?? prim.outgoingParts ?? [],
     element: prim.overriddenElement ?? prim.nativeElement ?? prim.element,
     ignoreHR: attackIgnoreHR,
+    ...(profile._summary?.hrZeroReason ? { hrZeroReason: profile._summary.hrZeroReason } : {}),
     finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal,
   } : {
     base: prim.damageBonus + prim.outgoingTotal,

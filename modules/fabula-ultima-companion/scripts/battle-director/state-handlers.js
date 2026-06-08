@@ -2461,6 +2461,11 @@ const PreRoll = {
       // actor-status accuracy mods (RWM) or auto-fired outgoing damage reactions.
       let dmgBase = weapon.damageBonus ?? 0;
       let checkBonusShown = weapon.checkBonus ?? 0;
+      let hrZeroReason = ignoreHR
+        ? (String(director.ctx.attackMode ?? "").startsWith("two-weapon")
+            ? "Two-Weapon Fighting forces HR=0"
+            : `${freeActions.get(attacker?.actorId ?? null)?.sourceLabel || "Free action"} treats HR as 0`)
+        : null;
       let preRollRange = ignoreHR
         ? { min: dmgBase, max: dmgBase, maxHR: 0 }
         : { min: dmgBase + 1, max: dmgBase + maxHR, maxHR };
@@ -2503,6 +2508,7 @@ const PreRoll = {
         });
         if (profile?._summary) {
           if (typeof profile._summary.checkBonusTotal === "number") checkBonusShown = profile._summary.checkBonusTotal;
+          if (profile._summary.hrZeroReason) hrZeroReason = profile._summary.hrZeroReason;
           const hr = profile._summary.headlineRange;
           if (hr) {
             preRollRange = { min: hr.min, max: hr.max, maxHR: hr.maxHR };
@@ -2517,7 +2523,7 @@ const PreRoll = {
         weapon: { name: weapon.name, range: weapon.range, weaponType: weapon.weaponType, damageType: weapon.damageType, imageUrl: weapon.imageUrl, A1: weapon.A1, A2: weapon.A2 },
         targets: targetSnaps.map((e) => ({ name: e.name, actorUuid: e.actorUuid, tokenImg: e.tokenImg, disposition: e.disposition, defense: e.defense, studied: isStudied(e) })),
         checkFormula: { A1: weapon.A1, A2: weapon.A2, dA, dB, checkBonus: checkBonusShown },
-        damage: { base: dmgBase, element: weapon.damageType, ignoreHR, preRollRange },
+        damage: { base: dmgBase, element: weapon.damageType, ignoreHR, preRollRange, ...(hrZeroReason ? { hrZeroReason } : {}) },
         attackMode: director.ctx.attackMode ?? "main",
         prePassives: askable,
         // GM-side callback the card pill's "Apply" runs for a pre-roll reaction:
