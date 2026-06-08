@@ -157,6 +157,7 @@
     "scripts/dungeon-pathing-system/dp-helper-mode.js",
     "scripts/dungeon-pathing-system/dp-confirm-dialog.js",
     "scripts/dungeon-pathing-system/dp-events.js",
+    "scripts/dungeon-pathing-system/dp-ae-lifecycle.js",
     "scripts/dungeon-pathing-system/dp-socket.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-blank.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-random-battle.js",
