@@ -67,7 +67,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("menu_option_refs", "Option Refs", { tooltip: "Comma-separated effect_label refs offered by this menu, in order.", vis: OAM_VIS }),
   textCol("menu_option_labels", "Option Labels", { tooltip: "Pipe (|)-separated display labels, paired with Option Refs.", vis: OAM_VIS }),
   textCol("menu_option_descriptions", "Option Descriptions", { tooltip: "Pipe (|)-separated descriptions, paired with Option Refs.", vis: OAM_VIS }),
-  // free-action grant config
+  // free-action grant config (open_action_menu free_mode — High Speed, Hawkeye
+  // option b, On the Hunt). free_mode + allowed_types were historically added by
+  // a dedicated column migration but never registry-backed, so a fresh template
+  // or an un-migrated co-dev world could lack them (data-only / strippable). List
+  // them here so the boot-3b sync self-heals the columns everywhere.
+  checkboxCol("free_mode", "Free Mode", { tooltip: "Grant a FREE ACTION + mini-turn (no inline picker) instead of showing menu options. Pairs with Allowed Types / Free: HR as 0.", vis: OAM_VIS }),
+  textCol("allowed_types", "Allowed Types", { tooltip: "Free Mode only: comma-separated action types the granted free action is limited to (e.g. \"Attack\"). Blank = any.", vis: OAM_VIS }),
   checkboxCol("free_hr_as_zero", "Free: HR as 0", { tooltip: "Granted free attack treats High Roll as 0 for damage (Hawkeye option b / Soaring Strike). Pairs with Free Mode.", vis: OAM_VIS }),
   // deal_damage / adjust_damage config — these kinds were added (deal_damage;
   // adjust_damage from the add_damage+modify_damage_taken unify) without any
