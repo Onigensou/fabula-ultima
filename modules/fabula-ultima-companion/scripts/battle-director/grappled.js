@@ -57,6 +57,86 @@ export async function breakFree(actor, { reason = "" } = {}) {
 }
 
 /**
+ * End every Guard-cover the given actor is currently PROVIDING to allies
+ * (Grappled rule #2): when an actor becomes Grappled, any ally it is covering
+ * loses the Covered AE — and that cover's riders (e.g. Bodyguard's RS-to-all
+ * AE) — while the guarder keeps its own self-Guard (a separate AE on itself,
+ * never touched here).
+ *
+ * The Covered AE carries the `guardCoverBy = <guarderUuid>` marker (stamped at
+ * apply time in skill-effects.js). We find allies covered by this guarder via
+ * that marker, then on each such ally remove the Covered AE PLUS the riders the
+ * same guarder applied to that ally (matched by directorAppliedBy.reactorActorUuid).
+ * Scoped to (this ally + this guarder) so other guarders' covers and unrelated
+ * AEs survive. Returns the number of AEs removed.
+ */
+export async function endGuardCoverProvidedBy(guarderActor) {
+  const guarderUuid = guarderActor?.uuid;
+  if (!guarderUuid) return 0;
+  const scenes = game.scenes?.active ? [game.scenes.active] : (game.scenes?.contents ?? []);
+  const seenActors = new Set();
+  let removed = 0;
+  for (const scene of scenes) {
+    for (const tok of scene.tokens?.contents ?? []) {
+      const ally = tok.actor;
+      if (!ally || seenActors.has(ally.uuid)) continue;
+      seenActors.add(ally.uuid);
+      const effects = ally.effects?.contents ?? [];
+      // Only act on allies this guarder is actually covering.
+      const coveredByGuarder = effects.some((e) => e?.flags?.[NS]?.guardCoverBy === guarderUuid);
+      if (!coveredByGuarder) continue;
+      // The cover (marker) + its riders (same guarder applied them to this
+      // covered ally — Bodyguard etc.). A guarder doesn't normally apply
+      // non-cover AEs to the very ally it's covering, so this stays precise.
+      const ids = effects.filter((e) => {
+        const f = e?.flags?.[NS];
+        return f?.guardCoverBy === guarderUuid
+          || f?.directorAppliedBy?.reactorActorUuid === guarderUuid;
+      }).map((e) => e.id);
+      if (!ids.length) continue;
+      try {
+        await ally.deleteEmbeddedDocuments("ActiveEffect", ids);
+        removed += ids.length;
+      } catch (e) {
+        console.warn(`[grappled] endGuardCoverProvidedBy: delete failed on ${ally?.name}`, e);
+      }
+    }
+  }
+  if (removed) {
+    console.log(`[grappled] ${guarderActor.name} became Grappled — ended Guard-cover (${removed} AE(s) removed)`);
+  }
+  return removed;
+}
+
+// Module-level guard so repeated director boots (rewind/reconstruct) don't
+// stack duplicate hooks.
+let _coverWatcherInstalled = false;
+
+/**
+ * Install the "Grappled ends the cover you provide" watcher (rule #2). A
+ * createActiveEffect hook fires when a Grappled AE lands on an actor; on the
+ * GM client we tear down any Guard-cover that actor is providing. Idempotent.
+ */
+export function installGrappledCoverWatcher() {
+  if (_coverWatcherInstalled) return;
+  _coverWatcherInstalled = true;
+  Hooks.on("createActiveEffect", (effect) => {
+    try {
+      if (!game.user?.isGM) return;            // only the authoritative client mutates
+      if (!nameMatches(effect)) return;        // only the Grappled relationship status
+      const grappledActor = effect.parent;
+      if (!grappledActor?.uuid) return;
+      // Fire-and-forget: the hook is sync, the teardown is async.
+      endGuardCoverProvidedBy(grappledActor).catch((e) =>
+        console.warn("[grappled] cover-watcher teardown threw", e));
+    } catch (e) {
+      console.warn("[grappled] cover-watcher hook threw", e);
+    }
+  });
+  console.log("[grappled] Guard-cover-ends-on-Grappled watcher installed");
+}
+
+/**
  * Reverse lookup — every TOKEN whose actor is Grappled by the given grappler.
  * Scans the active scene's tokens (covers unlinked NPC tokens that share one
  * base actor) and matches by token UUID first, falling back to actor UUID.

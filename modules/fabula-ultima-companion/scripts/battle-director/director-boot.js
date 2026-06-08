@@ -16,6 +16,7 @@
 import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher } from "./state-handlers.js";
+import { installGrappledCoverWatcher } from "./grappled.js";
 import { STATES } from "./states.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
@@ -765,6 +766,10 @@ async function rewindTo(snapshotId) {
 // the rest of the module's boot sequence; we attach an `experimental`
 // namespace under it so the director never shadows production APIs.
 Hooks.once("ready", () => {
+  // Grappled rule #2: ending a Guard-cover when its guarder becomes Grappled.
+  // Session-global, idempotent — install once here (path-independent of
+  // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
+  installGrappledCoverWatcher();
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   const exp = (api.experimental = api.experimental ?? {});
