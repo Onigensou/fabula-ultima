@@ -1238,7 +1238,7 @@
     try {
       globalThis.ONI?.emit?.(eventName, report, {
         local: true,
-        world: true
+        world: false   // AEM events are internal — world-broadcast floods the socket with large report payloads
       });
     } catch (_e) {}
   }

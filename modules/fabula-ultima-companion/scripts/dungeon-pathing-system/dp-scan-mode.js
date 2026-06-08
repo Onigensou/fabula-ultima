@@ -170,6 +170,7 @@
       if (!canvas?.ready) return;
       if (isGM()) return;
       if (!isDungeonActive()) return;
+      if (game.paused) return;
 
       const center = getTokenCenter();
       if (!center) return;

@@ -15,8 +15,11 @@
 //                       Decrement that field so the AE stays consistent
 //                       if the member re-enters battle.
 //   Non-stamped       — no `directorAppliedBy` (manual, camp, tile effects).
-//                       Lazy-init `flags.<MODULE>.dungeonTurnsRemaining` from
-//                       `duration.rounds`, falling back to DEFAULT_DURATION.
+//                       `flags.<MODULE>.dungeonTurnsRemaining` is pre-stamped
+//                       by dp-tile-effect-engine.buildEffectRefs() so the HUD
+//                       counter is correct from the moment the AE lands.
+//                       tickAEsOnActor falls back to lazy-init only for AEs
+//                       applied outside the tile engine (camp events, macros).
 //
 // Skip conditions (matching battle director behaviour):
 //   directorPermanent === true   — permanent; never auto-expires
@@ -87,11 +90,11 @@
     }
 
     if (toUpdate.length) {
-      try { await actor.updateEmbeddedDocuments("ActiveEffect", toUpdate); }
+      try { await actor.updateEmbeddedDocuments("ActiveEffect", toUpdate, { render: false }); }
       catch (e) { console.warn(TAG, "update failed for", actor.name, e); }
     }
     if (toDelete.length) {
-      try { await actor.deleteEmbeddedDocuments("ActiveEffect", toDelete); }
+      try { await actor.deleteEmbeddedDocuments("ActiveEffect", toDelete, { render: false }); }
       catch (e) { console.warn(TAG, "delete failed for", actor.name, e); }
     }
 
@@ -117,6 +120,18 @@
       console.warn(TAG, "no party members found — skipping AE tick");
       return;
     }
+
+    // Short-circuit: if no actor has a tickable AE, skip all DB roundtrips.
+    // This is the common case when walking through dungeon without active debuffs.
+    const anyTickable = members.some(({ actor }) =>
+      (actor?.effects ?? []).some(eff => {
+        const f = eff.flags?.[FLAG_NS] ?? {};
+        if (f.directorPermanent === true) return false;
+        const mode = String(f.lifetimeMode ?? "").trim().toLowerCase();
+        return mode !== "on_activation" && mode !== "round_end";
+      })
+    );
+    if (!anyTickable) return;
 
     const results = await Promise.all(members.map(({ actor }) => tickAEsOnActor(actor)));
     const totals = results.reduce(

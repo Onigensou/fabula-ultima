@@ -353,6 +353,7 @@
   // ---------------------------------------------------------------------------
   async function handleClick(ev) {
     if (!state.active) return;
+    if (game.paused) { ui.notifications?.info?.("The game is paused."); return; }
     if (DP.FastTravel?.active) return; // FT mode owns the canvas while active
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
     if (ev.button !== 0) return;
