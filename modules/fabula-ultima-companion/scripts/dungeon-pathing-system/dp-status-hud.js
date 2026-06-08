@@ -3,20 +3,21 @@
 //
 // Compact overlay showing party status during dungeon exploration.
 //
-// Layout per row:
-//   LEFT column  — portrait (top) + HP / MP bars + IP pips (below)
-//   RIGHT column — AE icons grid with turn-count badge
+// Layout per member row (single horizontal strip):
+//   [portrait]  [HP bar / MP bar / IP pips]  |  [AE icon] [AE icon] …
 //
-// Hovering an AE icon shows a tooltip with the effect's description,
-// resolved using the same priority chain as active-effect-tooltip.js:
-//   effect.description → system.description → flags → origin item → changes.
+// GM fade: the HUD sits at the same top-left position for all clients.
+// For the GM, hovering the panel fades it to near-transparent (opacity 0.08)
+// and removes pointer-events so the toolbar underneath remains clickable.
+// A document-level mousemove restores the panel once the cursor leaves the zone.
 //
-// Filtering: only AEs whose system.tags array contains at least one of
+// AE filtering: only effects whose system.tags contains at least one of
 //   VISIBLE_TAGS ("debuff", "buff", "dungeon", "food").
-//   Charge-governed AEs (lifetimeMode "on_activation") are excluded.
+//   Charge-governed (lifetimeMode "on_activation") are always excluded.
 //
-// Positioning: top-left for players; right-offset on GM clients to clear
-//   Foundry's scene-controls toolbar on the left side.
+// Tooltip: hovering an AE icon shows a fixed-position DOM tooltip with the
+// effect's name, remaining turns, and description (resolved via the same
+// priority chain as active-effect-tooltip.js, with a session cache).
 // ============================================================================
 (() => {
   const DP      = globalThis.DungeonPathing ??= {};
@@ -39,7 +40,7 @@
 #oni-dp-status-hud {
   position: fixed;
   top: 10px;
-  left: var(--dp-hud-left, 10px);
+  left: 10px;
   z-index: 99990;
   display: flex;
   flex-direction: column;
@@ -56,46 +57,56 @@
   transform: translateX(0);
   pointer-events: auto;
 }
+#oni-dp-status-hud.dp-hud-faded {
+  opacity: 0.08 !important;
+  pointer-events: none !important;
+  transition:
+    opacity 140ms ease,
+    transform 280ms cubic-bezier(.4,0,.2,1);
+}
 
-/* ── Row ── */
+/* ── Row — single horizontal strip ── */
 .oni-dp-hud-row {
   display: flex;
-  align-items: stretch;
-  padding: 6px 8px 6px 6px;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px 8px;
   border-radius: 8px;
-  border: 1px solid rgba(200,160,80,0.30);
-  background: rgba(16,11,5,0.87);
+  border: 1px solid rgba(200,160,80,0.28);
+  background: rgba(14,10,4,0.88);
   backdrop-filter: blur(6px);
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  gap: 0;
 }
 
-/* ── Left column: portrait + resource bars ── */
-.oni-dp-hud-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 44px;
-  flex-shrink: 0;
-}
-
+/* ── Portrait ── */
 .oni-dp-hud-portrait {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid rgba(200,160,80,0.5);
+  border: 1.5px solid rgba(200,160,80,0.45);
   background: rgba(40,28,14,0.9);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+/* ── Resource bars section ── */
+.oni-dp-hud-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  justify-content: center;
+  width: 56px;
   flex-shrink: 0;
 }
 
 .oni-dp-hud-bar-wrap {
-  width: 38px;
+  width: 100%;
   height: 4px;
   border-radius: 2px;
   background: rgba(255,255,255,0.08);
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .oni-dp-hud-bar-fill {
@@ -111,8 +122,7 @@
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
-  justify-content: center;
-  width: 38px;
+  width: 100%;
 }
 
 .oni-dp-hud-pip {
@@ -120,7 +130,7 @@
   height: 5px;
   border-radius: 50%;
   background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(200,160,80,0.25);
+  border: 1px solid rgba(200,160,80,0.22);
   flex-shrink: 0;
   transition: background 250ms ease, border-color 250ms ease;
 }
@@ -136,24 +146,23 @@
   align-self: stretch;
   background: rgba(200,160,80,0.16);
   flex-shrink: 0;
-  margin: 0 7px;
+  margin: 0 8px;
 }
 
-/* ── Right column: AE icons ── */
+/* ── AE icons ── */
 .oni-dp-hud-aes {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   flex-wrap: wrap;
-  align-content: flex-start;
-  align-items: flex-start;
-  min-width: 28px;
-  padding: 2px 0;
+  align-items: center;
+  align-content: center;
+  min-width: 0;
 }
 
 .oni-dp-hud-ae {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
   cursor: default;
 }
@@ -175,11 +184,11 @@
   border: 1px solid rgba(200,160,80,0.7);
   color: #e8c870;
   font-family: var(--font-primary, sans-serif);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   line-height: 1;
-  min-width: 13px;
-  height: 13px;
+  min-width: 12px;
+  height: 12px;
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -247,15 +256,48 @@
     document.head.appendChild(s);
   }
 
+  // ── GM fade-on-hover ────────────────────────────────────────────────────────
+  // Fades the HUD to near-transparent when GM's cursor enters the panel zone,
+  // so the toolbar underneath stays clickable.
+  // A document-level mousemove restores opacity once the cursor leaves.
+
+  let _fadeMoveHandler = null;
+
+  function setupGMFade(panel) {
+    if (!game.user?.isGM) return;
+
+    panel.addEventListener("mouseenter", () => {
+      panel.classList.add("dp-hud-faded");
+    });
+
+    _fadeMoveHandler = (ev) => {
+      if (!panel.classList.contains("dp-hud-faded")) return;
+      const rect   = panel.getBoundingClientRect();
+      const margin = 24;
+      const outside =
+        ev.clientX < rect.left   - margin ||
+        ev.clientX > rect.right  + margin ||
+        ev.clientY < rect.top    - margin ||
+        ev.clientY > rect.bottom + margin;
+      if (outside) panel.classList.remove("dp-hud-faded");
+    };
+    document.addEventListener("mousemove", _fadeMoveHandler);
+  }
+
+  function teardownGMFade() {
+    if (_fadeMoveHandler) {
+      document.removeEventListener("mousemove", _fadeMoveHandler);
+      _fadeMoveHandler = null;
+    }
+  }
+
   // ── Tooltip ─────────────────────────────────────────────────────────────────
 
-  // Map uuid → AE document, populated during each render.
-  const _effMap = new Map();
-  // Description cache uuid → resolved string (survives re-renders).
-  const _descCache = new Map();
+  const _effMap    = new Map(); // uuid → AE document, repopulated each render
+  const _descCache = new Map(); // uuid → resolved description string
 
-  let _tooltipEl = null;
-  let _tooltipTarget = null;  // current .oni-dp-hud-ae element
+  let _tooltipEl     = null;
+  let _tooltipTarget = null;
 
   function getTooltipEl() {
     if (!_tooltipEl || !document.body.contains(_tooltipEl)) {
@@ -273,20 +315,19 @@
   }
 
   function positionTooltip(clientX, clientY) {
-    const el = getTooltipEl();
+    const el  = getTooltipEl();
     const pad = 12;
-    let left = clientX + 16;
-    let top  = clientY + 14;
-    // Force a layout pass to get real dimensions before clamping.
+    let left  = clientX + 16;
+    let top   = clientY + 14;
     el.style.display = "block";
     const { width, height } = el.getBoundingClientRect();
-    if (left + width + pad > window.innerWidth)  left = clientX - width - 16;
+    if (left + width  + pad > window.innerWidth)  left = clientX - width  - 16;
     if (top  + height + pad > window.innerHeight) top  = clientY - height - 14;
     el.style.left = `${Math.max(pad, left)}px`;
     el.style.top  = `${Math.max(pad, top)}px`;
   }
 
-  // Replicates the description resolution from active-effect-tooltip.js.
+  // Replicates description resolution from active-effect-tooltip.js.
   async function resolveDescription(eff) {
     const key = eff?.uuid ?? eff?.id ?? "?";
     if (_descCache.has(key)) return _descCache.get(key);
@@ -301,7 +342,6 @@
     if (typeof desc !== "string") desc = String(desc ?? "");
     desc = desc.trim();
 
-    // Fallback: origin item description
     if (!desc && eff?.origin) {
       try {
         const origin = await fromUuid(eff.origin);
@@ -311,7 +351,6 @@
       } catch {}
     }
 
-    // Final fallback: changes list
     if (!desc) {
       const ch = Array.isArray(eff?.changes) ? eff.changes : [];
       if (ch.length) desc = ch.map(c => `• ${c.key ?? "?"}: ${c.value ?? ""}`).join("<br>");
@@ -330,8 +369,7 @@
     if (!eff) return;
 
     _tooltipTarget = aeEl;
-    const el = getTooltipEl();
-
+    const el    = getTooltipEl();
     const icon  = eff.icon ?? eff.img ?? "";
     const name  = eff.name ?? "Unnamed Effect";
     const turns = getAETurns(eff);
@@ -339,7 +377,6 @@
       ? `<div class="oni-dp-hud-tt-turns">${turns} turn${turns !== 1 ? "s" : ""} remaining</div>`
       : "";
 
-    // Render with a placeholder while description resolves async.
     el.innerHTML = `
       <div class="oni-dp-hud-tt-header">
         <img class="oni-dp-hud-tt-icon" src="${icon}" alt="${name}">
@@ -350,15 +387,13 @@
 
     positionTooltip(clientX, clientY);
 
-    // Resolve description and update in-place.
-    const desc = await resolveDescription(eff);
-    // Guard: user may have moved off the icon by the time this resolves.
+    const desc   = await resolveDescription(eff);
     if (_tooltipTarget !== aeEl) return;
     const descEl = el.querySelector(".oni-dp-hud-tt-desc");
     if (descEl) descEl.innerHTML = desc;
   }
 
-  // ── Event delegation on the panel ──────────────────────────────────────────
+  // ── Panel event delegation ──────────────────────────────────────────────────
 
   function onPanelMouseMove(ev) {
     const aeEl = ev.target.closest(".oni-dp-hud-ae");
@@ -367,18 +402,15 @@
       return;
     }
     if (aeEl === _tooltipTarget) {
-      // Tooltip already shown; just reposition.
       if (_tooltipEl?.style.display !== "none") positionTooltip(ev.clientX, ev.clientY);
       return;
     }
     showTooltip(aeEl, ev.clientX, ev.clientY).catch(() => {});
   }
 
-  function onPanelMouseLeave() {
-    hideTooltip();
-  }
+  function onPanelMouseLeave() { hideTooltip(); }
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
+  // ── Data helpers ────────────────────────────────────────────────────────────
 
   function hasVisibleTag(eff) {
     const tags = eff?.system?.tags;
@@ -405,42 +437,33 @@
     return Math.min(100, Math.max(0, Math.round((c / m) * 100)));
   }
 
-  function renderLeft(actor) {
-    const p    = actor?.system?.props ?? {};
+  // ── Row HTML builders ───────────────────────────────────────────────────────
+
+  function renderResources(actor) {
+    const p     = actor?.system?.props ?? {};
     const hpPct = getPct(p.current_hp, p.max_hp);
     const mpPct = getPct(p.current_mp, p.max_mp);
-    const maxIp  = Math.max(1, Number(p.max_ip) || 6);
-    const curIp  = parseInt(p.current_ip) || 0;
+    const maxIp = Math.max(1, Number(p.max_ip) || 6);
+    const curIp = parseInt(p.current_ip) || 0;
 
-    const pipHtml = Array.from({ length: maxIp }, (_, i) =>
+    const pips = Array.from({ length: maxIp }, (_, i) =>
       `<span class="oni-dp-hud-pip${i < curIp ? " filled" : ""}"></span>`
     ).join("");
 
-    const portrait  = actor.img ?? "icons/svg/mystery-man.svg";
-    const actorName = actor.name ?? "?";
-    const hpLabel   = `HP ${parseInt(p.current_hp)||0} / ${Number(p.max_hp)||0}`;
-    const mpLabel   = `MP ${parseInt(p.current_mp)||0} / ${Number(p.max_mp)||0}`;
-    const ipLabel   = `IP ${curIp} / ${maxIp}`;
+    const hpLabel = `HP ${parseInt(p.current_hp)||0} / ${Number(p.max_hp)||0}`;
+    const mpLabel = `MP ${parseInt(p.current_mp)||0} / ${Number(p.max_mp)||0}`;
+    const ipLabel = `IP ${curIp} / ${maxIp}`;
 
     return `
-      <div class="oni-dp-hud-left">
-        <img class="oni-dp-hud-portrait" src="${portrait}" alt="${actorName}" title="${actorName}">
+      <div class="oni-dp-hud-resources">
         <div class="oni-dp-hud-bar-wrap" title="${hpLabel}">
           <div class="oni-dp-hud-bar-fill oni-dp-hud-bar-hp" style="width:${hpPct}%"></div>
         </div>
         <div class="oni-dp-hud-bar-wrap" title="${mpLabel}">
           <div class="oni-dp-hud-bar-fill oni-dp-hud-bar-mp" style="width:${mpPct}%"></div>
         </div>
-        <div class="oni-dp-hud-pips" title="${ipLabel}">${pipHtml}</div>
+        <div class="oni-dp-hud-pips" title="${ipLabel}">${pips}</div>
       </div>`;
-  }
-
-  // ── Left offset — clears GM toolbar ─────────────────────────────────────────
-
-  function computeLeftPx() {
-    const ctrl = document.querySelector("#controls, .controls-panel, #scene-controls, #ui-controls");
-    if (ctrl && ctrl.offsetWidth > 20) return ctrl.offsetWidth + 8;
-    return game.user?.isGM ? 78 : 10;
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -460,8 +483,6 @@
     const panel = document.getElementById(PANEL_ID);
     if (!panel) return;
 
-    panel.style.setProperty("--dp-hud-left", computeLeftPx() + "px");
-
     const members = await CampSystem?.Party?.resolve?.() ?? [];
 
     _effMap.clear();
@@ -475,13 +496,12 @@
         return mode !== "on_activation";
       });
 
-      // Register all visible AEs in the map for tooltip lookup.
       for (const eff of aes) {
         const key = eff?.uuid ?? eff?.id;
         if (key) _effMap.set(key, eff);
       }
 
-      if (aes.length) rows.push({ actor, aes });
+      rows.push({ actor, aes });
     }
 
     if (!rows.length) {
@@ -491,23 +511,28 @@
     }
 
     panel.innerHTML = rows.map(({ actor, aes }) => {
+      const portrait = actor.img ?? "icons/svg/mystery-man.svg";
+      const name     = actor.name ?? "?";
+
       const aeHtml = aes.map(eff => {
         const icon  = eff.icon ?? eff.img ?? "icons/svg/mystery-man.svg";
-        const name  = eff.name ?? "Effect";
+        const label = eff.name ?? "Effect";
         const turns = getAETurns(eff);
         const badge = turns != null ? `<span class="oni-dp-hud-badge">${turns}</span>` : "";
         const uuid  = eff?.uuid ?? eff?.id ?? "";
-        return `
-          <div class="oni-dp-hud-ae" data-eff-uuid="${uuid}">
-            <img src="${icon}" alt="${name}">${badge}
-          </div>`;
+        return `<div class="oni-dp-hud-ae" data-eff-uuid="${uuid}">
+          <img src="${icon}" alt="${label}">${badge}
+        </div>`;
       }).join("");
+
+      const aesSection = aes.length
+        ? `<div class="oni-dp-hud-divider"></div><div class="oni-dp-hud-aes">${aeHtml}</div>`
+        : "";
 
       return `
         <div class="oni-dp-hud-row">
-          ${renderLeft(actor)}
-          <div class="oni-dp-hud-divider"></div>
-          <div class="oni-dp-hud-aes">${aeHtml}</div>
+          <img class="oni-dp-hud-portrait" src="${portrait}" alt="${name}" title="${name}">
+          ${renderResources(actor)}${aesSection}
         </div>`;
     }).join("");
 
@@ -517,7 +542,7 @@
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
   const _hookIds = [];
-  let _resizeHandler = null;
+  let _resizeHandler     = null;
   let _panelMoveHandler  = null;
   let _panelLeaveHandler = null;
 
@@ -540,13 +565,13 @@
         document.body.appendChild(panel);
       }
 
-      // Event delegation for AE tooltips.
       _panelMoveHandler  = ev => onPanelMouseMove(ev);
       _panelLeaveHandler = ()  => onPanelMouseLeave();
       panel.addEventListener("mousemove",  _panelMoveHandler);
       panel.addEventListener("mouseleave", _panelLeaveHandler);
 
-      // Foundry broadcasts AE doc hooks to all clients after GM writes.
+      setupGMFade(panel);
+
       _on("createActiveEffect", scheduleRender);
       _on("updateActiveEffect", scheduleRender);
       _on("deleteActiveEffect", scheduleRender);
@@ -561,6 +586,7 @@
 
     hide() {
       _removeHooks();
+      teardownGMFade();
 
       if (_resizeHandler) {
         window.removeEventListener("resize", _resizeHandler);
