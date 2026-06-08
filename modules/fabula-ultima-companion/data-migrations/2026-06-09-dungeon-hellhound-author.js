@@ -53,6 +53,16 @@
  *      data (worlds/ is never committed), so the migration is the only way it
  *      reaches a co-dev's Hellhound.
  *
+ *   5. Actor-level `system.props.activation` baked as "0". The Battle Director
+ *      reads activation as actions-per-round and HONORS an explicit "0" (an AE
+ *      can set it to 0 to skip a turn — readBaseActivation in director-combat.js),
+ *      so a Hellhound with base "0" gets NO turn in combat, regardless of the
+ *      "Only main player acts" toggle — it never becomes an eligible combatant.
+ *      Every other NPC in the world (incl. soldier-rank peers) carries "1"; this
+ *      is anomalous data on the Hellhound base actor. Heal it to "1" when the
+ *      live value is falsy/0. Like #4 this is world data, so the migration is the
+ *      only durable carrier to a co-dev's Hellhound.
+ *
  * IDEMPOTENT: each patch is checked against the desired value and only writes
  * on drift; a fully-migrated Hellhound re-runs as a no-op. Tagged
  * `"idempotent": true` in _manifest.json so a pulled co-dev world self-heals
@@ -69,7 +79,8 @@ export const description =
   "rebuild On the Hunt as a free-action grant (free Attack, HR as 0); scope " +
   "on-hit riders (Flame Breath Burn, Bite grappled bonus) to their own skill " +
   "via TRIGGER_IS_SELF; stamp the canonical charges:3 on Flame Breath's embedded " +
-  "Burn template so applied Burns carry stacks (tick + count badge).";
+  "Burn template so applied Burns carry stacks (tick + count badge); heal the " +
+  "actor's activation from a turn-skipping \"0\" to \"1\".";
 
 const ACTOR_NAME = "Hellhound";
 const NS = "fabula-ultima-companion";
@@ -183,8 +194,25 @@ function stableStringify(v) {
 }
 const deepEqual = (a, b) => stableStringify(a) === stableStringify(b);
 
+// Heal the actor's actions-per-round. The Battle Director honors an explicit
+// "0" activation as "skip this creature's turn" (readBaseActivation), so a base
+// "0" makes the Hellhound never act. Normalize a falsy/0 value to "1". Idempotent:
+// writes only when the live value is 0/blank — a Hellhound already at "1" (or any
+// positive value) is left untouched.
+async function healActivation(actor, log) {
+  const raw = actor.system?.props?.activation;
+  const n = Number(String(raw ?? "").replace(/[^0-9.\-]/g, ""));
+  if (Number.isFinite(n) && n >= 1) {
+    log(`  [${actor.name}] activation: already ${JSON.stringify(raw)} — ok`);
+    return 0;
+  }
+  await actor.update({ "system.props.activation": "1" });
+  log(`  [${actor.name}] activation: ${JSON.stringify(raw)} → "1" (was turn-skipping)`);
+  return 1;
+}
+
 async function patchActor(actor, log) {
-  let totalChanged = 0;
+  let totalChanged = await healActivation(actor, log);
   for (const [skillName, spec] of Object.entries(PATCHES)) {
     const items = actor.items.filter((i) => i.name === skillName);
     if (!items.length) { log(`  [${actor.name}] "${skillName}": item not found — skipped`); continue; }
