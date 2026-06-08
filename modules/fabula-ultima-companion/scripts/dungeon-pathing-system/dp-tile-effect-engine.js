@@ -177,6 +177,8 @@
   }
 
   // ── Active Effects (array, one actor) ─────────────────────────────────────
+  // Always called with silent:true — the tile system handles its own VFX/SFX
+  // and chat card, so the AEM screen-flash and sound are redundant here.
   async function applyActiveEffects(actor, activeEffects) {
     const aeApi = window.FUCompanion?.api?.activeEffectManager;
     if (!aeApi?.applyEffects) { console.warn(TAG, "AEM API not available."); return []; }
@@ -192,7 +194,7 @@
     if (!effectRefs.length) return [];
 
     try {
-      const res = await aeApi.applyEffects({ actors: [actor], effects: effectRefs });
+      const res = await aeApi.applyEffects({ actors: [actor], effects: effectRefs, silent: true });
       return activeEffects.map(e => ({ label: e.label ?? "Effect", ok: res?.ok ?? true }));
     } catch (e) {
       console.error(TAG, `AE apply failed for ${actor.name}:`, e);
@@ -216,7 +218,7 @@
     if (!effectRefs.length) return [];
 
     try {
-      const res = await aeApi.removeEffects({ actors: [actor], effects: effectRefs });
+      const res = await aeApi.removeEffects({ actors: [actor], effects: effectRefs, silent: true });
       return removeEffects.map(e => ({ label: e.label ?? "Effect", ok: res?.ok ?? true }));
     } catch (e) {
       console.error(TAG, `AE remove failed for ${actor.name}:`, e);

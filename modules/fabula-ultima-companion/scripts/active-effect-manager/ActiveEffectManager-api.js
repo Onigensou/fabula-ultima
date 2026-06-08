@@ -34,6 +34,13 @@
 //     duration: { rounds: 3, turns: 0 }
 //   });
 //
+// Silent mode — suppresses screen-flash VFX, audio, and chat card:
+//   await FUCompanion.api.activeEffectManager.applyEffects({
+//     actorUuids: ["Actor.dafTLBUscCDNgq8H"],
+//     effects: ["Burn"],
+//     silent: true          // no FX, no chat; caller manages its own feedback
+//   });
+//
 // Example with registry ID:
 //   await FUCompanion.api.activeEffectManager.applyEffects({
 //     actorUuids: ["Actor.dafTLBUscCDNgq8H"],
