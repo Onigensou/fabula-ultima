@@ -629,21 +629,13 @@
 
           <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
             <h3 style="margin:0 0 6px;">Dungeon Management</h3>
-            <div class="form-group" style="align-items:flex-start;">
+            <div class="form-group" style="align-items:center;">
               <label>Reset Dungeon</label>
-              <div class="form-fields" style="flex-direction:column;gap:8px;align-items:flex-start;">
-                <div class="oni-reset-filters" style="display:flex;gap:16px;font-size:12px;padding:3px 0;">
-                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal;">
-                    <input type="checkbox" class="oni-reset-filter-tiles" checked /> Tiles
-                  </label>
-                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal;">
-                    <input type="checkbox" class="oni-reset-filter-shroud" checked /> Shroud
-                  </label>
-                </div>
-                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;">
-                  <i class="fas fa-redo"></i> Reset Selected
+              <div class="form-fields" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;flex-shrink:0;">
+                  <i class="fas fa-redo"></i> Reset Dungeon
                 </button>
-                <span class="notes" style="margin:0;color:#e05252;">Resets the selected data. Cannot be undone.</span>
+                <span class="notes" style="margin:0;color:#e05252;">Opens reset options. Cannot be undone.</span>
               </div>
             </div>
 
@@ -1054,27 +1046,45 @@
       tabPanel.querySelector(".oni-reset-dungeon-btn")?.addEventListener("click", async (ev) => {
         ev.preventDefault(); ev.stopPropagation();
 
-        const filterTiles  = resetSection.querySelector(".oni-reset-filter-tiles")?.checked ?? true;
-        const filterShroud = resetSection.querySelector(".oni-reset-filter-shroud")?.checked ?? true;
-
-        if (!filterTiles && !filterShroud) {
-          ui.notifications?.warn?.("Select at least one option to reset.");
-          return;
-        }
-
-        const parts = [];
-        if (filterTiles)  parts.push("tile states");
-        if (filterShroud) parts.push("shroud reveals");
-
-        const confirmed = await Dialog.confirm({
-          title: "Reset Dungeon",
-          content: `<p>Reset <b>${parts.join(" and ")}</b> in <b>${scene?.name ?? "this scene"}</b>?</p><p>This cannot be undone.</p>`,
-          yes: () => true,
-          no:  () => false,
-          defaultYes: false,
+        const result = await new Promise(resolve => {
+          new Dialog({
+            title: "Reset Dungeon",
+            content: `
+              <p>Choose what to reset in <b>${scene?.name ?? "this scene"}</b>:</p>
+              <div style="margin:10px 0;display:flex;flex-direction:column;gap:8px;">
+                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;">
+                  <input type="checkbox" id="oni-reset-filter-tiles" checked style="margin-top:2px;" />
+                  <span><b>Tiles</b> — restore all tile states and textures, clear visited flags</span>
+                </label>
+                <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;">
+                  <input type="checkbox" id="oni-reset-filter-shroud" checked style="margin-top:2px;" />
+                  <span><b>Shroud</b> — clear all permanent shroud reveals</span>
+                </label>
+              </div>
+              <p style="color:#e05252;font-size:11px;margin:0;">This cannot be undone.</p>
+            `,
+            buttons: {
+              reset: {
+                label: '<i class="fas fa-redo"></i> Reset',
+                callback: (html) => resolve({
+                  tiles:  html[0].querySelector("#oni-reset-filter-tiles")?.checked ?? true,
+                  shroud: html[0].querySelector("#oni-reset-filter-shroud")?.checked ?? true,
+                }),
+              },
+              cancel: { label: "Cancel", callback: () => resolve(null) },
+            },
+            default: "cancel",
+            close: () => resolve(null),
+          }).render(true);
         });
 
-        if (!confirmed) return;
+        if (!result) return;
+        const { tiles: filterTiles, shroud: filterShroud } = result;
+
+        if (!filterTiles && !filterShroud) {
+          ui.notifications?.warn?.("Nothing selected — reset cancelled.");
+          return;
+        }
 
         const DP = globalThis.DungeonPathing;
 
