@@ -14,11 +14,6 @@
 //   The sprite is stretched to match the actual tile bounds on the map so it
 //   overlays correctly regardless of how large the tile was placed.
 //
-//   Idle animation — gentle alpha pulse via a single shared PIXI ticker:
-//     Fog    0.85 – 1.00  @ 0.45 rad/s  (~14s period)
-//     Shroud 0.78 – 1.00  @ 0.28 rad/s  (~22s period)
-//   Phase is seeded per-container so tiles don't breathe in unison.
-//
 // Transitions:
 //   Reveal (fog lifts)    — container.alpha fades OUT 600ms cubic ease.
 //   Re-fog (mist returns) — container.alpha fades IN  500ms cubic ease.
@@ -28,7 +23,6 @@
 //   · parent?.removeChild() always before destroy({ children:true })
 //   · _animating Set prevents double-animation on the same tile
 //   · No DOM reads inside any animation loop
-//   · Single shared PIXI ticker drives all idle animations
 //   · Textures preloaded once via Foundry's loadTexture on "ready"
 // ============================================================================
 (() => {
@@ -42,19 +36,11 @@
   const FOG_TEXTURE_URL    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fog_Tile.png";
   const SHROUD_TEXTURE_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Shroud_Tile.png";
 
-  // Idle animation parameters per mode
-  const IDLE = {
-    fog:    { minAlpha: 0.85, amp: 0.15, speed: 0.45 },
-    shroud: { minAlpha: 0.78, amp: 0.22, speed: 0.28 },
-  };
-
   const _fogContainers       = new Map();  // tileId → PIXI.Container
   const _animating           = new Set();  // tileId — mid-animation guard
   let   _prevAdjacentIds     = new Set();
   let   _initialized         = false;
   const _localShroudRevealed = new Set();
-
-  let _tickerFn = null;
 
   // ---------------------------------------------------------------------------
   // Flag helper — fogMode with backward compat for old boolean fog flag
@@ -88,32 +74,6 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Idle ticker — single shared callback for all active containers
-  // ---------------------------------------------------------------------------
-  function _startIdleTick() {
-    if (_tickerFn || !canvas?.app?.ticker) return;
-    _tickerFn = () => {
-      if (!_fogContainers.size) return;
-      const t = performance.now() * 0.001; // seconds
-      for (const [tileId, container] of _fogContainers) {
-        if (container.destroyed || _animating.has(tileId)) continue;
-        const sprite = container._sprite;
-        if (!sprite || sprite.destroyed) continue;
-        const { minAlpha, amp, speed } = container._idle;
-        // sin normalised to [0,1] → mapped to [minAlpha, 1.0]
-        sprite.alpha = minAlpha + amp * ((Math.sin(t * speed + container._idlePhase) + 1) * 0.5);
-      }
-    };
-    canvas.app.ticker.add(_tickerFn);
-  }
-
-  function _stopIdleTick() {
-    if (!_tickerFn) return;
-    canvas?.app?.ticker?.remove?.(_tickerFn);
-    _tickerFn = null;
-  }
-
-  // ---------------------------------------------------------------------------
   // Build a fog/shroud container for the given node
   // ---------------------------------------------------------------------------
   function buildContainer(node, fogMode) {
@@ -126,12 +86,6 @@
     container.zIndex = FOG_Z;
     container.x      = b.left;
     container.y      = b.top;
-
-    // Idle animation params — phase seeded from current time so containers
-    // start at alpha 1.0 and drift downward smoothly (no snap on first tick)
-    const idle = IDLE[fogMode] ?? IDLE.fog;
-    container._idle      = idle;
-    container._idlePhase = Math.PI / 2 - performance.now() * 0.001 * idle.speed;
 
     // Build sprite
     const url    = fogMode === "shroud" ? SHROUD_TEXTURE_URL : FOG_TEXTURE_URL;
@@ -296,7 +250,6 @@
             const container = buildContainer(node, fogMode);
             canvas.stage.addChild(container);
             _fogContainers.set(tileId, container);
-            _startIdleTick();
 
             if (wasAdjacent && _initialized && fogMode === "fog") {
               _animateFadeIn(tileId);
@@ -316,7 +269,6 @@
     },
 
     destroyAll() {
-      _stopIdleTick();
       for (const tileId of [..._fogContainers.keys()]) {
         destroyContainer(tileId);
       }
@@ -347,7 +299,6 @@
       const container = buildContainer(node, fogMode);
       canvas.stage.addChild(container);
       _fogContainers.set(tileId, container);
-      _startIdleTick();
       container.alpha = 1;
     },
   };
