@@ -10,43 +10,50 @@
 //              adjacent and never returns.  Stored in scene.fogRevealed.
 //
 // Visuals:
-//   Fog    — cool blue-grey mist; soft overlapping ellipses, no hard edges.
-//   Shroud — deep indigo/violet veil; denser, more ominous.
-//   Both   — organic shape (no rectangular base), idle breathing animation.
+//   Each mode uses a dedicated image asset sized to the tile template.
+//   The sprite is stretched to match the actual tile bounds on the map so it
+//   overlays correctly regardless of how large the tile was placed.
 //
-// Animations:
-//   Reveal (fog lifts)    — fade OUT 600ms ease-in-out cubic.
-//   Re-fog (mist returns) — new container fades IN 500ms (fog mode only).
-//   Idle breathing        — per-layer alpha oscillation via PIXI ticker
-//                           (single shared ticker, all containers updated together).
-//   First load / snap     — containers appear at full alpha instantly.
+//   Idle animation — gentle alpha pulse via a single shared PIXI ticker:
+//     Fog    0.85 – 1.00  @ 0.45 rad/s  (~14s period)
+//     Shroud 0.78 – 1.00  @ 0.28 rad/s  (~22s period)
+//   Phase is seeded per-container so tiles don't breathe in unison.
+//
+// Transitions:
+//   Reveal (fog lifts)    — container.alpha fades OUT 600ms cubic ease.
+//   Re-fog (mist returns) — container.alpha fades IN  500ms cubic ease.
+//   First load / snap     — container appears at alpha 1 instantly.
 //
 // Performance — PIXI pitfalls guarded:
 //   · parent?.removeChild() always before destroy({ children:true })
 //   · _animating Set prevents double-animation on the same tile
 //   · No DOM reads inside any animation loop
-//   · Single PIXI ticker for idle (not one rAF per tile)
+//   · Single shared PIXI ticker drives all idle animations
+//   · Textures preloaded once via Foundry's loadTexture on "ready"
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Fog]";
 
   const FOG_Z     = 999996;  // below hover (999997) and helper cursors (999998)
-  const REVEAL_MS = 600;     // fade-out duration in ms
-  const REFOG_MS  = 500;     // fade-in duration in ms (fog mode re-hide)
+  const REVEAL_MS = 600;
+  const REFOG_MS  = 500;
 
-  // Active PIXI containers
-  const _fogContainers = new Map();  // tileId → PIXI.Container
-  const _animating     = new Set();  // tileId — currently mid-animation (guard)
+  const FOG_TEXTURE_URL    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fog_Tile.png";
+  const SHROUD_TEXTURE_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Shroud_Tile.png";
 
-  // Adjacency from previous refresh — detects transitions
-  let _prevAdjacentIds = new Set();
-  let _initialized     = false;
+  // Idle animation parameters per mode
+  const IDLE = {
+    fog:    { minAlpha: 0.85, amp: 0.15, speed: 0.45 },
+    shroud: { minAlpha: 0.78, amp: 0.22, speed: 0.28 },
+  };
 
-  // Local guard for shroud permanent reveals (survives until destroyAll)
+  const _fogContainers       = new Map();  // tileId → PIXI.Container
+  const _animating           = new Set();  // tileId — mid-animation guard
+  let   _prevAdjacentIds     = new Set();
+  let   _initialized         = false;
   const _localShroudRevealed = new Set();
 
-  // Shared PIXI ticker for idle breathing animation
   let _tickerFn = null;
 
   // ---------------------------------------------------------------------------
@@ -55,16 +62,14 @@
   function getFogMode(tileDoc) {
     const mode = tileDoc?.getFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogMode`);
     if (mode === "fog" || mode === "shroud") return mode;
-    // Old boolean flag → shroud (original behavior was permanent reveal)
     const legacy = tileDoc?.getFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fog`);
     if (legacy === true || legacy === "true") return "shroud";
     return null;
   }
 
   // ---------------------------------------------------------------------------
-  // PIXI helpers
+  // PIXI stage helper
   // ---------------------------------------------------------------------------
-
   function ensureStage() {
     if (!canvas?.stage) return false;
     canvas.stage.sortableChildren = true;
@@ -72,7 +77,18 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Idle ticker — single shared callback, all active containers updated per frame
+  // Texture preload — called once on "ready"; ensures both textures are cached
+  // so buildContainer can apply them synchronously.
+  // ---------------------------------------------------------------------------
+  Hooks.once("ready", () => {
+    Promise.all([
+      loadTexture(FOG_TEXTURE_URL),
+      loadTexture(SHROUD_TEXTURE_URL),
+    ]).catch(e => console.warn(TAG, "texture preload failed:", e));
+  });
+
+  // ---------------------------------------------------------------------------
+  // Idle ticker — single shared callback for all active containers
   // ---------------------------------------------------------------------------
   function _startIdleTick() {
     if (_tickerFn || !canvas?.app?.ticker) return;
@@ -81,12 +97,11 @@
       const t = performance.now() * 0.001; // seconds
       for (const [tileId, container] of _fogContainers) {
         if (container.destroyed || _animating.has(tileId)) continue;
-        for (const layer of (container._fogLayers ?? [])) {
-          // Oscillate each layer between 80% and 100% of its base alpha.
-          // sin range [-1,1] → normalised to [0,1] → mapped to [0.80, 1.00].
-          layer.gfx.alpha = layer.baseAlpha *
-            (0.80 + 0.20 * ((Math.sin(t * layer.speed + layer.phase) + 1) * 0.5));
-        }
+        const sprite = container._sprite;
+        if (!sprite || sprite.destroyed) continue;
+        const { minAlpha, amp, speed } = container._idle;
+        // sin normalised to [0,1] → mapped to [minAlpha, 1.0]
+        sprite.alpha = minAlpha + amp * ((Math.sin(t * speed + container._idlePhase) + 1) * 0.5);
       }
     };
     canvas.app.ticker.add(_tickerFn);
@@ -99,80 +114,44 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Layer configs
-  //   Each entry: { x, y, rx, ry, color, baseAlpha, phase, speed }
-  //   x/y are in tile-local coordinates (origin = top-left of tile).
-  //   phase/speed drive the idle animation; different values per layer so
-  //   they breathe independently rather than all pulsing in unison.
-  // ---------------------------------------------------------------------------
-
-  // Blue-grey mist — transient fog
-  function _fogLayers(cx, cy, w, h) {
-    return [
-      // Two large masses cover the center without a hard rectangle
-      { x: cx * 0.95, y: cy * 1.05, rx: w * 0.58, ry: h * 0.48, color: 0x4a7090, baseAlpha: 0.60, phase: 0.0, speed: 0.40 },
-      { x: cx * 1.08, y: cy * 0.90, rx: w * 0.52, ry: h * 0.44, color: 0x3d6070, baseAlpha: 0.52, phase: 1.6, speed: 0.35 },
-      // Outer wisps drift beyond tile edges for an organic boundary
-      { x: cx * 1.28, y: cy * 0.72, rx: w * 0.44, ry: h * 0.32, color: 0x6895b0, baseAlpha: 0.38, phase: 0.8, speed: 0.55 },
-      { x: cx * 0.65, y: cy * 1.28, rx: w * 0.42, ry: h * 0.30, color: 0x72a0bc, baseAlpha: 0.33, phase: 2.4, speed: 0.50 },
-      { x: cx * 0.75, y: cy * 0.70, rx: w * 0.36, ry: h * 0.26, color: 0x8ab8d0, baseAlpha: 0.28, phase: 3.2, speed: 0.62 },
-      { x: cx * 1.22, y: cy * 1.30, rx: w * 0.38, ry: h * 0.24, color: 0x9acce0, baseAlpha: 0.24, phase: 4.0, speed: 0.48 },
-      // Bright central highlight — creates the illusion of depth
-      { x: cx * 1.05, y: cy * 0.95, rx: w * 0.28, ry: h * 0.20, color: 0xbadaec, baseAlpha: 0.18, phase: 1.2, speed: 0.70 },
-    ];
-  }
-
-  // Deep indigo/violet veil — permanent shroud
-  function _shroudLayers(cx, cy, w, h) {
-    return [
-      // Dense dark base layers — heavier, slower breath than fog
-      { x: cx * 1.00, y: cy * 1.00, rx: w * 0.60, ry: h * 0.50, color: 0x120924, baseAlpha: 0.78, phase: 0.0, speed: 0.28 },
-      { x: cx * 0.90, y: cy * 1.05, rx: w * 0.55, ry: h * 0.45, color: 0x1e0d3c, baseAlpha: 0.65, phase: 1.8, speed: 0.25 },
-      // Purple bloom layers — mid-opacity, moderate speed
-      { x: cx * 1.15, y: cy * 0.80, rx: w * 0.46, ry: h * 0.36, color: 0x3d1870, baseAlpha: 0.48, phase: 0.9, speed: 0.40 },
-      { x: cx * 0.70, y: cy * 1.20, rx: w * 0.44, ry: h * 0.34, color: 0x4e2288, baseAlpha: 0.42, phase: 2.7, speed: 0.38 },
-      // Edge tendrils — lighter, faster — give it a restless quality
-      { x: cx * 0.82, y: cy * 0.68, rx: w * 0.36, ry: h * 0.26, color: 0x6638a8, baseAlpha: 0.32, phase: 1.4, speed: 0.52 },
-      { x: cx * 1.20, y: cy * 1.32, rx: w * 0.34, ry: h * 0.24, color: 0x7848c0, baseAlpha: 0.26, phase: 3.5, speed: 0.46 },
-      // Soft violet shimmer near centre — gives the shroud an inner glow
-      { x: cx * 1.02, y: cy * 0.98, rx: w * 0.24, ry: h * 0.18, color: 0xb090e0, baseAlpha: 0.22, phase: 2.2, speed: 0.60 },
-    ];
-  }
-
-  // ---------------------------------------------------------------------------
-  // Build a PIXI.Container — one separate Graphics per layer (enables idle anim)
+  // Build a fog/shroud container for the given node
   // ---------------------------------------------------------------------------
   function buildContainer(node, fogMode) {
     const b  = node.bounds;
     const w  = b.right - b.left;
     const h  = b.bottom - b.top;
-    const cx = w / 2;
-    const cy = h / 2;
 
     const container = new PIXI.Container();
-    container.name        = `ONI_DP_Fog_${node.nodeId}`;
-    container.zIndex      = FOG_Z;
-    container.x           = b.left;
-    container.y           = b.top;
-    container._fogLayers  = [];
+    container.name   = `ONI_DP_Fog_${node.nodeId}`;
+    container.zIndex = FOG_Z;
+    container.x      = b.left;
+    container.y      = b.top;
 
-    const layers = fogMode === "shroud"
-      ? _shroudLayers(cx, cy, w, h)
-      : _fogLayers(cx, cy, w, h);
+    // Idle animation params — phase seeded from current time so containers
+    // start at alpha 1.0 and drift downward smoothly (no snap on first tick)
+    const idle = IDLE[fogMode] ?? IDLE.fog;
+    container._idle      = idle;
+    container._idlePhase = Math.PI / 2 - performance.now() * 0.001 * idle.speed;
 
-    for (const layer of layers) {
-      const gfx = new PIXI.Graphics();
-      gfx.beginFill(layer.color, 1);
-      gfx.drawEllipse(layer.x, layer.y, layer.rx, layer.ry);
-      gfx.endFill();
-      gfx.alpha = layer.baseAlpha;
-      container.addChild(gfx);
-      container._fogLayers.push({
-        gfx,
-        baseAlpha: layer.baseAlpha,
-        phase:     layer.phase,
-        speed:     layer.speed,
-      });
+    // Build sprite
+    const url    = fogMode === "shroud" ? SHROUD_TEXTURE_URL : FOG_TEXTURE_URL;
+    const cached = getTexture(url);
+    const sprite = new PIXI.Sprite(cached ?? PIXI.Texture.EMPTY);
+    sprite.width  = w;
+    sprite.height = h;
+    sprite.alpha  = 1;
+    container.addChild(sprite);
+    container._sprite = sprite;
+
+    // If texture wasn't cached yet, load it and update the sprite in-place
+    if (!cached) {
+      loadTexture(url).then(tex => {
+        if (!sprite.destroyed) {
+          sprite.texture = tex;
+          sprite.width   = w;
+          sprite.height  = h;
+        }
+      }).catch(() => {});
     }
 
     return container;
@@ -184,7 +163,7 @@
     _fogContainers.delete(tileId);
     _animating.delete(tileId);
     if (c.destroyed) return;
-    c.parent?.removeChild(c);           // prevent PIXI stage orphan
+    c.parent?.removeChild(c);
     c.destroy({ children: true });
   }
 
@@ -195,7 +174,6 @@
     if (_animating.has(tileId)) return;
     _animating.add(tileId);
 
-    // Shroud mode only — write permanent reveal flag
     if (fogMode === "shroud") {
       _localShroudRevealed.add(tileId);
       const scene = canvas?.scene;
@@ -270,15 +248,6 @@
 
   DP.Fog = {
 
-    /**
-     * Main entry point — called from dp-bootstrap rebuild() after neighbors
-     * are computed.
-     *
-     * Fog mode:    show fog for all non-adjacent tiles; reveal adjacent ones;
-     *              fade fog back in when party moves away.
-     * Shroud mode: show fog until first adjacency; reveal permanently; never
-     *              re-create after reveal.
-     */
     refresh(graph, currentNode, neighbors) {
       if (!ensureStage()) return;
       const scene = canvas?.scene;
@@ -304,7 +273,6 @@
 
         seenTileIds.add(tileId);
 
-        // Shroud: permanently revealed once first seen
         if (fogMode === "shroud") {
           const isPermaRevealed = _localShroudRevealed.has(tileId)
             || !!(scene.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY]?.fogRevealed?.[tileId]);
@@ -320,12 +288,10 @@
           && !_fogContainers.get(tileId)?.destroyed;
 
         if (isAdjacent) {
-          // Party is adjacent — lift the fog
           if (hasContainer && !_animating.has(tileId)) {
             _animateReveal(tileId, fogMode);
           }
         } else {
-          // Party is not adjacent — fog should be visible
           if (!hasContainer && !_animating.has(tileId)) {
             const container = buildContainer(node, fogMode);
             canvas.stage.addChild(container);
@@ -333,17 +299,14 @@
             _startIdleTick();
 
             if (wasAdjacent && _initialized && fogMode === "fog") {
-              // Transition: was adjacent last turn → mist drifts back in
               _animateFadeIn(tileId);
             } else {
-              // First load or shroud first appearance — snap to full opacity
               container.alpha = 1;
             }
           }
         }
       }
 
-      // Purge containers for tiles no longer in the graph (scene/canvas change guard)
       for (const [tileId] of _fogContainers) {
         if (!seenTileIds.has(tileId)) destroyContainer(tileId);
       }
@@ -352,10 +315,6 @@
       _initialized = true;
     },
 
-    /**
-     * Destroy all active fog containers and reset session state.
-     * Called on dungeon deactivate, canvas teardown, and dungeon reset.
-     */
     destroyAll() {
       _stopIdleTick();
       for (const tileId of [..._fogContainers.keys()]) {
@@ -366,12 +325,6 @@
       _initialized = false;
     },
 
-    /**
-     * Immediately restore the fog container for a single shroud tile after a
-     * manual GM reset (per-tile Reset Shroud button in tile config).
-     * Clears the local session guard and re-creates the PIXI container if the
-     * tile is not currently adjacent to the party.
-     */
     resetShroudLocally(tileId) {
       _localShroudRevealed.delete(tileId);
       _animating.delete(tileId);
@@ -384,15 +337,14 @@
 
       const isAdjacent = api.currentNode?.nodeId === tileId
         || api.state.neighborIds?.has(tileId);
-      if (isAdjacent) return; // would be lifted again immediately on next rebuild
+      if (isAdjacent) return;
 
       if (_fogContainers.has(tileId) && !_fogContainers.get(tileId)?.destroyed) return;
 
-      // Look up fogMode from tile document to use correct visual
       const tileDoc = canvas?.scene?.tiles?.get(tileId);
-      const fogMode = tileDoc ? getFogMode(tileDoc) : "shroud";
+      const fogMode = (tileDoc ? getFogMode(tileDoc) : null) ?? "shroud";
 
-      const container = buildContainer(node, fogMode ?? "shroud");
+      const container = buildContainer(node, fogMode);
       canvas.stage.addChild(container);
       _fogContainers.set(tileId, container);
       _startIdleTick();
@@ -401,10 +353,7 @@
   };
 
   // ---------------------------------------------------------------------------
-  // Multi-client sync — when the GM resets fogRevealed flags the scene flag
-  // change arrives here via Foundry's native updateScene broadcast.  We clear
-  // the corresponding entries from _localShroudRevealed (the in-memory session
-  // guard) so all clients correctly show fog again on the next rebuild.
+  // Multi-client sync
   // ---------------------------------------------------------------------------
   Hooks.on("updateScene", (sceneDoc, diff) => {
     if (!canvas?.scene || sceneDoc.id !== canvas.scene.id) return;
@@ -413,12 +362,10 @@
 
     let changed = false;
 
-    // Full clear: scene.unsetFlag("dungeonPathing.fogRevealed") → "-=fogRevealed": null
     if ("-=fogRevealed" in dp) {
       _localShroudRevealed.clear();
       changed = true;
     } else if (dp.fogRevealed && typeof dp.fogRevealed === "object") {
-      // Per-tile clear: unsetFlag("fogRevealed.tileId") → "fogRevealed": { "-=tileId": null }
       for (const key of Object.keys(dp.fogRevealed)) {
         if (key.startsWith("-=")) {
           _localShroudRevealed.delete(key.slice(2));
@@ -428,7 +375,6 @@
     }
 
     if (changed) {
-      // Trigger a rebuild so all clients recreate fog containers immediately
       globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
     }
   });
