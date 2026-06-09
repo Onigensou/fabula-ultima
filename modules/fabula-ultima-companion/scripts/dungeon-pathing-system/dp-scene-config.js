@@ -4,16 +4,15 @@
 // Injects a "Fabula" section into the Scene Configuration dialog containing
 // dungeon-pathing-related per-scene settings.
 //
-// Currently exposed:
-//   • Linked Camp Scene UUID — the scene players are transported to when they
-//     use a Camp tile in this dungeon.  Stored as:
-//       flags.fabula-ultima-companion.campSceneUuid
+// Layout convention:
+//   Settings  — standard form-group rows (label + input).  Saved via Foundry's
+//               name-attribute serialisation on form submit.
+//   Actions   — full-width buttons under a divider.  Wired via JS event
+//               listeners; never participate in form submission (type="button").
 //
-// ARCHITECTURE NOTE
-// =================
-// The field uses Foundry's standard name-attribute form serialisation so no
-// manual save hook is required — Foundry reads all named inputs on submit and
-// maps "flags.module-id.key" paths directly to the document update.
+// Currently exposed:
+//   Settings: Linked Camp Scene UUID
+//   Actions:  Reset All Shroud Reveals
 // ============================================================================
 (() => {
   const GLOBAL_KEY  = "oni.DungeonSceneConfig";
@@ -30,24 +29,64 @@
     const s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = `
+      /* Outer wrapper */
       .oni-dp-scene-section {
-        padding: 10px 8px;
+        padding: 10px 8px 4px;
         border-top: 1px solid rgba(153,153,153,0.3);
         margin-top: 8px;
       }
-      .oni-dp-scene-section h3 {
-        margin: 0 0 8px;
+      .oni-dp-scene-section > h3 {
+        margin: 0 0 10px;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
         gap: 6px;
       }
-      .oni-dp-scene-section .form-group {
+
+      /* Settings block — standard form-group rows */
+      .oni-dp-scene-settings .form-group {
         margin-bottom: 8px;
       }
       .oni-dp-scene-uuid-input {
         font-family: monospace;
         font-size: 11px;
+      }
+
+      /* Actions block */
+      .oni-dp-scene-actions-header {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 10px 0 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        opacity: 0.55;
+      }
+      .oni-dp-scene-actions-header hr {
+        flex: 1;
+        margin: 0;
+        border: none;
+        border-top: 1px solid rgba(153,153,153,0.3);
+      }
+
+      /* Each action row: full-width button + description beneath it */
+      .oni-dp-scene-action {
+        margin-bottom: 8px;
+      }
+      .oni-dp-scene-action button {
+        width: 100%;
+        cursor: pointer;
+        text-align: left;
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .oni-dp-scene-action .notes {
+        margin-top: 3px;
+        padding-left: 2px;
       }
     `;
     document.head.appendChild(s);
@@ -59,7 +98,6 @@
       const root = html instanceof HTMLElement ? html : html?.[0];
       if (!root) return;
 
-      // Guard against double-injection on re-renders
       if (root.querySelector("[data-oni-dp-scene-config]")) return;
 
       ensureStyle();
@@ -67,49 +105,55 @@
       const sceneDoc = app?.document ?? app?.object;
       const campUuid = sceneDoc?.getFlag(MODULE_ID, "campSceneUuid") ?? "";
 
-      // Find a sensible insertion point — before the form footer/submit button
-      const form       = root.querySelector("form") ?? root;
-      const footer     = form.querySelector("footer, .sheet-footer, .form-footer");
-      const insertRef  = footer ?? null;
+      const form      = root.querySelector("form") ?? root;
+      const footer    = form.querySelector("footer, .sheet-footer, .form-footer");
+      const insertRef = footer ?? null;
 
       const section = document.createElement("div");
       section.className = "oni-dp-scene-section";
       section.setAttribute("data-oni-dp-scene-config", "1");
       section.innerHTML = `
-        <h3><i class="fas fa-campground"></i> Dungeon Pathing — Fabula</h3>
+        <h3><i class="fas fa-dungeon"></i> Dungeon Pathing — Fabula</h3>
 
-        <div class="form-group">
-          <label>Linked Camp Scene</label>
-          <div class="form-fields">
-            <input class="oni-dp-scene-uuid-input"
-                   type="text"
-                   name="flags.${MODULE_ID}.campSceneUuid"
-                   value="${campUuid}"
-                   placeholder="Scene.xxxxxxxxxxxxxxxx"
-                   title="UUID of the camp scene for this dungeon (drag a scene from the sidebar to get its UUID)" />
+        <!-- ── Settings ── -->
+        <div class="oni-dp-scene-settings">
+
+          <div class="form-group">
+            <label>Linked Camp Scene</label>
+            <div class="form-fields">
+              <input class="oni-dp-scene-uuid-input"
+                     type="text"
+                     name="flags.${MODULE_ID}.campSceneUuid"
+                     value="${campUuid}"
+                     placeholder="Scene.xxxxxxxxxxxxxxxx"
+                     title="UUID of the camp scene for this dungeon" />
+            </div>
+            <p class="notes">
+              UUID of the scene players are transported to when they <b>Use</b> a Camp tile.
+              Right-click a scene in the sidebar and choose <em>Copy UUID</em> to get it.
+            </p>
           </div>
-          <p class="notes">
-            UUID of the scene players are transported to when they <b>Use</b> a Camp tile in this
-            dungeon.  To find a scene's UUID, right-click it in the sidebar and choose
-            <em>Copy UUID</em>, or drag it into a text field.
-          </p>
+
         </div>
 
-        <div class="form-group">
-          <label>Shroud Reveals</label>
-          <div class="form-fields">
-            <button type="button" data-oni-reset-all-shrouds="1" style="cursor:pointer;">
-              <i class="fas fa-eye-slash"></i> Reset All Shroud Reveals
-            </button>
-          </div>
+        <!-- ── Actions ── -->
+        <div class="oni-dp-scene-actions-header">
+          <span>Actions</span><hr />
+        </div>
+
+        <div class="oni-dp-scene-action">
+          <button type="button" data-oni-reset-all-shrouds="1">
+            <i class="fas fa-eye-slash"></i> Reset All Shroud Reveals
+          </button>
           <p class="notes">
-            Clears the revealed state of every <b>Shroud</b> tile in this scene without
-            affecting tile states or visited tiles. Use when starting fresh with a new group.
+            Clears every <b>Shroud</b> tile's revealed state on this scene.
+            Does <em>not</em> affect tile types, textures, or visited tiles.
+            Use when preparing the dungeon for a new group.
           </p>
         </div>
       `;
 
-      // Wire Reset All Shroud Reveals — GM only, no form submission needed
+      // Wire: Reset All Shroud Reveals
       section.querySelector("[data-oni-reset-all-shrouds]")?.addEventListener("click", async () => {
         const DP = globalThis.DungeonPathing;
         const revealedMap = sceneDoc?.flags?.[MODULE_ID]?.dungeonPathing?.fogRevealed ?? {};
@@ -120,8 +164,8 @@
         }
         const confirmed = await Dialog.confirm({
           title: "Reset All Shroud Reveals",
-          content: `<p>Clear <b>${count}</b> shroud reveal(s) on <b>${sceneDoc.name}</b>?
-                    <br>Tile states and visited tiles are not affected.</p>`,
+          content: `<p>Clear <b>${count}</b> shroud reveal(s) on <b>${sceneDoc.name}</b>?<br>
+                    Tile states and visited tiles are not affected.</p>`,
           yes: { label: "Reset", icon: '<i class="fas fa-eye-slash"></i>' },
         });
         if (!confirmed) return;
@@ -140,7 +184,6 @@
         form.appendChild(section);
       }
 
-      // Resize the dialog to fit the new content
       try { app.setPosition({ height: "auto" }); } catch {}
     } catch (e) {
       console.warn(TAG, "inject failed:", e);
