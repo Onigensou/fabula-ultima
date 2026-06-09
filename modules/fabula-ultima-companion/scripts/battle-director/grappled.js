@@ -15,8 +15,13 @@
 
 const NS = "fabula-ultima-companion";
 const GRAPPLED_NAME = "grappled";
+// The grappler-side reciprocal AE (applied to whoever applies "Grappled" via
+// the supervised reciprocalAe flag in skill-effects.applyApplyAeEffect). It
+// hosts the shared-space splash reaction (rule #1).
+const GRAPPLING_NAME = "grappling";
 
 const nameMatches = (e) => String(e?.name ?? "").trim().toLowerCase() === GRAPPLED_NAME;
+const grapplingMatches = (e) => String(e?.name ?? "").trim().toLowerCase() === GRAPPLING_NAME;
 
 /** Non-disabled "Grappled" AEs on an actor. */
 export function grappledAEsOn(actor) {
@@ -43,15 +48,56 @@ export function grapplerOf(actor) {
   return null;
 }
 
+/** Non-disabled "Grappling" AEs on an actor (the grappler-side reciprocal). */
+export function grapplingAEsOn(actor) {
+  const effects = actor?.effects?.contents ?? (Array.isArray(actor?.effects) ? actor.effects : []);
+  return effects.filter((e) => e && !e.disabled && grapplingMatches(e));
+}
+
+/**
+ * Drop a grappler's "Grappling" AE once it holds no one (after a victim breaks
+ * free / the grapple ends). Supervised cleanup — called from breakFree. A
+ * lingering Grappling is harmless (tokensGrappledBy → empty → the splash adds
+ * nothing), so this is hygiene, not correctness. Returns count removed.
+ */
+export async function syncGrapplingForGrappler(grapplerActor) {
+  if (!grapplerActor?.uuid) return 0;
+  if (tokensGrappledBy({ actorUuid: grapplerActor.uuid }).length) return 0; // still grappling
+  const aes = grapplingAEsOn(grapplerActor);
+  if (!aes.length) return 0;
+  try {
+    await grapplerActor.deleteEmbeddedDocuments("ActiveEffect", aes.map((e) => e.id));
+  } catch (e) {
+    console.warn(`[grappled] syncGrapplingForGrappler: delete failed on ${grapplerActor?.name}`, e);
+    return 0;
+  }
+  return aes.length;
+}
+
 /** Remove every Grappled AE on `actor` (break free). Returns count removed. */
 export async function breakFree(actor, { reason = "" } = {}) {
   const aes = grappledAEsOn(actor);
   if (!aes.length) return 0;
+  // Capture grapplers BEFORE deletion so we can clean up their reciprocal
+  // "Grappling" AE afterwards if they no longer hold anyone.
+  const grapplerUuids = new Set();
+  for (const ae of aes) {
+    const guuid = ae.flags?.[NS]?.directorAppliedBy?.reactorActorUuid;
+    if (guuid) grapplerUuids.add(guuid);
+  }
   try {
     await actor.deleteEmbeddedDocuments("ActiveEffect", aes.map((e) => e.id));
   } catch (e) {
     console.warn(`[grappled] breakFree: delete failed on ${actor?.name}`, e);
     return 0;
+  }
+  // Reciprocal cleanup (supervised): the victim's Grappled is gone, so drop
+  // each grappler's Grappling AE if it now holds no one.
+  for (const guuid of grapplerUuids) {
+    try {
+      const grappler = await fromUuid(guuid);
+      if (grappler) await syncGrapplingForGrappler(grappler);
+    } catch (e) { console.warn(`[grappled] breakFree: grappling sync failed for ${guuid}`, e); }
   }
   return aes.length;
 }
