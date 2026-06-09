@@ -275,7 +275,8 @@
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
       const persistFlag       = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
       const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
-      const fogFlag           = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fog`) ?? false;
+      const rawFogMode        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fogMode`) ?? "";
+      const legacyFogFlag     = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fog`);
       const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
       const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
       const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
@@ -284,7 +285,8 @@
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
       const persists        = persistFlag       === true || persistFlag       === "true";
       const usable          = usableFlag        === true || usableFlag        === "true";
-      const fog             = fogFlag           === true || fogFlag           === "true";
+      // fogMode with backward compat for old boolean fog flag (treated as shroud)
+      const fogMode         = rawFogMode || ((legacyFogFlag === true || legacyFogFlag === "true") ? "shroud" : "");
       const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
       const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
       const blockGoBack     = blockGoBackFlag   === true || blockGoBackFlag   === "true";
@@ -357,16 +359,19 @@
         </div>
 
         <div class="form-group">
-          <label>Fog</label>
+          <label>Concealment</label>
           <div class="form-fields">
-            <input type="checkbox"
-                   name="flags.${MODULE_ID}.${pathingKey}.fog"
-                   data-dtype="Boolean"
-                   ${fog ? "checked" : ""} />
+            <select name="flags.${MODULE_ID}.${pathingKey}.fogMode" data-dtype="String">
+              <option value=""       ${!fogMode             ? "selected" : ""}>— None —</option>
+              <option value="fog"    ${fogMode === "fog"    ? "selected" : ""}>Fog — lifts when adjacent, returns when party moves away</option>
+              <option value="shroud" ${fogMode === "shroud" ? "selected" : ""}>Shroud — lifts once when adjacent, revealed forever</option>
+            </select>
           </div>
           <p class="notes">
-            When checked, this tile's true type is hidden from players until the party steps
-            onto an adjacent tile. A fog overlay covers the tile and fades away on reveal.
+            <b>Fog</b>: The tile is veiled by drifting mist. Players see it clearly while
+            the party stands adjacent — but the mist rolls back in the moment they move away.<br>
+            <b>Shroud</b>: The tile is hidden beneath a permanent veil. Once the party steps
+            adjacent, the shroud parts and the tile is revealed forever.
           </p>
         </div>
 
