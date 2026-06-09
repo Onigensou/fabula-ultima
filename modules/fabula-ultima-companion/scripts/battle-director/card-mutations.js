@@ -51,7 +51,11 @@ async function readEffectTableForCandidate(cand) {
     const doc = await fromUuid(cand.carrierUuid);
     if (!doc) return null;
     if (cand.carrierKind === "ae") {
-      return doc?.flags?.[FLAG_NS]?.reactionConfig?.effect_table ?? null;
+      // AE reactionConfigs use the legacy key `reaction_effect_table` (see
+      // Acceleration et al.); newer ones may use `effect_table`. Accept both,
+      // mirroring firePreAcceptedCandidate's fallback.
+      const rc = doc?.flags?.[FLAG_NS]?.reactionConfig;
+      return rc?.effect_table ?? rc?.reaction_effect_table ?? null;
     }
     // item carrier (default)
     return doc?.system?.props?.effect_table ?? null;
@@ -444,6 +448,126 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
 //   3. (future) add_damage handled separately via computeSenderDamageBonuses
 //      so element / damage adjustments compose with Cheap Shot-style
 //      bonuses computed against the (possibly redirected) target.
+// ── Add target (effect_kind: "add_target", card-mutation path) ───────────
+// Grappled "shared space" splash (rule #1): the grappler's "Grappling" AE
+// hosts a creature_targeted_by_action reaction whose add_target row resolves
+// `grappled_by_self` and APPENDS the grappled victim(s) to the action. They
+// share the attacker's already-locked roll, each recomputed against its own
+// defense/affinity (same per-target math as a redirect). The collector
+// excludes the attacker, so a grappled unit attacking its own grappler doesn't
+// splash onto itself. See [[project_grappled_advanced_debuff]].
+//
+// NOTE: distinct from Barrage's add_target, which is an ATTACKER-side
+// (creature_performs_action) reaction committed at Apply-click via
+// onAddTargetApply + the _preRoll sink — those candidates are tagged
+// `_addTarget` and excluded from the card-mutation `applied` list, so they
+// never reach here. This path handles TARGET-side add_target only.
+async function applyAddTargetMutation(ctx, cand, row, effectTable) {
+  const reactorUuid = cand.reactorActorUuid;
+  if (!reactorUuid) { warn("add_target: missing reactor on candidate"); return "failed"; }
+  const reactor = await fromUuid(reactorUuid);
+  if (!reactor) { warn(`add_target: reactor ${reactorUuid} not resolvable`); return "failed"; }
+
+  // target_ref may be a labelled targeting row OR an inline object (sugar).
+  // For an AE-carried reaction the labelled row lives in the AE's effect_table
+  // (flags.reactionConfig.effect_table), NOT system.props — pass it as
+  // runtimeEffectTable so the resolver can find a string label.
+  const rawRef = row?.target_ref;
+  const isObjRef = !!rawRef && typeof rawRef === "object";
+  const targetRef = isObjRef ? rawRef : String(rawRef ?? "").trim();
+  if (!isObjRef && !targetRef) { warn(`add_target: row "${row?.effect_label}" missing target_ref`); return "failed"; }
+
+  // The grappler's EXACT token = the slot being attacked (precise for unlinked
+  // NPC tokens that share a base actor); fall back to a canvas lookup.
+  const slot = ctx.targets.find((t) => t?.actorUuid === reactorUuid);
+  const reactorTok = (slot?.tokenUuid ? await fromUuid(slot.tokenUuid).catch(() => null) : null)
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === reactor.uuid)?.document
+    ?? reactor?.getActiveTokens?.()?.[0]?.document
+    ?? null;
+
+  // Feed the attacker into the payload so candidate_source "grappled_by_self"
+  // can drop a victim who IS the attacker (the spec's "someone OTHER than the
+  // grappled unit" clause).
+  const attackerActorUuid = ctx.ar?.attackerActorRef ?? ctx.ar?.attacker?.actorUuid ?? null;
+  const attackerTokenUuid = ctx.ar?.attacker?.tokenUuid ?? null;
+  const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+  const chainCtx = makeBdChainContext({
+    reactorActor: reactor,
+    reactorToken: reactorTok,
+    skill: carrier,
+    runtimeEffectTable: effectTable ?? null,
+    payload: { attackerActorUuid, attackerTokenUuid },
+    isPassive: true,
+  });
+  const resolved = await resolveBdTargetRef(targetRef, chainCtx);
+  const tokens = resolved?.tokens ?? [];
+  if (!resolved?.ok || !tokens.length) {
+    log(`add_target: no extra targets for ${cand.carrierName ?? "?"} (${resolved?.reason ?? "empty"})`);
+    return "failed";
+  }
+
+  const { applyAffinityToDamage } = await import("./snapshot.js");
+  let added = 0;
+  for (const tok of tokens) {
+    const victim = tok?.actor;
+    if (!victim) continue;
+    // Dedup — skip a victim already in the target list (incl. the original).
+    if (ctx.targets.some((t) => t?.tokenUuid === tok.uuid || t?.actorUuid === victim.uuid)) continue;
+    const per = recomputePerTargetForRedirect({ ar: ctx.ar, reactor: victim, reactorTok: tok, applyAffinityToDamage });
+    const addedVia = { via: cand.carrierName ?? "Grappling", reactorName: reactor.name };
+    per.addedVia = addedVia;
+    ctx.targets.push({
+      actorUuid: victim.uuid,
+      tokenUuid: tok.uuid,
+      name: victim.name,
+      tokenImg: tok.texture?.src ?? victim.img,
+      disposition: tok.disposition,
+      defense: per.defense,
+      addedVia,
+    });
+    ctx.perTargets.push(per);
+    added += 1;
+    log(`add_target: +${victim.name} splashed in (via ${cand.carrierName ?? "Grappling"})`);
+  }
+  return added ? "applied" : "failed";
+}
+
+// Shared add_target dispatch — append every accepted candidate's add_target
+// victims into ctx (targets + perTargets). Returns the count applied. Used by
+// both the full card-mutation pipeline (post-confirm) and applyAddTargetSplices
+// (the pre-card pre-splice for FORCE add_target, so the card shows the victim).
+async function runAddTargetPhase(ctx, cands) {
+  let count = 0;
+  for (const cand of cands ?? []) {
+    if (!cand?.reactorActorUuid) continue;
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    const rows = expandEffectChain(effectTable, cand.ref);
+    for (const row of rows) {
+      const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+      if (kind === "add_target") {
+        const result = await applyAddTargetMutation(ctx, cand, row, effectTable);
+        if (result === "applied") count += 1;
+      }
+    }
+  }
+  return count;
+}
+
+// Pre-card splice for FORCE add_target reactions (the Grappled shared-space
+// splash). CONFIRM calls this BEFORE postActionCard so the spliced victim(s)
+// render as normal target rows on the card. Idempotent vs the post-confirm
+// pass: applyAddTargetMutation dedups against ctx.targets, so re-running over
+// the same accepted candidates adds nothing. Returns
+// { targets, perTargetResults, mutationsApplied }.
+export async function applyAddTargetSplices(arSnapshot, cands) {
+  const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
+  const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
+  const ctx = { ar: arSnapshot, targets, perTargets };
+  const mutationsApplied = await runAddTargetPhase(ctx, cands);
+  return { targets: ctx.targets, perTargetResults: ctx.perTargets, mutationsApplied };
+}
+
 export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
@@ -489,6 +613,13 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       }
     }
   }
+
+  // Phase 3: add_target (Grappled "shared space" splash). Runs AFTER redirect
+  // + accuracy so the appended victims reflect the final target identities and
+  // the locked roll. The grappler's Grappling AE (self reaction on
+  // creature_targeted_by_action) is the only producer today; Barrage's
+  // attacker-side add_target is tagged `_addTarget` and excluded upstream.
+  mutationsApplied += await runAddTargetPhase(ctx, acceptedPrePassives);
 
   return {
     targets: ctx.targets,

@@ -30,7 +30,7 @@
 
 import { log, warn } from "./logger.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
-import { isGrappled } from "./grappled.js";
+import { isGrappled, tokensGrappledBy } from "./grappled.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -262,6 +262,7 @@ async function buildCandidatePool(source, ctx) {
     case "trigger_actor":       return collectTriggerActor(ctx);
     case "trigger_subject":     return collectTriggerSubject(ctx);
     case "cover_target":        return collectCoverTarget(ctx);
+    case "grappled_by_self":    return collectGrappledBySelf(ctx);
     case "combat":
     default:                    return collectCombatTokens(ctx);
   }
@@ -324,6 +325,32 @@ async function collectCoverTarget(ctx) {
     return [];
   }
   return await uuidsToTokens([uuid]);
+}
+
+// Grappled "shared space" splash (rule #1). The reactor here is a GRAPPLER —
+// its "Grappling" AE hosts a creature_targeted_by_action reaction. When the
+// grappler is attacked, its grappled victim(s) get added to the attacker's
+// target list. Victims are resolved live from the P0 grappler stamp via
+// tokensGrappledBy (single source of truth — no stored pointer). We EXCLUDE
+// the attacker so a grappled unit attacking its own grappler doesn't splash
+// onto itself — the spec's "originating from someone OTHER than the grappled
+// unit" clause. See [[project_grappled_advanced_debuff]].
+function collectGrappledBySelf(ctx) {
+  const grapplerTokenUuid = ctx.reactorToken?.uuid ?? null;
+  const grapplerActorUuid = ctx.reactorToken?.actor?.uuid ?? ctx.reactorActor?.uuid ?? null;
+  if (!grapplerTokenUuid && !grapplerActorUuid) return [];
+  const victims = tokensGrappledBy({ tokenUuid: grapplerTokenUuid, actorUuid: grapplerActorUuid });
+  // The action performer (attacker). creature_targeted_by_action carries it as
+  // attackerActorUuid/attackerTokenUuid — NOT sourceActorUuid (which is the
+  // target here). Drop any victim that IS the attacker.
+  const attackerActorUuid = ctx.payload?.attackerActorUuid ?? null;
+  const attackerTokenUuid = ctx.payload?.attackerTokenUuid ?? null;
+  if (!attackerActorUuid && !attackerTokenUuid) return victims;
+  return victims.filter((tok) => {
+    if (attackerTokenUuid && tok.uuid === attackerTokenUuid) return false;
+    if (attackerActorUuid && tok.actor?.uuid === attackerActorUuid) return false;
+    return true;
+  });
 }
 
 function collectCombatTokens(ctx) {

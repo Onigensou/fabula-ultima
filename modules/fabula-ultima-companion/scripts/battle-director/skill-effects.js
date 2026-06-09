@@ -2772,6 +2772,29 @@ async function applyApplyAeEffect(row, ctx) {
       warn(`skill-effects.apply_ae: createEmbeddedDocuments failed on ${actor.name}`, e);
     }
   }
+  // Reciprocal AE (declarative, director-supervised). A template may carry
+  // flags[FLAG_NS].reciprocalAe = "<AE name>" to ALSO apply that AE to the
+  // APPLIER (ctx.reactorActor) whenever this AE lands. Grappled → "Grappling"
+  // on the grappler, which hosts the shared-space splash reaction (rule #1).
+  // Runs INSIDE this supervised apply flow (stamped + snapshot/rewind-safe) —
+  // deliberately NOT a global hook. Applied once via a self-targeted recursive
+  // call with skip-dup; recursion-safe (the reciprocal carries no reciprocalAe
+  // of its own + the _reciprocalApply guard). See [[project_grappled_advanced_debuff]].
+  const reciprocalName = String(template.flags?.[FLAG_NS]?.reciprocalAe ?? "").trim();
+  if (reciprocalName && applied.length && !ctx._reciprocalApply && ctx.reactorActor) {
+    try {
+      await applyApplyAeEffect(
+        {
+          effect_label: `${row.effect_label}__reciprocal`,
+          effect_kind: "apply_ae",
+          ae_template_ref: reciprocalName,
+          target_ref: "self",
+          ae_duplicate_mode: "skip",
+        },
+        { ...ctx, _reciprocalApply: true },
+      );
+    } catch (e) { warn(`skill-effects.apply_ae: reciprocal "${reciprocalName}" apply failed`, e); }
+  }
   log(`skill-effects.apply_ae: row "${row.effect_label}" applied "${template.name}" to ${applied.length} actor(s)`);
   return { ok: true, kind: "apply_ae", applied };
 }

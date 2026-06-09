@@ -3183,6 +3183,33 @@ const Confirm = {
       }
     }
 
+    // Pre-card splice for FORCE add_target reactions (the Grappled shared-space
+    // splash — a grappler's "Grappling" AE adds its grappled victim(s) when the
+    // grappler is attacked). These are deterministic (no player choice), so we
+    // splice them into the target list BEFORE posting the card — the card then
+    // renders the added victim as a normal target row. The post-confirm
+    // card-mutations pass dedups against ctx.targets, so nothing double-applies.
+    // Scoped to force/on, non-`_addTarget` (Barrage's interactive add_target
+    // rides onAddTargetApply instead). See [[project_grappled_advanced_debuff]].
+    let cardTargets = ar.targets;
+    let cardPerTargets = ar.perTargetResults;
+    try {
+      const forceAdds = (prePassives ?? []).filter(
+        (p) => (p.mode === "force" || p.mode === "on") && !p._addTarget);
+      if (forceAdds.length) {
+        const { applyAddTargetSplices } = await import("./card-mutations.js?cb=" + Date.now());
+        const r = await applyAddTargetSplices(ar, forceAdds);
+        if (r.mutationsApplied > 0) {
+          cardTargets = r.targets;
+          cardPerTargets = r.perTargetResults;
+          director.ctx.actionResult = freezeActionResult({
+            ...ar, targets: cardTargets, perTargetResults: cardPerTargets,
+          });
+          log(`CONFIRM: pre-spliced ${r.mutationsApplied} force add_target (e.g. Grappling) onto the card`);
+        }
+      }
+    } catch (e) { warn("CONFIRM: force add_target pre-splice threw", e); }
+
     // Critical-hit cut-in — fire it AS the action card (with the roll result)
     // appears, NOT at RESOLVE. Fire-and-forget so the ~2s cinematic plays
     // alongside the card while the player reads the crit roll and confirms.
@@ -3198,10 +3225,10 @@ const Confirm = {
         attacker: ar.attacker,
         attackerActor,
         weapon: ar.weapon,
-        targets: ar.targets,
+        targets: cardTargets,
         roll: ar.roll,
         damage: ar.damage,
-        perTargetResults: ar.perTargetResults,
+        perTargetResults: cardPerTargets,
         attackMode: ar.attackMode,
         passIndex: ar.passIndex,
         totalPasses: ar.totalPasses,

@@ -480,6 +480,11 @@
       "key": "2026-06-09-guard-affinity-rs",
       "path": "data-migrations/2026-06-09-guard-affinity-rs.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-06-09-grappling-reciprocal-author",
+      "path": "data-migrations/2026-06-09-grappling-reciprocal-author.js",
+      "idempotent": true
     }
   ]
 }
