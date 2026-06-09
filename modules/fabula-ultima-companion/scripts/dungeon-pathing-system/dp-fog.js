@@ -9,20 +9,23 @@
 //   "shroud" — Permanent veil.  The shroud parts the first time the party is
 //              adjacent and never returns.  Stored in scene.fogRevealed.
 //
-// Visual: layered overlapping ellipses in cool grey-blue tones — no labels,
-// no hard edges.  The composition resembles drifting mist patches rather than
-// a solid block.
+// Visuals:
+//   Fog    — cool blue-grey mist; soft overlapping ellipses, no hard edges.
+//   Shroud — deep indigo/violet veil; denser, more ominous.
+//   Both   — organic shape (no rectangular base), idle breathing animation.
 //
 // Animations:
-//   Reveal (fog lifts)       — fade OUT 600ms ease-in-out cubic.
-//   Re-fog (mist returns)    — new container fades IN 500ms (fog mode only).
-//   First load / scene snap  — containers appear at full alpha instantly.
+//   Reveal (fog lifts)    — fade OUT 600ms ease-in-out cubic.
+//   Re-fog (mist returns) — new container fades IN 500ms (fog mode only).
+//   Idle breathing        — per-layer alpha oscillation via PIXI ticker
+//                           (single shared ticker, all containers updated together).
+//   First load / snap     — containers appear at full alpha instantly.
 //
 // Performance — PIXI pitfalls guarded:
 //   · parent?.removeChild() always before destroy({ children:true })
 //   · _animating Set prevents double-animation on the same tile
 //   · No DOM reads inside any animation loop
-//   · No persistent rAF — every animation self-terminates
+//   · Single PIXI ticker for idle (not one rAF per tile)
 // ============================================================================
 (() => {
   const DP  = globalThis.DungeonPathing ??= {};
@@ -42,6 +45,9 @@
 
   // Local guard for shroud permanent reveals (survives until destroyAll)
   const _localShroudRevealed = new Set();
+
+  // Shared PIXI ticker for idle breathing animation
+  let _tickerFn = null;
 
   // ---------------------------------------------------------------------------
   // Flag helper — fogMode with backward compat for old boolean fog flag
@@ -65,7 +71,78 @@
     return true;
   }
 
-  function buildContainer(node) {
+  // ---------------------------------------------------------------------------
+  // Idle ticker — single shared callback, all active containers updated per frame
+  // ---------------------------------------------------------------------------
+  function _startIdleTick() {
+    if (_tickerFn || !canvas?.app?.ticker) return;
+    _tickerFn = () => {
+      if (!_fogContainers.size) return;
+      const t = performance.now() * 0.001; // seconds
+      for (const [tileId, container] of _fogContainers) {
+        if (container.destroyed || _animating.has(tileId)) continue;
+        for (const layer of (container._fogLayers ?? [])) {
+          // Oscillate each layer between 80% and 100% of its base alpha.
+          // sin range [-1,1] → normalised to [0,1] → mapped to [0.80, 1.00].
+          layer.gfx.alpha = layer.baseAlpha *
+            (0.80 + 0.20 * ((Math.sin(t * layer.speed + layer.phase) + 1) * 0.5));
+        }
+      }
+    };
+    canvas.app.ticker.add(_tickerFn);
+  }
+
+  function _stopIdleTick() {
+    if (!_tickerFn) return;
+    canvas?.app?.ticker?.remove?.(_tickerFn);
+    _tickerFn = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Layer configs
+  //   Each entry: { x, y, rx, ry, color, baseAlpha, phase, speed }
+  //   x/y are in tile-local coordinates (origin = top-left of tile).
+  //   phase/speed drive the idle animation; different values per layer so
+  //   they breathe independently rather than all pulsing in unison.
+  // ---------------------------------------------------------------------------
+
+  // Blue-grey mist — transient fog
+  function _fogLayers(cx, cy, w, h) {
+    return [
+      // Two large masses cover the center without a hard rectangle
+      { x: cx * 0.95, y: cy * 1.05, rx: w * 0.58, ry: h * 0.48, color: 0x4a7090, baseAlpha: 0.60, phase: 0.0, speed: 0.40 },
+      { x: cx * 1.08, y: cy * 0.90, rx: w * 0.52, ry: h * 0.44, color: 0x3d6070, baseAlpha: 0.52, phase: 1.6, speed: 0.35 },
+      // Outer wisps drift beyond tile edges for an organic boundary
+      { x: cx * 1.28, y: cy * 0.72, rx: w * 0.44, ry: h * 0.32, color: 0x6895b0, baseAlpha: 0.38, phase: 0.8, speed: 0.55 },
+      { x: cx * 0.65, y: cy * 1.28, rx: w * 0.42, ry: h * 0.30, color: 0x72a0bc, baseAlpha: 0.33, phase: 2.4, speed: 0.50 },
+      { x: cx * 0.75, y: cy * 0.70, rx: w * 0.36, ry: h * 0.26, color: 0x8ab8d0, baseAlpha: 0.28, phase: 3.2, speed: 0.62 },
+      { x: cx * 1.22, y: cy * 1.30, rx: w * 0.38, ry: h * 0.24, color: 0x9acce0, baseAlpha: 0.24, phase: 4.0, speed: 0.48 },
+      // Bright central highlight — creates the illusion of depth
+      { x: cx * 1.05, y: cy * 0.95, rx: w * 0.28, ry: h * 0.20, color: 0xbadaec, baseAlpha: 0.18, phase: 1.2, speed: 0.70 },
+    ];
+  }
+
+  // Deep indigo/violet veil — permanent shroud
+  function _shroudLayers(cx, cy, w, h) {
+    return [
+      // Dense dark base layers — heavier, slower breath than fog
+      { x: cx * 1.00, y: cy * 1.00, rx: w * 0.60, ry: h * 0.50, color: 0x120924, baseAlpha: 0.78, phase: 0.0, speed: 0.28 },
+      { x: cx * 0.90, y: cy * 1.05, rx: w * 0.55, ry: h * 0.45, color: 0x1e0d3c, baseAlpha: 0.65, phase: 1.8, speed: 0.25 },
+      // Purple bloom layers — mid-opacity, moderate speed
+      { x: cx * 1.15, y: cy * 0.80, rx: w * 0.46, ry: h * 0.36, color: 0x3d1870, baseAlpha: 0.48, phase: 0.9, speed: 0.40 },
+      { x: cx * 0.70, y: cy * 1.20, rx: w * 0.44, ry: h * 0.34, color: 0x4e2288, baseAlpha: 0.42, phase: 2.7, speed: 0.38 },
+      // Edge tendrils — lighter, faster — give it a restless quality
+      { x: cx * 0.82, y: cy * 0.68, rx: w * 0.36, ry: h * 0.26, color: 0x6638a8, baseAlpha: 0.32, phase: 1.4, speed: 0.52 },
+      { x: cx * 1.20, y: cy * 1.32, rx: w * 0.34, ry: h * 0.24, color: 0x7848c0, baseAlpha: 0.26, phase: 3.5, speed: 0.46 },
+      // Soft violet shimmer near centre — gives the shroud an inner glow
+      { x: cx * 1.02, y: cy * 0.98, rx: w * 0.24, ry: h * 0.18, color: 0xb090e0, baseAlpha: 0.22, phase: 2.2, speed: 0.60 },
+    ];
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build a PIXI.Container — one separate Graphics per layer (enables idle anim)
+  // ---------------------------------------------------------------------------
+  function buildContainer(node, fogMode) {
     const b  = node.bounds;
     const w  = b.right - b.left;
     const h  = b.bottom - b.top;
@@ -73,42 +150,31 @@
     const cy = h / 2;
 
     const container = new PIXI.Container();
-    container.name   = `ONI_DP_Fog_${node.nodeId}`;
-    container.zIndex = FOG_Z;
-    container.x      = b.left;
-    container.y      = b.top;
+    container.name        = `ONI_DP_Fog_${node.nodeId}`;
+    container.zIndex      = FOG_Z;
+    container.x           = b.left;
+    container.y           = b.top;
+    container._fogLayers  = [];
 
-    const gfx = new PIXI.Graphics();
+    const layers = fogMode === "shroud"
+      ? _shroudLayers(cx, cy, w, h)
+      : _fogLayers(cx, cy, w, h);
 
-    // Deep base layer — anchors the darkness so the tile beneath is invisible
-    gfx.beginFill(0x0b131e, 0.78);
-    gfx.drawRoundedRect(0, 0, w, h, 6);
-    gfx.endFill();
-
-    // Organic fog wisps — soft overlapping ellipses at varying positions/opacities.
-    // Positions are deliberately asymmetric so the result reads as mist, not geometry.
-    const wisps = [
-      // Large central mass
-      { x: cx * 0.95, y: cy * 1.10, rx: w * 0.60, ry: h * 0.40, color: 0x5d85a0, a: 0.40 },
-      // Upper-right wisp
-      { x: cx * 1.22, y: cy * 0.78, rx: w * 0.46, ry: h * 0.33, color: 0x7aa3bc, a: 0.33 },
-      // Lower-left wisp
-      { x: cx * 0.68, y: cy * 1.25, rx: w * 0.44, ry: h * 0.30, color: 0x8fb8cc, a: 0.28 },
-      // Upper-left tendril
-      { x: cx * 0.78, y: cy * 0.72, rx: w * 0.38, ry: h * 0.28, color: 0xa8cedd, a: 0.24 },
-      // Lower-right tendril
-      { x: cx * 1.18, y: cy * 1.28, rx: w * 0.42, ry: h * 0.26, color: 0xbad5e4, a: 0.21 },
-      // Bright highlight near centre — gives depth
-      { x: cx * 1.02, y: cy * 0.92, rx: w * 0.30, ry: h * 0.22, color: 0xd5e8f0, a: 0.16 },
-    ];
-
-    for (const wisp of wisps) {
-      gfx.beginFill(wisp.color, wisp.a);
-      gfx.drawEllipse(wisp.x, wisp.y, wisp.rx, wisp.ry);
+    for (const layer of layers) {
+      const gfx = new PIXI.Graphics();
+      gfx.beginFill(layer.color, 1);
+      gfx.drawEllipse(layer.x, layer.y, layer.rx, layer.ry);
       gfx.endFill();
+      gfx.alpha = layer.baseAlpha;
+      container.addChild(gfx);
+      container._fogLayers.push({
+        gfx,
+        baseAlpha: layer.baseAlpha,
+        phase:     layer.phase,
+        speed:     layer.speed,
+      });
     }
 
-    container.addChild(gfx);
     return container;
   }
 
@@ -248,8 +314,8 @@
           }
         }
 
-        const isAdjacent  = adjacentIds.has(tileId);
-        const wasAdjacent = _prevAdjacentIds.has(tileId);
+        const isAdjacent   = adjacentIds.has(tileId);
+        const wasAdjacent  = _prevAdjacentIds.has(tileId);
         const hasContainer = _fogContainers.has(tileId)
           && !_fogContainers.get(tileId)?.destroyed;
 
@@ -261,9 +327,10 @@
         } else {
           // Party is not adjacent — fog should be visible
           if (!hasContainer && !_animating.has(tileId)) {
-            const container = buildContainer(node);
+            const container = buildContainer(node, fogMode);
             canvas.stage.addChild(container);
             _fogContainers.set(tileId, container);
+            _startIdleTick();
 
             if (wasAdjacent && _initialized && fogMode === "fog") {
               // Transition: was adjacent last turn → mist drifts back in
@@ -290,6 +357,7 @@
      * Called on dungeon deactivate, canvas teardown, and dungeon reset.
      */
     destroyAll() {
+      _stopIdleTick();
       for (const tileId of [..._fogContainers.keys()]) {
         destroyContainer(tileId);
       }
@@ -320,9 +388,14 @@
 
       if (_fogContainers.has(tileId) && !_fogContainers.get(tileId)?.destroyed) return;
 
-      const container = buildContainer(node);
+      // Look up fogMode from tile document to use correct visual
+      const tileDoc = canvas?.scene?.tiles?.get(tileId);
+      const fogMode = tileDoc ? getFogMode(tileDoc) : "shroud";
+
+      const container = buildContainer(node, fogMode ?? "shroud");
       canvas.stage.addChild(container);
       _fogContainers.set(tileId, container);
+      _startIdleTick();
       container.alpha = 1;
     },
   };
