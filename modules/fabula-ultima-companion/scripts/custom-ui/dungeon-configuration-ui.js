@@ -629,13 +629,21 @@
 
           <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
             <h3 style="margin:0 0 6px;">Dungeon Management</h3>
-            <div class="form-group" style="align-items:center;">
+            <div class="form-group" style="align-items:flex-start;">
               <label>Reset Dungeon</label>
-              <div class="form-fields" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;flex-shrink:0;">
-                  <i class="fas fa-redo"></i> Reset All Tiles
+              <div class="form-fields" style="flex-direction:column;gap:8px;align-items:flex-start;">
+                <div class="oni-reset-filters" style="display:flex;gap:16px;font-size:12px;padding:3px 0;">
+                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal;">
+                    <input type="checkbox" class="oni-reset-filter-tiles" checked /> Tiles
+                  </label>
+                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-weight:normal;">
+                    <input type="checkbox" class="oni-reset-filter-shroud" checked /> Shroud
+                  </label>
+                </div>
+                <button type="button" class="oni-reset-dungeon-btn" style="color:#e05252;">
+                  <i class="fas fa-redo"></i> Reset Selected
                 </button>
-                <span class="notes" style="margin:0;color:#e05252;">Restores all tiles to initial state. Cannot be undone.</span>
+                <span class="notes" style="margin:0;color:#e05252;">Resets the selected data. Cannot be undone.</span>
               </div>
             </div>
 
@@ -1046,10 +1054,21 @@
       tabPanel.querySelector(".oni-reset-dungeon-btn")?.addEventListener("click", async (ev) => {
         ev.preventDefault(); ev.stopPropagation();
 
+        const filterTiles  = resetSection.querySelector(".oni-reset-filter-tiles")?.checked ?? true;
+        const filterShroud = resetSection.querySelector(".oni-reset-filter-shroud")?.checked ?? true;
+
+        if (!filterTiles && !filterShroud) {
+          ui.notifications?.warn?.("Select at least one option to reset.");
+          return;
+        }
+
+        const parts = [];
+        if (filterTiles)  parts.push("tile states");
+        if (filterShroud) parts.push("shroud reveals");
+
         const confirmed = await Dialog.confirm({
           title: "Reset Dungeon",
-          content: `<p>Reset <b>all tiles</b> in <b>${scene?.name ?? "this scene"}</b> back to their
-                    initial state?</p><p>This cannot be undone.</p>`,
+          content: `<p>Reset <b>${parts.join(" and ")}</b> in <b>${scene?.name ?? "this scene"}</b>?</p><p>This cannot be undone.</p>`,
           yes: () => true,
           no:  () => false,
           defaultYes: false,
@@ -1057,11 +1076,20 @@
 
         if (!confirmed) return;
 
+        const DP = globalThis.DungeonPathing;
+
         try {
-          await globalThis.__ONI_DUNGEON_PATHING__?.resetDungeon?.();
-          ui.notifications?.info?.("Dungeon tiles reset to initial state.");
+          if (filterTiles && filterShroud) {
+            await DP?.TileState?.resetDungeon?.(scene);
+          } else if (filterTiles) {
+            await DP?.TileState?.resetTiles?.(scene);
+          } else {
+            await DP?.TileState?.resetAllFogRevealed?.(scene);
+            DP?.Fog?.destroyAll?.();
+            ui.notifications?.info?.("Shroud reveals cleared.");
+          }
         } catch (e) {
-          console.error("[FabulaConfigUI] resetDungeon failed:", e);
+          console.error("[FabulaConfigUI] reset failed:", e);
           ui.notifications?.error?.("Reset failed — see console.");
         }
       });

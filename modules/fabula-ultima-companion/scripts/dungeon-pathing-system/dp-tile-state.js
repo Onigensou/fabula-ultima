@@ -298,6 +298,37 @@
     },
 
     /**
+     * Reset tile states and visited flags only — does not touch fog/shroud reveals.
+     * Must run as GM.
+     */
+    async resetTiles(scene) {
+      if (!game.user?.isGM) {
+        ui.notifications?.warn?.("Dungeon reset must be run as GM.");
+        return;
+      }
+      if (!scene) return;
+
+      const states     = getStates(scene);
+      const stateCount = Object.keys(states).length;
+      console.log(TAG, `resetTiles — scene: ${scene.name} (${scene.id}), tile states: ${stateCount}`);
+
+      const updated = {};
+      for (const [id, entry] of Object.entries(states)) {
+        updated[id] = { ...entry, currentType: entry.initialType };
+        if (entry.initialTexture) {
+          const tileDoc = scene.tiles.get(id);
+          if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
+        }
+      }
+      await setStates(scene, updated).catch(e => console.warn(TAG, "resetTiles — setStates failed:", e));
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`)
+        .catch(e => console.warn(TAG, "resetTiles — clearVisited failed:", e));
+
+      console.log(TAG, `resetTiles — done (${stateCount} tile(s) restored).`);
+      ui.notifications?.info?.("Tile states and visited tiles reset.");
+    },
+
+    /**
      * Clear ALL shroud reveals for a scene without touching tile states or visited tiles.
      * Use when setting up for a fresh group.  Must run as GM.
      */
