@@ -275,6 +275,7 @@
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
       const persistFlag       = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
       const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
+      const fogFlag           = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fog`) ?? false;
       const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
       const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
       const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
@@ -283,6 +284,7 @@
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
       const persists        = persistFlag       === true || persistFlag       === "true";
       const usable          = usableFlag        === true || usableFlag        === "true";
+      const fog             = fogFlag           === true || fogFlag           === "true";
       const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
       const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
       const blockGoBack     = blockGoBackFlag   === true || blockGoBackFlag   === "true";
@@ -351,6 +353,20 @@
             When checked, landing on this tile shows an extra <b>Use</b> button in the confirmation
             panel. Pressing <b>Use</b> triggers the tile's event. Pressing <b>Confirm</b> lands
             without triggering it, letting the player choose when to act.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Fog</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.fog"
+                   data-dtype="Boolean"
+                   ${fog ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, this tile's true type is hidden from players until the party steps
+            onto an adjacent tile. A fog overlay covers the tile and fades away on reveal.
           </p>
         </div>
 

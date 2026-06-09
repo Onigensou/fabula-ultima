@@ -34,6 +34,10 @@
     await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`, visited);
   }
 
+  function getRevealed(scene) {
+    return scene?.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY]?.fogRevealed ?? {};
+  }
+
   // Infer tile type from name + texture path (legacy fallback, same as prototype)
   function inferType(tileDoc) {
     const name    = String(tileDoc?.name ?? "").toLowerCase();
@@ -217,6 +221,12 @@
         .catch(e => console.warn(TAG, "resetDungeon — clearVisited failed:", e));
       console.log(TAG, `resetDungeon — visited cleared. Post-reset visited:`, getVisited(scene));
 
+      // Clear fog reveals so fog tiles are hidden again after reset.
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed`)
+        .catch(e => console.warn(TAG, "resetDungeon — clearFogRevealed failed:", e));
+      DP.Fog?.destroyAll?.();
+      console.log(TAG, "resetDungeon — fog reveals cleared.");
+
       ui.notifications?.info?.("Dungeon reset: all tiles restored and visited flags cleared.");
     },
 
@@ -256,9 +266,27 @@
         .catch(e => console.warn(TAG, "unmarkVisited failed", e));
     },
 
+    /**
+     * Mark a fog tile as revealed (its overlay should be removed on all clients).
+     * Must run as GM — scene flag writes require GM authority.
+     */
+    async markFogRevealed(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const revealed = getRevealed(scene);
+      if (revealed[tileId]) return;
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed.${tileId}`, true)
+        .catch(e => console.warn(TAG, "markFogRevealed failed", e));
+    },
+
+    /** Returns true if this fog tile has already been revealed. */
+    isFogRevealed(scene, tileId) {
+      return !!getRevealed(scene)[tileId];
+    },
+
     /** Raw dump of all tile states for debugging. */
     dump(scene) {
-      return { states: getStates(scene), visited: getVisited(scene) };
+      return { states: getStates(scene), visited: getVisited(scene), fogRevealed: getRevealed(scene) };
     }
   };
 })();
