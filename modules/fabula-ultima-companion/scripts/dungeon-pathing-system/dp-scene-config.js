@@ -94,7 +94,45 @@
             <em>Copy UUID</em>, or drag it into a text field.
           </p>
         </div>
+
+        <div class="form-group">
+          <label>Shroud Reveals</label>
+          <div class="form-fields">
+            <button type="button" data-oni-reset-all-shrouds="1" style="cursor:pointer;">
+              <i class="fas fa-eye-slash"></i> Reset All Shroud Reveals
+            </button>
+          </div>
+          <p class="notes">
+            Clears the revealed state of every <b>Shroud</b> tile in this scene without
+            affecting tile states or visited tiles. Use when starting fresh with a new group.
+          </p>
+        </div>
       `;
+
+      // Wire Reset All Shroud Reveals — GM only, no form submission needed
+      section.querySelector("[data-oni-reset-all-shrouds]")?.addEventListener("click", async () => {
+        const DP = globalThis.DungeonPathing;
+        const revealedMap = sceneDoc?.flags?.[MODULE_ID]?.dungeonPathing?.fogRevealed ?? {};
+        const count = Object.keys(revealedMap).length;
+        if (!count) {
+          ui.notifications?.warn?.("No shroud reveals to reset on this scene.");
+          return;
+        }
+        const confirmed = await Dialog.confirm({
+          title: "Reset All Shroud Reveals",
+          content: `<p>Clear <b>${count}</b> shroud reveal(s) on <b>${sceneDoc.name}</b>?
+                    <br>Tile states and visited tiles are not affected.</p>`,
+          yes: { label: "Reset", icon: '<i class="fas fa-eye-slash"></i>' },
+        });
+        if (!confirmed) return;
+        try {
+          await DP?.TileState?.resetAllFogRevealed?.(sceneDoc);
+          ui.notifications?.info?.(`${count} shroud reveal(s) cleared on ${sceneDoc.name}.`);
+        } catch (e) {
+          console.warn(TAG, "resetAllFogRevealed failed:", e);
+          ui.notifications?.error?.("Failed to reset shroud reveals — see console.");
+        }
+      });
 
       if (insertRef) {
         form.insertBefore(section, insertRef);

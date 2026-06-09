@@ -297,7 +297,68 @@
       _prevAdjacentIds = new Set();
       _initialized = false;
     },
+
+    /**
+     * Immediately restore the fog container for a single shroud tile after a
+     * manual GM reset (per-tile Reset Shroud button in tile config).
+     * Clears the local session guard and re-creates the PIXI container if the
+     * tile is not currently adjacent to the party.
+     */
+    resetShroudLocally(tileId) {
+      _localShroudRevealed.delete(tileId);
+      _animating.delete(tileId);
+
+      const api = globalThis.__ONI_DUNGEON_PATHING__;
+      if (!api?.state?.active || !api.graph) return;
+
+      const node = api.graph.nodeMap?.get(tileId);
+      if (!node || !ensureStage()) return;
+
+      const isAdjacent = api.currentNode?.nodeId === tileId
+        || api.state.neighborIds?.has(tileId);
+      if (isAdjacent) return; // would be lifted again immediately on next rebuild
+
+      if (_fogContainers.has(tileId) && !_fogContainers.get(tileId)?.destroyed) return;
+
+      const container = buildContainer(node);
+      canvas.stage.addChild(container);
+      _fogContainers.set(tileId, container);
+      container.alpha = 1;
+    },
   };
+
+  // ---------------------------------------------------------------------------
+  // Multi-client sync — when the GM resets fogRevealed flags the scene flag
+  // change arrives here via Foundry's native updateScene broadcast.  We clear
+  // the corresponding entries from _localShroudRevealed (the in-memory session
+  // guard) so all clients correctly show fog again on the next rebuild.
+  // ---------------------------------------------------------------------------
+  Hooks.on("updateScene", (sceneDoc, diff) => {
+    if (!canvas?.scene || sceneDoc.id !== canvas.scene.id) return;
+    const dp = diff?.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY];
+    if (!dp) return;
+
+    let changed = false;
+
+    // Full clear: scene.unsetFlag("dungeonPathing.fogRevealed") → "-=fogRevealed": null
+    if ("-=fogRevealed" in dp) {
+      _localShroudRevealed.clear();
+      changed = true;
+    } else if (dp.fogRevealed && typeof dp.fogRevealed === "object") {
+      // Per-tile clear: unsetFlag("fogRevealed.tileId") → "fogRevealed": { "-=tileId": null }
+      for (const key of Object.keys(dp.fogRevealed)) {
+        if (key.startsWith("-=")) {
+          _localShroudRevealed.delete(key.slice(2));
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      // Trigger a rebuild so all clients recreate fog containers immediately
+      globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
+    }
+  });
 
   console.debug(TAG, "Fog overlay manager loaded.");
 })();

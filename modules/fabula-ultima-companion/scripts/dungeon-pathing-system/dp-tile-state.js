@@ -284,6 +284,30 @@
       return !!getRevealed(scene)[tileId];
     },
 
+    /**
+     * Un-reveal a single shroud tile, restoring its fog overlay.
+     * Must run as GM.
+     */
+    async unmarkFogRevealed(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const revealed = getRevealed(scene);
+      if (!revealed[tileId]) return;
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed.${tileId}`)
+        .catch(e => console.warn(TAG, "unmarkFogRevealed failed", e));
+    },
+
+    /**
+     * Clear ALL shroud reveals for a scene without touching tile states or visited tiles.
+     * Use when setting up for a fresh group.  Must run as GM.
+     */
+    async resetAllFogRevealed(scene) {
+      if (!game.user?.isGM) return;
+      if (!scene) return;
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed`)
+        .catch(e => console.warn(TAG, "resetAllFogRevealed failed", e));
+    },
+
     /** Raw dump of all tile states for debugging. */
     dump(scene) {
       return { states: getStates(scene), visited: getVisited(scene), fogRevealed: getRevealed(scene) };
