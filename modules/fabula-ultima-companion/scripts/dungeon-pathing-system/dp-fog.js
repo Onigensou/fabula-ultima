@@ -210,7 +210,15 @@
   // Invisible tile — utility helpers
   // ---------------------------------------------------------------------------
   function _getDrawingPlaceable(drawingId) {
-    return canvas?.drawings?.placeables?.find(d => d.document?.id === drawingId) ?? null;
+    const dr = canvas?.drawings?.placeables?.find(d => d.document?.id === drawingId) ?? null;
+    if (!dr) return null;
+    // Target the shape child, not the container. Foundry's _refreshOpacity() resets
+    // Drawing.alpha (the container) back to document.alpha on each render-flag cycle,
+    // undoing any manual alpha we set. Drawing.shape is a PIXI.Graphics child that
+    // Foundry never resets, so effective visual alpha = container.alpha × shape.alpha.
+    // When shape.alpha=0 the drawing is invisible regardless of what Foundry does to
+    // the container, giving us stable control for animation.
+    return dr.shape ?? dr;
   }
 
   function _getEdgesForNode(nodeId, graph) {
