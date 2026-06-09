@@ -33,9 +33,10 @@
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Fog]";
 
-  const FOG_Z     = 999996;  // below hover (999997) and helper cursors (999998)
-  const REVEAL_MS = 600;
-  const REFOG_MS  = 500;
+  const FOG_Z             = 999996;  // below hover (999997) and helper cursors (999998)
+  const REVEAL_MS         = 600;
+  const REFOG_MS          = 500;
+  const INVISIBLE_GM_ALPHA = 0.4;   // GM sees hidden invisible tiles at this alpha
 
   const FOG_TEXTURE_URL    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fog_Tile.png";
   const SHROUD_TEXTURE_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Shroud_Tile.png";
@@ -239,6 +240,7 @@
     if (!mesh) return;
     _animatingMesh.add(tileId);
     _hiddenTileIds.delete(tileId);
+    const fromAlpha = mesh.alpha;  // lerp from wherever we currently are (0 for players, GM_ALPHA for GM)
     const start = performance.now();
     function tick() {
       if (!_animatingMesh.has(tileId)) return;  // cancelled by destroyAll
@@ -246,7 +248,7 @@
       if (!m) { _animatingMesh.delete(tileId); return; }
       const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      m.alpha = ease;
+      m.alpha = fromAlpha + (1 - fromAlpha) * ease;
       if (t < 1) { requestAnimationFrame(tick); }
       else { m.alpha = 1; _animatingMesh.delete(tileId); }
     }
@@ -257,8 +259,11 @@
     if (_animatingMesh.has(tileId)) return;
     const mesh = canvas?.tiles?.get(tileId)?.mesh;
     if (!mesh) return;
+    // GM sees a partial-alpha ghost so they can still see and interact with hidden tiles
+    const toAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
     _animatingMesh.add(tileId);
     _hiddenTileIds.add(tileId);
+    const fromAlpha = mesh.alpha;
     const start = performance.now();
     function tick() {
       if (!_animatingMesh.has(tileId)) return;  // cancelled by destroyAll
@@ -266,9 +271,9 @@
       if (!m) { _animatingMesh.delete(tileId); return; }
       const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      m.alpha = 1 - ease;
+      m.alpha = fromAlpha + (toAlpha - fromAlpha) * ease;
       if (t < 1) { requestAnimationFrame(tick); }
-      else { m.alpha = 0; _animatingMesh.delete(tileId); }
+      else { m.alpha = toAlpha; _animatingMesh.delete(tileId); }
     }
     requestAnimationFrame(tick);
   }
@@ -282,6 +287,7 @@
     if (!dr) return;
     _animatingDrawing.add(drawingId);
     _hiddenDrawingIds.delete(drawingId);
+    const fromAlpha = dr.alpha;
     const start = performance.now();
     function tick() {
       if (!_animatingDrawing.has(drawingId)) return;
@@ -289,7 +295,7 @@
       if (!fresh) { _animatingDrawing.delete(drawingId); return; }
       const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      fresh.alpha = ease;
+      fresh.alpha = fromAlpha + (1 - fromAlpha) * ease;
       if (t < 1) { requestAnimationFrame(tick); }
       else { fresh.alpha = 1; _animatingDrawing.delete(drawingId); }
     }
@@ -300,8 +306,10 @@
     if (_animatingDrawing.has(drawingId)) return;
     const dr = _getDrawingPlaceable(drawingId);
     if (!dr) return;
+    const toAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
     _animatingDrawing.add(drawingId);
     _hiddenDrawingIds.add(drawingId);
+    const fromAlpha = dr.alpha;
     const start = performance.now();
     function tick() {
       if (!_animatingDrawing.has(drawingId)) return;
@@ -309,9 +317,9 @@
       if (!fresh) { _animatingDrawing.delete(drawingId); return; }
       const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      fresh.alpha = 1 - ease;
+      fresh.alpha = fromAlpha + (toAlpha - fromAlpha) * ease;
       if (t < 1) { requestAnimationFrame(tick); }
-      else { fresh.alpha = 0; _animatingDrawing.delete(drawingId); }
+      else { fresh.alpha = toAlpha; _animatingDrawing.delete(drawingId); }
     }
     requestAnimationFrame(tick);
   }
@@ -352,13 +360,15 @@
             }
           }
         } else if (!_initialized) {
-          // Scene first load — snap hidden immediately, no animation
+          // Scene first load — snap to hidden state immediately, no animation.
+          // GM gets partial transparency so they can still see and interact with the passage.
+          const snapAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
           const m = canvas?.tiles?.get(tileId)?.mesh;
-          if (m) m.alpha = 0;
+          if (m) m.alpha = snapAlpha;
           _hiddenTileIds.add(tileId);
           for (const edge of edges) {
             const dr = _getDrawingPlaceable(edge.drawingId);
-            if (dr) dr.alpha = 0;
+            if (dr) dr.alpha = snapAlpha;
             _hiddenDrawingIds.add(edge.drawingId);
           }
         }
