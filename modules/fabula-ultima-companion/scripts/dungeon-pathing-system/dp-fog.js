@@ -1,27 +1,31 @@
 // ============================================================================
 // Dungeon Pathing System — Fog Overlay
 //
-// Supports two tile concealment modes (set via fogMode flag on tile):
+// Supports three tile concealment modes (set via fogMode flag on tile):
 //
-//   "fog"    — Transient proximity fog.  The mist lifts when the party stands
-//              adjacent, then drifts back when they move away.  No persistence.
+//   "fog"       — Transient proximity fog.  The mist lifts when the party stands
+//                 adjacent, then drifts back when they move away.  No persistence.
 //
-//   "shroud" — Permanent veil.  The shroud parts the first time the party is
-//              adjacent and never returns.  Stored in scene.fogRevealed.
+//   "shroud"    — Permanent veil.  The shroud parts the first time the party is
+//                 adjacent and never returns.  Stored in scene.fogRevealed.
+//
+//   "invisible" — Hidden passage.  The tile mesh and all connecting path drawings
+//                 fade to alpha 0 until the party is adjacent.  Like fog, it
+//                 re-hides when the party moves away.  No overlay sprite — the
+//                 tile mesh itself is animated directly.
 //
 // Visuals:
-//   Each mode uses a dedicated image asset sized to the tile template.
-//   The sprite is stretched to match the actual tile bounds on the map so it
-//   overlays correctly regardless of how large the tile was placed.
+//   Fog/Shroud use a dedicated image asset sized to the tile template.
+//   Invisible operates directly on tile.mesh.alpha and drawing.alpha — no sprite.
 //
 // Transitions:
-//   Reveal (fog lifts)    — container.alpha fades OUT 600ms cubic ease.
-//   Re-fog (mist returns) — container.alpha fades IN  500ms cubic ease.
-//   First load / snap     — container appears at alpha 1 instantly.
+//   Reveal (fog lifts / path appears)  — alpha fades OUT/IN 600ms cubic ease.
+//   Re-fog / re-hide (returns)         — alpha fades IN/OUT 500ms cubic ease.
+//   First load / snap                  — fog appears at alpha 1; invisible snaps to 0 instantly.
 //
 // Performance — PIXI pitfalls guarded:
 //   · parent?.removeChild() always before destroy({ children:true })
-//   · _animating Set prevents double-animation on the same tile
+//   · _animating/_animatingMesh/_animatingDrawing Sets prevent double-animation
 //   · No DOM reads inside any animation loop
 //   · Textures preloaded once via Foundry's loadTexture on "ready"
 // ============================================================================
@@ -29,9 +33,10 @@
   const DP  = globalThis.DungeonPathing ??= {};
   const TAG = "[DungeonPathing][Fog]";
 
-  const FOG_Z     = 999996;  // below hover (999997) and helper cursors (999998)
-  const REVEAL_MS = 600;
-  const REFOG_MS  = 500;
+  const FOG_Z             = 999996;  // below hover (999997) and helper cursors (999998)
+  const REVEAL_MS         = 600;
+  const REFOG_MS          = 500;
+  const INVISIBLE_GM_ALPHA = 0.4;   // GM sees hidden invisible tiles at this alpha
 
   const FOG_TEXTURE_URL    = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fog_Tile.png";
   const SHROUD_TEXTURE_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Shroud_Tile.png";
@@ -40,14 +45,20 @@
   const _animating           = new Set();  // tileId — mid-animation guard
   let   _prevAdjacentIds     = new Set();
   let   _initialized         = false;
-  const _localShroudRevealed = new Set();
+  const _localShroudRevealed  = new Set();
+
+  // Invisible tile state
+  const _animatingMesh        = new Set();  // tileId   — guard for tile mesh alpha animations
+  const _animatingDrawing     = new Set();  // drawingId — guard for drawing alpha animations
+  const _hiddenTileIds        = new Set();  // invisible tiles currently at alpha 0
+  const _hiddenDrawingIds     = new Set();  // drawing edges currently at alpha 0
 
   // ---------------------------------------------------------------------------
   // Flag helper — fogMode with backward compat for old boolean fog flag
   // ---------------------------------------------------------------------------
   function getFogMode(tileDoc) {
     const mode = tileDoc?.getFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogMode`);
-    if (mode === "fog" || mode === "shroud") return mode;
+    if (mode === "fog" || mode === "shroud" || mode === "invisible") return mode;
     const legacy = tileDoc?.getFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fog`);
     if (legacy === true || legacy === "true") return "shroud";
     return null;
@@ -197,6 +208,175 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Invisible tile — utility helpers
+  // ---------------------------------------------------------------------------
+  function _getDrawingPlaceable(drawingId) {
+    const dr = canvas?.drawings?.placeables?.find(d => d.document?.id === drawingId) ?? null;
+    if (!dr) return null;
+    // Target the shape child, not the container. Foundry's _refreshOpacity() resets
+    // Drawing.alpha (the container) back to document.alpha on each render-flag cycle,
+    // undoing any manual alpha we set. Drawing.shape is a PIXI.Graphics child that
+    // Foundry never resets, so effective visual alpha = container.alpha × shape.alpha.
+    // When shape.alpha=0 the drawing is invisible regardless of what Foundry does to
+    // the container, giving us stable control for animation.
+    return dr.shape ?? dr;
+  }
+
+  function _getEdgesForNode(nodeId, graph) {
+    return (graph?.edges ?? []).filter(e => e.fromNodeId === nodeId || e.toNodeId === nodeId);
+  }
+
+  // An edge should remain hidden if ANY of its endpoint tiles is currently invisible-hidden.
+  function _shouldHideEdge(edge) {
+    return _hiddenTileIds.has(edge.fromNodeId) || _hiddenTileIds.has(edge.toNodeId);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invisible tile — tile mesh animators
+  // ---------------------------------------------------------------------------
+  function _animateTileReveal(tileId) {
+    if (_animatingMesh.has(tileId)) return;
+    const mesh = canvas?.tiles?.get(tileId)?.mesh;
+    if (!mesh) return;
+    _animatingMesh.add(tileId);
+    _hiddenTileIds.delete(tileId);
+    const fromAlpha = mesh.alpha;  // lerp from wherever we currently are (0 for players, GM_ALPHA for GM)
+    const start = performance.now();
+    function tick() {
+      if (!_animatingMesh.has(tileId)) return;  // cancelled by destroyAll
+      const m = canvas?.tiles?.get(tileId)?.mesh;
+      if (!m) { _animatingMesh.delete(tileId); return; }
+      const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      m.alpha = fromAlpha + (1 - fromAlpha) * ease;
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { m.alpha = 1; _animatingMesh.delete(tileId); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function _animateTileHide(tileId) {
+    if (_animatingMesh.has(tileId)) return;
+    const mesh = canvas?.tiles?.get(tileId)?.mesh;
+    if (!mesh) return;
+    // GM sees a partial-alpha ghost so they can still see and interact with hidden tiles
+    const toAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
+    _animatingMesh.add(tileId);
+    _hiddenTileIds.add(tileId);
+    const fromAlpha = mesh.alpha;
+    const start = performance.now();
+    function tick() {
+      if (!_animatingMesh.has(tileId)) return;  // cancelled by destroyAll
+      const m = canvas?.tiles?.get(tileId)?.mesh;
+      if (!m) { _animatingMesh.delete(tileId); return; }
+      const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      m.alpha = fromAlpha + (toAlpha - fromAlpha) * ease;
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { m.alpha = toAlpha; _animatingMesh.delete(tileId); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invisible tile — drawing edge animators
+  // ---------------------------------------------------------------------------
+  function _animateDrawingReveal(drawingId) {
+    if (_animatingDrawing.has(drawingId)) return;
+    const dr = _getDrawingPlaceable(drawingId);
+    if (!dr) return;
+    _animatingDrawing.add(drawingId);
+    _hiddenDrawingIds.delete(drawingId);
+    const fromAlpha = dr.alpha;
+    const start = performance.now();
+    function tick() {
+      if (!_animatingDrawing.has(drawingId)) return;
+      const fresh = _getDrawingPlaceable(drawingId);
+      if (!fresh) { _animatingDrawing.delete(drawingId); return; }
+      const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      fresh.alpha = fromAlpha + (1 - fromAlpha) * ease;
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { fresh.alpha = 1; _animatingDrawing.delete(drawingId); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function _animateDrawingHide(drawingId) {
+    if (_animatingDrawing.has(drawingId)) return;
+    const dr = _getDrawingPlaceable(drawingId);
+    if (!dr) return;
+    const toAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
+    _animatingDrawing.add(drawingId);
+    _hiddenDrawingIds.add(drawingId);
+    const fromAlpha = dr.alpha;
+    const start = performance.now();
+    function tick() {
+      if (!_animatingDrawing.has(drawingId)) return;
+      const fresh = _getDrawingPlaceable(drawingId);
+      if (!fresh) { _animatingDrawing.delete(drawingId); return; }
+      const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      fresh.alpha = fromAlpha + (toAlpha - fromAlpha) * ease;
+      if (t < 1) { requestAnimationFrame(tick); }
+      else { fresh.alpha = toAlpha; _animatingDrawing.delete(drawingId); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invisible tile — per-node visibility update (called from refresh)
+  // ---------------------------------------------------------------------------
+  function _handleInvisibleNode(tileId, adjacentIds, graph, seenDrawingIds) {
+    const isAdjacent  = adjacentIds.has(tileId);
+    const wasAdjacent = _prevAdjacentIds.has(tileId);
+    const isHidden    = _hiddenTileIds.has(tileId);
+    const inAnimMesh  = _animatingMesh.has(tileId);
+    const edges       = _getEdgesForNode(tileId, graph);
+
+    for (const e of edges) seenDrawingIds.add(e.drawingId);
+
+    if (isAdjacent) {
+      // Tile just became visible — animate reveal if it was hidden
+      if (isHidden && !inAnimMesh) {
+        _animateTileReveal(tileId);
+        for (const edge of edges) {
+          // Only reveal edge when both invisible endpoints are now adjacent
+          if (!_shouldHideEdge(edge)
+              && _hiddenDrawingIds.has(edge.drawingId)
+              && !_animatingDrawing.has(edge.drawingId)) {
+            _animateDrawingReveal(edge.drawingId);
+          }
+        }
+      }
+    } else {
+      if (!isHidden && !inAnimMesh) {
+        if (wasAdjacent && _initialized) {
+          // Party moved away — fade out
+          _animateTileHide(tileId);
+          for (const edge of edges) {
+            if (!_hiddenDrawingIds.has(edge.drawingId) && !_animatingDrawing.has(edge.drawingId)) {
+              _animateDrawingHide(edge.drawingId);
+            }
+          }
+        } else if (!_initialized) {
+          // Scene first load — snap to hidden state immediately, no animation.
+          // GM gets partial transparency so they can still see and interact with the passage.
+          const snapAlpha = game.user?.isGM ? INVISIBLE_GM_ALPHA : 0;
+          const m = canvas?.tiles?.get(tileId)?.mesh;
+          if (m) m.alpha = snapAlpha;
+          _hiddenTileIds.add(tileId);
+          for (const edge of edges) {
+            const dr = _getDrawingPlaceable(edge.drawingId);
+            if (dr) dr.alpha = snapAlpha;
+            _hiddenDrawingIds.add(edge.drawingId);
+          }
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Public API
   // ---------------------------------------------------------------------------
 
@@ -211,7 +391,9 @@
         [currentNode?.nodeId, ...neighbors.map(n => n.nodeId)].filter(Boolean)
       );
 
-      const seenTileIds = new Set();
+      const seenTileIds           = new Set();
+      const seenInvisibleTileIds  = new Set();
+      const seenInvisibleDrawings = new Set();
 
       for (const node of graph.nodes) {
         const tileId  = node.nodeId;
@@ -219,6 +401,13 @@
         if (!tileDoc) continue;
 
         const fogMode = getFogMode(tileDoc);
+
+        // Invisible tile — handled separately; does not use a PIXI overlay container
+        if (fogMode === "invisible") {
+          seenInvisibleTileIds.add(tileId);
+          _handleInvisibleNode(tileId, adjacentIds, graph, seenInvisibleDrawings);
+          continue;
+        }
 
         if (!fogMode) {
           if (_fogContainers.has(tileId)) destroyContainer(tileId);
@@ -264,6 +453,25 @@
         if (!seenTileIds.has(tileId)) destroyContainer(tileId);
       }
 
+      // Restore tiles/drawings that were invisible but are no longer in the graph
+      // or whose fogMode was changed away from "invisible".
+      for (const tileId of [..._hiddenTileIds]) {
+        if (!seenInvisibleTileIds.has(tileId)) {
+          _animatingMesh.delete(tileId);
+          const m = canvas?.tiles?.get(tileId)?.mesh;
+          if (m && !m.destroyed) m.alpha = 1;
+          _hiddenTileIds.delete(tileId);
+        }
+      }
+      for (const drawingId of [..._hiddenDrawingIds]) {
+        if (!seenInvisibleDrawings.has(drawingId)) {
+          _animatingDrawing.delete(drawingId);
+          const dr = _getDrawingPlaceable(drawingId);
+          if (dr) dr.alpha = 1;
+          _hiddenDrawingIds.delete(drawingId);
+        }
+      }
+
       _prevAdjacentIds = adjacentIds;
       _initialized = true;
     },
@@ -275,6 +483,22 @@
       _localShroudRevealed.clear();
       _prevAdjacentIds = new Set();
       _initialized = false;
+
+      // Reset all invisible tile meshes (hidden + mid-animation)
+      for (const tileId of new Set([..._hiddenTileIds, ..._animatingMesh])) {
+        const m = canvas?.tiles?.get(tileId)?.mesh;
+        if (m && !m.destroyed) m.alpha = 1;
+      }
+      _hiddenTileIds.clear();
+      _animatingMesh.clear();
+
+      // Reset all invisible drawing edges (hidden + mid-animation)
+      for (const drawingId of new Set([..._hiddenDrawingIds, ..._animatingDrawing])) {
+        const dr = _getDrawingPlaceable(drawingId);
+        if (dr) dr.alpha = 1;
+      }
+      _hiddenDrawingIds.clear();
+      _animatingDrawing.clear();
     },
 
     resetShroudLocally(tileId) {
