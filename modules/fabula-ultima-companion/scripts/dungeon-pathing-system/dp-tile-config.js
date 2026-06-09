@@ -395,16 +395,19 @@
           <label>Concealment</label>
           <div class="form-fields">
             <select name="flags.${MODULE_ID}.${pathingKey}.fogMode" data-dtype="String">
-              <option value=""       ${!fogMode             ? "selected" : ""}>— None —</option>
-              <option value="fog"    ${fogMode === "fog"    ? "selected" : ""}>Fog — lifts when adjacent, returns when party moves away</option>
-              <option value="shroud" ${fogMode === "shroud" ? "selected" : ""}>Shroud — lifts once when adjacent, revealed forever</option>
+              <option value=""          ${!fogMode                  ? "selected" : ""}>— None —</option>
+              <option value="fog"       ${fogMode === "fog"         ? "selected" : ""}>Fog — lifts when adjacent, returns when party moves away</option>
+              <option value="shroud"    ${fogMode === "shroud"      ? "selected" : ""}>Shroud — lifts once when adjacent, revealed forever</option>
+              <option value="invisible" ${fogMode === "invisible"   ? "selected" : ""}>Invisible — tile and path hidden until adjacent, re-hides when party moves away</option>
             </select>
           </div>
           <p class="notes">
             <b>Fog</b>: The tile is veiled by drifting mist. Players see it clearly while
             the party stands adjacent — but the mist rolls back in the moment they move away.<br>
             <b>Shroud</b>: The tile is hidden beneath a permanent veil. Once the party steps
-            adjacent, the shroud parts and the tile is revealed forever.
+            adjacent, the shroud parts and the tile is revealed forever.<br>
+            <b>Invisible</b>: The tile and the path lines leading to it vanish completely.
+            They fade in when the party is adjacent and fade out again when the party moves away.
           </p>
         </div>
 
