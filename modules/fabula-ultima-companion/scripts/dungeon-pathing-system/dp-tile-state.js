@@ -34,6 +34,10 @@
     await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`, visited);
   }
 
+  function getRevealed(scene) {
+    return scene?.flags?.[DP.MODULE_ID]?.[DP.PATHING_ROOT_KEY]?.fogRevealed ?? {};
+  }
+
   // Infer tile type from name + texture path (legacy fallback, same as prototype)
   function inferType(tileDoc) {
     const name    = String(tileDoc?.name ?? "").toLowerCase();
@@ -217,6 +221,12 @@
         .catch(e => console.warn(TAG, "resetDungeon — clearVisited failed:", e));
       console.log(TAG, `resetDungeon — visited cleared. Post-reset visited:`, getVisited(scene));
 
+      // Clear fog reveals so fog tiles are hidden again after reset.
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed`)
+        .catch(e => console.warn(TAG, "resetDungeon — clearFogRevealed failed:", e));
+      DP.Fog?.destroyAll?.();
+      console.log(TAG, "resetDungeon — fog reveals cleared.");
+
       ui.notifications?.info?.("Dungeon reset: all tiles restored and visited flags cleared.");
     },
 
@@ -256,9 +266,82 @@
         .catch(e => console.warn(TAG, "unmarkVisited failed", e));
     },
 
+    /**
+     * Mark a fog tile as revealed (its overlay should be removed on all clients).
+     * Must run as GM — scene flag writes require GM authority.
+     */
+    async markFogRevealed(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const revealed = getRevealed(scene);
+      if (revealed[tileId]) return;
+      await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed.${tileId}`, true)
+        .catch(e => console.warn(TAG, "markFogRevealed failed", e));
+    },
+
+    /** Returns true if this fog tile has already been revealed. */
+    isFogRevealed(scene, tileId) {
+      return !!getRevealed(scene)[tileId];
+    },
+
+    /**
+     * Un-reveal a single shroud tile, restoring its fog overlay.
+     * Must run as GM.
+     */
+    async unmarkFogRevealed(scene, tileId) {
+      if (!game.user?.isGM) return;
+      if (!scene || !tileId) return;
+      const revealed = getRevealed(scene);
+      if (!revealed[tileId]) return;
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed.${tileId}`)
+        .catch(e => console.warn(TAG, "unmarkFogRevealed failed", e));
+    },
+
+    /**
+     * Reset tile states and visited flags only — does not touch fog/shroud reveals.
+     * Must run as GM.
+     */
+    async resetTiles(scene) {
+      if (!game.user?.isGM) {
+        ui.notifications?.warn?.("Dungeon reset must be run as GM.");
+        return;
+      }
+      if (!scene) return;
+
+      const states     = getStates(scene);
+      const stateCount = Object.keys(states).length;
+      console.log(TAG, `resetTiles — scene: ${scene.name} (${scene.id}), tile states: ${stateCount}`);
+
+      const updated = {};
+      for (const [id, entry] of Object.entries(states)) {
+        updated[id] = { ...entry, currentType: entry.initialType };
+        if (entry.initialTexture) {
+          const tileDoc = scene.tiles.get(id);
+          if (tileDoc) await tileDoc.update({ "texture.src": entry.initialTexture }).catch(() => {});
+        }
+      }
+      await setStates(scene, updated).catch(e => console.warn(TAG, "resetTiles — setStates failed:", e));
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`)
+        .catch(e => console.warn(TAG, "resetTiles — clearVisited failed:", e));
+
+      console.log(TAG, `resetTiles — done (${stateCount} tile(s) restored).`);
+      ui.notifications?.info?.("Tile states and visited tiles reset.");
+    },
+
+    /**
+     * Clear ALL shroud reveals for a scene without touching tile states or visited tiles.
+     * Use when setting up for a fresh group.  Must run as GM.
+     */
+    async resetAllFogRevealed(scene) {
+      if (!game.user?.isGM) return;
+      if (!scene) return;
+      await scene.unsetFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.fogRevealed`)
+        .catch(e => console.warn(TAG, "resetAllFogRevealed failed", e));
+    },
+
     /** Raw dump of all tile states for debugging. */
     dump(scene) {
-      return { states: getStates(scene), visited: getVisited(scene) };
+      return { states: getStates(scene), visited: getVisited(scene), fogRevealed: getRevealed(scene) };
     }
   };
 })();

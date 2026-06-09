@@ -275,6 +275,8 @@
       const pathingKey  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
       const persistFlag       = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.persistAfterTrigger`) ?? false;
       const usableFlag        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.usable`) ?? false;
+      const rawFogMode        = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fogMode`) ?? "";
+      const legacyFogFlag     = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.fog`);
       const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
       const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
       const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
@@ -283,6 +285,11 @@
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
       const persists        = persistFlag       === true || persistFlag       === "true";
       const usable          = usableFlag        === true || usableFlag        === "true";
+      // fogMode with backward compat for old boolean fog flag (treated as shroud)
+      const fogMode         = rawFogMode || ((legacyFogFlag === true || legacyFogFlag === "true") ? "shroud" : "");
+      const isShroudRevealed = (fogMode === "shroud" && scene && tileId)
+        ? !!(DP.TileState?.isFogRevealed?.(scene, tileId))
+        : false;
       const skipConfirm     = skipConfirmFlag   === true || skipConfirmFlag   === "true";
       const disableGoBack   = disableGoBackFlag === true || disableGoBackFlag === "true";
       const blockGoBack     = blockGoBackFlag   === true || blockGoBackFlag   === "true";
@@ -307,7 +314,37 @@
         ? FT_ELIGIBLE_TYPES.has(initialType)
         : (rawEligible === true || rawEligible === "true" || rawEligible === 1);
 
-      dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible });
+      dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible, fogMode, isShroudRevealed });
+
+      // Build shroud state section HTML separately to avoid deeply nested template literals
+      const shroudStateHtml = (() => {
+        if (fogMode !== "shroud") return "";
+        const stateText = isShroudRevealed ? "✓ Revealed" : "○ Concealed";
+        const stateNote = isShroudRevealed
+          ? "The shroud has been lifted — this tile is permanently visible to the party."
+          : "The shroud is intact — reveals permanently when the party stands adjacent.";
+        const resetRow = (isShroudRevealed && game.user?.isGM)
+          ? `<div class="form-group" data-oni-shroud-reset-group="1">
+               <label></label>
+               <div class="form-fields">
+                 <button type="button" data-oni-reset-shroud-tile="1" style="cursor:pointer;">
+                   <i class="fas fa-eye-slash"></i> Reset Shroud
+                 </button>
+               </div>
+               <p class="notes">Restores the shroud on this tile. Use when preparing for a new group.</p>
+             </div>`
+          : "";
+        return `
+          <div class="form-group" data-oni-shroud-state-group="1">
+            <label>Shroud State</label>
+            <div class="form-fields">
+              <input class="oni-dp-tile-info" type="text" readonly
+                     value="${stateText}" data-oni-shroud-state-input="1" />
+            </div>
+            <p class="notes" data-oni-shroud-state-note="1">${stateNote}</p>
+          </div>
+          ${resetRow}`;
+      })();
 
       dungeonSubPanel.innerHTML = `
         <h3 style="margin: 0 0 6px;"><i class="fas fa-cog"></i> Behavior</h3>
@@ -353,6 +390,25 @@
             without triggering it, letting the player choose when to act.
           </p>
         </div>
+
+        <div class="form-group">
+          <label>Concealment</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.fogMode" data-dtype="String">
+              <option value=""       ${!fogMode             ? "selected" : ""}>— None —</option>
+              <option value="fog"    ${fogMode === "fog"    ? "selected" : ""}>Fog — lifts when adjacent, returns when party moves away</option>
+              <option value="shroud" ${fogMode === "shroud" ? "selected" : ""}>Shroud — lifts once when adjacent, revealed forever</option>
+            </select>
+          </div>
+          <p class="notes">
+            <b>Fog</b>: The tile is veiled by drifting mist. Players see it clearly while
+            the party stands adjacent — but the mist rolls back in the moment they move away.<br>
+            <b>Shroud</b>: The tile is hidden beneath a permanent veil. Once the party steps
+            adjacent, the shroud parts and the tile is revealed forever.
+          </p>
+        </div>
+
+        ${shroudStateHtml}
 
         <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-undo"></i> Undo</h3>
@@ -599,6 +655,31 @@
               warn("visited toggle failed:", e);
               // Revert checkbox on failure
               visitedCb.checked = !visitedCb.checked;
+            }
+          });
+        }
+      }
+
+      // GM-only: wire per-tile Reset Shroud button (shown only in Shroud mode when revealed)
+      if (game.user?.isGM && fogMode === "shroud" && isShroudRevealed && scene && tileId) {
+        const resetBtn = dungeonSubPanel.querySelector("[data-oni-reset-shroud-tile]");
+        if (resetBtn) {
+          resetBtn.addEventListener("click", async () => {
+            try {
+              resetBtn.disabled = true;
+              await DP.TileState.unmarkFogRevealed(scene, tileId);
+              DP.Fog?.resetShroudLocally?.(tileId);
+              // Update the open dialog without a full re-render
+              const stateInput = dungeonSubPanel.querySelector("[data-oni-shroud-state-input]");
+              if (stateInput) stateInput.value = "○ Concealed";
+              const stateNote = dungeonSubPanel.querySelector("[data-oni-shroud-state-note]");
+              if (stateNote) stateNote.textContent = "The shroud is intact — reveals permanently when the party stands adjacent.";
+              const resetGroup = dungeonSubPanel.querySelector("[data-oni-shroud-reset-group]");
+              if (resetGroup) resetGroup.style.display = "none";
+              ui.notifications?.info?.("Shroud restored on tile.");
+            } catch (e) {
+              warn("reset shroud tile failed:", e);
+              resetBtn.disabled = false;
             }
           });
         }

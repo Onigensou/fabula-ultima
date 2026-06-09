@@ -28,6 +28,7 @@
   const MSG_MV    = "DP_MARK_VISITED";
   const MSG_AS    = "DP_ACTIVATE_SCENE";
   const MSG_TAE   = "DP_TICK_PARTY_AES";
+  const MSG_FOG   = "DP_FOG_REVEALED";
   const MV_GUARD  = "__ONI_DP_MV_SOCKET__";
 
   DP.Socket = {
@@ -70,6 +71,15 @@
           // Player client finished a dungeon turn — tick party AEs as GM.
           await DP.AELifecycle?.tickPartyAEs?.()
             .catch(e => console.warn(TAG, "raw tickPartyAEs failed:", e));
+          return;
+        }
+
+        if (msg?.type === MSG_FOG) {
+          const { sceneId, tileId } = msg.payload ?? {};
+          const scene = game.scenes.get(sceneId);
+          if (!scene || !tileId) { console.warn(TAG, "raw markFogRevealed: bad payload", msg.payload); return; }
+          await DP.TileState.markFogRevealed(scene, tileId)
+            .catch(e => console.warn(TAG, "raw markFogRevealed failed:", e));
           return;
         }
       });
@@ -218,6 +228,13 @@
       }
       // Bypass socketlib — emit directly on game.socket so the GM's raw listener handles it.
       game.socket.emit(RAW_CH, { type: MSG_MV, payload: { sceneId: scene.id, tileId } });
+    },
+
+    async markFogRevealed(scene, tileId) {
+      if (game.user?.isGM) {
+        return DP.TileState.markFogRevealed(scene, tileId);
+      }
+      game.socket.emit(RAW_CH, { type: MSG_FOG, payload: { sceneId: scene.id, tileId } });
     },
 
     async unmarkVisited(scene, tileId) {

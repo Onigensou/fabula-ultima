@@ -170,6 +170,9 @@
     DP.HelperMode.update(neighbors);
     const dtNeighbors = performance.now() - tNeighbors;
 
+    // ── 6. Fog overlay — reveal tiles adjacent to current node ──────────────
+    DP.Fog?.refresh?.(graph, currentNode, neighbors);
+
     state.lastHoveredNodeId = null; // reset hover tracking after rebuild
     DP.Overlay.clearHover?.();
     DP.Events.graphRebuilt(graph, token);
@@ -585,6 +588,7 @@
     removeClickListener();
     removeHoverHandler();
     DP.FastTravel?.exit?.();
+    DP.Fog?.destroyAll?.();
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();
