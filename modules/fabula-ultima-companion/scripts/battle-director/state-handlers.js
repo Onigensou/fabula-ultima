@@ -38,7 +38,8 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -323,6 +324,12 @@ async function resolveAction(director, ar, opts = {}) {
   // Skill/Spell effect_kinds never read these, so this is inert for them.
   ctx.actionResult = ar;
   ctx.actionView = view;
+  // Battle-log sink for THIS action: every commit (hits, via applyDamageToTarget's
+  // logContext) + every miss (below) + any deal_damage riders fired through this
+  // ctx push their {entry,row} here; we flush ONCE at the end → a Multi-N action
+  // is one write, not N. Threaded onto ctx so rider effects coalesce too.
+  const battleLogSink = [];
+  ctx.battleLogSink = battleLogSink;
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   try {
@@ -361,7 +368,20 @@ async function resolveAction(director, ar, opts = {}) {
       // Pierce keyword (action-agnostic): a pierce-miss still deals its
       // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
       // in COMPUTE for ANY action carrying Pierce — not just Attack.
-      if (!r.hit && !r.pierceMiss) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
+      if (!r.hit && !r.pierceMiss) {
+        playMissVfx({ tokenUuid: r.tokenUuid });
+        // Whiff → a Miss row (no commit, so logged here, not at the seam).
+        battleLogSink.push(buildMissRow({
+          attackerName: casterActor.name,
+          targetName: r.name,
+          element: ar.damageType ?? "elementless",
+          accuracy: ar.roll?.total ?? null,
+          weaponType: ar.weapon?.weaponType ?? null,
+          range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+          sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+        }));
+        continue;
+      }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -386,6 +406,23 @@ async function resolveAction(director, ar, opts = {}) {
           tokenUuid: r.tokenUuid,
           logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
           logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
+          // Battle Log: hit row, pushed to this action's shared sink (flushed
+          // once at the end). Rich attacker context from the action result.
+          // (`efficiency` is omitted → the row shows 100%. The BD does NOT apply
+          // weapon efficiency at all today — neither action-profile nor the
+          // incoming ruleset — so 100% honestly reflects current behavior. If
+          // weapon efficiency lands (target-side, gated on weaponType), surface
+          // the real % here too. See the damage-unification Phase-6 note.)
+          logContext: {
+            attackerName: casterActor.name,
+            element: ar.damageType ?? "elementless",
+            weaponType: ar.weapon?.weaponType ?? null,
+            range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+            accuracy: ar.roll?.total ?? null,
+            isCrit: !!ar.roll?.isCrit,
+            sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+            sink: battleLogSink,
+          },
         });
         const finalValue = dmgRes.finalValue;
         const valueType = dmgRes.resource;
@@ -414,6 +451,17 @@ async function resolveAction(director, ar, opts = {}) {
         };
         try { await firePostDamageEffect(skill, ctx, damagePayload); }
         catch (e) { warn("Skill resolve: firePostDamageEffect threw", e); }
+
+        // Part 1 — unified resource-ledger trigger. Fire creature_lose_resource /
+        // creature_gain_resource on the creature whose HP/MP just changed (cause:
+        // "damage"). Queued (post-save) + supervised. Part 2's crisis reactor
+        // listens here (resource=hp); any "when my <resource> changes" skill too.
+        fireResourceChangeTrigger({
+          director, actor: targetActor, tokenUuid: r.tokenUuid,
+          resource: valueType, direction: valueDirection, amount: finalValue,
+          cause: "damage",
+          source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
+        });
       } catch (e) {
         err("Skill resolve: damage application failed", r, e);
       }
@@ -636,6 +684,12 @@ async function resolveAction(director, ar, opts = {}) {
       },
     });
   }
+
+  // 9. Flush this action's Battle Log in ONE write — Multi-N action = one
+  //    row-batch, not N. Hits were pushed by applyDamageToTarget's logContext,
+  //    misses in the damage loop, and any deal_damage riders via the shared
+  //    ctx.battleLogSink. Last step so it captures the whole action.
+  if (battleLogSink.length) await appendBattleLog(battleLogSink);
 }
 
 // Stash a passive-trigger config in ctx so RESOLVE.onEnter's tail can
@@ -3693,15 +3747,16 @@ const Resolve = {
     // Vanish (and the AE it added). Without this re-ordering the
     // reaction-applied AE landed in the snapshot and required two
     // rewinds to remove.
-    const queued = Array.isArray(director.ctx?._postResolveTriggers)
-      ? director.ctx._postResolveTriggers : [];
-    director.ctx._postResolveTriggers = [];
-    for (const cfg of queued) {
-      try {
-        await firePassiveTriggers({ director, ...cfg });
-      } catch (e) {
-        warn(`RESOLVE: post-save passive trigger "${cfg?.trigger}" threw`, e);
-      }
+    // Generalized to the same transaction settle used at Start-of-Turn: drains
+    // the resource ledger to quiescence AND runs the built-in engine reactors
+    // (crisis), so attack/effect-damage HP changes fold into the crisis cascade
+    // — not just Start-of-Turn ticks. Authored-reaction behavior is unchanged
+    // (settleInstance drains each event via the same firePassiveTriggers call).
+    try {
+      const { settleInstance } = await import("./instance-settle.js");
+      await settleInstance(director, { reason: "resolve" });
+    } catch (e) {
+      warn("RESOLVE: settleInstance threw", e);
     }
 
     // Crit → stamp opportunity payload so the RESOLVE transition branches to
@@ -3772,7 +3827,6 @@ const Cleanup = {
   async onEnter(director) {
     director.ctx.actionResult = null;
     director.ctx.currentWeapon = null;
-    director.ctx.pendingTriggers.length = 0;
     director.ctx.reactionDepth = 0;
 
     // Multi-pass attacks (Two-Weapon Fighting): if more passes remain in
@@ -3964,7 +4018,13 @@ const StandaloneReactionWindow = {
     // dispatch + queue-check loop below runs on the same trigger.
     // The pop fires regardless of save/resume — the routing target
     // (top.resumeAt = SRW) is what brought us back here.
-    if (topIsSrwDetour(ctx)) {
+    // Re-entry after a FAW detour (free-action drain) is marked by the
+    // srwDetour frame on top. Capture it BEFORE popping: for phased
+    // (transactional) triggers it tells us the forced pass + settle +
+    // checkpoint already ran on the first entry, so we skip straight to the
+    // ask pass and don't re-tick Burn / re-settle.
+    const wasReentry = topIsSrwDetour(ctx);
+    if (wasReentry) {
       popFrame(director);
     }
 
@@ -3977,9 +4037,52 @@ const StandaloneReactionWindow = {
       return;
     }
     log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget}, depth ${stackDepth(ctx)})`);
+    // Transactional instance frame — Start-of-Turn / Start-of-Conflict run as a
+    // transaction: a deterministic FORCED pass (ticks like Burn commit + forced
+    // grants enqueue) → settleInstance drains the resource ledger to quiescence
+    // (T1; crisis cascade plugs in here in a later batch) → CHECKPOINT (the
+    // commit point, after the forced result is settled) → ASK pass (player
+    // reactions). Mandatory free-action cards enqueued above drain through the
+    // existing FAW detour below (T2), after the checkpoint. Other standalone
+    // triggers keep the legacy single combined pass for now.
+    const PHASED = trigger === "turn_start" || trigger === "conflict_start";
     try {
-      const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
-      if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
+      if (PHASED) {
+        if (!wasReentry) {
+          // FORCED pass — auto-fire force/on (Burn commits + populates the
+          // ledger; action-creating grants like High Speed enqueue freeActionQueue).
+          await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });
+          // Combat-start crisis seed — apply/remove Crisis on every combatant by
+          // current HP (the event-driven crisis reactor only fires on HP CHANGES,
+          // so a creature already below threshold at combat start needs this).
+          if (trigger === "conflict_start") {
+            try {
+              const { sweepCrisis } = await import("./crisis-reactor.js");
+              await sweepCrisis(director);
+            } catch (e) { warn("STANDALONE_REACTION_WINDOW: conflict_start crisis sweep threw", e); }
+          }
+          // SETTLE (T1) — drain the resource ledger, re-firing to quiescence.
+          try {
+            const { settleInstance } = await import("./instance-settle.js");
+            await settleInstance(director, { reason: trigger });
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settleInstance threw`, e); }
+          // CHECKPOINT — transaction commit point (forced reactions settled).
+          try {
+            const lbl = rewindPhaseLabel(ctx, director.dCombat?.round);
+            await saveDirectorState(director, {
+              label: `${lbl} · settled`,
+              description: "Forced reactions settled — awaiting player decision",
+            });
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settle checkpoint failed`, e); }
+        }
+        // ASK pass — surface player-facing reactions only (auto-fires suppressed;
+        // already-decided asks deduped by scope idempotency). Runs every entry.
+        const spawned = await dispatchStandaloneTrigger({ director, trigger, payload, phase: "ask" });
+        if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} ask pass dispatched ${spawned} menu(s)`);
+      } else {
+        const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
+        if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
+      }
     } catch (e) {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }

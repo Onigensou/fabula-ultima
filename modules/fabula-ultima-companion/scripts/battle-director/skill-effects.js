@@ -23,6 +23,8 @@ import { pickOption } from "./option-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
 import { readPropNum } from "./snapshot.js";
+import { computeIncomingDamage } from "./damage-ruleset.js";
+import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -103,10 +105,6 @@ export async function sweepTransientAEsAtSceneEnd() {
   if (swept) log(`sweepTransientAEsAtSceneEnd: cleared ${swept} transient AE(s) across ${deleteByActor.size} actor(s)`);
   return { swept, perActor: deleteByActor.size };
 }
-
-// Legacy export — kept as an alias so older call sites still resolve.
-// New callers should use `sweepTransientAEsAtSceneEnd`.
-export const sweepDirectorAEsAll = sweepTransientAEsAtSceneEnd;
 
 // ── Damage-taken reaction resolver ─────────────────────────────────────
 //
@@ -320,10 +318,26 @@ export async function applyDamageToTarget({
   tokenUuid = null,
   logPrefix = "",
   logSuffix = "",
+  // Battle-log: when present, this commit pushes ONE {entry,row} record (built
+  // from the attacker-side context here + the bands computed below) into
+  // `logContext.sink` (an array the owning action flushes once via
+  // appendBattleLog → Multi-N action = ONE write). Carries: attackerName,
+  // element, weaponType?, efficiency?, range?, accuracy?, isCrit?, sourceType?,
+  // sink. Absent → no log emit (silent callers stay quiet).
+  logContext = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
   const prefix = logPrefix ? `${logPrefix} ` : "";
+  // Build a battle-log record from this commit's facts + the caller's context
+  // and push it to the sink. The single damage/heal logging seam (misses, which
+  // have no commit, are logged by the attack RESOLVE loop). Never throws into
+  // the damage write.
+  const _pushLog = (fields) => {
+    if (!logContext?.sink) return;
+    try { logContext.sink.push(buildDamageRow({ ...logContext, targetName, ...fields })); }
+    catch (e) { warn("applyDamageToTarget: battle-log row build failed", e); }
+  };
 
   // MP path — drain spells, future MP-burn. No AB flip; no reactions
   // (could add later for an MP-clamp AE if a use case appears).
@@ -334,6 +348,7 @@ export async function applyDamageToTarget({
     await target.update({ "system.props.current_mp": newMp });
     log(`${prefix}applied ${damage} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
     fireResourceLossVfx({ tokenUuid, resource: "mp", amount: curMp - newMp });
+    _pushLog({ resource: "mp", affinity: "NE", value: damage, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
     return { resource: "mp", finalValue: damage, valueDirection: "loss", fired: [] };
   }
 
@@ -344,11 +359,13 @@ export async function applyDamageToTarget({
   // AB → heal flip.
   if (affinity === "AB") {
     const healed = Math.max(0, damage);
+    let newHp = curHp;
     if (healed > 0) {
-      const newHp = Math.min(maxHp, curHp + healed);
+      newHp = Math.min(maxHp, curHp + healed);
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
       fireAbsorbVfx({ tokenUuid, amount: newHp - curHp });
+      _pushLog({ resource: "hp", affinity: "AB", value: healed, valueDirection: "recover", bands: { hp: { from: curHp, to: newHp } } });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
     }
@@ -376,6 +393,7 @@ export async function applyDamageToTarget({
     // Fully absorbed — only the shield changed; HP untouched.
     if (toHp <= 0) {
       await target.update({ "system.props.shield_value": newShield });
+      _pushLog({ resource: "shield", affinity, value: damage, valueDirection: "loss", bands: { shield: { from: curShield, to: newShield }, hp: { from: curHp, to: curHp } } });
       return { resource: "hp", finalValue: damage, valueDirection: "loss", fired: [], shieldAbsorbed: absorbed };
     }
 
@@ -395,6 +413,7 @@ export async function applyDamageToTarget({
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
     fireResourceLossVfx({ tokenUuid, resource: "hp", amount: curHp - newHp, affinity });
+    _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
       finalValue: Math.max(0, curHp - newHp) + absorbed,
@@ -406,21 +425,12 @@ export async function applyDamageToTarget({
 
   // Immune (IM) zeroed the damage — fire the immune cue so the hit isn't silent
   // (other 0-damage cases, e.g. a 0 roll, stay quiet).
-  if (affinity === "IM") fireImmuneVfx({ tokenUuid });
+  if (affinity === "IM") {
+    fireImmuneVfx({ tokenUuid });
+    _pushLog({ resource: "hp", affinity: "IM", value: 0, valueDirection: "none", noEffectReason: "Immune", bands: { hp: { from: curHp, to: curHp } } });
+  }
   log(`${prefix}no HP change for ${targetName} [${affinity}]${logSuffix} (damage was ${damage})`);
   return empty;
-}
-
-// Legacy alias — kept temporarily so any straggling call sites resolve.
-// New code should use resolveDamageReactions() above.
-export async function applyMercyClamp(targetActor, curHp, rawDamage) {
-  const r = await resolveDamageReactions({ target: targetActor, curHp, rawDamage });
-  // Consume the AEs that fired (matches the old helper's behavior).
-  for (const id of r.consumedAeIds) {
-    const ae = targetActor?.effects?.get?.(id);
-    if (ae) { try { await ae.delete(); } catch (e) { warn("applyMercyClamp compat: AE delete failed", e); } }
-  }
-  return { newHp: r.newHp, mercyFired: r.fired.length > 0 };
 }
 
 // ── Damage-type override ────────────────────────────────────────────────
@@ -465,20 +475,6 @@ export function resolveDamageElementOverride({ actor, scope, native } = {}) {
   if (isReal(props.override_all_damage_type)) return norm(props.override_all_damage_type);
   return native;
 }
-
-// Legacy single-arg helper kept so the existing import sites resolve
-// during the transition. Implicitly scope="attack" because that's
-// the only damage-compute path that calls it today.
-export function applyDamageTypeOverride(attackerActor, originalElement) {
-  return resolveDamageElementOverride({
-    actor: attackerActor,
-    scope: "attack",
-    native: originalElement,
-  });
-}
-
-// Older alias name retained for compatibility.
-export const applySoulWeaponElementOverride = applyDamageTypeOverride;
 
 // ── Passive trigger layer (reaction_config_table-driven) ───────────────
 //
@@ -605,6 +601,29 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
       log(`passive ${item.name}: action_intent filter failed — want="${wantIntent}" got="${payloadIntent}"`);
       return false;
     }
+  }
+
+  // 4. Resource-ledger filters (creature_lose_resource / creature_gain_resource).
+  //    Blank = any (no-op for every existing row). reaction_resource_filter
+  //    matches payload.resource (hp/mp/ip/fp/…); reaction_cause_filter matches
+  //    payload.cause (damage/cost/drain/grant/heal).
+  const wantResource = String(row.reaction_resource_filter ?? "").trim().toLowerCase();
+  if (wantResource && String(payload?.resource ?? "").toLowerCase() !== wantResource) {
+    log(`passive ${item.name}: resource filter failed — want="${wantResource}" got="${payload?.resource}"`);
+    return false;
+  }
+  const wantCause = String(row.reaction_cause_filter ?? "").trim().toLowerCase();
+  if (wantCause && String(payload?.cause ?? "").toLowerCase() !== wantCause) {
+    log(`passive ${item.name}: cause filter failed — want="${wantCause}" got="${payload?.cause}"`);
+    return false;
+  }
+  // 5. Status-ledger filter (creature_status_applied / creature_loses_status).
+  //    Blank = any. reaction_status_filter matches payload.status (e.g. "Crisis").
+  //    Used by On the Hunt ("when an enemy enters Crisis").
+  const wantStatus = String(row.reaction_status_filter ?? "").trim().toLowerCase();
+  if (wantStatus && String(payload?.status ?? "").toLowerCase() !== wantStatus) {
+    log(`passive ${item.name}: status filter failed — want="${wantStatus}" got="${payload?.status}"`);
+    return false;
   }
   return true;
 }
@@ -1137,6 +1156,11 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     reactorToken,
     skill: skillForCtx,
     dCombat: director?.dCombat ?? null,
+    director: director ?? null,
+    // Carrier identity for itemized resource-ledger lines (originLabel/Uuid):
+    // the AE or item running these effects (e.g. "Burn").
+    sourceLabel: carrier?.name ?? null,
+    sourceUuid: carrier?.uuid ?? null,
     payload,
     // Pass the action's target list through — `target_ref:
     // "ally_action_targets"` (Healing Power) + `hit_action_targets`
@@ -1410,6 +1434,59 @@ export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinit
 // collection, auto-fire, ask-mode menu, harness override, AE consume-
 // self / charges bookkeeping — happens downstream in dispatchReactionMenu
 // → firePreAcceptedCandidate.
+// ── Resource-ledger trigger ──────────────────────────────────────────────
+// Queue a `creature_lose_resource` / `creature_gain_resource` event for
+// post-save, supervised dispatch (drained at RESOLVE's tail via
+// firePassiveTriggers — same path + timing as creature_deals_damage, so
+// reaction-applied AEs land after the rewind anchor). This is the SINGLE
+// post-commit "resource ledger" family: HP/MP/IP/FP/zero_power/shield/etc.
+// "Damage" is a `cause`, not its own event — the payload carries
+// cause ∈ damage|hazard|cost|drain|grant|heal (+ attacker/source for
+// cause==damage). damage = inflicted attack; hazard = Burn/Poison/environment.
+// Reactor (= subject) is the creature whose resource changed; its own
+// reaction_source:"self" rows fire, and Part 2's built-in crisis reactor reads
+// the subject. No-op without a director (out of combat) — resource reactions
+// are combat-context by design. Rows filter via reaction_resource_filter +
+// reaction_cause_filter (see passesMatchFilters).
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null }) {
+  if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
+  if (direction !== "loss" && direction !== "recover") return;
+  if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+  director.ctx._postResolveTriggers.push({
+    casterActor: actor,
+    trigger: direction === "loss" ? "creature_lose_resource" : "creature_gain_resource",
+    payload: {
+      resource: String(resource).toLowerCase(),
+      amount,
+      cause: cause ?? null,
+      direction,
+      // ── Itemized source identity (NEVER summed across lines) ──
+      // Distinct from `cause` (the deferred category axis): these answer
+      // "which effect contributed this exact line + by how much", so the
+      // turn breakdown can render "−5 Burn / −10 Poison" and a per-source
+      // reaction can match exactly one line. `element` = fire|poison|… ;
+      // `originLabel` = display name (the AE/skill, e.g. "Burn"); `originUuid`
+      // = the originating effect/item.
+      element: element ?? null,
+      originLabel: originLabel ?? null,
+      originUuid: originUuid ?? null,
+      // The reaction_source filter (self/ally/enemy) keys off
+      // `payload.sourceActorUuid` — so it MUST be the SUBJECT of this event =
+      // the creature whose resource changed (its own "self" rows fire; an
+      // observer's "enemy" rows resolve against it). Mirrors how
+      // creature_deals_damage sets sourceActorUuid = the acting creature.
+      sourceActorUuid: actor.uuid,
+      sourceTokenUuid: tokenUuid ?? null,
+      subjectActorUuid: actor.uuid,
+      subjectTokenUuid: tokenUuid ?? null,
+      // Who/what CAUSED the change (e.g. the attacker, for cause==damage) — for
+      // reflect/leech-style reactions (Painful Lesson). NOT the source filter.
+      causeActorUuid: source.actorUuid ?? null,
+      causeTokenUuid: source.tokenUuid ?? null,
+    },
+  });
+}
+
 export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
   if (!casterActor || !trigger) return { fired: [] };
 
@@ -1455,192 +1532,6 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
     // across actions. Each new event prompts fresh; firedSet stays empty.
   });
   return { fired: Array.isArray(result?.fired) ? result.fired : [] };
-}
-
-// ── Legacy firePassiveTriggers body — retained as a comment for diff
-//    clarity and as documentation of the previous structure. Safe to
-//    delete in a follow-up cleanup pass once the migration has soaked.
-async function _legacy_firePassiveTriggers_unused({ director, casterActor, trigger, payload, skipEvaluated }) {
-  if (!casterActor || !trigger) return { fired: [] };
-  const skipSet = new Set(
-    (Array.isArray(skipEvaluated) ? skipEvaluated : [])
-      .map((e) => `${e?.rowKey ?? ""}:${e?.carrierUuid ?? ""}`)
-  );
-
-  // ── Collect candidates from BOTH items and AEs ───────────────────────
-  //
-  // Carrier kinds:
-  //   - "item": props.reaction_config_table on the item, effect_table on
-  //             the item via getRuntimeSkillView. Classic firing site for
-  //             passives like Healing Power / Support Magic (item-bound).
-  //   - "ae":   ae.flags.fabula-ultima-companion.reactionConfig carries
-  //             both reaction_config_table and effect_table. Used by
-  //             AE-bound buffs that react to subsequent events on the
-  //             AE's bearer (Support Magic's check-bonus AE auto-consume,
-  //             Mercy-style damage-time clamps without the bespoke
-  //             resolveDamageReactions path).
-  const candidates = [];
-  for (const item of casterActor.items?.contents ?? []) {
-    const rc = item.system?.props?.reaction_config_table;
-    if (!rc || typeof rc !== "object") continue;
-    for (const key of Object.keys(rc)) {
-      const row = rc[key];
-      if (!row || row.$deleted) continue;
-      if (row.reaction_isPassive !== true) continue;
-      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
-      if (skipSet.has(`${key}:${item.uuid}`)) continue;
-      candidates.push({
-        carrierKind: "item",
-        carrier: item,
-        carrierName: item.name,
-        carrierDescription: item.system?.props?.description,
-        row,
-      });
-    }
-  }
-  for (const ae of casterActor.effects?.contents ?? []) {
-    if (ae.disabled) continue;
-    const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
-    if (!cfg || typeof cfg !== "object") continue;
-    const rc = cfg.reaction_config_table;
-    if (!rc || typeof rc !== "object") continue;
-    for (const key of Object.keys(rc)) {
-      const row = rc[key];
-      if (!row || row.$deleted) continue;
-      if (row.reaction_isPassive !== true) continue;
-      if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
-      if (skipSet.has(`${key}:${ae.uuid}`)) continue;
-      candidates.push({
-        carrierKind: "ae",
-        carrier: ae,
-        carrierName: ae.name,
-        carrierDescription: ae.description ?? "",
-        aeEffectTable: cfg.effect_table ?? {},
-        row,
-      });
-    }
-  }
-  if (!candidates.length) return { fired: [] };
-
-  const fired = [];
-  for (const cand of candidates) {
-    const { carrierKind, carrier, carrierName, row } = cand;
-    if (!(await shouldReactionPassiveFire(row, carrier, casterActor, payload))) {
-      log(`passive: ${carrierName} skipped (reaction-config filter/condition mismatch)`);
-      continue;
-    }
-    const mode = resolveReactionPassiveMode(row);
-    if (mode === "off") {
-      log(`passive: ${carrierName} mode=off — skipping`);
-      continue;
-    }
-    // "force" mode is engine-mandatory — fires without prompt, same
-    // path as "on", just doesn't surface to UI elsewhere. Falls
-    // through to the dispatch below.
-    if (mode === "ask") {
-      // Harness override (Phase 2.1): see __FU_HARNESS_ACCEPT_PASSIVES__.
-      const ovAccept = globalThis.__FU_HARNESS_ACCEPT_PASSIVES__;
-      let ok;
-      if (ovAccept !== undefined && ovAccept !== null) {
-        if (typeof ovAccept === "boolean") ok = ovAccept;
-        else if (typeof ovAccept === "object") {
-          let matched = null;
-          for (const [name, val] of Object.entries(ovAccept)) {
-            if (carrierName.includes(name) || name.includes(carrierName)) { matched = !!val; break; }
-          }
-          ok = matched ?? await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
-        } else ok = await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
-      } else {
-        ok = await promptPassiveOptin(carrierName, casterActor, cand.carrierDescription);
-      }
-      if (!ok) { log(`passive: ${carrierName} declined by GM`); continue; }
-    }
-    const refLabel = String(row.reaction_effect_ref ?? "").trim();
-
-    const { makeChainContext } = await import("./skill-targeting.js");
-    const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
-      ?? casterActor?.getActiveTokens?.()?.[0]?.document
-      ?? null;
-
-    // Build the effect_table that applyEffectByLabel will resolve against.
-    // For item carriers, run through getRuntimeSkillView so recipes / sugar
-    // expand. For AE carriers, the AE-borne effect_table is already the
-    // final shape.
-    let runtimeEffectTable;
-    let firePoints;
-    let skillForCtx;
-    if (carrierKind === "item") {
-      const { getRuntimeSkillView } = await import("./skill-recipes.js");
-      const view = getRuntimeSkillView(carrier);
-      runtimeEffectTable = view.effect_table;
-      firePoints = view.fire_points;
-      skillForCtx = carrier;
-    } else {
-      runtimeEffectTable = cand.aeEffectTable;
-      firePoints = null;
-      // AE-bound reactions don't have a parent skill — pass the AE for
-      // any formula resolver that wants SL/recipe context (resolver
-      // tolerates null skill).
-      skillForCtx = null;
-    }
-    const ctx = makeChainContext({
-      reactorActor: casterActor,
-      reactorToken,
-      skill: skillForCtx,
-      dCombat: director?.dCombat ?? null,
-      payload,
-      actionTargetUuids: payload?.targetTokenUuids ?? [],
-      hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
-      // "on" and "force" are both auto-fired without GM prompt → treat
-      // as passive for the targeting-auto-skip / prompt-bypass flow.
-      isPassive: mode === "on" || mode === "force",
-      runtimeEffectTable,
-      firePoints,
-    });
-    try {
-      // refLabel may be blank for AE-bound reactions that only need to
-      // consume themselves (the firing IS the effect). Skip the dispatch
-      // in that case; the post-fire consume-self path still runs.
-      let r = { ok: true, kind: "noop" };
-      if (refLabel) {
-        r = await applyEffectByLabel(refLabel, ctx);
-      }
-      fired.push({ carrier: carrierName, carrierKind, ok: !!r.ok, kind: r.kind });
-      log(`passive ${carrierName} (${carrierKind}): fired ref "${refLabel || "(none)"}" → ok=${!!r.ok}`);
-
-      // Post-fire bookkeeping for AE carriers: consume self / decrement
-      // charges. AE-bound passives commonly want "fire once then remove";
-      // the dispatcher handles this so individual reactions don't have
-      // to author a consume_charge effect_row pointing at themselves.
-      //
-      // Two consume signals supported:
-      //   - row.consume_self === true       → unconditional delete after fire
-      //   - effectRow.consume_self === true → effect-row-driven delete
-      //   - AE carries charges flag         → decrement; delete when 0
-      if (carrierKind === "ae" && r.ok) {
-        const effRow = refLabel
-          ? Object.values(cand.aeEffectTable).find((er) => er?.effect_label === refLabel)
-          : null;
-        const consumeSelfFlag = row.consume_self === true || effRow?.consume_self === true;
-        const chargeFlags = carrier.flags?.[FLAG_NS] ?? {};
-        const hasCharges = chargeFlags.charges != null || chargeFlags.chargesMax != null;
-        if (consumeSelfFlag) {
-          try {
-            await carrier.delete();
-            log(`passive ${carrierName}: consume_self → AE deleted`);
-          } catch (e) { warn(`consume_self delete failed`, e); }
-        } else if (hasCharges) {
-          // Decrement via the shared charges API (auto-deletes at 0).
-          const { consume: consumeCharge } = await import("./skill-charges.js");
-          const res = await consumeCharge(carrier, { count: 1 });
-          log(`passive ${carrierName}: charge consumed (remaining=${res?.remaining ?? "?"}, deleted=${!!res?.deleted})`);
-        }
-      }
-    } catch (e) {
-      warn(`passive ${carrierName}: applyEffectByLabel threw`, e);
-    }
-  }
-  return { fired };
 }
 
 // Sweep AEs whose `directorAppliedBy.lifetimeMode === "round_end"` —
@@ -2204,8 +2095,13 @@ async function applySetResourceEffect(row, ctx) {
 //
 // Deal element-typed damage OUTRIGHT to the target(s) — the offensive
 // counterpart to `grant` (a raw resource delta with no affinity). Routes
-// through the Universal Damage API (`FUCompanion.api.applyDamage.applyToActor`),
-// so target affinity (VU ×2 / RS ½ / IM ×0 / AB → heal) applies automatically.
+// through the BD-native damage path: `computeIncomingDamage` (the incoming
+// ruleset — DR + affinity + damage_taken_mult) → `applyDamageToTarget` (the
+// single BD-supervised commit), so target affinity (VU ×2 / RS ½ / IM ×0 /
+// AB → heal) applies automatically and the hit shares the attack pipeline's
+// shield/Mercy/VFX handling. (Was the Gen-2 Universal Damage API,
+// `FUCompanion.api.applyDamage.applyToActor`, which dragged in legacy chat-card
+// display; retired here as part of the Gen-3 damage unification.)
 // For status ticks (Burn) and any reaction that INFLICTS flat/elemental
 // damage rather than modifying an in-flight attack (that is `add_damage`).
 //
@@ -2214,32 +2110,39 @@ async function applySetResourceEffect(row, ctx) {
 //   damage_amount   | amount    — formula evaluated PER TARGET (so MAX_HP / CUR_HP
 //                                 read the VICTIM's sheet). Floored; ≤0 skips.
 //   target_ref                  — defaults to "self".
-//   damage_verbosity            — "silent" | "numbers" | "fx" | "full" (default "full").
 //   attacker_name               — display label (default the skill/AE name).
+// (`damage_verbosity` is no longer honored — Gen 3 has no verbosity knob yet;
+//  the hit surfaces via the director VFX + log. Re-add if a silent tick is needed.)
 // No attacker outgoing modifiers are applied (status/environmental damage),
 // so a self-tick is not inflated by the bearer's own damage bonuses.
 async function applyDealDamageEffect(row, ctx) {
   const element = String(row.damage_element ?? row.element ?? "elementless").trim().toLowerCase();
   const amountFormula = row.damage_amount ?? row.amount ?? "0";
   const targetRef = row.target_ref || "self";
-  const verbosity = String(row.damage_verbosity ?? "full").trim().toLowerCase();
   const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
   // Opt-out of affinity (RS/VU/IM/AB) for flat/"true" effect damage — e.g. a
   // fixed opposed-check consequence (Pounce's 20) that should land regardless of
   // the target's resistances. Default off, so elemental ticks (Burn) still
   // respect affinity. Reads the declarative `damage_ignore_affinity` checkbox.
   const ignoreAffinity = row.damage_ignore_affinity === true || String(row.damage_ignore_affinity).toLowerCase() === "true";
+  // Resource-ledger cause: deal_damage is direct/elemental damage (status ticks,
+  // opposed-check consequences, riders), so it's HAZARD by default — it must NOT
+  // trip "player-inflicted damage" reactions the way a real attack does. Authors
+  // set damage_cause:"damage" for inflicted deal_damage that should count as an
+  // attack. (Real attacks route through applyDamageToTarget, which stamps
+  // cause:"damage" directly.)
+  const damageCause = String(row.damage_cause ?? "").trim().toLowerCase() || "hazard";
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
     return { ok: false, kind: "deal_damage", reason: targetResult.reason ?? "no-targets" };
   }
-  const api = globalThis.FUCompanion?.api?.applyDamage;
-  if (!api?.applyToActor) {
-    warn(`skill-effects.deal_damage: FUCompanion.api.applyDamage unavailable (row "${row.effect_label}")`);
-    return { ok: false, kind: "deal_damage", reason: "no-damage-api" };
-  }
-
+  // Battle-log sink: inherit the owning action's sink when fired as a rider
+  // (so an attack + its deal_damage riders coalesce into ONE write), else own a
+  // local sink and flush it here (a standalone Burn tick = one write; a multi-
+  // target deal_damage = one write for all its targets).
+  const inheritedSink = Array.isArray(ctx.battleLogSink) ? ctx.battleLogSink : null;
+  const battleLogSink = inheritedSink ?? [];
   const applied = [];
   for (const token of targetResult.tokens) {
     const actor = token.actor;
@@ -2257,20 +2160,69 @@ async function applyDealDamageEffect(row, ctx) {
       continue;
     }
     try {
-      const res = await api.applyToActor({
-        baseDamage:  amount,
-        elementType: element,
-        targetActor: actor,
-        targetToken: token,
-        attackerName,
-        ignoreAffinity,
-        verbosity,
+      // BD-native incoming ruleset → BD-supervised commit (Gen 3). Replaces the
+      // Gen-2 apply-damage-core path (which dragged in the legacy chat-card
+      // display). No attacker OUTGOING modifiers — status/environmental damage
+      // isn't inflated by the bearer's own bonuses; the base is baked in the
+      // damage_amount formula. The commit also applies shield absorption and the
+      // Mercy reaction-AE clamp (shared with the attack pipeline).
+      const ruled = computeIncomingDamage(actor, { base: amount, element, ignoreAffinity });
+      const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
+      const res = await applyDamageToTarget({
+        target: actor,
+        damage: ruled.damage,
+        affinity: ruled.affinity,
+        resource: "hp",
+        targetName: actor.name,
+        tokenUuid: token.document?.uuid ?? null,
+        logPrefix: `${attackerName}:`,
+        // Effect/tick damage → Battle Log (one row per target, flushed once
+        // below). sourceType "effect" so the log distinguishes ticks/riders
+        // from weapon attacks. No weapon/efficiency/range (status damage).
+        logContext: { attackerName, element, sourceType: "effect", sink: battleLogSink },
       });
-      applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalDamage ?? res?.applied ?? null });
+      applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalValue ?? null, direction: res?.valueDirection });
+
+      // Resource-ledger (cause taxonomy): itemize this hit onto the running
+      // director's post-commit ledger so the Start-of-Turn transaction's settle
+      // (crisis reactor etc.) and the turn breakdown see one line per source.
+      // Derived from the ACTUAL committed HP delta (re-read the now-mutated
+      // in-memory actor) — Gen 3 absorbs shield before HP, so the HP delta can
+      // be < `ruled.damage`. deal_damage is HP-only, so we ledger only the HP
+      // line; a tick fully soaked by shield moves no HP and (by design) emits no
+      // ledger line. NOTE: the old Gen-2 path also itemized shield/mp bands —
+      // restore those lines here if a shield-loss reaction ever needs to fire on
+      // tick damage. No-op out of combat (getActiveDirector() → null).
+      const _director = ctx?.director
+        ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+      if (_director) {
+        const hpAfter = readPropNum(actor, ["current_hp", "hp"]);
+        const delta = hpAfter - hpBefore;
+        if (delta !== 0) {
+          fireResourceChangeTrigger({
+            director: _director,
+            actor,
+            tokenUuid: token.document?.uuid ?? null,
+            resource: "hp",
+            direction: delta < 0 ? "loss" : "recover",
+            amount: Math.abs(delta),
+            cause: damageCause,          // hazard (default) | damage (declared)
+            element,                     // itemized identity
+            // Source name for the breakdown: an explicit attacker_name wins,
+            // else the carrier (AE/item, e.g. "Burn"), else the skill, else
+            // the generic damage label.
+            originLabel: row.attacker_name || ctx.sourceLabel || ctx.skill?.name || attackerName,
+            originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+          });
+        }
+      }
     } catch (e) {
-      warn(`skill-effects.deal_damage: applyToActor failed on ${actor.name}`, e);
+      warn(`skill-effects.deal_damage: applyDamageToTarget failed on ${actor.name}`, e);
     }
   }
+  // Flush only when WE own the sink — if a parent action lent us theirs, they
+  // flush after their own loop so the whole action is one write.
+  if (!inheritedSink && battleLogSink.length) await appendBattleLog(battleLogSink);
   log(`skill-effects.deal_damage: row "${row.effect_label}" dealt ${element} to ${applied.length} actor(s)`);
   return { ok: true, kind: "deal_damage", applied };
 }

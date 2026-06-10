@@ -426,6 +426,19 @@ export function makeChainContext({
   reactorToken = null,
   skill = null,
   dCombat = null,
+  // The running director, when the ctx is built inside the FSM. Lets effect
+  // handlers reach `director.ctx._postResolveTriggers` (the resource ledger)
+  // without a global lookup — and makes the deal_damage→ledger wiring work in
+  // the simulate harness, which threads a director but never sets the module
+  // singleton (`director-boot._instance`). Null for out-of-FSM/preview ctx.
+  director = null,
+  // Itemized SOURCE identity of the effect chain — the carrier (skill/AE) that
+  // is running these effects. Feeds the resource-ledger event's originLabel/
+  // originUuid so the turn breakdown reads "−5 Burn" not "−5 Effect" for
+  // AE-carried ticks (where `skill` is null and the damage row has no
+  // attacker_name). Set by firePreAcceptedCandidate from the carrier.
+  sourceLabel = null,
+  sourceUuid = null,
   payload = null,
   actionTargetUuids = null,
   // Subset of actionTargetUuids that passed the Check (DEF/MDEF). Drives
@@ -460,6 +473,9 @@ export function makeChainContext({
     reactorToken,
     skill,
     dCombat,
+    director,
+    sourceLabel,
+    sourceUuid,
     payload,
     actionTargetUuids,
     hitActionTargetUuids,

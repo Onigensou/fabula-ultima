@@ -82,6 +82,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // [[feedback_csb_template_gating]].
   textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
+  selectCol("damage_cause", "Damage Cause", [
+    { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
+    { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },
+  ], { tooltip: "Resource-ledger cause for this deal_damage. hazard (default) won't trip 'player-inflicted damage' reactions; damage = creature-inflicted. Reactions filter via reaction_cause_filter.", vis: DEAL_VIS, defaultValue: "hazard" }),
   textCol("damage_amount", "Damage Amount", { tooltip: "Damage formula. deal_damage: amount dealt per target. adjust_damage: the operand.", vis: DEAL_OR_ADJUST_VIS }),
   selectCol("damage_operation", "Damage Op", [
     { key: "add",      value: "Add" },
@@ -105,6 +109,12 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
     { key: "off",   value: "Off — disabled" },
     { key: "force", value: "Force — auto-fires, UI-invisible (engine-mandatory)" },
   ], { tooltip: "ask = clickable pill · on = auto-fire visible · off = disabled · force = auto-fire, engine-only.", defaultValue: "ask" }),
+  // Resource-ledger trigger filters (creature_lose_resource / creature_gain_resource).
+  // Blank = any. resource matches the changed resource; cause matches why.
+  textCol("reaction_resource_filter", "Resource Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only when this resource changed — hp/mp/ip/fp/zero_power/shield/zenit/enmity. Blank = any." }),
+  textCol("reaction_cause_filter", "Cause Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only for this cause — damage/hazard/cost/drain/grant/heal. Blank = any. (damage = inflicted attack; hazard = Burn/Poison/environment.)" }),
+  // Status-ledger filter (creature_status_applied / creature_loses_status).
+  textCol("reaction_status_filter", "Status Filter", { tooltip: "For creature_status_applied / creature_loses_status: fire only when this status (AE) changed — e.g. Crisis. Blank = any." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.

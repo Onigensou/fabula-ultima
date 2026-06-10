@@ -71,7 +71,6 @@ export class BattleDirector {
       eligibleTargets: null,
       declaredCommand: null,
       actionResult: null,
-      pendingTriggers: [],
       reactionDepth: 0,
       transientAEs: [],
       endOfRound: false,
@@ -199,14 +198,11 @@ export class BattleDirector {
     }
     const rule = stateTable[intent.type];
     if (!rule) {
-      // Event with no declared transition. Persistent events (TRIGGER_EMIT)
-      // are queued; transient ones are dropped.
-      if (intent.type === INTENTS.TRIGGER_EMIT) {
-        this.ctx.pendingTriggers.push(intent.body);
-        log("queued trigger for later", intent.body?.trigger);
-      } else {
-        log(`drop intent ${intent.type} in state ${this.state}`);
-      }
+      // Event with no declared transition for this state — dropped. (A former
+      // `pendingTriggers` queue buffered TRIGGER_EMIT events here but was never
+      // drained, so they were dropped at Cleanup anyway; removed as dead state.
+      // Real out-of-band events now flow through the resource ledger + settle.)
+      log(`drop intent ${intent.type} in state ${this.state}`);
       return;
     }
     // Guard check

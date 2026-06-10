@@ -20,7 +20,7 @@ import {
   resolveAccuracyParts, resolveOutgoingDamageParts,
   isCriticalHit, applyCritDamage, resolveIncomingReduction,
 } from "./skill-formulas.js";
-import { applyAffinityToDamage } from "./snapshot.js";
+import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp } from "./skill-effects.js";
 
@@ -308,8 +308,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       const outBase = effectiveHr + primary.damageBonus + primary.outgoingTotal;
       rawDamage = (kind === "Attack" && pierceMiss) ? Math.ceil(outBase / 2) : outBase;
 
+      // Target actor for the incoming layer (DR + weapon efficiency), fetched
+      // once and reused (null for MP damage, which skips the incoming layer).
+      const liveTarget = (!primary.isMpDamage) ? await fromUuid(e.actorUuid).catch(() => null) : null;
+
       if (!primary.isMpDamage) {
-        const liveTarget = await fromUuid(e.actorUuid).catch(() => null);
         const red = resolveIncomingReduction({
           actor: liveTarget, elementType: primary.element, range: primary.rangeKind ?? null, raw: rawDamage,
         });
@@ -335,6 +338,21 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           d = next;
         }
         rawDamage = Math.max(0, Math.floor(d));
+      }
+
+      // Weapon efficiency — the target's per-weapon-type incoming multiplier (the
+      // INCOMING twin of element affinity, applied just before it to match the
+      // legacy order: DR → crit → efficiency → affinity). Weapon attacks only
+      // (`primary.weaponKey` is null for spells / skills / MP). Shares the
+      // readWeaponEfficiency resolver with the effect ruleset — one source of
+      // truth for the weapon-affinity axis.
+      if (primary.weaponKey && liveTarget) {
+        const effPct = readWeaponEfficiency(liveTarget, primary.weaponKey);
+        if (effPct !== 100) {
+          const before = rawDamage;
+          rawDamage = Math.ceil(rawDamage * (effPct / 100));
+          if (rawDamage !== before) damageModParts.push({ source: `${primary.weaponKey} efficiency ${effPct}%`, amount: rawDamage - before });
+        }
       }
 
       affinityCode = computeAffinity();

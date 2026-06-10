@@ -186,7 +186,7 @@ async function getReactionMenu() {
 // Walk the director's combatants and return [{ actor, token }] entries
 // for every live reactor on the active battle. Skips combatants whose
 // actor doc went stale or token isn't on canvas (they can't host a menu).
-async function collectReactors(director) {
+export async function collectReactors(director) {
   const out = [];
   const dc = director?.dCombat;
   if (!dc) return out;
@@ -302,6 +302,12 @@ export async function dispatchReactionMenu({
   // Used by post-resolve creature_completes_spell so a Spell that fired
   // pre-resolve passives at CONFIRM doesn't re-prompt the same rows.
   skipEvaluated = null,
+  // Firing-phase filter for the transactional instance frame:
+  //   "forced" → process only auto-fire (force/on); skip the ask menu.
+  //   "ask"    → surface only ask-mode; skip auto-fire (already ran in the
+  //              forced pass).
+  //   null     → both, in one pass (legacy behavior, all non-phased triggers).
+  phase = null,
 } = {}) {
   if (!director || !reactor || !token || !trigger) {
     return { cancelled: false, fired: [] };
@@ -413,7 +419,9 @@ export async function dispatchReactionMenu({
     else if (harnessChoice === false) harnessSkipped.push(c);
     else askable.push(c);
   }
-  for (const c of autoFire) {
+  // Phase: "ask" suppresses auto-fire (force/on already ran in the forced
+  // pass); "forced"/null run it.
+  for (const c of (phase === "ask" ? [] : autoFire)) {
     try {
       await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: c, payload,
@@ -429,6 +437,12 @@ export async function dispatchReactionMenu({
         decision: "auto",
       });
     }
+  }
+
+  // Forced pass of the transaction: auto-fires are done; the ask menu is the
+  // caller's separate ask pass. Don't surface anything here.
+  if (phase === "forced") {
+    return { cancelled: false, fired };
   }
 
   if (!askable.length) {
@@ -865,7 +879,7 @@ export async function dispatchReactionMenu({
 // `restrictTo` (optional): when present, only this reactor actor is
 // considered — used by turn_start/turn_end to fire only for the
 // acting combatant.
-export async function dispatchStandaloneTrigger({ director, trigger, restrictTo = null, payload: extraPayload = null } = {}) {
+export async function dispatchStandaloneTrigger({ director, trigger, restrictTo = null, payload: extraPayload = null, phase = null } = {}) {
   if (!director || !trigger) return 0;
   let reactors = await collectReactors(director);
   if (restrictTo) {
@@ -890,6 +904,7 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
       passLabel: "Pass",
       scope,
       scene,
+      phase,
     }).catch((e) => {
       warn(`dispatchStandaloneTrigger[${trigger}]: reactor ${actor?.name} threw`, e);
       return { cancelled: true, fired: [] };

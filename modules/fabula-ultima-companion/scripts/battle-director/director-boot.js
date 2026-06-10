@@ -37,6 +37,8 @@ import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
+import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
+import { crisisReactor } from "./crisis-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
@@ -193,6 +195,14 @@ async function start(arg) {
   // hooks (deleteCombat/combatEnd/updateCombat) are no-ops. The only entry to
   // stop is the End-Battle button (custom UI at the bottom-right of the
   // screen) → [BattleEnd: Manager] → [BattleEnd: Director Manager] → api.stop.
+
+  // Register engine-mandatory transaction-settle reactors (run inside
+  // settleInstance during every instance settle). Clear first so a restart
+  // doesn't stack duplicates. The crisis reactor reconciles each creature's
+  // Crisis AE by stored crisis_hp on every hp ledger event — the BD-native
+  // replacement for the retired auto-crisis-detection hook.
+  clearBuiltinReactors();
+  registerBuiltinReactor(crisisReactor);
 
   _instance = director;
   try {
@@ -612,6 +622,14 @@ function isRunning() {
   return !!_instance;
 }
 
+// Live director accessor for code paths with no `director` in scope — notably
+// the effect-damage path (`applyToActor` via deal_damage) that needs to push
+// onto the running instance's resource-ledger (`ctx._postResolveTriggers`).
+// Returns the running director or null (out of combat → callers no-op).
+function getActiveDirector() {
+  return _instance;
+}
+
 function getSourceSceneId() {
   return _instance?.dCombat?.sourceSceneId ?? null;
 }
@@ -778,6 +796,7 @@ Hooks.once("ready", () => {
     stop,
     status,
     isRunning,
+    getActiveDirector,
     getSourceSceneId,
     // Rewind tool (GM-only). See [[director-rewind-tool-plan]].
     history,
