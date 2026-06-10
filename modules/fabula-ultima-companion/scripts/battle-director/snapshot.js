@@ -104,6 +104,26 @@ export function applyAffinityToDamage(damage, code) {
   }
 }
 
+// Weapon efficiency — the target's per-weapon-type incoming multiplier (RAW
+// per-weapon armor/vulnerability). The INCOMING twin of element affinity:
+// element → `affinity_N` (VU/RS/IM/AB), weapon family → `<family>_ef` (a percent,
+// 25–200, default 100). One resolver so both the effect ruleset and the attack
+// path read the same source of truth.
+//
+// `weaponType` may be the bare family ("sword", "brawling", "arcane") — the BD
+// weapon snapshot's form — or the already-suffixed legacy key ("sword_ef"); both
+// resolve to `system.props.<family>_ef`. No type / "none" → 100 (inert), so
+// spells / MP / effect damage pass through untouched. Returns a percent; the
+// caller applies `ceil(value * pct / 100)`. Mirrors legacy `actorData[weaponType]
+// || 100` — 0 / NaN / missing all fold to 100 (no accidental zero-out).
+export function readWeaponEfficiency(target, weaponType) {
+  const fam = String(weaponType ?? "").trim().toLowerCase();
+  if (!fam || fam === "none" || fam === "none_ef") return 100;
+  const key = fam.endsWith("_ef") ? fam : `${fam}_ef`;
+  const v = Number(target?.system?.props?.[key]);
+  return Number.isFinite(v) && v > 0 ? v : 100;
+}
+
 // Numeric prop reader with multiple candidate keys + default.
 export function readPropNum(actor, keys, fallback = 0) {
   const props = actor?.system?.props ?? actor?.system ?? {};

@@ -39,6 +39,7 @@ import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -323,6 +324,12 @@ async function resolveAction(director, ar, opts = {}) {
   // Skill/Spell effect_kinds never read these, so this is inert for them.
   ctx.actionResult = ar;
   ctx.actionView = view;
+  // Battle-log sink for THIS action: every commit (hits, via applyDamageToTarget's
+  // logContext) + every miss (below) + any deal_damage riders fired through this
+  // ctx push their {entry,row} here; we flush ONCE at the end → a Multi-N action
+  // is one write, not N. Threaded onto ctx so rider effects coalesce too.
+  const battleLogSink = [];
+  ctx.battleLogSink = battleLogSink;
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   try {
@@ -361,7 +368,20 @@ async function resolveAction(director, ar, opts = {}) {
       // Pierce keyword (action-agnostic): a pierce-miss still deals its
       // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
       // in COMPUTE for ANY action carrying Pierce — not just Attack.
-      if (!r.hit && !r.pierceMiss) { playMissVfx({ tokenUuid: r.tokenUuid }); continue; }
+      if (!r.hit && !r.pierceMiss) {
+        playMissVfx({ tokenUuid: r.tokenUuid });
+        // Whiff → a Miss row (no commit, so logged here, not at the seam).
+        battleLogSink.push(buildMissRow({
+          attackerName: casterActor.name,
+          targetName: r.name,
+          element: ar.damageType ?? "elementless",
+          accuracy: ar.roll?.total ?? null,
+          weaponType: ar.weapon?.weaponType ?? null,
+          range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+          sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+        }));
+        continue;
+      }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -386,6 +406,23 @@ async function resolveAction(director, ar, opts = {}) {
           tokenUuid: r.tokenUuid,
           logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
           logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
+          // Battle Log: hit row, pushed to this action's shared sink (flushed
+          // once at the end). Rich attacker context from the action result.
+          // (`efficiency` is omitted → the row shows 100%. The BD does NOT apply
+          // weapon efficiency at all today — neither action-profile nor the
+          // incoming ruleset — so 100% honestly reflects current behavior. If
+          // weapon efficiency lands (target-side, gated on weaponType), surface
+          // the real % here too. See the damage-unification Phase-6 note.)
+          logContext: {
+            attackerName: casterActor.name,
+            element: ar.damageType ?? "elementless",
+            weaponType: ar.weapon?.weaponType ?? null,
+            range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+            accuracy: ar.roll?.total ?? null,
+            isCrit: !!ar.roll?.isCrit,
+            sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+            sink: battleLogSink,
+          },
         });
         const finalValue = dmgRes.finalValue;
         const valueType = dmgRes.resource;
@@ -647,6 +684,12 @@ async function resolveAction(director, ar, opts = {}) {
       },
     });
   }
+
+  // 9. Flush this action's Battle Log in ONE write — Multi-N action = one
+  //    row-batch, not N. Hits were pushed by applyDamageToTarget's logContext,
+  //    misses in the damage loop, and any deal_damage riders via the shared
+  //    ctx.battleLogSink. Last step so it captures the whole action.
+  if (battleLogSink.length) await appendBattleLog(battleLogSink);
 }
 
 // Stash a passive-trigger config in ctx so RESOLVE.onEnter's tail can
@@ -3784,7 +3827,6 @@ const Cleanup = {
   async onEnter(director) {
     director.ctx.actionResult = null;
     director.ctx.currentWeapon = null;
-    director.ctx.pendingTriggers.length = 0;
     director.ctx.reactionDepth = 0;
 
     // Multi-pass attacks (Two-Weapon Fighting): if more passes remain in
