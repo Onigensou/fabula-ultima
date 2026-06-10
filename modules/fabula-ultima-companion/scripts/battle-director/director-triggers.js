@@ -81,6 +81,26 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // (when present) so `target_ref: "action_targets"` in the apply_ae chain
   // resolves cleanly.
   "creature_guards",
+  // Resource-ledger triggers — the SINGLE post-commit event family for any
+  // resource value moving (HP, MP, IP, FP, zero_power, shield, zenit, enmity).
+  // "Damage" is NOT a separate event family — it's a `cause` of a loss (the
+  // payload carries cause: damage|hazard|cost|drain|grant|heal + attacker
+  // context when cause==damage). `damage` = creature-inflicted attack;
+  // `hazard` = Burn/Poison/environment (deal_damage default), which must NOT
+  // trip player-inflicted-damage reactions. Reactions filter via reaction_resource_filter
+  // + reaction_cause_filter. Fired (subject = the creature whose resource
+  // changed) from every BD commit point: the damage loop, consume_resource,
+  // grant, and applyToActor. NOTE: attacker-side `creature_deals_damage` stays
+  // separate (it's not a resource change on the actor), as does the PRE-commit
+  // damage-adjustment layer (Guard/DR/Mercy reduce before the write).
+  "creature_lose_resource",
+  "creature_gain_resource",
+  // Status-ledger triggers — fired (subject = the creature whose status changed)
+  // when an AE that represents a status lands/leaves during a settle. The
+  // built-in crisis reactor emits these when it applies/removes the Crisis AE,
+  // so reactions (On the Hunt: "when an enemy enters Crisis") can chain off them.
+  "creature_status_applied",
+  "creature_loses_status",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),
@@ -162,6 +182,12 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_completes_item":    "post-resolve",
   "creature_takes_damage":      "post-resolve",
   "creature_guards":            "post-resolve",
+  // Resource-ledger family (post-commit, subject = the changed creature).
+  "creature_lose_resource":     "post-resolve",
+  "creature_gain_resource":     "post-resolve",
+  // Status-ledger family (post-commit, subject = the creature gaining/losing it).
+  "creature_status_applied":    "post-resolve",
+  "creature_loses_status":      "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",

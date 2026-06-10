@@ -38,7 +38,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -414,6 +414,17 @@ async function resolveAction(director, ar, opts = {}) {
         };
         try { await firePostDamageEffect(skill, ctx, damagePayload); }
         catch (e) { warn("Skill resolve: firePostDamageEffect threw", e); }
+
+        // Part 1 — unified resource-ledger trigger. Fire creature_lose_resource /
+        // creature_gain_resource on the creature whose HP/MP just changed (cause:
+        // "damage"). Queued (post-save) + supervised. Part 2's crisis reactor
+        // listens here (resource=hp); any "when my <resource> changes" skill too.
+        fireResourceChangeTrigger({
+          director, actor: targetActor, tokenUuid: r.tokenUuid,
+          resource: valueType, direction: valueDirection, amount: finalValue,
+          cause: "damage",
+          source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
+        });
       } catch (e) {
         err("Skill resolve: damage application failed", r, e);
       }
@@ -3693,15 +3704,16 @@ const Resolve = {
     // Vanish (and the AE it added). Without this re-ordering the
     // reaction-applied AE landed in the snapshot and required two
     // rewinds to remove.
-    const queued = Array.isArray(director.ctx?._postResolveTriggers)
-      ? director.ctx._postResolveTriggers : [];
-    director.ctx._postResolveTriggers = [];
-    for (const cfg of queued) {
-      try {
-        await firePassiveTriggers({ director, ...cfg });
-      } catch (e) {
-        warn(`RESOLVE: post-save passive trigger "${cfg?.trigger}" threw`, e);
-      }
+    // Generalized to the same transaction settle used at Start-of-Turn: drains
+    // the resource ledger to quiescence AND runs the built-in engine reactors
+    // (crisis), so attack/effect-damage HP changes fold into the crisis cascade
+    // — not just Start-of-Turn ticks. Authored-reaction behavior is unchanged
+    // (settleInstance drains each event via the same firePassiveTriggers call).
+    try {
+      const { settleInstance } = await import("./instance-settle.js");
+      await settleInstance(director, { reason: "resolve" });
+    } catch (e) {
+      warn("RESOLVE: settleInstance threw", e);
     }
 
     // Crit → stamp opportunity payload so the RESOLVE transition branches to
@@ -3964,7 +3976,13 @@ const StandaloneReactionWindow = {
     // dispatch + queue-check loop below runs on the same trigger.
     // The pop fires regardless of save/resume — the routing target
     // (top.resumeAt = SRW) is what brought us back here.
-    if (topIsSrwDetour(ctx)) {
+    // Re-entry after a FAW detour (free-action drain) is marked by the
+    // srwDetour frame on top. Capture it BEFORE popping: for phased
+    // (transactional) triggers it tells us the forced pass + settle +
+    // checkpoint already ran on the first entry, so we skip straight to the
+    // ask pass and don't re-tick Burn / re-settle.
+    const wasReentry = topIsSrwDetour(ctx);
+    if (wasReentry) {
       popFrame(director);
     }
 
@@ -3977,9 +3995,52 @@ const StandaloneReactionWindow = {
       return;
     }
     log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget}, depth ${stackDepth(ctx)})`);
+    // Transactional instance frame — Start-of-Turn / Start-of-Conflict run as a
+    // transaction: a deterministic FORCED pass (ticks like Burn commit + forced
+    // grants enqueue) → settleInstance drains the resource ledger to quiescence
+    // (T1; crisis cascade plugs in here in a later batch) → CHECKPOINT (the
+    // commit point, after the forced result is settled) → ASK pass (player
+    // reactions). Mandatory free-action cards enqueued above drain through the
+    // existing FAW detour below (T2), after the checkpoint. Other standalone
+    // triggers keep the legacy single combined pass for now.
+    const PHASED = trigger === "turn_start" || trigger === "conflict_start";
     try {
-      const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
-      if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
+      if (PHASED) {
+        if (!wasReentry) {
+          // FORCED pass — auto-fire force/on (Burn commits + populates the
+          // ledger; action-creating grants like High Speed enqueue freeActionQueue).
+          await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });
+          // Combat-start crisis seed — apply/remove Crisis on every combatant by
+          // current HP (the event-driven crisis reactor only fires on HP CHANGES,
+          // so a creature already below threshold at combat start needs this).
+          if (trigger === "conflict_start") {
+            try {
+              const { sweepCrisis } = await import("./crisis-reactor.js");
+              await sweepCrisis(director);
+            } catch (e) { warn("STANDALONE_REACTION_WINDOW: conflict_start crisis sweep threw", e); }
+          }
+          // SETTLE (T1) — drain the resource ledger, re-firing to quiescence.
+          try {
+            const { settleInstance } = await import("./instance-settle.js");
+            await settleInstance(director, { reason: trigger });
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settleInstance threw`, e); }
+          // CHECKPOINT — transaction commit point (forced reactions settled).
+          try {
+            const lbl = rewindPhaseLabel(ctx, director.dCombat?.round);
+            await saveDirectorState(director, {
+              label: `${lbl} · settled`,
+              description: "Forced reactions settled — awaiting player decision",
+            });
+          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settle checkpoint failed`, e); }
+        }
+        // ASK pass — surface player-facing reactions only (auto-fires suppressed;
+        // already-decided asks deduped by scope idempotency). Runs every entry.
+        const spawned = await dispatchStandaloneTrigger({ director, trigger, payload, phase: "ask" });
+        if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} ask pass dispatched ${spawned} menu(s)`);
+      } else {
+        const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });
+        if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} dispatched ${spawned} reactor menu(s)`);
+      }
     } catch (e) {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }

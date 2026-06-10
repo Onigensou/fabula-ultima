@@ -606,6 +606,29 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
       return false;
     }
   }
+
+  // 4. Resource-ledger filters (creature_lose_resource / creature_gain_resource).
+  //    Blank = any (no-op for every existing row). reaction_resource_filter
+  //    matches payload.resource (hp/mp/ip/fp/…); reaction_cause_filter matches
+  //    payload.cause (damage/cost/drain/grant/heal).
+  const wantResource = String(row.reaction_resource_filter ?? "").trim().toLowerCase();
+  if (wantResource && String(payload?.resource ?? "").toLowerCase() !== wantResource) {
+    log(`passive ${item.name}: resource filter failed — want="${wantResource}" got="${payload?.resource}"`);
+    return false;
+  }
+  const wantCause = String(row.reaction_cause_filter ?? "").trim().toLowerCase();
+  if (wantCause && String(payload?.cause ?? "").toLowerCase() !== wantCause) {
+    log(`passive ${item.name}: cause filter failed — want="${wantCause}" got="${payload?.cause}"`);
+    return false;
+  }
+  // 5. Status-ledger filter (creature_status_applied / creature_loses_status).
+  //    Blank = any. reaction_status_filter matches payload.status (e.g. "Crisis").
+  //    Used by On the Hunt ("when an enemy enters Crisis").
+  const wantStatus = String(row.reaction_status_filter ?? "").trim().toLowerCase();
+  if (wantStatus && String(payload?.status ?? "").toLowerCase() !== wantStatus) {
+    log(`passive ${item.name}: status filter failed — want="${wantStatus}" got="${payload?.status}"`);
+    return false;
+  }
   return true;
 }
 
@@ -1137,6 +1160,11 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     reactorToken,
     skill: skillForCtx,
     dCombat: director?.dCombat ?? null,
+    director: director ?? null,
+    // Carrier identity for itemized resource-ledger lines (originLabel/Uuid):
+    // the AE or item running these effects (e.g. "Burn").
+    sourceLabel: carrier?.name ?? null,
+    sourceUuid: carrier?.uuid ?? null,
     payload,
     // Pass the action's target list through — `target_ref:
     // "ally_action_targets"` (Healing Power) + `hit_action_targets`
@@ -1410,6 +1438,59 @@ export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinit
 // collection, auto-fire, ask-mode menu, harness override, AE consume-
 // self / charges bookkeeping — happens downstream in dispatchReactionMenu
 // → firePreAcceptedCandidate.
+// ── Resource-ledger trigger ──────────────────────────────────────────────
+// Queue a `creature_lose_resource` / `creature_gain_resource` event for
+// post-save, supervised dispatch (drained at RESOLVE's tail via
+// firePassiveTriggers — same path + timing as creature_deals_damage, so
+// reaction-applied AEs land after the rewind anchor). This is the SINGLE
+// post-commit "resource ledger" family: HP/MP/IP/FP/zero_power/shield/etc.
+// "Damage" is a `cause`, not its own event — the payload carries
+// cause ∈ damage|hazard|cost|drain|grant|heal (+ attacker/source for
+// cause==damage). damage = inflicted attack; hazard = Burn/Poison/environment.
+// Reactor (= subject) is the creature whose resource changed; its own
+// reaction_source:"self" rows fire, and Part 2's built-in crisis reactor reads
+// the subject. No-op without a director (out of combat) — resource reactions
+// are combat-context by design. Rows filter via reaction_resource_filter +
+// reaction_cause_filter (see passesMatchFilters).
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null }) {
+  if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
+  if (direction !== "loss" && direction !== "recover") return;
+  if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+  director.ctx._postResolveTriggers.push({
+    casterActor: actor,
+    trigger: direction === "loss" ? "creature_lose_resource" : "creature_gain_resource",
+    payload: {
+      resource: String(resource).toLowerCase(),
+      amount,
+      cause: cause ?? null,
+      direction,
+      // ── Itemized source identity (NEVER summed across lines) ──
+      // Distinct from `cause` (the deferred category axis): these answer
+      // "which effect contributed this exact line + by how much", so the
+      // turn breakdown can render "−5 Burn / −10 Poison" and a per-source
+      // reaction can match exactly one line. `element` = fire|poison|… ;
+      // `originLabel` = display name (the AE/skill, e.g. "Burn"); `originUuid`
+      // = the originating effect/item.
+      element: element ?? null,
+      originLabel: originLabel ?? null,
+      originUuid: originUuid ?? null,
+      // The reaction_source filter (self/ally/enemy) keys off
+      // `payload.sourceActorUuid` — so it MUST be the SUBJECT of this event =
+      // the creature whose resource changed (its own "self" rows fire; an
+      // observer's "enemy" rows resolve against it). Mirrors how
+      // creature_deals_damage sets sourceActorUuid = the acting creature.
+      sourceActorUuid: actor.uuid,
+      sourceTokenUuid: tokenUuid ?? null,
+      subjectActorUuid: actor.uuid,
+      subjectTokenUuid: tokenUuid ?? null,
+      // Who/what CAUSED the change (e.g. the attacker, for cause==damage) — for
+      // reflect/leech-style reactions (Painful Lesson). NOT the source filter.
+      causeActorUuid: source.actorUuid ?? null,
+      causeTokenUuid: source.tokenUuid ?? null,
+    },
+  });
+}
+
 export async function firePassiveTriggers({ director, casterActor, trigger, payload, skipEvaluated }) {
   if (!casterActor || !trigger) return { fired: [] };
 
@@ -1588,6 +1669,7 @@ async function _legacy_firePassiveTriggers_unused({ director, casterActor, trigg
       reactorToken,
       skill: skillForCtx,
       dCombat: director?.dCombat ?? null,
+      director: director ?? null,
       payload,
       actionTargetUuids: payload?.targetTokenUuids ?? [],
       hitActionTargetUuids: payload?.hitTargetTokenUuids ?? payload?.targetTokenUuids ?? [],
@@ -2229,6 +2311,13 @@ async function applyDealDamageEffect(row, ctx) {
   // the target's resistances. Default off, so elemental ticks (Burn) still
   // respect affinity. Reads the declarative `damage_ignore_affinity` checkbox.
   const ignoreAffinity = row.damage_ignore_affinity === true || String(row.damage_ignore_affinity).toLowerCase() === "true";
+  // Resource-ledger cause: deal_damage is direct/elemental damage (status ticks,
+  // opposed-check consequences, riders), so it's HAZARD by default — it must NOT
+  // trip "player-inflicted damage" reactions the way a real attack does. Authors
+  // set damage_cause:"damage" for inflicted deal_damage that should count as an
+  // attack. (Real attacks route through applyDamageToTarget, which stamps
+  // cause:"damage" directly.)
+  const damageCause = String(row.damage_cause ?? "").trim().toLowerCase() || "hazard";
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
@@ -2267,6 +2356,39 @@ async function applyDealDamageEffect(row, ctx) {
         verbosity,
       });
       applied.push({ actorUuid: actor.uuid, amount, element, final: res?.finalDamage ?? res?.applied ?? null });
+
+      // Resource-ledger (Part 1 / "1b"): itemize EVERY resource this hit
+      // actually moved (hp / mp / shield) onto the running director's
+      // post-commit ledger, so the Start-of-Turn transaction's settle (crisis
+      // reactor etc.) and the turn breakdown see one line per source. Derived
+      // from the from/to bands so shield-absorption (shield drops, hp doesn't)
+      // and Absorb-affinity (hp.to > hp.from → "recover") are handled exactly.
+      // One event per changed resource; never summed. No-op out of combat
+      // (getActiveDirector() → null) — resource reactions are combat-context.
+      const _director = ctx?.director
+        ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+      if (_director && res) {
+        for (const key of ["hp", "mp", "shield"]) {
+          const band = res[key];
+          if (!band || band.from === band.to) continue;
+          const delta = band.to - band.from;
+          fireResourceChangeTrigger({
+            director: _director,
+            actor,
+            tokenUuid: token.document?.uuid ?? null,
+            resource: key,
+            direction: delta < 0 ? "loss" : "recover",
+            amount: Math.abs(delta),
+            cause: damageCause,          // hazard (default) | damage (declared)
+            element,                     // itemized identity
+            // Source name for the breakdown: an explicit attacker_name wins,
+            // else the carrier (AE/item, e.g. "Burn"), else the skill, else
+            // the generic damage label.
+            originLabel: row.attacker_name || ctx.sourceLabel || ctx.skill?.name || attackerName,
+            originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+          });
+        }
+      }
     } catch (e) {
       warn(`skill-effects.deal_damage: applyToActor failed on ${actor.name}`, e);
     }

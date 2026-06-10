@@ -20,8 +20,10 @@
  *      `open_action_menu` + `free_mode: true` (enqueues a free-action grant +
  *      mini-turn restricted to Attack via `allowed_types`) + `free_hr_as_zero:
  *      true` (the granted attack zeroes HR for damage — same knob as Hawkeye
- *      option b). The reaction (creature_enter_crisis / source enemy / mode
- *      ask) is already correct — "may" → the GM is prompted to take it.
+ *      option b). The reaction is re-pointed onto the BD crisis cascade:
+ *      `creature_status_applied` (status "Crisis") / source enemy / mode `on`
+ *      (auto-grant; GM-customizable). The legacy `creature_enter_crisis` trigger
+ *      had no BD consumer.
  *      LIMITATION: the engine does not yet lock the free attack's target to the
  *      crisis creature (freeActionQueue.lockedTargetTokenUuid is a future hook),
  *      so the GM targets that creature manually during the mini-turn.
@@ -116,6 +118,21 @@ const PATCHES = {
         free_hr_as_zero: true,
       },
     },
+    // Re-point the reaction off the dead legacy `creature_enter_crisis` (no BD
+    // consumer) onto the BD-native crisis cascade: the built-in crisis reactor
+    // emits `creature_status_applied` (status "Crisis") when a creature drops to
+    // its crisis threshold; On the Hunt watches an ENEMY gain it. mode `on` =
+    // auto-grant the free attack (GM can switch to ask). Was: creature_enter_crisis
+    // / enemy / ask.
+    reaction_row_set: [{
+      ref: "hunt_free_attack",
+      set: {
+        reaction_trigger:        "creature_status_applied",
+        reaction_source:         "enemy",
+        reaction_passive_mode:   "on",
+        reaction_status_filter:  "Crisis",
+      },
+    }],
   },
   "Flame Breath": {
     reaction_cond: [{ ref: "apply_burn", cond: "TRIGGER_IS_SELF == 1 && chance(50)" }],
@@ -185,6 +202,34 @@ function patchReactionConds(item, specs) {
   return { table, changed, notes };
 }
 
+// Apply field-sets to reaction_config_table rows matched by reaction_effect_ref
+// — used to re-point a reaction's trigger / source / mode / filters. Returns
+// { table, changed, notes }. (If a skill ALSO uses reaction_cond, both write the
+// reaction_config_table from the live item independently — keep them on
+// separate skills, or chain them, to avoid clobbering. On the Hunt uses only
+// this one.)
+function patchReactionRow(item, specs) {
+  const src = item.system?.props?.reaction_config_table;
+  if (!src || typeof src !== "object") return { table: null, changed: false, notes: ["no reaction_config_table"] };
+  const table = foundry.utils.deepClone(src);
+  let changed = false;
+  const notes = [];
+  for (const { ref, set } of specs) {
+    let found = false;
+    for (const row of Object.values(table)) {
+      if (!row || row.$deleted) continue;
+      if (row.reaction_effect_ref === ref) {
+        found = true;
+        for (const [k, v] of Object.entries(set ?? {})) {
+          if (row[k] !== v) { row[k] = v; changed = true; notes.push(`${ref}.${k}→"${v}"`); }
+        }
+      }
+    }
+    if (!found) notes.push(`${ref}: REACTION ROW NOT FOUND`);
+  }
+  return { table, changed, notes };
+}
+
 // Deep-equality (key-order-insensitive) for idempotent drift detection.
 function stableStringify(v) {
   if (v === null || typeof v !== "object") return JSON.stringify(v);
@@ -227,6 +272,11 @@ async function patchActor(actor, log) {
       if (spec.reaction_cond) {
         const { table, changed, notes } = patchReactionConds(item, spec.reaction_cond);
         log(`  [${actor.name}] "${skillName}".reactions: ${notes.join("; ")}`);
+        if (changed && table) updates["system.props.reaction_config_table"] = table;
+      }
+      if (spec.reaction_row_set) {
+        const { table, changed, notes } = patchReactionRow(item, spec.reaction_row_set);
+        log(`  [${actor.name}] "${skillName}".reaction-row: ${notes.join("; ")}`);
         if (changed && table) updates["system.props.reaction_config_table"] = table;
       }
       if (Object.keys(updates).length) {
