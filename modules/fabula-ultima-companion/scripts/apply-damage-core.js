@@ -736,9 +736,12 @@
       const weaponKey    = extractWeaponKey(weaponType);
       const weaponNice   = weaponKey ? `${weaponKey.toLowerCase()} weapon` : "";
       const valueTypeLbl = valueType === "hp" ? "HP" : valueType === "mp" ? "MP" : "Shield";
-      const tgtDisp      = targetToken
-        ? (targetToken.document.disposition === 1 ? "ally" : targetToken.document.disposition === -1 ? "enemy" : "neutral")
-        : "neutral";
+      // targetToken may be a placeable Token (disposition on `.document`) OR a
+      // TokenDocument (disposition directly) — effect-damage via reactions
+      // (Burn et al.) passes the document. Read defensively so the battle-log
+      // step never throws after the HP write has already committed.
+      const tgtDisposition = targetToken?.document?.disposition ?? targetToken?.disposition ?? null;
+      const tgtDisp      = tgtDisposition === 1 ? "ally" : tgtDisposition === -1 ? "enemy" : "neutral";
 
       let summary = "";
       if      (currentChangeKey === "hpReduction")    summary = `${attackerName} deals ${displayAmt}${elementType !== "elementless" ? ` ${_CAP(elementType)}` : ""} damage to ${targetActor.name}${weaponNice ? ` with a ${weaponNice}` : ""} [${effLabel}] [Efficiency: ${Math.round(weaponEfficiencyUsed)}%]`;
