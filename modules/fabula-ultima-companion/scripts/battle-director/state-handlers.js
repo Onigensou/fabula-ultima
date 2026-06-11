@@ -45,6 +45,7 @@ import { rollCheck, checkVsThreshold } from "./check.js";
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
 import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
+import { STANDALONE_TRIGGERS } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
@@ -4027,15 +4028,23 @@ const StandaloneReactionWindow = {
       return;
     }
     log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget}, depth ${stackDepth(ctx)})`);
-    // Transactional instance frame — Start-of-Turn / Start-of-Conflict run as a
-    // transaction: a deterministic FORCED pass (ticks like Burn commit + forced
-    // grants enqueue) → settleInstance drains the resource ledger to quiescence
-    // (T1; crisis cascade plugs in here in a later batch) → CHECKPOINT (the
-    // commit point, after the forced result is settled) → ASK pass (player
-    // reactions). Mandatory free-action cards enqueued above drain through the
-    // existing FAW detour below (T2), after the checkpoint. Other standalone
-    // triggers keep the legacy single combined pass for now.
-    const PHASED = trigger === "turn_start" || trigger === "conflict_start";
+    // Transactional instance frame — EVERY standalone lifecycle trigger now runs
+    // as a transaction: a deterministic FORCED pass (ticks like Burn commit +
+    // forced grants enqueue) → settleInstance drains the resource ledger to
+    // quiescence (T1; crisis cascade plugs in here) → CHECKPOINT (the commit
+    // point, after the forced result is settled) → ASK pass (player reactions).
+    // Mandatory free-action cards enqueued above drain through the existing FAW
+    // detour below (T2), after the checkpoint.
+    //
+    // The forced→settle→ask ordering is what lets an ask-mode reaction SEE the
+    // AEs that a force-mode reaction committed in the same window: the ask pass
+    // re-collects candidates fresh (findPassiveCandidates), so e.g. a skill gated
+    // on a force-applied AE at round_start is offerable on the first round. The
+    // legacy single combined pass evaluated ask availability from a snapshot
+    // taken BEFORE force fired, which dropped such skills. Conflict-start crisis
+    // seeding stays gated to conflict_start (below). Every trigger that reaches
+    // this handler is a standalone trigger, so this set covers all of them.
+    const PHASED = STANDALONE_TRIGGERS.has(trigger);
     try {
       if (PHASED) {
         if (!wasReentry) {
