@@ -65,10 +65,11 @@
  *      live value is falsy/0. Like #4 this is world data, so the migration is the
  *      only durable carrier to a co-dev's Hellhound.
  *
- * IDEMPOTENT: each patch is checked against the desired value and only writes
- * on drift; a fully-migrated Hellhound re-runs as a no-op. Tagged
- * `"idempotent": true` in _manifest.json so a pulled co-dev world self-heals
- * on boot (see feedback_pulled_world_stale_author_migration).
+ * RUN ONCE: NOT manifest-tagged `idempotent` (changed 2026-06-12), so it runs a
+ * single time then stays in the appliedMigrations ledger — it will NOT re-apply
+ * over a co-dev's later edits to these skills. Co-dev delivery is via WORLD-DATA
+ * PUSH (see feedback_world_data_sharing_hazard). The patch logic is still
+ * drift-safe (checks desired value, no-ops if already correct) if it does re-run.
  *
  * NOTE: Hellhound is a CO-DEV-owned world actor (Current Dungeon). This
  * migration is the durable carrier for these fixes — do not hand-edit the

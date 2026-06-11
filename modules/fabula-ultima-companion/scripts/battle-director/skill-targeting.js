@@ -120,6 +120,18 @@ async function resolveTargetingRow(row, ctx) {
   const excludeSelf = !!row.exclude_self;
   const autoConfirm = row.auto_confirm_when_obvious !== false;       // default true
   const skipWhenPassive = row.skip_when_passive !== false;            // default true
+  // Auto-target mode — what happens on an ASSURED target (self / all / single):
+  //   "skip"    → resolve silently, never prompt
+  //   "confirm" → always show a locked Confirm (pre-selected, can't change)
+  //   "auto" / absent → ROLE-BASED: the GM resolves silently (better pace when
+  //                     running NPCs), but a PLAYER gets the locked Confirm so they
+  //                     see what their action is committing to.
+  // Legacy boolean tolerated (true = skip, false = confirm).
+  const _at = row.auto_target;
+  const autoMode = _at === true ? "skip" : _at === false ? "confirm"
+    : String(_at ?? "auto").trim().toLowerCase();
+  const isGM = !!game.user?.isGM;
+  const autoTarget = autoMode === "skip" ? true : (autoMode === "confirm" ? false : isGM);
 
   // 1. Build candidate pool.
   let pool = await buildCandidatePool(candidateSource, ctx);
@@ -151,17 +163,33 @@ async function resolveTargetingRow(row, ctx) {
   if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
 
   // 4. Apply mode.
-  // mode=all OR skip_when_passive in passive context OR auto_confirm
-  // when pool has exactly one element → take the whole pool / single
-  // element without prompting.
-  if (mode === "all") {
-    return { ok: true, tokens: [...pool] };
-  }
+  // Passive auto-fires resolve silently — they're automatic, no decision to make;
+  // never pester a player to confirm a reaction the engine fired for them.
   if (skipWhenPassive && ctx.isPassive) {
     return { ok: true, tokens: [...pool] };
   }
+  // mode=all OR auto_confirm when pool has exactly one element → the target set is
+  // ASSURED (no real choice). `autoTarget` decides: skip silently (GM, or "skip")
+  // or surface a locked-confirm the actor just acknowledges (player on "auto", or
+  // "confirm").
+  const assured = async (tokens) => {
+    if (autoTarget) return { ok: true, tokens };
+    const picked = await promptBdPick({ row, pool: tokens, n: tokens.length, mode, ctx, locked: true });
+    if (picked?.cancelled) return { ok: false, cancelled: true, reason: "cancelled", tokens: [] };
+    if (!picked?.ok || !picked.tokens?.length) {
+      // Picker unavailable (no DOM / harness) — fall back to the assured set so
+      // the chain still completes. Locked confirm can't change the selection
+      // anyway, so this is behaviorally equivalent to a confirm.
+      warn(`skill-targeting: row "${row.effect_label}" needs a locked confirm but picker returned no tokens (${picked?.reason ?? "?"}); using the assured set.`);
+      return { ok: true, tokens };
+    }
+    return { ok: true, tokens: picked.tokens };
+  };
+  if (mode === "all") {
+    return assured([...pool]);
+  }
   if (autoConfirm && pool.length === 1) {
-    return { ok: true, tokens: [...pool] };
+    return assured([...pool]);
   }
 
   // Ambiguous pick — pool has more candidates than we need. Prompt via
@@ -173,7 +201,9 @@ async function resolveTargetingRow(row, ctx) {
   // `auto_confirm_when_obvious` didn't resolve to one.
   const n = mode === "up_to" ? Math.min(count, pool.length) : Math.min(count, pool.length);
   if (pool.length <= n) {
-    return { ok: true, tokens: pool.slice(0, n) };
+    // No genuine choice (candidates ≤ needed) — assured. Auto-target governs
+    // whether to take it silently or lock-confirm it.
+    return assured(pool.slice(0, n));
   }
   const picked = await promptBdPick({ row, pool, n, mode, ctx });
   if (picked?.cancelled) {
@@ -202,7 +232,7 @@ async function resolveTargetingRow(row, ctx) {
 // separate enhancement; depends on adding a server-roundtrip to
 // `target-picker.js` or an IntentChannel message to ferry the pick
 // across clients.
-async function promptBdPick({ row, pool, n, mode, ctx }) {
+async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
   // Convert the token-doc pool into target-picker.js's "eligible
   // snapshot" shape — minimum required fields are `tokenId` + `tokenUuid`
   // (used to look up canvas tokens for ring placement) plus a few
@@ -222,16 +252,20 @@ async function promptBdPick({ row, pool, n, mode, ctx }) {
     return { ok: false, reason: "no-eligible-tokens", tokens: [] };
   }
 
-  const titleText = ctx?.skill?.name
-    ? `Pick a target for ${ctx.skill.name}`
-    : `Pick ${n} target${n === 1 ? "" : "s"}`;
+  // `locked` (auto_target=off) — every eligible token is pre-selected and the
+  // selection can't be changed; the player only confirms. Force an interactive
+  // mode (`mode: "all"` would auto-resolve with no prompt) + lockSelection.
+  const titleText = locked
+    ? (ctx?.skill?.name ? `Confirm targets for ${ctx.skill.name}` : `Confirm ${eligible.length} target${eligible.length === 1 ? "" : "s"}`)
+    : (ctx?.skill?.name ? `Pick a target for ${ctx.skill.name}` : `Pick ${n} target${n === 1 ? "" : "s"}`);
 
   try {
     const result = await requestBdTargetPicker({
       director: ctx?.director ?? null,
       eligible,
-      mode: mode === "up_to" ? "up_to" : "exact",
-      count: n,
+      mode: locked ? "exact" : (mode === "up_to" ? "up_to" : "exact"),
+      count: locked ? eligible.length : n,
+      lockSelection: locked,
       titleText,
     });
     if (!result?.ok) {

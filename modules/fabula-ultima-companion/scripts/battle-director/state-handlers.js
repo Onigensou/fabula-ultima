@@ -463,6 +463,20 @@ async function resolveAction(director, ar, opts = {}) {
           resource: valueType, direction: valueDirection, amount: finalValue,
           cause: "damage",
           source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
+          // Itemized identity + "how it changed" context (the attack site has the
+          // full action result; the tick site can't supply weapon/roll fields).
+          element: damageTypeForPayload,                     // fire/ice/… (recover → "healing")
+          originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
+          originUuid: skill?.uuid ?? null,
+          weaponType: ar.weapon?.weaponType ?? null,
+          weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+          actionKind: view?.kind ?? null,
+          actionIntent: ar.actionIntent ?? null,
+          isCrit: !!ar.roll?.isCrit,
+          isFumble: !!ar.roll?.isFumble,
+          accuracyTotal: ar.roll?.total ?? null,
+          highRoll: ar.roll?.hr ?? null,
+          pierce: !!r.pierceMiss,
         });
       } catch (e) {
         err("Skill resolve: damage application failed", r, e);

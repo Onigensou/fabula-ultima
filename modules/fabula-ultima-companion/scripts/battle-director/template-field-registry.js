@@ -29,6 +29,9 @@ const OAM_VIS = `equalText(sameRow("effect_kind",''), "open_action_menu")`;
 const DEAL_VIS = `equalText(sameRow("effect_kind",''), "deal_damage")`;
 const ADJUST_VIS = `equalText(sameRow("effect_kind",''), "adjust_damage")`;
 const DEAL_OR_ADJUST_VIS = `or(equalText(sameRow("effect_kind",''), "deal_damage"), equalText(sameRow("effect_kind",''), "adjust_damage"))`;
+const TGT_VIS = `equalText(sameRow("effect_kind",''), "targeting")`;
+const APPLY_AE_VIS = `equalText(sameRow("effect_kind",''), "apply_ae")`;
+const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -38,11 +41,11 @@ function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
     colName, readonlyPredefined: false,
   };
 }
-function checkboxCol(key, colName, { tooltip = "", vis = "" } = {}) {
+function checkboxCol(key, colName, { tooltip = "", vis = "", defaultChecked = false } = {}) {
   return {
     key, colSpan: 1, rowSpan: 1, cssClass: "", role: 0, editRole: 0, permission: 0,
     tooltip, visibilityFormula: vis,
-    type: "checkbox", size: "full-size", label: "", defaultChecked: false, align: "left",
+    type: "checkbox", size: "full-size", label: "", defaultChecked, align: "left",
     colName, readonlyPredefined: false,
   };
 }
@@ -101,6 +104,34 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "outgoing", value: "Outgoing (attacker, pre-resolve)" },
     { key: "incoming", value: "Incoming (victim, at HP-write)" },
   ], { tooltip: "Which side adjust_damage modifies.", vis: ADJUST_VIS, defaultValue: "outgoing" }),
+  // apply_action_keyword config — which keyword to tag the in-flight hit with.
+  // Extensible: each new keyword = one option here + one branch in
+  // recomputePerTargetDamages. Author via a creature_will_deal_damage reaction
+  // (e.g. Chomp: TRIGGER_IS_SELF == 1 && RAW_DAMAGE >= 100 → apply_action_keyword pierce).
+  selectCol("action_keyword", "Action Keyword", [
+    { key: "pierce", value: "Pierce (ignore Resistance)" },
+  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Pierce = the target's Resistance (RS) is treated as neutral for this hit (VU/IM/AB unchanged).", vis: KEYWORD_VIS, defaultValue: "pierce" }),
+  // Optional gate for the keyword, evaluated AFTER pre-resolve bonuses (so it can
+  // reference FINAL_DAMAGE — the post-bonus, pre-affinity hit). Blank = always.
+  // e.g. Chomp pierce: "FINAL_DAMAGE >= 100".
+  textCol("condition_formula", "Keyword Condition", { tooltip: "apply_action_keyword gate (blank = always). Evaluated after pre-resolve bonuses; can use FINAL_DAMAGE (post-bonus, pre-affinity hit). e.g. FINAL_DAMAGE >= 100.", vis: KEYWORD_VIS }),
+  // targeting config — Auto-target. Governs ASSURED targets (self / all / single).
+  // "auto" (default) is ROLE-BASED: the GM resolves silently for pace; a PLAYER
+  // gets a locked Confirm so they see what they're committing to. "skip" = never
+  // prompt (either role); "confirm" = always lock-prompt (either role). Engine
+  // reads it in skill-targeting.resolveTargetingRow; passive auto-fires always
+  // skip regardless. Default "auto" so a sheet save preserves the role-based behavior.
+  // apply_ae add_charges config — charge count to grant/increment. Data-only until
+  // now (the add_charges option migration never added the column), so a sheet save
+  // could strip it and an "+1 per turn" stacker would fall back to the template's
+  // default charges. Register so boot-3b self-heals the column. See Burning Grasp.
+  textCol("ae_initial_charges", "Initial Charges", { tooltip: "apply_ae: charge count to grant (add_charges: amount to add per application; otherwise the new AE's starting charges). Blank = AE template's charges.", vis: APPLY_AE_VIS }),
+  textCol("ae_initial_charges_max", "Charges Max", { tooltip: "apply_ae add_charges: cap on total charges. Blank = template chargesMax / uncapped.", vis: APPLY_AE_VIS }),
+  selectCol("auto_target", "Auto-target", [
+    { key: "auto",    value: "Auto — GM skips, player confirms (default)" },
+    { key: "skip",    value: "Always skip (no prompt)" },
+    { key: "confirm", value: "Always confirm (locked prompt)" },
+  ], { tooltip: "Assured targets (self/all/single): Auto = GM silent for pace + player gets a locked Confirm; Skip = never prompt; Confirm = always lock-prompt.", vis: TGT_VIS, defaultValue: "auto" }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

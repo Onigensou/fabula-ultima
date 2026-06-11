@@ -470,8 +470,7 @@
     },
     {
       "key": "2026-06-09-dungeon-hellhound-author",
-      "path": "data-migrations/2026-06-09-dungeon-hellhound-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-09-dungeon-hellhound-author.js"
     },
     {
       "key": "2026-06-09-grappled-status-author",
@@ -487,6 +486,26 @@
       "key": "2026-06-09-grappling-reciprocal-author",
       "path": "data-migrations/2026-06-09-grappling-reciprocal-author.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-06-12-dungeon-salamander-author",
+      "path": "data-migrations/2026-06-12-dungeon-salamander-author.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-fireslime-author",
+      "path": "data-migrations/2026-06-12-dungeon-fireslime-author.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-burninghand-author",
+      "path": "data-migrations/2026-06-12-dungeon-burninghand-author.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-inferex-author",
+      "path": "data-migrations/2026-06-12-dungeon-inferex-author.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-inferex-chomp-author",
+      "path": "data-migrations/2026-06-12-dungeon-inferex-chomp-author.js"
     }
   ]
 }

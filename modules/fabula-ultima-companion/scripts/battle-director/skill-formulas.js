@@ -358,6 +358,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "BOND_COUNT_AFFECTION":  return countBondsByEmotion(actor, "affection");
       case "BOND_COUNT_HATRED":     return countBondsByEmotion(actor, "hatred");
       // Damage-card payload reads (per-target — payload is per-event)
+      // RAW_DAMAGE: the PRE-affinity damage this hit WILL deal — available on the
+      // pre-resolve creature_will_deal_damage payload (state-handlers stamps
+      // rawDamage per target). For conditions that gate on the size of the
+      // pending hit, e.g. Chomp's "if the damage dealt is ≥ 100, gain Pierce"
+      // (RAW_DAMAGE >= 100). Distinct from DAMAGE_DEALT (post-affinity, set at
+      // HP-write on creature_deals_damage).
+      case "RAW_DAMAGE":         return Number(payload?.rawDamage) || 0;
+      // FINAL_DAMAGE: the outgoing hit AFTER pre-resolve bonuses (add/multiply)
+      // but BEFORE the target's affinity — what an attack is about to deal. Set
+      // by computeSenderDamageBonuses' keyword-condition pass so a keyword gate
+      // (e.g. pierce "FINAL_DAMAGE >= 100") sees the post-multiply value.
+      case "FINAL_DAMAGE":       return Number(payload?.finalDamage) || 0;
       case "DAMAGE_DEALT":       return Number(payload?.finalValue) || 0;
       case "DAMAGE_DEALT_TOTAL": return Number(payload?.finalValue) || 0;
       case "HP_DEALT":     return payload?.valueType === "hp" ? (Number(payload?.finalValue) || 0) : 0;
@@ -538,6 +550,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         return ids.some((u) => u && String(u).trim() === carrierUuid) ? 1 : 0;
       }
       default:
+        // Dynamic TRIGGER_DAMAGE_IS_<ELEMENT> identifier — 1 when the damage
+        // event that fired this trigger was of <ELEMENT>, else 0. Reads
+        // `payload.element` (fire/ice/bolt/earth/air/light/dark/physical/poison),
+        // populated on creature_lose_resource / creature_gain_resource and the
+        // damage-event payloads. The tokenizer has NO string literals, so the
+        // element is baked into the identifier name (lowercased), mirroring
+        // HAS_SKILL_<NAME>/AE_COUNT_<NAME>. Examples:
+        //   TRIGGER_DAMAGE_IS_ICE  → 1 if the killing/dealt damage was Ice
+        //   TRIGGER_DAMAGE_IS_FIRE → 1 if Fire
+        // "Reduced to 0 by NON-Ice" = `CUR_HP <= 0 && TRIGGER_DAMAGE_IS_ICE == 0`
+        // (Fire Slime's Flame Burst). Returns 0 when the payload carries no
+        // element (e.g. cost/drain losses) → an `== 0` non-X gate reads true.
+        if (name.startsWith("TRIGGER_DAMAGE_IS_")) {
+          const want = name.slice("TRIGGER_DAMAGE_IS_".length).replace(/_/g, " ").toLowerCase().trim();
+          const got = String(payload?.element ?? "").toLowerCase().trim();
+          return got && got === want ? 1 : 0;
+        }
         // Dynamic HAS_SKILL_<NAME> identifier — "Does this actor own
         // a skill named <NAME>?". Returns 1 / 0. The tokenizer
         // doesn't support string literals, so the skill name is
@@ -575,7 +604,8 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // case-insensitive. Examples:
         //   AE_COUNT_BURN      → number of "Burn" AEs on the actor
         //   AE_COUNT_SOUL_LINK → number of "Soul Link" AEs
-        // Used by stackable-status passives (Salamander Blaze: "AE_COUNT_BURN * 4").
+        // Counts AE INSTANCES (presence), NOT charges — for stack/charge totals
+        // (e.g. Burn stacks under the charge-as-stack model) use AE_CHARGES_<NAME>.
         if (name.startsWith("AE_COUNT_")) {
           const needle = name
             .slice("AE_COUNT_".length)

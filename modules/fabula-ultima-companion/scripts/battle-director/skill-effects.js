@@ -1292,6 +1292,11 @@ export async function computeSenderDamageBonuses({
   const out = new Map();
   if (!Array.isArray(acceptedPrePassives) || !acceptedPrePassives.length) return out;
 
+  // Per-subject base (pre-bonus) damage — used to project FINAL_DAMAGE for any
+  // keyword condition gates (e.g. pierce "FINAL_DAMAGE >= 100"). Same value the
+  // recompute starts each entry from (entry.rawDamage).
+  const subjectBaseRaw = new Map();
+
   for (const cand of acceptedPrePassives) {
     if (!cand?.ref) continue;
     // Carrier resolution mirrors firePreAcceptedCandidate so item-bound
@@ -1358,6 +1363,15 @@ export async function computeSenderDamageBonuses({
           // of silently folding it into the per-target total. See action-profile
           // projectProfileToActionResult / buildPerTarget.
           ops.push({ op, amount, source: cand.carrierName || carrierSkill?.name || "Reaction" });
+        } else if (kind === "apply_action_keyword") {
+          // Tag the hit with an action keyword (pierce, …). Carried as a
+          // non-numeric op so recomputePerTargetDamages can apply its damage-calc
+          // effect after the numeric ops. Extensible: new keywords are new strings.
+          const kw = String(row.action_keyword ?? "").trim().toLowerCase();
+          // Optional gate evaluated AFTER the numeric ops (Phase 2 below), so the
+          // formula can reference FINAL_DAMAGE (the post-bonus, pre-affinity hit).
+          const condition = String(row.condition_formula ?? "").trim() || null;
+          if (kw) ops.push({ op: "keyword", keyword: kw, condition, source: cand.carrierName || carrierSkill?.name || "Keyword" });
         } else if (kind === "chain") {
           const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
           for (const s of steps) walkDamage(s);
@@ -1370,8 +1384,37 @@ export async function computeSenderDamageBonuses({
     }
     if (!ops.length) continue;
 
+    const candBaseRaw = Number(cand.payloadAtFire?.rawDamage ?? cand.payload?.rawDamage);
     for (const uuid of subjectUuids) {
       out.set(uuid, (out.get(uuid) ?? []).concat(ops));
+      if (Number.isFinite(candBaseRaw) && !subjectBaseRaw.has(uuid)) subjectBaseRaw.set(uuid, candBaseRaw);
+    }
+  }
+
+  // Phase 2 — resolve keyword condition gates against FINAL_DAMAGE (the
+  // post-numeric-ops, pre-affinity hit — what the recompute will produce). A
+  // keyword op with a `condition` is kept only if it passes; unconditional
+  // keyword ops always pass. This is where "pierce when FINAL_DAMAGE >= 100"
+  // fires AFTER the ×Kill-Frenzy multiply (which a discovery-time reaction
+  // condition couldn't see).
+  for (const [uuid, ops] of out) {
+    if (!ops.some((o) => o.op === "keyword" && o.condition)) continue;
+    const numeric = ops.filter((o) => o.op !== "keyword");
+    let d = Number(subjectBaseRaw.get(uuid)) || 0;
+    for (const { op, amount } of numeric) d = applyDamageOp(d, op, amount);
+    d = Math.max(0, Math.floor(d));
+    let resolver = null;
+    try {
+      const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+      const kept = [];
+      for (const o of ops) {
+        if (o.op !== "keyword" || !o.condition) { kept.push(o); continue; }
+        if (!resolver) resolver = buildSkillResolver({ actor: casterActor, payload: { finalDamage: d }, round: dCombat?.round ?? 0 });
+        if (Number(evaluateFormula(o.condition, resolver, 0))) kept.push(o);
+      }
+      out.set(uuid, kept);
+    } catch (e) {
+      warn(`computeSenderDamageBonuses: keyword condition eval threw`, e);
     }
   }
   return out;
@@ -1401,18 +1444,26 @@ export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinit
     if (!ops || !ops.length) return entry;
     if (!entry.hit) return entry;  // misses don't take damage adjustments
     const baseRaw = Number(entry.rawDamage) || 0;
+    // Separate numeric damage ops from action-keyword tags (pierce, …).
+    const numericOps = ops.filter((o) => o.op !== "keyword");
+    const keywords = new Set(ops.filter((o) => o.op === "keyword").map((o) => o.keyword));
     let d = baseRaw;
-    for (const { op, amount } of ops) d = applyDamageOp(d, op, amount);
+    for (const { op, amount } of numericOps) d = applyDamageOp(d, op, amount);
     d = Math.max(0, Math.floor(d));
-    const newDamage = applyAffinity(d, String(entry.affinity ?? "NE"));
+    // Action-keyword damage-calc effects. PIERCE ignores Resistance only — a
+    // pierced hit treats RS as neutral (full damage); VU / IM / AB are untouched.
+    // (New keywords add a branch here.)
+    let affinity = String(entry.affinity ?? "NE");
+    if (keywords.has("pierce") && affinity === "RS") affinity = "NE";
+    const newDamage = applyAffinity(d, affinity);
     return {
       ...entry,
       rawDamage: d,
       damage: newDamage,
       // Diagnostic — lets the action card show a "+X / ×0 (Skill)" hint and
       // lets the RESOLVE log explain the change. `baseBonus` kept for back-compat
-      // with readers that show a simple delta.
-      bonusBreakdown: { ops, from: baseRaw, to: d, baseBonus: d - baseRaw },
+      // with readers that show a simple delta. `keywords` surfaces applied tags.
+      bonusBreakdown: { ops: numericOps, from: baseRaw, to: d, baseBonus: d - baseRaw, keywords: [...keywords] },
     };
   });
 }
@@ -1448,7 +1499,7 @@ export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinit
 // the subject. No-op without a director (out of combat) — resource reactions
 // are combat-context by design. Rows filter via reaction_resource_filter +
 // reaction_cause_filter (see passesMatchFilters).
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -1470,6 +1521,20 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       element: element ?? null,
       originLabel: originLabel ?? null,
       originUuid: originUuid ?? null,
+      // ── "How it changed" context (attack/skill losses only; null for tick/
+      // status damage, which has no weapon or roll). Additive + future-facing:
+      // populated at the attack-damage site, available for "react when my HP
+      // drops to a melee/crit/<element> hit" style gates once a reader identifier
+      // exists for the field. All null-safe — absence reads as "not applicable".
+      weaponType: weaponType ?? null,       // sword | bow | brawling | dagger | …
+      weaponRange: weaponRange ?? null,     // melee | ranged
+      actionKind: actionKind ?? null,       // Attack | Skill | Spell | Item
+      actionIntent: actionIntent ?? null,
+      isCrit: isCrit ?? null,
+      isFumble: isFumble ?? null,
+      accuracyTotal: accuracyTotal ?? null, // the to-hit total that landed it
+      highRoll: highRoll ?? null,           // HR of the producing roll
+      pierce: pierce ?? null,               // hit through immunity/affinity
       // The reaction_source filter (self/ally/enemy) keys off
       // `payload.sourceActorUuid` — so it MUST be the SUBJECT of this event =
       // the creature whose resource changed (its own "self" rows fire; an
@@ -1675,6 +1740,12 @@ const EFFECT_KIND_DISPATCH = {
   equip_swap:          applyEquipSwapEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
+  // apply_action_keyword: tag the in-flight per-target hit with an action keyword
+  // (pierce, …). Data-only here — the real work is in computeSenderDamageBonuses
+  // (collects the keyword per subject) + recomputePerTargetDamages (applies its
+  // damage-calc effect, e.g. pierce → Resistance treated as neutral). A generic,
+  // extensible slot: new keywords add one option + one recompute branch.
+  apply_action_keyword: (row) => ({ ok: true, kind: "apply_action_keyword", applied: [], reason: "applied-at-damage-recompute" }),
   redirect_target:     (row) => ({ ok: true, kind: "redirect_target", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
 };
@@ -1703,6 +1774,7 @@ export const EFFECT_KIND_LABELS = {
   equip_swap:          "Equip Swap",
   encyclopedia_record: "Encyclopedia Record",
   adjust_damage:       "Adjust Damage",
+  apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
 };
