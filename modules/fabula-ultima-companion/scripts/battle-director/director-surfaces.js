@@ -127,7 +127,7 @@ const SURFACE_DEFS = [
   { kind: "action-card-mirror",     test: (el) => el.id === "fud-bf-mirror-root" },
   { kind: "turn-picker",            test: (el) => typeof el.id === "string" && el.id.startsWith("fud-pickturn-") },
   { kind: "turn-ui",                test: (el) => typeof el.id === "string" && el.id.startsWith("fud-octopath-") },
-  { kind: "weapon-mode-picker",     test: (el) => el.id === "fud-weapon-mode-picker-root" },
+  { kind: "list-picker",            test: (el) => typeof el.id === "string" && el.id.startsWith("fud-list-picker-root") },
   { kind: "attribute-pair-picker",  test: (el) => el.id === "fud-attribute-pair-picker-root" },
   { kind: "skill-picker",           test: (el) => el.id === "fud-skill-picker-root" },
   { kind: "option-picker",          test: (el) => typeof el.id === "string" && el.id.startsWith("fud-option-picker-root") },

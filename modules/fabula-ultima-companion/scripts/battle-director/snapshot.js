@@ -338,6 +338,45 @@ export function resolveVirtualAttacks(actor) {
   return Object.freeze(out);
 }
 
+// Does any applied AE grant mixed-Category Two-Weapon Fighting? Declarative seam
+// mirroring exposedVirtualAttack (resolveVirtualAttacks above): an AE carries
+//   flags.fabula-ultima-companion.allowMixedTwoWeapon = true
+//     // or { condition_formula: "<formula>" } for a gated grant
+// so the engine never hardcodes a skill name. The Ambidextrous Heroic Skill
+// ("fight with two weapons of different Categories") authors this flag on a
+// transfer:true passive AE; any future "lift the same-Category rule" skill is
+// pure authoring. Returns true once any non-disabled exposing AE's condition
+// holds (absent/empty condition = always grants while owned).
+export function actorAllowsMixedTwoWeapon(actor) {
+  if (!actor) return false;
+  let effs = [];
+  try {
+    if (actor.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor.allApplicableEffects) effs = Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled);
+    else if (actor.effects?.contents) effs = actor.effects.contents;
+    else if (actor.effects) effs = Array.from(actor.effects);
+  } catch (e) {
+    warn("actorAllowsMixedTwoWeapon: effect enumeration threw", e);
+    return false;
+  }
+  if (!effs.length) return false;
+  let resolver = null;
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    const spec = ae?.flags?.[FLAG_NS]?.allowMixedTwoWeapon;
+    if (spec == null || spec === false) continue;
+    if (spec === true) return true;
+    if (typeof spec === "object") {
+      const cond = spec.condition_formula;
+      if (cond == null || cond === "") return true;
+      resolver ??= buildSkillResolver({ actor });
+      const ok = isFormulaString(cond) ? evaluateFormula(cond, resolver, 0) : Number(cond);
+      if (ok) return true;
+    }
+  }
+  return false;
+}
+
 // Build the weapon-related fields for a combatant snapshot — main weapon,
 // off-hand, and the two-weapon eligibility flag — in one safe pass. Each
 // piece is individually defended: if `resolveAttackerWeapon` throws for one
@@ -384,7 +423,11 @@ function buildWeaponBundle(actor) {
     if (weapon && offWeapon) {
       const mt = String(weapon.weaponType ?? "").trim().toLowerCase();
       const ot = String(offWeapon.weaponType ?? "").trim().toLowerCase();
-      canTwoWeaponFight = !!mt && mt === ot;
+      // RAW Core p.69: Two-Weapon Fighting requires the SAME Category in both
+      // hands. A skill may lift that restriction declaratively (Ambidextrous →
+      // the allowMixedTwoWeapon AE flag); when present, any two real weapons
+      // qualify. Both weapons must still carry a Category.
+      canTwoWeaponFight = !!mt && !!ot && (mt === ot || actorAllowsMixedTwoWeapon(actor));
     }
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
 

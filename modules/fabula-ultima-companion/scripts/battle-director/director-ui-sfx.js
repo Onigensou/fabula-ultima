@@ -46,7 +46,7 @@ const INTERACTIVE_SELECTOR = [
   ".fud-app-attr-btn", ".fud-app-dl-step", ".fud-app-dl-preset", ".fud-app-btn",
   ".fud-skp-row", ".fud-skp-cancel",
   ".fud-target-btn",
-  ".fud-wmp-option", ".fud-wmp-cancel",
+  ".fud-lp-option", ".fud-lp-cancel",
   // Passive manager.
   ".fud-passive-mgr-row", ".fud-passive-mgr-close",
   // Turn picker pills + octopath turn menu items + reaction menu items
