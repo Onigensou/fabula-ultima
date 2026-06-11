@@ -207,17 +207,24 @@ function collectClassSkillItems(cls) {
   return [...byName.values()];
 }
 
-// Which weapon family a class's skills GATE on, so a generated test actor gets
-// a usable weapon equipped (Sharpshooter's Barrage/RWM/Warning Shot all gate on
-// HAS_RANGED_WEAPON; an unequipped backpack weapon leaves them inert). Scans the
-// raw skill data for the formula identifiers. Returns "ranged"|"melee"|"arcane"
-// |null.
-function weaponHintFromSkillData(skillDatas) {
+// What loadout a class's skills GATE on, so a generated test actor is
+// combat-ready instead of inert. Scans the raw skill data for the loadout
+// formula identifiers (HAS_*_WEAPON / HAS_SHIELD / HAS_MARTIAL_ARMOR) — e.g.
+// Sharpshooter's Barrage/RWM/Warning Shot need HAS_RANGED_WEAPON; Guardian's
+// Rampart needs HAS_SHIELD || HAS_MARTIAL_ARMOR. An unequipped backpack item
+// leaves those gates false. Returns
+//   { weaponFamily: "ranged"|"melee"|"arcane"|null, needsShield, needsMartialArmor }.
+function loadoutNeedsFromSkillData(skillDatas) {
   const txt = JSON.stringify(skillDatas ?? []).toUpperCase();
-  if (txt.includes("HAS_RANGED_WEAPON")) return "ranged";
-  if (txt.includes("HAS_MELEE_WEAPON"))  return "melee";
-  if (txt.includes("HAS_ARCANE_WEAPON")) return "arcane";
-  return null;
+  let weaponFamily = null;
+  if (txt.includes("HAS_RANGED_WEAPON")) weaponFamily = "ranged";
+  else if (txt.includes("HAS_MELEE_WEAPON"))  weaponFamily = "melee";
+  else if (txt.includes("HAS_ARCANE_WEAPON")) weaponFamily = "arcane";
+  return {
+    weaponFamily,
+    needsShield: txt.includes("HAS_SHIELD"),
+    needsMartialArmor: txt.includes("HAS_MARTIAL_ARMOR"),
+  };
 }
 
 // Choose a weapon from the actor's inventory to equip — one matching the class's
@@ -235,6 +242,42 @@ function pickWeaponToEquip(actor, hint) {
     if (m) return m;
   }
   return weapons[0];
+}
+
+// Choose a shield from the actor's inventory (item_type "shield") to equip in
+// the off-hand — satisfies HAS_SHIELD (e.g. Guardian's Rampart). `martial`
+// prefers a martial shield when available, else any shield. Returns the live
+// item or null.
+function pickShieldToEquip(actor, { martial = false } = {}) {
+  const shields = (actor.items ?? []).filter(
+    (i) => String(i.system?.props?.item_type ?? "").toLowerCase() === "shield");
+  if (!shields.length) return null;
+  if (martial) {
+    const m = shields.find((s) => !!s.system?.props?.isMartial);
+    if (m) return m;
+  }
+  return shields[0];
+}
+
+// Best-effort: equip a martial armor item the actor already owns so
+// HAS_MARTIAL_ARMOR reads true. Armor is NOT handled by applyEquipmentSwap
+// (RAW forbids mid-combat armor swaps, and HAS_MARTIAL_ARMOR only reads the
+// per-item isEquipped flag), so flip it directly + enable its item-resident
+// AEs. No-op when the actor has no martial armor item. Returns the equipped
+// item or null.
+async function ensureMartialArmorEquipped(actor) {
+  const armor = (actor.items ?? []).find(
+    (i) => String(i.system?.props?.item_type ?? "").toLowerCase() === "armor"
+      && !!i.system?.props?.isMartial);
+  if (!armor) return null;
+  if (!armor.system?.props?.isEquipped) {
+    try {
+      await armor.update({ "system.props.isEquipped": true });
+      const fx = (armor.effects?.contents ?? []).filter((e) => e.disabled).map((e) => ({ _id: e.id, disabled: false }));
+      if (fx.length) await armor.updateEmbeddedDocuments("ActiveEffect", fx);
+    } catch (e) { warn(`test-battle: equip martial armor "${armor.name}" failed`, e); }
+  }
+  return armor;
 }
 
 // All basic weapons + basic shields (the world's RAW basic-equipment set),
@@ -350,21 +393,41 @@ async function genClassActor(className, { withBasicGear = true } = {}) {
   const toAdd = [...skillItems, ...gearItems];
   if (toAdd.length) await actor.createEmbeddedDocuments("Item", toAdd);
 
-  // Auto-equip a weapon the class can actually USE. Basic gear is added
-  // unequipped (backpack), but most class skills/attacks need an equipped
-  // weapon — and weapon-gated passives (Sharpshooter's Barrage/RWM/Warning
-  // Shot → HAS_RANGED_WEAPON) stay inert without one. Equip a weapon matching
-  // the class's gate hint (ranged/melee/arcane) via the real equip path so
-  // main_hand + isEquipped + derived props all persist.
+  // Auto-equip the loadout the class can actually USE. Basic gear is added
+  // unequipped (backpack), but most class skills/attacks need equipped gear —
+  // and gated passives stay inert without it: Sharpshooter's Barrage/RWM/
+  // Warning Shot need HAS_RANGED_WEAPON; Guardian's Rampart needs
+  // HAS_SHIELD || HAS_MARTIAL_ARMOR. Derive the need from the skill data and
+  // equip a matching weapon (main) + shield (off) via the real equip path so
+  // main_hand/off_hand + isEquipped + derived props all persist (the two-level
+  // equip model). Martial armor is a separate direct flip (not swappable).
   try {
-    const hint = weaponHintFromSkillData(skillItems);
-    const weapon = pickWeaponToEquip(actor, hint);
-    if (weapon) {
-      await applyEquipmentSwap(actor, { main: weapon.id });
-      log(`test-battle: equipped "${weapon.name}" (${hint ?? "default"}) in ${name}'s main hand`);
+    const need = loadoutNeedsFromSkillData(skillItems);
+    const weapon = pickWeaponToEquip(actor, need.weaponFamily);
+    const shield = need.needsShield ? pickShieldToEquip(actor) : null;
+    const selections = {};
+    if (weapon) selections.main = weapon.id;
+    if (shield) selections.off = shield.id;
+    if (weapon || shield) {
+      await applyEquipmentSwap(actor, selections);
+      const bits = [
+        weapon ? `"${weapon.name}" (${need.weaponFamily ?? "default"}) main` : null,
+        shield ? `"${shield.name}" off` : null,
+      ].filter(Boolean).join(" + ");
+      log(`test-battle: equipped ${bits} on ${name}`);
+    }
+    if (need.needsShield && !shield) {
+      warn(`test-battle: ${name} skills need HAS_SHIELD but no shield item is in inventory`);
+    }
+    // HAS_MARTIAL_ARMOR — best-effort (armor isn't swap-handled). A shield
+    // already satisfies Rampart's OR gate; this covers any armor-only need.
+    if (need.needsMartialArmor) {
+      const armor = await ensureMartialArmorEquipped(actor);
+      if (armor) log(`test-battle: equipped martial armor "${armor.name}" on ${name}`);
+      else if (!shield) warn(`test-battle: ${name} skills need HAS_MARTIAL_ARMOR but no martial armor item is in inventory`);
     }
     // Reconcile isEquipped to the slots so loadout gates (HAS_RANGED_WEAPON,
-    // HAS_SHIELD, …) read correctly on the generated actor — even if no weapon
+    // HAS_SHIELD, …) read correctly on the generated actor — even if no gear
     // was auto-equipped (lean mode) or the cloned base PC left stale state.
     await reconcileEquip(actor);
   } catch (e) { warn("test-battle: auto-equip threw", e); }
