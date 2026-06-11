@@ -342,11 +342,13 @@
     },
     {
       "key": "2026-06-05-common-study-author",
-      "path": "data-migrations/2026-06-05-common-study-author.js"
+      "path": "data-migrations/2026-06-05-common-study-author.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-05-common-hinder-author",
-      "path": "data-migrations/2026-06-05-common-hinder-author.js"
+      "path": "data-migrations/2026-06-05-common-hinder-author.js",
+      "idempotent": true
     },
     {
       "key": "2026-06-05-bd-skills-restore",

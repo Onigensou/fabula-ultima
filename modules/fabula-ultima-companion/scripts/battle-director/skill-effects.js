@@ -3087,6 +3087,8 @@ function buildMenuOptions(row, ctx) {
     (s == null || String(s).trim() === "") ? [] : String(s).split("|").map((x) => x.trim());
   const rowLabels = splitPipe(row.menu_option_labels);
   const rowDescs  = splitPipe(row.menu_option_descriptions);
+  const rowIcons  = splitPipe(row.menu_option_icons);
+  const rowColors = splitPipe(row.menu_option_colors);
   let options = [];
   let optionRows = [];
   if (refs.length) {
@@ -3105,7 +3107,16 @@ function buildMenuOptions(row, ctx) {
       const desc = (rowDescs[i] && rowDescs[i] !== "")
         ? rowDescs[i]
         : (refRow.menu_description ?? null);
-      options.push({ label, description: desc ? String(desc) : null });
+      // Optional per-option presentation (icon image + accent color). Menu-row
+      // pipe-list wins; fall back to the option row's own field. Absent → null,
+      // and the picker renders a plain row (back-compat for every existing menu).
+      const icon = (rowIcons[i] && rowIcons[i] !== "")
+        ? rowIcons[i]
+        : (refRow.menu_icon ?? null);
+      const color = (rowColors[i] && rowColors[i] !== "")
+        ? rowColors[i]
+        : (refRow.menu_color ?? null);
+      options.push({ label, description: desc ? String(desc) : null, icon: icon || null, color: color || null });
       optionRows.push(refRow);
     }
   }
@@ -3116,7 +3127,12 @@ function buildMenuOptions(row, ctx) {
       ? optsRaw
       : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
     const valid = inline.filter((o) => o && typeof o === "object" && o.label);
-    options = valid.map((o) => ({ label: String(o.label), description: o.description ? String(o.description) : null }));
+    options = valid.map((o) => ({
+      label: String(o.label),
+      description: o.description ? String(o.description) : null,
+      icon: o.menu_icon ?? o.icon ?? null,
+      color: o.menu_color ?? o.color ?? null,
+    }));
     optionRows = valid;
   }
   return { options, optionRows };

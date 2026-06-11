@@ -108,6 +108,17 @@ function ensureStyles() {
       margin-right: 5px;
       opacity: 0.7;
     }
+    /* Optional per-option presentation (icon + accent). Absent → plain row. */
+    .fud-opt-picker-row.has-icon { flex-direction: row; align-items: center; gap: 10px; }
+    .fud-opt-picker-row.has-icon .fud-opt-picker-text {
+      display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;
+    }
+    .fud-opt-picker-icon {
+      width: 30px; height: 30px; flex: 0 0 30px;
+      border-radius: 7px; object-fit: cover;
+      border: 1px solid var(--fud-stroke, #7a6a55);
+      background: rgba(255, 255, 255, 0.45);
+    }
     .fud-opt-picker-cancel {
       align-self: center;
       margin-top: 10px;
@@ -169,10 +180,19 @@ export async function pickOption({
     const desc = opt.description ? escapeHtml(opt.description) : "";
     const numHint = i < 9 ? `<span class="fud-opt-picker-num">${i + 1}.</span>` : "";
     const descHTML = desc ? `<div class="fud-opt-picker-desc">${desc}</div>` : "";
+    // Optional presentation: an icon image + a left accent color. Both absent →
+    // a plain row identical to the historical look (the .fud-opt-picker-text
+    // wrapper is layout-transparent for column rows).
+    const hasIcon = !!opt.icon;
+    const iconHTML = hasIcon ? `<img class="fud-opt-picker-icon" src="${escapeHtml(opt.icon)}" alt="" />` : "";
+    const accent = opt.color ? ` style="border-left: 4px solid ${escapeHtml(opt.color)};"` : "";
     return `
-      <div class="fud-opt-picker-row" data-fud-opt-idx="${i}" role="button" tabindex="0">
-        <div class="fud-opt-picker-label">${numHint}${label}</div>
-        ${descHTML}
+      <div class="fud-opt-picker-row${hasIcon ? " has-icon" : ""}" data-fud-opt-idx="${i}" role="button" tabindex="0"${accent}>
+        ${iconHTML}
+        <div class="fud-opt-picker-text">
+          <div class="fud-opt-picker-label">${numHint}${label}</div>
+          ${descHTML}
+        </div>
       </div>
     `;
   }).join("");

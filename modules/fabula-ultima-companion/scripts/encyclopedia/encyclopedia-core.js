@@ -60,6 +60,29 @@
   const TIER_STATS    = 8;
   const TIER_DETAILS  = 13;
 
+  // The Study crit rule, single-sourced. A critical success reveals everything
+  // regardless of the raw total — promote the effective value to the Details
+  // threshold so a low-roll crit (e.g. 6+6=12) still unlocks the top tier.
+  // recordResult (the data write) AND classifyStudyTotal (the display) both go
+  // through this, so they can never disagree.
+  function effectiveStudyTotal(total, isCrit = false) {
+    const totalN = Number(total) || 0;
+    return isCrit ? Math.max(totalN, TIER_DETAILS) : totalN;
+  }
+
+  // Canonical Study tier classifier — the SINGLE source of truth for mapping a
+  // Study Check result to a reveal tier. A fumble reveals nothing. Used by the
+  // Battle Director's Study COMPUTE/card so the displayed tier always matches
+  // what recordResult will store. Returns { name, threshold, fumbled }.
+  function classifyStudyTotal(total, { isCrit = false, isFumble = false } = {}) {
+    if (isFumble) return { name: "None", threshold: 0, fumbled: true, effective: 0 };
+    const effective = effectiveStudyTotal(total, isCrit);
+    if (effective >= TIER_DETAILS)  return { name: "Details",  threshold: TIER_DETAILS,  fumbled: false, effective };
+    if (effective >= TIER_STATS)    return { name: "Stats",    threshold: TIER_STATS,    fumbled: false, effective };
+    if (effective >= TIER_IDENTITY) return { name: "Identity", threshold: TIER_IDENTITY, fumbled: false, effective };
+    return { name: "None", threshold: 0, fumbled: false, effective };
+  }
+
   const SOCKET_CHANNEL = `module.${MODULE_ID}`;
   const ANIM_STYLE_ID  = "oni-encyclopedia-anim-styles";
   const ANIM_CLASS     = "oni-enc-unlocking";
@@ -943,13 +966,10 @@
     if (!page) return null;
 
     const previousBest = Number(getFlag(page, "bestResult")) || 0;
-    const totalN = Number(total) || 0;
-    // Critical Success on a Study Check reveals everything regardless of the
-    // raw total — promote the effective value to the Details threshold so
-    // the highest tier unlocks. A low-roll crit (e.g. 6+6=12) would otherwise
-    // fall just short of Details despite being thematically a "you got lucky
-    // and learned a lot" moment.
-    const effectiveTotal = isCrit ? Math.max(totalN, TIER_DETAILS) : totalN;
+    // Critical Success on a Study Check reveals everything regardless of the raw
+    // total — see effectiveStudyTotal (shared with classifyStudyTotal so the
+    // recorded best can never disagree with the tier the card displayed).
+    const effectiveTotal = effectiveStudyTotal(total, isCrit);
     const newBest = Math.max(previousBest, effectiveTotal);
     const changed = newBest > previousBest;
 
@@ -1341,6 +1361,10 @@
       getPageForActor,
       upsertPage,
       recordResult,
+      // Canonical Study tier classifier (single source of truth, crit-aware) —
+      // the Battle Director's Study COMPUTE calls this so the card's tier always
+      // matches what recordResult stores.
+      classifyStudyTotal,
       renderPage,
       // Study skill resolver — exposed so [Macro] Study.js and any future
       // caller can find the world's Study skill UUID without hardcoding it.

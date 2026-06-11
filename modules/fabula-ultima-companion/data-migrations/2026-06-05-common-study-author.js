@@ -13,8 +13,12 @@
  * roll from the action result. Token VFX + opening the encyclopedia sheet stay
  * in the thin Study RESOLVE wrapper (presentation, not data).
  *
- * `check_mode: open` documents the roll style for the COMPUTE-unification step;
- * COMPUTE still computes the Open Check today.
+ * `check_mode: open` + `rolled_atr1/2` (INS+INS) drive the roll: COMPUTE
+ * (`computeStudy`) reads the attribute pair FROM this item. The tier
+ * classification (Identity/Stats/Details) is NOT authored here — it is canonical
+ * to the Encyclopedia subsystem (encyclopedia-core `classifyStudyTotal`, crit-
+ * aware), which COMPUTE calls so the card's tier always matches what
+ * `recordResult` stores. No hardcoded check/tier logic remains in COMPUTE.
  *
  * effect_table:
  *   study_record → encyclopedia_record

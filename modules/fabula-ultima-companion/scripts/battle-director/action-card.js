@@ -885,24 +885,6 @@ export function ensureStyles() {
       filter: grayscale(0.3);
     }
 
-    /* Hinder status picker: 2×2 grid of buttons (dazed/shaken/slow/weak).
-       Each button forwards its statusValue via data-fud-status-value. */
-    .fud-bf-card .fud-bf-status-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .fud-bf-card .fud-btn-hinder-status {
-      background: linear-gradient(180deg, #f7ecd9, #e7d8b6);
-      flex: unset;
-      border-width: 2px;
-      padding: 9px 8px;
-      font-size: 11px;
-    }
-    .fud-bf-card .fud-btn-hinder-status:hover {
-      background: linear-gradient(180deg, #fff5e0, #efe0c0);
-    }
-
     /* Equipment card — "Open Character Sheet" affordance. Visual cousin of
        the cancel button (neutral parchment), since clicking it doesn't
        commit the action — it just launches the sheet. */
@@ -2356,17 +2338,6 @@ function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }
   };
 }
 
-// The four Hinder statuses (RAW Core p.71). Visual definition for the
-// card buttons + the AE icon used at RESOLVE time. Statuses correspond
-// to attribute penalties (RAW p.94) — handled by the affected mechanic,
-// not by the card.
-const HINDER_STATUSES = [
-  { key: "dazed",  label: "Dazed",  icon: "🌀", attrShort: "INS", color: "#9b59b6", iconUrl: "icons/svg/daze.svg" },
-  { key: "shaken", label: "Shaken", icon: "😱", attrShort: "WLP", color: "#5a6a85", iconUrl: "icons/svg/terror.svg" },
-  { key: "slow",   label: "Slow",   icon: "🐢", attrShort: "DEX", color: "#8b5e3c", iconUrl: "icons/svg/clockwork.svg" },
-  { key: "weak",   label: "Weak",   icon: "💔", attrShort: "MIG", color: "#c44a2a", iconUrl: "icons/svg/degen.svg" },
-];
-
 function buildEquipmentCard({ attacker, attackerActor }) {
   // Integrated swap UI — one custom dropdown per slot (Main / Off / Acc 1
   // / Acc 2). Each lists the current selection + every eligible item from
@@ -2923,27 +2894,16 @@ function buildHinderCard({ attacker, target, roll, dl, success }) {
     ? [{ tokenImg: target.tokenImg, name: target.name, disposition: target.disposition }]
     : [];
 
-  // Status picker (4 buttons in a 2×2 grid) — clicking ANY button is the
-  // commit on success. Buttons forward `statusValue` to Confirm via the
-  // card's finish() extras → Confirm merges it into actionResult before
-  // dispatching CONFIRM_ACTION so RESOLVE knows which AE to apply.
-  const successButtonsHTML = HINDER_STATUSES.map((s) => `
-    <div class="fud-btn fud-btn-hinder-status"
-         data-fud-action="confirm"
-         data-fud-status-value="${escapeHtml(s.key)}"
-         style="border-color:${s.color}; color:${s.color};"
-         role="button" tabindex="0"
-         title="${escapeHtml(s.label)} (penalises ${s.attrShort} Opposed Checks)">
-      <span style="margin-right:4px;">${s.icon}</span>${escapeHtml(s.label)}
-    </div>
-  `).join("");
-
   // RAW: the GM tells the player whether they succeeded — they DO NOT
   // reveal the Difficulty Level. Hide `dl` from the result text so the
   // player can't trivially deduce the DL by comparing their roll total to
   // the threshold (the roll total is still visible in the accuracy
   // widget, which is intentional — they know what they rolled, just not
   // what they needed to beat).
+  //
+  // The status CHOICE is no longer a bespoke card grid: on Confirm, RESOLVE
+  // fires Common/Hinder's open_action_menu (rendered by the shared option
+  // picker with per-status icons + colors), exactly like any menu skill.
   const resultBox = success
     ? `<fieldset class="fud-bf-section">
         <legend>Result</legend>
@@ -2951,7 +2911,7 @@ function buildHinderCard({ attacker, target, roll, dl, success }) {
           Success!
         </div>
         <div style="font-size:12px; text-align:center; opacity:0.85; margin-top:4px;">
-          Pick a status to inflict on <strong>${escapeHtml(target?.name ?? "target")}</strong>:
+          Confirm to choose a status for <strong>${escapeHtml(target?.name ?? "target")}</strong>.
         </div>
       </fieldset>`
     : `<fieldset class="fud-bf-section">
@@ -2964,11 +2924,7 @@ function buildHinderCard({ attacker, target, roll, dl, success }) {
         </div>
       </fieldset>`;
 
-  const buttonsHTML = success
-    ? `<div class="fud-bf-btn-row fud-bf-status-grid">
-         ${successButtonsHTML}
-       </div>`
-    : `<div class="fud-bf-btn-row">
+  const buttonsHTML = `<div class="fud-bf-btn-row">
          <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">Confirm</div>
        </div>`;
 
