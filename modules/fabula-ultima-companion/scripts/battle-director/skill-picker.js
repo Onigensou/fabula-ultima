@@ -287,6 +287,7 @@ export async function pickSkill({
     autoFocusFirst: true,
     numberShortcuts: false,  // skill lists routinely exceed 9 rows
     width: 480,
+    listHeight: "min(56vh, 440px)",  // consistent size across selector pickers
     zIndex: 96,
   });
 }

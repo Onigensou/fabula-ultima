@@ -124,6 +124,7 @@ export async function pickItem({ director, actor, externalCancel = null } = {}) 
     numberShortcuts: false,
     tabbed: true,
     width: 420,
+    listHeight: "min(56vh, 440px)",  // consistent size across selector pickers
     zIndex: 96,
   });
 }

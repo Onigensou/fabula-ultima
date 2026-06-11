@@ -24,6 +24,8 @@
 //     subtitle?:  string,        // sub-header line under the title
 //     cancelLabel?: string,      // cancel button text (default "Cancel")
 //     width?:     number,        // card width px (default 360; e.g. 420/480)
+//     listHeight?: string,       // fixed scroll-area height (CSS length) for a
+//                                // consistent card size — selectors set it; menus omit it
 //
 //     // --- behavior ---
 //     tabbed?:        boolean,   // render sections as tabs when ≥2 (else stacked)
@@ -320,6 +322,7 @@ export async function pickFromList({
   autoFocusFirst = false,
   width = 360,
   tabbed = false,
+  listHeight = null,
 } = {}) {
   ensureStyles();
   ensureTip();
@@ -382,6 +385,10 @@ export async function pickFromList({
   // when another tab has rows. (Falls back to 0 if all are empty.)
   const firstNonEmpty = groups.findIndex((s) => (s.items ?? []).length > 0);
   const activeStart = firstNonEmpty >= 0 ? firstNonEmpty : 0;
+  // Fixed scroll-area height (opt-in) — keeps the selector pickers (weapon/skill/
+  // item) a consistent size regardless of item count. Menus omit it so they stay
+  // content-sized.
+  const optionsStyle = listHeight ? ` style="flex:none;height:${listHeight}"` : "";
   let middleHTML;
   if (useTabs) {
     const tabBar = `<div class="fud-lp-tabs">${builtSections.map((s, si) =>
@@ -390,12 +397,12 @@ export async function pickFromList({
     const panels = builtSections.map((s, si) =>
       `<div class="fud-lp-panel${si === activeStart ? " is-active" : ""}" data-fud-lp-panel="${si}">${s.itemsHTML}</div>`
     ).join("");
-    middleHTML = `${tabBar}<div class="fud-lp-options">${panels}</div>`;
+    middleHTML = `${tabBar}<div class="fud-lp-options"${optionsStyle}>${panels}</div>`;
   } else {
     const stacked = builtSections.map((s) =>
       (s.label ? `<div class="fud-lp-section-label">${s.label}${s.hint ? `<span class="hint">${s.hint}</span>` : ""}</div>` : "") + s.itemsHTML
     ).join("");
-    middleHTML = `<div class="fud-lp-options">${stacked}</div>`;
+    middleHTML = `<div class="fud-lp-options"${optionsStyle}>${stacked}</div>`;
   }
 
   // Drop the icon column entirely when no row carries an icon (flush-left rows).

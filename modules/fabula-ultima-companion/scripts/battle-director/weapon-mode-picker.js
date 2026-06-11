@@ -131,6 +131,7 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
     title: "Choose Attack Mode",
     sections,
     externalCancel,
+    listHeight: "min(56vh, 440px)",  // consistent size across selector pickers
     zIndex: 96,
   });
 }
