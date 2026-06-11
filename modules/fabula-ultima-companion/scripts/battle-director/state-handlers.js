@@ -27,7 +27,7 @@ import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, 
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
 // Phase B.1 Skill engine
 import { pickSkill, SkillPicker } from "./skill-picker.js";
-import { OptionPicker } from "./option-picker.js";
+import { ListPicker } from "./list-picker.js";
 // Player-driven input: client-local compose chain runner.
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
@@ -40,6 +40,7 @@ import { freeActions } from "./free-actions.js";
 import { makeChainContext } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
+import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
@@ -789,7 +790,9 @@ function describeActionForRewind(ar) {
     }
     case "Hinder":
       if (!ar.success) return `${attName} failed to Hinder ${ar.target?.name ?? "target"}`;
-      return `${attName} inflicted ${ar.statusValue ?? "status"} on ${ar.target?.name ?? "target"}`;
+      // The specific status is chosen in the post-confirm menu (RESOLVE) and
+      // shows as an AE chip on the target — keep the summary status-agnostic.
+      return `${attName} hindered ${ar.target?.name ?? "target"}`;
     case "Study":
       if (ar.roll?.isFumble) return `${attName} fumbled Study on ${ar.target?.name ?? "target"}`;
       return `${attName} studied ${ar.target?.name ?? "target"} (${ar.tier?.name ?? "?"})`;
@@ -966,19 +969,10 @@ async function maybeRunBreakFree(director, snap) {
     const A1 = cfg.A1;
     const A2 = cfg.A2;
     const DL = Math.max(1, Number(cfg.dl) || 10);
-    const dA = snap.attributes?.[A1] ?? 8;
-    const dB = snap.attributes?.[A2] ?? 8;
-    const fumbleThr = Math.max(1, snap.fumbleThreshold ?? 1);
-
-    const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-    const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
-    const rA = dice[0] ?? 0;
-    const rB = dice[1] ?? 0;
-    const total = (rA + rB) | 0;
-    const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-    const isCrit = (rA === rB) && !isFumble && rA >= 6;
-    // Same rule as Hinder: crit always succeeds, fumble always fails.
-    const success = isCrit ? true : isFumble ? false : (total >= DL);
+    // BD-canonical check (roll + prop-aware crit/fumble) + vs-DL comparison.
+    const check = await rollCheck({ actor, A1, A2 });
+    const { rA, rB, dA, dB, total, isFumble, isCrit } = check;
+    const { success } = checkVsThreshold(check, DL);
 
     let removed = 0;
     if (success) {
@@ -1905,8 +1899,13 @@ const Target = {
     // weak} via the card buttons — that pick IS the commit.
     if (command === "Hinder") {
       const attackerSnap = director.ctx.turnSnapshot;
+      // Target spec + check defaults are authored on the Hinder Common item
+      // (skill_target, rolled_atr1/2, check_difficulty_level) — read them here so
+      // TARGET no longer hardcodes the RAW literals. The GM picker below still
+      // lets the GM override the authored attribute pair / DL per situation.
+      const hinderProps = getCoreActionSkill("hinder")?.system?.props ?? {};
       const hinderTargeting = await resolveActionTargets(director, attackerSnap, {
-        skillTargetText:    "One Enemy",
+        skillTargetText:    hinderProps.skill_target || "One Enemy",
         usingPreComposed:   !!director.ctx.pickedTargetUuids?.length,
         composedTargetUuids: director.ctx.pickedTargetUuids,
         titleText:          `${attackerSnap.name}: pick an opponent to Hinder`,
@@ -1919,16 +1918,19 @@ const Target = {
       // Per RAW Core p.71, the GM picks the attribute pair AFTER the
       // player describes their approach. Surface that on the GM client
       // now — the player is committed to the target but waits for the GM
-      // to call the check. Default DL is 10 (the fixed RAW value) but the
-      // GM can adjust for situational difficulty.
+      // to call the check. Default DL is the item's check_difficulty_level
+      // (RAW 10); the GM can adjust for situational difficulty.
       const targetName = hinderTargeting.targets[0]?.name ?? "target";
+      const defA1 = String(hinderProps.rolled_atr1 || "DEX").toUpperCase();
+      const defA2 = String(hinderProps.rolled_atr2 || "INS").toUpperCase();
+      const defDL = Math.max(1, Number(hinderProps.check_difficulty_level) || 10);
       const checkConfig = await pickAttributePair({
         director,
         titleText: `Hinder ${targetName}: configure the Check`,
-        subtitle: `Pick the attribute pair the GM thinks matches the player's described approach. DL default ${10} per RAW Core p.71.`,
-        defaults: { A1: "DEX", A2: "INS" },
+        subtitle: `Pick the attribute pair the GM thinks matches the player's described approach. DL default ${defDL} per RAW Core p.71.`,
+        defaults: { A1: defA1, A2: defA2 },
         includeDL: true,
-        defaultDL: 10,
+        defaultDL: defDL,
       });
       if (!checkConfig.ok) {
         director.dispatch({ type: INTENTS.TARGET_BACK });
@@ -2479,6 +2481,147 @@ const Target = {
   },
 };
 
+// ── COMPUTE plugins ────────────────────────────────────────────────────
+// Per-command COMPUTE handlers, extracted from Compute.onEnter so the state is
+// a thin dispatcher (one registry entry per action kind). Each builds
+// director.ctx.actionResult and enqueues INTERNAL_DONE (or ABORT). They share
+// the pipeline shape: resolve params → check (rollCheck/computeActionProfile) →
+// build result.
+
+// Hinder — check vs a GM-set DL (RAW Core p.71); on success the player picks a
+// status (dazed/shaken/slow/weak) at the card before RESOLVE.
+async function computeHinder(director, { attacker, tokenUuids }) {
+  const targetUuid = tokenUuids[0];
+  const targetSnap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === targetUuid);
+  if (!targetSnap) {
+    warn("COMPUTE Hinder: target not found in eligibleTargets", targetUuid);
+    director.enqueue({ type: INTENTS.ABORT });
+    return;
+  }
+
+  // Check config — read attrs / DL FROM the Hinder Common item (authored data);
+  // the live GM attribute-picker result (hinderCheckConfig, set in TARGET)
+  // overrides the authored defaults. Falls back to RAW values if the Common-item
+  // migration hasn't run on this world yet.
+  const hinderProps = getCoreActionSkill("hinder")?.system?.props ?? {};
+  const cfg = director.ctx.hinderCheckConfig ?? {};
+  const A1 = String(cfg.A1 ?? hinderProps.rolled_atr1 ?? "DEX").toUpperCase();
+  const A2 = String(cfg.A2 ?? hinderProps.rolled_atr2 ?? "INS").toUpperCase();
+  const DL = Math.max(1, Number(cfg.dl) || Number(hinderProps.check_difficulty_level) || 10);
+
+  // Free-action grant — add checkBonus to Hinder's roll if a grant is pending
+  // and the player elected Hinder. damageBonus n/a (no damage stage for Hinder).
+  const hinderActorIdForGrant = attacker?.actorId ?? null;
+  const hinderGrant = hinderActorIdForGrant ? freeActions.get(hinderActorIdForGrant) : null;
+  const hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
+  const hinderCheckBonusParts = [];
+  if (hinderGrant && hinderCheckBonus !== 0) {
+    hinderCheckBonusParts.push({
+      source: hinderGrant.sourceLabel || "Free Action",
+      amount: hinderCheckBonus,
+    });
+  }
+  if (hinderGrant) {
+    log(`Hinder COMPUTE: applied ${hinderGrant.sourceLabel} grant (+${hinderGrant.checkBonus ?? 0} check)`);
+    freeActions.clear(hinderActorIdForGrant);
+  }
+
+  // BD-canonical check (roll + prop-aware crit/fumble) + vs-DL comparison.
+  const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+  const check = await rollCheck({ actor: liveActor, A1, A2, checkBonus: hinderCheckBonus });
+  const { rA, rB, dA, dB, total, hr, isFumble, isCrit } = check;
+  const { success } = checkVsThreshold(check, DL);
+
+  director.ctx.actionResult = freezeActionResult({
+    kind: "Hinder",
+    attacker,
+    attackerActorRef: attacker.actorUuid,
+    target: targetSnap,
+    targets: [targetSnap],
+    roll: {
+      A1, A2,
+      dA, dB, rA, rB, checkBonus: hinderCheckBonus, checkBonusParts: hinderCheckBonusParts, total, hr,
+      isCrit, isFumble,
+      opportunities: isCrit && !isFumble,
+    },
+    dl: DL,
+    success,
+    // The inflicted status is chosen at RESOLVE via Common/Hinder's
+    // open_action_menu (not stored on the frozen actionResult).
+    ...(hinderGrant ? { freeActionGrant: { sourceLabel: hinderGrant.sourceLabel, checkBonus: hinderGrant.checkBonus ?? 0, damageBonus: 0 } } : {}),
+  });
+  director.enqueue({ type: INTENTS.INTERNAL_DONE });
+}
+
+// Study — open check (RAW Core p.46-47), no defense; total maps to encyclopedia
+// tiers (Identity >=7 / Stats >=8 / Details >=13).
+async function computeStudy(director, { attacker, tokenUuids }) {
+  const targetUuid = tokenUuids[0];
+  const targetSnap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === targetUuid);
+  if (!targetSnap) {
+    warn("COMPUTE Study: target not found in eligibleTargets", targetUuid);
+    director.enqueue({ type: INTENTS.ABORT });
+    return;
+  }
+
+  // Check config — read attrs FROM the Study Common item (authored data, like
+  // Hinder). Open Check (default INS+INS); prop-aware crit/fumble.
+  const studyProps = getCoreActionSkill("study")?.system?.props ?? {};
+  const A1 = String(studyProps.rolled_atr1 ?? "INS").toUpperCase();
+  const A2 = String(studyProps.rolled_atr2 ?? "INS").toUpperCase();
+  const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+  const check = await rollCheck({ actor: liveActor, A1, A2 });
+  const { rA, rB, dA, dB, total, hr, isFumble, isCrit } = check;
+
+  // Encyclopedia tier classification — the SINGLE source of truth lives in the
+  // encyclopedia (crit-aware: a critical Study reveals Details regardless of raw
+  // total, matching recordResult, so the card can never disagree with what gets
+  // stored). Falls back to the raw-total ladder only if the API isn't mounted.
+  const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+  const tier = encApi?.classifyStudyTotal
+    ? encApi.classifyStudyTotal(total, { isCrit, isFumble })
+    : (isFumble        ? { name: "None",     threshold: 0,  fumbled: true,  effective: 0 }
+       : total >= 13   ? { name: "Details",  threshold: 13, fumbled: false, effective: total }
+       : total >= 8    ? { name: "Stats",    threshold: 8,  fumbled: false, effective: total }
+       : total >= 7    ? { name: "Identity", threshold: 7,  fumbled: false, effective: total }
+       :                 { name: "None",     threshold: 0,  fumbled: false, effective: total });
+
+  // Current best result for the target — so the card can show whether this Study improved on it.
+  let previousBest = 0;
+  if (encApi?.getPageForActor) {
+    const candidates = [targetSnap.worldActorUuid, targetSnap.actorUuid].filter(Boolean);
+    for (const uuid of candidates) {
+      try {
+        const page = encApi.getPageForActor(uuid);
+        if (!page) continue;
+        const flag = page.getFlag?.("fabula-ultima-companion", "encyclopedia");
+        const best = Number(flag?.bestResult ?? 0) || 0;
+        if (best > previousBest) previousBest = best;
+      } catch (_) { /* try next candidate */ }
+    }
+  }
+
+  director.ctx.actionResult = freezeActionResult({
+    kind: "Study",
+    attacker,
+    attackerActorRef: attacker.actorUuid,
+    target: targetSnap,
+    targets: [targetSnap],
+    roll: {
+      A1, A2,
+      dA, dB, rA, rB, checkBonus: 0, total, hr,
+      isCrit, isFumble,
+      opportunities: isCrit && !isFumble,
+    },
+    tier,
+    previousBest,
+    // Compare the crit-promoted effective total (what recordResult stores), so a
+    // low-roll crit that floors up to Details still reads as an improvement.
+    improved: !isFumble && (tier.effective ?? total) > previousBest,
+  });
+  director.enqueue({ type: INTENTS.INTERNAL_DONE });
+}
+
 // ─── COMPUTE ───────────────────────────────────────────────────────────
 // Roll accuracy + damage. Build an immutable actionResult.
 const Compute = {
@@ -2525,13 +2668,11 @@ const Compute = {
       // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
       let dice = null;
       if (ar.isCheck) {
-        const A1 = ar.rolledA1 || "INS";
-        const A2 = ar.rolledA2 || "INS";
-        const dA = attacker.attributes?.[A1] ?? 8;
-        const dB = attacker.attributes?.[A2] ?? 8;
-        const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-        const d = rollObj.dice.map((x) => x.results?.[0]?.result ?? 0);
-        dice = { rA: d[0] ?? 0, rB: d[1] ?? 0 };
+        // Roll via the shared check primitive (computeActionProfile re-derives
+        // crit/fumble from these dice). Last of the BD's raw roll sites unified.
+        const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+        const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS" });
+        dice = { rA: c.rA, rB: c.rB };
       }
       const profile = await computeActionProfile({
         view: getRuntimeActionView(skill), ar, attacker, targets: allTargets, dice,
@@ -2595,13 +2736,13 @@ const Compute = {
         freeActions.clear(attackerActorIdForGrant);
       }
       {
-        const adA = attacker.attributes?.[weapon.A1] ?? 8;
-        const adB = attacker.attributes?.[weapon.A2] ?? 8;
-        const rollObj = await new Roll(`1d${adA} + 1d${adB}`).roll();
-        const adice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
+        // Roll via the shared check primitive (computeActionProfile re-derives
+        // crit/fumble from these dice). Last of the BD's raw roll sites unified.
+        const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+        const c = await rollCheck({ actor: liveActor, A1: weapon.A1, A2: weapon.A2 });
         const profile = await computeActionProfile({
           view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
-          attacker, weapon, targets: targetSnapshots, dice: { rA: adice[0] ?? 0, rB: adice[1] ?? 0 },
+          attacker, weapon, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
           ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant: attackGrant },
         });
         const delta = projectProfileToActionResult(profile, null, targetSnapshots);
@@ -2625,160 +2766,9 @@ const Compute = {
     }
 
 
-    if (command === "Hinder") {
-      // Check vs DL set by the GM (default 10 per RAW Core p.71). The GM
-      // also chose the attribute pair via the pickAttributePair prompt in
-      // TARGET — ctx.hinderCheckConfig carries those choices. If TARGET
-      // somehow skipped the picker (manual ABORT recovery, etc.) we fall
-      // back to the RAW defaults so nothing crashes.
-      const targetUuid = tokenUuids[0];
-      const targetSnap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === targetUuid);
-      if (!targetSnap) {
-        warn("COMPUTE Hinder: target not found in eligibleTargets", targetUuid);
-        director.enqueue({ type: INTENTS.ABORT });
-        return;
-      }
+    if (command === "Hinder") return computeHinder(director, { attacker, tokenUuids });
 
-      const cfg = director.ctx.hinderCheckConfig ?? {};
-      const A1 = cfg.A1 ?? "DEX";
-      const A2 = cfg.A2 ?? "INS";
-      const DL = Math.max(1, Number(cfg.dl) || 10);
-      const dA = attacker.attributes?.[A1] ?? 8;
-      const dB = attacker.attributes?.[A2] ?? 8;
-      const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
-
-      // Free-action grant — add checkBonus to Hinder's roll if a grant
-      // is pending and the player elected Hinder. damageBonus n/a (no
-      // damage stage for Hinder). Same consume-on-pick semantics as
-      // Attack.
-      const hinderActorIdForGrant = attacker?.actorId ?? null;
-      const hinderGrant = hinderActorIdForGrant ? freeActions.get(hinderActorIdForGrant) : null;
-      const hinderCheckBonus = hinderGrant ? Number(hinderGrant.checkBonus) || 0 : 0;
-      const hinderCheckBonusParts = [];
-      if (hinderGrant && hinderCheckBonus !== 0) {
-        hinderCheckBonusParts.push({
-          source: hinderGrant.sourceLabel || "Free Action",
-          amount: hinderCheckBonus,
-        });
-      }
-      if (hinderGrant) {
-        log(`Hinder COMPUTE: applied ${hinderGrant.sourceLabel} grant (+${hinderGrant.checkBonus ?? 0} check)`);
-        freeActions.clear(hinderActorIdForGrant);
-      }
-
-      const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-      const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
-      const rA = dice[0] ?? 0;
-      const rB = dice[1] ?? 0;
-      const total = (rA + rB + hinderCheckBonus) | 0;
-      const hr = Math.max(rA, rB);
-      const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-      const isCrit = (rA === rB) && !isFumble && rA >= 6;
-      // Success: crit always succeeds, fumble always fails, otherwise vs DL.
-      const success = isCrit ? true : isFumble ? false : (total >= DL);
-
-      director.ctx.actionResult = freezeActionResult({
-        kind: "Hinder",
-        attacker,
-        attackerActorRef: attacker.actorUuid,
-        target: targetSnap,
-        targets: [targetSnap],
-        roll: {
-          A1, A2,
-          dA, dB, rA, rB, checkBonus: hinderCheckBonus, checkBonusParts: hinderCheckBonusParts, total, hr,
-          isCrit, isFumble,
-          opportunities: isCrit && !isFumble,
-        },
-        dl: DL,
-        success,
-        // statusValue is filled in by the card click (one of dazed /
-        // shaken / slow / weak) before RESOLVE runs. See Confirm.onEnter.
-        statusValue: null,
-        ...(hinderGrant ? { freeActionGrant: { sourceLabel: hinderGrant.sourceLabel, checkBonus: hinderGrant.checkBonus ?? 0, damageBonus: 0 } } : {}),
-      });
-      director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      return;
-    }
-
-    if (command === "Study") {
-      // Open Check (RAW Core p.46-47): roll the attribute pair, no defense
-      // comparison. INS+INS is the default for Study; situational variants
-      // like INS+WLP for inquiry are a future picker — v1 hardcodes INS+INS.
-      // The total maps to encyclopedia tiers (Identity ≥7 / Stats ≥8 /
-      // Details ≥13, per `scripts/encyclopedia/encyclopedia-core.js`).
-      const targetUuid = tokenUuids[0];
-      const targetSnap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === targetUuid);
-      if (!targetSnap) {
-        warn("COMPUTE Study: target not found in eligibleTargets", targetUuid);
-        director.enqueue({ type: INTENTS.ABORT });
-        return;
-      }
-
-      const dA = attacker.attributes?.INS ?? 8;
-      const dB = attacker.attributes?.INS ?? 8;
-      const fumbleThr = Math.max(1, attacker.fumbleThreshold ?? 1);
-
-      const rollObj = await new Roll(`1d${dA} + 1d${dB}`).roll();
-      const dice = rollObj.dice.map((d) => d.results?.[0]?.result ?? 0);
-      const rA = dice[0] ?? 0;
-      const rB = dice[1] ?? 0;
-      const total = (rA + rB) | 0;
-      const hr = Math.max(rA, rB);
-      const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-      const isCrit = (rA === rB) && !isFumble && rA >= 6;
-
-      // Encyclopedia tier classification — labels and thresholds come from
-      // [[reference_game_flow_map]] / encyclopedia-core.js, NOT from RAW's
-      // Basic/Complete/Detailed/Encyclopedic. The journal page is what
-      // actually surfaces the reveal; using its names keeps the card and
-      // the page in sync.
-      let tierName = "None";
-      let tierThreshold = 0;
-      if (total >= 13)      { tierName = "Details";  tierThreshold = 13; }
-      else if (total >= 8)  { tierName = "Stats";    tierThreshold = 8;  }
-      else if (total >= 7)  { tierName = "Identity"; tierThreshold = 7;  }
-      const tierFumble = isFumble;
-
-      // Look up the current best result for the target so the card can
-      // tell the player whether this Study improved on what's known.
-      const encApi = globalThis.FUCompanion?.api?.encyclopedia;
-      let previousBest = 0;
-      if (encApi?.getPageForActor) {
-        const candidates = [targetSnap.worldActorUuid, targetSnap.actorUuid].filter(Boolean);
-        for (const uuid of candidates) {
-          try {
-            const page = encApi.getPageForActor(uuid);
-            if (!page) continue;
-            const flag = page.getFlag?.("fabula-ultima-companion", "encyclopedia");
-            const best = Number(flag?.bestResult ?? 0) || 0;
-            if (best > previousBest) previousBest = best;
-          } catch (_) { /* try next candidate */ }
-        }
-      }
-
-      director.ctx.actionResult = freezeActionResult({
-        kind: "Study",
-        attacker,
-        attackerActorRef: attacker.actorUuid,
-        target: targetSnap,
-        targets: [targetSnap],
-        roll: {
-          A1: "INS", A2: "INS",
-          dA, dB, rA, rB, checkBonus: 0, total, hr,
-          isCrit, isFumble,
-          opportunities: isCrit && !isFumble,
-        },
-        tier: {
-          name: tierName,
-          threshold: tierThreshold,
-          fumbled: tierFumble,
-        },
-        previousBest,
-        improved: !isFumble && total > previousBest,
-      });
-      director.enqueue({ type: INTENTS.INTERNAL_DONE });
-      return;
-    }
+    if (command === "Study") return computeStudy(director, { attacker, tokenUuids });
 
     // Unknown command — shouldn't happen if TARGET filtered correctly.
     warn("COMPUTE: unknown command", command);
@@ -3656,10 +3646,10 @@ const Resolve = {
       await resolveAction(director, ar);
     } else if (ar.kind === "Hinder") {
       // Success-gating + fail/fumble Miss VFX stay here (presentation); on a
-      // success, resolveAction fires Common/Hinder's apply_ae row, which
-      // resolves the card-picked status (ar.statusValue) via the dynamic
-      // "status_value" ae_template_ref and applies it to action_targets with
-      // replace_same_status dedup.
+      // success, resolveAction fires Common/Hinder's open_action_menu, which
+      // prompts for one of Dazed/Shaken/Slow/Weak (shared option picker with
+      // per-status icons + colors) and applies it to action_targets with
+      // replace_same_status dedup. The menu only fires on success (this gate).
       if (!ar.success) {
         log(`Hinder failed against ${ar.target?.name ?? "?"} (roll ${ar.roll?.total ?? "?"} vs DL ${ar.dl})`);
         playMissVfx({ tokenUuid: ar.target?.tokenUuid });
@@ -4294,7 +4284,7 @@ const Stopped = {
     WeaponModePicker.despawn({ director });
     AttributePairPicker.despawn({ director });
     SkillPicker.despawn({ director });
-    OptionPicker.despawnAll();
+    ListPicker.despawnAll();  // tears down weapon-mode / skill / item / menu overlays
     BattlefieldActionCard.despawn({ director });
     // Drop any reaction menus left over from earlier in the battle.
     // conflict_end has no dispatch site yet — it needs a pre-STOPPED

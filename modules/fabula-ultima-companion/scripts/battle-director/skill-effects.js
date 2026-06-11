@@ -19,7 +19,7 @@
 
 import { log, warn } from "./logger.js";
 import { evaluateFormula, buildSkillResolver, isFormulaString } from "./skill-formulas.js";
-import { pickOption } from "./option-picker.js";
+import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
 import { readPropNum } from "./snapshot.js";
@@ -3087,6 +3087,8 @@ function buildMenuOptions(row, ctx) {
     (s == null || String(s).trim() === "") ? [] : String(s).split("|").map((x) => x.trim());
   const rowLabels = splitPipe(row.menu_option_labels);
   const rowDescs  = splitPipe(row.menu_option_descriptions);
+  const rowIcons  = splitPipe(row.menu_option_icons);
+  const rowColors = splitPipe(row.menu_option_colors);
   let options = [];
   let optionRows = [];
   if (refs.length) {
@@ -3105,7 +3107,16 @@ function buildMenuOptions(row, ctx) {
       const desc = (rowDescs[i] && rowDescs[i] !== "")
         ? rowDescs[i]
         : (refRow.menu_description ?? null);
-      options.push({ label, description: desc ? String(desc) : null });
+      // Optional per-option presentation (icon image + accent color). Menu-row
+      // pipe-list wins; fall back to the option row's own field. Absent → null,
+      // and the picker renders a plain row (back-compat for every existing menu).
+      const icon = (rowIcons[i] && rowIcons[i] !== "")
+        ? rowIcons[i]
+        : (refRow.menu_icon ?? null);
+      const color = (rowColors[i] && rowColors[i] !== "")
+        ? rowColors[i]
+        : (refRow.menu_color ?? null);
+      options.push({ label, description: desc ? String(desc) : null, icon: icon || null, color: color || null });
       optionRows.push(refRow);
     }
   }
@@ -3116,7 +3127,12 @@ function buildMenuOptions(row, ctx) {
       ? optsRaw
       : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
     const valid = inline.filter((o) => o && typeof o === "object" && o.label);
-    options = valid.map((o) => ({ label: String(o.label), description: o.description ? String(o.description) : null }));
+    options = valid.map((o) => ({
+      label: String(o.label),
+      description: o.description ? String(o.description) : null,
+      icon: o.menu_icon ?? o.icon ?? null,
+      color: o.menu_color ?? o.color ?? null,
+    }));
     optionRows = valid;
   }
   return { options, optionRows };
@@ -3131,6 +3147,25 @@ function buildMenuOptions(row, ctx) {
 // an interactive prompt per pick over the remaining options. Cancelling the
 // FIRST interactive pick → {cancelled:true}; a later cancel keeps prior picks.
 // Shared by the live dispatch + the apply-click preview so both pick identically.
+// Escape author text for the list-picker (it renders primary/secondary as HTML).
+function escapeMenuHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[m]));
+}
+
+// Map menu options ({label, description, icon?, color?}) to list-picker rows.
+// `value` is the LOCAL index — the caller maps it back into its own list.
+function menuOptionsToRows(opts) {
+  return opts.map((o, i) => ({
+    value: i,
+    primary: escapeMenuHtml(o.label),
+    secondary: o.description ? escapeMenuHtml(o.description) : null,
+    imageUrl: o.icon ?? null,
+    color: o.color ?? null,
+  }));
+}
+
 async function selectMenuPicks(row, ctx, options) {
   let pickCount = 1;
   const pcRaw = row.menu_pick_count;
@@ -3187,17 +3222,18 @@ async function selectMenuPicks(row, ctx, options) {
         ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
         : baseSubtitle;
       const remOptions = remainingIdx.map((i) => options[i]);
-      const picked = await pickOption({
+      const pickedLocal = await pickFromList({
         title: String(row.menu_title ?? "Choose an option"),
         subtitle,
-        options: remOptions,
+        options: menuOptionsToRows(remOptions),
+        zIndex: 97,  // above the action card (95) during RESOLVE
       });
-      if (!picked) {
+      if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
         log(`skill-effects.open_action_menu: player stopped after ${pick} pick(s)`);
         break;
       }
-      idx = remainingIdx[picked.index];
+      idx = remainingIdx[pickedLocal];
     }
     takeIndex(idx);
   }
@@ -3494,9 +3530,9 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     // the candidate list. Passive ctx auto-picks the first remaining match.
     let remainingMatches = matches.slice();
     for (let i = 0; i < count && remainingMatches.length; i += 1) {
-      let chosen = null;
+      let chosenIdx = null;
       if (ctx.isPassive) {
-        chosen = { index: 0, option: { label: remainingMatches[0].name } };
+        chosenIdx = 0;
       } else {
         const options = remainingMatches.map((eff) => ({
           label: String(eff.name ?? "(unnamed)"),
@@ -3504,13 +3540,13 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
         }));
         const title = String(row.menu_title ?? `Choose a ${filterTag} to remove`);
         const subtitle = `${actor.name}${row.menu_subtitle ? ` · ${row.menu_subtitle}` : ""}`;
-        chosen = await pickOption({ title, subtitle, options });
+        chosenIdx = await pickFromList({ title, subtitle, options: menuOptionsToRows(options) });
       }
-      if (!chosen) {
+      if (chosenIdx == null) {
         log(`skill-effects.remove_tagged_ae: ${actor.name} picker cancelled; skipping rest of this target`);
         break;
       }
-      const picked = remainingMatches[chosen.index];
+      const picked = remainingMatches[chosenIdx];
       try {
         await picked.delete();
         removed.push({ actorUuid: actor.uuid, aeName: picked.name });

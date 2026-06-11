@@ -18,9 +18,10 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts,
-  isCriticalHit, applyCritDamage, resolveIncomingReduction,
+  applyCritDamage, resolveIncomingReduction,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
+import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp } from "./skill-effects.js";
 
@@ -195,15 +196,12 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
     return check;
   }
 
-  const rA = dice.rA ?? 0, rB = dice.rB ?? 0;
-  const total = (rA + rB + baseBonus) | 0;
-  const hr = Math.max(rA, rB);
-  const isFumble = (rA <= fumbleThr && rB <= fumbleThr);
-  const isCrit = (kind === "Hinder" || kind === "Study")
-    ? ((rA === rB) && !isFumble && rA >= 6)
-    : isCriticalHit({ rA, rB, props, isFumble });
-
-  Object.assign(check, { rA, rB, hr, total, isCrit, isFumble, checkBonus: baseBonus });
+  // Single check derivation (prop-aware crit + fumble_threshold) — same rule as
+  // every other check site. The former open-check special-case (hardcoded
+  // rA>=6 for Hinder/Study) is gone; deriveCheck honors crit-modifier props for
+  // all kinds.
+  const d = deriveCheck({ rA: dice.rA ?? 0, rB: dice.rB ?? 0, props, fumbleThreshold: fumbleThr, checkBonus: baseBonus });
+  Object.assign(check, { rA: d.rA, rB: d.rB, hr: d.hr, total: d.total, isCrit: d.isCrit, isFumble: d.isFumble, checkBonus: baseBonus });
 
   if (kind === "Hinder") {
     check.outcomeSuccess = isCrit ? true : isFumble ? false : (total >= dl);
