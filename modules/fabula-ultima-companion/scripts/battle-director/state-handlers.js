@@ -27,7 +27,7 @@ import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, 
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
 // Phase B.1 Skill engine
 import { pickSkill, SkillPicker } from "./skill-picker.js";
-import { OptionPicker } from "./option-picker.js";
+import { ListPicker } from "./list-picker.js";
 // Player-driven input: client-local compose chain runner.
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
@@ -4284,7 +4284,7 @@ const Stopped = {
     WeaponModePicker.despawn({ director });
     AttributePairPicker.despawn({ director });
     SkillPicker.despawn({ director });
-    OptionPicker.despawnAll();
+    ListPicker.despawnAll();  // tears down weapon-mode / skill / item / menu overlays
     BattlefieldActionCard.despawn({ director });
     // Drop any reaction menus left over from earlier in the battle.
     // conflict_end has no dispatch site yet — it needs a pre-STOPPED

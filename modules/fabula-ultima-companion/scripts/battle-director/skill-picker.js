@@ -1,21 +1,18 @@
-// Skill Picker — director-native overlay.
+// Skill Picker — Skill/Spell selection step.
 //
-// Shown by the Skill action's TARGET state. Lists the actor's known
-// Active skills + equipped-item-granted skills. Each row shows icon +
-// name + skill_type / element + cost badge. Unaffordable skills render
-// disabled (greyed + non-clickable). Hover on a row pops a description
-// tooltip (mirrors the Item-card / Equipment-card hover pattern).
+// Thin builder over the shared list-picker (list-picker.js): it gathers the
+// actor's known Active skills + equipped-item-granted skills, groups them into
+// sections, maps each to a list-picker row (icon, name, subtitle, cost badge,
+// affordability-disabled, description tooltip), and delegates rendering +
+// lifecycle + keyboard to pickFromList. No bespoke overlay here anymore — only
+// the Skill-specific gathering + row construction.
 //
-// Returns a Promise resolving to `{ skillUuid, sourceItemUuid? } | null`
-// (null = cancelled).
-//
-// Style mirrors weapon-mode-picker.js — sectioned list, parchment
-// palette, number-key shortcuts.
+// Returns a Promise resolving to `{ skillUuid, sourceItemUuid? } | null`.
 
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { playUiHoverSfx } from "./director-ui-sfx.js";
+import { pickFromList, ListPicker } from "./list-picker.js";
 
 // Display-time formula resolver for free-text props like skill_target.
 // Some authors embed inline expressions like
@@ -50,202 +47,6 @@ function resolveDisplayFormula(text, actor, skill) {
   }
 }
 
-const CSS_ID  = "fud-skill-picker-style";
-const ROOT_ID = "fud-skill-picker-root";
-const TIP_ID  = "fud-skill-picker-tip";
-
-const _overlays = new Map();
-let _tipEl = null;
-let _tipHideTid = null;
-const HOVER_DWELL_MS = 600;
-
-function ensureStyles() {
-  if (document.getElementById(CSS_ID)) return;
-  const css = document.createElement("style");
-  css.id = CSS_ID;
-  css.textContent = `
-    #${ROOT_ID} {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0.92);
-      opacity: 0;
-      z-index: 96;
-      pointer-events: none;
-      transition: transform 200ms cubic-bezier(.2,.7,.2,1), opacity 200ms ease-out;
-    }
-    #${ROOT_ID}.is-visible { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    #${ROOT_ID}.is-resolving { transform: translate(-50%, -50%) scale(0.96); opacity: 0; transition: transform 180ms ease-out, opacity 180ms ease-out; }
-
-    .fud-skp-card {
-      pointer-events: auto;
-      width: 480px;
-      max-width: 92vw;
-      max-height: 70vh;
-      display: flex; flex-direction: column;
-      padding: 12px 14px 10px;
-      border: 2px solid var(--fud-stroke, #7a6a55);
-      border-radius: 14px;
-      background: linear-gradient(180deg, var(--fud-parchment-top, #f6f1e6), var(--fud-parchment-bot, #ebe3d0));
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-      color: var(--fud-ink, #3a3228);
-      font-family: "Inter", "Signika", "Segoe UI", system-ui, sans-serif;
-      letter-spacing: 0.2px;
-    }
-    .fud-skp-card .fud-skp-title {
-      font-size: 14px; font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
-      text-align: center;
-      padding-bottom: 7px;
-      border-bottom: 2px solid var(--fud-stroke, #7a6a55);
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-    .fud-skp-card .fud-skp-list {
-      display: flex; flex-direction: column; gap: 4px;
-      overflow-y: auto;
-      flex: 1;
-      min-height: 0;
-      padding-right: 2px;
-    }
-    .fud-skp-card .fud-skp-section-label {
-      font-size: 9.5px; font-weight: 900; letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--fud-stroke, #7a6a55);
-      padding: 6px 4px 3px;
-      border-bottom: 1px solid rgba(122, 106, 85, 0.4);
-      margin-bottom: 1px;
-    }
-    .fud-skp-card .fud-skp-section-label:first-child { margin-top: 0; padding-top: 2px; }
-    .fud-skp-card .fud-skp-empty {
-      padding: 16px;
-      text-align: center;
-      color: var(--fud-stroke, #7a6a55);
-      font-size: 11px;
-      font-style: italic;
-    }
-    .fud-skp-card .fud-skp-row {
-      display: grid; grid-template-columns: 44px 1fr auto;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 10px;
-      border-radius: 9px;
-      border: 2px solid rgba(90, 62, 28, 0.5);
-      background: linear-gradient(180deg, #fffef8, #f5eedd);
-      color: #2d1f0d;
-      box-shadow: 0 2px 0 rgba(41, 33, 24, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 100ms ease, filter 100ms ease, background 80ms ease;
-    }
-    .fud-skp-card .fud-skp-row:hover  { filter: brightness(1.03); transform: translateY(-1px); }
-    .fud-skp-card .fud-skp-row:active { transform: translateY(0); }
-    .fud-skp-card .fud-skp-row.is-kb-focused {
-      background: linear-gradient(180deg, #fef5dc, #ebd9a6);
-      border-color: rgba(90, 62, 28, 0.75);
-      box-shadow: 0 3px 0 rgba(41, 33, 24, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, inset 3px 0 0 var(--fud-gold-2, #b7935a);
-      transform: translateY(-1px);
-    }
-    .fud-skp-card .fud-skp-row.is-disabled {
-      filter: grayscale(0.7) brightness(0.9);
-      opacity: 0.55;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .fud-skp-card .fud-skp-row.is-disabled:hover { filter: grayscale(0.7) brightness(0.9); transform: none; }
-    .fud-skp-card .fud-skp-row.is-disabled.is-kb-focused { transform: none; box-shadow: 0 2px 0 rgba(41,33,24,.25), 0 0 0 1px rgba(255,255,255,.8) inset; }
-    .fud-skp-card .fud-skp-row .icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
-    .fud-skp-card .fud-skp-row .icon img {
-      width: 40px; height: 40px;
-      border-radius: 6px; object-fit: cover;
-      border: 0 !important; outline: 0 !important; background: transparent !important;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
-    }
-    /* min-width:0 lets the grid track shrink below its content's intrinsic
-       width — without it the long subtitle would push the .info column
-       wider than the column track and overlap the cost badge. overflow:
-       hidden caps it visually as a safety net. */
-    .fud-skp-card .fud-skp-row .info { min-width: 0; overflow: hidden; }
-    .fud-skp-card .fud-skp-row .primary {
-      font-weight: 900; font-size: 13px;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .fud-skp-card .fud-skp-row .primary .source-tag {
-      font-size: 10px; opacity: 0.8;
-    }
-    /* Subtitle is allowed to wrap to a second line when bullets exceed
-       the available width (long subtitles like "MP Burn · Range · One
-       creature · INS + WLP"). Bullets keep their tokens intact via
-       white-space:nowrap; the spaces around the dot join (added in the
-       row builder) supply the wrap opportunities. line-height:1.3 keeps
-       the wrap from feeling cramped. */
-    .fud-skp-card .fud-skp-row .secondary {
-      font-size: 10.5px; opacity: 0.82; font-weight: 600;
-      margin-top: 2px; line-height: 1.3;
-    }
-    .fud-skp-card .fud-skp-row .secondary .dot { margin: 0 5px; opacity: 0.6; }
-    .fud-skp-card .fud-skp-row .secondary .bullet { white-space: nowrap; }
-    .fud-skp-card .fud-skp-row .secondary .check-attr {
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: rgba(40, 30, 18, 0.14);
-      color: #4a3208;
-    }
-    .fud-skp-card .fud-skp-row .cost-badge {
-      font-size: 11px; font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: rgba(40, 30, 18, 0.18);
-      border: 1px solid rgba(40, 30, 18, 0.32);
-      color: #2d2110;
-      white-space: nowrap;
-    }
-    .fud-skp-card .fud-skp-row.is-disabled .cost-badge { color: #6b1e1e; background: rgba(110, 30, 30, 0.18); border-color: rgba(110, 30, 30, 0.32); }
-    .fud-skp-card .fud-skp-row .cost-badge.free { background: rgba(40, 100, 40, 0.18); border-color: rgba(40, 100, 40, 0.32); color: #194c19; }
-    .fud-skp-card .fud-skp-cancel {
-      margin-top: 8px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 2px solid var(--fud-stroke, #7a6a55);
-      background: linear-gradient(180deg, #e5d6c5, #c9b294);
-      color: var(--fud-ink, #3a3228);
-      font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
-      font-size: 11px;
-      cursor: pointer;
-      text-align: center;
-      user-select: none;
-      flex-shrink: 0;
-      box-shadow: 0 3px 0 var(--fud-shadow, rgba(41, 33, 24, 0.55)), 0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset;
-    }
-    .fud-skp-card .fud-skp-cancel:hover { filter: brightness(1.05); }
-
-    /* Description tooltip — body-mounted singleton */
-    #${TIP_ID} {
-      position: fixed;
-      max-width: 320px;
-      padding: 10px 12px;
-      background: linear-gradient(180deg, #fff8e8, #f0e4cc);
-      border: 2px solid var(--fud-stroke, #7a6a55);
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      color: var(--fud-ink, #3a3228);
-      font-family: "Inter", "Signika", "Segoe UI", system-ui, sans-serif;
-      font-size: 11.5px;
-      line-height: 1.4;
-      z-index: 99;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 120ms ease;
-    }
-    #${TIP_ID}.is-visible { opacity: 1; }
-    #${TIP_ID} .tip-name { font-weight: 900; font-size: 12.5px; margin-bottom: 4px; letter-spacing: 0.2px; }
-    #${TIP_ID} .tip-body { margin: 0; }
-    #${TIP_ID} .tip-cost { font-weight: 800; color: #4a3208; }
-  `;
-  document.head.appendChild(css);
-}
-
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -278,23 +79,11 @@ function stripHtml(html) {
 //
 // Each candidate shape:
 //   {
-//     uuid:               string,
-//     id:                 string,
-//     name:               string,
-//     img:                string,
-//     skillType:          string,   // "Active" / "Passive" / etc.
-//     element:            string,   // type_damage if set
-//     range:              string,   // skill_range
-//     skillTarget:        string,   // skill_target (free text)
-//     descriptionHtml:    string,
-//     rawCost:            string,
-//     parsedCost:         { tokens, hasVariable, raw },
-//     costMap:            Map<resource, amount>  (resolved at default targetCount=1)
-//     affordable:         bool,
-//     missingResources:   [{resource, has, need, label}],
-//     source:             "actor" | "item-granted",
-//     sourceItemUuid:     string | null,   // for item-granted
-//     sourceItemName:     string | null,
+//     uuid, id, name, img,
+//     skillType, element, range, skillTarget, descriptionHtml,
+//     isCheck, isOffensiveSpell, rolledA1, rolledA2,
+//     rawCost, parsedCost, costMap, affordable, missingResources,
+//     source: "actor" | "item-granted", sourceItemUuid, sourceItemName,
 //   }
 export async function gatherSkillsForActor(actor) {
   if (!actor) return [];
@@ -303,36 +92,30 @@ export async function gatherSkillsForActor(actor) {
 
   // PRIMARY SOURCE: walk actor.items and pick out any item that carries
   // a skill_type prop. This is the source-of-truth list; the legacy
-  // `skill_active_list` is a meta-summary that misses spells (those
-  // live in `normal_spell_list` / `offensive_spell_list` on the actor).
-  // Walking items directly catches every skill / spell the actor knows
-  // regardless of which summary bucket the CSB template put them in.
+  // `skill_active_list` is a meta-summary that misses spells. Walking items
+  // directly catches every skill / spell the actor knows regardless of which
+  // summary bucket the CSB template put them in.
   const items = Array.from(actor.items ?? []);
   for (const item of items) {
     const skillType = String(item.system?.props?.skill_type ?? "").trim();
     if (!skillType) continue;
     if (seenUuids.has(item.uuid)) continue;
-    // Build a candidate from the item directly (no fromUuid round-trip
-    // needed — we already have the doc). Mirrors buildCandidate.
     const cand = buildCandidateFromItem(item, actor, { source: "actor", sourceItem: null });
     if (!cand) continue;
     seenUuids.add(item.uuid);
     candidates.push(cand);
   }
 
-  // SECONDARY SOURCE: equipped items' item_skill_active grants. These
-  // point at skills the actor doesn't own (the granting weapon/accessory
-  // is the source). Resolve each via fromUuid.
+  // SECONDARY SOURCE: equipped items' item_skill_active grants. These point
+  // at skills the actor doesn't own (the granting weapon/accessory is the
+  // source). Resolve each via fromUuid.
   for (const item of items) {
     const isEquipped = item.system?.isEquipped ?? false;
     if (!isEquipped) continue;
     const granted = asObjectValues(item.system?.props?.item_skill_active);
     for (const entry of granted) {
       if (!entry?.uuid || seenUuids.has(entry.uuid)) continue;
-      const cand = await buildCandidate(entry.uuid, actor, {
-        source: "item-granted",
-        sourceItem: item,
-      });
+      const cand = await buildCandidate(entry.uuid, actor, { source: "item-granted", sourceItem: item });
       if (!cand) continue;
       seenUuids.add(entry.uuid);
       candidates.push(cand);
@@ -347,14 +130,14 @@ export async function gatherSkillsForActor(actor) {
   return candidates;
 }
 
-// Build a candidate from a live skill Item (already in memory).
-// Same shape as buildCandidate (which fetches by UUID) but skips the
-// fromUuid round-trip — used by the primary actor.items walk.
-function buildCandidateFromItem(skill, actor, { source, sourceItem }) {
-  if (!skill) return null;
+// Build a candidate from props (shared by the live-item walk and the
+// fromUuid path). `skill` is the resolved Item doc.
+function candidateFromSkill(skill, actor, { source, sourceItem }) {
   const p = skill.system?.props ?? {};
   const rawCost = String(p.cost ?? "");
   const parsedCost = parseSkillCost(rawCost);
+  // Resolve at targetCount=1 for the affordability gate — variable costs
+  // resolve against the MINIMUM (variableAmount defaults to 0).
   const costMap = resolveCost(parsedCost, { actor, targetCount: 1, variableAmount: 0 });
   const gate = checkAffordable(actor, costMap);
   return {
@@ -382,57 +165,28 @@ function buildCandidateFromItem(skill, actor, { source, sourceItem }) {
   };
 }
 
-async function buildCandidate(uuid, actor, { source, sourceItem }) {
+// Build a candidate from a live skill Item (already in memory) — skips the
+// fromUuid round-trip; used by the primary actor.items walk.
+function buildCandidateFromItem(skill, actor, opts) {
+  if (!skill) return null;
+  return candidateFromSkill(skill, actor, opts);
+}
+
+async function buildCandidate(uuid, actor, opts) {
   let skill = null;
   try { skill = await fromUuid(uuid); } catch (e) { warn("skill-picker.buildCandidate: fromUuid failed", uuid, e); }
   if (!skill) return null;
-  const p = skill.system?.props ?? {};
-  const rawCost = String(p.cost ?? "");
-  const parsedCost = parseSkillCost(rawCost);
-  // Resolve at targetCount=1 for affordability gate — variable costs
-  // resolve against the MINIMUM (since variableAmount defaults to 0).
-  const costMap = resolveCost(parsedCost, { actor, targetCount: 1, variableAmount: 0 });
-  const gate = checkAffordable(actor, costMap);
-  return {
-    uuid: skill.uuid,
-    id: skill.id,
-    name: skill.name ?? "(unnamed)",
-    img: skill.img ?? "icons/svg/sun.svg",
-    skillType: String(p.skill_type ?? "").trim() || "—",
-    element: String(p.type_damage ?? "").trim(),
-    range: String(p.skill_range ?? "").trim(),
-    skillTarget: resolveDisplayFormula(String(p.skill_target ?? "").trim(), actor, skill),
-    descriptionHtml: String(p.description ?? ""),
-    isCheck: !!p.isCheck,
-    isOffensiveSpell: !!p.isOffensiveSpell,
-    rolledA1: String(p.rolled_atr1 ?? "").trim(),
-    rolledA2: String(p.rolled_atr2 ?? "").trim(),
-    rawCost,
-    parsedCost,
-    costMap,
-    affordable: gate.ok,
-    missingResources: gate.missing,
-    source,
-    sourceItemUuid: sourceItem?.uuid ?? null,
-    sourceItemName: sourceItem?.name ?? null,
-  };
+  return candidateFromSkill(skill, actor, opts);
 }
 
-// ── Picker UI ───────────────────────────────────────────────────────────
+// ── Filtering ───────────────────────────────────────────────────────────
 
-// Filter helper — restrict the picker to a specific set of skill_type
-// values. Passed in lowercase.
-//
-// The Skill action calls this with ["active"] (Skills only).
-// The Spell action calls this with ["spell"] (Spells only).
-// Passing null/undefined returns everything (rare; debug surface).
+// Restrict the picker to a specific set of skill_type values (lowercase).
+// Skill action → ["active"]; Spell action → ["spell"]; null → everything.
 export function filterBySkillTypes(candidates, allowedTypes) {
   if (!allowedTypes) return candidates ?? [];
   const set = new Set(allowedTypes.map((t) => String(t).toLowerCase()));
-  return (candidates ?? []).filter((c) => {
-    const t = String(c.skillType ?? "").trim().toLowerCase();
-    return set.has(t);
-  });
+  return (candidates ?? []).filter((c) => set.has(String(c.skillType ?? "").trim().toLowerCase()));
 }
 
 // Back-compat alias — old callers may still reference this name.
@@ -440,11 +194,48 @@ export function filterToActiveSkillType(candidates) {
   return filterBySkillTypes(candidates, ["active", "spell"]);
 }
 
-// Open the picker. Returns a Promise<{skillUuid, sourceItemUuid?} | null>.
-//
-// `allowedSkillTypes` defaults to ["active"] — the Skill action's
-// filter. The Spell action passes ["spell"]. Pass null to disable
-// filtering (debug surface only).
+// ── Picker ──────────────────────────────────────────────────────────────
+
+// Map a gathered candidate to a list-picker row.
+function candidateToRow(c) {
+  const subtitleParts = [];
+  if (c.element) subtitleParts.push(escapeHtml(c.element));
+  if (c.range) subtitleParts.push(escapeHtml(c.range));
+  if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
+  const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;
+  const a2 = c.rolledA2 && c.rolledA2 !== "-" ? c.rolledA2 : null;
+  if (c.isCheck && a1 && a2) {
+    subtitleParts.push(`<span class="check-attr">${escapeHtml(a1)} + ${escapeHtml(a2)}</span>`);
+  }
+  const secondary = subtitleParts
+    .map((b) => `<span class="bullet">${b}</span>`)
+    .join(` <span class="dot">•</span> `);
+
+  const hasCost = c.parsedCost.tokens.length > 0;
+  const costLabel = hasCost ? escapeHtml(formatParsedCost(c.parsedCost)) : "Free";
+  const sourceTag = c.source === "item-granted" && c.sourceItemName
+    ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
+  const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
+
+  return {
+    value: { skillUuid: c.uuid, sourceItemUuid: c.sourceItemUuid || null },
+    imageUrl: safeImg,
+    primary: `${sourceTag}${escapeHtml(c.name)}`,
+    secondary,
+    badge: costLabel,
+    badgeTone: !hasCost ? "free" : (c.affordable ? null : "danger"),
+    disabled: !c.affordable,
+    tooltip: {
+      name: c.name,
+      body: stripHtml(c.descriptionHtml || "(no description)"),
+      cost: hasCost ? formatParsedCost(c.parsedCost) : null,
+      missing: c.missingResources.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ") || null,
+    },
+  };
+}
+
+// Open the picker. Returns Promise<{skillUuid, sourceItemUuid?} | null>.
+// `allowedSkillTypes` defaults to ["active"]; the Spell action passes ["spell"].
 export async function pickSkill({
   director,
   actor,
@@ -453,18 +244,6 @@ export async function pickSkill({
   emptyMessage = null,
   externalCancel = null,
 }) {
-  // No GM gate: skill-pick is client-local. Both GM and acting actor's
-  // owner spawn this inside their own composeAction() chain.
-  ensureStyles();
-  ensureTip();
-
-  // Overlay keying. GM uses director.combatId; player has no director.
-  const overlayKey = director?.combatId ?? "no-director";
-
-  // Despawn any prior.
-  const prior = _overlays.get(overlayKey);
-  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(overlayKey); }
-
   const all = await gatherSkillsForActor(actor);
   const candidates = filterBySkillTypes(all, allowedSkillTypes);
   if (!candidates.length) {
@@ -473,11 +252,11 @@ export async function pickSkill({
     return null;
   }
 
-  // Group into sections.
+  // Group into sections (Spell mode splits offensive/normal; Skill mode splits
+  // actor-owned / item-granted).
   const sections = [];
   const isSpellMode = Array.isArray(allowedSkillTypes) && allowedSkillTypes.length === 1
     && allowedSkillTypes[0].toLowerCase() === "spell";
-
   if (isSpellMode) {
     const offensive = candidates.filter((c) => c.isOffensiveSpell);
     const normal = candidates.filter((c) => !c.isOffensiveSpell);
@@ -490,244 +269,31 @@ export async function pickSkill({
     if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
   }
 
-  const sectionsHTML = sections.map((section) => {
-    const itemsHTML = section.items.map((c) => {
-      const subtitleParts = [];
-      if (c.element) subtitleParts.push(escapeHtml(c.element));
-      if (c.range) subtitleParts.push(escapeHtml(c.range));
-      if (c.skillTarget) subtitleParts.push(escapeHtml(c.skillTarget));
-      const a1 = c.rolledA1 && c.rolledA1 !== "-" ? c.rolledA1 : null;
-      const a2 = c.rolledA2 && c.rolledA2 !== "-" ? c.rolledA2 : null;
-      if (c.isCheck && a1 && a2) {
-        subtitleParts.push(`<span class="check-attr">${escapeHtml(a1)} + ${escapeHtml(a2)}</span>`);
-      }
-      const wrappedBullets = subtitleParts.map((b) => `<span class="bullet">${b}</span>`);
-      const subtitle = wrappedBullets.join(` <span class="dot">•</span> `);
+  const lpSections = sections.map((s) => ({
+    label: s.label,
+    hint: s.hint ?? null,
+    items: s.items.map(candidateToRow),
+  }));
 
-      const costLabel = c.parsedCost.tokens.length ? escapeHtml(formatParsedCost(c.parsedCost)) : "Free";
-      const costClass = c.parsedCost.tokens.length ? "" : "free";
+  log(`pickSkill: ${candidates.length} skills (${candidates.filter((c) => c.affordable).length} affordable)`);
 
-      const sourceTag = c.source === "item-granted" && c.sourceItemName
-        ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span>` : "";
-
-      const disabled = c.affordable ? "" : " is-disabled";
-      const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
-
-      const tipBody = stripHtml(c.descriptionHtml || "(no description)");
-      const tipPayload = encodeURIComponent(JSON.stringify({
-        name: c.name,
-        body: tipBody,
-        cost: c.parsedCost.tokens.length ? formatParsedCost(c.parsedCost) : null,
-        missing: c.missingResources.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ") || null,
-      }));
-
-      return `
-        <div class="fud-skp-row${disabled}"
-             data-fud-skill-uuid="${escapeHtml(c.uuid)}"
-             data-fud-source-uuid="${escapeHtml(c.sourceItemUuid ?? "")}"
-             data-fud-tip="${tipPayload}"
-             role="button" tabindex="0">
-          <div class="icon"><img src="${safeImg}" alt=""></div>
-          <div class="info">
-            <div class="primary">${sourceTag}${escapeHtml(c.name)}</div>
-            <div class="secondary">${subtitle}</div>
-          </div>
-          <div class="cost-badge ${costClass}">${costLabel}</div>
-        </div>
-      `;
-    }).join("");
-    const hintHTML = section.hint ? ` <span style="font-weight:700;opacity:0.75;text-transform:none;letter-spacing:0.2px;font-size:9px;">${escapeHtml(section.hint)}</span>` : "";
-    return `<div class="fud-skp-section-label">${escapeHtml(section.label)}${hintHTML}</div>${itemsHTML}`;
-  }).join("");
-
-  const root = document.createElement("div");
-  root.id = ROOT_ID;
-  root.innerHTML = `
-    <div class="fud-skp-card" role="dialog" aria-label="Skill Picker">
-      <div class="fud-skp-title">${escapeHtml(titleText)}</div>
-      <div class="fud-skp-list">${sectionsHTML}</div>
-      <div class="fud-skp-cancel" data-fud-skp-action="cancel" role="button" tabindex="0">Cancel</div>
-    </div>
-  `;
-  document.body.appendChild(root);
-  requestAnimationFrame(() => {
-    root.classList.add("is-visible");
-    const firstRow = root.querySelector("[data-fud-skill-uuid]");
-    if (firstRow) firstRow.classList.add("is-kb-focused");
-  });
-
-  log(`SkillPicker spawned with ${candidates.length} skills (${candidates.filter(c => c.affordable).length} affordable)`);
-
-  return new Promise((resolve) => {
-    let resolved = false;
-    let keyListener = null;
-    let despawnTid = null;
-    let hoverDwellTid = null;
-    let kbIndex = 0;
-
-    function getRows() {
-      return Array.from(root.querySelectorAll("[data-fud-skill-uuid]"));
-    }
-
-    function setKbFocus(idx, rows) {
-      rows = rows ?? getRows();
-      const prev = kbIndex;
-      kbIndex = Math.max(0, Math.min(idx, rows.length - 1));
-      rows.forEach((r, i) => r.classList.toggle("is-kb-focused", i === kbIndex));
-      const focused = rows[kbIndex];
-      if (focused) {
-        focused.scrollIntoView({ block: "nearest", behavior: "smooth" });
-        if (kbIndex !== prev) playUiHoverSfx();
-      }
-    }
-
-    const finish = (result) => {
-      if (resolved) return;
-      resolved = true;
-      hideTip();
-      root.classList.remove("is-visible");
-      root.classList.add("is-resolving");
-      despawnTid = setTimeout(() => {
-        try { root.remove(); } catch {}
-        _overlays.delete(overlayKey);
-      }, 200);
-      if (keyListener) { try { window.removeEventListener("keydown", keyListener, true); } catch {} keyListener = null; }
-      if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
-      resolve(result);
-    };
-
-    const onClick = (ev) => {
-      const cancelEl = ev.target?.closest?.("[data-fud-skp-action='cancel']");
-      if (cancelEl) { ev.stopPropagation(); finish(null); return; }
-      const rowEl = ev.target?.closest?.("[data-fud-skill-uuid]");
-      if (!rowEl) return;
-      if (rowEl.classList.contains("is-disabled")) {
-        ev.stopPropagation();
-        return;
-      }
-      ev.stopPropagation();
-      finish({
-        skillUuid: rowEl.dataset.fudSkillUuid,
-        sourceItemUuid: rowEl.dataset.fudSourceUuid || null,
-      });
-    };
-    root.addEventListener("click", onClick);
-
-    // Hover syncs kb focus index so arrow keys continue from where the
-    // mouse left off.
-    const onMove = (ev) => {
-      if (resolved) return;
-      const rowEl = ev.target?.closest?.("[data-fud-skill-uuid]");
-      if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
-      if (!rowEl) { hideTip(); return; }
-      const rows = getRows();
-      const idx = rows.indexOf(rowEl);
-      if (idx >= 0 && idx !== kbIndex) setKbFocus(idx, rows);
-      const rect = rowEl.getBoundingClientRect();
-      hoverDwellTid = setTimeout(() => {
-        if (resolved) return;
-        try {
-          const payload = JSON.parse(decodeURIComponent(rowEl.dataset.fudTip ?? "%7B%7D"));
-          showTip(payload, rect);
-        } catch {}
-      }, HOVER_DWELL_MS);
-    };
-    root.addEventListener("mousemove", onMove);
-    root.addEventListener("mouseleave", () => {
-      if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
-      hideTip();
-    });
-
-    keyListener = (ev) => {
-      if (resolved) return;
-      const rows = getRows();
-      if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish(null); return; }
-      if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
-        ev.preventDefault();
-        setKbFocus(kbIndex + 1, rows);
-        return;
-      }
-      if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
-        ev.preventDefault();
-        setKbFocus(kbIndex - 1, rows);
-        return;
-      }
-      if (ev.key === "Enter" || ev.key === " " || ev.key === "z" || ev.key === "Z") {
-        ev.preventDefault();
-        const row = rows[kbIndex];
-        if (!row || row.classList.contains("is-disabled")) return;
-        finish({ skillUuid: row.dataset.fudSkillUuid, sourceItemUuid: row.dataset.fudSourceUuid || null });
-        return;
-      }
-    };
-    window.addEventListener("keydown", keyListener, true);
-
-    const cleanup = () => {
-      try { clearTimeout(despawnTid); } catch {}
-      try { window.removeEventListener("keydown", keyListener, true); } catch {}
-      try { root.remove(); } catch {}
-      _overlays.delete(overlayKey);
-      hideTip();
-      if (!resolved) { resolved = true; resolve(null); }
-    };
-    _overlays.set(overlayKey, { cleanup, root });
-
-    // External cancellation — composeAction lost the race, tear down the
-    // overlay and resolve with null (same as Esc).
-    if (externalCancel && typeof externalCancel.then === "function") {
-      externalCancel.then(() => {
-        if (resolved) return;
-        try { cleanup(); } catch {}
-      });
-    }
+  // The shared list-picker returns the chosen row's `value`
+  // ({skillUuid, sourceItemUuid}) or null on cancel — the old contract.
+  return pickFromList({
+    director,
+    title: titleText,
+    sections: lpSections,
+    externalCancel,
+    autoFocusFirst: true,
+    numberShortcuts: false,  // skill lists routinely exceed 9 rows
+    width: 480,
+    zIndex: 96,
   });
 }
 
-// ── Tooltip helpers ─────────────────────────────────────────────────────
-
-function ensureTip() {
-  if (_tipEl) return;
-  _tipEl = document.createElement("div");
-  _tipEl.id = TIP_ID;
-  document.body.appendChild(_tipEl);
-}
-
-function showTip(payload, anchorRect) {
-  if (!_tipEl) return;
-  if (_tipHideTid) { clearTimeout(_tipHideTid); _tipHideTid = null; }
-  const parts = [];
-  parts.push(`<div class="tip-name">${escapeHtml(payload.name ?? "")}</div>`);
-  if (payload.cost) parts.push(`<div class="tip-cost">Cost: ${escapeHtml(payload.cost)}</div>`);
-  if (payload.missing) parts.push(`<div class="tip-cost" style="color:#7a1a1a;">Missing: ${escapeHtml(payload.missing)}</div>`);
-  if (payload.body) parts.push(`<p class="tip-body">${escapeHtml(payload.body)}</p>`);
-  _tipEl.innerHTML = parts.join("");
-  // Position to the right of the anchor row, bottom-aligned. Clamp to viewport.
-  const x = Math.min(window.innerWidth - 340, anchorRect.right + 8);
-  const y = Math.min(window.innerHeight - 120, Math.max(8, anchorRect.top));
-  _tipEl.style.left = `${x}px`;
-  _tipEl.style.top = `${y}px`;
-  _tipEl.classList.add("is-visible");
-}
-
-function hideTip() {
-  if (!_tipEl) return;
-  _tipEl.classList.remove("is-visible");
-  if (_tipHideTid) clearTimeout(_tipHideTid);
-  _tipHideTid = setTimeout(() => { try { _tipEl.innerHTML = ""; } catch {} }, 180);
-}
-
+// Lifecycle delegates to the shared list-picker (overlay lives there, keyed by
+// director.combatId — the same key pickFromList derives from `director`).
 export const SkillPicker = {
-  despawn({ director }) {
-    const key = director?.combatId ?? "no-director";
-    const rec = _overlays.get(key);
-    if (!rec) return;
-    try { rec.cleanup(); } catch {}
-    _overlays.delete(key);
-  },
-  despawnAll() {
-    for (const rec of _overlays.values()) {
-      try { rec.cleanup(); } catch {}
-    }
-    _overlays.clear();
-  },
+  despawn({ director }) { ListPicker.despawn({ director }); },
+  despawnAll() { ListPicker.despawnAll(); },
 };

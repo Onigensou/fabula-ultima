@@ -42,9 +42,7 @@ const INTERACTIVE_SELECTOR = [
   ".fud-bf-equip-option",
   ".fud-bf-reaction-pill",
   // Pickers.
-  ".fud-opt-picker-row", ".fud-opt-picker-cancel",
   ".fud-app-attr-btn", ".fud-app-dl-step", ".fud-app-dl-preset", ".fud-app-btn",
-  ".fud-skp-row", ".fud-skp-cancel",
   ".fud-target-btn",
   ".fud-lp-option", ".fud-lp-cancel",
   // Passive manager.

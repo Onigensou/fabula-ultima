@@ -1,130 +1,129 @@
 // pickItem — the Item action's source-selection step (Item's "pickSkill").
 //
-// Renders the REAL item menu (buildItemCard — the same Use/Create tabbed list
-// the action card used) as a pre-card picker overlay, and resolves with the
-// chosen source. After this, composeItem runs the SHARED targeting and the
-// action flows through the one pipeline exactly like a Skill — no Item-specific
-// path downstream. Client-local (GM for NPCs, owner for PCs), like pickSkill.
+// Thin builder over the shared list-picker (list-picker.js): gathers the actor's
+// usable consumables + IP-affordable recipes, groups them into Use / Create
+// sections, maps each to a list-picker row, and delegates rendering + lifecycle
+// + keyboard to pickFromList. The chosen row's `value` IS the return contract.
+// After this, composeItem runs the SHARED targeting and the action flows through
+// the one pipeline exactly like a Skill — no Item-specific path downstream.
 //
 // Returns: { mode:"use"|"create", key, cost, uuid, name } | null (cancelled).
 
-import { gatherConsumables, gatherCreatables, readActorIp } from "./item-resource.js";
-import { buildItemCard, ensureStyles as ensureCardStyles } from "./action-card.js";
+import { gatherConsumables, gatherCreatables, readActorIp, describeCandidateForTooltip } from "./item-resource.js";
+import { pickFromList } from "./list-picker.js";
 import { log, warn } from "./logger.js";
 
-let _chromeInjected = false;
-function ensureChrome() {
-  if (_chromeInjected) return;
-  _chromeInjected = true;
-  const css = `
-  .fud-itempick-backdrop { position:fixed; inset:0; z-index:120000; display:flex;
-    align-items:center; justify-content:center; background:rgba(0,0,0,.45); }
-  /* The card styles itself (320px parchment panel w/ its own border+shadow).
-     The footer lives INSIDE it so it matches the card's width + background. */
-  .fud-itempick-card { max-height:86vh; overflow:hidden auto; }
-  .fud-itempick-card .fud-itempick-hint { display:flex; align-items:center;
-    justify-content:space-between; gap:10px; margin:11px -14px -11px; padding:9px 14px;
-    border-top:1px solid rgba(0,0,0,.18); background:rgba(0,0,0,.05);
-    border-bottom-left-radius:12px; border-bottom-right-radius:12px;
-    font-size:12px; color:var(--fud-ink,#3a3228); }
-  .fud-itempick-card .fud-itempick-btn { cursor:pointer; padding:5px 16px; border-radius:7px;
-    border:1px solid rgba(0,0,0,.3); font-size:12px; font-weight:600;
-    background:#fff; color:var(--fud-ink,#3a3228); }
-  .fud-itempick-card .fud-itempick-btn:hover { background:rgba(0,0,0,.08); }
-  `;
-  const el = document.createElement("style");
-  el.id = "fud-item-picker-chrome";
-  el.textContent = css;
-  document.head.appendChild(el);
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[m]));
 }
 
-export function pickItem({ director, actor, externalCancel = null } = {}) {
-  return new Promise(async (resolve) => {
-    if (!actor) { resolve(null); return; }
-    try { ensureCardStyles(); } catch (e) { warn("pickItem: ensureCardStyles threw", e); }
-    ensureChrome();
+function stripHtml(html) {
+  if (!html) return "";
+  try {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = String(html);
+    return (tmp.textContent ?? tmp.innerText ?? "").trim();
+  } catch {
+    return String(html).replace(/<[^>]*>/g, "").trim();
+  }
+}
 
-    const [useList, createList] = await Promise.all([
-      gatherConsumables(actor).catch((e) => { warn("pickItem: gatherConsumables threw", e); return []; }),
-      gatherCreatables(actor).catch((e) => { warn("pickItem: gatherCreatables threw", e); return []; }),
-    ]);
-    if (!useList.length && !createList.length) {
-      ui.notifications?.warn("No consumables to use and no recipes to create.");
-      resolve(null);
-      return;
-    }
-    const ip = readActorIp(actor);
-    const itemCandidates = { use: useList, create: createList };
+function safeImg(img, fallback) {
+  return img && !/['"<>\n\r]/.test(img) ? img : fallback;
+}
 
-    // Build the REAL item-menu card body (the UI the player is used to).
-    let card;
-    try {
-      card = buildItemCard({ attacker: { name: actor.name }, attackerActor: actor, itemCandidates, ip });
-    } catch (e) {
-      warn("pickItem: buildItemCard threw", e);
-      resolve(null);
-      return;
-    }
+// Secondary line — linked skill names (+ recipe name for Create), mirroring
+// buildItemCard's formatMeta.
+function metaSecondary(c) {
+  const parts = [];
+  if (c.skillNames?.length) parts.push(escapeHtml(c.skillNames.join(", ")));
+  if (c.mode === "create" && c.recipeName) parts.push(`Recipe: ${escapeHtml(c.recipeName)}`);
+  return parts.map((p) => `<span class="bullet">${p}</span>`).join(` <span class="dot">•</span> `);
+}
 
-    const backdrop = document.createElement("div");
-    backdrop.className = "fud-itempick-backdrop";
-    backdrop.innerHTML = `
-      <div class="fud-bf-card fud-itempick-card" role="dialog" aria-label="Use an Item">
-        <div class="fud-bf-title-row">
-          <div class="fud-bf-title">${card.titleIcon ?? ""}<span>${card.titleText ?? "Item"}</span></div>
-        </div>
-        ${card.subtitle ?? ""}
-        ${card.body ?? ""}
-        <div class="fud-itempick-hint">
-          <span>Click an item to choose its target</span>
-          <div class="fud-itempick-btn cancel">Cancel</div>
-        </div>
-      </div>`;
-    document.body.appendChild(backdrop);
+// Consumable → row. The value object IS pickItem's return contract for "use".
+function useRow(c) {
+  const qty = c.isUnique ? "∞" : (c.quantity ?? 0);
+  return {
+    value: { mode: "use", key: c.id, cost: 0, uuid: c.uuid, name: c.name },
+    imageUrl: safeImg(c.img, "icons/svg/potion.svg"),
+    primary: escapeHtml(c.name),
+    secondary: metaSecondary(c),
+    secondaryNoWrap: true,
+    badge: `x${qty}`,
+    tooltip: { name: c.name, body: stripHtml(describeCandidateForTooltip(c) || "(no description)") },
+  };
+}
 
-    const cardRoot = backdrop.querySelector(".fud-bf-card");
+// Recipe → row. Disabled + danger badge when its IP cost exceeds current IP.
+function createRow(c, curIp) {
+  const unaffordable = Number(c.ipCost) > curIp;
+  return {
+    value: { mode: "create", key: c.key, cost: c.ipCost, uuid: c.itemUuid, name: c.name },
+    imageUrl: safeImg(c.img, "icons/svg/item-bag.svg"),
+    primary: escapeHtml(c.name),
+    secondary: metaSecondary(c),
+    secondaryNoWrap: true,
+    badge: `${c.ipCost} IP`,
+    badgeTone: unaffordable ? "danger" : null,
+    disabled: unaffordable,
+    tooltip: { name: c.name, body: stripHtml(describeCandidateForTooltip(c) || "(no description)"), cost: `${c.ipCost} IP` },
+  };
+}
 
-    let done = false;
-    const finish = (val) => {
-      if (done) return; done = true;
-      try { backdrop.remove(); } catch {}
-      resolve(val);
-    };
-    if (externalCancel?.then) externalCancel.then(() => finish(null));
+export async function pickItem({ director, actor, externalCancel = null } = {}) {
+  if (!actor) return null;
 
-    backdrop.addEventListener("click", (ev) => {
-      // Tab switch (mirrors postActionCard's item-tab handler).
-      const tab = ev.target.closest?.(".fud-bf-item-tab");
-      if (tab) {
-        for (const t of cardRoot.querySelectorAll(".fud-bf-item-tab")) t.classList.toggle("is-active", t === tab);
-        for (const p of cardRoot.querySelectorAll(".fud-bf-item-panel")) p.classList.toggle("is-active", p.dataset.fudItemPanel === tab.dataset.fudItemTab);
-        return;
-      }
-      // Row click → choose immediately and proceed to targeting (no separate
-      // Confirm — the player confirms the TARGET next anyway).
-      const row = ev.target.closest?.(".fud-bf-item-row");
-      if (row) {
-        if (row.dataset.fudItemDisabled === "1") return;
-        const mode = row.dataset.fudItemMode;
-        const key  = row.dataset.fudItemKey;
-        if (!mode || !key) return;
-        const cost = Number(row.dataset.fudItemCost) || 0;
-        // Map the row back to the candidate to recover the source uuid.
-        let uuid = null, name = "";
-        if (mode === "use") {
-          const c = useList.find((x) => String(x.id) === String(key));
-          uuid = c?.uuid ?? null; name = c?.name ?? "";
-        } else {
-          const c = createList.find((x) => String(x.key) === String(key));
-          uuid = c?.itemUuid ?? null; name = c?.name ?? "";
-        }
-        if (!uuid) { warn("pickItem: selected item not resolvable", mode, key); return; }
-        log(`pickItem: chose ${mode} ${name}`);
-        finish({ mode, key, cost, uuid, name });
-        return;
-      }
-      if (ev.target.closest?.(".fud-itempick-btn.cancel")) { finish(null); return; }
-      if (ev.target === backdrop) finish(null);
-    });
+  const [useList, createList] = await Promise.all([
+    gatherConsumables(actor).catch((e) => { warn("pickItem: gatherConsumables threw", e); return []; }),
+    gatherCreatables(actor).catch((e) => { warn("pickItem: gatherCreatables threw", e); return []; }),
+  ]);
+  if (!useList.length && !createList.length) {
+    ui.notifications?.warn("No consumables to use and no recipes to create.");
+    return null;
+  }
+
+  const ip = readActorIp(actor);
+  const curIp = Number(ip?.current ?? 0) || 0;
+  const maxIp = Number(ip?.max ?? 0) || 0;
+
+  // Use + Create become two sections. With both present the list-picker renders
+  // them as tabs (tabbed mode, ≥2 sections); with only one type it falls back to
+  // a plain single list. The IP budget rides on the Create section's hint/tab.
+  // Always emit BOTH tabs even when one is empty (the empty tab stays present +
+  // clickable, showing an empty-state line). The both-empty case already
+  // returned above, so at least one tab has rows.
+  const sections = [
+    {
+      label: "Use",
+      hint: `${useList.length} consumable${useList.length === 1 ? "" : "s"}`,
+      items: useList.map(useRow),
+      emptyText: "No consumables to use.",
+    },
+    {
+      label: "Create",
+      hint: `IP ${curIp}/${maxIp}`,
+      items: createList.map((c) => createRow(c, curIp)),
+      emptyText: "No recipes you can craft.",
+    },
+  ];
+
+  log(`pickItem: ${useList.length} use / ${createList.length} create (IP ${curIp}/${maxIp})`);
+
+  // The shared list-picker returns the chosen row's `value`
+  // ({mode, key, cost, uuid, name}) or null on cancel — the old contract.
+  return pickFromList({
+    director,
+    title: "Item",
+    subtitle: "Use a consumable • Spend IP to craft",
+    sections,
+    externalCancel,
+    autoFocusFirst: true,
+    numberShortcuts: false,
+    tabbed: true,
+    width: 420,
+    zIndex: 96,
   });
 }
