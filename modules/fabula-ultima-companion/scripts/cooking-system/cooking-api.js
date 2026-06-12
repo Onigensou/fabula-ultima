@@ -73,7 +73,14 @@
   // Descriptors
   // ---------------------------------------------------------------------------
   function describeItem(item, actorUuid = null) {
-    const p = item?.system?.props ?? {};
+    let p = item?.system?.props ?? {};
+    // Embedded inventory copies usually predate ingredient tagging and never
+    // receive prop updates made to world items — the world item by the same
+    // name is the source of truth for cooking data.
+    if (!p.isIngredient) {
+      const worldItem = game.items?.find?.(i => i.name === item?.name && i.system?.props?.item_type === "material");
+      if (worldItem?.system?.props?.isIngredient) p = worldItem.system.props;
+    }
     return {
       name: item?.name ?? "?",
       taste: String(p.ingredient_taste ?? "").toLowerCase(),
@@ -229,11 +236,11 @@
       .filter(i => i.system?.props?.item_type === "material" &&
                    (parseInt(i.system?.props?.item_quantity) || 0) > 0)
       .map(i => {
-        const p = i.system.props;
-        const taste = p.isIngredient && p.ingredient_taste
-          ? p.ingredient_taste.charAt(0).toUpperCase() + p.ingredient_taste.slice(1)
+        const d = describeItem(i);
+        const taste = d.isIngredient && d.taste
+          ? d.taste.charAt(0).toUpperCase() + d.taste.slice(1)
           : "❓";
-        return { id: i.id, label: `${i.name} [${taste}] ×${parseInt(p.item_quantity) || 0}` };
+        return { id: i.id, label: `${i.name} [${taste}] ×${parseInt(i.system.props.item_quantity) || 0}` };
       });
   }
 

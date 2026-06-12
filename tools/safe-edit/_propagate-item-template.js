@@ -3,6 +3,13 @@
 // CSB TemplateSystem.reloadTemplate(): copies body/header/hidden/display +
 // templateSystemUniqueVersion. Props are left untouched (sheet render creates
 // missing ones; we deliberately skip CSB's orphan-prop removal offline).
+//
+// ⚠️ DO NOT RUN UNFILTERED. On 2026-06-12 a full run added ~53MB to the world
+// payload and pushed it past V8's max string length (536,870,888 chars) —
+// World.requestWorldData failed with "Invalid string length" and the world
+// could not boot. The same applies to CSB's in-game "reload all templates".
+// Check headroom first with _measure-world-payload.js, and filter the items
+// you stamp (e.g. only item_type material/recipe) to the minimum needed.
 const { openCollection } = require("./lib/db");
 const { snapshotCollection } = require("./lib/backup");
 const { assertGameClosed } = require("./lib/lock");
