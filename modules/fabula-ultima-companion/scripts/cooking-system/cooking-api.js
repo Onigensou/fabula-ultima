@@ -263,7 +263,7 @@
         },
         default: "ok",
         close: () => res(null),
-      }).render(true);
+      }, { classes: ["dialog", "oni-cook-dialog"] }).render(true);
     });
   }
 
@@ -285,6 +285,11 @@
   }
 
   Hooks.once("ready", () => {
+    // Camp overlays sit at z-index 1200–1500; cooking dialogs must float above
+    const style = document.createElement("style");
+    style.textContent = `.app.oni-cook-dialog { z-index: 1600 !important; }`;
+    document.head.appendChild(style);
+
     game.socket?.on(SOCKET_CH, async (msg) => {
       if (!msg || typeof msg !== "object") return;
       if (msg.type === MSG.PICK_REQUEST) {
@@ -338,6 +343,15 @@
   async function start(options = {}) {
     if (!game.user?.isGM) throw new Error(`${TAG} start() must run on the GM client`);
     const cfg = getConfig();
+
+    // World content (dishes + _Cooking Config) is required to resolve a pot.
+    // Bail out before prompting anyone if it hasn't been authored yet.
+    const hasDishes = Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
+    if (!hasDishes) {
+      ui.notifications?.warn("Cooking: no dish content configured (_Cooking Config / Dishes folder missing) — skipping the hot-pot.");
+      return null;
+    }
+
     const sessionId = foundry.utils.randomID();
 
     // — participants
