@@ -1733,6 +1733,70 @@ export async function applyEffectByLabel(effectLabel, ctx) {
 // (here) and both the engine + the dropdown stay in sync. See
 // [[feedback_csb_template_gating]] + [[feedback_effect_kind_check_all_passive_modes]].
 //
+// ── adjust_charges ───────────────────────────────────────────────────────
+//
+// Charge arithmetic on a TARGET's named charge-AE — the charge-side twin of
+// adjust_damage. For each resolved target, read the current total charges on
+// AEs named `charge_ae_name`, apply `charge_operation` (add/subtract/multiply/
+// set/cap/floor) with `charge_amount` (number or per-target formula), clamp ≥0
+// (+ optional `charge_max`), then write the result back — consolidating into one
+// AE (deletes the rest). No-op if the target has no such AE (can't multiply a
+// nonexistent stack). Used by Enkindle ("double the target's Burn": Burn ×2).
+async function applyAdjustChargesEffect(row, ctx) {
+  const aeName = String(row.charge_ae_name ?? "").trim();
+  if (!aeName) {
+    warn(`skill-effects.adjust_charges: missing charge_ae_name on "${row.effect_label}"`);
+    return { ok: false, kind: "adjust_charges", reason: "no-ae-name" };
+  }
+  const op = String(row.charge_operation ?? "set").trim().toLowerCase();
+  if (!DAMAGE_OPS.has(op)) {
+    warn(`skill-effects.adjust_charges: bad charge_operation "${op}" on "${row.effect_label}"`);
+    return { ok: false, kind: "adjust_charges", reason: "bad-op" };
+  }
+  const targetResult = await resolveTargetRef(row.target_ref, ctx);
+  if (!targetResult.ok || !targetResult.tokens?.length) {
+    return { ok: false, kind: "adjust_charges", reason: targetResult.reason ?? "no-targets" };
+  }
+  const needle = aeName.toLowerCase();
+  const maxRaw = String(row.charge_max ?? "").trim();
+  const capN = maxRaw === "" ? null : (Number.isFinite(Number(maxRaw)) ? Number(maxRaw) : null);
+  const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+
+  const applied = [];
+  for (const token of targetResult.tokens) {
+    const actor = token.actor;
+    if (!actor) continue;
+    const matches = Array.from(actor.effects ?? []).filter(
+      (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
+    );
+    if (!matches.length) {
+      log(`skill-effects.adjust_charges: ${actor.name} has no "${aeName}" — skipping`);
+      continue;
+    }
+    const current = matches.reduce((s, e) => s + (Number(e.flags?.[FLAG_NS]?.charges ?? 0) || 0), 0);
+    // Per-target resolver so the amount formula can read the target's own state.
+    const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    const amount = Number(evaluateFormula(String(row.charge_amount ?? "0"), resolver, 0)) || 0;
+    let next = Math.max(0, Math.floor(applyDamageOp(current, op, amount)));
+    if (capN != null) next = Math.min(next, capN);
+    try {
+      if (next <= 0) {
+        await actor.deleteEmbeddedDocuments("ActiveEffect", matches.map((e) => e.id).filter(Boolean));
+      } else {
+        await matches[0].update({ [`flags.${FLAG_NS}.charges`]: next });
+        if (matches.length > 1) {
+          await actor.deleteEmbeddedDocuments("ActiveEffect", matches.slice(1).map((e) => e.id).filter(Boolean));
+        }
+      }
+      applied.push({ actorUuid: actor.uuid, aeName, op, from: current, to: next });
+      log(`skill-effects.adjust_charges: ${actor.name} "${aeName}" ${op} ${amount}: ${current} → ${next}`);
+    } catch (e) {
+      warn(`skill-effects.adjust_charges: write failed on ${actor.name}`, e);
+    }
+  }
+  return { ok: true, kind: "adjust_charges", applied };
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -1746,6 +1810,7 @@ const EFFECT_KIND_DISPATCH = {
   chain:               applyChainEffect,
   open_action_menu:    applyOpenActionMenuEffect,
   free_action:         applyFreeActionEffect,
+  adjust_charges:      applyAdjustChargesEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    applyConsumeResourceEffect,
@@ -1781,6 +1846,7 @@ export const EFFECT_KIND_LABELS = {
   chain:               "Chain (invoke other effects)",
   open_action_menu:    "Open Action Menu",
   free_action:         "Free Action (perform single action)",
+  adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
   remove_tagged_ae:    "Remove Tagged AE",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
@@ -1916,6 +1982,9 @@ const EFFECT_KIND_PREVIEW = {
   // free_action enqueues a free turn-action (drained by FREE_ACTION_WINDOW) —
   // not a target-facing inline row. No standalone card preview.
   free_action: () => null,
+
+  // adjust_charges mutates a target's charge-AE at apply time — no card row.
+  adjust_charges: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
   chain: () => null,
@@ -2701,6 +2770,13 @@ async function applyApplyAeEffect(row, ctx) {
     if (Array.isArray(data.changes) && data.changes.length) {
       for (const ch of data.changes) {
         if (typeof ch?.value !== "string") continue;
+        // Affinity-slot changes carry affinity CODES (VU/RS/IM/AB/NE) — bare
+        // 2-letter all-caps tokens that collide with the all-caps-identifier
+        // heuristic below, which would "evaluate" the unknown code to 0 and
+        // corrupt e.g. Oil/Wet's affinity_N "VU" → "0". These are never numeric
+        // formulas; never bake them (the per-target affinity-override filter
+        // further down owns affinity_N handling).
+        if (/^(?:system\.props\.)?affinity_\d+$/.test(String(ch.key ?? ""))) continue;
         if (!isFormulaString(ch.value)) continue;
         // Only bake values that actually LOOK like a numeric formula. A bare
         // word string-literal change ("melee", "Light", "ranged" — used by
@@ -3685,7 +3761,11 @@ async function applyFreeActionEffect(row, ctx) {
     sourceItemUuid: ctx.skill?.uuid ?? null,
     maxMpCost,
     lockedTargetTokenUuid: null,
-    preset,                                    // NEW — null = compose; set = staged directly in DECLARE
+    preset,                                    // null = compose; set = staged directly in DECLARE
+    // chain: this free action is a CHAIN strike, not a "free attack" — it
+    // BYPASSES preventFreeAttack (a "no Free Attacks" debuff must not stop a
+    // Chain N attack). freeActions.get/set honor this flag. Default false.
+    chain: row.chain === true || String(row.chain ?? "").trim().toLowerCase() === "true",
   });
   log(`free_action: enqueued "${sourceLabel}" for ${reactor.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
@@ -3725,9 +3805,15 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     warn(`skill-effects.remove_tagged_ae: missing filter_tag on "${row.effect_label}"`);
     return { ok: false, kind: "remove_tagged_ae", reason: "no-filter-tag" };
   }
+  // count semantics: ABSENT/empty OR "all" → remove ALL matches. A number N →
+  // remove N: auto-remove when N ≥ matches (nothing to choose), else show the
+  // list-picker so the player chooses which N (passive ctx auto-picks). Default
+  // is ALL (a bare "remove these tagged AEs" clears the whole category — Cleanse
+  // = filter_tag "cleansable", Dispel = "dispellable"); set count to gate it.
   const rawCount = row.count;
-  const removeAll = String(rawCount ?? "1").toLowerCase() === "all";
-  const count = removeAll ? Infinity : Math.max(1, Number(rawCount ?? 1) || 1);
+  const rawCountStr = String(rawCount ?? "").trim().toLowerCase();
+  const removeAll = rawCountStr === "" || rawCountStr === "all";
+  const count = removeAll ? Infinity : Math.max(1, Number(rawCount) || 1);
 
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
   if (!targetResult.ok) return { ok: false, kind: "remove_tagged_ae", reason: targetResult.reason ?? "no-targets" };

@@ -514,6 +514,18 @@
     {
       "key": "2026-06-12-template-options-free-action",
       "path": "data-migrations/2026-06-12-template-options-free-action.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-dryad-author",
+      "path": "data-migrations/2026-06-12-dungeon-dryad-author.js"
+    },
+    {
+      "key": "2026-06-12-template-options-adjust-charges",
+      "path": "data-migrations/2026-06-12-template-options-adjust-charges.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-centimare-author",
+      "path": "data-migrations/2026-06-12-dungeon-centimare-author.js"
     }
   ]
 }

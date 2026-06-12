@@ -32,6 +32,8 @@ const DEAL_OR_ADJUST_VIS = `or(equalText(sameRow("effect_kind",''), "deal_damage
 const TGT_VIS = `equalText(sameRow("effect_kind",''), "targeting")`;
 const APPLY_AE_VIS = `equalText(sameRow("effect_kind",''), "apply_ae")`;
 const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword")`;
+// adjust_charges — charge arithmetic on a target's named charge-AE.
+const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
 // free_action — perform ONE free turn-action (skill name / "self" / type).
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
@@ -143,12 +145,26 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // like the legacy free_mode). target_ref (a general column) optionally LOCKS the
   // targets (Counterattack → the attacker); blank → picked at TARGET by role.
   textCol("action_ref", "Free Action Ref", { tooltip: 'free_action: what to perform — "self" (re-cast the carrier skill), a skill/item NAME on the actor, or an action TYPE / comma-list ("Attack" / "Attack,Hinder"). A single specific action skips the menu and auto-performs.', vis: FREE_ACTION_VIS }),
+  checkboxCol("chain", "Chain Strike", { tooltip: "free_action: mark this as a CHAIN strike (not a Free Attack) — it bypasses preventFreeAttack, so a 'no Free Attacks' debuff can't stop a Chain N attack. Used by Centimare Scythe (Chain 2).", vis: FREE_ACTION_VIS }),
   // Bonus/cost fields shared with the open_action_menu free_mode grant (register
   // them so the column self-heals where missing; free_action reuses the same
   // free-action queue + COMPUTE-time bonus application).
   textCol("check_bonus_formula", "Free: Check Bonus", { tooltip: "Free action grant: bonus added to the granted action's Check (formula). e.g. Blazing Sweep repeat: -(AE_CHARGES_BLAZING_SWEEP_LOCK).", vis: FREE_GRANT_VIS }),
   textCol("damage_bonus_formula", "Free: Damage Bonus", { tooltip: "Free action grant: bonus added to the granted action's damage (formula, may be negative). e.g. Blazing Sweep repeat: floor(38 * pow(0.5, AE_CHARGES_BLAZING_SWEEP_LOCK)) - 38.", vis: FREE_GRANT_VIS }),
   textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (blank = the action's own cost applies).", vis: FREE_GRANT_VIS }),
+  // adjust_charges config — charge arithmetic on a target's named charge-AE
+  // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.
+  textCol("charge_ae_name", "Charge AE Name", { tooltip: "adjust_charges: the charge-AE to modify, by name (e.g. Burn).", vis: ADJUST_CHARGES_VIS }),
+  selectCol("charge_operation", "Charge Op", [
+    { key: "add",      value: "Add" },
+    { key: "subtract", value: "Subtract" },
+    { key: "multiply", value: "Multiply" },
+    { key: "set",      value: "Set" },
+    { key: "cap",      value: "Cap (upper bound)" },
+    { key: "floor",    value: "Floor (lower bound)" },
+  ], { tooltip: "adjust_charges: how charge_amount combines with the target's current charge count.", vis: ADJUST_CHARGES_VIS, defaultValue: "multiply" }),
+  textCol("charge_amount", "Charge Amount", { tooltip: "adjust_charges: the operand (number or per-target formula). e.g. 2 to double.", vis: ADJUST_CHARGES_VIS }),
+  textCol("charge_max", "Charge Max", { tooltip: "adjust_charges: optional cap on the resulting charge total. Blank = uncapped.", vis: ADJUST_CHARGES_VIS }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

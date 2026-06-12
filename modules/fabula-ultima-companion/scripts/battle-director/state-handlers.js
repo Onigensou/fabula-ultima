@@ -4272,6 +4272,8 @@ const FreeActionWindow = {
       // determined action bundle. DECLARE reads this to skip composeAction and
       // stage the exact action directly. See applyFreeActionEffect.
       preset:           req.preset ?? null,
+      // chain strike → bypasses preventFreeAttack (freeActions.get/set honor it).
+      chain:            req.chain === true,
     });
 
     // PUSH the free-action frame BEFORE mutating turnSnapshot+actionResult.
