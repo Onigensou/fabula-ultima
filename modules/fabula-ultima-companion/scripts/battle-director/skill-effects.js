@@ -902,6 +902,8 @@ export function isActionCreatingReaction(item, reactionRow) {
     const kind = String(row.effect_kind ?? "").trim().toLowerCase();
     // open_action_menu with free_mode → enqueues free action via FREE_ACTION_WINDOW
     if (kind === "open_action_menu" && row.free_mode === true) return true;
+    // free_action ALWAYS enqueues a free action (its whole purpose)
+    if (kind === "free_action") return true;
     // Future post-resolve card spawns wire here. Add new effect_kinds
     // to this list as they ship.
     // if (kind === "spawn_action_card") return true;
@@ -1332,60 +1334,72 @@ export async function computeSenderDamageBonuses({
       subjectUuids = [single];
     }
 
-    const ops = []; // ordered outgoing damage operations for this candidate
-    try {
-      const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
-      const resolver = buildSkillResolver({
-        actor: casterActor,
-        payload: cand.payloadAtFire ?? null,
-        skill: carrierSkill,
-        round: dCombat?.round ?? 0,
-      });
-      const byLabel = new Map();
-      for (const r of Object.values(runtimeEffectTable ?? {})) {
-        if (!r || r.$deleted) continue;
-        const lbl = String(r.effect_label ?? "").trim();
-        if (lbl) byLabel.set(lbl, r);
-      }
-      const seen = new Set();
-      function walkDamage(label) {
-        if (!label || seen.has(label)) return;
-        seen.add(label);
-        const row = byLabel.get(label);
-        if (!row) return;
-        const kind = String(row.effect_kind ?? "").toLowerCase();
-        if (kind === "adjust_damage") {
-          const { op, amountFormula, stage } = readAdjustRow(row);
-          if (stage !== "outgoing" || !DAMAGE_OPS.has(op)) return; // incoming handled receiver-side
-          const amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
-          // `source` lets the action-card damage breakdown attribute this
-          // in-flight bonus to its carrier (e.g. Bite's +50%-vs-Grappled) instead
-          // of silently folding it into the per-target total. See action-profile
-          // projectProfileToActionResult / buildPerTarget.
-          ops.push({ op, amount, source: cand.carrierName || carrierSkill?.name || "Reaction" });
-        } else if (kind === "apply_action_keyword") {
-          // Tag the hit with an action keyword (pierce, …). Carried as a
-          // non-numeric op so recomputePerTargetDamages can apply its damage-calc
-          // effect after the numeric ops. Extensible: new keywords are new strings.
-          const kw = String(row.action_keyword ?? "").trim().toLowerCase();
-          // Optional gate evaluated AFTER the numeric ops (Phase 2 below), so the
-          // formula can reference FINAL_DAMAGE (the post-bonus, pre-affinity hit).
-          const condition = String(row.condition_formula ?? "").trim() || null;
-          if (kw) ops.push({ op: "keyword", keyword: kw, condition, source: cand.carrierName || carrierSkill?.name || "Keyword" });
-        } else if (kind === "chain") {
-          const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
-          for (const s of steps) walkDamage(s);
+    // Effect-table label map — static across subjects, built once.
+    const byLabel = new Map();
+    for (const r of Object.values(runtimeEffectTable ?? {})) {
+      if (!r || r.$deleted) continue;
+      const lbl = String(r.effect_label ?? "").trim();
+      if (lbl) byLabel.set(lbl, r);
+    }
+
+    // Evaluate the outgoing ops PER SUBJECT so per-target formulas
+    // (TARGET_AE_CHARGES_*, TARGET_*) resolve against EACH subject's own state.
+    // A multi-target Blaze (Fiery Onslaught: +5×each target's OWN Burn) yields a
+    // different bonus per target; evaluating once off payloadAtFire would apply
+    // the first hit target's value to every subject. Single-subject candidates
+    // and flat ops (Hawkeye +N) are unaffected — same amount, re-derived.
+    const candBaseRaw = Number(cand.payloadAtFire?.rawDamage ?? cand.payload?.rawDamage);
+    let formulas = null;
+    try { formulas = await getSkillFormulas(); }
+    catch (e) { warn(`computeSenderDamageBonuses: getSkillFormulas threw`, e); }
+    for (const uuid of subjectUuids) {
+      const ops = []; // ordered outgoing damage operations for THIS subject
+      if (formulas) {
+        try {
+          const { buildSkillResolver, evaluateFormula } = formulas;
+          const resolver = buildSkillResolver({
+            actor: casterActor,
+            payload: { ...(cand.payloadAtFire ?? {}), subjectActorUuid: uuid },
+            skill: carrierSkill,
+            round: dCombat?.round ?? 0,
+          });
+          const seen = new Set();
+          const walkDamage = (label) => {
+            if (!label || seen.has(label)) return;
+            seen.add(label);
+            const row = byLabel.get(label);
+            if (!row) return;
+            const kind = String(row.effect_kind ?? "").toLowerCase();
+            if (kind === "adjust_damage") {
+              const { op, amountFormula, stage } = readAdjustRow(row);
+              if (stage !== "outgoing" || !DAMAGE_OPS.has(op)) return; // incoming handled receiver-side
+              const amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+              // `source` lets the action-card damage breakdown attribute this
+              // in-flight bonus to its carrier (e.g. Bite's +50%-vs-Grappled) instead
+              // of silently folding it into the per-target total. See action-profile
+              // projectProfileToActionResult / buildPerTarget.
+              ops.push({ op, amount, source: cand.carrierName || carrierSkill?.name || "Reaction" });
+            } else if (kind === "apply_action_keyword") {
+              // Tag the hit with an action keyword (pierce, …). Carried as a
+              // non-numeric op so recomputePerTargetDamages can apply its damage-calc
+              // effect after the numeric ops. Extensible: new keywords are new strings.
+              const kw = String(row.action_keyword ?? "").trim().toLowerCase();
+              // Optional gate evaluated AFTER the numeric ops (Phase 2 below), so the
+              // formula can reference FINAL_DAMAGE (the post-bonus, pre-affinity hit).
+              const condition = String(row.condition_formula ?? "").trim() || null;
+              if (kw) ops.push({ op: "keyword", keyword: kw, condition, source: cand.carrierName || carrierSkill?.name || "Keyword" });
+            } else if (kind === "chain") {
+              const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+              for (const s of steps) walkDamage(s);
+            }
+          };
+          walkDamage(cand.ref);
+        } catch (e) {
+          warn(`computeSenderDamageBonuses: adjust_damage eval threw on ${cand.carrierName}`, e);
+          ops.length = 0;
         }
       }
-      walkDamage(cand.ref);
-    } catch (e) {
-      warn(`computeSenderDamageBonuses: adjust_damage eval threw on ${cand.carrierName}`, e);
-      ops.length = 0;
-    }
-    if (!ops.length) continue;
-
-    const candBaseRaw = Number(cand.payloadAtFire?.rawDamage ?? cand.payload?.rawDamage);
-    for (const uuid of subjectUuids) {
+      if (!ops.length) continue;
       out.set(uuid, (out.get(uuid) ?? []).concat(ops));
       if (Number.isFinite(candBaseRaw) && !subjectBaseRaw.has(uuid)) subjectBaseRaw.set(uuid, candBaseRaw);
     }
@@ -1731,6 +1745,7 @@ const EFFECT_KIND_DISPATCH = {
   consume_charge:      applyConsumeChargeEffect,
   chain:               applyChainEffect,
   open_action_menu:    applyOpenActionMenuEffect,
+  free_action:         applyFreeActionEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    applyConsumeResourceEffect,
@@ -1765,6 +1780,7 @@ export const EFFECT_KIND_LABELS = {
   consume_charge:      "Consume Charge",
   chain:               "Chain (invoke other effects)",
   open_action_menu:    "Open Action Menu",
+  free_action:         "Free Action (perform single action)",
   remove_tagged_ae:    "Remove Tagged AE",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
@@ -1897,6 +1913,10 @@ const EFFECT_KIND_PREVIEW = {
   // the profile builder handles it separately. Return null here.
   open_action_menu: () => null,
 
+  // free_action enqueues a free turn-action (drained by FREE_ACTION_WINDOW) —
+  // not a target-facing inline row. No standalone card preview.
+  free_action: () => null,
+
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
   chain: () => null,
 
@@ -1929,9 +1949,41 @@ export { EFFECT_KIND_PREVIEW };
 
 // Dispatch a single effect row. Callers that already have the row
 // (e.g. chain steps) call this directly.
+// effect_kinds whose `condition_formula` is evaluated in a LATER phase (not at
+// dispatch) — exempt from the dispatch-time gate below so we don't double-gate
+// them against a payload that lacks the deferred value. apply_action_keyword's
+// gate (e.g. Chomp "FINAL_DAMAGE >= 100") is resolved in computeSenderDamageBonuses'
+// keyword pass; FINAL_DAMAGE isn't in the dispatch payload, so gating here would
+// always skip a row whose dispatch is a data-only no-op anyway.
+const DISPATCH_CONDITION_EXEMPT_KINDS = new Set(["apply_action_keyword"]);
+
 export async function applyEffectRow(row, ctx) {
   if (!row) return { ok: false, reason: "no-row" };
   const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+
+  // Effect-row condition gate. A non-empty `condition_formula` gates the row at
+  // dispatch: falsy → SKIP this row and CONTINUE the chain (ok, not a failure).
+  // Mirrors the reaction-level gate; lets fire-point / chain rows be conditional
+  // (Prepare to Charge: apply Swift only if no Slow; Soul Steal HIT_COUNT>0;
+  // Quaking Titan HAS_MARTIAL_ARMOR==1). Evaluated against the reactor + payload.
+  const condRaw = String(row.condition_formula ?? "").trim();
+  if (condRaw && !DISPATCH_CONDITION_EXEMPT_KINDS.has(kind)) {
+    try {
+      const { evaluateFormula, buildSkillResolver } = await getSkillFormulas();
+      const resolver = buildSkillResolver({
+        actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+      });
+      const val = evaluateFormula(condRaw, resolver, 0);
+      if (!val) {
+        log(`skill-effects: row "${row.effect_label}" condition_formula="${condRaw}" → falsy; skipping (chain continues)`);
+        return { ok: true, kind, applied: [], skipped: true, reason: "condition-false" };
+      }
+    } catch (e) {
+      // Fail-open: a broken formula shouldn't silently drop the effect.
+      warn(`skill-effects: condition_formula eval threw on "${row.effect_label}" — running row anyway`, e);
+    }
+  }
+
   const handler = EFFECT_KIND_DISPATCH[kind];
   if (handler) return handler(row, ctx);
   warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
@@ -3527,6 +3579,118 @@ async function applyOpenActionMenuEffect(row, ctx) {
   };
 }
 
+// ── free_action ──────────────────────────────────────────────────────────
+//
+// Perform ONE free turn-action — no option menu (contrast open_action_menu,
+// which is the Hinder/Hawkeye-style CHOICE picker). Reuses the SAME free-action
+// queue + FREE_ACTION_WINDOW + bonus machinery as open_action_menu's free_mode,
+// so it inherits snapshot-swap, check/damage bonuses, HR-as-0, and "free action
+// doesn't consume the turn". The one addition is a `preset` on the request: when
+// `action_ref` names a SPECIFIC action (a skill name, or "self" = the carrier
+// skill), DECLARE skips composeAction and stages that exact action directly,
+// then flows normally through TARGET → COMPUTE → RESOLVE (so targeting + Confirm
+// happen by role — GM picks/auto, owner gets the picker).
+//
+// `action_ref` forms:
+//   - "self"                       → re-perform the carrier skill (Blazing Sweep
+//                                     repeats itself).
+//   - a skill/item NAME on the actor → perform that exact skill (preset).
+//   - an action TYPE or comma-list  → no preset; behaves like free_mode (compose
+//     ("Attack" / "Attack,Hinder")    filtered by type). Lets the player choose
+//                                     the specific action within those types.
+// Bonus fields mirror free_mode: check_bonus_formula / damage_bonus_formula /
+// free_hr_as_zero / max_mp_cost. `target_ref` (optional) locks the action's
+// targets (e.g. Counterattack → the triggering attacker); empty → picked at TARGET.
+const FREE_ACTION_TYPES = new Set([
+  "attack", "skill", "spell", "guard", "hinder", "study", "equipment", "item", "objective",
+]);
+
+async function applyFreeActionEffect(row, ctx) {
+  const { freeActionQueue } = await import("./free-action-queue.js");
+  const reactor = ctx.reactorActor;
+  if (!reactor) {
+    warn(`skill-effects.free_action: no reactorActor on ctx`);
+    return { ok: false, kind: "free_action", reason: "no-reactor" };
+  }
+
+  const resolver = buildSkillResolver({
+    actor: reactor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+  });
+  const checkBonus  = evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0;
+  const damageBonus = evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0;
+  const hrAsZero = row.free_hr_as_zero === true || String(row.free_hr_as_zero ?? "").toLowerCase() === "true";
+  const mpRaw = String(row.max_mp_cost ?? "").trim();
+  const maxMpCost = mpRaw === "" ? null : (Number.isFinite(Number(mpRaw)) ? Number(mpRaw) : null);
+
+  // Optional locked targets.
+  let presetTargetTokenUuids = null;
+  if (String(row.target_ref ?? "").trim()) {
+    try {
+      const tr = await resolveTargetRef(row.target_ref, ctx);
+      if (tr.ok && tr.tokens?.length) {
+        presetTargetTokenUuids = tr.tokens.map((t) => t.uuid ?? t.document?.uuid).filter(Boolean);
+      }
+    } catch (e) { warn(`skill-effects.free_action: target_ref "${row.target_ref}" resolve threw`, e); }
+  }
+
+  // Resolve action_ref → a specific item (preset) OR a type filter.
+  const ref = String(row.action_ref ?? "").trim();
+  let presetItem = null;
+  let enabledLabels = [];
+  if (ref.toLowerCase() === "self") {
+    presetItem = ctx.skill ?? null;
+  } else if (ref) {
+    const parts = ref.split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+    const allTypes = parts.length > 0 && parts.every((p) => FREE_ACTION_TYPES.has(p.toLowerCase()));
+    if (allTypes) {
+      // Type-filter path — identical to open_action_menu free_mode.
+      enabledLabels = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
+    } else {
+      // Skill-name path — find the named item on the reactor.
+      const wanted = parts[0].toLowerCase();
+      presetItem = (reactor.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === wanted)) ?? null;
+      if (!presetItem) warn(`skill-effects.free_action: action_ref "${parts[0]}" — no matching item on ${reactor.name}`);
+    }
+  }
+
+  // Build the preset bundle for a specific action (skill name / self).
+  let preset = null;
+  if (presetItem) {
+    let kind = "Skill";
+    try {
+      const { getRuntimeActionView } = await import("./skill-recipes.js");
+      kind = getRuntimeActionView(presetItem).kind || "Skill";
+    } catch (e) { warn(`skill-effects.free_action: getRuntimeActionView threw for ${presetItem.name}`, e); }
+    const targetUuids = presetTargetTokenUuids ?? undefined;
+    if (kind === "Attack") {
+      preset = { command: "Attack", attackMode: "npc", npcAttackItemUuid: presetItem.uuid, targetUuids };
+    } else if (kind === "Spell") {
+      preset = { command: "Spell", skillUuid: presetItem.uuid, sourceItemUuid: presetItem.uuid, targetUuids };
+    } else if (kind === "Skill") {
+      preset = { command: "Skill", skillUuid: presetItem.uuid, sourceItemUuid: presetItem.uuid, targetUuids };
+    } else {
+      preset = { command: kind, skillUuid: presetItem.uuid, targetUuids };
+    }
+    // Keep the grant's type filter consistent with the preset command.
+    enabledLabels = [preset.command];
+  }
+
+  const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
+  freeActionQueue.enqueue({
+    reactorActorId:   reactor.id,
+    reactorActorUuid: reactor.uuid,
+    reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
+    enabledLabels, checkBonus, damageBonus, hrAsZero,
+    sourceLabel,
+    sourceItemUuid: ctx.skill?.uuid ?? null,
+    maxMpCost,
+    lockedTargetTokenUuid: null,
+    preset,                                    // NEW — null = compose; set = staged directly in DECLARE
+  });
+  log(`free_action: enqueued "${sourceLabel}" for ${reactor.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
+  return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
+}
+
 // ── remove_tagged_ae ────────────────────────────────────────────────────
 //
 // Per-target dynamic picker that removes Active Effects matching a
@@ -3575,9 +3739,17 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     const actor = token.actor;
     if (!actor) continue;
 
+    // Match on system.tags OR the charge-AE identity flag (chargeKey). A
+    // charge-based status's REAL identity is its chargeKey (e.g. "burn"), and
+    // templates aren't tagged consistently (some Burn templates carry only
+    // ["debuff"], or no tags) — so a tag-only match would silently skip Burn
+    // applied from those sources. chargeKey is the same identity the cost
+    // walker (findChargeAEsOnActor) keys on, so this keeps the two aligned.
     const matches = Array.from(actor.effects ?? []).filter((eff) => {
       const tags = eff?.system?.tags;
-      return Array.isArray(tags) && tags.includes(filterTag);
+      if (Array.isArray(tags) && tags.includes(filterTag)) return true;
+      const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
+      return !!chargeKey && chargeKey === filterTag;
     });
 
     if (!matches.length) {

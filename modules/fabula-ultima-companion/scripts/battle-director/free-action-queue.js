@@ -17,6 +17,12 @@
 //     lockedTargetTokenUuid: string | null  — Forced target (future, Painful Lesson)
 //     sourceLabel:           string         — "High Speed" / "Acceleration" / etc.
 //     sourceItemUuid:        string         — Actor.X.Item.Y of the granting skill/AE
+//     preset:                object | null  — a fully-determined action bundle
+//        (from the `free_action` effect_kind). null for compose-style grants
+//        (open_action_menu free_mode / free_action with a type ref). When set,
+//        DECLARE skips composeAction and stages this exact action. Shape mirrors
+//        composeAction's bundle: { command, skillUuid?/npcAttackItemUuid?,
+//        attackMode?, targetUuids? }.
 //   }
 //
 // Ordering: FIFO. First reaction to fire wins. Matches the locked

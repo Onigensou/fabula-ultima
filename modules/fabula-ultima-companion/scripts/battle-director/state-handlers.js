@@ -1354,6 +1354,47 @@ function resolveActingOwnerForActor(actor) {
 // available.
 //
 // See [[director-player-driven-input]] for the design.
+
+// Apply a composed (or preset) action bundle to ctx + advance to TARGET. Shared
+// by the normal compose-race winner path AND the free_action preset shortcut, so
+// both stage the action identically. TARGET's per-command branches read these
+// ctx fields and skip their own pickers when pre-populated.
+function applyComposedBundleAndAdvance(director, winnerBundle) {
+  if (!winnerBundle._commandOnly) {
+    // Generic marker any branch can read for "did the player pre-compose this?"
+    director.ctx._composedBundle = winnerBundle;
+
+    if (winnerBundle.command === "Attack") {
+      if (winnerBundle.attackMode) director.ctx.attackMode = winnerBundle.attackMode;
+      if (Array.isArray(winnerBundle.targetUuids)) {
+        director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+      }
+    } else if (winnerBundle.command === "Study" || winnerBundle.command === "Hinder") {
+      if (Array.isArray(winnerBundle.targetUuids)) {
+        director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+      }
+    } else if (winnerBundle.command === "Skill" || winnerBundle.command === "Spell" || winnerBundle.command === "Item") {
+      if (Array.isArray(winnerBundle.targetUuids)) {
+        director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
+      }
+    }
+    // Guard: bundle.coverTokenUuid (null = skip, string = ally) is
+    //   consumed by TARGET's Guard branch via ctx._composedBundle.
+    // Equipment: no extra ctx — TARGET branch already needs nothing
+    //   beyond declaredCommand.
+  } else {
+    director.ctx._composedBundle = null;
+  }
+  director.ctx.declaredCommand = winnerBundle.command;
+
+  // Advance the FSM. TARGET's per-command branches read ctx and skip
+  // their pickers when pre-populated.
+  director.dispatch({
+    type: INTENTS.DECLARE_COMMAND,
+    body: { command: winnerBundle.command },
+  });
+}
+
 const Declare = {
   async onEnter(director) {
     const snap = director.ctx.turnSnapshot;
@@ -1386,6 +1427,21 @@ const Declare = {
     // Resolve owner. fromUuid is async but cheap; on error, only GM runs.
     let actor = null;
     try { actor = await fromUuid(snap.actorUuid); } catch {}
+
+    // free_action PRESET shortcut — a fully-determined free action (action_ref =
+    // skill name / "self") skips composeAction entirely: stage the exact action
+    // and advance straight to TARGET. The free-action grant (bonuses) was already
+    // installed on the freeActions singleton by FREE_ACTION_WINDOW; the action
+    // still flows through TARGET → COMPUTE → RESOLVE, so targeting + Confirm
+    // happen by role (GM picks/auto, owner gets the picker). Compose-style free
+    // actions (action_ref = a type) carry no preset and fall through to compose.
+    const presetGrant = freeActions.get(snap.actorId);
+    if (presetGrant?.preset?.command) {
+      log(`DECLARE: free_action preset "${presetGrant.sourceLabel}" → ${presetGrant.preset.command} (skip compose)`);
+      applyComposedBundleAndAdvance(director, presetGrant.preset);
+      return;
+    }
+
     const ownerUserId = resolveActingOwnerForActor(actor);
 
     // Pre-bake eligible target snapshots. We do this here (with full
@@ -1570,46 +1626,7 @@ const Declare = {
     // "_commandOnly" bundles (Skill/Spell/Item — not yet supported by
     // composeAction beyond the Octopath click), the GM still runs its
     // normal pickers in TARGET state.
-    if (!winnerBundle._commandOnly) {
-      // Generic marker that any branch can read for "did the player
-      // pre-compose this?" — set to the full bundle for fine-grained
-      // dispatch in per-command branches below.
-      director.ctx._composedBundle = winnerBundle;
-
-      if (winnerBundle.command === "Attack") {
-        if (winnerBundle.attackMode) director.ctx.attackMode = winnerBundle.attackMode;
-        if (Array.isArray(winnerBundle.targetUuids)) {
-          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
-        }
-      } else if (winnerBundle.command === "Study" || winnerBundle.command === "Hinder") {
-        // Both share the same shape — a single enemy target.
-        if (Array.isArray(winnerBundle.targetUuids)) {
-          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
-        }
-      } else if (winnerBundle.command === "Skill" || winnerBundle.command === "Spell" || winnerBundle.command === "Item") {
-        // Skill/Spell/Item carries the picked source (skillUuid = skill or
-        // consumable) + targets (+ Item's itemMode/itemKey/itemCost). TARGET's
-        // branch reads ctx._composedBundle to skip the picker; for Item it also
-        // reads the use/create cost. actionResult build stays GM-authority.
-        if (Array.isArray(winnerBundle.targetUuids)) {
-          director.ctx.pickedTargetUuids = [...winnerBundle.targetUuids];
-        }
-      }
-      // Guard: bundle.coverTokenUuid (null = skip, string = ally) is
-      //   consumed by TARGET's Guard branch via ctx._composedBundle.
-      // Equipment: no extra ctx — TARGET branch already needs nothing
-      //   beyond declaredCommand.
-    } else {
-      director.ctx._composedBundle = null;
-    }
-    director.ctx.declaredCommand = winnerBundle.command;
-
-    // Advance the FSM. TARGET's per-command branches read ctx and skip
-    // their pickers when pre-populated.
-    director.dispatch({
-      type: INTENTS.DECLARE_COMMAND,
-      body: { command: winnerBundle.command },
-    });
+    applyComposedBundleAndAdvance(director, winnerBundle);
   },
 
   async onExit(director) {
@@ -4251,6 +4268,10 @@ const FreeActionWindow = {
       hrAsZero:         req.hrAsZero === true,
       sourceLabel:      req.sourceLabel,
       sourceItemUuid:   req.sourceItemUuid,
+      // free_action preset (null for compose-style free_mode grants): a fully
+      // determined action bundle. DECLARE reads this to skip composeAction and
+      // stage the exact action directly. See applyFreeActionEffect.
+      preset:           req.preset ?? null,
     });
 
     // PUSH the free-action frame BEFORE mutating turnSnapshot+actionResult.

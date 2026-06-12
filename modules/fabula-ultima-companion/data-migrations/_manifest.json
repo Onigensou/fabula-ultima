@@ -506,6 +506,14 @@
     {
       "key": "2026-06-12-dungeon-inferex-chomp-author",
       "path": "data-migrations/2026-06-12-dungeon-inferex-chomp-author.js"
+    },
+    {
+      "key": "2026-06-12-dungeon-centuaros-author",
+      "path": "data-migrations/2026-06-12-dungeon-centuaros-author.js"
+    },
+    {
+      "key": "2026-06-12-template-options-free-action",
+      "path": "data-migrations/2026-06-12-template-options-free-action.js"
     }
   ]
 }
