@@ -365,6 +365,10 @@
     } else {
       entries = (await globalThis.CampSystem?.Party?.resolve?.()) ?? [];
     }
+    // CampSystem.Party.resolve() does not populate userId — fill it for every entry
+    for (const e of entries) {
+      if (!e.userId) e.userId = _ownerUserId(e.actor);
+    }
     if (!entries.length) throw new Error(`${TAG} no participants`);
 
     const cookerUuid = String(options.cookerUuid ?? entries[0].actor.uuid);
