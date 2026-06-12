@@ -64,11 +64,15 @@ export const freeActions = {
    */
   get(actorId) {
     if (!actorId) return null;
+    const g = _registry.get(actorId) ?? null;
+    // chain strikes (free_action with chain:true) are NOT "free attacks" — a
+    // preventFreeAttack debuff must not stop a Chain N attack. Let them through.
+    if (g?.chain === true) return g;
     if (actorHasFreeAttackPrevention(actorId)) {
       log(`freeActions.get: ${actorId} has preventFreeAttack AE — grant suppressed`);
       return null;
     }
-    return _registry.get(actorId) ?? null;
+    return g;
   },
 
   /**
@@ -91,7 +95,8 @@ export const freeActions = {
       log(`freeActions: cleared grant for ${actorId}`);
       return;
     }
-    if (actorHasFreeAttackPrevention(actorId)) {
+    // chain strikes bypass preventFreeAttack (see get()).
+    if (grant.chain !== true && actorHasFreeAttackPrevention(actorId)) {
       log(`freeActions.set: ${actorId} has preventFreeAttack AE — grant refused`);
       return;
     }
