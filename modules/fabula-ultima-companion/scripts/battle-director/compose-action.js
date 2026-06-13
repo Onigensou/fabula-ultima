@@ -652,16 +652,22 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: false, targetUuids: [...r.tokenUuids] };
   }
 
-  // "creature/creatures" → any (ally + enemy pool). "ally/allies" OR aid intent
-  // → ally only. Default → enemy. "creature" takes priority over intent. Mirrors
-  // composeSkill / state-handlers exactly.
+  // Target side: an EXPLICIT side in skill_target wins (creature = either side;
+  // enemy; ally). The action-intent heuristic is only a TIEBREAKER for
+  // side-agnostic text — it must NOT override an explicit "Enemy"/"Ally". Mirrors
+  // resolveActionTargets (state-handlers) exactly.
   const intent = classifyActionIntent(source);
   const wantsCreature = /creature|creatures/i.test(skillTargetText);
-  const wantsAlly = !wantsCreature && (/ally|allies/i.test(skillTargetText) || intent === "aid");
-  const targetList = wantsCreature
+  const wantsEnemy    = /enem/i.test(skillTargetText);
+  const wantsAllyText = /\ball(?:y|ies)\b/i.test(skillTargetText);
+  const side = wantsCreature ? "any"
+    : wantsEnemy    ? "enemy"
+    : wantsAllyText ? "ally"
+    : (intent === "aid" ? "ally" : "enemy");
+  const targetList = side === "any"
     ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
-    : (wantsAlly ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
-  const categoryLabel = wantsCreature ? "creatures" : (wantsAlly ? "allies" : "enemies");
+    : (side === "ally" ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
+  const categoryLabel = side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies");
   if (!targetList.length) {
     ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
     return { cancelled: true, reason: "no targets" };

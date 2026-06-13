@@ -491,6 +491,42 @@ export function ensureStyles() {
       font-weight: 800;
       font-size: 11px;
     }
+    /* Negated (Shadow Possession / Crossfire) — the action's accuracy / damage /
+       result panels keep their REAL numbers but go semi-transparent, and each
+       panel's OWN fieldset box is recoloured red (border + wash) so the red box
+       lines up exactly with the panel it covers — no floating inner rectangle.
+       A solid white-on-red "Negated" pill is centred over each. Distinct from
+       "Blocked" (which replaces/zeroes the value). The action still produces no
+       actual outcome (RESOLVE skips it).
+       NB: acc + result are <div>s inside a .fud-bf-section fieldset, while dmg IS
+       the fieldset — so :has() pins all three at the fieldset level uniformly. */
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc),
+    .fud-bf-card.is-negated fieldset.fud-bf-section.fud-bf-dmg,
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-target-list) {
+      position: relative;
+      border-color: rgba(214, 40, 45, 0.85);
+      background: rgba(190, 26, 30, 0.12);
+    }
+    /* dim only the real readout — keep each panel's legend label crisp */
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc) > *:not(legend),
+    .fud-bf-card.is-negated fieldset.fud-bf-section.fud-bf-dmg > *:not(legend),
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-target-list) > *:not(legend) {
+      opacity: 0.3;
+    }
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc)::after,
+    .fud-bf-card.is-negated fieldset.fud-bf-section.fud-bf-dmg::after,
+    .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-target-list)::after {
+      content: "Negated";
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); z-index: 4;
+      padding: 3px 13px; border-radius: 999px;
+      background: #c0181d; color: #fff;
+      font-weight: 900; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
     /* Reaction Effect panel — chips listing the statuses/costs an applied
        reaction (Warning Shot, etc.) will inflict. */
     .fud-bf-card .fud-bf-reaction-effects .fud-bf-effect-chips {
@@ -2126,37 +2162,21 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     }
   }
 
-  // Accuracy override (Crossfire): the attacker's Accuracy Check was overridden
-  // (set to 0 → the attack fails against all targets). Show "Blocked" in the
-  // accuracy panel instead of the literal total, and flip every target row to
-  // MISS. Always reset to the real roll total when no override is active so
-  // un-toggling the reaction reverts the preview.
-  const accEl    = rootEl.querySelector(".fud-bf-acc");
+  // Negated — UNIFIED treatment for both Shadow Possession (negate_action) and
+  // Crossfire (adjust_accuracy → accuracyOverride.blocked). Both fully nullify the
+  // action; we keep the REAL accuracy/damage/result numbers, dim them, and plaster
+  // a red "Negated" overlay over each panel (CSS: .fud-bf-card.is-negated) — instead
+  // of the old "Blocked" replace-text + MISS-flip + damage-strike style. Accuracy
+  // always shows the real roll total (reverts cleanly when no reaction is active).
+  // The outcome is still nullified — negate via RESOLVE's ar.negated, Crossfire via
+  // its accuracy=0 per-target recompute. Player mirrors get this via the broadcast.
   const accTotal = rootEl.querySelector(".fud-bf-acc .total");
-  const blocked  = !!delta.accuracyOverride?.blocked;
-  if (accTotal) {
-    if (blocked) {
-      accTotal.textContent = "Blocked";
-      accEl?.classList.add("is-blocked");
-    } else {
-      if (rollTotal != null) accTotal.textContent = String(rollTotal);
-      accEl?.classList.remove("is-blocked");
-    }
-  }
-  if (blocked && hasDamageRows) {
-    for (const rowEl of rootEl.querySelectorAll(".fud-bf-target-row")) {
-      const resultSpan = rowEl.querySelector(".t-result");
-      if (!resultSpan) continue;
-      resultSpan.className = "t-result miss";
-      resultSpan.textContent = "MISS";
-    }
-  }
-  // Strike the damage preview when the attack is blocked — mirrors Warning
-  // Shot's "deal no damage" strike so a blocked attack reads as dealing none.
-  // Uses its own class (see CSS) to stay independent of the apply-click
-  // menu nullify path.
-  const dmgEl = rootEl.querySelector(".fud-bf-dmg");
-  if (dmgEl) dmgEl.classList.toggle("is-blocked-dmg", blocked);
+  if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
+  rootEl.querySelector(".fud-bf-acc")?.classList.remove("is-blocked");
+  rootEl.querySelector(".fud-bf-dmg")?.classList.remove("is-blocked-dmg");
+  const negated = !!delta.negated || !!delta.accuracyOverride?.blocked;
+  const cardEl = rootEl.classList?.contains("fud-bf-card") ? rootEl : rootEl.querySelector(".fud-bf-card");
+  if (cardEl) cardEl.classList.toggle("is-negated", negated);
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
@@ -3877,8 +3897,24 @@ export async function postActionCard({ director, kind, payload }) {
             rollTotal: arSnapshot.roll?.total ?? null,
             element: arSnapshot.damage?.element ?? null,
             accuracyOverride: mutationResult.accuracyOverride ?? null,
+            negated: !!mutationResult.negated,
           };
           applyCardTargetMutationDelta(root, delta);
+
+          // Negated/Blocked action — auto-reject any still-pending (undecided) ask
+          // pills. Reacting to a nullified action is moot, and skipping them clears
+          // the Confirm lock (the data-fud-reactions-pending counter). Uses the pure
+          // DOM-commit (NOT recordPillDecision) to avoid re-entering this recompute.
+          if (mutationResult.negated || mutationResult.accuracyOverride?.blocked) {
+            for (const p of prePassives ?? []) {
+              if (p.mode !== "ask") continue;
+              const k = `${p.rowKey}:${p.carrierUuid}`;
+              if (reactionDecisionMap.has(k)) continue;   // already decided (incl. the negate/block pill itself)
+              reactionDecisionMap.set(k, "skip");
+              try { commitPillDecisionDom(p.rowKey, p.carrierUuid, "skip"); }
+              catch (e) { warn("auto-reject pending pill on negate threw", e); }
+            }
+          }
 
           // Broadcast the delta to every connected player so their
           // mirror reflects the same redirect visuals. Pass-through

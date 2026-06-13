@@ -197,6 +197,9 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   textCol("reaction_cause_filter", "Cause Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only for this cause — damage/hazard/cost/drain/grant/heal. Blank = any. (damage = inflicted attack; hazard = Burn/Poison/environment.)" }),
   // Status-ledger filter (creature_status_applied / creature_loses_status).
   textCol("reaction_status_filter", "Status Filter", { tooltip: "For creature_status_applied / creature_loses_status: fire only when this status (AE) changed — e.g. Crisis. Blank = any." }),
+  // Action-kind filter (creature_performs_action). Comma-list of action TYPES the
+  // reaction accepts (Attack/Skill/Spell/Item/Guard/…), matched vs payload.actionKind.
+  textCol("reaction_action_kind", "Action Kind Filter", { tooltip: "For creature_performs_action: fire only for these action TYPES — comma-list (e.g. \"Attack,Skill,Spell\"). Matched against the performed action's kind. Blank = any kind." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.

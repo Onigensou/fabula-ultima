@@ -603,6 +603,21 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
     }
   }
 
+  // 3b. Action-kind filter — comma-list of action TYPES this reaction accepts
+  //     (Attack / Skill / Spell / Item / Guard / …), matched case-insensitively
+  //     against payload.actionKind. Blank = any kind. Lets a creature_performs_action
+  //     reaction scope to a subset of action types without a hardcoded trigger
+  //     (Shadow Possession's Creeped: "Attack,Skill,Spell"; Barrage: "Attack").
+  const wantKindRaw = String(row.reaction_action_kind ?? "").trim().toLowerCase();
+  if (wantKindRaw) {
+    const wantKinds = wantKindRaw.split(",").map((s) => s.trim()).filter(Boolean);
+    const gotKind = String(payload?.actionKind ?? "").trim().toLowerCase();
+    if (!wantKinds.includes(gotKind)) {
+      log(`passive ${item.name}: action_kind filter failed — want="${wantKindRaw}" got="${gotKind}"`);
+      return false;
+    }
+  }
+
   // 4. Resource-ledger filters (creature_lose_resource / creature_gain_resource).
   //    Blank = any (no-op for every existing row). reaction_resource_filter
   //    matches payload.resource (hp/mp/ip/fp/…); reaction_cause_filter matches
@@ -1016,6 +1031,22 @@ function skillActionPassiveApplies(item, payload) {
   return item.uuid === usedUuid;
 }
 
+// Does the effect reached by `ref` (following one level of chain steps) include
+// an `add_target` row? Used to tag ONLY Barrage-style add_target reactions for
+// the onAddTargetApply path — other creature_performs_action reactions (Creeped
+// negate/buff) resolve as ordinary pre-resolve pills.
+function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
+  if (!effectTable || !ref || depth > 8) return false;
+  const row = Object.values(effectTable).find((r) => r?.effect_label === ref && !r?.$deleted);
+  if (!row) return false;
+  if (row.effect_kind === "add_target") return true;
+  if (row.effect_kind === "chain") {
+    return String(row.chain_steps ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean)
+      .some((s) => effectRefUsesAddTarget(effectTable, s, depth + 1));
+  }
+  return false;
+}
+
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
@@ -1082,6 +1113,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
         unavailableReason,
       });
@@ -1114,6 +1146,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
         unavailableReason,
       });
@@ -1938,6 +1971,12 @@ const EFFECT_KIND_DISPATCH = {
   apply_action_keyword: (row) => ({ ok: true, kind: "apply_action_keyword", applied: [], reason: "applied-at-damage-recompute" }),
   redirect_target:     (row) => ({ ok: true, kind: "redirect_target", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // negate_action: nullify the performer's in-flight action (Shadow Possession's
+  // Creeped). Data-only here — the real work is at the card-mutation phase
+  // (card-mutations.js Phase 0 sets ar.negated + a Blocked override) and RESOLVE
+  // (skips outcome + effect/reaction firing when ar.negated). The reaction's OTHER
+  // rows (Frightened, consume_self) still fire normally.
+  negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -1970,6 +2009,7 @@ export const EFFECT_KIND_LABELS = {
   apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
+  negate_action:       "Negate Action (block — no outcome/reactions)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
@@ -2109,6 +2149,7 @@ const EFFECT_KIND_PREVIEW = {
   adjust_damage: () => null,
   redirect_target: () => null,
   adjust_accuracy: () => null,
+  negate_action: () => null,
 };
 
 // Preview a single effect row. Returns an EffectPreview or null (nothing to

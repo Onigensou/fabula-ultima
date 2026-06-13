@@ -236,6 +236,19 @@ async function resolveTargetingRow(row, ctx) {
 
   if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
 
+  // mode "random" — pick `count` tokens at random from the pool, no prompt.
+  // Chain-level random targeting (Shadow Possession's "one random enemy gets the
+  // block variant"); the action-level equivalent lives in resolveActionTargets
+  // via skill_target "One Random ..." (Chomp). Resolved before the prompt logic.
+  if (mode === "random") {
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return { ok: true, tokens: shuffled.slice(0, Math.min(count, shuffled.length)) };
+  }
+
   // 4. Apply mode.
   // Passive auto-fires resolve silently — they're automatic, no decision to make;
   // never pester a player to confirm a reaction the engine fired for them.

@@ -575,6 +575,39 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   let mutationsApplied = 0;
   let cancelled = false;
 
+  // Phase 0: negate_action — a performer/self reaction (Shadow Possession's
+  // Creeped block variant) nullifies the WHOLE action: no hit, no damage, no
+  // effects, no reactions. Scans EVERY accepted candidate (not just third-party
+  // reactorActorUuid ones — the negate reaction is the actor's OWN). When found,
+  // mark `negated`, zero every per-target hit/damage, and set a Blocked accuracy
+  // override for the card UI. RESOLVE honors `ar.negated` to skip the outcome +
+  // effect/reaction firing. Short-circuits the other phases (they're moot).
+  let negated = false;
+  for (const cand of acceptedPrePassives ?? []) {
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    const rows = expandEffectChain(effectTable, cand.ref);
+    if (rows.some((r) => String(r.effect_kind ?? "").trim().toLowerCase() === "negate_action")) {
+      negated = true;
+      break;
+    }
+  }
+  if (negated) {
+    ctx.negated = true;
+    // Keep the REAL accuracy / damage / per-target results on the card — the UI
+    // shows them dimmed with a red "Negated" overlay (NOT "Blocked"/zeroed). The
+    // outcome is still fully nullified at RESOLVE via ar.negated, so these values
+    // are display-only. No accuracyOverride (that drives the "Blocked" treatment).
+    return {
+      targets: ctx.targets,
+      perTargetResults: ctx.perTargets,
+      mutationsApplied: 1,
+      cancelled: false,
+      accuracyOverride: null,
+      negated: true,
+    };
+  }
+
   // Phase 1: redirect_target (only third-party candidates produce these
   // today — `reactorActorUuid` is the discriminator). A cancelled
   // picker short-circuits the whole pipeline so the caller can revert
@@ -627,5 +660,6 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     mutationsApplied,
     cancelled,
     accuracyOverride: ctx.accuracyOverride ?? null,
+    negated: false,
   };
 }

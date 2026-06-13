@@ -264,6 +264,44 @@ async function resolveAction(director, ar, opts = {}) {
     }
   }
 
+  // 1b. negate_action (Shadow Possession's Creeped block) — the action was
+  //     PERFORMED (cost paid above) but is fully NULLIFIED. We still FIRE the
+  //     accepted pre-resolve reactions (so the negate reaction's OWN Frightened +
+  //     consume_self land — same firing step 6 would do), then bail: skip the
+  //     entire outcome (on_activate, per-target damage, post_damage, effect_table)
+  //     AND every post-resolve trigger the action would fire (creature_deals_damage /
+  //     completes_attack / _spell / action-kind). The card already shows "Blocked"
+  //     with all per-target hits zeroed.
+  if (ar.negated) {
+    const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
+    if (accepted.length) {
+      const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+      const negPayload = {
+        sourceActorUuid: ar.attackerActorRef,
+        sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+        targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+        targets: (ar.targets ?? []).map((t) => t.tokenUuid),
+        actionIntent: ar.actionIntent,
+        actionKind: ar.kind ?? null,
+        spellUuid: skill?.uuid ?? null,
+      };
+      for (const cand of accepted) {
+        try {
+          let fireActor = casterActor;
+          let firePayload = negPayload;
+          if (cand?.reactorActorUuid) {
+            const resolved = await fromUuid(cand.reactorActorUuid);
+            if (resolved) fireActor = resolved;
+            if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
+          }
+          await firePreAcceptedCandidate({ director, casterActor: fireActor, candidate: cand, payload: firePayload });
+        } catch (e) { warn(`resolveAction(negated): prePassive "${cand?.carrierName}" threw`, e); }
+      }
+    }
+    log(`resolveAction: ${ar.kind} by ${casterActor.name} NEGATED — fired accepted reactions, skipped outcome + post-resolve triggers`);
+    return;
+  }
+
   // 2. Build the chain ctx (recipe-merged effect_table + fire-points).
   //    `payload` carries the cast's roll-derived state so HR / CRIT /
   //    FUMBLE / TOTAL identifiers resolve correctly in on_activate
@@ -1778,10 +1816,19 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (isSelf) {
     eligibleForPicker = [attackerSnap];
   } else {
+    // Target side: an EXPLICIT side in skill_target wins (creature = either side;
+    // enemy; ally). The action-intent heuristic is only a TIEBREAKER for
+    // side-agnostic text ("One Target", "Up to 3") — it must NOT override an
+    // explicit "Enemy"/"Ally" (the bug that flipped Shadow Possession's "All
+    // Enemy" to allies because a damageless Active classifies as "aid").
     const wantsCreature = /creature|creatures/i.test(text);
+    const wantsEnemy    = /enem/i.test(text);
+    const wantsAllyText = /\ball(?:y|ies)\b/i.test(text);
     const intent        = skill ? classifyActionIntent(skill) : "harmful";
-    const wantsAlly     = !wantsCreature && (/ally|allies/i.test(text) || intent === "aid");
-    category            = wantsCreature ? "any" : (wantsAlly ? "ally" : "enemy");
+    category = wantsCreature ? "any"
+      : wantsEnemy    ? "enemy"
+      : wantsAllyText ? "ally"
+      : (intent === "aid" ? "ally" : "enemy");
     eligibleForPicker   = director.dCombat
       ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category })
       : snapshotEligibleTargets(director.combat, attackerSnap, { category });
@@ -3125,16 +3172,14 @@ const Confirm = {
       }
     }
 
-    // Performer-side scan — creature_performs_action (Barrage). Formerly hosted
-    // in the deleted PRE_ROLL window; now a normal pill on the post-roll card.
-    // Action-level (offered once), first-pass Attack only. On Apply, the pill
-    // runs the reaction's add_target chain and the picked target(s) share THIS
-    // action's already-rolled accuracy total (see onAddTargetApply below) —
-    // "shared roll, post-roll pick". Tagged `_addTarget` so the card recognizes
-    // the add-target apply path and RESOLVE excludes it from the re-fire (it
-    // commits its MP cost + targets at Apply, not at RESOLVE).
-    const firePerformsAction =
-      attackerActor && ar.kind === "Attack" && (ar.passIndex ?? 1) <= 1;
+    // Performer-side scan — creature_performs_action. Fires once (first pass) for
+    // ANY card action (Attack/Skill/Spell/Item/…), carrying the real actionKind;
+    // reactions scope themselves via `reaction_action_kind` (Barrage: "Attack";
+    // Shadow Possession's Creeped: "Attack,Skill,Spell"). Only genuine add_target
+    // reactions (Barrage) ride the onAddTargetApply path — tagged `_addTarget`
+    // when the reaction's effect contains add_target; everything else (Creeped's
+    // negate / Energized) resolves as an ordinary pre-resolve pill.
+    const firePerformsAction = attackerActor && (ar.passIndex ?? 1) <= 1;
     if (firePerformsAction) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
@@ -3148,10 +3193,11 @@ const Confirm = {
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             targets: allTargetUuids,
             targetTokenUuids: allTargetUuids,
-            actionIntent: "harmful",
-            actionKind: "Attack",
-            actionName: ar.weapon?.name ?? "Attack",
+            actionIntent: ar.actionIntent ?? "harmful",
+            actionKind: ar.kind ?? "Attack",
+            actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             weaponUuid: ar.weapon?.uuid ?? null,
+            skillUuid: ar.skillUuid ?? null,
             // ATTACK_IS_RANGED gate reads this.
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
           },
@@ -3159,7 +3205,13 @@ const Confirm = {
         }) ?? [];
         for (const cand of cands) {
           if (cand.kind === "passive" && cand.mode === "off") continue;
-          cand._addTarget = true;
+          if (cand.usesAddTarget) {
+            // add_target (Barrage) only makes sense on an Attack — skip it on
+            // Skill/Spell/etc. so extending this trigger to all kinds doesn't
+            // leak Barrage onto a spell. Other reactions fire on any kind.
+            if (ar.kind !== "Attack") continue;
+            cand._addTarget = true;
+          }
           prePassives.push(cand);
         }
       } catch (e) {
@@ -3540,14 +3592,16 @@ const Confirm = {
       let mutatedTargets = liveAr.targets ?? null;
       let mutatedPerTargets = liveAr.perTargetResults ?? null;
       let accuracyOverride = null;
+      let negated = false;
       try {
         const { applyAcceptedCardMutations } = await import("./card-mutations.js?cb=" + Date.now());
         const r = await applyAcceptedCardMutations(liveAr, applied);
+        negated = !!r.negated;
         if (r.mutationsApplied > 0) {
           mutatedTargets = r.targets;
           mutatedPerTargets = r.perTargetResults;
           accuracyOverride = r.accuracyOverride ?? null;
-          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + accuracy/element/damage hooks)`);
+          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + accuracy/element/damage hooks${negated ? "; NEGATED" : ""})`);
         }
       } catch (e) { warn("CONFIRM: card mutations threw", e); }
 
@@ -3577,6 +3631,9 @@ const Confirm = {
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
         accuracyOverride,
+        // negate_action (Shadow Possession) — RESOLVE skips outcome + effect/
+        // reaction firing; the per-target hits are already zeroed + Blocked above.
+        negated,
       });
     }
     // Drop the survival-flag pendingAction the moment the card resolves
