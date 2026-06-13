@@ -268,9 +268,13 @@
   }
 
   function _ownerUserId(actor) {
+    // Assigned character is the strongest actor→player mapping; ownership
+    // scans can land on GM users, who carry explicit OWNER on most actors.
+    const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor?.id);
+    if (assigned) return assigned.id;
     return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
       const user = game.users?.get(id);
-      return id !== "default" && lvl === 3 && user && !user.isGM;
+      return id !== "default" && lvl >= 3 && user && !user.isGM;
     })?.[0] ?? null;
   }
 
@@ -365,9 +369,11 @@
     } else {
       entries = (await globalThis.CampSystem?.Party?.resolve?.()) ?? [];
     }
-    // CampSystem.Party.resolve() does not populate userId — fill it for every entry
+    // Re-route any entry whose userId is missing or points at a GM — picks
+    // must reach the owning player's client, never a GM account.
     for (const e of entries) {
-      if (!e.userId) e.userId = _ownerUserId(e.actor);
+      const u = e.userId ? game.users?.get(e.userId) : null;
+      if (!u || u.isGM) e.userId = _ownerUserId(e.actor);
     }
     if (!entries.length) throw new Error(`${TAG} no participants`);
 

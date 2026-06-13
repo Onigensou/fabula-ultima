@@ -38,10 +38,18 @@
         }
         if (!actor) { console.warn(TAG, `party_member_${i} not found:`, raw); continue; }
 
-        // Find owning user (permission level OWNER = 3)
-        const userId   = Object.entries(actor.ownership ?? {}).find(([uid, lvl]) => {
-          return lvl >= 3 && uid !== "default" && game.users?.get(uid);
-        })?.[0] ?? null;
+        // Find the owning PLAYER user. Assigned character beats raw ownership:
+        // GM users carry explicit OWNER on most actors and would win the
+        // ownership scan (e.g. Hina → "GM II"), routing player prompts to GM.
+        const playerOwners = Object.entries(actor.ownership ?? {})
+          .filter(([uid, lvl]) => uid !== "default" && lvl >= 3)
+          .map(([uid]) => game.users?.get(uid))
+          .filter(u => u && !u.isGM);
+        const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor.id);
+        const userId   = assigned?.id
+          ?? playerOwners.find(u => u.active)?.id
+          ?? playerOwners[0]?.id
+          ?? null;
         const user     = userId ? game.users.get(userId) : null;
         const userName = user?.name ?? actor.name;
 
