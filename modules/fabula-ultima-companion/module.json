@@ -265,6 +265,7 @@
     "scripts/bond-system/bond-updater-core.js",
     "scripts/encyclopedia/encyclopedia-core.js",
     "scripts/cooking-system/cooking-api.js",
+    "scripts/cooking-system/cooking-ui.js",
     "scripts/camp-system/camp-constants.js",
     "scripts/camp-system/camp-sound.js",
     "scripts/camp-system/camp-styles.js",

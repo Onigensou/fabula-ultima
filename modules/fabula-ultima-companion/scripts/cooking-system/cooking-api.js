@@ -2,26 +2,23 @@
 // Cooking System — API
 //
 // Public API:  FUCompanion.api.cooking
-//   .getConfig()                            → resolved config (defaults ⊕ _Cooking Config item flags)
-//   .resolve(contributions, opts)           → pure resolver, NO side effects
+//   .getConfig()                            → resolved config
+//   .resolve(contributions, opts)           → pure resolver, no side effects
 //   .applyDish(dishUuid, targetActorUuids)  → food-AE slot logic (GM context)
 //   .start(options)                         → full hot-pot session (GM context)
-//   .describeItem(item)                     → contribution descriptor from an Item doc
+//   .describeItem(item)                     → contribution descriptor
+//   .proceed(sessionId)                     → resolve a waiting proceed gate
 //
-// Contribution descriptor:
-//   { name, taste, taste2, rarity, isIngredient, actorUuid?, itemUuid? }
-//
-// resolve() opts:
-//   { cookerCheck: { total, isCrit, isFumble } | null,
-//     knownRecipes: [{ name, dishUuid, ingredientNames: string[] }],
-//     rng: () => number }                   // injectable for tests
-//
-// Resolution order: exact recipe (bypasses goop + check) → goop (weirdness ≥
-// threshold) → clash tie = mystery → taste math (potency sum + check mod).
-//
-// Food buffs are AEs tagged via flags.<MOD>.foodBuff with campRestCharges: 1
-// (survive the rest that follows camp, expire at the next one). One meal slot:
-// applying a dish removes any previous foodBuff AE first.
+// Socket messages (cooking-ui.js handles the visual side):
+//   GM → ALL:    COOKING_PANEL_OPEN  { sessionId, entries, cookerActorId }
+//   PLAYER → ALL: COOKING_HOVER     { sessionId, actorId, itemImg, itemName, itemTaste, itemTaste2, isSelect? }
+//   PLAYER → GM:  COOKING_LOCK      { sessionId, actorId, itemId, itemImg, itemName }
+//   GM → ALL:    COOKING_STATE      { sessionId, slots, tasteValues }
+//   GM → ALL:    COOKING_ANIMATE    { sessionId, contributions }
+//   GM → ALL:    COOKING_RESULTS    { sessionId, outcome }
+//   GM → ALL:    COOKING_CLOSE      { sessionId }
+//   GM → ALL:    COOKING_SFX        { sessionId, sfx: "START"|"EAT" }
+//   PLAYER → GM: COOKING_PROCEED    { sessionId, userId }
 // ============================================================================
 (() => {
   const MODULE_ID = "fabula-ultima-companion";
@@ -31,18 +28,11 @@
   if (window[GUARD]) return;
   window[GUARD] = true;
 
-  const MSG = Object.freeze({
-    PICK_REQUEST: "COOKING_PICK_REQUEST",   // GM → all (targeted by userId)
-    PICK_SUBMIT:  "COOKING_PICK_SUBMIT",    // player → all (GM processes)
-  });
-
   const TASTES = ["bitter", "salty", "sour", "sweet", "umami"];
 
-  // ---------------------------------------------------------------------------
-  // Config
-  // ---------------------------------------------------------------------------
+  // ── Config ─────────────────────────────────────────────────────────────────
   const DEFAULT_CONFIG = {
-    matrix: {},            // { family: { 1: dishId, 2: dishId, 3: dishId } } — from _Cooking Config
+    matrix: {},
     mysteryDishId: null,
     goopDishId: null,
     tierBreakpoints: [8, 12],
@@ -52,13 +42,10 @@
     cookerCheck: {
       attrA: "INS", attrB: "DEX", helperDl: 10,
       bands: [
-        { max: 6, potency: -1 },
-        { max: 12, potency: 0 },
-        { max: 15, potency: 1 },
-        { max: 9999, potency: 2 },
+        { max: 6, potency: -1 }, { max: 12, potency: 0 },
+        { max: 15, potency: 1 }, { max: 9999, potency: 2 },
       ],
-      critPotency: 2,
-      fumbleWeird: 1,
+      critPotency: 2, fumbleWeird: 1,
     },
     pickTimeoutMs: 120_000,
   };
@@ -69,17 +56,12 @@
     return foundry.utils.mergeObject(foundry.utils.deepClone(DEFAULT_CONFIG), flags, { inplace: false });
   }
 
-  // ---------------------------------------------------------------------------
-  // Descriptors
-  // ---------------------------------------------------------------------------
+  // ── Descriptors ────────────────────────────────────────────────────────────
   function describeItem(item, actorUuid = null) {
     let p = item?.system?.props ?? {};
-    // Embedded inventory copies usually predate ingredient tagging and never
-    // receive prop updates made to world items — the world item by the same
-    // name is the source of truth for cooking data.
     if (!p.isIngredient) {
-      const worldItem = game.items?.find?.(i => i.name === item?.name && i.system?.props?.item_type === "material");
-      if (worldItem?.system?.props?.isIngredient) p = worldItem.system.props;
+      const world = game.items?.find?.(i => i.name === item?.name && i.system?.props?.item_type === "material");
+      if (world?.system?.props?.isIngredient) p = world.system.props;
     }
     return {
       name: item?.name ?? "?",
@@ -92,47 +74,61 @@
     };
   }
 
-  // ---------------------------------------------------------------------------
-  // Pure resolver
-  // ---------------------------------------------------------------------------
+  function _materialChoices(actor) {
+    return (actor?.items ?? [])
+      .filter(i => (parseInt(i.system?.props?.item_quantity) || 0) > 0)
+      .map(i => ({ i, d: describeItem(i) }))
+      .filter(({ d }) => d.isIngredient)
+      .map(({ i, d }) => {
+        const taste  = d.taste  && TASTES.includes(d.taste)  ? d.taste  : null;
+        const taste2 = d.taste2 && TASTES.includes(d.taste2) ? d.taste2 : null;
+        const rawDesc = String(i.system?.props?.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150);
+        return {
+          id: i.id,
+          name: i.name,
+          img: i.img || "icons/svg/item-bag.svg",
+          taste, taste2,
+          rarity: d.rarity || "Common",
+          qty: parseInt(i.system?.props?.item_quantity) || 0,
+          description: rawDesc,
+        };
+      });
+  }
+
+  // ── Pure resolver ──────────────────────────────────────────────────────────
   function resolve(contributions, opts = {}) {
     const cfg = opts.config ?? getConfig();
     const rng = opts.rng ?? Math.random;
     const check = opts.cookerCheck ?? null;
     const recipes = opts.knownRecipes ?? [];
     const contribs = (contributions ?? []).filter(Boolean);
-
     const breakdown = [];
 
-    // — cooker check → potency modifier / fumble weirdness
-    let potencyMod = 0;
-    let fumbleWeird = 0;
+    let potencyMod = 0, fumbleWeird = 0;
     if (check) {
       if (check.isFumble) {
         fumbleWeird = cfg.cookerCheck.fumbleWeird;
-        breakdown.push(`Cooker fumbled the check — +${fumbleWeird} weirdness`);
+        breakdown.push(`Cooker fumbled — +${fumbleWeird} weirdness`);
       } else if (check.isCrit) {
         potencyMod = cfg.cookerCheck.critPotency;
         breakdown.push(`Critical cooking! +${potencyMod} potency`);
       } else {
         const band = cfg.cookerCheck.bands.find(b => check.total <= b.max);
         potencyMod = band?.potency ?? 0;
-        if (potencyMod) breakdown.push(`Cooker check ${check.total} — ${potencyMod > 0 ? "+" : ""}${potencyMod} potency`);
+        if (potencyMod) breakdown.push(`Cooker check ${check.total} → ${potencyMod > 0 ? "+" : ""}${potencyMod} potency`);
       }
     }
 
-    // — 1. exact recipe match (multiset of names; bypasses goop AND check)
+    // Exact recipe match (bypasses goop + check)
     const potNames = contribs.map(c => c.name).sort();
     for (const r of recipes) {
-      const reqNames = [...(r.ingredientNames ?? [])].sort();
-      if (reqNames.length && reqNames.length === potNames.length &&
-          reqNames.every((n, i) => n === potNames[i])) {
+      const req = [...(r.ingredientNames ?? [])].sort();
+      if (req.length && req.length === potNames.length && req.every((n,i) => n === potNames[i])) {
         breakdown.push(`Recipe match: ${r.name}`);
         return { kind: "recipe", dishId: r.dishUuid, recipeName: r.name, potency: null, weirdness: 0, breakdown };
       }
     }
 
-    // — weirdness + taste points + potency
     let weirdness = fumbleWeird;
     const points = Object.fromEntries(TASTES.map(t => [t, 0]));
     let potency = potencyMod;
@@ -153,37 +149,31 @@
       breakdown.push(`${line} (+${rp} potency)`);
     }
 
-    // — 2. goop gate
     if (weirdness >= cfg.weirdThreshold) {
-      breakdown.push(`Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is lost`);
+      breakdown.push(`Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
       return { kind: "goop", dishId: cfg.goopDishId, potency, weirdness, points, breakdown };
     }
 
-    // — 3. dominance / clash
     const max = Math.max(...Object.values(points));
     const leaders = TASTES.filter(t => points[t] === max && max > 0);
     if (leaders.length !== 1) {
       breakdown.push(leaders.length === 0 ? "No taste dominates" : `Taste clash: ${leaders.join(" vs ")}`);
       const family = leaders.length ? leaders[Math.floor(rng() * leaders.length)] : TASTES[Math.floor(rng() * TASTES.length)];
-      const redirect = cfg.matrix?.[family]?.[1] ?? null;
       return {
-        kind: "mystery", dishId: cfg.mysteryDishId, redirectDishId: redirect,
+        kind: "mystery", dishId: cfg.mysteryDishId,
+        redirectDishId: cfg.matrix?.[family]?.[1] ?? null,
         redirectFamily: family, potency, weirdness, points, breakdown,
       };
     }
 
-    // — 4. taste math
     const family = leaders[0];
     const tier = potency >= cfg.tierBreakpoints[1] ? 3 : potency >= cfg.tierBreakpoints[0] ? 2 : 1;
     breakdown.push(`Dominant taste: ${family} — potency ${potency} → tier ${tier}`);
-    const dishId = cfg.matrix?.[family]?.[tier] ?? null;
-    return { kind: "dish", dishId, family, tier, potency, weirdness, points, breakdown };
+    return { kind: "dish", dishId: cfg.matrix?.[family]?.[tier] ?? null, family, tier, potency, weirdness, points, breakdown };
   }
 
-  // ---------------------------------------------------------------------------
-  // applyDish — one-meal-slot AE application (GM context)
-  // ---------------------------------------------------------------------------
-  async function applyDish(dishUuid, targetActorUuids, opts = {}) {
+  // ── applyDish ──────────────────────────────────────────────────────────────
+  async function applyDish(dishUuid, targetActorUuids) {
     if (!game.user?.isGM) throw new Error(`${TAG} applyDish requires GM context`);
     const dishId = String(dishUuid).replace(/^Item\./, "");
     const dish = game.items?.get(dishId) ?? await fromUuid(String(dishUuid)).catch(() => null);
@@ -196,27 +186,19 @@
       const actor = await fromUuid(String(uuid).startsWith("Actor.") ? String(uuid) : `Actor.${uuid}`).catch(() => null);
       if (!actor) { console.warn(TAG, "applyDish: actor not found", uuid); continue; }
 
-      // One meal slot: clear any previous food buff
-      const oldIds = actor.effects
-        .filter(e => e.getFlag(MODULE_ID, "foodBuff"))
-        .map(e => e.id);
+      const oldIds = actor.effects.filter(e => e.getFlag(MODULE_ID, "foodBuff")).map(e => e.id);
       if (oldIds.length) await actor.deleteEmbeddedDocuments("ActiveEffect", oldIds);
 
-      // Day-long AE (campRestCharges: 1 → survives tonight's rest, expires at the next)
       await actor.createEmbeddedDocuments("ActiveEffect", [{
-        name: dish.name,
-        img: dish.img,
+        name: dish.name, img: dish.img,
         description: srcAe?.description ?? "",
-        origin: dish.uuid,
-        disabled: false,
-        transfer: false,
+        origin: dish.uuid, disabled: false, transfer: false,
         changes: foundry.utils.deepClone(srcAe?.changes ?? []),
         statuses: ["permanent"],
         system: { tags: ["food"] },
         flags: { [MODULE_ID]: { foodBuff: true, campRestCharges: 1, cookingDish: { dishId: dish.id, ...meta } } },
       }]);
 
-      // Instant effects (Shield pool)
       const shield = Number(meta.instant?.shield ?? 0);
       if (shield > 0) {
         const cur = parseInt(actor.system?.props?.shield_value) || 0;
@@ -226,50 +208,52 @@
     return { dishId: dish.id, dishName: dish.name, targets: targetActorUuids.length };
   }
 
-  // ---------------------------------------------------------------------------
-  // Contribution gathering (socket + dialogs)
-  // ---------------------------------------------------------------------------
-  const _pending = new Map(); // `${sessionId}:${actorId}` → resolve(itemId|null)
+  // ── Async gates ────────────────────────────────────────────────────────────
+  const _pendingLocks   = new Map(); // `${sessionId}:${actorId}` → resolve({ itemId, itemImg, itemName })
+  const _pendingProceed = new Map(); // sessionId → resolve(userId)
 
-  function _materialChoices(actor) {
-    return (actor?.items ?? [])
-      .filter(i => i.system?.props?.item_type === "material" &&
-                   (parseInt(i.system?.props?.item_quantity) || 0) > 0)
-      .map(i => {
-        const d = describeItem(i);
-        const taste = d.isIngredient && d.taste
-          ? d.taste.charAt(0).toUpperCase() + d.taste.slice(1)
-          : "❓";
-        return { id: i.id, label: `${i.name} [${taste}] ×${parseInt(i.system.props.item_quantity) || 0}` };
-      });
-  }
-
-  async function _promptPick(actor) {
-    const choices = _materialChoices(actor);
-    if (!choices.length) {
-      ui.notifications?.info(`${actor.name} has nothing to put in the pot.`);
-      return null;
-    }
-    const options = choices.map(c => `<option value="${c.id}">${c.label}</option>`).join("");
-    return new Promise(res => {
-      new Dialog({
-        title: `🍲 Cooking — ${actor.name}'s ingredient`,
-        content: `<p>Choose one item to add to the hot-pot.<br>
-                  <em>Unknown tastes (❓) count as Weird — 2+ weird things ruin the pot!</em></p>
-                  <select id="oni-cook-pick" style="width:100%">${options}</select>`,
-        buttons: {
-          ok: { label: "Into the pot!", callback: (html) => res(html.find("#oni-cook-pick").val() || null) },
-          skip: { label: "Contribute nothing", callback: () => res(null) },
-        },
-        default: "ok",
-        close: () => res(null),
-      }, { classes: ["dialog", "oni-cook-dialog"] }).render(true);
+  function _waitForLock(sessionId, actorId, timeoutMs) {
+    return new Promise(resolve => {
+      const key = `${sessionId}:${actorId}`;
+      const t = setTimeout(() => { _pendingLocks.delete(key); resolve({ itemId: null, itemImg: null, itemName: null }); }, timeoutMs);
+      _pendingLocks.set(key, r => { clearTimeout(t); _pendingLocks.delete(key); resolve(r); });
     });
   }
 
+  function _waitForProceed(sessionId, timeoutMs = 300_000) {
+    return new Promise(resolve => {
+      const t = setTimeout(() => { _pendingProceed.delete(sessionId); resolve(null); }, timeoutMs);
+      _pendingProceed.set(sessionId, uid => { clearTimeout(t); _pendingProceed.delete(sessionId); resolve(uid); });
+    });
+  }
+
+  function proceed(sessionId) {
+    _pendingProceed.get(sessionId)?.(game.user?.id);
+  }
+
+  // ── Taste values helper (GM session state) ─────────────────────────────────
+  const _sessionStates = new Map(); // sessionId → { entries, slots }
+
+  function _computeTastes(sessionId, cfg) {
+    const state = _sessionStates.get(sessionId);
+    if (!state) return Object.fromEntries(TASTES.map(t => [t, 0]));
+    const values = Object.fromEntries(TASTES.map(t => [t, 0]));
+    for (const [actorId, slot] of Object.entries(state.slots)) {
+      if (!slot.locked || !slot.itemId) continue;
+      const entry = state.entries.find(e => e.actorId === actorId);
+      const item = entry?.actor?.items?.get(slot.itemId);
+      if (!item) continue;
+      const d = describeItem(item);
+      if (d.isIngredient && d.taste && TASTES.includes(d.taste)) {
+        values[d.taste] += cfg.tastePoints.primary;
+        if (d.taste2 && TASTES.includes(d.taste2)) values[d.taste2] += cfg.tastePoints.secondary;
+      }
+    }
+    return values;
+  }
+
+  // ── Misc helpers ───────────────────────────────────────────────────────────
   function _ownerUserId(actor) {
-    // Assigned character is the strongest actor→player mapping; ownership
-    // scans can land on GM users, who carry explicit OWNER on most actors.
     const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor?.id);
     if (assigned) return assigned.id;
     return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
@@ -278,40 +262,6 @@
     })?.[0] ?? null;
   }
 
-  function _waitForPick(sessionId, actorId, timeoutMs) {
-    return new Promise(resolveP => {
-      const key = `${sessionId}:${actorId}`;
-      const timer = setTimeout(() => {
-        if (_pending.has(key)) { _pending.delete(key); resolveP(null); }
-      }, timeoutMs);
-      _pending.set(key, (itemId) => { clearTimeout(timer); _pending.delete(key); resolveP(itemId); });
-    });
-  }
-
-  Hooks.once("ready", () => {
-    // Camp overlays sit at z-index 1200–1500; cooking dialogs must float above
-    const style = document.createElement("style");
-    style.textContent = `.app.oni-cook-dialog { z-index: 1600 !important; }`;
-    document.head.appendChild(style);
-
-    game.socket?.on(SOCKET_CH, async (msg) => {
-      if (!msg || typeof msg !== "object") return;
-      if (msg.type === MSG.PICK_REQUEST) {
-        if (msg.userId !== game.user?.id) return;
-        const actor = game.actors?.get(msg.actorId);
-        if (!actor) return;
-        const itemId = await _promptPick(actor);
-        game.socket.emit(SOCKET_CH, { type: MSG.PICK_SUBMIT, sessionId: msg.sessionId, actorId: msg.actorId, itemId });
-      } else if (msg.type === MSG.PICK_SUBMIT) {
-        if (!game.user?.isGM) return;
-        _pending.get(`${msg.sessionId}:${msg.actorId}`)?.(msg.itemId ?? null);
-      }
-    });
-  });
-
-  // ---------------------------------------------------------------------------
-  // Recipes known by the party (cooking-kind recipe items in inventories)
-  // ---------------------------------------------------------------------------
   function _gatherKnownRecipes(actors) {
     const recipes = [];
     for (const actor of actors) {
@@ -320,8 +270,7 @@
         if (p.item_type !== "recipe" || p.recipe_kind !== "cooking") continue;
         const dishUuid = String(p.recipe_dish_uuid ?? "").trim();
         if (!dishUuid) continue;
-        const rel = p.related_item_list ?? {};
-        const ingredientNames = Object.values(rel).map(r => r?.name).filter(Boolean);
+        const ingredientNames = Object.values(p.related_item_list ?? {}).map(r => r?.name).filter(Boolean);
         if (!ingredientNames.length) continue;
         recipes.push({ name: item.name, dishUuid, ingredientNames });
       }
@@ -329,36 +278,192 @@
     return recipes;
   }
 
-  // ---------------------------------------------------------------------------
-  // Ingredient consumption (decrement quantity, delete at 0)
-  // ---------------------------------------------------------------------------
   async function _consume(actor, item) {
     const qty = parseInt(item.system?.props?.item_quantity) || 0;
-    if (qty > 1) {
-      await item.update({ "system.props.item_quantity": String(qty - 1) });
-    } else {
-      await item.delete();
-    }
+    if (qty > 1) await item.update({ "system.props.item_quantity": String(qty - 1) });
+    else await item.delete();
   }
 
-  // ---------------------------------------------------------------------------
-  // start — full session orchestrator (GM context)
-  // ---------------------------------------------------------------------------
+  // ── devSim ─────────────────────────────────────────────────────────────────
+  // Simulates a complete cooking loop from a single GM client.
+  // GM picks ingredients one character at a time via the normal picker UI.
+  // Uses the real group check flow; ingredients NOT consumed by default.
+  // opts: { consume:false, apply:true, cookerUuid }
+  async function devSim(opts = {}) {
+    if (!game.user?.isGM) { ui.notifications?.error("devSim: GM only"); return; }
+    const cfg = getConfig();
+    const hasDishes = Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
+    if (!hasDishes) { ui.notifications?.warn("Cooking: no dish content configured."); return; }
+
+    const sessionId = foundry.utils.randomID();
+    ui.notifications?.info("🍲 devSim: pick ingredients for each character…");
+
+    // --- gather party entries ---
+    let entries = (await globalThis.CampSystem?.Party?.resolve?.()) ?? [];
+    for (const e of entries) {
+      const u = e.userId ? game.users?.get(e.userId) : null;
+      if (!u || u.isGM) e.userId = _ownerUserId(e.actor);
+    }
+    if (!entries.length) { ui.notifications?.error("devSim: no party members found."); return; }
+
+    const cookerUuid = String(opts.cookerUuid ?? entries[0].actor.uuid);
+    const cookerId   = cookerUuid.replace(/^Actor\./, "");
+    const cooker     = game.actors.get(cookerId);
+
+    // --- session state ---
+    const sessionState = { entries, slots: {} };
+    _sessionStates.set(sessionId, sessionState);
+
+    const panelEntries = entries.map(e => ({
+      actorId: e.actorId, userId: e.userId,
+      actorName: e.actor.name,
+      portraitUrl: e.actor.img || "icons/svg/mystery-man.svg",
+    }));
+
+    // --- open main panel locally (no broadcast) ---
+    globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId);
+
+    // --- sequential picker per character ---
+    const allResults = [];
+    for (const e of entries) {
+      const choices = _materialChoices(e.actor);
+      const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
+      const item = itemId ? e.actor.items.get(itemId) : null;
+      const r = { e, itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null };
+      if (item) {
+        sessionState.slots[e.actorId] = { itemId, itemImg: item.img, itemName: item.name, locked: true };
+        const tv = _computeTastes(sessionId, cfg);
+        globalThis.CookingUI?.applyState(sessionId, sessionState.slots, tv);
+      }
+      allResults.push(r);
+    }
+
+    const picks = allResults
+      .filter(r => r.itemId)
+      .map(r => ({ entry: r.e, item: r.e.actor.items.get(r.itemId), itemImg: r.itemImg, itemName: r.itemName }))
+      .filter(p => p.item);
+
+    if (!picks.length) {
+      ui.notifications?.warn("devSim: nobody contributed an ingredient.");
+      globalThis.CookingUI?.closeAll();
+      _sessionStates.delete(sessionId);
+      return null;
+    }
+
+    // --- animate ---
+    const contributions = picks.map(p => ({
+      actorId: p.entry.actorId,
+      itemImg: p.itemImg || p.item?.img || "icons/svg/item-bag.svg",
+      itemName: p.itemName || p.item?.name || "?",
+    }));
+    await globalThis.CookingUI?.runAnimation(sessionId, contributions) ?? new Promise(r => setTimeout(r, 1600));
+    await new Promise(r => setTimeout(r, 4000));
+
+    // --- real group check ---
+    let cookerCheck = null;
+    try {
+      const gc = await globalThis.ONI?.GroupCheck?.request?.({
+        leaderUuid: cooker?.uuid ?? cookerUuid,
+        participantMode: "open",
+        allActorUuids: entries.map(e => e.actor.uuid),
+        attrA: cfg.cookerCheck.attrA, attrB: cfg.cookerCheck.attrB,
+        helperDl: cfg.cookerCheck.helperDl, helperBonus: 1, hiddenDl: true,
+        label: "🍲 Cooking (Dev Sim)",
+      });
+      if (gc?.leaderResult) {
+        cookerCheck = { total: gc.leaderResult.total, isCrit: !!gc.leaderResult.isCrit, isFumble: !!gc.leaderResult.isFumble };
+      }
+    } catch (err) { console.warn(TAG, "devSim group check skipped:", err); }
+
+    // --- play cooking start sfx for all clients (fires after group check) ---
+    game.socket.emit(SOCKET_CH, { type: "COOKING_SFX", sfx: "START", sessionId });
+    globalThis.CookingUI?.playSfx?.("START");
+
+    // --- resolve ---
+    const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
+    const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
+    const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
+    if (cookerCheck?.isFumble) outcome.kind = "goop";
+
+    // --- consume (default: false for dev safety) ---
+    if (opts.consume === true) {
+      for (const p of picks) await _consume(p.entry.actor, p.item);
+    }
+
+    // --- apply dish ---
+    const applyId = outcome.kind === "mystery" ? (outcome.redirectDishId ?? outcome.dishId) : outcome.dishId;
+    let applied = null;
+    if (opts.apply !== false && applyId) {
+      applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
+    }
+
+    // --- build results payload ---
+    const dishItem = applied ? game.items.get(applied.dishId) : null;
+    const isMyster = outcome.kind === "mystery";
+    const dishName  = isMyster ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
+    const dishImg   = (isMyster ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
+    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
+    const kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase()+outcome.family.slice(1)} ${tierStars}`
+                    : outcome.kind === "mystery" ? "🎲 Mystery Pot!"
+                    : outcome.kind === "goop"    ? "💀 Abyssal Goop"
+                    : "📖 Recipe Match";
+    const rawEffect = dishItem?.system?.props?.description ?? "";
+    const dishEffect = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    const ingredientNames = picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name }));
+    const resultsPayload = {
+      dishName, dishImg, kindLabel,
+      cookerCheck,
+      dishEffect,
+      ingredientNames,
+      kind: outcome.kind,
+      breakdown: outcome.breakdown,
+    };
+
+    // --- show results locally ---
+    globalThis.CookingUI?.showResults(sessionId, resultsPayload);
+
+    // --- wait for proceed ---
+    await _waitForProceed(sessionId);
+
+    // --- cleanup ---
+    _sessionStates.delete(sessionId);
+    globalThis.CookingUI?.closeAll();
+
+    // --- chat card ---
+    const contribLines = picks.map(p => `<li><b>${p.entry.actor.name}</b> — ${p.item.name}</li>`).join("");
+    await ChatMessage.create({
+      speaker: { alias: "Camp Cooking" },
+      content: `<div style="border:1px solid #8a4b2d;border-radius:6px;padding:8px">
+        <div style="background:rgba(200,100,0,.15);font-size:.72em;font-weight:700;color:#b85c00;padding:2px 6px;border-radius:4px;margin-bottom:6px;display:inline-block">⚙️ DEV SIM — ingredients ${opts.consume === true ? "consumed" : "NOT consumed"}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="${dishImg}" width="36" height="36" style="border:none">
+          <div>
+            <div style="font-weight:bold">${dishName}${isMyster && dishItem ? ` → ${dishItem.name}` : ""}</div>
+            <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : " (no check)"}</div>
+          </div>
+        </div>
+        <ul style="margin:6px 0">${contribLines}</ul>
+      </div>`,
+    });
+
+    console.log(TAG, "devSim complete:", outcome);
+    return { ...outcome, appliedDishId: applied?.dishId ?? null, sessionId };
+  }
+
+  // ── start ──────────────────────────────────────────────────────────────────
   async function start(options = {}) {
     if (!game.user?.isGM) throw new Error(`${TAG} start() must run on the GM client`);
     const cfg = getConfig();
 
-    // World content (dishes + _Cooking Config) is required to resolve a pot.
-    // Bail out before prompting anyone if it hasn't been authored yet.
     const hasDishes = Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
     if (!hasDishes) {
-      ui.notifications?.warn("Cooking: no dish content configured (_Cooking Config / Dishes folder missing) — skipping the hot-pot.");
+      ui.notifications?.warn("Cooking: no dish content configured — skipping.");
       return null;
     }
 
     const sessionId = foundry.utils.randomID();
 
-    // — participants
+    // --- gather entries ---
     let entries;
     if (Array.isArray(options.participants) && options.participants.length) {
       entries = [];
@@ -369,8 +474,6 @@
     } else {
       entries = (await globalThis.CampSystem?.Party?.resolve?.()) ?? [];
     }
-    // Re-route any entry whose userId is missing or points at a GM — picks
-    // must reach the owning player's client, never a GM account.
     for (const e of entries) {
       const u = e.userId ? game.users?.get(e.userId) : null;
       if (!u || u.isGM) e.userId = _ownerUserId(e.actor);
@@ -378,101 +481,232 @@
     if (!entries.length) throw new Error(`${TAG} no participants`);
 
     const cookerUuid = String(options.cookerUuid ?? entries[0].actor.uuid);
-    const cookerId = cookerUuid.replace(/^Actor\./, "");
-    const cooker = game.actors.get(cookerId);
+    const cookerId   = cookerUuid.replace(/^Actor\./, "");
+    const cooker     = game.actors.get(cookerId);
 
-    // — contribution phase (player owners via socket, GM-owned sequentially)
-    const picks = []; // { entry, item }
-    const waits = [];
+    // --- session state ---
+    const sessionState = { entries, slots: {} };
+    _sessionStates.set(sessionId, sessionState);
+
+    const panelEntries = entries.map(e => ({
+      actorId: e.actorId, userId: e.userId,
+      actorName: e.actor.name,
+      portraitUrl: e.actor.img || "icons/svg/mystery-man.svg",
+    }));
+
+    // --- open GM's main panel (socket doesn't echo to self) ---
+    globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId);
+
+    // --- register pending locks for active player entries BEFORE broadcasting ---
+    const lockWaits = [];
     for (const e of entries) {
       const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
       if (uid && uid !== game.user.id) {
-        game.socket.emit(SOCKET_CH, { type: MSG.PICK_REQUEST, sessionId, actorId: e.actorId, userId: uid });
-        waits.push(_waitForPick(sessionId, e.actorId, cfg.pickTimeoutMs).then(itemId => ({ e, itemId })));
-      } else {
-        // GM-owned or offline owner — GM picks on their behalf, sequentially
-        waits.push((async () => ({ e, itemId: await _promptPick(e.actor) }))());
+        lockWaits.push(
+          _waitForLock(sessionId, e.actorId, cfg.pickTimeoutMs)
+            .then(r => ({ e, ...r }))
+        );
       }
     }
-    for (const w of await Promise.all(waits)) {
-      const item = w.itemId ? w.e.actor.items.get(w.itemId) : null;
-      if (item) picks.push({ entry: w.e, item });
+
+    // --- broadcast PANEL_OPEN to all clients ---
+    game.socket.emit(SOCKET_CH, { type: "COOKING_PANEL_OPEN", sessionId, entries: panelEntries, cookerActorId: cookerId });
+
+    // --- GM opens pickers locally for offline / GM-owned entries ---
+    const gmPickWaits = [];
+    for (const e of entries) {
+      const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
+      if (!uid || uid === game.user.id) {
+        const choices = _materialChoices(e.actor);
+        gmPickWaits.push((async () => {
+          const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
+          const item = itemId ? e.actor.items.get(itemId) : null;
+          const r = { itemId, itemImg: item?.img ?? null, itemName: item?.name ?? null };
+          // Update session state + broadcast STATE
+          sessionState.slots[e.actorId] = { ...r, locked: true };
+          const tv = _computeTastes(sessionId, cfg);
+          game.socket.emit(SOCKET_CH, { type: "COOKING_STATE", sessionId, slots: sessionState.slots, tasteValues: tv });
+          globalThis.CookingUI?.applyState(sessionId, sessionState.slots, tv);
+          return { e, ...r };
+        })());
+      }
     }
+
+    const allResults = await Promise.all([...lockWaits, ...gmPickWaits]);
+
+    const picks = allResults
+      .map(r => ({ entry: r.e, item: r.itemId ? r.e.actor.items.get(r.itemId) : null, itemImg: r.itemImg, itemName: r.itemName }))
+      .filter(p => p.item);
+
     if (!picks.length) {
       ui.notifications?.warn("Cooking: nobody put anything in the pot.");
+      game.socket.emit(SOCKET_CH, { type: "COOKING_CLOSE", sessionId });
+      globalThis.CookingUI?.closeAll();
+      _sessionStates.delete(sessionId);
       return null;
     }
 
-    // — cooker group check (open lobby via Check Requester)
+    // --- animate ---
+    const contributions = picks.map(p => ({ actorId: p.entry.actorId, itemImg: p.itemImg || p.item?.img || "icons/svg/item-bag.svg", itemName: p.itemName || p.item?.name || "?" }));
+    game.socket.emit(SOCKET_CH, { type: "COOKING_ANIMATE", sessionId, contributions });
+    await globalThis.CookingUI?.runAnimation(sessionId, contributions) ?? new Promise(r => setTimeout(r, 1600));
+
+    // 4-second anticipation pause
+    await new Promise(r => setTimeout(r, 4000));
+
+    // --- cooker group check ---
     let cookerCheck = null;
     try {
       const gc = await globalThis.ONI?.GroupCheck?.request?.({
         leaderUuid: cooker?.uuid ?? cookerUuid,
         participantMode: "open",
         allActorUuids: entries.map(e => e.actor.uuid),
-        attrA: cfg.cookerCheck.attrA,
-        attrB: cfg.cookerCheck.attrB,
-        helperDl: cfg.cookerCheck.helperDl,
+        attrA: cfg.cookerCheck.attrA, attrB: cfg.cookerCheck.attrB,
+        helperDl: cfg.cookerCheck.helperDl, helperBonus: 1, hiddenDl: true,
         label: "🍲 Cooking",
       });
       if (gc?.leaderResult) {
-        cookerCheck = {
-          total: gc.leaderResult.total,
-          isCrit: !!gc.leaderResult.isCrit,
-          isFumble: !!gc.leaderResult.isFumble,
-        };
+        cookerCheck = { total: gc.leaderResult.total, isCrit: !!gc.leaderResult.isCrit, isFumble: !!gc.leaderResult.isFumble };
       }
-    } catch (err) {
-      console.warn(TAG, "Group check failed/cancelled — cooking without check.", err);
-    }
+    } catch (err) { console.warn(TAG, "Group check skipped:", err); }
 
-    // — resolve
-    const contributions = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
+    // --- play cooking start sfx for all clients (fires after group check) ---
+    game.socket.emit(SOCKET_CH, { type: "COOKING_SFX", sfx: "START", sessionId });
+    globalThis.CookingUI?.playSfx?.("START");
+
+    // --- resolve ---
+    const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
     const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
-    const outcome = resolve(contributions, { config: cfg, cookerCheck, knownRecipes });
+    const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
+    if (cookerCheck?.isFumble) outcome.kind = "goop";
 
-    // — consume ingredients (world actors; linked PC tokens inherit)
+    // --- consume ---
     for (const p of picks) await _consume(p.entry.actor, p.item);
 
-    // — apply (mystery redirects to a random tier-1 dish)
+    // --- apply ---
     const applyId = outcome.kind === "mystery" ? (outcome.redirectDishId ?? outcome.dishId) : outcome.dishId;
     let applied = null;
-    if (applyId) {
-      applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
-    } else {
-      console.warn(TAG, "No dish id resolved — outcome:", outcome);
-    }
+    if (applyId) applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
 
-    // — chat card
+    // --- build results payload ---
     const dishItem = applied ? game.items.get(applied.dishId) : null;
-    const faceName = outcome.kind === "mystery" ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
-    const faceImg = (outcome.kind === "mystery" ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
+    const isMyster = outcome.kind === "mystery";
+    const dishName = isMyster ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
+    const dishImg  = (isMyster ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
+    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
+    const kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase()+outcome.family.slice(1)} ${tierStars}`
+                    : outcome.kind === "mystery" ? "🎲 Mystery Pot!"
+                    : outcome.kind === "goop"    ? "💀 Abyssal Goop"
+                    : "📖 Recipe Match";
+    const rawEffect = dishItem?.system?.props?.description ?? "";
+    const dishEffect = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    const ingredientNames = picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name }));
+    const resultsPayload = {
+      dishName, dishImg, kindLabel,
+      cookerCheck,
+      dishEffect,
+      ingredientNames,
+      kind: outcome.kind,
+      breakdown: outcome.breakdown,
+    };
+
+    // --- show results ---
+    game.socket.emit(SOCKET_CH, { type: "COOKING_RESULTS", sessionId, outcome: resultsPayload });
+    globalThis.CookingUI?.showResults(sessionId, resultsPayload);
+
+    // --- wait for proceed ---
+    await _waitForProceed(sessionId);
+
+    // --- cleanup + close ---
+    _sessionStates.delete(sessionId);
+    game.socket.emit(SOCKET_CH, { type: "COOKING_CLOSE", sessionId });
+    globalThis.CookingUI?.closeAll();
+
+    // --- chat card ---
     const contribLines = picks.map(p => `<li><b>${p.entry.actor.name}</b> — ${p.item.name}</li>`).join("");
-    const detail = outcome.breakdown.map(b => `<div style="opacity:.75;font-size:.85em">${b}</div>`).join("");
+    const detail = outcome.breakdown.map(b => `<div style="opacity:.7;font-size:.85em">${b}</div>`).join("");
     await ChatMessage.create({
       speaker: { alias: "Camp Cooking" },
-      content: `
-        <div style="border:1px solid #8a4b2d;border-radius:6px;padding:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <img src="${faceImg}" width="36" height="36" style="border:none"/>
-            <div>
-              <div style="font-weight:bold">${faceName}${outcome.kind === "mystery" && dishItem ? ` → ${dishItem.name}` : ""}</div>
-              <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : ""}</div>
-            </div>
+      content: `<div style="border:1px solid #8a4b2d;border-radius:6px;padding:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="${dishImg}" width="36" height="36" style="border:none">
+          <div>
+            <div style="font-weight:bold">${dishName}${isMyster && dishItem ? ` → ${dishItem.name}` : ""}</div>
+            <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : ""}</div>
           </div>
-          <ul style="margin:6px 0">${contribLines}</ul>
-          ${detail}
-        </div>`,
+        </div>
+        <ul style="margin:6px 0">${contribLines}</ul>
+        ${detail}
+      </div>`,
     });
 
     return { ...outcome, appliedDishId: applied?.dishId ?? null, sessionId };
   }
 
-  // ---------------------------------------------------------------------------
-  // Register API
-  // ---------------------------------------------------------------------------
+  // ── Socket handler ─────────────────────────────────────────────────────────
+  Hooks.once("ready", () => {
+    game.socket?.on(SOCKET_CH, async (msg) => {
+      if (!msg || typeof msg !== "object") return;
+      const { type, sessionId } = msg;
+
+      // GM-only: resolve pending gates
+      if (game.user?.isGM) {
+        if (type === "COOKING_LOCK") {
+          const key = `${sessionId}:${msg.actorId}`;
+          _pendingLocks.get(key)?.({ itemId: msg.itemId ?? null, itemImg: msg.itemImg ?? null, itemName: msg.itemName ?? null });
+          // Update session state + broadcast STATE
+          const state = _sessionStates.get(sessionId);
+          if (state && msg.actorId) {
+            state.slots[msg.actorId] = { itemId: msg.itemId ?? null, itemImg: msg.itemImg ?? null, itemName: msg.itemName ?? null, locked: true };
+            const tv = _computeTastes(sessionId, getConfig());
+            game.socket.emit(SOCKET_CH, { type: "COOKING_STATE", sessionId, slots: state.slots, tasteValues: tv });
+            globalThis.CookingUI?.applyState(sessionId, state.slots, tv);
+          }
+          return;
+        }
+        if (type === "COOKING_PROCEED") {
+          _pendingProceed.get(sessionId)?.(msg.userId ?? null);
+          return;
+        }
+      }
+
+      // All clients
+      if (type === "COOKING_PANEL_OPEN") {
+        globalThis.CookingUI?.openMainPanel(sessionId, msg.entries, msg.cookerActorId);
+        // Player opens picker for their character
+        const myEntry = msg.entries?.find(e => e.userId === game.user?.id);
+        if (myEntry && !game.user?.isGM) {
+          const actor = game.actors?.get(myEntry.actorId);
+          const choices = _materialChoices(actor);
+          const itemId = await globalThis.CookingUI?.openPicker(sessionId, myEntry.actorId, choices) ?? null;
+          const item = actor?.items?.get(itemId);
+          game.socket.emit(SOCKET_CH, {
+            type: "COOKING_LOCK", sessionId,
+            actorId: myEntry.actorId,
+            itemId: itemId ?? null,
+            itemImg: item?.img ?? null,
+            itemName: item?.name ?? null,
+          });
+        }
+      } else if (type === "COOKING_SFX") {
+        globalThis.CookingUI?.playSfx?.(msg.sfx);
+      } else if (type === "COOKING_HOVER") {
+        globalThis.CookingUI?._applyHover(msg.actorId, msg.itemImg, msg.itemName, msg.itemTaste||null, msg.itemTaste2||null, msg.isSelect||false);
+      } else if (type === "COOKING_STATE") {
+        globalThis.CookingUI?.applyState(sessionId, msg.slots, msg.tasteValues);
+      } else if (type === "COOKING_ANIMATE") {
+        await globalThis.CookingUI?.runAnimation(sessionId, msg.contributions);
+      } else if (type === "COOKING_RESULTS") {
+        globalThis.CookingUI?.showResults(sessionId, msg.outcome);
+      } else if (type === "COOKING_CLOSE") {
+        globalThis.CookingUI?.closeAll();
+      }
+    });
+    console.debug(TAG, "Cooking API loaded.");
+  });
+
+  // ── Register API ───────────────────────────────────────────────────────────
   globalThis.FUCompanion ??= {};
   globalThis.FUCompanion.api ??= {};
-  globalThis.FUCompanion.api.cooking = { getConfig, resolve, applyDish, start, describeItem };
-  console.debug(TAG, "Cooking API loaded.");
+  globalThis.FUCompanion.api.cooking = { getConfig, resolve, applyDish, start, describeItem, proceed, devSim };
 })();
