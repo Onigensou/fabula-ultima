@@ -538,6 +538,21 @@
     {
       "key": "2026-06-14-advanced-debuff-action-gating",
       "path": "data-migrations/2026-06-14-advanced-debuff-action-gating.js"
+    },
+    {
+      "key": "2026-06-14-sharpshooter-powerful-shot-author",
+      "path": "data-migrations/2026-06-14-sharpshooter-powerful-shot-author.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-06-14-sharpshooter-bullet-break-author",
+      "path": "data-migrations/2026-06-14-sharpshooter-bullet-break-author.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-06-14-sharpshooter-double-arrow-author",
+      "path": "data-migrations/2026-06-14-sharpshooter-double-arrow-author.js",
+      "idempotent": true
     }
   ]
 }
