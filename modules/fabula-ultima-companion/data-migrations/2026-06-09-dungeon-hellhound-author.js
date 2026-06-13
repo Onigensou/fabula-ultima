@@ -65,6 +65,14 @@
  *      live value is falsy/0. Like #4 this is world data, so the migration is the
  *      only durable carrier to a co-dev's Hellhound.
  *
+ *   6. Flame Breath's `apply_burn` row used `ae_duplicate_mode: "stack"` — which
+ *      makes apply_ae spawn a NEW Burn AE on every application (two hits → two
+ *      independent 3-charge Burns ticking in parallel). Canonical Burn stacking
+ *      is `add_charges`: one Burn that POOLS charges (3 → 6 → …), matching the
+ *      master design (2026-06-06-burn-status-tick / -default-charges-3). Retype
+ *      the dup-mode to `add_charges` (effect_kind stays apply_ae). World data, so
+ *      this migration is the durable carrier to a co-dev's Hellhound.
+ *
  * RUN ONCE: NOT manifest-tagged `idempotent` (changed 2026-06-12), so it runs a
  * single time then stays in the appliedMigrations ledger — it will NOT re-apply
  * over a co-dev's later edits to these skills. Co-dev delivery is via WORLD-DATA
@@ -82,8 +90,9 @@ export const description =
   "rebuild On the Hunt as a free-action grant (free Attack, HR as 0); scope " +
   "on-hit riders (Flame Breath Burn, Bite grappled bonus) to their own skill " +
   "via TRIGGER_IS_SELF; stamp the canonical charges:3 on Flame Breath's embedded " +
-  "Burn template so applied Burns carry stacks (tick + count badge); heal the " +
-  "actor's activation from a turn-skipping \"0\" to \"1\".";
+  "Burn template so applied Burns carry stacks (tick + count badge); retype " +
+  "apply_burn's dup-mode stack→add_charges (Burn pools charges, not parallel AEs); " +
+  "heal the actor's activation from a turn-skipping \"0\" to \"1\".";
 
 const ACTOR_NAME = "Hellhound";
 const NS = "fabula-ultima-companion";
@@ -137,6 +146,13 @@ const PATCHES = {
   },
   "Flame Breath": {
     reaction_cond: [{ ref: "apply_burn", cond: "TRIGGER_IS_SELF == 1 && chance(50)" }],
+    // apply_burn was authored `ae_duplicate_mode: "stack"`, which in apply_ae
+    // creates a SEPARATE Burn AE per application (two hits → two coexisting
+    // 3-charge Burns, each ticking independently). Canonical Burn stacking is
+    // `add_charges` — one Burn that POOLS charges (3 → 6 → …), per the
+    // burn-status-tick / burn-default-charges-3 master design. Retype to match
+    // (effect_kind unchanged = apply_ae; only the dup-mode field drifts).
+    effect_kind: [{ label: "apply_burn", kind: "apply_ae", fields: { ae_duplicate_mode: "add_charges" } }],
     // Flame Breath carries its OWN embedded "Burn" template, and a skill-local
     // effect WINS over the world "Debuff" master in resolveAeTemplate — so this
     // embedded copy is what gets cloned onto the target. It must carry the
