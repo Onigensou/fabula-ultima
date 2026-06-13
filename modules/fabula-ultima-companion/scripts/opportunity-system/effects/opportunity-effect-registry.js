@@ -202,49 +202,78 @@
     return candidates[0] ?? null;
   }
 
+  // Shared helper: build a high-z-index (100030) modal that floats above ALL
+  // overlays (check-requester at 100010, opportunity wheel at 100020).
+  // Foundry's Dialog renders at Foundry's own z-index counter (~100–1000) which
+  // is invisible when any of our full-screen backdrops are open.
+  function _oniModal({ title, bodyHtml, onConfirm, onCancel }) {
+    const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    const wrap = document.createElement("div");
+    wrap.style.cssText = [
+      "position:fixed;inset:0;z-index:100030",
+      "background:rgba(0,0,0,.65)",
+      "display:flex;align-items:center;justify-content:center",
+      "font-family:'Signika',serif",
+    ].join(";");
+    wrap.innerHTML = `
+      <div style="background:#2a1e0f;border:2px solid #8b6914;border-radius:12px;
+        padding:20px 24px;min-width:340px;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,.7);">
+        <div style="font-size:1rem;font-weight:700;color:#fcd470;margin-bottom:10px;">${esc(title)}</div>
+        ${bodyHtml}
+        <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">
+          <button class="oni-modal-cancel" style="padding:6px 18px;background:#555;color:#ddd;
+            border:1px solid #777;border-radius:6px;cursor:pointer;font-family:inherit;">Cancel</button>
+          <button class="oni-modal-confirm" style="padding:6px 18px;background:#4caf50;color:#fff;
+            border:2px solid #2e7d32;border-radius:6px;cursor:pointer;font-weight:700;font-family:inherit;">Confirm</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const close = () => wrap.remove();
+    wrap.querySelector(".oni-modal-cancel").addEventListener("click", () => { close(); onCancel(); });
+    wrap.querySelector(".oni-modal-confirm").addEventListener("click", () => { close(); onConfirm(wrap); });
+    return wrap;
+  }
+
   /**
-   * Show a GM-side text-input dialog with an optional textarea.
+   * Show a GM-side text-input prompt above all overlays.
    * Returns the trimmed string, or null if cancelled / empty.
-   *
-   * @param {object} opts
-   * @param {string}  opts.title
-   * @param {string}  [opts.label]          HTML rendered above the textarea
-   * @param {string}  [opts.placeholder]
-   * @param {boolean} [opts.multiline=true]  false → single <input type="text">
    */
   function gmTextPrompt({ title = "Enter Text", label = "", placeholder = "", multiline = true } = {}) {
     return new Promise(resolve => {
       const escAttr = s => String(s ?? "").replaceAll("&","&amp;").replaceAll('"',"&quot;");
+      const fieldId = "oni-gtp-field";
       const field   = multiline
-        ? `<textarea id="oni-opp-text-in" rows="3" placeholder="${escAttr(placeholder)}"
-             style="width:100%;padding:6px;resize:vertical;box-sizing:border-box;"></textarea>`
-        : `<input id="oni-opp-text-in" type="text" placeholder="${escAttr(placeholder)}"
-             style="width:100%;padding:6px;box-sizing:border-box;" />`;
+        ? `<textarea id="${fieldId}" rows="3" placeholder="${escAttr(placeholder)}"
+             style="width:100%;padding:6px;resize:vertical;box-sizing:border-box;font-family:inherit;background:#1a1208;color:#e8d8a0;border:1px solid #6b4c1a;border-radius:4px;"></textarea>`
+        : `<input id="${fieldId}" type="text" placeholder="${escAttr(placeholder)}"
+             style="width:100%;padding:6px;box-sizing:border-box;font-family:inherit;background:#1a1208;color:#e8d8a0;border:1px solid #6b4c1a;border-radius:4px;" />`;
+      const body = `${label ? `<p style="margin:0 0 6px;color:#c8a864;font-size:.875rem;">${label}</p>` : ""}${field}`;
 
-      new Dialog({
+      const wrap = _oniModal({
         title,
-        content: `<div style="padding:4px 0 8px;">
-          ${label ? `<p style="margin:0 0 6px;">${label}</p>` : ""}
-          ${field}
-        </div>`,
-        buttons: {
-          confirm: {
-            label:    "Confirm",
-            callback: html => {
-              const val = String(html.find("#oni-opp-text-in").val() ?? "").trim();
-              resolve(val || null);
-            },
-          },
-          cancel: { label: "Cancel", callback: () => resolve(null) },
+        bodyHtml: body,
+        onConfirm: (el) => {
+          const val = String(el.querySelector(`#${fieldId}`)?.value ?? "").trim();
+          resolve(val || null);
         },
-        default: "confirm",
-        close:   () => resolve(null),
-      }).render(true);
+        onCancel: () => resolve(null),
+      });
+
+      // Focus field and wire Enter key
+      setTimeout(() => {
+        const f = wrap.querySelector(`#${fieldId}`);
+        f?.focus();
+        if (!multiline) {
+          f?.addEventListener("keydown", e => {
+            if (e.key === "Enter") { e.preventDefault(); wrap.querySelector(".oni-modal-confirm")?.click(); }
+          });
+        }
+      }, 30);
     });
   }
 
   /**
-   * Show an item-picker dialog for a given actor (GM-side).
+   * Show an item-picker above all overlays for a given actor (GM-side).
    * Returns the chosen Item document, or null if cancelled / no items.
    */
   function pickItem(actor) {
@@ -257,27 +286,17 @@
 
     return new Promise(resolve => {
       const esc  = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-      const opts = items.map((it, i) =>
-        `<option value="${i}">${esc(it.name)}</option>`
-      ).join("");
-      new Dialog({
-        title:   `Lost Item — ${actor.name}`,
-        content: `<div style="padding:4px 0 8px;">
-          <select id="oni-opp-item-sel" style="width:100%;padding:4px;">${opts}</select>
-        </div>`,
-        buttons: {
-          confirm: {
-            label:    "Confirm",
-            callback: html => {
-              const idx = parseInt(html.find("#oni-opp-item-sel").val() ?? "0", 10);
-              resolve(items[Number.isFinite(idx) ? idx : 0] ?? null);
-            },
-          },
-          cancel: { label: "Cancel", callback: () => resolve(null) },
+      const opts = items.map((it, i) => `<option value="${i}">${esc(it.name)}</option>`).join("");
+      const body = `<select id="oni-pi-sel" style="width:100%;padding:6px;background:#1a1208;color:#e8d8a0;border:1px solid #6b4c1a;border-radius:4px;font-family:inherit;">${opts}</select>`;
+      _oniModal({
+        title:     `Lost Item — ${esc(actor.name)}`,
+        bodyHtml:  body,
+        onConfirm: (el) => {
+          const idx = parseInt(el.querySelector("#oni-pi-sel")?.value ?? "0", 10);
+          resolve(items[Number.isFinite(idx) ? idx : 0] ?? null);
         },
-        default: "confirm",
-        close:   () => resolve(null),
-      }).render(true);
+        onCancel:  () => resolve(null),
+      });
     });
   }
 
