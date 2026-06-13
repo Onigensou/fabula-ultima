@@ -76,20 +76,20 @@
 
   function _materialChoices(actor) {
     return (actor?.items ?? [])
-      .filter(i => i.system?.props?.item_type === "material" &&
-                   (parseInt(i.system?.props?.item_quantity) || 0) > 0)
-      .map(i => {
-        const d = describeItem(i);
-        const taste  = d.isIngredient && d.taste  && TASTES.includes(d.taste)  ? d.taste  : null;
-        const taste2 = d.isIngredient && d.taste2 && TASTES.includes(d.taste2) ? d.taste2 : null;
-        const rawDesc = String(i.system?.description ?? i.system?.props?.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150);
+      .filter(i => (parseInt(i.system?.props?.item_quantity) || 0) > 0)
+      .map(i => ({ i, d: describeItem(i) }))
+      .filter(({ d }) => d.isIngredient)
+      .map(({ i, d }) => {
+        const taste  = d.taste  && TASTES.includes(d.taste)  ? d.taste  : null;
+        const taste2 = d.taste2 && TASTES.includes(d.taste2) ? d.taste2 : null;
+        const rawDesc = String(i.system?.props?.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 150);
         return {
           id: i.id,
           name: i.name,
           img: i.img || "icons/svg/item-bag.svg",
           taste, taste2,
           rarity: d.rarity || "Common",
-          qty: parseInt(i.system.props.item_quantity) || 0,
+          qty: parseInt(i.system?.props?.item_quantity) || 0,
           description: rawDesc,
         };
       });
