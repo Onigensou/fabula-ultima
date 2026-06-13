@@ -135,6 +135,9 @@ export async function composeAction({
       director, token, combatId, actorUuid, cancelSentinel,
       enabledLabels: grant?.enabledLabels ?? null,
       budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
+      // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
+      // reason}> captured at snapshot time; the menu greys + red-stamps these.
+      disabledLabels: snap?.blockedActions ?? null,
     });
     if (externallyCancelled || command === null) break;
 
@@ -194,7 +197,7 @@ export async function composeAction({
 
 // Spawn TurnUI, return a Promise that resolves with the command label
 // or null if cancelled. Cleans up the Octopath in either path.
-function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null }) {
+function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null }) {
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
@@ -209,6 +212,7 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
       onPick: (command) => finish(command),
       enabledLabels,
       budgetText,
+      disabledLabels,
       // Passive button intentionally uses TurnUI's default — opens
       // PassiveManager locally without entering the compose chain. The
       // Octopath stays open (TurnUI.spawn doesn't auto-close on Passive

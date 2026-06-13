@@ -146,6 +146,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // exclusion). exclude = membership exclusion by ref (reserved or named).
   textCol("target_filter", "Target Filter", { tooltip: "targeting: per-candidate keep-if-truthy formula, evaluated against EACH candidate's own actor. e.g. \"AE_CHARGES_BURN >= 1\" (must carry Burn). Exclude is the inverse: \"AE_CHARGES_BURN == 0\" / \"!(...)\". Blank = no filter.", vis: TGT_VIS }),
   textCol("exclude", "Exclude Refs", { tooltip: "targeting: drop any candidate appearing in these ref(s) — reserved (\"self\", \"action_targets\") or named targeting-row labels, comma-listed (\"self,tether_giver\"). Generic replacement for exclude_self / exclude_action_targets.", vis: TGT_VIS }),
+  checkboxCol("allow_empty", "Allow Empty", { tooltip: "targeting: this row may legitimately resolve to ZERO targets (e.g. \"the REST of the enemies\" when there is only one). Without it, an empty pool returns ok:false and HALTS the enclosing chain; with it, an empty pool resolves to an empty set so dependent target_ref applies no-op and the chain continues.", vis: TGT_VIS }),
   // free_action config — perform ONE free turn-action (no menu). action_ref names
   // it: "self" (re-perform the carrier skill), a skill/item NAME on the actor, or
   // an action TYPE / comma-list ("Attack" / "Attack,Hinder" → compose filtered,

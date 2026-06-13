@@ -1707,6 +1707,9 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
       if (!stamp) continue;
       if (stamp.reactorActorUuid !== applierActorUuid) continue;
       if (stamp.turnsRemaining == null) continue;  // explicit opt-out
+      // "target_turn_end" AEs are owned by the bearer-turn-end tick, not the
+      // applier-turn-start tick — skip so they're not double-counted.
+      if (stamp.lifetimeMode === "target_turn_end") continue;
       const next = Number(stamp.turnsRemaining) - 1;
       ticked += 1;
       if (next <= 0) {
@@ -1740,6 +1743,84 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
   ]);
   if (ticked) log(`tickDirectorAEsForApplier: ticked ${ticked} AE(s) for ${applierActorUuid}; expired ${expiredNames.length}: ${expiredNames.join(", ")}`);
   return { ticked, expired: expiredNames };
+}
+
+// Tick down `turnsRemaining` on every AE OWNED BY the given bearer whose
+// lifetimeMode is "target_turn_end" — called from TURN_END for the actor whose
+// turn just ended. This is the "lasts N of the AFFECTED creature's turns,
+// decrement at the END of each of their turns" model used by the homebrew
+// action-gating Advanced Debuffs (Frightened/Silence/Confused/Disarmed/Berserk).
+// Distinct from tickDirectorAEsForApplier (applier-turn-START tick): here the
+// counter is keyed to the BEARER (the AE's owning actor), not the applier, so a
+// debuff lands and runs out on the victim's own turns regardless of who cast it.
+// AEs reaching 0 are deleted. Returns `{ ticked, expired: [names] }`.
+export async function tickDirectorAEsForBearerTurnEnd(bearerActorUuid) {
+  if (!bearerActorUuid) return { ticked: 0, expired: [] };
+  const actor = await fromUuid(bearerActorUuid).catch(() => null);
+  if (!actor?.effects) return { ticked: 0, expired: [] };
+  const updates = [];
+  const deletes = [];
+  const expiredNames = [];
+  for (const eff of actor.effects) {
+    const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
+    if (!stamp) continue;
+    if (stamp.lifetimeMode !== "target_turn_end") continue;
+    if (stamp.turnsRemaining == null) continue;
+    const next = Number(stamp.turnsRemaining) - 1;
+    if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
+    else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`]: next });
+  }
+  try {
+    if (updates.length) await actor.updateEmbeddedDocuments("ActiveEffect", updates);
+    if (deletes.length) await actor.deleteEmbeddedDocuments("ActiveEffect", deletes);
+  } catch (e) { warn(`tickDirectorAEsForBearerTurnEnd: write failed for ${bearerActorUuid}`, e); }
+  const ticked = updates.length + deletes.length;
+  if (ticked) log(`tickDirectorAEsForBearerTurnEnd: ticked ${ticked} AE(s) on ${actor.name}; expired ${expiredNames.length}: ${expiredNames.join(", ")}`);
+  return { ticked, expired: expiredNames };
+}
+
+// Reap orphaned APPLIER-TIED AEs when their applier leaves the battle (defeated
+// or removed from combat). The default lifetime mode decrements only at the
+// START of the applier's turn (tickDirectorAEsForApplier) — so if the applier
+// never gets another turn, the AE is stranded on the bearer until the conflict-
+// end sweep. This reaps exactly that stuck set: director-applied AEs whose
+// `directorAppliedBy.reactorActorUuid` is the departing actor AND that are
+// applier-turn-tied (default mode: turnsRemaining set + no explicit lifetimeMode).
+//
+// Deliberately NARROW — leaves alone everything that does NOT depend on the
+// applier's turns, so they're never wrongly dropped when the applier dies:
+//   - bearer-tied AEs (lifetimeMode "target_turn_end") — keyed to the victim;
+//   - round-end / charge-governed (lifetimeMode "round_end" / "on_activation");
+//   - permanent AEs (turnsRemaining == null).
+// Target-resident DoTs (Burn = charge/on_activation, etc.) are therefore NOT reaped.
+//
+// GM-authoritative (driven by the director, which is GM-only). Returns
+// `{ reaped, names }`.
+export async function reapApplierTiedAEs(applierActorUuid) {
+  if (!applierActorUuid) return { reaped: 0, names: [] };
+  const deleteByActor = new Map();   // actorUuid -> Set<aeId>
+  const names = [];
+  for (const actor of game.actors ?? []) {
+    for (const eff of actor.effects ?? []) {
+      const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
+      if (!stamp) continue;
+      if (stamp.reactorActorUuid !== applierActorUuid) continue;
+      if (stamp.turnsRemaining == null) continue;   // permanent / charge / round-end → not applier-tied
+      if (stamp.lifetimeMode) continue;              // only the DEFAULT mode is applier-turn-start
+      let set = deleteByActor.get(actor.uuid);
+      if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
+      set.add(eff.id);
+      names.push(eff.name);
+    }
+  }
+  await Promise.all(Array.from(deleteByActor.entries()).map(async ([actorUuid, ids]) => {
+    try {
+      const actor = await fromUuid(actorUuid);
+      if (actor) await actor.deleteEmbeddedDocuments("ActiveEffect", Array.from(ids));
+    } catch (e) { warn(`reapApplierTiedAEs: delete failed for ${actorUuid}`, e); }
+  }));
+  if (names.length) log(`reapApplierTiedAEs: applier ${applierActorUuid} left battle → reaped ${names.length} stranded AE(s): ${names.join(", ")}`);
+  return { reaped: names.length, names };
 }
 
 // Apply an effect by its `effect_label`. Looks up the row in the
@@ -3040,6 +3121,13 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
     } else if (lifetimeMode === "on_activation") {
       turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
+    } else if (lifetimeMode === "target_turn_end") {
+      // "Lasts N of the AFFECTED creature's turns, decrement at the END of each
+      // of the bearer's turns" — the homebrew action-gating Advanced Debuffs
+      // (Frightened/Silence/Confused/Disarmed/Berserk). Counted here (default 3,
+      // override via duration.rounds) but ticked by tickDirectorAEsForBearerTurnEnd
+      // at TURN_END, NOT by the applier-turn-start tick (which skips this mode).
+      turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
     } else if (Number.isFinite(explicit) && explicit > 0) {
       turnsRemaining = explicit;
     } else {

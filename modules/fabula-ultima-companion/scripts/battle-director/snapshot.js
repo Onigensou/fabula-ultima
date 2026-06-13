@@ -474,6 +474,9 @@ export function snapshotDirectorCombatant(dc) {
       // override via `fumble_threshold` (the highest die value that still
       // counts as a fumbled die — both dice must be ≤ threshold).
       fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
+      // Action-gating debuffs (Frightened/Silence/Confused/Disarmed/Berserk) →
+      // frozen Array<{label, reason}>; the Octopath menu greys + red-stamps these.
+      blockedActions: snapshotBlockedActions(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -518,6 +521,7 @@ export function snapshotCombatant(combat) {
         WLP: attrDieSize(actor, "WLP"),
       }),
       fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
+      blockedActions: snapshotBlockedActions(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -565,6 +569,76 @@ export function getTargetSideBlocks(actor) {
     }
   }
   return out;
+}
+
+// Canonical turn-action labels an action-gating debuff can block. Mirrors the
+// Octopath menu's action set (turn-ui-manager LEGACY_PAGES). "Switch" / "Passive"
+// are menu navigation, not real actions, so they're excluded — enable_action_only
+// never blocks them.
+export const GATEABLE_ACTION_LABELS = Object.freeze([
+  "Attack", "Guard", "Skill", "Spell", "Item",
+  "Equipment", "Study", "Hinder", "Objective",
+]);
+const _ACTION_LABEL_CANON = new Map(GATEABLE_ACTION_LABELS.map((l) => [l.toLowerCase(), l]));
+function canonActionLabel(raw) {
+  const k = String(raw ?? "").trim().toLowerCase();
+  return _ACTION_LABEL_CANON.get(k) ?? String(raw ?? "").trim();
+}
+
+// AE-driven turn-action gating. Walks an actor's active effects and collects
+// every change row that disables turn-action type(s) — the engine seam behind
+// the homebrew "action-gating" Advanced Debuffs (Frightened / Silence / Confused
+// / Disarmed / Berserk). Two declarative change keys:
+//
+//   key "disable_action"      value = comma-list of labels to BLOCK
+//                             (Frightened→Attack, Silence→Spell, Confused→Objective,
+//                              Disarmed→Equipment)
+//   key "enable_action_only"  value = comma-list of the ONLY allowed labels;
+//                             every other GATEABLE label is blocked
+//                             (Berserk→Attack = "disable all except Attack")
+//
+// Reads are UNIONed per-AE across every active effect, so two debuffs blocking
+// different actions both apply and neither clobbers the other (unlike a single
+// CSB-applied field would). Mirrors getTargetSideBlocks / getCannotTargetReasons:
+// pure change-row markers the BD reads itself — no reliance on a CSB template
+// field. Returns Map<label, reason> where reason is the source AE's name (shown
+// as the red rubber-stamp over the disabled menu blade).
+export function getBlockedActionLabels(actor) {
+  const out = new Map();
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  const splitList = (raw) => String(raw ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  const add = (label, reason) => {
+    const L = canonActionLabel(label);
+    if (L && !out.has(L)) out.set(L, reason);   // first source wins the stamp text
+  };
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const reason = String(ae?.name ?? "").trim() || "Disabled";
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key === "disable_action") {
+        for (const lbl of splitList(ch.value)) add(lbl, reason);
+      } else if (ch?.key === "enable_action_only") {
+        const allow = new Set(splitList(ch.value).map(canonActionLabel));
+        for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason);
+      }
+    }
+  }
+  return out;
+}
+
+// Serializable form of getBlockedActionLabels for the frozen snapshot (a Map
+// can't survive the IntentChannel hop to the player client that runs the
+// compose-action menu). Returns a frozen Array<{label, reason}>.
+function snapshotBlockedActions(actor) {
+  try {
+    return Object.freeze(Array.from(getBlockedActionLabels(actor),
+      ([label, reason]) => Object.freeze({ label, reason })));
+  } catch (e) {
+    warn("snapshotBlockedActions threw", e);
+    return Object.freeze([]);
+  }
 }
 
 // AE-driven target exclusion. Walks the chooser's active effects, collects

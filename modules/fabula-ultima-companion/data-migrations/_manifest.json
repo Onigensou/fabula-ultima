@@ -534,6 +534,10 @@
     {
       "key": "2026-06-13-dungeon-creeps-author",
       "path": "data-migrations/2026-06-13-dungeon-creeps-author.js"
+    },
+    {
+      "key": "2026-06-14-advanced-debuff-action-gating",
+      "path": "data-migrations/2026-06-14-advanced-debuff-action-gating.js"
     }
   ]
 }

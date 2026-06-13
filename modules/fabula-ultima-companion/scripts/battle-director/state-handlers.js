@@ -38,7 +38,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
@@ -132,6 +132,40 @@ export function installGuardHpWatcher(director) {
     }
   }, { label: "guard-hp-watcher" });
   log("Guard HP watcher installed");
+}
+
+// Install a director-scoped reaper for orphaned APPLIER-TIED AEs: when an AE's
+// applier leaves the battle — DEFEATED (HP→0) or REMOVED from the combat tracker
+// (deleteCombatant) — drop the default-lifetime AEs they left on others. Those
+// tick down only at the START of the applier's turn (tickDirectorAEsForApplier),
+// so a departed applier strands them on the bearer until the conflict-end sweep.
+// reapApplierTiedAEs is narrow (skips bearer-tied / round-end / charge / permanent
+// AEs), so target-resident DoTs like Burn are never dropped. Owned by
+// director.hooks → auto-disposes on director.stop(). GM-only (AE deletes need
+// GM authority + the director is GM-only in v1). Mirrors installGuardHpWatcher.
+export function installApplierReaperWatcher(director) {
+  // Defeat — HP crosses to 0 (same trigger the guard-HP watcher uses).
+  director.hooks.on("updateActor", async (actor, change /*, options, userId */) => {
+    try {
+      if (!game.user?.isGM) return;
+      const newHp = foundry.utils.getProperty(change, "system.props.current_hp");
+      if (newHp === undefined || newHp === null) return;
+      if (Number(newHp) > 0) return;
+      await reapApplierTiedAEs(actor.uuid);
+    } catch (e) { warn("Applier reaper (defeat) threw", e); }
+  }, { label: "applier-reaper:defeat" });
+
+  // Removal — the applier's combatant is deleted from the tracker.
+  director.hooks.on("deleteCombatant", async (combatant /*, options, userId */) => {
+    try {
+      if (!game.user?.isGM) return;
+      const auid = combatant?.actor?.uuid ?? null;
+      if (!auid) return;
+      await reapApplierTiedAEs(auid);
+    } catch (e) { warn("Applier reaper (remove) threw", e); }
+  }, { label: "applier-reaper:remove" });
+
+  log("Applier reaper watcher installed");
 }
 
 // Build a short, human-readable description of an actionResult for the
@@ -932,6 +966,8 @@ const Prep = {
     // Install lifecycle watchers that need dCombat in place. Owned by
     // director.hooks → auto-disposed on director.stop().
     installGuardHpWatcher(director);
+    // Reap orphaned applier-tied AEs when an applier is defeated/removed.
+    installApplierReaperWatcher(director);
     // Rewind tool: buffer item deletions between snapshots so the
     // rewind UI can recreate consumed items. See [[director-rewind-tool-plan]].
     installItemDeletionTracker(director);
@@ -1489,9 +1525,19 @@ const Declare = {
     // actions (action_ref = a type) carry no preset and fall through to compose.
     const presetGrant = freeActions.get(snap.actorId);
     if (presetGrant?.preset?.command) {
-      log(`DECLARE: free_action preset "${presetGrant.sourceLabel}" → ${presetGrant.preset.command} (skip compose)`);
-      applyComposedBundleAndAdvance(director, presetGrant.preset);
-      return;
+      // Action-gating debuff backstop: a free-action preset of a blocked type
+      // (e.g. a granted free Attack while Frightened) bypasses the Octopath
+      // menu. Refuse it here and fall through to compose, whose menu greys the
+      // blocked action so the owner picks a legal free action or cancels.
+      const presetBlock = (snap.blockedActions ?? []).find((b) => b?.label === presetGrant.preset.command);
+      if (presetBlock) {
+        ui.notifications?.warn(`${presetBlock.reason}: cannot use the ${presetGrant.preset.command} action.`);
+        log(`DECLARE: free_action preset "${presetGrant.sourceLabel}" → ${presetGrant.preset.command} BLOCKED by ${presetBlock.reason}; falling through to compose`);
+      } else {
+        log(`DECLARE: free_action preset "${presetGrant.sourceLabel}" → ${presetGrant.preset.command} (skip compose)`);
+        applyComposedBundleAndAdvance(director, presetGrant.preset);
+        return;
+      }
     }
 
     const ownerUserId = resolveActingOwnerForActor(actor);
@@ -1667,6 +1713,18 @@ const Declare = {
 
     if (!winnerBundle || !winnerBundle.command) {
       warn("DECLARE: race winner produced no bundle", winnerBundle);
+      director.enqueue({ type: INTENTS.TIMEOUT });
+      return;
+    }
+
+    // Authoritative action-gating backstop. The menu greys blocked actions on
+    // both clients, but a stale/forced/tampered DECLARE_COMMAND could still
+    // arrive — refuse it here (the GM is the source of truth) and bounce so the
+    // turn isn't spent on an illegal action.
+    const blockedHit = (snap.blockedActions ?? []).find((b) => b?.label === winnerBundle.command);
+    if (blockedHit) {
+      warn(`DECLARE: winner command "${winnerBundle.command}" blocked by ${blockedHit.reason} — refusing`);
+      ui.notifications?.warn(`${blockedHit.reason}: cannot use the ${winnerBundle.command} action.`);
       director.enqueue({ type: INTENTS.TIMEOUT });
       return;
     }
@@ -4030,6 +4088,15 @@ const TurnEnd = {
       const teRoundEnded = director.dCombat.round ?? 0;
       const endingActorUuid  = director.dCombat?.current?.actorUuid ?? null;
       const endingTokenUuid  = director.dCombat?.current?.tokenUuid ?? null;
+
+      // Bearer-turn-end AE tick — decrement "target_turn_end" lifetime AEs on the
+      // actor whose turn just ended (action-gating Advanced Debuffs last N of the
+      // AFFECTED creature's own turns). Distinct from the applier-turn-start tick
+      // that runs in TURN_START; awaited so expiry commits before the next turn.
+      if (endingActorUuid) {
+        try { await tickDirectorAEsForBearerTurnEnd(endingActorUuid); }
+        catch (e) { warn("TURN_END: tickDirectorAEsForBearerTurnEnd threw", e); }
+      }
 
       try {
         const r = director.dCombat.nextTurn();

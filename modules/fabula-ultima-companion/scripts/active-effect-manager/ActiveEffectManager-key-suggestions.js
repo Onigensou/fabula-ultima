@@ -81,6 +81,14 @@ skipPartyActors: true
     { key: "defense", label: "Defense", category: "Parameter", valueKind: "number" },
     { key: "magic_defense", label: "Magic Defense", category: "Parameter", valueKind: "number" },
 
+    // Action-gating debuff markers (read by the BD, not CSB-applied). Comma-list
+    // of turn-action labels. disable_action = block these; enable_action_only =
+    // allow ONLY these (block everything else). Drives the Octopath menu grey-out
+    // + red "Negated"-style stamp. Used by Frightened/Silence/Confused/Disarmed
+    // (disable_action) and Berserk (enable_action_only).
+    { key: "disable_action", label: "Disable Action(s)", category: "Action Gating", valueKind: "string" },
+    { key: "enable_action_only", label: "Enable Action(s) Only", category: "Action Gating", valueKind: "string" },
+
     // Resources
     { key: "current_hp", label: "Current HP", category: "Resource", valueKind: "number" },
     { key: "current_mp", label: "Current MP", category: "Resource", valueKind: "number" },

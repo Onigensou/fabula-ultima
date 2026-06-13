@@ -156,6 +156,17 @@ async function resolveTargetingRow(row, ctx) {
   const excludeSelf = !!row.exclude_self;
   const autoConfirm = row.auto_confirm_when_obvious !== false;       // default true
   const skipWhenPassive = row.skip_when_passive !== false;            // default true
+  // allow_empty — this targeting row may legitimately resolve to ZERO targets
+  // (e.g. "the REST of the enemies" when there is only one, so exclude empties
+  // the pool). Without it, an empty pool returns ok:false, which HALTS the
+  // enclosing chain (skill-effects.applyChainEffect stops on any !ok step) —
+  // dropping later steps like the apply that should still run. With it, an empty
+  // pool resolves to an empty set so dependent target_ref applies just no-op and
+  // the chain continues. Opt-in → no behavior change for existing rows.
+  const allowEmpty = !!row.allow_empty;
+  const emptyResult = () => allowEmpty
+    ? { ok: true, tokens: [] }
+    : { ok: false, reason: "no-candidates", tokens: [] };
   // Auto-target mode — what happens on an ASSURED target (self / all / single):
   //   "skip"    → resolve silently, never prompt
   //   "confirm" → always show a locked Confirm (pre-selected, can't change)
@@ -171,7 +182,7 @@ async function resolveTargetingRow(row, ctx) {
 
   // 1. Build candidate pool.
   let pool = await buildCandidatePool(candidateSource, ctx);
-  if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
+  if (!pool.length) return emptyResult();
 
   // 2. Category filter (disposition vs reactor).
   if (category) {
@@ -234,7 +245,7 @@ async function resolveTargetingRow(row, ctx) {
     });
   }
 
-  if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
+  if (!pool.length) return emptyResult();
 
   // mode "random" — pick `count` tokens at random from the pool, no prompt.
   // Chain-level random targeting (Shadow Possession's "one random enemy gets the

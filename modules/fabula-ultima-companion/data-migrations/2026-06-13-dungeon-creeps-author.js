@@ -59,7 +59,7 @@ const deepEqual = (a, b) => stableStringify(a) === stableStringify(b);
 const SKILL_EFFECT_TABLE = {
   "0": { effect_label: "creep_chain", effect_kind: "chain", chain_steps: "creep_possessed,creep_rest,creep_apply_block,creep_apply_buff" },
   "1": { effect_label: "creep_possessed", effect_kind: "targeting", candidate_source: "action_targets", mode: "random", count: "1" },
-  "2": { effect_label: "creep_rest", effect_kind: "targeting", candidate_source: "action_targets", exclude: "creep_possessed", mode: "all" },
+  "2": { effect_label: "creep_rest", effect_kind: "targeting", candidate_source: "action_targets", exclude: "creep_possessed", mode: "all", allow_empty: true },
   "3": { effect_label: "creep_apply_block", effect_kind: "apply_ae", ae_template_ref: BLOCK_ID, target_ref: "creep_possessed", ae_duplicate_mode: "replace" },
   "4": { effect_label: "creep_apply_buff", effect_kind: "apply_ae", ae_template_ref: BUFF_ID, target_ref: "creep_rest", ae_duplicate_mode: "replace" },
 };

@@ -44,6 +44,36 @@ const NON_ACTION_COMMANDS = new Set(["Passive"]);
 // don't collide on the same client.
 const _instances = new Map();
 
+// Stamp a disabled blade with a red rubber-stamp label (the action-gating
+// debuff's name). The stamp is appended to the WRAP (.item), not the blade,
+// so the blade's per-frame dim doesn't wash it out. A long name is condensed
+// horizontally via scaleX so it never spills past the blade — height is fixed
+// (the stamp's own font-size/padding are untouched; only the X axis scales).
+// A 0.4 floor keeps an extreme name legible rather than fitting at any cost.
+function applyBladeStamp(wrap, btn, text) {
+  if (!wrap || !btn) return;
+  let stamp = wrap.querySelector(":scope > .blade-stamp");
+  if (!stamp) {
+    stamp = document.createElement("span");
+    stamp.className = "blade-stamp";
+    wrap.appendChild(stamp);
+  }
+  stamp.textContent = String(text ?? "");
+  stamp.style.transform = "translate(-50%,-50%) rotate(-8deg) scaleX(1)";
+  const fit = () => {
+    // scrollWidth = unscaled content width (transform-independent); clientWidth
+    // = blade content box. Target ~92% so the stamp breathes inside the blade.
+    const bladeW = btn.clientWidth || btn.getBoundingClientRect().width;
+    const stampW = stamp.scrollWidth;
+    if (!bladeW || !stampW) return;
+    const target = bladeW * 0.92;
+    const ratio = stampW > target ? Math.max(0.4, target / stampW) : 1;
+    stamp.style.transform = `translate(-50%,-50%) rotate(-8deg) scaleX(${ratio})`;
+  };
+  // Two frames: one for the stamp to land in layout, one for measurement.
+  requestAnimationFrame(() => requestAnimationFrame(fit));
+}
+
 function ensureBaseStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const css = document.createElement("style");
@@ -109,6 +139,22 @@ function ensureBaseStyles() {
       background:linear-gradient(180deg,var(--fud-gold-1),var(--fud-gold-2));
       border:2px solid var(--fud-stroke); border-right:none; border-radius:10px 0 0 10px;
       box-shadow:0 0 0 1px var(--fud-highlight) inset;
+    }
+    /* Red rubber-stamp over a disabled blade — the action-gating debuff's name
+       (Frightened / Silence / …). Lives on .item (the wrap), NOT .blade, so the
+       blade's per-frame dim (opacity ~0.22 + greyscale) doesn't wash the stamp
+       out. JS measures it and scaleX-compresses a long word to fit inside the
+       blade width — height is never touched (see applyBladeStamp). */
+    .fud-octopath .item > .blade-stamp{
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) rotate(-8deg); transform-origin:center center;
+      font-family:"Cinzel","Georgia",serif; font-weight:900; font-size:13px;
+      letter-spacing:1.5px; text-transform:uppercase; white-space:nowrap;
+      color:rgba(200,16,16,1);
+      text-shadow:0 1px 0 rgba(255,255,255,.7), 0 0 1px rgba(120,0,0,.9);
+      padding:2px 10px; border:2px solid rgba(200,16,16,.95);
+      border-radius:4px; background:rgba(255,238,228,.92);
+      pointer-events:none; z-index:3;
     }
     .fud-octopath .pager{
       position:absolute; display:flex; align-items:center; justify-content:space-between;
@@ -204,7 +250,7 @@ function worldAnchor(token) {
 //                intent over socket. Must be supplied if no director.
 //   - onPassive: () => void. Called when the Passive button is clicked.
 //                Default opens PassiveManager for the actor.
-function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null }) {
+function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null }) {
   ensureBaseStyles();
 
   // Free-action mode (enabledLabels supplied): collapse the multi-page
@@ -274,7 +320,17 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   const enabledSet = Array.isArray(enabledLabels) && enabledLabels.length
     ? new Set(enabledLabels.map((s) => String(s).trim()))
     : null;
+  // Action-gating debuff block-list — Array<{label, reason}> from the snapshot
+  // (Frightened/Silence/Confused/Disarmed/Berserk). reason = the debuff name,
+  // red-stamped over the blade. Composes with everything else: a blocked label
+  // is disabled even in a free-action window (Frightened still blocks Attack).
+  const blockedReasons = new Map(
+    (Array.isArray(disabledLabels) ? disabledLabels : [])
+      .map((d) => [String(d?.label ?? "").trim(), String(d?.reason ?? "Disabled").trim() || "Disabled"])
+      .filter(([l]) => l)
+  );
   function isEnabledLabel(label) {
+    if (blockedReasons.has(label)) return false;   // action-gating debuff wins
     if (filterMode) return true;
     if (!enabledSet) return true;
     if (NON_ACTION_COMMANDS.has(label)) return true;
@@ -416,25 +472,41 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
       // visible during the spin-in then settles at a strongly muted
       // value (~ 0.18 final).
       const isEnabled = isEnabledLabel(it.label);
+      // An action-gating debuff block (red stamp) stays FULLY VISIBLE but dimmed,
+      // so the player can read which action the stamp covers. The free-action
+      // filter's disabled blades stay faint (~0.22) since they're just out of scope.
+      const isBlockedDebuff = blockedReasons.has(it.label);
       it.wrap.style.left = `${x}px`;
       it.wrap.style.top = `${y}px`;
       it.wrap.style.transform = `translate(0,-50%) rotate(${angleDeg}deg) scale(${scale})`;
       it.btn.style.transform = `rotate(${-angleDeg}deg)`;
-      it.btn.style.opacity = (isEnabled ? animOpacity : animOpacity * 0.22).toFixed(3);
+      it.btn.style.opacity = ((isEnabled || isBlockedDebuff) ? animOpacity : animOpacity * 0.22).toFixed(3);
       it.btn.classList.toggle("is-kb-focused", kbActive && i === kbIndex && isEnabled);
+      // Mark the WRAP (.item) disabled so the shared director-ui-sfx delegated
+      // listener (which matches '[id^="fud-octopath-"] .item' and checks
+      // .is-disabled) stays quiet on hover/click of a non-working blade.
+      it.wrap.classList.toggle("is-disabled", !isEnabled);
       if (!isEnabled) {
         // Greyscale + no-pointer apply once (idempotent assignments
         // are cheap; setting an unchanged style is a no-op in the
-        // browser's style engine).
-        it.btn.style.filter = "grayscale(0.95) brightness(0.55)";
+        // browser's style engine). Debuff-blocked = lighter dim (stays readable);
+        // free-action-disabled = heavier mute.
+        it.btn.style.filter = isBlockedDebuff ? "grayscale(0.8) brightness(0.82)" : "grayscale(0.95) brightness(0.55)";
         it.btn.style.pointerEvents = "none";
         it.btn.style.cursor = "not-allowed";
       }
       if (!it.bound && p >= 1) {
         if (!isEnabled) {
-          it.btn.title = enabledLabels?.length
-            ? `Disabled — free action allows: ${enabledLabels.join(", ")}`
-            : "Disabled";
+          const blockReason = blockedReasons.get(it.label) ?? null;
+          if (blockReason) {
+            // Action-gating debuff — red-stamp the blade with the debuff name.
+            applyBladeStamp(it.wrap, it.btn, blockReason);
+            it.btn.title = blockReason;
+          } else {
+            it.btn.title = enabledLabels?.length
+              ? `Disabled — free action allows: ${enabledLabels.join(", ")}`
+              : "Disabled";
+          }
           it.bound = true;
           continue;
         }
@@ -578,7 +650,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
 //   - Player-on-PC:     pass { token, combatId, actorUuid, onPick }
 //     where onPick emits DECLARE_COMMAND over IntentChannel.
 export const TurnUI = {
-  spawn({ director, token, combatId, actorUuid, onPick, onPassive, enabledLabels = null, budgetText = null }) {
+  spawn({ director, token, combatId, actorUuid, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null }) {
     if (!token) {
       warn("Turn UI spawn: no token");
       return null;
@@ -616,7 +688,7 @@ export const TurnUI = {
       } catch (e) { warn("Turn UI: Passive button failed", e); }
     });
 
-    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb, enabledLabels, budgetText });
+    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb, enabledLabels, budgetText, disabledLabels });
     _instances.set(key, rec);
     return rec;
   },

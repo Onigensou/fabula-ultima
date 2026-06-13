@@ -492,12 +492,12 @@ export function ensureStyles() {
       font-size: 11px;
     }
     /* Negated (Shadow Possession / Crossfire) — the action's accuracy / damage /
-       result panels keep their REAL numbers but go semi-transparent, and each
-       panel's OWN fieldset box is recoloured red (border + wash) so the red box
-       lines up exactly with the panel it covers — no floating inner rectangle.
-       A solid white-on-red "Negated" pill is centred over each. Distinct from
-       "Blocked" (which replaces/zeroes the value). The action still produces no
-       actual outcome (RESOLVE skips it).
+       result panels keep their REAL numbers but are DIMMED (desaturated + darkened,
+       kept fully opaque — NOT transparent), and each panel's OWN fieldset box is
+       recoloured red (border + wash) so the red box lines up exactly with the panel
+       it covers — no floating inner rectangle. A solid white-on-red "Negated" pill
+       is centred over each. Distinct from "Blocked" (which replaces/zeroes the
+       value). The action still produces no actual outcome (RESOLVE skips it).
        NB: acc + result are <div>s inside a .fud-bf-section fieldset, while dmg IS
        the fieldset — so :has() pins all three at the fieldset level uniformly. */
     .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc),
@@ -507,11 +507,12 @@ export function ensureStyles() {
       border-color: rgba(214, 40, 45, 0.85);
       background: rgba(190, 26, 30, 0.12);
     }
-    /* dim only the real readout — keep each panel's legend label crisp */
+    /* dim only the real readout — keep each panel's legend label crisp. Filter
+       (not opacity) so the numbers stay solid/opaque, just muted + greyed. */
     .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc) > *:not(legend),
     .fud-bf-card.is-negated fieldset.fud-bf-section.fud-bf-dmg > *:not(legend),
     .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-target-list) > *:not(legend) {
-      opacity: 0.3;
+      filter: grayscale(0.85) brightness(0.8);
     }
     .fud-bf-card.is-negated fieldset.fud-bf-section:has(> .fud-bf-acc)::after,
     .fud-bf-card.is-negated fieldset.fud-bf-section.fud-bf-dmg::after,

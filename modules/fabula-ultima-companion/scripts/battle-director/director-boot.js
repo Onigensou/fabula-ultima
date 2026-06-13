@@ -15,7 +15,7 @@
 
 import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
-import { STATE_HANDLERS, installGuardHpWatcher } from "./state-handlers.js";
+import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
 import { STATES } from "./states.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
@@ -465,6 +465,8 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Re-install the guard-HP watcher (PrepState.onEnter does this on the
   // fresh path; on resume we install it here since we bypass PREP).
   installGuardHpWatcher(director);
+  // Same reasoning: re-install the applier-tied-AE reaper on resume.
+  installApplierReaperWatcher(director);
   // Rewind tool: same reasoning — re-install the item-deletion tracker
   // on the resume path so the rewind history's deletedItemsLog keeps
   // getting populated post-reload.
