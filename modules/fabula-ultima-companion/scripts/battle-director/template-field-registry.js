@@ -201,6 +201,9 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // Action-kind filter (creature_performs_action). Comma-list of action TYPES the
   // reaction accepts (Attack/Skill/Spell/Item/Guard/…), matched vs payload.actionKind.
   textCol("reaction_action_kind", "Action Kind Filter", { tooltip: "For creature_performs_action: fire only for these action TYPES — comma-list (e.g. \"Attack,Skill,Spell\"). Matched against the performed action's kind. Blank = any kind." }),
+  // Source-skill name filter (creature_completes_skill). The NAME of the skill
+  // whose completion fired the trigger — for "after you use <Skill>" follow-ups.
+  textCol("reaction_source_skill", "Source Skill Filter", { tooltip: "For creature_completes_skill: fire only when the completing skill has this NAME (e.g. \"Crossfire\"). Matched against the completing skill's name. Blank = any skill." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.

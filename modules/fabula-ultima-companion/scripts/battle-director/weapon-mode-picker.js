@@ -53,9 +53,16 @@ function safeUrl(raw) {
 //
 // `virtualAttacks` is an array of frozen profiles from snapshot.resolveVirtualAttacks
 // — each becomes a pick option in a separate "Virtual" section.
-export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, virtualAttacks = [], externalCancel = null }) {
+export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwoWeapon = false, twoWeaponSolo = false, virtualAttacks = [], externalCancel = null }) {
   const arrow = `<i class="fa-solid fa-arrow-right" style="opacity:0.55; font-size:10.5px;"></i>`;
   const sections = [];
+
+  // A solo two-weapon grant (Double Arrow: a lone bow attacks twice) sets
+  // offWeapon === mainWeapon. In that case there is no real off-hand, so we
+  // skip the duplicate "Off-Hand" single row and present ONE clear "Attack
+  // Twice" option rather than a confusing "Weapon → Weapon" pair.
+  const soloDouble = !!(allowTwoWeapon && twoWeaponSolo && mainWeapon);
+  const hasRealOffhand = !!(offWeapon && !soloDouble);
 
   // Primary visual = weapon image (or weapon-type FA icon); the Main/Off/Two-
   // Weapon role sits on the secondary line so the eye lands on the weapon.
@@ -66,10 +73,10 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
       imageUrl: safeUrl(mainWeapon.imageUrl),
       fallbackIcon: weaponIcon(mainWeapon.weaponType),
       primary: escapeHtml(mainWeapon.name),
-      secondary: `Main Hand<span class="dot">•</span>${escapeHtml(mainWeapon.A1)} + ${escapeHtml(mainWeapon.A2)}`,
+      secondary: `${soloDouble ? "Single Shot" : "Main Hand"}<span class="dot">•</span>${escapeHtml(mainWeapon.A1)} + ${escapeHtml(mainWeapon.A2)}`,
     });
   }
-  if (offWeapon) {
+  if (hasRealOffhand) {
     singleHand.push({
       value: "off",
       imageUrl: safeUrl(offWeapon.imageUrl),
@@ -80,7 +87,22 @@ export async function pickWeaponMode({ director, mainWeapon, offWeapon, allowTwo
   }
   if (singleHand.length) sections.push({ label: "Single Hand", hint: null, items: singleHand });
 
-  if (allowTwoWeapon && mainWeapon && offWeapon) {
+  if (soloDouble) {
+    // Lone-weapon double attack — one option, two separate attacks (HR 0).
+    sections.push({
+      label: "Two-Weapon",
+      hint: "Attack twice — HR 0",
+      items: [
+        {
+          value: "two-weapon",
+          imageUrl: safeUrl(mainWeapon.imageUrl),
+          fallbackIcon: `<i class="fa-solid fa-swords" aria-hidden="true"></i>`,
+          primary: `${escapeHtml(mainWeapon.name)} ${arrow} ${escapeHtml(mainWeapon.name)}`,
+          secondary: `Attack twice (two separate rolls)`,
+        },
+      ],
+    });
+  } else if (allowTwoWeapon && mainWeapon && offWeapon) {
     sections.push({
       label: "Two-Weapon",
       hint: "Both attack — HR 0",

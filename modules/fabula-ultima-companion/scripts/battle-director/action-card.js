@@ -528,6 +528,39 @@ export function ensureStyles() {
       box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
       pointer-events: none;
     }
+    /* ONE-SHOT entrance. 'is-negated-stamp' is added ONCE when the action is
+       first negated and removed after ~900ms. Keeping the transition + stamp
+       animation here (not on the persistent .is-negated) stops them replaying
+       when a LATER reaction is clicked and the card recomputes (is-negated
+       stays put, so it would otherwise re-fire). STAMP: arrives oversized then
+       snaps to size and hard-stops (55%→100% hold) — like a stamp slamming. */
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-acc),
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section.fud-bf-dmg,
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-target-list) {
+      transition: border-color 240ms ease-out, background-color 240ms ease-out;
+    }
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-acc) > *:not(legend),
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section.fud-bf-dmg > *:not(legend),
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-target-list) > *:not(legend) {
+      transition: filter 240ms ease-out;
+    }
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-acc)::after,
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section.fud-bf-dmg::after,
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-target-list)::after {
+      animation: fudNegatedStamp 200ms cubic-bezier(.3,.7,.4,1) both;
+    }
+    /* Stagger the three stamps top→bottom (accuracy → damage → result). */
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section.fud-bf-dmg::after {
+      animation-delay: 110ms;
+    }
+    .fud-bf-card.is-negated-stamp fieldset.fud-bf-section:has(> .fud-bf-target-list)::after {
+      animation-delay: 220ms;
+    }
+    @keyframes fudNegatedStamp {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+      55%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
     /* Reaction Effect panel — chips listing the statuses/costs an applied
        reaction (Warning Shot, etc.) will inflict. */
     .fud-bf-card .fud-bf-reaction-effects .fud-bf-effect-chips {
@@ -720,6 +753,13 @@ export function ensureStyles() {
     }
     .fud-bf-card .fud-bf-reaction-pill {
       display: flex; align-items: center; gap: 6px;
+      box-sizing: border-box;
+      /* Consistent pill height across pending↔resolved: the Apply/Skip buttons
+         make a pending pill the tallest, and swapping them for the short status
+         chip would otherwise shrink the pill (and the whole card). min-height
+         floors every pill at that button-state height so applying a reaction
+         doesn't change the card size. */
+      min-height: 34px;
       padding: 4px 6px;
       background: rgba(255, 255, 255, 0.55);
       border-radius: 6px;
@@ -753,13 +793,25 @@ export function ensureStyles() {
       border-color: rgba(190, 90, 60, 0.65);
     }
     .fud-bf-card .fud-bf-reaction-pill.is-third-party .fud-bf-reaction-reactor {
-      font-size: 10.5px;
+      font-size: 9.5px;
       font-weight: 800;
       color: #2c1c5c;
-      margin-right: 2px;
+      opacity: 0.85;
     }
     .fud-bf-card .fud-bf-reaction-pill.is-side-npc .fud-bf-reaction-reactor {
       color: #7a2c1c;
+    }
+    /* Cascade entrance — a reaction injected by the reactive re-derive (e.g.
+       Bullet Break after Crossfire). Played as DISTINCT, separated stages
+       (card grows → pill fades+moves in → glow), sequenced by JS with gaps so
+       each piece reads on its own. Each stage is its own class/animation. */
+    .fud-bf-card .fud-bf-reaction-pill.is-cascade-glow {
+      animation: fudReactionCascadeGlow 1500ms ease-out both;
+    }
+    @keyframes fudReactionCascadeGlow {
+      0%   { box-shadow: 0 0 0 0 rgba(255, 224, 60, 0); }
+      22%  { box-shadow: 0 0 6px 1px rgba(255, 224, 60, 1); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 224, 60, 0); }
     }
     .fud-bf-card .fud-bf-reaction-icon {
       width: 18px; height: 18px;
@@ -768,8 +820,12 @@ export function ensureStyles() {
       object-fit: cover;
       font-size: 14px; line-height: 18px; text-align: center;
     }
+    /* Two-line name block: reactor on line 1, skill name on line 2. */
+    .fud-bf-card .fud-bf-reaction-namewrap {
+      display: flex; flex-direction: column; justify-content: center;
+      flex: 1 1 auto; min-width: 0; gap: 1px; line-height: 1.15;
+    }
     .fud-bf-card .fud-bf-reaction-name {
-      flex: 1 1 auto;
       font-size: 11px; font-weight: 700;
       color: #2c1c5c;
     }
@@ -793,6 +849,16 @@ export function ensureStyles() {
       border-width: 1.5px;
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
     }
+    /* Keep the reaction buttons COMPACT (shorter than the two-line name) so a
+       pending pill (with Apply/Skip) and a resolved pill (status chip) are the
+       same height — otherwise the base .fud-btn padding (defined later, so it
+       wins at equal specificity) makes the buttons ~33px and the pill taller
+       when pending, changing the card size on apply. Higher specificity wins. */
+    .fud-bf-card .fud-bf-reaction-actions .fud-btn-reaction {
+      padding: 2px 9px;
+      font-size: 9.5px;
+      line-height: 1.25;
+    }
     .fud-bf-card .fud-btn-reaction-apply {
       background: linear-gradient(180deg, #c5e8c5, #9fce9f);
       color: #1a3a1a;
@@ -804,21 +870,28 @@ export function ensureStyles() {
       border-color: #8a7560;
     }
     /* Lock Confirm while any ask-mode pill is still pending. The data
-       attribute holds the count; CSS only needs to know "is there one". */
+       attribute holds the count; CSS only needs to know "is there one".
+       The "resolve reactions first" hint is OVERLAID on the Confirm button
+       (its label hidden) rather than appended below the card, so the card
+       height stays constant when the hint appears/disappears. */
     .fud-bf-card[data-fud-reactions-pending] .fud-btn-confirm {
-      opacity: 0.45 !important;
+      opacity: 0.45 !important;          /* previous faded look */
       pointer-events: none !important;
       cursor: not-allowed !important;
       filter: grayscale(0.4);
+      color: transparent !important;     /* hide "Confirm"; hint overlays the row */
     }
-    .fud-bf-card[data-fud-reactions-pending]::after {
-      content: "⏳ Resolve reactions first";
-      display: block;
-      margin-top: 6px;
-      font-size: 10px; font-style: italic; font-weight: 700;
+    /* Hint is overlaid on the Confirm BUTTON'S ROW (not the button) so it renders
+       at full opacity (the button itself is faded) and adds no card height. */
+    .fud-bf-card .fud-bf-btn-row:has(> .fud-btn-confirm) { position: relative; }
+    .fud-bf-card[data-fud-reactions-pending] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "Resolve reactions first";
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; font-style: italic;
+      letter-spacing: 0.3px; text-transform: none;
       color: #4a2f87;
-      text-align: center;
-      letter-spacing: 0.3px;
+      pointer-events: none;
     }
     /* Mode footer inside the reaction tooltip body — small chip-like
        hint so the player sees whether the pill is auto / ask / off. */
@@ -2177,7 +2250,18 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   rootEl.querySelector(".fud-bf-dmg")?.classList.remove("is-blocked-dmg");
   const negated = !!delta.negated || !!delta.accuracyOverride?.blocked;
   const cardEl = rootEl.classList?.contains("fud-bf-card") ? rootEl : rootEl.querySelector(".fud-bf-card");
-  if (cardEl) cardEl.classList.toggle("is-negated", negated);
+  if (cardEl) {
+    const wasNegated = cardEl.classList.contains("is-negated");
+    cardEl.classList.toggle("is-negated", negated);
+    // Play the one-shot stamp/fade ONLY on the first transition to negated, so
+    // it doesn't replay when a later reaction is clicked and this recomputes.
+    if (negated && !wasNegated) {
+      cardEl.classList.add("is-negated-stamp");
+      setTimeout(() => cardEl.classList.remove("is-negated-stamp"), 900);
+    } else if (!negated) {
+      cardEl.classList.remove("is-negated-stamp");
+    }
+  }
 }
 
 // Build the two header sprite slots ({ left, right }) for an action. Attacker
@@ -3021,7 +3105,10 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // rows) surfaces the skill's description on hover. The body bundles a
 // "Mode" footer chip so the player can see whether the pill is acting
 // automatically vs. waiting on their click vs. disabled.
-function buildReactionPillRow(prePassives) {
+// Build just the pill elements (no row wrapper) for a candidate list. Shared by
+// the initial row render and the cascade-injection append path so dynamically
+// added reactions (Bullet Break after Crossfire) render identically.
+function buildReactionPills(prePassives) {
   // Hide "off" (auto-rejected). Show "on" + "force" + "ask" — Force-mode
   // is engine-mandatory, no player decision, but the effect is often
   // player-meaningful (Bodyguard grants RS to all damage, etc.) so it
@@ -3029,7 +3116,7 @@ function buildReactionPillRow(prePassives) {
   // still fires Force from the decision map regardless of UI state.
   const visible = prePassives.filter((p) => p?.mode !== "off");
   if (!visible.length) return "";
-  const pillsHtml = visible.map((p) => {
+  return visible.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
     const safeKey  = escapeHtml(String(p.rowKey ?? ""));
     const safeCarrier = escapeHtml(String(p.carrierUuid ?? ""));
@@ -3043,15 +3130,17 @@ function buildReactionPillRow(prePassives) {
                            "Asks (You choose)";
 
     // Third-party reaction (Protect on an Attack(ally) card) — the
-    // reactor is NOT the action-taker. Surface the reactor's name as
-    // a "<Blanche>:" prefix so the player sees whose reaction this
-    // is, and stamp a side-color class (pc-side vs npc-side per
-    // `reactorIsPlayer`) so monster-side reactions are visually
-    // distinct from party-side reactions.
+    // reactor is NOT the action-taker. Render the reactor's name on its
+    // OWN line above the skill name (two-line name block), and stamp a
+    // side-color class (pc-side vs npc-side per `reactorIsPlayer`) so
+    // monster-side reactions are visually distinct from party-side ones.
     const isThirdParty = !!p.reactorActorUuid;
-    const reactorPrefix = isThirdParty
-      ? `<span class="fud-bf-reaction-reactor">${escapeHtml(String(p.reactorActorName ?? "Reactor"))}:</span> `
+    const reactorLine = isThirdParty
+      ? `<span class="fud-bf-reaction-reactor">${escapeHtml(String(p.reactorActorName ?? "Reactor"))}</span>`
       : "";
+    // Reactor on line 1 (when present), skill name on line 2.
+    const nameBlock =
+      `<div class="fud-bf-reaction-namewrap">${reactorLine}<span class="fud-bf-reaction-name">${safeName}</span></div>`;
     const sideClass = isThirdParty
       ? (p.reactorIsPlayer ? "is-third-party is-side-pc" : "is-third-party is-side-npc")
       : "";
@@ -3071,20 +3160,25 @@ function buildReactionPillRow(prePassives) {
       return `
         <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs}>
           ${iconHtml}
-          <span class="fud-bf-reaction-name">${reactorPrefix}${safeName}</span>
+          ${nameBlock}
           <span class="fud-bf-reaction-status">Active</span>
         </div>`;
     }
     return `
       <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr} data-fud-reaction-pending="1"${tipAttrs}>
         ${iconHtml}
-        <span class="fud-bf-reaction-name">${reactorPrefix}${safeName}</span>
+        ${nameBlock}
         <div class="fud-bf-reaction-actions">
           <div class="fud-btn fud-btn-reaction fud-btn-reaction-apply" data-fud-reaction-action="apply" role="button" tabindex="0">Apply</div>
           <div class="fud-btn fud-btn-reaction fud-btn-reaction-skip" data-fud-reaction-action="skip" role="button" tabindex="0">Skip</div>
         </div>
       </div>`;
   }).join("");
+}
+
+function buildReactionPillRow(prePassives) {
+  const pillsHtml = buildReactionPills(prePassives);
+  if (!pillsHtml) return "";
   return `
     <div class="fud-bf-reactions-row">
       <div class="fud-bf-reactions-label">Reactions</div>
@@ -3590,6 +3684,110 @@ export async function postActionCard({ director, kind, payload }) {
       } catch (e) { warn("commitPillDecisionDom: pill-update broadcast threw", e); }
     }
 
+    // ── Reactive cascade: reaction list updates itself on card-state change ──
+    // When a reaction is accepted, a follow-up reaction keyed on
+    // `creature_completes_skill` may become eligible (Bullet Break after
+    // Crossfire). Re-derive cascade candidates from the ledger of accepted
+    // skill-completions and inject any NEW ones as pills in THIS panel. The
+    // sequencing/diff/convergence is the pure reaction-derive core; only the
+    // DOM append lives here (delegated click handler already covers new pills).
+    const cascadeFiredKeys = new Set();   // candidateKeys already injected
+    function appendCascadePills(cands) {
+      if (!cands?.length) return;
+      const card = root.querySelector(".fud-bf-card");
+      const h0 = card ? card.offsetHeight : 0;   // height BEFORE the new pill
+      let list = root.querySelector(".fud-bf-reactions-list");
+      if (!list) {
+        // No reaction row existed (no initial pills) — build the whole row.
+        const host = card ?? root;
+        host.insertAdjacentHTML("beforeend", buildReactionPillRow(cands));
+        list = root.querySelector(".fud-bf-reactions-list");
+      } else {
+        list.insertAdjacentHTML("beforeend", buildReactionPills(cands));
+      }
+      const pills = list ? Array.from(list.querySelectorAll(".fud-bf-reaction-pill")) : [];
+      const fresh = pills.slice(-cands.length);
+
+      const GROW_MS = 260;   // pill unfolds (its real height drives the reflow)
+      const GLOW_MS = 1500;  // settle glow, right after the grow
+
+      // Animate the new pill's own HEIGHT from 0 → natural. Because height is a
+      // real layout property, the reaction panel, invoke/bond buttons, the
+      // Confirm button AND the (auto-height) card all reflow SMOOTHLY together
+      // each frame — no separate box animation with snapping children. opacity
+      // fades the content in as it unfolds; glow fires when it settles.
+      for (const el of fresh) {
+        if (typeof el.animate !== "function") {
+          el.classList.add("is-cascade-glow");
+          setTimeout(() => el.classList.remove("is-cascade-glow"), GLOW_MS);
+          continue;
+        }
+        const target = el.offsetHeight;            // natural height (incl. min-height)
+        const prevOverflow = el.style.overflow;
+        el.style.overflow = "hidden";
+        // min-height must also animate from 0, else the CSS floor (min-height:34px)
+        // pins the box and the unfold can't start collapsed.
+        const anim = el.animate(
+          [
+            { height: "0px", minHeight: "0px", opacity: 0 },
+            { height: `${target}px`, minHeight: `${target}px`, opacity: 1 },
+          ],
+          { duration: GROW_MS, easing: "cubic-bezier(.2,.7,.2,1)" },
+        );
+        const done = () => {
+          el.style.overflow = prevOverflow;
+          el.classList.add("is-cascade-glow");
+          setTimeout(() => el.classList.remove("is-cascade-glow"), GLOW_MS);
+        };
+        anim.onfinish = done;
+        anim.oncancel = done;
+      }
+    }
+    async function injectCascadeReactions() {
+      try {
+        const rd = await import("./reaction-derive.js?cb=" + Date.now());
+        const se = await import("./skill-effects.js?cb=" + Date.now());
+        // Ledger = accepted candidates that represent a completed skill.
+        const ledger = [];
+        for (const p of prePassives) {
+          if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
+          ledger.push({
+            reactorActorUuid: p.reactorActorUuid ?? payload?.attackerActor?.uuid ?? null,
+            reactorTokenUuid: p.reactorTokenUuid ?? null,
+            skillName: p.carrierName,
+          });
+        }
+        if (!ledger.length) return;
+        const cardCtx = {
+          attackerActorUuid: payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null,
+          attackerTokenUuid: payload?.attacker?.tokenUuid ?? payload?.attackerTokenUuid ?? null,
+          checkTotal: payload?.roll?.total ?? payload?.checkTotal ?? null,
+          weaponRange: payload?.weaponRange ?? payload?.weapon?.range ?? null,
+          actionKind: kind,
+        };
+        const derived = await rd.deriveCascadeCandidates({
+          ledger, cardCtx, firedKeys: cascadeFiredKeys,
+          deps: {
+            findPassiveCandidates: se.findPassiveCandidates,
+            resolveActorByUuid: (u) => fromUuid(u).catch(() => null),
+          },
+        });
+        const { added } = rd.diffCandidates(prePassives, derived);
+        if (!added.length) return;
+        for (const c of added) {
+          const reactor = c.reactorActorUuid ? await fromUuid(c.reactorActorUuid).catch(() => null) : null;
+          c.reactorActorName = reactor?.name ?? "Reactor";
+          c.reactorIsPlayer = !!reactor?.hasPlayerOwner;
+          cascadeFiredKeys.add(rd.candidateKey(c));
+          prePassives.push(c);
+        }
+        appendCascadePills(added);
+        log(`injectCascadeReactions: +${added.length} cascade reaction(s) [${added.map((c) => c.carrierName).join(", ")}]`);
+      } catch (e) {
+        warn("injectCascadeReactions threw", e);
+      }
+    }
+
     async function recordPillDecision(rowKey, carrierUuid, decision) {
       const pillEl = root.querySelector(
         `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
@@ -3717,6 +3915,11 @@ export async function postActionCard({ director, kind, payload }) {
       }
 
       commitPillDecisionDom(rowKey, carrierUuid, decision);
+
+      // Reactive cascade: an accepted reaction may make a follow-up eligible
+      // (Bullet Break after Crossfire). Re-derive + inject new pills into THIS
+      // panel. Convergence-guarded, so re-running on every decision is safe.
+      if (decision === "apply") { try { await injectCascadeReactions(); } catch (e) { warn("recordPillDecision: cascade inject threw", e); } }
     }
 
     // Render (or clear) the reaction Effect-preview surface on the card from the

@@ -357,6 +357,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
       mainWeapon: snap.weapon,
       offWeapon: snap.offWeapon,
       allowTwoWeapon: !!snap.canTwoWeaponFight,
+      twoWeaponSolo: !!snap.twoWeaponSolo,
       virtualAttacks,
       // Forward the cancel sentinel so the picker overlay tears
       // itself down if the race resolves against us.

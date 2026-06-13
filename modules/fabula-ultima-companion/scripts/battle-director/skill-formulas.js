@@ -462,6 +462,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "HAS_ARCANE_WEAPON":   return hasEquippedWeaponOfType(actor, "arcane") ? 1 : 0;
       case "HAS_MELEE_WEAPON":    return hasEquippedWeaponOfType(actor, "melee") ? 1 : 0;
       case "HAS_RANGED_WEAPON":   return hasEquippedWeaponOfType(actor, "ranged") ? 1 : 0;
+      // Weapon-family gate: 1 if an equipped weapon's Category is "firearm"
+      // (matches the `category`/`weapon_type` field, not the range). Used by
+      // Bullet Break's "with a ranged firearm weapon you have equipped" RAW gate.
+      case "HAS_FIREARM":         return hasEquippedWeaponOfType(actor, "firearm") ? 1 : 0;
       // Equipped-shield + martial-armor predicates. Walk actor.items
       // for any EQUIPPED item whose item_type matches "shield" or
       // "armor" (martial flag required for the armor variant). Used by

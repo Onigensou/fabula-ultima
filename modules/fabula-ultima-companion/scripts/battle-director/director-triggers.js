@@ -58,6 +58,17 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // Item action, items-as-skill-shaped). Lets reactions hook "when a creature
   // uses an item". Payload carries actionKind/actionName + targets.
   "creature_completes_item",
+  // "A specific skill (or reaction) completed" hook — fires when a NAMED skill
+  // resolves, so follow-up combos ("after you use <Skill>, you may …") are
+  // authorable as DATA via the `reaction_source_skill` name filter. Generic:
+  // the engine never branches on a skill name — the row carries it. The payload
+  // forwards the completing skill's name + its context (for a reaction-skill like
+  // Crossfire, the reacted-to attack's attacker / accuracy Result / weapon range)
+  // so downstream gates (ATTACK_CHECK_RESULT, ATTACK_IS_RANGED, trigger_actor)
+  // resolve. First consumer: Bullet Break (after Crossfire negates). When emitted
+  // from within an action-card reaction window, it is injected into that card's
+  // pill list by the reactive re-derive (see action-card recomputeTargetPreviews).
+  "creature_completes_skill",
   // Pre-resolve attack damage hook — fires per-target AFTER COMPUTE has
   // locked rawDamage + affinity but BEFORE the action card commits the
   // damage. Reactions matching this trigger surface as pre-resolve
@@ -176,6 +187,9 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_completes_spell":   "pre-resolve",
   "creature_will_deal_damage":  "pre-resolve",
   "creature_uses_item":         "pre-resolve",
+  // Card-scoped: cascades into the live action-card pill list via re-derive when
+  // a reaction completes during the card's reaction window (Bullet Break).
+  "creature_completes_skill":   "pre-resolve",
   // Post-resolve — token-anchored menu, fires after action commits.
   "creature_deals_damage":      "post-resolve",
   "creature_completes_attack":  "post-resolve",

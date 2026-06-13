@@ -2568,6 +2568,7 @@ const Target = {
             mainWeapon: attacker.weapon,
             offWeapon: attacker.offWeapon,
             allowTwoWeapon: !!attacker.canTwoWeaponFight,
+            twoWeaponSolo: !!attacker.twoWeaponSolo,
             virtualAttacks,
           });
           if (!picked) {
@@ -3268,6 +3269,12 @@ const Confirm = {
             // Skill/Spell/etc. so extending this trigger to all kinds doesn't
             // leak Barrage onto a spell. Other reactions fire on any kind.
             if (ar.kind !== "Attack") continue;
+            // Two-weapon attacks (Double Arrow's double shot, classic TWF) lose
+            // the multi property and CANNOT gain it (RAW Two-Weapon Fighting).
+            // Block EVERY add_target reaction on a two-weapon pass — generic, so
+            // Barrage and any future multi-granting skill are covered as data.
+            const twMode = String(ar.attackMode ?? director.ctx?.attackMode ?? "").toLowerCase();
+            if (twMode.startsWith("two-weapon")) continue;
             cand._addTarget = true;
           }
           prePassives.push(cand);

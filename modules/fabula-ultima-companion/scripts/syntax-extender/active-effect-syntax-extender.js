@@ -167,7 +167,7 @@
 
   const hasCustomSyntax = (value) => {
     return typeof value === "string"
-      && /\b(?:ae|aeUuid|aeStatus|countAe|aeValue)\s*\(/.test(value);
+      && /\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast)\s*\(/.test(value);
   };
 
   const getDocName = (doc) => {
@@ -502,6 +502,27 @@
 
         if (isDebug()) {
           console.log(TAG, `aeValue("${name}", ${trueValue}, ${falseValue}) =>`, valueToReturn, actor?.name ?? null);
+        }
+
+        return valueToReturn;
+      }
+    );
+
+    // propAtLeast("level", 40, 10, 5)
+    // Numeric actor-prop threshold gate. Substitutes the third arg when the
+    // bearer's `system.props.<name>` is >= the threshold, else the fourth.
+    // Generic — any prop, any threshold; primarily the pervasive Fabula Ultima
+    // "value increases at level 40" upgrade pattern (prop "level" = character
+    // level, the same field CHAR_LEVEL reads). args 3/4 are bare CSB-safe values.
+    output = output.replace(
+      /\bpropAtLeast\s*\(\s*(['"])(.*?)\1\s*,\s*([^,()]+?)\s*,\s*([^,()]+?)\s*,\s*([^)]+?)\s*\)/g,
+      (_match, _quote, propName, thresholdRaw, trueValue, falseValue) => {
+        const cur = Number(actor?.system?.props?.[propName] ?? actor?.system?.[propName] ?? 0) || 0;
+        const threshold = Number(thresholdRaw) || 0;
+        const valueToReturn = cur >= threshold ? trueValue.trim() : falseValue.trim();
+
+        if (isDebug()) {
+          console.log(TAG, `propAtLeast("${propName}", ${thresholdRaw}, ${trueValue}, ${falseValue}) =>`, valueToReturn, actor?.name ?? null);
         }
 
         return valueToReturn;

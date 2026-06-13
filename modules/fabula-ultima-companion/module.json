@@ -78,6 +78,7 @@
     "scripts/active-effect-manager/ActiveEffectManager-charges-badge.js",
     "scripts/active-effect-manager/ActiveEffectManager-lifecycle-ui.js",
     "scripts/active-effect-manager/ActiveEffectManager-reaction-ui.js",
+    "scripts/active-effect-manager/ActiveEffectManager-twoWeaponGrant-ui.js",
     "scripts/active-effect-manager/ActiveEffectManager-bonus-actions.js",
     "scripts/passive-system/autoPassive-targetResolver.js",
     "scripts/passive-system/autoPassive-manager.js",

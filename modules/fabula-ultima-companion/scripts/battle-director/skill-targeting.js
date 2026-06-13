@@ -41,6 +41,7 @@ const RESERVED_REFS = {
   ally_action_targets:   { candidate_source: "action_targets", category: "ally", mode: "all" },
   enemy_action_targets:  { candidate_source: "action_targets", category: "enemy", mode: "all" },
   trigger_actor:         { candidate_source: "trigger_actor", mode: "exact", count: 1 },
+  trigger_attacker:      { candidate_source: "trigger_attacker", mode: "exact", count: 1 },
   trigger_subject:       { candidate_source: "trigger_subject", mode: "exact", count: 1 },
   // Guard's optional covered ally (resolveAction-unification). mode "all" takes
   // the (0 or 1) token collectCoverTarget yields without prompting.
@@ -392,6 +393,7 @@ async function buildCandidatePool(source, ctx) {
     case "action_targets":      return collectActionTargets(ctx);
     case "hit_action_targets":  return collectHitActionTargets(ctx);
     case "trigger_actor":       return collectTriggerActor(ctx);
+    case "trigger_attacker":    return collectTriggerAttacker(ctx);
     case "trigger_subject":     return collectTriggerSubject(ctx);
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
@@ -432,6 +434,16 @@ async function collectTriggerActor(ctx) {
 
 async function collectTriggerSubject(ctx) {
   const uuid = ctx.payload?.subjectTokenUuid ?? ctx.payload?.targetTokenUuid ?? null;
+  return await uuidsToTokens(uuid ? [uuid] : []);
+}
+
+// The ORIGINAL ATTACKER carried in a forwarded event context — distinct from
+// trigger_actor (the event's own subject/performer). Used by follow-up reactions
+// that act against the attacker of an action a prior skill responded to (Bullet
+// Break: free attack vs the attacker whose ranged attack Crossfire negated).
+// Reads payload.attackerTokenUuid (set by the creature_completes_skill emit).
+async function collectTriggerAttacker(ctx) {
+  const uuid = ctx.payload?.attackerTokenUuid ?? null;
   return await uuidsToTokens(uuid ? [uuid] : []);
 }
 

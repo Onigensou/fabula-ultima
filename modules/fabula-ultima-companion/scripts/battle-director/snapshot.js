@@ -377,6 +377,99 @@ export function actorAllowsMixedTwoWeapon(actor) {
   return false;
 }
 
+// ── Two-Weapon Fighting eligibility as DATA ─────────────────────────────────
+// The base RAW rule (Core p.69) is expressed as a data rule, and skills relax it
+// by authoring data grants — the engine never branches on a skill name or a
+// weapon Category literal.
+//
+// Rule shape:
+//   requireOffhand  — needs a SEPARATE off-hand weapon (genuine TWF). A
+//                     two-handed weapon (off-hand empty) can never satisfy this.
+//   sameCategory    — (requireOffhand only) both weapons must share a Category.
+//   soloWeapon      — ONE equipped weapon performs both attacks; off-hand MUST
+//                     be empty (Double Arrow: a lone bow). The base rule never
+//                     sets this, so a two-handed weapon stays a single attack
+//                     unless a soloWeapon grant explicitly opts its Category in.
+//   category        — "" = any; else the (main) weapon's Category must match.
+const BASE_TWO_WEAPON_RULE = Object.freeze({
+  requireOffhand: true, sameCategory: true, soloWeapon: false, category: "",
+});
+
+// Collect data-described Two-Weapon RELAXATIONS from the actor's AEs. An AE
+// carries flags.fabula-ultima-companion.twoWeaponGrant = <grant> | <grant>[]:
+//   grant = { soloWeapon?:bool, mixed?:bool, category?:string, condition_formula?:string }
+// soloWeapon → lone-weapon double attack (off-hand empty), Category-gated.
+// mixed      → lift the same-Category rule for two real weapons (the data form
+//              of the legacy allowMixedTwoWeapon, which is still honored below).
+export function actorTwoWeaponGrants(actor) {
+  const out = [];
+  if (!actor) return out;
+  let effs = [];
+  try {
+    if (actor.appliedEffects) effs = Array.from(actor.appliedEffects);
+    else if (actor.allApplicableEffects) effs = Array.from(actor.allApplicableEffects()).filter((e) => !e.disabled);
+    else if (actor.effects?.contents) effs = actor.effects.contents;
+    else if (actor.effects) effs = Array.from(actor.effects);
+  } catch (e) { warn("actorTwoWeaponGrants: effect enumeration threw", e); effs = []; }
+  let resolver = null;
+  const passesCond = (cond) => {
+    if (cond == null || cond === "") return true;
+    resolver ??= buildSkillResolver({ actor });
+    return !!(isFormulaString(cond) ? evaluateFormula(cond, resolver, 0) : Number(cond));
+  };
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    const spec = ae?.flags?.[FLAG_NS]?.twoWeaponGrant;
+    if (!spec) continue;
+    const grants = Array.isArray(spec) ? spec : [spec];
+    for (const g of grants) {
+      if (!g || typeof g !== "object") continue;
+      // A grant must declare an actual relaxation. `soloWeapon` = lone-weapon
+      // double attack; `mixed` = lift the same-Category rule for two real
+      // weapons (the data form of legacy allowMixedTwoWeapon). A grant that
+      // sets NEITHER is a no-op — skip it. This makes the `mixed` field real
+      // and means a stray/blank grant (e.g. a GM saving the AE-sheet panel
+      // with nothing enabled) can never accidentally hand out mixed TWF.
+      const solo = !!g.soloWeapon;
+      const mixed = !!g.mixed;
+      if (!solo && !mixed) continue;
+      if (!passesCond(g.condition_formula)) continue;
+      out.push({
+        soloWeapon: solo,
+        requireOffhand: !solo,
+        sameCategory: false,   // a relaxation never re-imposes same-Category
+        category: String(g.category ?? "").trim().toLowerCase(),
+      });
+    }
+  }
+  // Back-compat: fold the legacy allowMixedTwoWeapon flag (Ambidextrous) into a
+  // mixed grant so existing skills keep working without re-authoring.
+  if (actorAllowsMixedTwoWeapon(actor)) {
+    out.push({ soloWeapon: false, requireOffhand: true, sameCategory: false, category: "" });
+  }
+  return out;
+}
+
+// Evaluate the ordered rule list against the equipped weapons. Returns
+// { ok, off }: off is the weapon driving the SECOND attack (the off-hand for
+// genuine TWF, or the main weapon itself for a soloWeapon grant).
+export function evaluateTwoWeaponRules(weapon, offWeapon, rules) {
+  const cat = (w) => String(w?.weaponType ?? "").trim().toLowerCase();
+  const mt = cat(weapon), ot = cat(offWeapon);
+  for (const r of rules ?? []) {
+    if (r.category && r.category !== mt) continue;
+    if (r.soloWeapon) {
+      // Lone-weapon double attack: the SAME weapon fires twice (Double Arrow).
+      if (weapon && !offWeapon && mt) return { ok: true, off: weapon, solo: true };
+    } else if (r.requireOffhand) {
+      if (weapon && offWeapon && mt && ot && (!r.sameCategory || mt === ot)) {
+        return { ok: true, off: offWeapon, solo: false };
+      }
+    }
+  }
+  return { ok: false, off: null, solo: false };
+}
+
 // Build the weapon-related fields for a combatant snapshot — main weapon,
 // off-hand, and the two-weapon eligibility flag — in one safe pass. Each
 // piece is individually defended: if `resolveAttackerWeapon` throws for one
@@ -419,23 +512,25 @@ function buildWeaponBundle(actor) {
   catch (e) { warn("buildWeaponBundle: off resolve threw", e); offWeapon = null; }
 
   let canTwoWeaponFight = false;
+  let twoWeaponSolo = false;
   try {
-    if (weapon && offWeapon) {
-      const mt = String(weapon.weaponType ?? "").trim().toLowerCase();
-      const ot = String(offWeapon.weaponType ?? "").trim().toLowerCase();
-      // RAW Core p.69: Two-Weapon Fighting requires the SAME Category in both
-      // hands. A skill may lift that restriction declaratively (Ambidextrous →
-      // the allowMixedTwoWeapon AE flag); when present, any two real weapons
-      // qualify. Both weapons must still carry a Category.
-      canTwoWeaponFight = !!mt && !!ot && (mt === ot || actorAllowsMixedTwoWeapon(actor));
-    }
+    // Eligibility = the base RAW rule + any data grants the actor's AEs author.
+    // A soloWeapon grant (Double Arrow: lone bow) sets the SECOND attack to use
+    // the same weapon, so we adopt the returned `off` as the off-hand and flag
+    // `twoWeaponSolo` so the picker can present it as "attack twice with one
+    // weapon" rather than a confusing "Weapon → Weapon" dual entry.
+    const rules = [BASE_TWO_WEAPON_RULE, ...actorTwoWeaponGrants(actor)];
+    const ev = evaluateTwoWeaponRules(weapon, offWeapon, rules);
+    canTwoWeaponFight = ev.ok;
+    twoWeaponSolo = !!ev.solo;
+    if (ev.ok && ev.off) offWeapon = ev.off;
   } catch (e) { warn("buildWeaponBundle: canTwoWeaponFight threw", e); }
 
   let virtualAttacks = Object.freeze([]);
   try { virtualAttacks = resolveVirtualAttacks(actor); }
   catch (e) { warn("buildWeaponBundle: resolveVirtualAttacks threw", e); }
 
-  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, npcAttackItems: Object.freeze([]), virtualAttacks };
+  return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, twoWeaponSolo, npcAttackItems: Object.freeze([]), virtualAttacks };
 }
 
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc

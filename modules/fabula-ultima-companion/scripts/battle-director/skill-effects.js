@@ -618,6 +618,17 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
     }
   }
 
+  // 3c. Source-skill name filter — the NAME of the skill whose completion fired
+  //     this trigger (payload.sourceSkillName), matched case-insensitively. Blank
+  //     = any (no-op for every existing row). Lets a follow-up reaction key off a
+  //     SPECIFIC named skill ("after you use Crossfire …") as DATA, with no
+  //     skill-name branch in the engine. Primarily for creature_completes_skill.
+  const wantSkill = String(row.reaction_source_skill ?? "").trim().toLowerCase();
+  if (wantSkill && String(payload?.sourceSkillName ?? "").trim().toLowerCase() !== wantSkill) {
+    log(`passive ${item.name}: source_skill filter failed — want="${wantSkill}" got="${payload?.sourceSkillName}"`);
+    return false;
+  }
+
   // 4. Resource-ledger filters (creature_lose_resource / creature_gain_resource).
   //    Blank = any (no-op for every existing row). reaction_resource_filter
   //    matches payload.resource (hp/mp/ip/fp/…); reaction_cause_filter matches
