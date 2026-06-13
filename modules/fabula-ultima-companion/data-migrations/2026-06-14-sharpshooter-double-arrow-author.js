@@ -221,42 +221,38 @@ export async function migrate(game, log = () => {}) {
   const { folder } = await ensureFolderPath(game, [BD_ROOT_NAME, HYBRID_HEROIC_FOLDER], { log });
   if (!folder) return { applied: false, summary: `BD ${HYBRID_HEROIC_FOLDER} folder missing` };
 
-  let master = game.items?.contents?.find?.((i) =>
+  const existing = game.items?.contents?.find?.((i) =>
     i.name === "Double Arrow" && i.folder?.id === folder.id && templateMatches(i));
 
-  if (!master) {
-    const tpl = game.items.get(SKILL_TEMPLATE_ID);
-    const versionStamp = tpl?.system?.templateSystemUniqueVersion;
-    master = await Item.create({
-      name: "Double Arrow",
-      type: "equippableItem",
-      img: DOUBLE_ARROW_ICON,
-      folder: folder.id,
-      system: {
-        template: SKILL_TEMPLATE_ID,
-        ...(versionStamp !== undefined ? { templateSystemUniqueVersion: versionStamp } : {}),
-        props: { skill_type: "Passive", isHeroic: true, level: 1, max_level: 1 },
-      },
-    });
-    log(`  Double Arrow: master created in ${BD_ROOT_NAME}/${HYBRID_HEROIC_FOLDER}` +
-        (versionStamp !== undefined ? ` (stamp ${versionStamp})` : " (no template stamp)"));
+  // SEED-ONLY (world data is authoritative): if the master already exists, leave
+  // it — and every actor copy — untouched, so a co-dev's manual edits are never
+  // overridden. This migration only SEEDS a world that lacks the skill entirely.
+  if (existing) {
+    log("  Double Arrow already present — seed-only; leaving world data untouched");
+    return { applied: true, summary: "Double Arrow already present; left untouched (seed-only)" };
   }
 
-  let masters = 0, copies = 0;
-  if (await patchDoubleArrowItem(master, log, "master")) masters += 1;
+  const tpl = game.items.get(SKILL_TEMPLATE_ID);
+  const versionStamp = tpl?.system?.templateSystemUniqueVersion;
+  const master = await Item.create({
+    name: "Double Arrow",
+    type: "equippableItem",
+    img: DOUBLE_ARROW_ICON,
+    folder: folder.id,
+    system: {
+      template: SKILL_TEMPLATE_ID,
+      ...(versionStamp !== undefined ? { templateSystemUniqueVersion: versionStamp } : {}),
+      props: { skill_type: "Passive", isHeroic: true, level: 1, max_level: 1 },
+    },
+  });
+  log(`  Double Arrow: master created in ${BD_ROOT_NAME}/${HYBRID_HEROIC_FOLDER}` +
+      (versionStamp !== undefined ? ` (stamp ${versionStamp})` : " (no template stamp)"));
 
-  for (const actor of game.actors?.contents ?? []) {
-    for (const item of actor.items?.contents ?? []) {
-      if (item.name !== "Double Arrow") continue;
-      if (!templateMatches(item)) continue;
-      if (await patchDoubleArrowItem(item, log, `actor "${actor.name}"`)) copies += 1;
-    }
-  }
-
+  await patchDoubleArrowItem(master, log, "master");
   const equipped = await ensureOnDummy(master, log);
 
   return {
     applied: true,
-    summary: `Double Arrow authored: ${masters} master, ${copies} actor copy(s); dummy equipped: ${equipped}`,
+    summary: `Double Arrow seeded: master created; dummy equipped: ${equipped}`,
   };
 }

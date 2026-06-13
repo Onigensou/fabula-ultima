@@ -47,6 +47,17 @@
  *   skills on boot ([[feedback_pulled_world_stale_author_migration]]).
  *   ⚠ NEVER tag a base author that a later "-fix"/"-v2"/"-polish" migration
  *   patches — re-running it would revert that later work.
+ *   ⚠ DEPRECATED for new content authors — see SEED-ONLY below.
+ *
+ * AUTHORING CONVENTION (current — world data is authoritative)
+ * -----------------------------------------------------------
+ * We now SHIP world data (items + folders) to co-devs, so a content author's
+ * job is to SEED a world that LACKS the content, never to re-assert it. Write
+ * new content-author migrations SEED-ONLY: detect the master document up front
+ * and, if it already exists, return `{ applied: true }` WITHOUT touching it (or
+ * any actor copy). That way a co-dev's hand-edits to a pulled skill/AE are NEVER
+ * overridden by the migration tool. Pair seed-only with the One-time tier (NOT
+ * idempotent) — re-running has nothing to do once the world is seeded.
  *
  * RUNTIME
  * -------

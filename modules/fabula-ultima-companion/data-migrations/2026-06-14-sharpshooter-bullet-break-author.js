@@ -202,24 +202,22 @@ async function forceSetTables(item, log, label) {
   log(`  force-replaced tables on ${label}`);
 }
 
-async function syncAllActorCopies(game, log) {
-  let synced = 0;
-  for (const actor of game.actors?.contents ?? []) {
-    const copy = actor.items?.find?.((i) => i.name === SPEC.name);
-    if (!copy) continue;
-    await forceSetTables(copy, log, `${actor.name} copy`);
-    if (copy.system?.props?.reaction_config_table?.["0"]?.reaction_trigger === "creature_completes_skill") synced++;
-  }
-  log(`  ${synced} actor copy/copies now on the declarative Bullet Break`);
-}
-
 export async function migrate(game, log = () => {}) {
   const { folder } = await ensureFolderPath(game, [BD_ROOT_NAME, CLASS_NAME, HEROIC_SUBFOLDER], { log });
   if (!folder) return { applied: false, summary: `BD ${CLASS_NAME}/${HEROIC_SUBFOLDER} folder missing` };
+
+  // SEED-ONLY (world data is authoritative): if the master already exists, leave
+  // it — and every actor copy — untouched, so a co-dev's manual edits are never
+  // overridden. This migration only SEEDS a world that lacks the skill entirely.
+  const existing = findInFolder(game, folder, SPEC.name);
+  if (existing) {
+    log("  Bullet Break already present — seed-only; leaving world data untouched");
+    return { applied: true, summary: "Bullet Break already present; left untouched (seed-only)" };
+  }
+
   await ensureMaster(game, folder, log);
   const master = findInFolder(game, folder, SPEC.name);
-  const equipped = await ensureOnDummy(game, master, log);
   await forceSetTables(master, log, "BD master");
-  await syncAllActorCopies(game, log);
-  return { applied: true, summary: `Bullet Break BD master ensured; dummy equipped: ${equipped}; actor copies swept` };
+  const equipped = await ensureOnDummy(game, master, log);
+  return { applied: true, summary: `Bullet Break seeded: master created; dummy equipped: ${equipped}` };
 }

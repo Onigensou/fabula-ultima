@@ -241,42 +241,38 @@ export async function migrate(game, log = () => {}) {
     return { applied: false, summary: `Powerful Shot: missing folder "${BD_ROOT_NAME}/${CLASS_NAME}/${HEROIC_SUBFOLDER}"` };
   }
 
-  let master = game.items?.contents?.find?.((i) =>
+  const existing = game.items?.contents?.find?.((i) =>
     i.name === "Powerful Shot" && i.folder?.id === folder.id && templateMatches(i));
 
-  if (!master) {
-    const tpl = game.items.get(SKILL_TEMPLATE_ID);
-    const versionStamp = tpl?.system?.templateSystemUniqueVersion;
-    master = await Item.create({
-      name: "Powerful Shot",
-      type: "equippableItem",
-      img: POWERFUL_SHOT_ICON,
-      folder: folder.id,
-      system: {
-        template: SKILL_TEMPLATE_ID,
-        ...(versionStamp !== undefined ? { templateSystemUniqueVersion: versionStamp } : {}),
-        props: { skill_type: "Passive", isHeroic: true, level: 1, max_level: 1 },
-      },
-    });
-    log(`  Powerful Shot: master created in ${BD_ROOT_NAME}/${CLASS_NAME}/${HEROIC_SUBFOLDER}` +
-        (versionStamp !== undefined ? ` (stamp ${versionStamp})` : " (no template stamp)"));
+  // SEED-ONLY (world data is authoritative): if the master already exists, leave
+  // it — and every actor copy — untouched, so a co-dev's manual edits are never
+  // overridden. This migration only SEEDS a world that lacks the skill entirely.
+  if (existing) {
+    log("  Powerful Shot already present — seed-only; leaving world data untouched");
+    return { applied: true, summary: "Powerful Shot already present; left untouched (seed-only)" };
   }
 
-  let masters = 0, copies = 0;
-  if (await patchPowerfulShotItem(master, log, "master")) masters += 1;
+  const tpl = game.items.get(SKILL_TEMPLATE_ID);
+  const versionStamp = tpl?.system?.templateSystemUniqueVersion;
+  const master = await Item.create({
+    name: "Powerful Shot",
+    type: "equippableItem",
+    img: POWERFUL_SHOT_ICON,
+    folder: folder.id,
+    system: {
+      template: SKILL_TEMPLATE_ID,
+      ...(versionStamp !== undefined ? { templateSystemUniqueVersion: versionStamp } : {}),
+      props: { skill_type: "Passive", isHeroic: true, level: 1, max_level: 1 },
+    },
+  });
+  log(`  Powerful Shot: master created in ${BD_ROOT_NAME}/${CLASS_NAME}/${HEROIC_SUBFOLDER}` +
+      (versionStamp !== undefined ? ` (stamp ${versionStamp})` : " (no template stamp)"));
 
-  for (const actor of game.actors?.contents ?? []) {
-    for (const item of actor.items?.contents ?? []) {
-      if (item.name !== "Powerful Shot") continue;
-      if (!templateMatches(item)) continue;
-      if (await patchPowerfulShotItem(item, log, `actor "${actor.name}"`)) copies += 1;
-    }
-  }
-
+  await patchPowerfulShotItem(master, log, "master");
   const equipped = await ensureOnDummy(master, log);
 
   return {
     applied: true,
-    summary: `Powerful Shot authored: ${masters} master, ${copies} actor copy(s); dummy equipped: ${equipped}`,
+    summary: `Powerful Shot seeded: master created; dummy equipped: ${equipped}`,
   };
 }
