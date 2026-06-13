@@ -550,6 +550,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         return ids.some((u) => u && String(u).trim() === carrierUuid) ? 1 : 0;
       }
       default:
+        // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
+        // SAME effect chain. `prompt_number` stores the player's entered amount
+        // under `prompt_var`; later rows read it back as VAR_<NAME>. Stashed on
+        // payload._chainVars so it rides the per-target resolver every consumer
+        // builds. Name grammar: VAR_MOVE_AMOUNT → key "move_amount" (lowercased;
+        // underscores kept, unlike the AE-name identifiers). 0 when unset.
+        if (name.startsWith("VAR_")) {
+          const key = name.slice("VAR_".length).toLowerCase().trim();
+          const vars = payload?._chainVars;
+          return vars ? (Number(vars[key]) || 0) : 0;
+        }
         // Dynamic TRIGGER_DAMAGE_IS_<ELEMENT> identifier — 1 when the damage
         // event that fired this trigger was of <ELEMENT>, else 0. Reads
         // `payload.element` (fire/ice/bolt/earth/air/light/dark/physical/poison),

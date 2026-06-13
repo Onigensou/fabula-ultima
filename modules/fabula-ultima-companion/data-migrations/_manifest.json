@@ -526,6 +526,10 @@
     {
       "key": "2026-06-12-dungeon-centimare-author",
       "path": "data-migrations/2026-06-12-dungeon-centimare-author.js"
+    },
+    {
+      "key": "2026-06-13-dungeon-marigold-author",
+      "path": "data-migrations/2026-06-13-dungeon-marigold-author.js"
     }
   ]
 }

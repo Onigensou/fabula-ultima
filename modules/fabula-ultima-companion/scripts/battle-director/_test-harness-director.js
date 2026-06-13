@@ -816,6 +816,7 @@ async function runDirectorSkillSimulate(args = {}) {
   const { STATE_HANDLERS, STATES, INTENTS, freezeActionResult } = deps;
   const arPatch = {};
   if (Array.isArray(args.picks)) arPatch._harnessPicks = [...args.picks];
+  if (args.harnessNumbers && typeof args.harnessNumbers === "object") arPatch._harnessNumbers = { ...args.harnessNumbers };
   if (args.vismagusHpPaid === true) arPatch.vismagusHpPaid = true;
   let ar = Object.keys(arPatch).length
     ? freezeActionResult({ ...compute.actionResult, ...arPatch })

@@ -68,6 +68,42 @@ export async function resolveTargetRef(targetRef, ctx) {
   // Memoize per chain — multiple consumers should see the same tokens.
   if (ctx.resolvedTargets.has(key)) return ctx.resolvedTargets.get(key);
 
+  // Multi-ref union — "a,b,c" resolves each ref and unions their tokens
+  // (dedup by uuid). Lets one effect row target several named picks at once
+  // (Blazing Tether detonates giver + receiver via target_ref "giver,receiver").
+  // Each sub-ref resolves + memoizes on its own, so already-resolved picks are
+  // cache hits (no re-prompt); a cancel in any part cancels the whole union.
+  if (key.includes(",")) {
+    const parts = key.split(",").map((s) => s.trim()).filter(Boolean);
+    const seen = new Set();
+    const tokens = [];
+    let anyOk = false;
+    let firstReason = null;
+    for (const part of parts) {
+      const r = await resolveTargetRef(part, ctx);
+      if (r?.cancelled) {
+        const cancelled = { ok: false, cancelled: true, reason: "cancelled", tokens: [] };
+        ctx.resolvedTargets.set(key, cancelled);
+        return cancelled;
+      }
+      if (r?.ok) {
+        anyOk = true;
+        for (const t of (r.tokens ?? [])) {
+          const u = t?.uuid ?? t?.document?.uuid ?? null;
+          if (u == null) { tokens.push(t); continue; }
+          if (!seen.has(u)) { seen.add(u); tokens.push(t); }
+        }
+      } else if (firstReason == null) {
+        firstReason = r?.reason ?? "no-targets";
+      }
+    }
+    const result = anyOk
+      ? { ok: true, tokens }
+      : { ok: false, reason: firstReason ?? "no-targets", tokens: [] };
+    ctx.resolvedTargets.set(key, result);
+    return result;
+  }
+
   // Reserved word sugar.
   if (Object.prototype.hasOwnProperty.call(RESERVED_REFS, key)) {
     const result = await resolveTargetingRow(RESERVED_REFS[key], ctx);
@@ -158,6 +194,44 @@ async function resolveTargetingRow(row, ctx) {
       ?? []
     );
     if (already.size) pool = pool.filter((t) => !already.has(t.uuid));
+  }
+
+  // 3c. exclude — generic membership exclusion. Drop any candidate appearing in
+  // the resolved token set of the listed ref(s). One field covers every case:
+  // reserved refs ("self", "action_targets") AND named targeting rows, comma-
+  // listed for combinations ("self,tether_giver"). Resolves through
+  // resolveTargetRef (which already unions a comma list), so a prior chain
+  // step's pick is a cache hit — no re-prompt. Subsumes the legacy
+  // exclude_self / exclude_action_targets booleans (still honored above for
+  // existing data); new authoring uses `exclude`.
+  if (row.exclude) {
+    const r = await resolveTargetRef(String(row.exclude), ctx);
+    const excluded = new Set();
+    for (const t of (r?.tokens ?? [])) {
+      const u = t?.uuid ?? t?.document?.uuid ?? null;
+      if (u) excluded.add(u);
+    }
+    if (excluded.size) pool = pool.filter((t) => !excluded.has(t.uuid ?? t.document?.uuid));
+  }
+
+  // 3d. target_filter — per-candidate predicate formula. Keep a token when the
+  // formula is truthy (> 0), evaluated against THAT candidate's own actor (a
+  // resolver per token, like deal_damage does per victim). Generic gate: e.g.
+  // "AE_CHARGES_BURN >= 1" (Blazing Tether's giver must carry Burn). Exclusion
+  // is just the inverse — "AE_CHARGES_BURN == 0" / "!(...)" (the formula
+  // language has full <,>,==,!=,&&,||,! support), so one keep-if-truthy field
+  // covers both directions.
+  const filterFormula = String(row.target_filter ?? "").trim();
+  if (filterFormula) {
+    const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+    pool = pool.filter((t) => {
+      const actor = t?.actor;
+      if (!actor) return false;
+      const resolver = buildSkillResolver({
+        actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+      });
+      return Number(evaluateFormula(filterFormula, resolver, 0)) > 0;
+    });
   }
 
   if (!pool.length) return { ok: false, reason: "no-candidates", tokens: [] };
@@ -501,6 +575,11 @@ export function makeChainContext({
   // re-prompting. Same per-pick shape (label strings). harnessPicks wins if
   // both are set. See action-card.recordPillDecision + firePreAcceptedCandidate.
   menuPicks = null,
+  // Test-harness only — when set, applyPromptNumberEffect reads the entered
+  // amount from this map (keyed by prompt_var) instead of opening the Dialog,
+  // so a headless sim never hangs. Shape: { move_amount: 3, ... }. Live play
+  // never sets this. See FUCompanion.api.test.runDirectorSkillSimulate.
+  harnessNumbers = null,
 } = {}) {
   return {
     reactorActor,
@@ -518,6 +597,7 @@ export function makeChainContext({
     firePoints,
     harnessPicks,
     menuPicks,
+    harnessNumbers,
     resolvedTargets: new Map(),
   };
 }

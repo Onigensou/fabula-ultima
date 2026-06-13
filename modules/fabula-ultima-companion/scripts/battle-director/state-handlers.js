@@ -37,7 +37,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
-import { makeChainContext } from "./skill-targeting.js";
+import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsAtRoundEnd, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 import { rollCheck, checkVsThreshold } from "./check.js";
@@ -318,6 +318,7 @@ async function resolveAction(director, ar, opts = {}) {
     // built by FUCompanion.api.test.runDirectorSkillSimulate and lets
     // it auto-resolve open_action_menu prompts. Always null in live play.
     harnessPicks: ar?._harnessPicks ?? null,
+    harnessNumbers: ar?._harnessNumbers ?? null,
   });
   // Thread the live action result + view onto ctx so action-level effect_kinds
   // (equip_swap, encyclopedia_record, cover-ally targeting) can read the
@@ -326,6 +327,19 @@ async function resolveAction(director, ar, opts = {}) {
   // Skill/Spell effect_kinds never read these, so this is inert for them.
   ctx.actionResult = ar;
   ctx.actionView = view;
+  // target_sequence — re-seed ctx.resolvedTargets with the per-ref picks made at
+  // the TARGET phase so the chain's effect rows (Blazing Tether's give/take/
+  // detonate) resolve their giver/receiver refs to the already-picked tokens with
+  // NO re-prompt. Memoizing under each ref label = a resolveTargetRef cache hit.
+  if (ar?.targetSequencePicks && typeof ar.targetSequencePicks === "object") {
+    for (const [ref, uuids] of Object.entries(ar.targetSequencePicks)) {
+      const tokens = [];
+      for (const u of (Array.isArray(uuids) ? uuids : [])) {
+        try { const td = await fromUuid(u); if (td) tokens.push(td); } catch { /* gone */ }
+      }
+      ctx.resolvedTargets.set(ref, { ok: tokens.length > 0, tokens });
+    }
+  }
   // Battle-log sink for THIS action: every commit (hits, via applyDamageToTarget's
   // logContext) + every miss (below) + any deal_damage riders fired through this
   // ctx push their {entry,row} here; we flush ONCE at the end → a Multi-N action
@@ -1707,6 +1721,53 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     secondaryAction                   = null,
   } = opts;
 
+  // ── target_sequence — multi-step declarative targeting ──────────────────
+  // A skill can declare `target_sequence` (comma-list of targeting-row labels)
+  // to pick several targets IN ORDER at the TARGET phase, each with its own
+  // filter/exclude (e.g. Blazing Tether: pick a Burn-holder "giver", then a
+  // "receiver" excluding the giver). Each ref resolves through the shared
+  // resolveTargetRef (combat pool → target_filter → exclude → picker). A cancel
+  // on ANY pick bounces to the Action Menu (the standard TARGET_BACK the caller
+  // does on cancelled). The picks are recorded per-ref in `namedPicks` so RESOLVE
+  // can re-seed them onto the chain (no re-prompt); the union becomes the
+  // action's targets. Generic — any "pick an X, then a Y" skill can use it.
+  const sequenceRaw = String(skill?.system?.props?.target_sequence ?? "").trim();
+  if (sequenceRaw) {
+    const refs = sequenceRaw.split(",").map((s) => s.trim()).filter(Boolean);
+    let reactorToken = null;
+    try { reactorToken = await fromUuid(attackerSnap.tokenUuid); } catch { /* optional */ }
+    const seqCtx = {
+      skill,
+      runtimeEffectTable: skill?.system?.props?.effect_table ?? null,
+      payload: {},
+      dCombat: director.dCombat,
+      reactorToken,
+      reactorActor: attackerActor,
+      resolvedTargets: new Map(),
+      isPassive: false,
+    };
+    const namedPicks = {};
+    const pickedUuids = [];
+    for (const ref of refs) {
+      const r = await resolveTargetRef(ref, seqCtx);
+      if (r?.cancelled) {
+        return { ok: false, cancelled: true, reason: "target-cancelled", targets: [], targetUuids: [] };
+      }
+      if (!r?.ok || !r.tokens?.length) {
+        ui.notifications?.warn(`No eligible target for "${ref}".`);
+        return { ok: false, cancelled: false, reason: r?.reason ?? "no_eligible", targets: [], targetUuids: [] };
+      }
+      const uuids = r.tokens.map((tk) => tk?.document?.uuid ?? tk?.uuid).filter(Boolean);
+      namedPicks[ref] = uuids;
+      for (const u of uuids) if (!pickedUuids.includes(u)) pickedUuids.push(u);
+    }
+    const eligibleAll = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, attackerSnap, { category: "any" })
+      : snapshotEligibleTargets(director.combat, attackerSnap, { category: "any" });
+    const targets = eligibleAll.filter((e) => pickedUuids.includes(e.tokenUuid));
+    return { ok: true, cancelled: false, targets, targetUuids: pickedUuids, namedPicks };
+  }
+
   const text   = String(rawText ?? "").trim().toLowerCase();
   const isSelf = !text || /^self$/i.test(text);
 
@@ -2181,6 +2242,10 @@ const Target = {
         // (RAW: "you instead recover no HP, the spell still works on
         // other targets").
         vismagusHpPaid,
+        // target_sequence per-ref picks ({ ref: [tokenUuid] }) — carried so
+        // RESOLVE re-seeds ctx.resolvedTargets and the chain's effect rows
+        // resolve their giver/receiver refs without re-prompting.
+        targetSequencePicks: skillTargeting.namedPicks ?? null,
       });
       director.ctx.pickedTargetUuids = targetUuids;
       director.dispatch({

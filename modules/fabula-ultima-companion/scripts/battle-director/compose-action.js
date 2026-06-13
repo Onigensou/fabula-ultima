@@ -626,6 +626,13 @@ async function composeHinder({ director, snap, eligible, cancelSentinel }) {
 // reason }. `actor` is the caster doc (for SL/HAS_SKILL formula identifiers in
 // the target-count resolver). `eligible` = { allies, enemies }.
 export async function resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel }) {
+  // target_sequence skills do their multi-step picking at the TARGET phase
+  // (state-handlers resolveActionTargets), NOT here in the compose pre-target.
+  // Defer with empty targets so TARGET doesn't see pre-composed uuids and runs
+  // the real sequence (giver → receiver) with cancel-to-menu.
+  if (String(source?.system?.props?.target_sequence ?? "").trim()) {
+    return { cancelled: false, targetUuids: [] };
+  }
   // Preserve original case — skill_target may contain formula identifiers like
   // `HAS_SKILL_PILLAGE` matched case-sensitively. Category regex below is /i.
   const skillTargetText = String(source?.system?.props?.skill_target ?? "").trim();

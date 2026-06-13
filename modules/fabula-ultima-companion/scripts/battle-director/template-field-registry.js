@@ -36,6 +36,8 @@ const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword"
 const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
 // free_action — perform ONE free turn-action (skill name / "self" / type).
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
+// prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
+const PROMPT_NUMBER_VIS = `equalText(sameRow("effect_kind",''), "prompt_number")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
 // open_action_menu free_mode grant AND the new free_action kind.
 const FREE_GRANT_VIS = `or(equalText(sameRow("effect_kind",''), "open_action_menu"), equalText(sameRow("effect_kind",''), "free_action"))`;
@@ -139,6 +141,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "skip",    value: "Always skip (no prompt)" },
     { key: "confirm", value: "Always confirm (locked prompt)" },
   ], { tooltip: "Assured targets (self/all/single): Auto = GM silent for pace + player gets a locked Confirm; Skip = never prompt; Confirm = always lock-prompt.", vis: TGT_VIS, defaultValue: "auto" }),
+  // targeting filters — two orthogonal, non-growing axes for narrowing the pool.
+  // target_filter = per-candidate predicate (keep where truthy; invert for
+  // exclusion). exclude = membership exclusion by ref (reserved or named).
+  textCol("target_filter", "Target Filter", { tooltip: "targeting: per-candidate keep-if-truthy formula, evaluated against EACH candidate's own actor. e.g. \"AE_CHARGES_BURN >= 1\" (must carry Burn). Exclude is the inverse: \"AE_CHARGES_BURN == 0\" / \"!(...)\". Blank = no filter.", vis: TGT_VIS }),
+  textCol("exclude", "Exclude Refs", { tooltip: "targeting: drop any candidate appearing in these ref(s) — reserved (\"self\", \"action_targets\") or named targeting-row labels, comma-listed (\"self,tether_giver\"). Generic replacement for exclude_self / exclude_action_targets.", vis: TGT_VIS }),
   // free_action config — perform ONE free turn-action (no menu). action_ref names
   // it: "self" (re-perform the carrier skill), a skill/item NAME on the actor, or
   // an action TYPE / comma-list ("Attack" / "Attack,Hinder" → compose filtered,
@@ -165,6 +172,15 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   ], { tooltip: "adjust_charges: how charge_amount combines with the target's current charge count.", vis: ADJUST_CHARGES_VIS, defaultValue: "multiply" }),
   textCol("charge_amount", "Charge Amount", { tooltip: "adjust_charges: the operand (number or per-target formula). e.g. 2 to double.", vis: ADJUST_CHARGES_VIS }),
   textCol("charge_max", "Charge Max", { tooltip: "adjust_charges: optional cap on the resulting charge total. Blank = uncapped.", vis: ADJUST_CHARGES_VIS }),
+  // prompt_number config — interactive amount picker. Stores the entered value as
+  // a chain variable read later via the VAR_<NAME> formula identifier (Blazing
+  // Tether's move = prompt_number then two adjust_charges using VAR_MOVE_AMOUNT).
+  textCol("prompt_var", "Prompt Var", { tooltip: "prompt_number: variable name to store the entered amount under. Read later as VAR_<NAME> (e.g. prompt_var \"move_amount\" → VAR_MOVE_AMOUNT).", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_label", "Prompt Label", { tooltip: "prompt_number: the dialog prompt text (e.g. \"Burn stacks to move?\").", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_min", "Prompt Min", { tooltip: "prompt_number: minimum (number or formula). Default 0.", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_max", "Prompt Max", { tooltip: "prompt_number: maximum (number or formula, evaluated against Prompt Max Ref's actor). e.g. \"AE_CHARGES_BURN\". Blank = unbounded.", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_max_ref", "Prompt Max Ref", { tooltip: "prompt_number: target ref whose actor the min/max/default formulas read (e.g. \"tether_giver\" so max = the giver's Burn). Blank = the caster.", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_default", "Prompt Default", { tooltip: "prompt_number: the input's starting value (number or formula). Blank = max.", vis: PROMPT_NUMBER_VIS }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

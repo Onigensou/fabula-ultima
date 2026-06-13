@@ -12,6 +12,11 @@
  *       chance gate (the Hellhound/Salamander pattern).
  *     - Burn charge model: `ae_duplicate_mode: stack` → `add_charges` so Burn
  *       merges into one charge-bearing AE (charge-as-stack model).
+ *     - Embedded Burn template was CHARGELESS. A skill's own embedded "Burn" wins
+ *       over the canonical Debuff-hub Burn (charges 3) in resolveAeTemplate, and
+ *       apply_burn carries no ae_initial_charges → applied Burn had 0 charges (AE
+ *       present but 0 stacks: no tick, never a valid Blazing Tether giver). Stamp
+ *       the embedded Burn to charges 3 to match Hellhound/Salamander + the hub.
  *
  *   Flame Burst — "When reduced to 0 HP by NON-Ice damage, deal Fire to all
  *   creatures". Rebuilt:
@@ -49,7 +54,8 @@
 export const key = "2026-06-12-dungeon-fireslime-author";
 export const description =
   "Fix Fire Slime dungeon skills: scope Fire Shot's Burn rider (TRIGGER_IS_SELF) " +
-  "+ stack→add_charges; rebuild Flame Burst — re-point its dead creature_takes_damage " +
+  "+ stack→add_charges + stamp its chargeless embedded Burn template to charges 3; " +
+  "rebuild Flame Burst — re-point its dead creature_takes_damage " +
   "trigger to creature_lose_resource (hp/damage, CUR_HP<=0, non-Ice via " +
   "TRIGGER_DAMAGE_IS_ICE==0), retype death_burst grant→deal_damage, and add a " +
   "combat/exclude_self targeting row so the burst hits all allies+enemies but not " +
@@ -64,6 +70,15 @@ const PATCHES = {
     ],
     reaction_row_set: [
       { ref: "apply_burn", set: { condition_formula: "TRIGGER_IS_SELF == 1 && chance(50)" } },
+    ],
+    // Fire Shot's embedded "Burn" AE template shipped CHARGELESS — and a skill's
+    // own embedded template wins over the canonical Debuff-hub Burn (charges 3) in
+    // resolveAeTemplate. With apply_burn carrying no ae_initial_charges, applied
+    // Burn ended up with 0 charges (AE present but 0 stacks → no tick, never a
+    // valid Blazing Tether giver). Stamp charges 3 to match Hellhound Flame Breath
+    // / Salamander Heat Up / the hub. (Other monsters' embedded Burns are already 3.)
+    embedded_ae_charges: [
+      { aeName: "Burn", charges: 3, chargeKey: "burn" },
     ],
   },
   "Flame Burst": {
@@ -147,6 +162,29 @@ function patchReactionRow(item, specs) {
   return { table, changed, notes };
 }
 
+// Stamp charges (+ chargeKey) onto an embedded AE template by name — fixes a
+// chargeless scaffold so apply_ae produces a real charge-bearing status.
+async function patchEmbeddedAeCharges(item, specs, actorName, skillName, log) {
+  const NS = "fabula-ultima-companion";
+  let touched = false;
+  for (const { aeName, charges, chargeKey } of specs) {
+    const ae = (item.effects?.contents ?? []).find((e) => e.name === aeName);
+    if (!ae) { log(`  [${actorName}] "${skillName}": embedded AE "${aeName}" not found`); continue; }
+    const cur = ae.flags?.[NS] ?? {};
+    const update = {};
+    if (Number(cur.charges ?? NaN) !== charges) update[`flags.${NS}.charges`] = charges;
+    if (chargeKey && cur.chargeKey !== chargeKey) update[`flags.${NS}.chargeKey`] = chargeKey;
+    if (Object.keys(update).length) {
+      await ae.update(update);
+      log(`  [${actorName}] "${skillName}": embedded "${aeName}" → charges ${charges}`);
+      touched = true;
+    } else {
+      log(`  [${actorName}] "${skillName}": embedded "${aeName}" already charges ${charges}`);
+    }
+  }
+  return touched;
+}
+
 function stableStringify(v) {
   if (v === null || typeof v !== "object") return JSON.stringify(v);
   if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
@@ -192,6 +230,11 @@ async function patchActor(actor, log) {
         const { table, changed, notes } = patchReactionRow(item, spec.reaction_row_set);
         log(`  [${actor.name}] "${skillName}".reaction-row: ${notes.join("; ")}`);
         if (changed && table) { await item.update({ "system.props.reaction_config_table": table }); touched = true; }
+      }
+
+      // embedded AE charge stamps (fix chargeless Burn scaffold).
+      if (spec.embedded_ae_charges) {
+        if (await patchEmbeddedAeCharges(item, spec.embedded_ae_charges, actor.name, skillName, log)) touched = true;
       }
 
       if (touched) { totalChanged++; log(`  [${actor.name}] "${skillName}": UPDATED`); }

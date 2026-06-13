@@ -1797,6 +1797,115 @@ async function applyAdjustChargesEffect(row, ctx) {
   return { ok: true, kind: "adjust_charges", applied };
 }
 
+// ── prompt_number ─────────────────────────────────────────────────────────
+//
+// Interactive amount picker. Opens a number-input Dialog (min..max), clamps the
+// entry, and stashes it as a chain-local variable on `ctx.payload._chainVars`
+// under `prompt_var`, where later rows read it via the VAR_<NAME> formula
+// identifier (e.g. Blazing Tether's two adjust_charges move VAR_MOVE_AMOUNT Burn
+// stacks from giver to receiver). Generic: any "choose how much" skill.
+//
+// Fields:
+//   prompt_var      — variable name to store under (e.g. "move_amount").
+//   prompt_label    — dialog prompt text.
+//   prompt_min      — formula/number, default 0.
+//   prompt_max      — formula/number, default unbounded. Evaluated against
+//                     prompt_max_ref's first token's actor if set, else caster.
+//   prompt_max_ref  — optional target ref whose actor the formulas read (so
+//                     prompt_max "AE_CHARGES_BURN" reads the GIVER's Burn).
+//   prompt_default  — formula/number for the input's starting value (default max).
+//
+// Harness: inject via ctx.harnessNumbers[prompt_var] to skip the dialog so the
+// deterministic downstream rows are sim-verifiable. Passive auto-fire / no DOM
+// → falls back to the (clamped) default with no UI.
+async function applyPromptNumberEffect(row, ctx) {
+  const varName = String(row.prompt_var ?? "").trim().toLowerCase();
+  if (!varName) {
+    warn(`skill-effects.prompt_number: missing prompt_var on "${row.effect_label}"`);
+    return { ok: false, kind: "prompt_number", reason: "no-var" };
+  }
+  const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+
+  // Actor the min/max/default formulas read from (prompt_max_ref or the caster).
+  let formulaActor = ctx.reactorActor ?? null;
+  if (row.prompt_max_ref) {
+    const r = await resolveTargetRef(String(row.prompt_max_ref), ctx);
+    const tok = r?.tokens?.[0];
+    if (tok?.actor) formulaActor = tok.actor;
+  }
+  const resolver = buildSkillResolver({ actor: formulaActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+  const minV = Math.floor(Number(evaluateFormula(String(row.prompt_min ?? "0"), resolver, 0)) || 0);
+  const maxRaw = String(row.prompt_max ?? "").trim();
+  let maxV = maxRaw ? Math.floor(Number(evaluateFormula(maxRaw, resolver, 0)) || 0) : 1e9;
+  if (maxV < minV) maxV = minV;
+  const defRaw = String(row.prompt_default ?? "").trim();
+  let defV = defRaw ? Math.floor(Number(evaluateFormula(defRaw, resolver, maxV)) || 0) : maxV;
+  const clamp = (n) => Math.max(minV, Math.min(maxV, Math.floor(Number(n) || 0)));
+  defV = clamp(defV);
+
+  let value = defV;
+  const injected = ctx?.harnessNumbers?.[varName];
+  if (injected != null && Number.isFinite(Number(injected))) {
+    value = clamp(injected);
+  } else if (ctx.isPassive || typeof Dialog === "undefined" || typeof document === "undefined") {
+    value = defV; // auto-fire / headless — take the default, no UI
+  } else {
+    const entered = await promptNumberDialog({
+      label: String(row.prompt_label ?? "Enter a number"),
+      min: minV, max: maxV, def: defV, title: ctx.skill?.name ?? "Choose Amount",
+    });
+    value = entered == null ? minV : clamp(entered); // closed without confirm → min
+  }
+
+  if (!ctx.payload) ctx.payload = {};
+  if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+  ctx.payload._chainVars[varName] = value;
+  log(`skill-effects.prompt_number: ${varName} = ${value} (range ${minV}..${maxV})`);
+  return { ok: true, kind: "prompt_number", value };
+}
+
+// Number-input dialog (mirrors the attribute-pair-picker DL input). Resolves to
+// the clamped integer on Confirm, or null if closed without confirming.
+async function promptNumberDialog({ label, min, max, def, title }) {
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return new Promise((resolve) => {
+    let resolved = false;
+    const done = (v) => { if (!resolved) { resolved = true; resolve(v); } };
+    const content = `
+      <div class="fud-num-prompt" style="display:flex;flex-direction:column;gap:8px;padding:4px 2px;">
+        <label style="font-size:13px;">${esc(label)}</label>
+        <input type="number" min="${min}" max="${max}" step="1" value="${def}"
+               class="fud-num-prompt-input" style="width:100%;text-align:center;font-size:16px;"
+               aria-label="${esc(label)}">
+        <div style="font-size:11px;opacity:0.7;">Range ${min}–${max}</div>
+      </div>`;
+    const dlg = new Dialog({
+      title,
+      content,
+      buttons: {
+        ok: {
+          icon: '<i class="fas fa-check"></i>', label: "Confirm",
+          callback: (html) => {
+            const rootEl = html?.[0] ?? html;
+            const input = rootEl?.querySelector?.(".fud-num-prompt-input");
+            const raw = input ? Number(input.value) : def;
+            done(Math.max(min, Math.min(max, Math.floor(Number.isFinite(raw) ? raw : def))));
+          },
+        },
+      },
+      default: "ok",
+      close: () => done(null),
+      render: (html) => {
+        const rootEl = html?.[0] ?? html;
+        const input = rootEl?.querySelector?.(".fud-num-prompt-input");
+        if (input) { try { input.focus(); input.select(); } catch { /* noop */ } }
+      },
+    });
+    dlg.render(true);
+  });
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -1811,6 +1920,7 @@ const EFFECT_KIND_DISPATCH = {
   open_action_menu:    applyOpenActionMenuEffect,
   free_action:         applyFreeActionEffect,
   adjust_charges:      applyAdjustChargesEffect,
+  prompt_number:       applyPromptNumberEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    applyConsumeResourceEffect,
@@ -1847,6 +1957,7 @@ export const EFFECT_KIND_LABELS = {
   open_action_menu:    "Open Action Menu",
   free_action:         "Free Action (perform single action)",
   adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
+  prompt_number:       "Prompt Number (ask the user for an amount)",
   remove_tagged_ae:    "Remove Tagged AE",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
@@ -1985,6 +2096,9 @@ const EFFECT_KIND_PREVIEW = {
 
   // adjust_charges mutates a target's charge-AE at apply time — no card row.
   adjust_charges: () => null,
+
+  // prompt_number opens an input dialog at apply time — no target-facing row.
+  prompt_number: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
   chain: () => null,
@@ -2599,10 +2713,23 @@ async function applyApplyAeEffect(row, ctx) {
     return { ok: false, kind: "apply_ae", reason: "template-not-found" };
   }
 
+  // Charge counts (ae_initial_charges / _max) may be FORMULAS — evaluated per
+  // target so they can read the victim's state or chain vars (Blazing Tether's
+  // "give" = apply_ae Burn add_charges ae_initial_charges "VAR_MOVE_AMOUNT" → add
+  // the entered move amount, creating the AE if the receiver has none). A plain
+  // number string ("3") takes evaluateFormula's literal fast-path; an unparseable
+  // value folds to null (same as the old Number()→NaN→template-default behavior).
+  const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
   const applied = [];
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    const chargeResolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    const evalCharge = (raw) => {
+      if (raw == null || String(raw).trim() === "") return null;
+      const n = Number(evaluateFormula(String(raw), chargeResolver, NaN));
+      return Number.isFinite(n) ? n : null;
+    };
 
     // Status-immunity gate (engine-gap #4 stub — Rampart's "cannot suffer
     // status effects" lands as `condition_<status> = "IM"` AE writes on
@@ -2627,8 +2754,8 @@ async function applyApplyAeEffect(row, ctx) {
     // to ae_initial_charges_max (or the existing AE's chargesMax). If no
     // existing AE, fall through to create a fresh one with the normal path.
     if (baseMode === "add_charges") {
-      const rowChargesAdd = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
-      const rowChargesMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
+      const rowChargesAdd = evalCharge(row.ae_initial_charges);
+      const rowChargesMax = evalCharge(row.ae_initial_charges_max);
       const existing = findDuplicateAe(actor, template, null);
       if (existing) {
         const curCharges = Number(existing.flags?.[FLAG_NS]?.charges ?? 0) || 0;
@@ -2668,8 +2795,8 @@ async function applyApplyAeEffect(row, ctx) {
     // otherwise chargeless world-template AE (e.g. the "Burn" Debuff
     // container entry has no charges; the burn_apply row specifies 3).
     {
-      const rowC = row.ae_initial_charges != null ? Number(row.ae_initial_charges) : null;
-      const rowCMax = row.ae_initial_charges_max != null ? Number(row.ae_initial_charges_max) : null;
+      const rowC = evalCharge(row.ae_initial_charges);
+      const rowCMax = evalCharge(row.ae_initial_charges_max);
       if (rowC != null && Number.isFinite(rowC) && rowC > 0) {
         data.flags = data.flags ?? {};
         data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
