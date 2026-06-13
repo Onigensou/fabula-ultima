@@ -90,6 +90,10 @@ const REACTION_CONFIG_TABLE = {
     reaction_trigger: "creature_targeted_by_action",
     reaction_source: "all",
     reaction_action_intent: "harmful",
+    // RAW: "After a creature ... performs a ranged ATTACK". Gate to the Attack
+    // action kind explicitly — ATTACK_IS_RANGED alone is implicit (it relies on
+    // spells carrying no weaponRange) and would let a ranged-tagged Spell through.
+    reaction_action_kind: "Attack",
     reaction_passive_mode: "ask",
     reaction_effect_ref: "crossfire_do",
     // Post-roll bystander gate. ATTACK_IS_RANGED reads the *incoming* attack
