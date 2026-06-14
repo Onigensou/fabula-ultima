@@ -1303,11 +1303,38 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
   if (kind === "melee")  add("extra_damage_mod_melee",  "Damage (Melee)");
   if (kind === "ranged") add("extra_damage_mod_ranged", "Damage (Ranged)");
   if (kind === "spell")  add("extra_damage_mod_spell",  "Damage (Spell)");
+  if (kind === "item")   add("extra_damage_mod_item",   "Damage (Item)");
   const el = String(elementType ?? "").toLowerCase();
   if (el && el !== "elementless") add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
   const wk = String(weaponKey ?? "").toLowerCase();
   if (wk && wk !== "none") add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
   return parts;
+}
+
+// ── Outgoing restore modifier ──────────────────────────────────────────
+// The heal/restore counterpart to resolveOutgoingDamageParts: a SINGLE source
+// of truth for "+X to a resource you restore", read by BOTH the card preview
+// (buildHealPerTarget) AND the apply path (applyGrantEffect) so they can never
+// disagree. Families mirror the damage layer — add a line here to introduce a
+// new one. Currently: `item_restore_mod` applies only to item-use actions
+// (Secret Formula's passive AE), so created potions restore extra but normal
+// heals are untouched. Returns a flat resource-agnostic bonus (RAW: "+SL×5 to
+// each restored amount").
+export function resolveRestoreParts({ actor = null, props = null, kind = null } = {}) {
+  const p = props ?? actor?.system?.props ?? null;
+  if (!p) return [];
+  const parts = [];
+  const add = (key, label) => {
+    const total = _mnum(p[key]);
+    if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
+  };
+  if (String(kind ?? "").toLowerCase() === "item") add("item_restore_mod", "Restore (Item)");
+  return parts;
+}
+
+// Sum a parts list (resolveRestoreParts output) to a flat bonus.
+export function sumRestoreParts(parts) {
+  return (Array.isArray(parts) ? parts : []).reduce((s, p) => s + (Number(p?.amount) || 0), 0);
 }
 
 // ── Crit detection ─────────────────────────────────────────────────────

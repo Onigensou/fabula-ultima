@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
@@ -2939,7 +2939,16 @@ async function applyGrantEffect(row, ctx) {
     skill: ctx.skill,
     round: ctx.dCombat?.round ?? 0,
   });
-  const amount = evaluateFormula(row.grant_amount, resolver, 0);
+  let amount = evaluateFormula(row.grant_amount, resolver, 0);
+  // Restore modifier (Secret Formula etc.): add the SHARED restore bonus via the
+  // SAME resolveRestoreParts the card preview (buildHealPerTarget) uses, so the
+  // preview and the applied heal can't drift. Scoped by action kind
+  // (item_restore_mod → item-use only) + a POSITIVE HP/MP restore (never a drain
+  // authored as a negative grant, never ip/shield/charge grants).
+  if (amount > 0 && (resource === "hp" || resource === "mp")) {
+    const restoreBonus = sumRestoreParts(resolveRestoreParts({ actor: ctx.reactorActor, kind: ctx.actionResult?.kind }));
+    if (restoreBonus > 0) amount += restoreBonus;
+  }
   if (amount === 0) {
     log(`skill-effects.grant: amount evaluated to 0 (row "${row.effect_label}"); skipping write`);
     return { ok: true, kind: "grant", applied: [], reason: "zero-amount" };

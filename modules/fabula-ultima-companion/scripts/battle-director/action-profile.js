@@ -17,7 +17,7 @@
 import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
-  resolveAccuracyParts, resolveOutgoingDamageParts,
+  resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts,
   applyCritDamage, resolveIncomingReduction,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
@@ -117,7 +117,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     return { mode: "none", element: null, resource: "hp", isMpDamage: false,
       damageBonus, outgoingParts: [], outgoingTotal: 0 };
   }
-  const dmgKind = isSpell ? "spell" : null;
+  // Item-use actions get the `item` damage family so the actor's
+  // `extra_damage_mod_item` modifier (Secret Formula's passive AE) applies to
+  // created items (e.g. Elemental Shard) but NOT to normal attacks/spells.
+  const isItem = String(ar?.kind ?? "").toLowerCase() === "item";
+  const dmgKind = isItem ? "item" : (isSpell ? "spell" : null);
   const outgoingParts = isMpDamage ? [] : resolveOutgoingDamageParts({
     actor: liveAttacker, props, kind: dmgKind, elementType: element, weaponKey: null,
   });
@@ -402,7 +406,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 // ── Heal synthesis (no-damage skills with a grant) ───────────────────────────
 // Mirrors COMPUTE's heal preview: find the first grant row (recipe / on_activate)
 // and produce per-target heal EffectPreviews.
-async function buildHealPerTarget({ view, ar, targets, resolver }) {
+async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = null }) {
   const out = [];
   const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
   const tbl = view?.effect_table ?? {};
@@ -416,7 +420,17 @@ async function buildHealPerTarget({ view, ar, targets, resolver }) {
   if (!grantRow) return { rows: out, healingObj: null };
 
   const grantResource = String(grantRow.grant_resource ?? "").toLowerCase();
-  const grantAmount = evaluateFormula(grantRow.grant_amount, resolver, 0);
+  const grantBase = evaluateFormula(grantRow.grant_amount, resolver, 0);
+  // Secret Formula (and any restore modifier): add the SHARED restore bonus —
+  // the SAME resolveRestoreParts that applyGrantEffect uses at resolve, so the
+  // card preview and the applied heal can't drift. The PARTS (attributed to each
+  // AE source, e.g. "Secret Formula") feed the Healing tooltip's itemized
+  // breakdown, mirroring the damage side. Positive restores only.
+  const restoreParts = grantBase > 0
+    ? resolveRestoreParts({ actor: liveAttacker, kind: ar?.kind })
+    : [];
+  const restoreBonus = sumRestoreParts(restoreParts);
+  const grantAmount = grantBase + (restoreBonus > 0 ? restoreBonus : 0);
   if (!(grantAmount > 0) || !["hp", "mp"].includes(grantResource)) return { rows: out, healingObj: null };
 
   for (const e of targets) {
@@ -446,6 +460,9 @@ async function buildHealPerTarget({ view, ar, targets, resolver }) {
   const healingObj = {
     base: grantAmount, element: grantResource === "mp" ? "mp" : "healing", resource: grantResource,
     ignoreHR: true, finalIfHit: grantAmount, declaresHealing: grantResource === "hp", isHealing: true,
+    // Itemized restore-modifier sources (e.g. "Secret Formula: +20") — the
+    // Healing tooltip renders these under "Base bonus", same as damage baseParts.
+    baseParts: restoreParts,
   };
   return { rows: out, healingObj };
 }
@@ -525,7 +542,7 @@ export async function computeActionProfile(input) {
     perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap });
   }
   if (primary.mode !== "damage") {
-    const heal = await buildHealPerTarget({ view, ar, targets, resolver });
+    const heal = await buildHealPerTarget({ view, ar, targets, resolver, liveAttacker });
     if (heal.rows.length) { perTarget = perTarget.concat(heal.rows); healingObj = heal.healingObj; }
   }
 
