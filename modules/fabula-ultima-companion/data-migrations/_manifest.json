@@ -342,13 +342,11 @@
     },
     {
       "key": "2026-06-05-common-study-author",
-      "path": "data-migrations/2026-06-05-common-study-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-05-common-study-author.js"
     },
     {
       "key": "2026-06-05-common-hinder-author",
-      "path": "data-migrations/2026-06-05-common-hinder-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-05-common-hinder-author.js"
     },
     {
       "key": "2026-06-05-bd-skills-restore",
@@ -356,8 +354,7 @@
     },
     {
       "key": "2026-06-05-sharpshooter-hawkeye-author",
-      "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-05-sharpshooter-hawkeye-author.js"
     },
     {
       "key": "2026-06-05-sharpshooter-stub-desc-clean",
@@ -421,8 +418,7 @@
     },
     {
       "key": "2026-06-07-sharpshooter-rwm-bd-and-dummy",
-      "path": "data-migrations/2026-06-07-sharpshooter-rwm-bd-and-dummy.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-07-sharpshooter-rwm-bd-and-dummy.js"
     },
     {
       "key": "2026-06-07-fix-pds-dup-and-zero-strategy",
@@ -442,23 +438,19 @@
     },
     {
       "key": "2026-06-07-sharpshooter-warning-shot",
-      "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-07-sharpshooter-warning-shot.js"
     },
     {
       "key": "2026-06-07-sharpshooter-barrage",
-      "path": "data-migrations/2026-06-07-sharpshooter-barrage.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-07-sharpshooter-barrage.js"
     },
     {
       "key": "2026-06-07-sharpshooter-crossfire",
-      "path": "data-migrations/2026-06-07-sharpshooter-crossfire.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-07-sharpshooter-crossfire.js"
     },
     {
       "key": "2026-06-07-sharpshooter-perfect-aim",
-      "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-07-sharpshooter-perfect-aim.js"
     },
     {
       "key": "2026-06-07-menu-text-on-menu-row",
@@ -474,18 +466,15 @@
     },
     {
       "key": "2026-06-09-grappled-status-author",
-      "path": "data-migrations/2026-06-09-grappled-status-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-09-grappled-status-author.js"
     },
     {
       "key": "2026-06-09-guard-affinity-rs",
-      "path": "data-migrations/2026-06-09-guard-affinity-rs.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-09-guard-affinity-rs.js"
     },
     {
       "key": "2026-06-09-grappling-reciprocal-author",
-      "path": "data-migrations/2026-06-09-grappling-reciprocal-author.js",
-      "idempotent": true
+      "path": "data-migrations/2026-06-09-grappling-reciprocal-author.js"
     },
     {
       "key": "2026-06-12-dungeon-salamander-author",

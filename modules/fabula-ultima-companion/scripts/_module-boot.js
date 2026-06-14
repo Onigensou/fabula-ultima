@@ -8,11 +8,19 @@
  *    refreshes are visible: if Ctrl+F5 didn't actually refresh, you'll see the
  *    old timestamp and know you're still on cached scripts.
  *
- * 2) Automatic macro source sync (GM only)
- *    Walks `macros/_manifest.json` and upserts each macro from its source file
- *    into the world's macro directory. Equivalent to running the
- *    "Sync FUCompanion Macros" admin macro by hand after every `git pull`,
- *    but automatic on every world boot.
+ * 2) Macro source SEEDING (GM only)
+ *    Walks `macros/_manifest.json` and CREATES any macro that is missing from
+ *    the world's macro directory, from its source file. A macro that already
+ *    exists is left ALONE — this script seeds a new world (or a newly-added
+ *    macro) but never overwrites a macro already present. In-game edits to a
+ *    synced macro therefore PERSIST across refreshes; the world copy is the
+ *    authority once it exists (matches our "world data is authoritative"
+ *    delivery model — see [[feedback_seed_only_migrations_world_authoritative]]).
+ *
+ *    ⚠ Trade-off: a `git pull` that changes a macro's source will NOT auto-apply
+ *    to a world that already has that macro. To push a source change into an
+ *    existing macro, delete the live macro (then it re-seeds from disk on the
+ *    next boot) or paste the new source in by hand.
  *
  * 3) Template dropdown-options sync (GM only)
  *    Ensures every CSB select column in the skill template lists every value the
@@ -26,12 +34,12 @@
  *    value — no per-kind template edit to remember. See [[csb-template-gating]].
  *
  *    - Manifest-driven (modules/fabula-ultima-companion/macros/_manifest.json).
- *    - Idempotent: macros whose bodies already match are left untouched (no
- *      writes, no notification noise).
+ *    - Create-only: an existing macro (by name) is never written — only missing
+ *      ones are created. Zero writes in steady state.
  *    - GM-only: regular players don't have permission to modify macros and
  *      shouldn't trigger this anyway.
  *    - The "Sync FUCompanion Macros" macro itself is intentionally NOT in the
- *      manifest, so this script never overwrites the manual fallback.
+ *      manifest, so this script never touches the manual fallback.
  *
  * Loaded first in module.json so the boot marker beats other scripts' init
  * logs to console.
@@ -53,8 +61,8 @@ Hooks.once("ready", async () => {
   if (!game.user?.isGM) return;
 
   // Hidden escape hatch: set this flag in console before reload to skip the
-  // auto-sync for a single session (e.g. when intentionally hand-editing a
-  // live macro and you don't want it overwritten on next refresh).
+  // macro seed for a single session (e.g. when intentionally testing a world
+  // that is missing a macro and you don't want it re-created).
   if (globalThis.__FU_DISABLE_MACRO_SYNC__) {
     console.info(`${FU_BOOT_TAG} Auto-sync skipped (__FU_DISABLE_MACRO_SYNC__ set).`);
     return;
@@ -80,19 +88,7 @@ Hooks.once("ready", async () => {
     return;
   }
 
-  // Foundry's macro editor can normalize line endings (CRLF↔LF) and strip/add
-  // trailing whitespace on save, which makes the live `existing.command` no
-  // longer byte-equal to the raw source `fetch()`ed from disk. Without this
-  // helper, every boot would rewrite every macro forever. We normalize BOTH
-  // sides for the comparison only; the WRITE still uses the raw source text.
-  const normalizeForCompare = (s) =>
-    String(s ?? "")
-      .replace(/^﻿/, "")    // strip BOM if present
-      .replace(/\r\n?/g, "\n")   // normalize CRLF / lone CR to LF
-      .replace(/[ \t]+$/gm, "")  // strip trailing whitespace per line
-      .replace(/\n+$/g, "");     // strip trailing blank lines
-
-  const result = { updated: 0, created: 0, unchanged: 0, failed: 0, skipped: 0 };
+  const result = { created: 0, preserved: 0, failed: 0, skipped: 0 };
   const failures = [];
   const touched = [];
 
@@ -111,24 +107,22 @@ Hooks.once("ready", async () => {
 
       const existing = game.macros.getName(name);
       if (existing) {
-        if (normalizeForCompare(existing.command) === normalizeForCompare(text)) {
-          result.unchanged++;
-          continue;
-        }
-        await existing.update({ command: text });
-        result.updated++;
-        touched.push(name);
-      } else {
-        await Macro.create({
-          name,
-          type: "script",
-          command: text,
-          scope: "global",
-          img: "icons/svg/dice-target.svg"
-        });
-        result.created++;
-        touched.push(`${name} (new)`);
+        // SEED-ONLY: a macro already present in the world is OWNED by the world,
+        // not by this script. Never overwrite it, so in-game edits survive a
+        // refresh. To push a source change into an existing macro, delete the
+        // live macro (it re-seeds from disk next boot) or paste in the new source.
+        result.preserved++;
+        continue;
       }
+      await Macro.create({
+        name,
+        type: "script",
+        command: text,
+        scope: "global",
+        img: "icons/svg/dice-target.svg"
+      });
+      result.created++;
+      touched.push(`${name} (new)`);
     } catch (e) {
       result.failed++;
       failures.push({ name, path, error: e.message });
@@ -137,18 +131,18 @@ Hooks.once("ready", async () => {
   }
 
   const summary =
-    `${result.updated} updated, ${result.created} created, ` +
-    `${result.unchanged} unchanged, ${result.failed} failed, ${result.skipped} skipped`;
+    `${result.created} created, ${result.preserved} preserved, ` +
+    `${result.failed} failed, ${result.skipped} skipped`;
 
   if (result.failed > 0) {
-    console.warn(`${FU_BOOT_TAG} Auto-sync complete — ${summary}`, { failures });
-    ui.notifications?.warn(`Macro auto-sync: ${summary} — see console for failures`);
-  } else if (result.updated > 0 || result.created > 0) {
-    console.info(`${FU_BOOT_TAG} Auto-sync complete — ${summary}`, { touched });
-    ui.notifications?.info(`Macro auto-sync: ${summary}`);
+    console.warn(`${FU_BOOT_TAG} Macro seed complete — ${summary}`, { failures });
+    ui.notifications?.warn(`Macro seed: ${summary} — see console for failures`);
+  } else if (result.created > 0) {
+    console.info(`${FU_BOOT_TAG} Macro seed complete — ${summary}`, { touched });
+    ui.notifications?.info(`Macro seed: ${summary}`);
   } else {
-    // Quiet path: everything was already in sync. Just a console line, no toast.
-    console.info(`${FU_BOOT_TAG} Auto-sync complete — ${summary}`);
+    // Quiet path: every manifest macro already exists. Just a console line, no toast.
+    console.info(`${FU_BOOT_TAG} Macro seed complete — ${summary}`);
   }
 });
 
