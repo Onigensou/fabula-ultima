@@ -207,6 +207,25 @@ function collectClassSkillItems(cls) {
   return [...byName.values()];
 }
 
+// Hybrid (cross-class) heroics live in the class-less hub folder
+// `Battle Director / Hybrid Heroic Skill` (e.g. Double Arrow = Commander/
+// Sharpshooter, Hoplite = Commander/Guardian). They carry NO class field —
+// only a `heroic_requirement` naming the eligible classes ("…among Commander
+// and Sharpshooter."). Match the generated actor's class against that text so
+// the dummy also gets the hybrid heroics it qualifies for. Deduped by name.
+function collectHybridHeroicsForClass(cls) {
+  if (!cls) return [];
+  const re = new RegExp(`\\b${String(cls).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+  const matches = (game.items?.contents ?? []).filter((i) => {
+    const p = folderPathNames(i);
+    if (!(p[0] === "Battle Director" && p[1] === "Hybrid Heroic Skill")) return false;
+    return re.test(String(i.system?.props?.heroic_requirement ?? ""));
+  });
+  const byName = new Map();
+  for (const i of matches) if (!byName.has(i.name)) byName.set(i.name, i);
+  return [...byName.values()];
+}
+
 // What loadout a class's skills GATE on, so a generated test actor is
 // combat-ready instead of inert. Scans the raw skill data for the loadout
 // formula identifiers (HAS_*_WEAPON / HAS_SHIELD / HAS_MARTIAL_ARMOR) — e.g.
@@ -383,8 +402,14 @@ async function genClassActor(className, { withBasicGear = true } = {}) {
   // Load the class's implemented BD skills (+ optionally all basic weapons &
   // shields, unequipped, for Equipment-action testing).
   const mkData = (i) => { const o = i.toObject(); delete o._id; return o; };
-  const skillItems = collectClassSkillItems(className).map(mkData);
+  // Class-folder skills + any hybrid (cross-class) heroics this class qualifies
+  // for. Class-folder wins on a name clash (dedupe by name across both).
+  const classSkillDocs = collectClassSkillItems(className);
+  const seenNames = new Set(classSkillDocs.map((i) => i.name));
+  const hybridDocs = collectHybridHeroicsForClass(className).filter((i) => !seenNames.has(i.name));
+  const skillItems = [...classSkillDocs, ...hybridDocs].map(mkData);
   if (!skillItems.length) ui.notifications?.warn(`Test Battle: no implemented BD skills found for "${className}".`);
+  else if (hybridDocs.length) log(`test-battle: +${hybridDocs.length} hybrid heroic(s) for "${className}": ${hybridDocs.map((i) => i.name).join(", ")}`);
   const gearItems = withBasicGear ? collectBasicEquipment().map((i) => {
     const o = mkData(i);
     if (o.system?.props) o.system.props.isEquipped = false; // backpack, not equipped
