@@ -725,9 +725,21 @@ async function shouldReactionPassiveFire(row, item, reactorActor, payload) {
 //                    Charge form:   { kind:"charge", chargeKey, required, current }.
 //   - badge        : "Low MP" / "No Charge" / "Low MP, No Charge" style
 //                    label, or null when ok.
+// Deep Pockets et al.: an actor's `ip_reduction_value` lowers every IP SPEND
+// by that much, never below 1. Mirrors command-itemCreate.buildReducedIpCost so
+// BD item-create and skill-config IP spends behave identically (same store, same
+// floor). Populate the store via a permanent AE (Deep Pockets).
+function actorIpReduction(actor) {
+  const n = Number(actor?.system?.props?.ip_reduction_value);
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
+}
+function ipReducedAmount(amount, actor) {
+  return amount > 0 ? Math.max(1, amount - actorIpReduction(actor)) : amount;
+}
+
 export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
   const out = {
-    ok: false, debit: {}, chargeDebit: {},
+    ok: false, debit: {}, chargeDebit: {}, variable: false,
     sufficient: true, shortfalls: [], badge: null,
   };
   if (!effectTable || typeof effectTable !== "object" || !startLabel || !actor) return out;
@@ -743,6 +755,26 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
   const seen = new Set();
   const debit = {};
   const chargeDebit = {};
+  let variable = false;
+
+  // Does `label`'s reachable chain contain a SELF resource/charge cost? Used to
+  // flag choice-gated costs (open_action_menu options / confirm branches) as
+  // "variable" so the picker can show e.g. "Varied" instead of undercounting.
+  const hasCostUnder = (lbl, seenC = new Set()) => {
+    if (!lbl || seenC.has(lbl)) return false;
+    seenC.add(lbl);
+    const r = byLabel.get(lbl); if (!r) return false;
+    const k = String(r.effect_kind ?? "").trim().toLowerCase();
+    if (k === "consume_resource") {
+      const tref = String(r.target_ref ?? "self").trim() || "self";
+      return tref === "self" && !!RESOURCE_PROPS[String(r.consume_resource ?? "").trim().toLowerCase()];
+    }
+    if (k === "consume_charge") return String(r.on_empty ?? "abort").toLowerCase() === "abort" && !!String(r.charge_key ?? "").trim();
+    if (k === "chain") return parseEffectRefList(r.chain_steps).some((s) => hasCostUnder(s, seenC));
+    if (k === "open_action_menu") return parseEffectRefList(r.menu_option_refs).some((s) => hasCostUnder(s, seenC));
+    if (k === "confirm") return parseEffectRefList(r.confirm_button_refs).some((s) => hasCostUnder(s, seenC));
+    return false;
+  };
 
   function walk(label) {
     if (!label || seen.has(label)) return;
@@ -751,11 +783,18 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
     if (!row) return;
     const kind = String(row.effect_kind ?? "").trim().toLowerCase();
     if (kind === "consume_resource") {
+      // Only the actor's OWN spend is a cost — a consume targeting an enemy
+      // (e.g. an MP-drain) is a mechanic, not the caster's cost.
+      const tref = String(row.target_ref ?? "self").trim() || "self";
+      if (tref !== "self") return;
       const resource = String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase();
       const def = RESOURCE_PROPS[resource];
       if (!def) return;
       const amountRaw = row.consume_amount ?? row.grant_amount;
-      const amount = Number(evaluateFormula(amountRaw, resolver, 0)) || 0;
+      let amount = Number(evaluateFormula(amountRaw, resolver, 0)) || 0;
+      // IP spends honor the actor's ip_reduction_value (Deep Pockets) so the
+      // "Low IP" gate matches the actually-debited cost.
+      if (resource === "ip") amount = ipReducedAmount(amount, actor);
       if (amount > 0) debit[resource] = (debit[resource] ?? 0) + amount;
       return;
     }
@@ -777,16 +816,31 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
       for (const s of steps) walk(s);
       return;
     }
-    // open_action_menu options are player choices — affordability of
-    // each option is checked when chosen, not aggregated up here.
-    // grant / apply_ae / remove_tagged_ae / etc.: not a gate on the
-    // reactor; no-op.
+    if (kind === "open_action_menu") {
+      // Options are player choices — NOT summed into the fixed cost. But if any
+      // option carries a self-cost, flag the action as variable-cost.
+      if (row.free_mode !== true) {
+        if (parseEffectRefList(row.menu_option_refs).some((r) => hasCostUnder(r))) variable = true;
+        const inline = Array.isArray(row.menu_options) ? row.menu_options
+          : (row.menu_options && typeof row.menu_options === "object" ? Object.values(row.menu_options) : []);
+        if (inline.some((o) => ["consume_resource", "consume_charge"].includes(String(o?.effect_kind ?? "").toLowerCase()))) variable = true;
+      }
+      return;
+    }
+    if (kind === "confirm") {
+      // Branch buttons are player choices — flag variable if any branch costs.
+      if (parseEffectRefList(row.confirm_button_refs).some((r) => hasCostUnder(r))) variable = true;
+      return;
+    }
+    // grant / apply_ae / remove_tagged_ae / leave_combat / etc.: not a gate on
+    // the reactor; no-op.
   }
   walk(startLabel);
 
   out.ok = true;
   out.debit = debit;
   out.chargeDebit = chargeDebit;
+  out.variable = variable;
 
   // Resource shortfalls.
   for (const [resource, required] of Object.entries(debit)) {
@@ -2031,6 +2085,170 @@ async function promptNumberDialog({ label, min, max, def, title }) {
   });
 }
 
+// ── confirm — N-button decision dialog (gate or branch) ──────────────────
+// A reusable confirmation/decision step rendered as a parchment overlay
+// (matching the shared list-picker UI family). Modes:
+//   GATE   (no confirm_button_refs): [OK][Cancel]. OK → chain continues;
+//          Cancel / dismiss → { abort: true } (the chain stops, so a later
+//          consume_resource never fires — order cost AFTER this gate).
+//   BRANCH (confirm_button_refs set): one button per ref (any number) + a
+//          Cancel button. Clicking dispatches that ref's effect, then stops
+//          the parent chain (the branch IS the outcome).
+// Buttons are uniform width and accept a named style: default | danger |
+// primary | warning | success. Player-facing — in a passive/headless ctx it
+// auto-proceeds (gate) / auto-runs the first ref (branch), never blocking.
+const FUD_CONFIRM_STYLE_ID = "fud-confirm-style";
+// Parchment overlay matching the shared list-picker (.fud-lp-*) so confirm
+// dialogs read as the same UI family as targeting / option menus — not a raw
+// Foundry Dialog. Style variants tint within the parchment palette.
+function ensureConfirmStyle() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(FUD_CONFIRM_STYLE_ID)) return;
+  const el = document.createElement("style");
+  el.id = FUD_CONFIRM_STYLE_ID;
+  el.textContent = `
+    .fud-confirm-backdrop { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.34); }
+    .fud-confirm-card {
+      min-width:280px; max-width:min(92vw,440px); padding:0 0 12px; overflow:hidden;
+      border:2px solid var(--fud-stroke,#7a6a55); border-radius:14px;
+      background:linear-gradient(180deg, var(--fud-parchment-top,#f6f1e6), var(--fud-parchment-bot,#ebe3d0));
+      box-shadow:0 14px 44px rgba(0,0,0,0.5);
+      color:var(--fud-ink,#3a3228); font-family:"Inter","Signika","Segoe UI",system-ui,sans-serif;
+      transform:scale(0.96); opacity:0; transition:transform 140ms ease-out, opacity 140ms ease-out;
+    }
+    .fud-confirm-card.is-visible { transform:scale(1); opacity:1; }
+    .fud-confirm-card .fud-confirm-title {
+      font-size:14px; font-weight:900; letter-spacing:0.32px; text-transform:uppercase; text-align:center;
+      padding:10px 14px; border-bottom:2px solid var(--fud-stroke,#7a6a55);
+    }
+    .fud-confirm-card .fud-confirm-message {
+      font-size:12px; line-height:1.45; padding:13px 16px; color:var(--fud-ink-soft,#4b4338);
+    }
+    .fud-confirm-card .fud-confirm-buttons { display:flex; gap:8px; padding:0 12px; }
+    .fud-confirm-card .fud-cbtn {
+      flex:1 1 0; min-width:0; padding:9px 10px; border-radius:9px;
+      border:2px solid var(--fud-stroke,#7a6a55);
+      background:linear-gradient(180deg,#e5d6c5,#c9b294); color:var(--fud-ink,#3a3228);
+      font-weight:800; letter-spacing:0.32px; text-transform:uppercase; font-size:11px;
+      cursor:pointer; user-select:none; text-align:center;
+      box-shadow:0 3px 0 rgba(41,33,24,0.55), 0 0 0 1px rgba(255,255,255,0.7) inset;
+      transition:filter 100ms ease, transform 60ms ease;
+    }
+    .fud-confirm-card .fud-cbtn:hover { filter:brightness(1.05); }
+    .fud-confirm-card .fud-cbtn:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(41,33,24,0.55), 0 0 0 1px rgba(255,255,255,0.7) inset; }
+    .fud-confirm-card .fud-cbtn-danger  { background:linear-gradient(180deg,#caa0a0,#a86b6b); border-color:#7a3a3a; color:#3a1414; }
+    .fud-confirm-card .fud-cbtn-primary { background:linear-gradient(180deg,#a8bcd0,#6f93b8); border-color:#3a5a7a; color:#142433; }
+    .fud-confirm-card .fud-cbtn-warning { background:linear-gradient(180deg,#d8c79a,#bda35f); border-color:#7a5f1f; color:#3a2e0a; }
+    .fud-confirm-card .fud-cbtn-success { background:linear-gradient(180deg,#a8c9ad,#6f9d77); border-color:#2f6d3a; color:#143a1c; }
+  `;
+  document.head.appendChild(el);
+}
+
+// Render an N-button confirm overlay (parchment theme). `buttons` =
+// [{key,label,style}]; always appends a Cancel button. Resolves to the chosen
+// button key, or null on Cancel / Escape / backdrop click.
+function confirmButtonDialog({ title, message, buttons, cancelLabel, cancelStyle }) {
+  ensureConfirmStyle();
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return new Promise((resolve) => {
+    let resolved = false;
+    let onKey = null;
+    const backdrop = document.createElement("div");
+    backdrop.className = "fud-confirm-backdrop";
+    const done = (v) => {
+      if (resolved) return; resolved = true;
+      if (onKey) document.removeEventListener("keydown", onKey, true);
+      backdrop.querySelector(".fud-confirm-card")?.classList.remove("is-visible");
+      setTimeout(() => { try { backdrop.remove(); } catch { /* noop */ } }, 140);
+      resolve(v);
+    };
+    const btnHtml = buttons.map((b) =>
+      `<button type="button" class="fud-cbtn fud-cbtn-${esc(String(b.style ?? "default").toLowerCase())}" data-key="${esc(b.key)}">${esc(b.label)}</button>`
+    ).join("");
+    const cancelHtml = `<button type="button" class="fud-cbtn fud-cbtn-${esc(String(cancelStyle ?? "default").toLowerCase())}" data-key="__cancel__">${esc(cancelLabel ?? "Cancel")}</button>`;
+    backdrop.innerHTML = `
+      <div class="fud-confirm-card" role="dialog" aria-modal="true">
+        <div class="fud-confirm-title">${esc(title ?? "Confirm")}</div>
+        <div class="fud-confirm-message">${esc(message ?? "")}</div>
+        <div class="fud-confirm-buttons">${btnHtml}${cancelHtml}</div>
+      </div>`;
+    backdrop.addEventListener("click", (ev) => {
+      const btn = ev.target?.closest?.("[data-key]");
+      if (btn) { const k = btn.getAttribute("data-key"); done(k === "__cancel__" ? null : k); return; }
+      if (ev.target === backdrop) done(null);   // backdrop click = cancel
+    });
+    onKey = (ev) => { if (ev.key === "Escape") { ev.preventDefault(); done(null); } };
+    document.addEventListener("keydown", onKey, true);
+    document.body.appendChild(backdrop);
+    requestAnimationFrame(() => backdrop.querySelector(".fud-confirm-card")?.classList.add("is-visible"));
+  });
+}
+
+async function applyConfirmEffect(row, ctx) {
+  const title = String(row.confirm_title ?? ctx.skill?.name ?? "Confirm");
+  const message = String(row.confirm_message ?? "Are you sure?");
+  const headless = ctx.isPassive || typeof Dialog === "undefined" || typeof document === "undefined";
+  const refs = parseEffectRefList(row.confirm_button_refs);
+
+  if (refs.length) {
+    // BRANCH mode.
+    if (headless) {
+      const first = findEffectRow(ctx, refs[0]);
+      if (first?.effect_kind) await applyEffectRow({ ...first, effect_label: `${row.effect_label ?? "confirm"}:${refs[0]}` }, ctx);
+      return { ok: true, kind: "confirm", branch: refs[0], auto: true, abort: true };
+    }
+    const buttons = refs.map((ref) => {
+      const r = findEffectRow(ctx, ref);
+      return { key: ref, label: String(r?.button_label ?? r?.menu_label ?? r?.effect_label ?? ref), style: r?.button_style ?? "default" };
+    });
+    const chosen = await confirmButtonDialog({ title, message, buttons, cancelLabel: row.confirm_cancel_label, cancelStyle: row.confirm_cancel_style });
+    if (chosen == null) return { ok: true, kind: "confirm", reason: "cancelled", abort: true };
+    const r = findEffectRow(ctx, chosen);
+    let sub = null;
+    if (r?.effect_kind) sub = await applyEffectRow({ ...r, effect_label: `${row.effect_label ?? "confirm"}:${chosen}` }, ctx);
+    // A branch is the whole outcome — stop the parent chain either way.
+    return { ok: sub ? sub.ok : true, kind: "confirm", branch: chosen, nested: sub, abort: true };
+  }
+
+  // GATE mode.
+  if (headless) return { ok: true, kind: "confirm", confirmed: true, auto: true };
+  const okKey = "__ok__";
+  const chosen = await confirmButtonDialog({
+    title, message,
+    buttons: [{ key: okKey, label: String(row.confirm_ok_label ?? "Confirm"), style: row.confirm_ok_style ?? "default" }],
+    cancelLabel: row.confirm_cancel_label ?? "Cancel",
+    cancelStyle: row.confirm_cancel_style,
+  });
+  if (chosen === okKey) return { ok: true, kind: "confirm", confirmed: true };
+  return { ok: true, kind: "confirm", confirmed: false, abort: true };
+}
+
+// ── leave_combat — remove the target from the active conflict ─────────────
+// Drops the target's combatant from the director's turn order (dCombat) AND
+// removes its token from the scene (RAW "vanish from the scene"). Re-entry is
+// GM narrative. Self-targeted in practice (See you later). Routes through the
+// director's removeCombatant API so the FSM/turn-order/banner stay consistent.
+async function applyLeaveCombatEffect(row, ctx) {
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "leave_combat", reason: "no-targets", abort: true };
+  // The director API lives at FUCompanion.api.experimental.battleDirector.
+  const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const applied = [];
+  for (const token of tr.tokens) {
+    if (typeof bd?.removeCombatant === "function") {
+      try {
+        const res = await bd.removeCombatant({ tokenUuid: token.uuid });
+        if (res?.ok) applied.push(token.uuid);
+        else warn(`skill-effects.leave_combat: removeCombatant failed — ${res?.error}`);
+      } catch (e) { warn("skill-effects.leave_combat: removeCombatant threw", e); }
+    } else {
+      warn("skill-effects.leave_combat: director removeCombatant API unavailable");
+    }
+  }
+  return { ok: true, kind: "leave_combat", applied };
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -2049,6 +2267,8 @@ const EFFECT_KIND_DISPATCH = {
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    applyConsumeResourceEffect,
+  confirm:             applyConfirmEffect,
+  leave_combat:        applyLeaveCombatEffect,
   add_target:          applyAddTargetEffect,
   roll_loot_table:     applyRollLootTableEffect,
   deal_damage:         applyDealDamageEffect,
@@ -2092,6 +2312,8 @@ export const EFFECT_KIND_LABELS = {
   remove_tagged_ae:    "Remove Tagged AE",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
+  confirm:             "Confirm (decision dialog — gate / multi-button)",
+  leave_combat:        "Leave Combat (remove self from the conflict)",
   add_target:          "Add Target",
   roll_loot_table:     "Roll Loot Table",
   deal_damage:         "Deal Damage",
@@ -2231,6 +2453,11 @@ const EFFECT_KIND_PREVIEW = {
 
   // prompt_number opens an input dialog at apply time — no target-facing row.
   prompt_number: () => null,
+
+  // confirm pops a decision dialog at apply time; leave_combat removes a
+  // combatant — neither is a target-facing inline card row.
+  confirm: () => null,
+  leave_combat: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
   chain: () => null,
@@ -2712,16 +2939,19 @@ async function applyConsumeResourceEffect(row, ctx) {
   for (const token of targetResult.tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    // IP spends honor the payer's own ip_reduction_value (Deep Pockets), never
+    // below 1 — same rule as BD item-create. Per-target so each payer's mod applies.
+    const effAmount = resource === "ip" ? ipReducedAmount(amount, actor) : amount;
     const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
-    if (cur < amount) {
-      log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${amount}; ${onEmpty}`);
+    if (cur < effAmount) {
+      log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${effAmount}; ${onEmpty}`);
       if (onEmpty === "abort") {
         return { ok: false, kind: "consume_resource", reason: "insufficient", abort: true };
       }
       // Other behaviors (skip / warn) would continue here — kept minimal for ship.
       continue;
     }
-    const result = await writeResourceDelta(actor, def, -amount);
+    const result = await writeResourceDelta(actor, def, -effAmount);
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
       // Spend float over the payer's token. `result.applied` is negative for

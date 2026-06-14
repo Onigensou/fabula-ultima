@@ -12,7 +12,18 @@
 import { log, warn } from "./logger.js";
 import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "./skill-cost.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { analyzeChainCost } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
+
+// Cost badge labels for the config-derived (effect-chain) cost map.
+const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
+function formatCostMap(map) {
+  const parts = [];
+  for (const [res, amt] of map.entries()) {
+    if (Number(amt) > 0) parts.push(`${amt} ${COST_RES_LABEL[res] ?? String(res).toUpperCase()}`);
+  }
+  return parts.join(", ");
+}
 
 // Display-time formula resolver for free-text props like skill_target.
 // Some authors embed inline expressions like
@@ -138,7 +149,29 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   const parsedCost = parseSkillCost(rawCost);
   // Resolve at targetCount=1 for the affordability gate — variable costs
   // resolve against the MINIMUM (variableAmount defaults to 0).
-  const costMap = resolveCost(parsedCost, { actor, targetCount: 1, variableAmount: 0 });
+  const stringCostMap = resolveCost(parsedCost, { actor, targetCount: 1, variableAmount: 0 });
+  // Config-derived cost: walk the on_activate chain so in-chain consume_resource
+  // rows (the ACTUAL debits) drive the displayed cost + affordability — single
+  // source of truth for in-chain costs, no drift. Kept SEPARATE from the string
+  // cost so the string badge keeps its exact formatting ("up to 25 MP", "50% MP",
+  // "10×T MP" via formatParsedCost); the config part is appended. `costVariable`
+  // flags choice-gated costs (menu / confirm branch) → shown as "Varied".
+  // Skills with no on_activate chain skip this entirely → identical to before.
+  const configDebit = new Map();
+  let costVariable = false;
+  const activateRef = String(p.on_activate_effect_ref ?? "").trim();
+  if (activateRef && p.effect_table) {
+    try {
+      const ac = analyzeChainCost(p.effect_table, activateRef, actor, skill);
+      if (ac?.ok) {
+        for (const [res, amt] of Object.entries(ac.debit ?? {})) if (Number(amt) > 0) configDebit.set(res, Number(amt));
+        costVariable = !!ac.variable;
+      }
+    } catch (e) { warn("skill-picker: analyzeChainCost threw", e); }
+  }
+  // Affordability gate = string + config merged (display keeps them separate).
+  const costMap = new Map(stringCostMap);
+  for (const [res, amt] of configDebit) costMap.set(res, (costMap.get(res) ?? 0) + amt);
   const gate = checkAffordable(actor, costMap);
   return {
     uuid: skill.uuid,
@@ -157,6 +190,8 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     rawCost,
     parsedCost,
     costMap,
+    configDebit,
+    costVariable,
     affordable: gate.ok,
     missingResources: gate.missing,
     source,
@@ -211,8 +246,18 @@ function candidateToRow(c) {
     .map((b) => `<span class="bullet">${b}</span>`)
     .join(` <span class="dot">•</span> `);
 
-  const hasCost = c.parsedCost.tokens.length > 0;
-  const costLabel = hasCost ? escapeHtml(formatParsedCost(c.parsedCost)) : "Free";
+  // Cost badge = the string cost (formatted exactly as before, preserving
+  // up-to / % / ×T) + the config-chain cost appended. "Varied" when the real
+  // cost depends on a player choice (menu / confirm branch).
+  const stringLabel = c.parsedCost?.tokens?.length ? formatParsedCost(c.parsedCost) : "";
+  const configLabel = c.configDebit && c.configDebit.size ? formatCostMap(c.configDebit) : "";
+  const parts = [stringLabel, configLabel].filter(Boolean);
+  let costLabel;
+  if (parts.length && c.costVariable) costLabel = `${parts.join(", ")} + Varied`;
+  else if (parts.length) costLabel = parts.join(", ");
+  else if (c.costVariable) costLabel = "Varied";
+  else costLabel = "Free";
+  const isFree = !parts.length && !c.costVariable;
   const sourceTag = c.source === "item-granted" && c.sourceItemName
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
   const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
@@ -222,13 +267,13 @@ function candidateToRow(c) {
     imageUrl: safeImg,
     primary: `${sourceTag}${escapeHtml(c.name)}`,
     secondary,
-    badge: costLabel,
-    badgeTone: !hasCost ? "free" : (c.affordable ? null : "danger"),
+    badge: escapeHtml(costLabel),
+    badgeTone: isFree ? "free" : (c.affordable ? null : "danger"),
     disabled: !c.affordable,
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),
-      cost: hasCost ? formatParsedCost(c.parsedCost) : null,
+      cost: isFree ? null : costLabel,
       missing: c.missingResources.map((m) => `${m.label}: ${m.has}/${m.need}`).join(", ") || null,
     },
   };

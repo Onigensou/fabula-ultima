@@ -38,6 +38,8 @@ const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
 // prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
 const PROMPT_NUMBER_VIS = `equalText(sameRow("effect_kind",''), "prompt_number")`;
+// confirm — N-button decision dialog (gate or branch).
+const CONFIRM_VIS = `equalText(sameRow("effect_kind",''), "confirm")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
 // open_action_menu free_mode grant AND the new free_action kind.
 const FREE_GRANT_VIS = `or(equalText(sameRow("effect_kind",''), "open_action_menu"), equalText(sameRow("effect_kind",''), "free_action"))`;
@@ -182,6 +184,25 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("prompt_max", "Prompt Max", { tooltip: "prompt_number: maximum (number or formula, evaluated against Prompt Max Ref's actor). e.g. \"AE_CHARGES_BURN\". Blank = unbounded.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_max_ref", "Prompt Max Ref", { tooltip: "prompt_number: target ref whose actor the min/max/default formulas read (e.g. \"tether_giver\" so max = the giver's Burn). Blank = the caster.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_default", "Prompt Default", { tooltip: "prompt_number: the input's starting value (number or formula). Blank = max.", vis: PROMPT_NUMBER_VIS }),
+
+  // confirm — N-button decision dialog. GATE mode (no Button Refs) = OK/Cancel;
+  // BRANCH mode (Button Refs set) = one button per ref + Cancel (branch buttons
+  // reuse the ref row's menu_label / button_style). Cancel/dismiss aborts the chain.
+  textCol("confirm_title", "Confirm Title", { tooltip: "confirm: dialog title. Blank = the skill name.", vis: CONFIRM_VIS }),
+  textCol("confirm_message", "Confirm Message", { tooltip: "confirm: dialog body text.", vis: CONFIRM_VIS }),
+  textCol("confirm_ok_label", "Confirm OK Label", { tooltip: "confirm GATE mode: the proceed button's label. Default \"Confirm\".", vis: CONFIRM_VIS }),
+  selectCol("confirm_ok_style", "Confirm OK Style", [
+    { key: "default", value: "Default" }, { key: "danger", value: "Danger (red)" },
+    { key: "primary", value: "Primary (blue)" }, { key: "warning", value: "Warning (amber)" },
+    { key: "success", value: "Success (green)" },
+  ], { tooltip: "confirm GATE mode: proceed button color.", vis: CONFIRM_VIS, defaultValue: "default" }),
+  textCol("confirm_cancel_label", "Confirm Cancel Label", { tooltip: "confirm: the cancel button's label. Default \"Cancel\".", vis: CONFIRM_VIS }),
+  selectCol("confirm_cancel_style", "Confirm Cancel Style", [
+    { key: "default", value: "Default" }, { key: "danger", value: "Danger (red)" },
+    { key: "primary", value: "Primary (blue)" }, { key: "warning", value: "Warning (amber)" },
+    { key: "success", value: "Success (green)" },
+  ], { tooltip: "confirm: cancel button color.", vis: CONFIRM_VIS, defaultValue: "default" }),
+  textCol("confirm_button_refs", "Confirm Button Refs", { tooltip: "confirm BRANCH mode: comma-separated effect_label refs — one button per ref (any number); clicking dispatches that ref then stops the chain. Blank = GATE mode (OK/Cancel).", vis: CONFIRM_VIS }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

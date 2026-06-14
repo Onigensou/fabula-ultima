@@ -349,6 +349,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MAX_IP": return readProp(actor, "max_ip");
       // Status / bond counts
       case "STATUS_COUNT": return countStatusDebuffs(actor);
+      // Distinct debuff TYPES across all enemy combatants (Zero Trigger:
+      // Strategy — "two or more DIFFERENT status effects"). Unions identities,
+      // so two Dazed enemies = 1, one Dazed + one Slow = 2.
+      case "ENEMY_DISTINCT_STATUS_COUNT": return countEnemyDistinctStatuses(actor);
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1016,6 +1020,68 @@ function countStatusDebuffs(actor) {
     }
   }
   return count;
+}
+
+// ── enemy distinct status counting (Zero Trigger: Strategy) ──────────────
+// RAW: trigger fires when enemies collectively suffer "two or more DIFFERENT
+// status effects". We union the debuff IDENTITIES across all enemy combatants
+// and return the set size — two Dazed enemies = 1, one Dazed + one Slow = 2.
+// Identity = a RAW status id if present, else the AE's first status id, else
+// its normalized name (so custom debuffs like Burn/Frightened dedupe too).
+function _combatDisposition(actor) {
+  const combat = globalThis.game?.combat;
+  let d = combat?.combatants?.find?.((c) => c.actor === actor)?.token?.disposition;
+  if (d == null) d = actor?.prototypeToken?.disposition;
+  if (d == null) {
+    try { const t = actor?.getActiveTokens?.(true, true)?.[0]; d = t?.document?.disposition ?? t?.disposition; } catch {}
+  }
+  const n = Number(d);
+  return Number.isFinite(n) ? n : null;
+}
+
+function collectDebuffStatusKeys(actor) {
+  const out = new Set();
+  if (!actor?.effects) return out;
+  const aem = globalThis.FUCompanion?.api?.activeEffectManager;
+  for (const eff of Array.from(actor.effects)) {
+    if (eff.disabled) continue;
+    const statuses = (eff.statuses && typeof eff.statuses[Symbol.iterator] === "function")
+      ? [...eff.statuses].map((s) => String(s).toLowerCase()) : [];
+    let isDebuff = false;
+    let key = null;
+    for (const s of statuses) { if (RAW_DEBUFF_STATUSES.has(s)) { isDebuff = true; key = s; break; } }
+    if (!isDebuff) {
+      let aemCat = null; try { aemCat = aem?.inferCategory?.(eff); } catch {}
+      const flagCat = eff.flags?.["fabula-ultima-companion"]?.category;
+      const tags = eff.system?.tags;
+      if (String(aemCat ?? "").toLowerCase() === "debuff"
+        || String(flagCat ?? "").toLowerCase() === "debuff"
+        || (Array.isArray(tags) && tags.includes("debuff"))) {
+        isDebuff = true;
+      }
+    }
+    if (!isDebuff) continue;
+    if (!key) key = statuses[0] ?? String(eff.name ?? "").trim().toLowerCase();
+    if (key) out.add(key);
+  }
+  return out;
+}
+
+function countEnemyDistinctStatuses(actor) {
+  const combat = globalThis.game?.combat;
+  if (!actor || !combat?.combatants) return 0;
+  const myDisp = _combatDisposition(actor);
+  if (myDisp == null) return 0;
+  const union = new Set();
+  for (const c of combat.combatants) {
+    const a = c.actor;
+    if (!a || a === actor) continue;
+    const d = Number(c.token?.disposition ?? _combatDisposition(a));
+    // Enemy = opposite disposition sign (friendly PC vs hostile monster).
+    if (!Number.isFinite(d) || d * myDisp >= 0) continue;
+    for (const k of collectDebuffStatusKeys(a)) union.add(k);
+  }
+  return union.size;
 }
 
 // Bond data lives at `actor.system.props.bond_N` / `emotion_N_M`.
