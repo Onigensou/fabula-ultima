@@ -66,6 +66,7 @@ async function getSkillEffectsExtras() {
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { computeActionProfile, projectProfileToActionResult } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
 // when their associated actor drops to 0 HP. RAW Core p.70:
@@ -4543,6 +4544,48 @@ const Stopped = {
   },
 };
 
+// ─── ANIMATION ─────────────────────────────────────────────────────────
+const Animation = {
+  async onEnter(director) {
+    const ar = director.ctx.actionResult;
+    const spec = await resolveAnimationSpec(ar);
+
+    if (!spec.hasScript) {
+      // No animation defined for this action — skip straight through.
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+
+    const casterTokenUuid    = ar?.attacker?.tokenUuid ?? null;
+    const targetTokenUuids   = (ar?.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+
+    // playDirectorAnimation is intentionally not awaited here — it drives
+    // itself asynchronously and enqueues INTERNAL_DONE when the gate resolves.
+    // Errors are caught inside; the catch block below handles unexpected throws
+    // that slip through (defensive).
+    playDirectorAnimation({ spec, director, casterTokenUuid, targetTokenUuids }).catch((e) => {
+      warn("Animation.onEnter: playDirectorAnimation threw unexpectedly", e);
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+    });
+  },
+
+  onExit(director) {
+    // Abort the gate if the FSM leaves ANIMATION for any reason before the
+    // animation finishes (e.g. STOP_COMBAT during a cinematic).
+    if (director.ctx.animationController?.playing) {
+      try { director.ctx.animationController.abort?.(); } catch {}
+      director.ctx.animationController = null;
+    }
+  },
+
+  onAbort(director) {
+    if (director.ctx.animationController?.playing) {
+      try { director.ctx.animationController.abort?.(); } catch {}
+      director.ctx.animationController = null;
+    }
+  },
+};
+
 export const STATE_HANDLERS = Object.freeze({
   [STATES.PREP]:            Prep,
   [STATES.ROUND_START]:     RoundStart,
@@ -4551,6 +4594,7 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.TARGET]:          Target,
   [STATES.COMPUTE]:         Compute,
   [STATES.CONFIRM]:         Confirm,
+  [STATES.ANIMATION]:       Animation,
   [STATES.RESOLVE]:           Resolve,
   [STATES.OPPORTUNITY_WINDOW]: OpportunityWindow,
   [STATES.REACTION_WINDOW]:   ReactionWindow,

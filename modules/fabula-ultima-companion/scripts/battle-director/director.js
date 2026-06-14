@@ -303,4 +303,26 @@ export class BattleDirector {
       this._stateTimeoutHandle = null;
     }
   }
+
+  // ── Animation control ──────────────────────────────────────────────────
+
+  get isAnimationPlaying() {
+    return !!this.ctx.animationController?.playing;
+  }
+
+  // Abort the currently playing animation (if any) so the FSM advances to
+  // RESOLVE immediately. When no animation is playing the SKIP_ANIMATION
+  // intent is dispatched directly — if the FSM is already past ANIMATION
+  // the transition table will drop it (no matching entry in RESOLVE etc.).
+  skipAnimation() {
+    const ctrl = this.ctx.animationController;
+    if (ctrl?.playing) {
+      // Resolves the abortPromise inside playDirectorAnimation, which races
+      // it against the gate — this collapses the gate and INTERNAL_DONE
+      // is enqueued from within playDirectorAnimation.
+      ctrl.abort?.();
+    } else {
+      this.dispatch({ type: INTENTS.SKIP_ANIMATION });
+    }
+  }
 }

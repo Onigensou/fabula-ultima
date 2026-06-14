@@ -16,6 +16,7 @@ export const STATES = Object.freeze({
   TARGET:           "TARGET",
   COMPUTE:          "COMPUTE",
   CONFIRM:          "CONFIRM",
+  ANIMATION:        "ANIMATION",
   RESOLVE:          "RESOLVE",
   REACTION_WINDOW:  "REACTION_WINDOW",
   OPPORTUNITY_WINDOW: "OPPORTUNITY_WINDOW",
@@ -70,6 +71,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.TARGET]:          null,            // was 2 min — disabled, same reason
   [STATES.COMPUTE]:         null,
   [STATES.CONFIRM]:         null,            // was 5 min — disabled, same reason (Equipment / Item composition can be long)
+  [STATES.ANIMATION]:       35 * 1000,       // 35 s — wall-clock guard for stuck animation scripts; gate resolves silently on overrun
   [STATES.RESOLVE]:         null,
   [STATES.REACTION_WINDOW]: null,            // was 30 s — disabled; GM manually advances when player reactions are done (GM sees all menus). v1 stub still self-fires INTERNAL_DONE after 100ms.
   [STATES.OPPORTUNITY_WINDOW]: null,         // no timeout — awaits player choice; offer() has a 120s built-in safety timeout
@@ -158,10 +160,26 @@ export const TRANSITIONS = Object.freeze({
   },
 
   [STATES.CONFIRM]: {
-    [INTENTS.CONFIRM_ACTION]: { next: STATES.RESOLVE },
+    [INTENTS.CONFIRM_ACTION]: { next: STATES.ANIMATION },
     [INTENTS.CANCEL_ACTION]: { next: STATES.DECLARE },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
     [INTENTS.TIMEOUT]: { next: STATES.ABORTED },
+  },
+
+  [STATES.ANIMATION]: {
+    // INTERNAL_DONE is enqueued by playDirectorAnimation() after the gate
+    // resolves (oni:animationEnd / timing_offset / failsafe / abort).
+    INTERNAL_DONE:              { next: STATES.RESOLVE },
+    // SKIP_ANIMATION can be dispatched externally (API, macro, dev shortcut)
+    // when the controller is null (already past the gate) or as a fallback
+    // if the animation never started.
+    [INTENTS.SKIP_ANIMATION]:   { next: STATES.RESOLVE },
+    // On abort the normal ABORTED → CLEANUP routing applies; RESOLVE must not
+    // fire so damage is never applied for an aborted action.
+    [INTENTS.ABORT]:            { next: STATES.ABORTED },
+    // FSM timeout = wall-clock guard. Treat as a graceful skip so RESOLVE still
+    // runs and damage is applied (same as oni:animationEnd firing late).
+    [INTENTS.TIMEOUT]:          { next: STATES.RESOLVE },
   },
 
   [STATES.RESOLVE]: {

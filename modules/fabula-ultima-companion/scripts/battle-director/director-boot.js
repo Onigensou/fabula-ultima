@@ -999,6 +999,19 @@ Hooks.once("ready", () => {
       try { bannerRefreshTurnActions(d.dCombat); } catch (e) { warn("refillRoundTurns refresh threw", e); }
       return { ok: true };
     },
+    // ── Animation control ────────────────────────────────────────────────
+    // Abort the currently playing animation so the FSM advances to RESOLVE
+    // immediately. Safe to call when no animation is playing — dispatches
+    // SKIP_ANIMATION which the table drops if the FSM is past ANIMATION.
+    skipAnimation: () => {
+      const d = _instance;
+      if (!d) return { ok: false, error: "no battle running" };
+      d.skipAnimation();
+      return { ok: true };
+    },
+    // Returns { playing: true } while the ANIMATION state is gating.
+    isAnimationPlaying: () => ({ playing: !!_instance?.isAnimationPlaying }),
+
     // Expose constructor + handlers for advanced debugging
     _BattleDirector: BattleDirector,
     _STATE_HANDLERS: STATE_HANDLERS,

@@ -48,6 +48,11 @@ export const INTENTS = Object.freeze({
   // historically been single-reactor (caster = reactor).
   REACTION_CHOICE: "REACTION_CHOICE",
 
+  // External — sent by GM or API to skip the currently playing animation
+  // and advance directly to RESOLVE. Also acts as the transition key when
+  // the animation controller is already null (i.e. gate already resolved).
+  SKIP_ANIMATION:  "SKIP_ANIMATION",
+
   // Universal escape hatch
   ABORT:           "ABORT",
 

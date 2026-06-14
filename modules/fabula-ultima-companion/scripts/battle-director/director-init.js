@@ -30,6 +30,7 @@ import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
 import { buildDirectorHud } from "./director-player-hud.js";
+import { extractAnimationUrlsFromActors } from "./director-animation.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -202,6 +203,12 @@ function buildPreloadUrls({ tokens, payload }) {
   // so don't insist).
   const bgm = String(payload?.battleConfig?.bgm ?? "").trim();
   if (bgm && /^https?:\/\//.test(bgm)) urls.add(bgm);
+
+  // Animation preload URLs declared on skill items (animation_preload_urls field).
+  // Actors are derived from the token documents passed in — each td.actor gives
+  // the linked world actor with its items collection.
+  const actorDocs = tokens.map((t) => t.actor).filter(Boolean);
+  for (const u of extractAnimationUrlsFromActors(actorDocs)) urls.add(u);
 
   return Array.from(urls);
 }
