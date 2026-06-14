@@ -1,6 +1,47 @@
-# Infusion subsystem — design (DESIGN ONLY, not yet built)
+# Infusion subsystem — design + build log
 
-Status: **design doc, awaiting build approval.** Authored 2026-06-14.
+Status: **P0 + P1 BUILT (engine + migrations), UNVERIFIED — game was closed.**
+Authored 2026-06-14; build started 2026-06-14.
+
+## Build state (2026-06-14)
+
+ENGINE (all in scripts/battle-director/, UNCOMMITTED, need Ctrl+Shift+R):
+- `skill-formulas.js` — `GADGET_<TYPE>_TIER` identifier (reads skill.system.props.gadget_<type>_tier).
+- `skill-effects.js` — `notify` effect_kind; `change_damage_element` dispatch stub
+  (data-only); element override rides `computeSenderDamageBonuses` ({op:"element"},
+  per-subject affinity via resolveAffinity) → `recomputePerTargetDamages` (applies
+  new-element affinity to raw+ numeric ops, composes with the +5); `walkDamage`
+  now FOLLOWS the chosen open_action_menu option (cand.chosenMenuPicks label→ref)
+  so a menu that picks WHICH damage modifier feeds the recompute; `buildMenuOptions`
+  drops options whose `condition_formula` is falsy (tier-gating hides locked infusions).
+- `state-handlers.js` — added `actionKind: ar.kind` to the creature_will_deal_damage
+  payload so `reaction_action_kind:"Attack"` scopes infusions to attacks (not dmg-Skills).
+- `template-field-registry.js` — columns for notify_message/notify_type/notify_abort,
+  change_element; `condition_formula` broadened to a GENERIC row gate (always visible).
+
+MIGRATIONS (UNCOMMITTED, in _manifest.json after pre-activate):
+- `2026-06-14-skill-template-gadget-tier-columns.js` — adds gadget_infusion/alchemy/
+  magitech_tier numberField columns to _Skill Template (j0F5Msw5RZ8aIB3j), version bump.
+- `2026-06-14-tinkerer-gadgets-author.js` — seeds the ONE Gadgets skill (Battle
+  Director / Tinkerer / Skill, uid fuGadgetsMeta001): creature_will_deal_damage→inf_offer
+  menu (7 element infusions tier-gated 1/2 + Venom tier 3), inf_pay (2 IP), inf_plus5
+  (+5 outgoing), inf_el_* (change_damage_element literals), inf_envenom (Envenomed on
+  hit_action_targets), active-branch stubs (notify). Seeds Zarg's copy at infusion tier 3.
+
+NOT YET BUILT: Vampire (P3 — single-target HP/MP lifesteal). NOT VERIFIED: anything
+live (game closed during build). Next: open game → Ctrl+Shift+R → run the 2 migrations
+via bridge → live-verify element+affinity+5 / 2-IP / tier-gating → then build Vampire.
+
+KEY ENGINE FACT discovered during build: the infusion menu picks an OPTION (ref); the
+damage recompute must follow it. Wired via cand.chosenMenuPicks (captured at apply-click,
+round-tripped through snapshotReactionDecisions). The +5 and element BOTH ride the
+computeSenderDamageBonuses→recompute path (NOT card-mutations), so they compose in one
+affinity pass. The FU "poisoned" status is named **Envenomed** in this world.
+
+---
+
+## Original design (DESIGN ONLY, for reference)
+
 RAW source: Vanilla core "GADGETS" (Fabula_Ultima_TTJRPG.pdf, the Infusions facet) —
 confirmed against the **May-4-2026 playtest** (which only *adds* Tinkerer content:
 Detonation Artist heroic + Branching Magitech variant; the base Infusion rules are

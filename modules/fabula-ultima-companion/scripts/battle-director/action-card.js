@@ -3976,15 +3976,16 @@ export async function postActionCard({ director, kind, payload }) {
         if (e.kind === "apply_ae") {
           return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.statusName ?? e.label)}</span>`;
         }
-        if (e.kind === "consume_resource") {
-          const res = String(e.resource ?? "").toUpperCase();
-          const amt = (e.amount != null) ? `−${e.amount} ${res}` : escapeHtml(e.label);
-          return `<span class="fud-bf-effect-chip is-cost">${escapeHtml(amt)}</span>`;
+        // Special keyword riders (Drain → self-heal note). Rendered as a status-
+        // style chip so it reads as a gameplay effect.
+        if (e.kind === "keyword") {
+          return `<span class="fud-bf-effect-chip is-status">${escapeHtml(e.label ?? e.keyword ?? "Effect")}</span>`;
         }
         return `<span class="fud-bf-effect-chip">${escapeHtml(e.label ?? "Effect")}</span>`;
       }).join("");
-      const viaName = effects[0]?.via ? escapeHtml(effects[0].via) : "Reaction";
-      panel.innerHTML = `<legend>${viaName}</legend><div class="fud-bf-effect-chips">${chips}</div>`;
+      // Uniform "Effects" legend (the reaction pill above already names the
+      // skill; repeating the carrier name here was redundant).
+      panel.innerHTML = `<legend>Effects</legend><div class="fud-bf-effect-chips">${chips}</div>`;
     }
 
     // Phase 3 of the Cheap Shot integration: live damage preview update.
@@ -4221,9 +4222,18 @@ export async function postActionCard({ director, kind, payload }) {
               }
               const reactionDelta = reactionParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
               const baseDamage = payload.damage;
-              const patchedDamage = reactionDelta !== 0
+              // Element override (Tinkerer Infusions: Cryo/Pyro/… change the
+              // attack's element). recomputePerTargetDamages stamps the new
+              // element on the entry; fold it into the displayed damage so the
+              // headline element label re-renders (e.g. Physical → Fire) instead
+              // of staying on the weapon's base element.
+              const newElement = repEntry?.bonusBreakdown?.element ?? repEntry?.element ?? null;
+              const elementChanged = !!newElement &&
+                String(newElement).toLowerCase() !== String(baseDamage.element ?? "").toLowerCase();
+              const patchedDamage = (reactionDelta !== 0 || elementChanged)
                 ? {
                     ...baseDamage,
+                    ...(elementChanged ? { element: newElement } : {}),
                     base: (Number(baseDamage.base) || 0) + reactionDelta,
                     baseParts: [
                       ...(Array.isArray(baseDamage.baseParts) ? baseDamage.baseParts : []),

@@ -22,7 +22,7 @@ import { evaluateFormula, buildSkillResolver, isFormulaString } from "./skill-fo
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
-import { readPropNum } from "./snapshot.js";
+import { readPropNum, resolveAffinity } from "./snapshot.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 
@@ -612,7 +612,13 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   if (wantKindRaw) {
     const wantKinds = wantKindRaw.split(",").map((s) => s.trim()).filter(Boolean);
     const gotKind = String(payload?.actionKind ?? "").trim().toLowerCase();
-    if (!wantKinds.includes(gotKind)) {
+    // FAIL-OPEN when the payload carries no actionKind: a dispatch path that
+    // omits the kind must NOT silently drop the reaction (that hid the Tinkerer
+    // infusion offer on attacks). Only EXCLUDE when the kind is KNOWN and
+    // doesn't match — so Attack-vs-Skill scoping still works whenever the
+    // dispatch supplies actionKind (creature_performs_action always does;
+    // creature_will_deal_damage does too once the payload includes it).
+    if (gotKind && !wantKinds.includes(gotKind)) {
       log(`passive ${item.name}: action_kind filter failed — want="${wantKindRaw}" got="${gotKind}"`);
       return false;
     }
@@ -1072,29 +1078,20 @@ function weaponReactionInPlay(item, payload, casterActor) {
   return item?.system?.props?.isEquipped === true;
 }
 
-// Action-skill items (has skill_type) only fire their passive rows when they
-// are the current acting skill/weapon. This prevents e.g. Fiery Onslaught's
-// blaze_chain passive from firing during Blazing Sweep or any other action.
-// Gate uses skillUuid (Skill-kind actions) with weaponUuid as fallback
-// (Attack-kind actions where the weapon carries the UUID instead).
-// When payload has neither (lifecycle triggers like round_start), all pass.
-function skillActionPassiveApplies(item, payload) {
-  const props = item?.system?.props ?? {};
-  const skillType = String(props.skill_type ?? "").trim().toLowerCase();
-  if (!skillType) return true;
-  // Pure reaction skills (skill_type "Passive": Cheap Shot, Warning Shot, …)
-  // react to the EVENT, not to being the acting item — they fire on any
-  // matching trigger. Only INVOKABLE skills are gated, so an active skill's
-  // will_deal_damage rider (e.g. Fiery Onslaught's blaze_chain) doesn't leak
-  // into other actions. Without this exemption, weapons-as-skill-shaped (which
-  // gave weapons embedded uuids) makes every Passive reaction fail the
-  // weaponUuid comparison below on a basic attack — the bug that hid Cheap
-  // Shot / Warning Shot on embedded-weapon attacks.
-  if (skillType === "passive") return true;
-  const usedUuid = payload?.skillUuid ?? payload?.weaponUuid ?? null;
-  if (!usedUuid) return true;
-  return item.uuid === usedUuid;
-}
+// NOTE: the old `skillActionPassiveApplies` item-level gate (which used an
+// item's `skill_type` to decide whether its reaction rows were "ambient" vs.
+// "self-scoped to the acting skill") was REMOVED 2026-06-15. `skill_type`
+// conflates "is this skill invokable?" with "should this reaction fire on
+// other actions?" — two orthogonal axes — which silently hid ambient reaction
+// skills (Warning Shot / Gadgets / Barrage, all skill_type "Active") on basic
+// attacks because their UUID didn't match the acting weapon's.
+//
+// Self-scoping is now a PER-ROW config concern: a reaction row that should
+// only fire when its own skill is the acting one sets `reaction_source_skill`
+// to that skill's name (matched against `payload.sourceSkillName` in
+// passesMatchFilters). Riders (Fiery Onslaught's blaze_chain, monster on-hit
+// effects) set it; ambient reactions leave it blank. `weaponReactionInPlay`
+// still handles weapon-item two-weapon scoping (unrelated to skill_type).
 
 // Does the effect reached by `ref` (following one level of chain steps) include
 // an `add_target` row? Used to tag ONLY Barrage-style add_target reactions for
@@ -1157,7 +1154,6 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     if (!weaponReactionInPlay(item, payload, casterActor)) continue;
-    if (!skillActionPassiveApplies(item, payload)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
@@ -1486,9 +1482,49 @@ export async function computeSenderDamageBonuses({
               // formula can reference FINAL_DAMAGE (the post-bonus, pre-affinity hit).
               const condition = String(row.condition_formula ?? "").trim() || null;
               if (kw) ops.push({ op: "keyword", keyword: kw, condition, source: cand.carrierName || carrierSkill?.name || "Keyword" });
+            } else if (kind === "change_damage_element") {
+              // Override the in-flight attack's element for THIS subject (Tinkerer
+              // Infusions: Cryo→ice, Pyro→fire, …). The element is a literal
+              // ("ice") or a VAR_<NAME> chain-var (a prompt_element pick). Affinity
+              // for the new element is resolved per-subject AFTER the walk (needs
+              // the victim's sheet — async). Carried as a non-numeric op so the
+              // recompute applies it together with the +5 (one affinity pass).
+              const rawEl = String(row.change_element ?? row.damage_element ?? row.element ?? "").trim();
+              let element = rawEl.toLowerCase();
+              if (/^var_/i.test(rawEl)) {
+                const vkey = rawEl.slice(4).toLowerCase().trim();
+                const v = cand.payloadAtFire?._chainVars?.[vkey] ?? cand.payload?._chainVars?.[vkey];
+                element = String(v ?? "").trim().toLowerCase();
+              }
+              if (element) ops.push({ op: "element", element, source: cand.carrierName || carrierSkill?.name || "Infusion" });
             } else if (kind === "chain") {
               const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
               for (const s of steps) walkDamage(s);
+            } else if (kind === "open_action_menu") {
+              // Follow the player's CHOSEN option(s) — captured at apply-click on
+              // cand.chosenMenuPicks (by display label) — so a menu that selects
+              // WHICH damage modifier to apply (Tinkerer Infusions: pick "Pyro" →
+              // its fire-element + 5 chain) feeds the recompute. Unchosen options
+              // are NOT walked (else every infusion's +5 would stack). With no
+              // captured pick we can't know which → walk nothing.
+              const picks = Array.isArray(cand.chosenMenuPicks) ? cand.chosenMenuPicks : [];
+              if (picks.length) {
+                const optRefs = parseEffectRefList(row.menu_option_refs);
+                const optLabels = (row.menu_option_labels == null || String(row.menu_option_labels).trim() === "")
+                  ? [] : String(row.menu_option_labels).split("|").map((s) => s.trim());
+                const labelToRef = new Map();
+                for (let oi = 0; oi < optRefs.length; oi++) {
+                  const oref = optRefs[oi];
+                  const orow = byLabel.get(oref);
+                  const lbl = (optLabels[oi] && optLabels[oi] !== "")
+                    ? optLabels[oi] : String(orow?.menu_label ?? orow?.effect_label ?? oref);
+                  labelToRef.set(String(lbl).trim().toLowerCase(), oref);
+                }
+                for (const pk of picks) {
+                  const oref = labelToRef.get(String(pk).trim().toLowerCase());
+                  if (oref) walkDamage(oref);
+                }
+              }
             }
           };
           walkDamage(cand.ref);
@@ -1498,6 +1534,16 @@ export async function computeSenderDamageBonuses({
         }
       }
       if (!ops.length) continue;
+      // Resolve the new-element affinity per subject (async — reads the victim's
+      // affinity_<slot>). Done here (not in walkDamage, which is sync) so the
+      // recompute can apply the chosen element's affinity to (raw + numeric ops).
+      const elementOps = ops.filter((o) => o.op === "element" && o.affinity === undefined);
+      if (elementOps.length) {
+        const subjectActor = await fromUuid(uuid).catch(() => null);
+        for (const eop of elementOps) {
+          eop.affinity = subjectActor ? resolveAffinity(subjectActor, eop.element) : "NE";
+        }
+      }
       out.set(uuid, (out.get(uuid) ?? []).concat(ops));
       if (Number.isFinite(candBaseRaw) && !subjectBaseRaw.has(uuid)) subjectBaseRaw.set(uuid, candBaseRaw);
     }
@@ -1511,7 +1557,7 @@ export async function computeSenderDamageBonuses({
   // condition couldn't see).
   for (const [uuid, ops] of out) {
     if (!ops.some((o) => o.op === "keyword" && o.condition)) continue;
-    const numeric = ops.filter((o) => o.op !== "keyword");
+    const numeric = ops.filter((o) => o.op !== "keyword" && o.op !== "element");
     let d = Number(subjectBaseRaw.get(uuid)) || 0;
     for (const { op, amount } of numeric) d = applyDamageOp(d, op, amount);
     d = Math.max(0, Math.floor(d));
@@ -1556,26 +1602,40 @@ export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinit
     if (!ops || !ops.length) return entry;
     if (!entry.hit) return entry;  // misses don't take damage adjustments
     const baseRaw = Number(entry.rawDamage) || 0;
-    // Separate numeric damage ops from action-keyword tags (pierce, …).
-    const numericOps = ops.filter((o) => o.op !== "keyword");
+    // Separate numeric damage ops from action-keyword tags (pierce, …) and the
+    // element-override op (change_damage_element — Infusions).
+    const numericOps = ops.filter((o) => o.op !== "keyword" && o.op !== "element");
     const keywords = new Set(ops.filter((o) => o.op === "keyword").map((o) => o.keyword));
+    // Element override (last one wins) — recompute affinity against the NEW
+    // element (resolved per-subject upstream in computeSenderDamageBonuses).
+    const elementOp = [...ops].reverse().find((o) => o.op === "element" && o.element);
     let d = baseRaw;
     for (const { op, amount } of numericOps) d = applyDamageOp(d, op, amount);
     d = Math.max(0, Math.floor(d));
+    // Affinity: the overridden element's affinity if an Infusion changed it,
+    // else the entry's original affinity.
+    let affinity = elementOp ? String(elementOp.affinity ?? "NE") : String(entry.affinity ?? "NE");
     // Action-keyword damage-calc effects. PIERCE ignores Resistance only — a
     // pierced hit treats RS as neutral (full damage); VU / IM / AB are untouched.
     // (New keywords add a branch here.)
-    let affinity = String(entry.affinity ?? "NE");
     if (keywords.has("pierce") && affinity === "RS") affinity = "NE";
     const newDamage = applyAffinity(d, affinity);
     return {
       ...entry,
       rawDamage: d,
       damage: newDamage,
+      affinity,
+      // Action keywords applied to this hit (pierce, drain, …). Surfaced at the
+      // entry top-level so the RESOLVE damage loop can act on post-damage
+      // keywords (drain → heal the attacker 50% of the HP dealt). Pierce is
+      // already consumed above (affinity), but carrying it is harmless.
+      ...(keywords.size ? { keywords: [...keywords] } : {}),
+      // Surface the new element for the card / log when an Infusion changed it.
+      ...(elementOp ? { element: elementOp.element } : {}),
       // Diagnostic — lets the action card show a "+X / ×0 (Skill)" hint and
       // lets the RESOLVE log explain the change. `baseBonus` kept for back-compat
       // with readers that show a simple delta. `keywords` surfaces applied tags.
-      bonusBreakdown: { ops: numericOps, from: baseRaw, to: d, baseBonus: d - baseRaw, keywords: [...keywords] },
+      bonusBreakdown: { ops: numericOps, from: baseRaw, to: d, baseBonus: d - baseRaw, keywords: [...keywords], ...(elementOp ? { element: elementOp.element, affinity } : {}) },
     };
   });
 }
@@ -2311,6 +2371,32 @@ async function applyLeaveCombatEffect(row, ctx) {
   return { ok: true, kind: "leave_combat", applied };
 }
 
+// ── notify — surface a short message (chat + UI toast) ────────────────────
+// Generic "tell the player something" step. Primary use: branch STUBS for
+// not-yet-built subsystems (the Gadgets Alchemy/Magitech branches notify
+// "not yet implemented" so the skill is complete-shaped and fills in later
+// with no restructuring). Reads:
+//   notify_message — the text (required)
+//   notify_type    — "info" | "warning" | "error" (UI toast level; default info)
+//   notify_abort   — truthy → stop the chain after notifying (default true: a
+//                    stub branch has nothing more to do)
+// Headless (passive/no-DOM) → no toast, message logged; still returns ok.
+async function applyNotifyEffect(row, ctx) {
+  const message = String(row.notify_message ?? "").trim();
+  const type = String(row.notify_type ?? "info").trim().toLowerCase();
+  const abort = row.notify_abort === undefined ? true : !!row.notify_abort;
+  if (message) {
+    const headless = ctx.isPassive || typeof ui === "undefined" || !ui?.notifications;
+    if (headless) {
+      log(`skill-effects.notify: ${message}`);
+    } else {
+      const fn = ui.notifications[type] ? type : "info";
+      try { ui.notifications[fn](message); } catch { /* non-fatal */ }
+    }
+  }
+  return { ok: true, kind: "notify", message, abort };
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -2337,7 +2423,17 @@ const EFFECT_KIND_DISPATCH = {
   deal_damage:         applyDealDamageEffect,
   equip_swap:          applyEquipSwapEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
+  notify:              applyNotifyEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
+  // change_damage_element: override the in-flight attack's damage element for the
+  // chosen targets (Tinkerer Infusions: Cryo/Pyro/Volt/… make the attack "become"
+  // ice/fire/bolt/…). Data-only here — the real work rides the SAME per-subject
+  // damage-recompute path as adjust_damage: computeSenderDamageBonuses extracts an
+  // {op:"element"} (resolving the new element's affinity per victim) and
+  // recomputePerTargetDamages applies that affinity to (rawDamage + any +N), so
+  // element + bonus compose in one affinity pass. Element is read from
+  // row.change_element (literal) or VAR_<NAME> via _chainVars.
+  change_damage_element: (row) => ({ ok: true, kind: "change_damage_element", applied: [], reason: "applied-at-damage-recompute" }),
   // apply_action_keyword: tag the in-flight per-target hit with an action keyword
   // (pierce, …). Data-only here — the real work is in computeSenderDamageBonuses
   // (collects the keyword per subject) + recomputePerTargetDamages (applies its
@@ -2383,7 +2479,9 @@ export const EFFECT_KIND_LABELS = {
   deal_damage:         "Deal Damage",
   equip_swap:          "Equip Swap",
   encyclopedia_record: "Encyclopedia Record",
+  notify:              "Notify (show a message — stub / info)",
   adjust_damage:       "Adjust Damage",
+  change_damage_element: "Change Damage Element (override in-flight element)",
   apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
@@ -3965,6 +4063,29 @@ function buildMenuOptions(row, ctx) {
   const rowDescs  = splitPipe(row.menu_option_descriptions);
   const rowIcons  = splitPipe(row.menu_option_icons);
   const rowColors = splitPipe(row.menu_option_colors);
+  // An option whose row carries a non-empty `condition_formula` evaluating falsy
+  // is DROPPED from the menu entirely (hidden, not disabled) — the clean shape
+  // for "you don't own this option". Mirrors the dispatch-time row gate, so the
+  // menu only ever offers options that would actually fire. Used by the Tinkerer
+  // Gadgets menu to show only tier-unlocked infusions (GADGET_INFUSION_TIER >= N).
+  // Options with no condition_formula are unaffected (every existing menu).
+  let _menuResolver = null;
+  const optionGatePasses = (optRow) => {
+    const cond = String(optRow?.condition_formula ?? "").trim();
+    if (!cond) return true;
+    try {
+      if (!_menuResolver) {
+        _menuResolver = buildSkillResolver({
+          actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+        });
+      }
+      return !!evaluateFormula(cond, _menuResolver, 0);
+    } catch (e) {
+      // Fail-open: a broken gate shouldn't silently hide a legit option.
+      warn(`skill-effects.open_action_menu: option condition_formula="${cond}" threw — showing anyway`, e);
+      return true;
+    }
+  };
   let options = [];
   let optionRows = [];
   if (refs.length) {
@@ -3975,6 +4096,7 @@ function buildMenuOptions(row, ctx) {
         warn(`skill-effects.open_action_menu: ref "${ref}" → no matching effect_table row; skipping`);
         continue;
       }
+      if (!optionGatePasses(refRow)) continue;
       // Menu-row text wins; fall back to the option row's legacy fields, then
       // to the ref label. (Empty entries in the |-list also fall through.)
       const label = (rowLabels[i] && rowLabels[i] !== "")
@@ -4002,7 +4124,7 @@ function buildMenuOptions(row, ctx) {
     const inline = Array.isArray(optsRaw)
       ? optsRaw
       : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
-    const valid = inline.filter((o) => o && typeof o === "object" && o.label);
+    const valid = inline.filter((o) => o && typeof o === "object" && o.label && optionGatePasses(o));
     options = valid.map((o) => ({
       label: String(o.label),
       description: o.description ? String(o.description) : null,
@@ -4147,27 +4269,42 @@ async function selectMenuPicks(row, ctx, options) {
   return { chosenIndices, cancelled: false };
 }
 
-// Describe an option's effect for the action card's Effect panel preview —
-// human-readable, no commit. apply_ae → status name; consume_resource → the
-// resolved resource loss; everything else → the menu label.
+// Describe an option's gameplay RIDER effects for the action card's Effect
+// panel — human-readable, no commit. Returns an ARRAY (a chain option has
+// several riders). The panel shows only effects OUTSIDE of damage: applied
+// statuses and special keywords (Drain → self-heal). Cost (consume_resource)
+// and damage (adjust_damage / change_damage_element / the chosen element)
+// are intentionally OMITTED — cost is implied by the pick and element/+N
+// render in the Damage panel. A chain option (Tinkerer infusions:
+// inf_venom → inf_pay,inf_el_poison,inf_plus5,inf_poison) is WALKED so the
+// panel reads "Poisoned" / "Heal 50%", not the bare option label. An option
+// with no riders (a pure element infusion: Pyro = element + 5 only) returns
+// [] → no Effect panel for it (its element shows in the Damage panel).
 function describeMenuOptionEffect(optionRow, ctx) {
-  const kind = String(optionRow?.effect_kind ?? "").trim().toLowerCase();
-  const label = String(optionRow?.menu_label ?? optionRow?.effect_label ?? "Effect");
-  if (kind === "apply_ae") {
-    return { kind, label, statusName: String(optionRow.ae_template_ref ?? label) };
-  }
-  if (kind === "consume_resource") {
-    const resource = String(optionRow.consume_resource ?? "").toLowerCase();
-    let amount = null;
-    try {
-      const resolver = buildSkillResolver({
-        actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
-      });
-      amount = Number(evaluateFormula(String(optionRow.consume_amount ?? "0"), resolver, 0)) || 0;
-    } catch { amount = null; }
-    return { kind, label, resource, amount };
-  }
-  return { kind, label };
+  const out = [];
+  const seen = new Set();
+  const walk = (row) => {
+    if (!row) return;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    if (kind === "apply_ae") {
+      out.push({ kind: "apply_ae", statusName: String(row.ae_template_ref ?? row.menu_label ?? "Effect") });
+    } else if (kind === "apply_action_keyword") {
+      const kw = String(row.action_keyword ?? "").trim().toLowerCase();
+      if (kw === "drain") out.push({ kind: "keyword", keyword: "drain", label: "Heal 50% of damage" });
+      else if (kw) out.push({ kind: "keyword", keyword: kw, label: kw.charAt(0).toUpperCase() + kw.slice(1) });
+    } else if (kind === "chain") {
+      const steps = String(row.chain_steps ?? "").split(/[,\n]+/g).map((s) => s.trim()).filter(Boolean);
+      for (const s of steps) {
+        if (seen.has(s)) continue;
+        seen.add(s);
+        walk(findEffectRow(ctx, s));
+      }
+    }
+    // consume_resource (cost) + adjust_damage / change_damage_element (damage)
+    // are deliberately not surfaced here (riders-only Effect panel).
+  };
+  walk(optionRow);
+  return out;
 }
 
 // Apply-click PREVIEW of a reaction's option-menu(s). Walks the candidate's
@@ -4259,7 +4396,9 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     if (cancelled) return { ok: true, cancelled: true, hasMenu: true, picks: [], effects: [], damageNullified };
     for (const idx of chosenIndices) {
       chosenLabels.push(options[idx].label);
-      effects.push(describeMenuOptionEffect(optionRows[idx], ctx));
+      // describeMenuOptionEffect now returns an ARRAY of rider descriptors
+      // (walks chain options) — spread them into the panel's effect list.
+      effects.push(...describeMenuOptionEffect(optionRows[idx], ctx));
     }
   }
   return { ok: true, cancelled: false, hasMenu: true, picks: chosenLabels, effects, damageNullified };

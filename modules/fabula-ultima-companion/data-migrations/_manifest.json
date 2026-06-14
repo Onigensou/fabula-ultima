@@ -555,6 +555,18 @@
     {
       "key": "2026-06-14-skill-template-pre-activate-fire-point",
       "path": "data-migrations/2026-06-14-skill-template-pre-activate-fire-point.js"
+    },
+    {
+      "key": "2026-06-14-skill-template-gadget-tier-columns",
+      "path": "data-migrations/2026-06-14-skill-template-gadget-tier-columns.js"
+    },
+    {
+      "key": "2026-06-14-tinkerer-gadgets-author",
+      "path": "data-migrations/2026-06-14-tinkerer-gadgets-author.js"
+    },
+    {
+      "key": "2026-06-15-reaction-self-scope-source-skill",
+      "path": "data-migrations/2026-06-15-reaction-self-scope-source-skill.js"
     }
   ]
 }

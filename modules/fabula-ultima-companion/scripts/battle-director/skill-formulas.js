@@ -618,6 +618,24 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return getNamedSkillLevel(actor, needle);
         }
+        // Dynamic GADGET_<TYPE>_TIER — the unlock tier of a branch of the
+        // consolidated Tinkerer "Gadgets" meta-skill, read off the CARRIER
+        // skill's props (mirrors how SL reads skill.system.props.level). With
+        // one Gadgets skill holding all branches, "which types/tiers the
+        // character has" lives in numeric props on that item:
+        //   gadget_infusion_tier / gadget_alchemy_tier / gadget_magitech_tier
+        //   0 = none, 1 = basic, 2 = advanced, 3 = superior
+        // Used by per-infusion condition_formula gates, e.g.
+        //   GADGET_INFUSION_TIER >= 2  (Advanced infusions: Cyclone/Exorcism/…)
+        // Returns 0 when the prop is absent → the option is dropped by the
+        // affordability/menu walker, giving a tier-appropriate menu for free.
+        if (name.startsWith("GADGET_") && name.endsWith("_TIER")) {
+          const branch = name
+            .slice("GADGET_".length, name.length - "_TIER".length)
+            .toLowerCase()
+            .trim();
+          return Number(skill?.system?.props?.[`gadget_${branch}_tier`] ?? 0) || 0;
+        }
         // Dynamic AE_COUNT_<NAME> identifier — counts non-disabled AEs
         // with the given name on the reactor. Spaces → underscores,
         // case-insensitive. Examples:

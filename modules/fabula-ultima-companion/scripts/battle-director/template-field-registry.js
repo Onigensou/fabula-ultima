@@ -48,6 +48,10 @@ const CONFIRM_VIS = `equalText(sameRow("effect_kind",''), "confirm")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
 // open_action_menu free_mode grant AND the new free_action kind.
 const FREE_GRANT_VIS = `or(equalText(sameRow("effect_kind",''), "open_action_menu"), equalText(sameRow("effect_kind",''), "free_action"))`;
+// notify — surface a message (stub branches / info).
+const NOTIFY_VIS = `equalText(sameRow("effect_kind",''), "notify")`;
+// change_damage_element — override the in-flight attack's element (Tinkerer Infusions).
+const CHANGE_EL_VIS = `equalText(sameRow("effect_kind",''), "change_damage_element")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -126,11 +130,30 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // (e.g. Chomp: TRIGGER_IS_SELF == 1 && RAW_DAMAGE >= 100 → apply_action_keyword pierce).
   selectCol("action_keyword", "Action Keyword", [
     { key: "pierce", value: "Pierce (ignore Resistance)" },
-  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Pierce = the target's Resistance (RS) is treated as neutral for this hit (VU/IM/AB unchanged).", vis: KEYWORD_VIS, defaultValue: "pierce" }),
-  // Optional gate for the keyword, evaluated AFTER pre-resolve bonuses (so it can
-  // reference FINAL_DAMAGE — the post-bonus, pre-affinity hit). Blank = always.
-  // e.g. Chomp pierce: "FINAL_DAMAGE >= 100".
-  textCol("condition_formula", "Keyword Condition", { tooltip: "apply_action_keyword gate (blank = always). Evaluated after pre-resolve bonuses; can use FINAL_DAMAGE (post-bonus, pre-affinity hit). e.g. FINAL_DAMAGE >= 100.", vis: KEYWORD_VIS }),
+    { key: "drain",  value: "Drain (heal user 50% of damage dealt)" },
+  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Pierce = the target's Resistance (RS) is treated as neutral for this hit (VU/IM/AB unchanged). Drain = the attacker recovers HP equal to half the HP damage this hit deals (Tinkerer Vampire infusion; matches the Keyword Repository).", vis: KEYWORD_VIS, defaultValue: "pierce" }),
+  // GENERIC row gate — a non-empty formula gates this row at dispatch (falsy →
+  // skip the row, chain continues) AND, when the row is a menu option
+  // (referenced by an open_action_menu), drops the option from the menu entirely.
+  // Used for: tier-gating Gadgets infusions (GADGET_INFUSION_TIER >= 2), Prepare-
+  // to-Charge style conditionals, Soul Steal HIT_COUNT > 0, etc. Always visible.
+  // SPECIAL CASE: on an apply_action_keyword row the gate is evaluated LATER (post
+  // pre-resolve bonuses) so it may reference FINAL_DAMAGE (e.g. Chomp pierce:
+  // "FINAL_DAMAGE >= 100"); on every other kind it's a dispatch-time gate.
+  textCol("condition_formula", "Row Condition", { tooltip: "Generic gate: blank = always. Falsy → skip this row (chain continues); on a menu-option row, falsy also HIDES the option. e.g. GADGET_INFUSION_TIER >= 2, HIT_COUNT > 0. (apply_action_keyword: evaluated post-bonus, may use FINAL_DAMAGE.)", vis: "" }),
+  // notify — surface a short message (stub branches / info toast).
+  textCol("notify_message", "Notify Message", { tooltip: "notify: the text shown (chat + UI toast). e.g. \"Alchemy gadgets are not yet implemented.\"", vis: NOTIFY_VIS }),
+  selectCol("notify_type", "Notify Type", [
+    { key: "info",    value: "Info" },
+    { key: "warning", value: "Warning" },
+    { key: "error",   value: "Error" },
+  ], { tooltip: "notify: UI toast level.", vis: NOTIFY_VIS, defaultValue: "info" }),
+  checkboxCol("notify_abort", "Notify Abort", { tooltip: "notify: stop the chain after the message (default ON — a stub branch has nothing more to do). Uncheck to notify then continue.", vis: NOTIFY_VIS, defaultChecked: true }),
+  // change_damage_element — override the in-flight attack's element for the chosen
+  // targets (Infusions: Cryo→ice, Pyro→fire, …). Applied at the card-mutation phase
+  // (re-derives each target's affinity for the new element). Literal element id or
+  // VAR_<NAME> (a prompt_element pick from earlier in the chain).
+  textCol("change_element", "Change To Element", { tooltip: "change_damage_element: the new element — fire/ice/bolt/earth/air/light/dark/poison/physical, or VAR_<NAME> from an earlier prompt_element pick.", vis: CHANGE_EL_VIS }),
   // targeting config — Auto-target. Governs ASSURED targets (self / all / single).
   // "auto" (default) is ROLE-BASED: the GM resolves silently for pace; a PLAYER
   // gets a locked Confirm so they see what they're committing to. "skip" = never

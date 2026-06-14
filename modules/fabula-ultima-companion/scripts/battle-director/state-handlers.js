@@ -577,6 +577,41 @@ async function resolveAction(director, ar, opts = {}) {
           highRoll: ar.roll?.hr ?? null,
           pierce: !!r.pierceMiss,
         });
+
+        // Drain keyword (Tinkerer Vampire infusion / Keyword Repository): the
+        // ATTACKER recovers HP equal to HALF the HP damage this hit dealt. Only
+        // on real outgoing HP damage (not a heal/MP/absorb), and never self-drain.
+        // Heals via the AB path (caps at max HP) and queues a heal resource event
+        // so Crisis-recovery / On-the-Hunt see it. The keyword rides the per-target
+        // entry from recomputePerTargetDamages (apply_action_keyword "drain").
+        if (
+          Array.isArray(r.keywords) && r.keywords.includes("drain") &&
+          valueType === "hp" && valueDirection === "loss" && finalValue > 0 &&
+          casterActor && r.actorUuid !== ar.attackerActorRef
+        ) {
+          const healAmt = Math.floor(finalValue / 2);
+          if (healAmt > 0) {
+            try {
+              const drainRes = await applyDamageToTarget({
+                target: casterActor, damage: healAmt, affinity: "AB", resource: "hp",
+                targetName: casterActor.name, tokenUuid: ar.attacker?.tokenUuid ?? null,
+                logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`, logSuffix: " [Drain]",
+                logContext: {
+                  attackerName: casterActor.name, element: "healing",
+                  sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+                  sink: battleLogSink,
+                },
+              });
+              fireResourceChangeTrigger({
+                director, actor: casterActor, tokenUuid: ar.attacker?.tokenUuid ?? null,
+                resource: "hp", direction: "recover", amount: drainRes.finalValue, cause: "heal",
+                source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
+                originLabel: "Drain", originUuid: skill?.uuid ?? null,
+              });
+              log(`Drain: ${casterActor.name} recovered ${drainRes.finalValue} HP (50% of ${finalValue} dealt to ${r.name})`);
+            } catch (e) { warn("Skill resolve: drain self-heal threw", e); }
+          }
+        }
       } catch (e) {
         err("Skill resolve: damage application failed", r, e);
       }
@@ -620,6 +655,9 @@ async function resolveAction(director, ar, opts = {}) {
     // actionKind already carried on the pre-resolve creature_targeted_by_action
     // payload. Item-use reactions read this off creature_completes_item (§8b).
     actionKind: ar.kind ?? null,
+    // Acting skill/weapon name for `reaction_source_skill` self-scoping
+    // (replaces the removed skill_type item-gate).
+    sourceSkillName: skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
   };
   const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
   if (accepted.length) {
@@ -695,6 +733,8 @@ async function resolveAction(director, ar, opts = {}) {
             subjectTokenUuid: r.tokenUuid,
             subjectActorUuid: r.actorUuid,
             actionIntent: ar.actionIntent,
+            // Acting skill/weapon name for `reaction_source_skill` self-scoping.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
             weaponUuid: ar.weapon?.uuid ?? null,
             // Melee/ranged/arcane class of the acting weapon — drives the
             // ATTACK_IS_RANGED / ATTACK_IS_MELEE formula gates (Warning Shot,
@@ -731,6 +771,8 @@ async function resolveAction(director, ar, opts = {}) {
           sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           actionIntent: ar.actionIntent,
           weaponUuid: ar.weapon?.uuid ?? null,
+          // Acting skill/weapon name for `reaction_source_skill` self-scoping.
+          sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
         },
       });
     }
@@ -3222,6 +3264,10 @@ const Confirm = {
           const payloadForTrigger = {
             subjectActorUuid,
             subjectTokenUuid,
+            // The performing action's kind ("Attack" | "Skill"), so a
+            // will_deal_damage reaction can scope itself via reaction_action_kind
+            // (Tinkerer Infusions: "Attack" only — RAW "hit with an attack").
+            actionKind: ar.kind ?? null,
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
             rawDamage: entry.rawDamage,
@@ -3237,6 +3283,11 @@ const Confirm = {
             hitTargetTokenUuids: hitTargetUuids,
             skillUuid: ar.skillUuid ?? null,
             weaponUuid: ar.weapon?.uuid ?? null,
+            // Acting skill/weapon name — lets a self-rider reaction row scope
+            // itself to its own action via `reaction_source_skill` (replaces
+            // the removed skill_type item-gate). Ambient reactions leave that
+            // field blank and fire on any qualifying action.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
           };
 
           let cands;
@@ -3311,6 +3362,8 @@ const Confirm = {
             actionIntent: ar.actionIntent ?? "harmful",
             actionKind: ar.kind ?? "Attack",
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
+            // Acting skill/weapon name for `reaction_source_skill` self-scoping.
+            sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
             weaponUuid: ar.weapon?.uuid ?? null,
             skillUuid: ar.skillUuid ?? null,
             // ATTACK_IS_RANGED gate reads this.
@@ -3745,10 +3798,21 @@ const Confirm = {
           log(`CONFIRM: add_damage recompute applied — ${bonusMap.size} subject(s) modified`);
         }
       } catch (e) { warn("CONFIRM: add_damage recompute threw", e); }
+      // Infusion element override (change_damage_element): if every hit now
+      // shares a new element, reflect it on the action-level damageType so the
+      // committed card + battle log read the new element (e.g. Physical → Fire).
+      let newDamageType = null;
+      try {
+        const hitEls = (recomputedPerTargets ?? [])
+          .filter((e) => e?.hit && e?.element)
+          .map((e) => String(e.element).toLowerCase());
+        if (hitEls.length && hitEls.every((e) => e === hitEls[0])) newDamageType = hitEls[0];
+      } catch { /* non-fatal */ }
       director.ctx.actionResult = freezeActionResult({
         ...director.ctx.actionResult,
         targets: mutatedTargets,
         perTargetResults: recomputedPerTargets,
+        ...(newDamageType ? { damageType: newDamageType } : {}),
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
         accuracyOverride,
