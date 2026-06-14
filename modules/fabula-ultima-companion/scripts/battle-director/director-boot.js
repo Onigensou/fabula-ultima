@@ -64,6 +64,9 @@ import { peekTop, topIsFreeAction, topIsSrwDetour, stackDepth } from "./continua
 // Doesn't add behavior to the live director; lets the test bridge
 // drive skill COMPUTE for autonomous regression checks.
 import "./_test-harness-director.js";
+// Player resource HUD — side-effect import registers socket actions and the
+// reload-gate canvasReady hook on every client (not just the GM).
+import "./director-player-hud.js";
 
 // Module-level singleton — at most one director runs per client.
 let _instance = null;

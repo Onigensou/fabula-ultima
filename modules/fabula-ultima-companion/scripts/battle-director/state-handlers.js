@@ -19,6 +19,7 @@ import { postActionCard, BattlefieldActionCard } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
+import { destroyDirectorHud } from "./director-player-hud.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner } from "./director-round-banner.js";
@@ -4534,6 +4535,11 @@ const Stopped = {
     // can react before tokens get wiped. Tracked in
     // [[reaction-menu-on-token]] as next-iteration work.
     try { await clearAllStandaloneMenus(); } catch (e) { warn("STOPPED: clearAllStandaloneMenus threw", e); }
+    // Tear down BD player HUD and clear reload-gate scene flags.
+    try {
+      const scene = director.dCombat?.scene ?? canvas?.scene ?? null;
+      await destroyDirectorHud(scene);
+    } catch (e) { warn("STOPPED: destroyDirectorHud threw", e); }
   },
 };
 

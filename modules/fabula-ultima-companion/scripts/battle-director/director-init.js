@@ -29,6 +29,7 @@ import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, preload
 import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
+import { buildDirectorHud } from "./director-player-hud.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -987,6 +988,15 @@ export async function runDirectorInit(payload) {
   } else {
     await playEntranceAnimation({ partyTokens, enemyTokens });
   }
+
+  // ── 10.5. Player resource HUD — slides in immediately after entrance
+  // animations complete (or after lean token reveal). Fire-and-forget so the
+  // 420ms ease runs in parallel with battle-stance loops and the BATTLE START
+  // banner. Scene flags are written inside buildDirectorHud for reload survival.
+  buildDirectorHud(
+    partyTokens.map(t => ({ actor: t.actor, token: t })).filter(e => e.actor),
+    battleScene
+  ).catch(e => warn("PREP: buildDirectorHud threw", e));
 
   // ── 10b. Ensure battle-stance WEBM/MP4 loops are running on every token.
   // Idempotent: the party tokens are already animating (their shared texture
