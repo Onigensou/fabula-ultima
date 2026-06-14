@@ -66,7 +66,7 @@ function makeStudiedGate(attacker) {
 //
 // Returns { mode:"damage"|"heal"|"none", element, resource, damageBonus(number),
 //           isMpDamage, outgoingParts, outgoingTotal }.
-function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null }) {
+function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
 
@@ -94,7 +94,16 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
   }
 
   // Skill / Spell — read damage descriptor from the TARGET-built `ar`.
-  const nativeDt = String(ar?.damageType ?? "").toLowerCase();
+  // A `VAR_<NAME>` damage type (e.g. Elemental Shard's "VAR_ELEMENT") resolves
+  // to the element the player chose in a pre_activate prompt_element, stashed on
+  // ctx.chainVars — so the MAIN damage block (not just an effect chip) shows the
+  // chosen element + affinity. Falls back to the literal if no pick was made.
+  let nativeDt = String(ar?.damageType ?? "").toLowerCase();
+  if (nativeDt.startsWith("var_")) {
+    const k = nativeDt.slice(4);
+    const picked = chainVars?.[k];
+    nativeDt = String(picked ?? "").toLowerCase() || nativeDt;
+  }
   const isMpDamage = nativeDt === "mp";
   const isSpell = String(ar?.skillType ?? "").toLowerCase() === "spell";
   const element = isMpDamage
@@ -480,7 +489,7 @@ export async function computeActionProfile(input) {
   });
 
   const studiedGate = makeStudiedGate(attacker);
-  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null });
+  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null, chainVars: ctx?.chainVars ?? null });
   // Attack damage tooltip breakdown (per-AE/weapon/grant source list) — the
   // Skill path's baseParts are just the outgoing-mod parts; Attack appends the
   // buildDamageBonusParts breakdown ahead of them (mirrors COMPUTE Attack).

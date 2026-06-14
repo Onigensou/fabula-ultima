@@ -2716,7 +2716,7 @@ export async function applyEffectRow(row, ctx) {
   // up front so the cast animation flows straight into damage with no mid-
   // resolve prompts. See fireActivationEffectPre.
   if (ctx?.captureMode) {
-    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu"]);
+    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae"]);
     if (!CAPTURE_KINDS.has(kind)) {
       return { ok: true, kind, applied: [], skipped: true, reason: "capture-mode-noop" };
     }
@@ -4657,6 +4657,16 @@ async function applyFreeActionEffect(row, ctx) {
 // Cancel on a target's picker skips that target only — other targets in
 // the same effect still get prompted (does NOT abort the whole chain).
 
+// Append captured removal pick(s) (AE names) for a remove_tagged_ae row into the
+// shared pre_activate capture bag, keyed by the row's effect_label — so RESOLVE
+// reads them back via ctx.capturedMenuPicksByLabel and removes those exact AEs.
+function recordCapturedRemovals(ctx, label, names) {
+  if (!ctx.payload) ctx.payload = {};
+  if (!ctx.payload._capturedMenuPicks) ctx.payload._capturedMenuPicks = {};
+  const cur = Array.isArray(ctx.payload._capturedMenuPicks[label]) ? ctx.payload._capturedMenuPicks[label] : [];
+  ctx.payload._capturedMenuPicks[label] = [...cur, ...names];
+}
+
 async function applyRemoveTaggedAeEffect(row, ctx) {
   const filterTag = String(row.filter_tag ?? "").trim().toLowerCase();
   if (!filterTag) {
@@ -4678,6 +4688,19 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
   const tokens = targetResult.tokens;
   if (!tokens.length) return { ok: false, kind: "remove_tagged_ae", reason: "no-targets" };
 
+  // Pre-card capture / RESOLVE replay. When this row is wired as a
+  // `pre_activate_effect_ref`, the player picks WHICH status to remove BEFORE the
+  // card is built; the pick is recorded (by AE name) under the shared
+  // `_capturedMenuPicks` bag (keyed by this row's label) and replayed at RESOLVE
+  // via `ctx.capturedMenuPicksByLabel`, so the removal applies during the
+  // animation with no further input. Name-matching is scoped to the tag/chargeKey
+  // filter, so a stale name (status already gone) is a safe no-op. Reuses the
+  // open_action_menu capture plumbing — no new persistence field.
+  const label = String(row.effect_label ?? "");
+  const replayNames = ctx?.captureMode ? null
+    : (ctx?.capturedMenuPicksByLabel?.[label]
+       ?? (Array.isArray(ctx?.menuPicks) ? ctx.menuPicks : null));
+
   const removed = [];
   for (const token of tokens) {
     const actor = token.actor;
@@ -4698,6 +4721,50 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
 
     if (!matches.length) {
       log(`skill-effects.remove_tagged_ae: ${actor.name} has no "${filterTag}" AE; skipping target`);
+      continue;
+    }
+
+    // ── Capture mode (pre_activate): prompt now, RECORD the pick, don't remove.
+    if (ctx?.captureMode) {
+      if (count >= matches.length) {
+        // No choice (clear-all) — record every current name.
+        recordCapturedRemovals(ctx, label, matches.map((m) => m.name));
+        continue;
+      }
+      let remaining = matches.slice();
+      for (let i = 0; i < count && remaining.length; i += 1) {
+        let idx = 0;
+        if (!ctx.isPassive) {
+          const options = remaining.map((eff) => ({
+            label: String(eff.name ?? "(unnamed)"),
+            description: eff.description ? String(eff.description) : null,
+          }));
+          const title = String(row.menu_title ?? `Choose a ${filterTag} to remove`);
+          const subtitle = `${actor.name}${row.menu_subtitle ? ` · ${row.menu_subtitle}` : ""}`;
+          idx = await pickFromList({ title, subtitle, options: menuOptionsToRows(options) });
+        }
+        if (idx == null) {
+          // Cancel → abort (pre_activate wizard back-nav / drop to Action Menu).
+          return { ok: true, kind: "remove_tagged_ae", applied: [], reason: "cancelled", abort: true };
+        }
+        recordCapturedRemovals(ctx, label, [remaining[idx].name]);
+        remaining = remaining.filter((_, j) => j !== idx);
+      }
+      continue;
+    }
+
+    // ── RESOLVE replay: remove the pre-card pick(s) by name, no prompt.
+    if (replayNames && replayNames.length) {
+      const want = new Set(replayNames.map((n) => String(n)));
+      const pick = matches.filter((m) => want.has(String(m.name)));
+      const slice = (count === Infinity) ? pick : pick.slice(0, count);
+      if (slice.length) {
+        try {
+          await actor.deleteEmbeddedDocuments("ActiveEffect", slice.map((e) => e.id).filter(Boolean));
+          for (const m of slice) removed.push({ actorUuid: actor.uuid, aeName: m.name });
+          log(`skill-effects.remove_tagged_ae: replay removed ${slice.map((m) => m.name).join(", ")} from ${actor.name}`);
+        } catch (e) { warn(`skill-effects.remove_tagged_ae: replay remove failed on ${actor.name}`, e); }
+      }
       continue;
     }
 

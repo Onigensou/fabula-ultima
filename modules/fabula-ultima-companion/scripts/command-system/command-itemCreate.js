@@ -36,6 +36,16 @@
   // ipCost can override the item's own system.props.ip_cost when needed.
   // --------------------------------------------------------------------------
 
+  // NOTE (2026-06-15): the four base creatables (Elixir/Remedy/Tonic/Elemental
+  // Shard) are now delivered as BD-canon recipe items embedded on the party
+  // actor (recipe hosts an Item-skill carrying effect_config — see
+  // reference_csb_item_skill_link_mechanism + project_tinkerer_alchemy_plan).
+  // The legacy `type_damage`/`damage_bonus` consumables they used to point at
+  // are retired here so they don't win the `name::ipCost` dedup over the
+  // embedded BD recipes (world item beats embedded in preferCandidate). The
+  // BD recipes live on the shared party actor, so they remain available to
+  // every player by default. Re-enable an entry only to restore a legacy
+  // consumable as a hardcoded default.
   const DEFAULT_CREATABLE_ITEMS = [
     {
       key: "elixir",
@@ -44,7 +54,7 @@
       fallbackName: "Elixir",
       ipCost: 3,
       sort: 10,
-      enabled: true
+      enabled: false
     },
     {
       key: "remedy",
@@ -53,7 +63,7 @@
       fallbackName: "Remedy",
       ipCost: 3,
       sort: 20,
-      enabled: true
+      enabled: false
     },
     {
       key: "tonic",
@@ -62,7 +72,7 @@
       fallbackName: "Tonic",
       ipCost: 2,
       sort: 30,
-      enabled: true
+      enabled: false
     },
     {
       key: "elemental_shard",
@@ -71,7 +81,7 @@
       fallbackName: "Elemental Shard",
       ipCost: 2,
       sort: 40,
-      enabled: true
+      enabled: false
     }
   ];
 
@@ -467,7 +477,34 @@
       props.creatable_item_list ??
       {};
 
-    return asObjectValues(related);
+    // Preserve the row KEY (the related item's id) on each entry. CSB-derived
+    // itemContainer rows carry uuid:"" + id:"${item.id}" (a render-time literal),
+    // so the row key is the only reliable handle to the referenced item — and
+    // for an EMBEDDED recipe the referenced (sibling) item must be resolved
+    // actor-relative, not as a world `Item.<id>`. See resolveRelatedEntryUuid.
+    if (Array.isArray(related)) return related.filter(Boolean);
+    if (related && typeof related === "object") {
+      return Object.entries(related)
+        .filter(([, v]) => !!v)
+        .map(([key, v]) => (typeof v === "object" ? { __rowKey: key, ...v } : { __rowKey: key, uuid: v }));
+    }
+    return [];
+  }
+
+  // Resolve a related-entry to a usable document uuid. Prefer a real stored
+  // uuid; otherwise recover from the row key — ACTOR-RELATIVE when the recipe is
+  // embedded on an actor (its related/skill items are siblings on that actor),
+  // else as a world `Item.<id>`.
+  function resolveRelatedEntryUuid(recipeItem, entry) {
+    const raw = extractUuid(entry);
+    if (raw && !isBadDocumentUuid(raw)) return raw;
+    const key = safeString(entry?.__rowKey);
+    if (!key) return "";
+    const parent = recipeItem?.parent;
+    if (parent?.uuid && (parent.documentName === "Actor" || parent.constructor?.name === "Actor")) {
+      return `${parent.uuid}.Item.${key}`;
+    }
+    return `Item.${key}`;
   }
 
   function normalizeActiveSkillEntry(item, entry, key = "") {
@@ -723,6 +760,55 @@
       const recipeProps = getProps(recipe);
       const relatedEntries = getRelatedItemEntries(recipe);
 
+      // B0) BD-canon creatable: a recipe that HOSTS the activation skill directly
+      // (item_skill_active on the recipe) instead of pointing at a separate
+      // consumable via related_item_list. The recipe itself IS the creatable —
+      // its hosted Item-skill drives the effect on create. (See
+      // reference_csb_item_skill_link_mechanism: link = skill.system.container.)
+      const recipeSkillEntries = getActiveSkillEntries(recipe);
+      if (!relatedEntries.length && recipeSkillEntries.length) {
+        const baseIpCost = parseIpCost(recipeProps.ip_cost, recipeProps.recipe_ip_cost);
+        const ipCostInfo = buildReducedIpCost(baseIpCost, actingActor);
+        const descriptionHtml = recipeProps.description ?? "";
+        const candidate = {
+          name: safeString(recipe?.name, "Unknown Item"),
+          img: recipe?.img ?? "icons/svg/item-bag.svg",
+          descriptionHtml,
+          descriptionText: htmlToPlainText(descriptionHtml),
+
+          baseIpCost: ipCostInfo.baseIpCost,
+          ipCost: ipCostInfo.ipCost,
+          finalIpCost: ipCostInfo.finalIpCost,
+          ipReductionValue: ipCostInfo.ipReductionValue,
+          ipReductionApplied: ipCostInfo.ipReductionApplied,
+          costRawOriginal: ipCostInfo.costRawOriginal,
+          costRaw: ipCostInfo.costRaw,
+          costRawFinal: ipCostInfo.costRawFinal,
+
+          // The recipe is both the picked source and the effect host.
+          item: recipe,
+          itemUuid: recipe?.uuid ?? null,
+          itemId: recipe?.id ?? null,
+          itemName: recipe?.name ?? "Unknown Item",
+          itemProps: recipeProps,
+
+          recipe,
+          recipeUuid: recipe?.uuid ?? null,
+          recipeId: recipe?.id ?? null,
+          recipeName: recipe?.name ?? "Recipe",
+          recipeOwnerActorUuid: recipeRow.ownerActor?.uuid ?? null,
+          recipeOwnerActorName: recipeRow.ownerActor?.name ?? null,
+          recipeSource: recipeRow.source,
+
+          activeSkillEntries: recipeSkillEntries,
+
+          key: `recipe-self::${recipe?.id ?? recipe?.uuid ?? "recipe"}::${ipCostInfo.ipCost}`
+        };
+        const displayKey = `${safeString(candidate.name).toLowerCase()}::${candidate.ipCost}`;
+        byDisplayKey.set(displayKey, preferCandidate(byDisplayKey.get(displayKey), candidate));
+        continue;
+      }
+
       if (!relatedEntries.length) {
         if (includeRecipeWithoutRelatedItems) {
           warn("Recipe has no related_item_list.", {
@@ -734,7 +820,7 @@
       }
 
       for (const relatedEntry of relatedEntries) {
-        const relatedUuid = extractUuid(relatedEntry);
+        const relatedUuid = resolveRelatedEntryUuid(recipe, relatedEntry);
         if (!relatedUuid) continue;
 
         const item = await resolveDocument(relatedUuid);
@@ -746,7 +832,13 @@
           continue;
         }
 
-        const itemType = normalizeItemType(item);
+        // Use the CSB-level item_type ONLY (not normalizeItemType, which falls
+        // back to the Foundry doc type "equippableItem"). A BD-canon creatable
+        // is a skill-template item whose CSB item_type is empty — the doc-type
+        // fallback would wrongly classify it "equippableitem" and skip it.
+        // Empty CSB item_type ⇒ skill-shaped creatable ⇒ allowed; a real
+        // non-consumable CSB type (weapon/armor/…) ⇒ skip.
+        const itemType = toLower(getProps(item).item_type ?? "");
 
         // If the item has an item_type and it is not consumable, skip it.
         // If item_type is missing, allow it but log a warning.
