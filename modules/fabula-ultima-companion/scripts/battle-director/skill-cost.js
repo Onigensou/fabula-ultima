@@ -31,7 +31,7 @@ const RESOURCES = {
   ip:         { prop: "current_ip",    max: "max_ip",    label: "IP" },
   fp:         { prop: "fabula_point",  max: null,        label: "FP" },
   zenit:      { prop: "zenit",         max: null,        label: "Zenit" },
-  zero_power: { prop: "zero_power",    max: null,        label: "ZP" },
+  zero_power: { prop: "zero_power_value", max: null,        label: "ZP" },
   enmity:     { prop: "enmity",        max: null,        label: "Enmity" },
 };
 

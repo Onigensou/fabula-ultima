@@ -446,14 +446,14 @@ async function buildHealPerTarget({ view, ar, targets, resolver }) {
 // EffectPreviews. Pure preview — no writes. Self vs target routing is by
 // target_ref ("self" → selfEffects). Phase 0: a flat list per row; per-target
 // fan-out happens in the profile builder once target resolution is wired.
-function gatherEffectPreviews({ view, resolver }) {
+function gatherEffectPreviews({ view, resolver, chainVars = null }) {
   const selfEffects = [];
   const targetedEffects = [];
   const tbl = view?.effect_table ?? {};
   for (const k of Object.keys(tbl)) {
     const row = tbl[k];
     if (!row || row.$deleted) continue;
-    const pv = previewEffectRow(row, { resolver, targetRef: row.target_ref ?? null });
+    const pv = previewEffectRow(row, { resolver, targetRef: row.target_ref ?? null, chainVars });
     if (!pv) continue;
     const ref = String(row.target_ref ?? "").trim().toLowerCase();
     if (ref === "self" || ref === "" || pv.type === "cost" || pv.type === "equip") selfEffects.push(pv);
@@ -520,7 +520,7 @@ export async function computeActionProfile(input) {
     if (heal.rows.length) { perTarget = perTarget.concat(heal.rows); healingObj = heal.healingObj; }
   }
 
-  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver });
+  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, chainVars: ctx?.chainVars ?? null });
 
   const profile = {
     action: {

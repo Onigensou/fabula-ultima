@@ -551,6 +551,10 @@
     {
       "key": "2026-06-14-tinkerer-deep-pockets-ae-author",
       "path": "data-migrations/2026-06-14-tinkerer-deep-pockets-ae-author.js"
+    },
+    {
+      "key": "2026-06-14-skill-template-pre-activate-fire-point",
+      "path": "data-migrations/2026-06-14-skill-template-pre-activate-fire-point.js"
     }
   ]
 }

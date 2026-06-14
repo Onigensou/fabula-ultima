@@ -34,7 +34,7 @@ const RESOURCE_PROPS = {
   hp:         { prop: "current_hp",    max: "max_hp"    },
   mp:         { prop: "current_mp",    max: "max_mp"    },
   ip:         { prop: "current_ip",    max: "max_ip"    },
-  zero_power: { prop: "zero_power",    max: null, hardMin: 0, hardMax: 6 },
+  zero_power: { prop: "zero_power_value", max: null, hardMin: 0, hardMax: 6 },
   zenit:      { prop: "zenit",         max: null        },
   enmity:     { prop: "enmity",        max: null        },
   fp:         { prop: "fabula_point",  max: null        },
@@ -2043,6 +2043,68 @@ async function applyPromptNumberEffect(row, ctx) {
   return { ok: true, kind: "prompt_number", value };
 }
 
+// ── prompt_element ─────────────────────────────────────────────────────────
+// Pop a damage-type picker and stash the chosen element STRING as a chain-local
+// variable on ctx.payload._chainVars[prompt_var]. A later row reads it back via
+// the VAR_<NAME> reference — e.g. `deal_damage` with `damage_element:
+// "VAR_ELEMENT"`, so ONE deal_damage deals whatever type the player picked
+// instead of one hard-coded row per element. The string counterpart to
+// prompt_number; generic for any "choose a damage type, then apply it" skill
+// (Meteor Shower; later the Infusion line's damage-type override).
+//
+// Fields:
+//   prompt_var       — variable name to store under (e.g. "element").
+//   element_options  — optional `|`/`,`/newline-separated element id list; default
+//                      the 9 FU types. Labels are auto-capitalized in the picker.
+//   menu_title       — picker title (falls back to prompt_label / a default).
+// Reuses selectMenuPicks (the open_action_menu picker), so harness picks
+// (ctx.harnessPicks / picks:[...] by label), passive auto-pick, and the parchment
+// UI all come for free. Cancel → abort (chain stops before any cost/damage).
+const DEFAULT_DAMAGE_ELEMENTS = ["physical", "air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"];
+async function applyPromptElementEffect(row, ctx) {
+  const varName = String(row.prompt_var ?? "").trim().toLowerCase();
+  if (!varName) {
+    warn(`skill-effects.prompt_element: missing prompt_var on "${row.effect_label}"`);
+    return { ok: false, kind: "prompt_element", reason: "no-var" };
+  }
+  // Already captured (pre_activate ran the pick before the card; the value was
+  // rehydrated onto _chainVars at RESOLVE) → use it, don't re-prompt.
+  const pre = ctx?.payload?._chainVars?.[varName];
+  if (typeof pre === "string" && pre.trim() !== "") {
+    log(`skill-effects.prompt_element: ${varName} already captured = ${pre}; skipping prompt`);
+    return { ok: true, kind: "prompt_element", value: pre };
+  }
+  const raw = String(row.element_options ?? "").trim();
+  const elements = raw
+    ? raw.split(/[|,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean)
+    : DEFAULT_DAMAGE_ELEMENTS.slice();
+  if (!elements.length) {
+    warn(`skill-effects.prompt_element: no element options on "${row.effect_label}"`);
+    return { ok: false, kind: "prompt_element", reason: "no-options" };
+  }
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const options = elements.map((e) => ({ label: cap(e) }));
+  // Build a picker row: reuse the option-menu title + passive auto-pick knob so a
+  // passive/headless reuse never hangs (interactive Active casts still prompt).
+  const pickRow = {
+    ...row,
+    menu_title: row.menu_title ?? row.prompt_label ?? "Choose a damage type",
+    skip_when_passive: true,
+  };
+  const { chosenIndices, cancelled } = await selectMenuPicks(pickRow, ctx, options);
+  if (cancelled) {
+    log(`skill-effects.prompt_element: "${row.effect_label}" cancelled by user`);
+    return { ok: true, kind: "prompt_element", applied: [], reason: "cancelled", abort: true };
+  }
+  const idx = chosenIndices?.[0] ?? 0;
+  const chosen = elements[idx] ?? elements[0];
+  if (!ctx.payload) ctx.payload = {};
+  if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+  ctx.payload._chainVars[varName] = chosen;
+  log(`skill-effects.prompt_element: ${varName} = ${chosen}`);
+  return { ok: true, kind: "prompt_element", value: chosen };
+}
+
 // Number-input dialog (mirrors the attribute-pair-picker DL input). Resolves to
 // the clamped integer on Confirm, or null if closed without confirming.
 async function promptNumberDialog({ label, min, max, def, title }) {
@@ -2264,6 +2326,7 @@ const EFFECT_KIND_DISPATCH = {
   free_action:         applyFreeActionEffect,
   adjust_charges:      applyAdjustChargesEffect,
   prompt_number:       applyPromptNumberEffect,
+  prompt_element:      applyPromptElementEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    applyConsumeResourceEffect,
@@ -2309,6 +2372,7 @@ export const EFFECT_KIND_LABELS = {
   free_action:         "Free Action (perform single action)",
   adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
   prompt_number:       "Prompt Number (ask the user for an amount)",
+  prompt_element:      "Prompt Element (ask the user for a damage type)",
   remove_tagged_ae:    "Remove Tagged AE",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
@@ -2390,14 +2454,28 @@ const EFFECT_KIND_PREVIEW = {
       source: row.effect_label, targetRef: row.target_ref ?? null };
   },
 
-  deal_damage: (row, pctx) => ({
-    type: "damage",
-    element: String(row.damage_element ?? row.element ?? "elementless").trim().toLowerCase(),
-    resource: "hp",
-    damageClass: "effect",
-    value: _previewAmount(row.damage_amount ?? row.amount, pctx),
-    valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "self",
-  }),
+  deal_damage: (row, pctx) => {
+    // A VAR_<NAME> element is chosen via prompt_element. If the pick was already
+    // captured (pre_activate → pctx.chainVars), show the real type on the card;
+    // otherwise (RESOLVE-time pick) show "varies".
+    const rawEl = String(row.damage_element ?? row.element ?? "elementless").trim();
+    let element;
+    if (/^var_/i.test(rawEl)) {
+      const key = rawEl.slice(4).toLowerCase().trim();
+      const v = pctx?.chainVars?.[key];
+      element = (typeof v === "string" && v.trim()) ? v.toLowerCase() : "varies";
+    } else {
+      element = rawEl.toLowerCase();
+    }
+    return {
+      type: "damage",
+      element,
+      resource: "hp",
+      damageClass: "effect",
+      value: _previewAmount(row.damage_amount ?? row.amount, pctx),
+      valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "self",
+    };
+  },
 
   consume_resource: (row, pctx) => ({
     type: "cost",
@@ -2443,6 +2521,10 @@ const EFFECT_KIND_PREVIEW = {
   // open_action_menu surfaces as a Decision node, not an inline EffectPreview —
   // the profile builder handles it separately. Return null here.
   open_action_menu: () => null,
+
+  // prompt_element is a RESOLVE-time player prompt (pick a damage type) — no
+  // inline card preview. (prompt_number has its own entry below.)
+  prompt_element: () => null,
 
   // free_action enqueues a free turn-action (drained by FREE_ACTION_WINDOW) —
   // not a target-facing inline row. No standalone card preview.
@@ -2527,6 +2609,21 @@ export async function applyEffectRow(row, ctx) {
     }
   }
 
+  // Capture mode (the pre_activate window, fired BEFORE the action card is
+  // built). Only CHOICE rows run — they record the player's picks (element via
+  // prompt_element, menu options via open_action_menu) into the payload so the
+  // card can reflect them and RESOLVE can replay them. Consequence rows
+  // (deal_damage, apply_ae, consume_resource, …) are NO-OP here; they fire for
+  // real at RESOLVE (on_activate). This is what lets a skill gather its choices
+  // up front so the cast animation flows straight into damage with no mid-
+  // resolve prompts. See fireActivationEffectPre.
+  if (ctx?.captureMode) {
+    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu"]);
+    if (!CAPTURE_KINDS.has(kind)) {
+      return { ok: true, kind, applied: [], skipped: true, reason: "capture-mode-noop" };
+    }
+  }
+
   const handler = EFFECT_KIND_DISPATCH[kind];
   if (handler) return handler(row, ctx);
   warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
@@ -2547,6 +2644,77 @@ export async function fireActivationEffect(skill, ctx) {
   ).trim();
   if (!label) return null;
   return applyEffectByLabel(label, ctx);
+}
+
+// Clear a choice step's captured value so re-running it RE-PROMPTS (used by the
+// pre_activate wizard's back-navigation). prompt_element/prompt_number stash a
+// chain var; open_action_menu stashes its picks under its effect_label.
+function clearCapturedForStep(row, ctx) {
+  if (!row) return;
+  const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+  if (kind === "prompt_element" || kind === "prompt_number") {
+    const v = String(row.prompt_var ?? "").trim().toLowerCase();
+    if (v && ctx?.payload?._chainVars) delete ctx.payload._chainVars[v];
+  } else if (kind === "open_action_menu") {
+    const lbl = row.effect_label;
+    if (lbl && ctx?.payload?._capturedMenuPicks) delete ctx.payload._capturedMenuPicks[lbl];
+  }
+}
+
+// Fire the skill's `pre_activate_effect_ref` hook in CAPTURE mode — runs BEFORE
+// the action card is built (skill COMPUTE). Choice rows (prompt_element /
+// open_action_menu) prompt and RECORD the player's picks onto ctx.payload
+// (_chainVars for element vars, _capturedMenuPicks for menu option labels);
+// consequence rows are no-op here (applyEffectRow's capture guard). The caller
+// persists the captured picks onto the actionResult and rehydrates them at
+// RESOLVE so the on_activate chain replays them with NO re-prompt — letting the
+// player make all choices up front, then watch the animation flow straight into
+// damage.
+//
+// WIZARD back-navigation: when the pre_activate root is a `chain`, its steps run
+// as an ordered wizard. Cancelling a step goes BACK to the previous step (re-
+// prompting it) rather than aborting; cancelling the FIRST step returns
+// { abort:true } so the caller drops to the Action Menu. So for Meteor Shower:
+// cancel the status pick → re-show the element pick; cancel the element pick →
+// Action Menu. No shared-picker change — a picker's "cancel" is reinterpreted
+// here as "step back". Non-chain roots run once. Returns the result, or null if
+// no pre_activate hook.
+export async function fireActivationEffectPre(skill, ctx) {
+  const label = String(
+    ctx?.firePoints?.pre_activate_effect_ref
+    ?? skill?.system?.props?.pre_activate_effect_ref
+    ?? ""
+  ).trim();
+  if (!label) return null;
+
+  const capCtx = { ...ctx, captureMode: true };
+  const root = findEffectRow(capCtx, label);
+  if (!root) {
+    warn(`skill-effects.fireActivationEffectPre: no effect row "${label}"`);
+    return { ok: false, reason: "no-row" };
+  }
+  // Non-chain root → single run (no wizard).
+  if (String(root.effect_kind ?? "").trim().toLowerCase() !== "chain") {
+    return applyEffectRow(root, capCtx);
+  }
+
+  const steps = parseEffectRefList(root.chain_steps);
+  let i = 0;
+  while (i < steps.length) {
+    const stepRow = findEffectRow(capCtx, steps[i]);
+    if (!stepRow) { i += 1; continue; }
+    const res = await applyEffectRow(stepRow, capCtx);
+    // Cancel = step back. First step → Action Menu (abort up to the caller).
+    if (res?.abort && res?.reason === "cancelled") {
+      if (i === 0) return { ok: true, abort: true, reason: "cancelled-to-menu" };
+      i -= 1;
+      clearCapturedForStep(findEffectRow(capCtx, steps[i]), capCtx); // re-prompt prev step
+      continue;
+    }
+    if (res?.abort) return res; // a real abort (e.g. consume-on-empty) — propagate
+    i += 1;
+  }
+  return { ok: true };
 }
 
 // Fire `post_damage_effect_ref` for ONE damage event. Caller invokes
@@ -2783,7 +2951,18 @@ async function applySetResourceEffect(row, ctx) {
 // No attacker outgoing modifiers are applied (status/environmental damage),
 // so a self-tick is not inflated by the bearer's own damage bonuses.
 async function applyDealDamageEffect(row, ctx) {
-  const element = String(row.damage_element ?? row.element ?? "elementless").trim().toLowerCase();
+  // Element may be a literal ("fire") OR a chain-local variable reference
+  // ("VAR_ELEMENT") set earlier by a `prompt_element` row — so one deal_damage
+  // can deal whatever type the player just chose (Meteor Shower, Infusions),
+  // instead of one hard-coded row per element. VAR_ reads the STRING stashed on
+  // ctx.payload._chainVars (the same bag prompt_number uses for numbers).
+  const rawElement = String(row.damage_element ?? row.element ?? "elementless").trim();
+  let element = rawElement.toLowerCase();
+  if (/^var_/i.test(rawElement)) {
+    const key = rawElement.slice(4).toLowerCase().trim();
+    const v = ctx?.payload?._chainVars?.[key];
+    element = String(v ?? "elementless").trim().toLowerCase() || "elementless";
+  }
   const amountFormula = row.damage_amount ?? row.amount ?? "0";
   const targetRef = row.target_ref || "self";
   const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
@@ -3864,6 +4043,23 @@ function menuOptionsToRows(opts) {
 }
 
 async function selectMenuPicks(row, ctx, options) {
+  // Replay captured picks — the pre_activate window recorded these BEFORE the
+  // card was built; RESOLVE replays them so the menu applies without re-
+  // prompting (keyed by the menu row's effect_label). Mirrors the reaction
+  // apply-click → RESOLVE replay, but for the caster's own skill.
+  const captured = ctx?.capturedMenuPicksByLabel?.[row.effect_label];
+  if (Array.isArray(captured) && captured.length) {
+    const idxs = [];
+    for (const label of captured) {
+      const want = String(label).trim().toLowerCase();
+      const i = options.findIndex((o) => String(o.label).trim().toLowerCase() === want);
+      if (i >= 0 && !idxs.includes(i)) idxs.push(i);
+    }
+    if (idxs.length) {
+      log(`skill-effects.selectMenuPicks: replaying captured picks for "${row.effect_label}" → ${idxs.map((i) => options[i].label).join(", ")}`);
+      return { chosenIndices: idxs, cancelled: false };
+    }
+  }
   let pickCount = 1;
   const pcRaw = row.menu_pick_count;
   if (pcRaw !== undefined && pcRaw !== null && String(pcRaw).trim() !== "") {
@@ -3927,6 +4123,20 @@ async function selectMenuPicks(row, ctx, options) {
       });
       if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
+        // Capture mode (pre_activate wizard): a multi-pick menu steps BACK one
+        // sub-pick on cancel — undo the previous selection and re-prompt it
+        // (e.g. cancel debuff 2/2 → re-pick debuff 1/2). Cancelling at 1/2 falls
+        // to the pick===0 branch above → cancelled → the wizard steps back to the
+        // previous choice. Non-capture menus keep "stop early, keep partials".
+        if (ctx?.captureMode) {
+          const last = chosenIndices.pop();
+          if (last != null && !remainingIdx.includes(last)) {
+            remainingIdx.push(last);
+            remainingIdx.sort((a, b) => a - b);
+          }
+          pick -= 2; // for-loop's pick++ lands us back on the previous sub-pick
+          continue;
+        }
         log(`skill-effects.open_action_menu: player stopped after ${pick} pick(s)`);
         break;
       }
@@ -4115,6 +4325,18 @@ async function applyOpenActionMenuEffect(row, ctx) {
   if (cancelled) {
     log(`skill-effects.open_action_menu: row "${row.effect_label}" cancelled by user`);
     return { ok: true, kind: "open_action_menu", applied: [], reason: "cancelled", abort: true };
+  }
+
+  // Capture mode (pre_activate window): record the chosen option LABELS onto the
+  // payload and return WITHOUT dispatching — the options apply for real at
+  // RESOLVE, where selectMenuPicks replays these via capturedMenuPicksByLabel.
+  if (ctx?.captureMode) {
+    if (!ctx.payload) ctx.payload = {};
+    if (!ctx.payload._capturedMenuPicks) ctx.payload._capturedMenuPicks = {};
+    const labels = chosenIndices.map((i) => options[i].label);
+    ctx.payload._capturedMenuPicks[row.effect_label] = labels;
+    log(`skill-effects.open_action_menu: capture mode — recorded "${row.effect_label}" → ${labels.join(", ")} (not dispatched)`);
+    return { ok: true, kind: "open_action_menu", captured: true, selectedLabels: labels };
   }
 
   // Dispatch each chosen option in pick order. Refs path: the referenced row

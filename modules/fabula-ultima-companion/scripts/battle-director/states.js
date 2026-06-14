@@ -156,6 +156,11 @@ export const TRANSITIONS = Object.freeze({
 
   [STATES.COMPUTE]: {
     INTERNAL_DONE: { next: STATES.CONFIRM },
+    // Cancelling a pre_activate choice (element / status pick, fired in capture
+    // mode at COMPUTE before the card is built) returns to the Action Menu so
+    // the player can re-pick their action — NOT a full abort. Nothing is spent
+    // (the card was never created). Mirrors TARGET's TARGET_BACK → DECLARE.
+    [INTENTS.TARGET_BACK]: { next: STATES.DECLARE },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 

@@ -38,6 +38,11 @@ const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
 // prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
 const PROMPT_NUMBER_VIS = `equalText(sameRow("effect_kind",''), "prompt_number")`;
+// prompt_element — interactive damage-type picker (Meteor Shower). Stores the
+// chosen element string under prompt_var, read later as VAR_<NAME>.
+const PROMPT_ELEMENT_VIS = `equalText(sameRow("effect_kind",''), "prompt_element")`;
+// prompt_var is shared by prompt_number (amount) and prompt_element (element).
+const PROMPT_VAR_VIS = `or(equalText(sameRow("effect_kind",''), "prompt_number"), equalText(sameRow("effect_kind",''), "prompt_element"))`;
 // confirm — N-button decision dialog (gate or branch).
 const CONFIRM_VIS = `equalText(sameRow("effect_kind",''), "confirm")`;
 // Shared free-action GRANT fields (bonuses / cost) — used by BOTH the legacy
@@ -75,7 +80,7 @@ function selectCol(key, colName, options, { tooltip = "", vis = "", defaultValue
 // no-op for columns that already exist, so listing a stable field is harmless.)
 export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // open_action_menu config
-  textCol("menu_title", "Menu Title", { tooltip: "Prompt title above the option list.", vis: OAM_VIS }),
+  textCol("menu_title", "Menu Title", { tooltip: "Prompt title above the option list (open_action_menu / prompt_element).", vis: `or(${OAM_VIS}, ${PROMPT_ELEMENT_VIS})` }),
   textCol("menu_subtitle", "Menu Subtitle", { tooltip: "Prompt subtitle / instruction line.", vis: OAM_VIS }),
   textCol("menu_pick_count", "Pick Count", { tooltip: "How many options to choose (number or formula, default 1).", vis: OAM_VIS }),
   textCol("menu_option_refs", "Option Refs", { tooltip: "Comma-separated effect_label refs offered by this menu, in order.", vis: OAM_VIS }),
@@ -178,7 +183,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // prompt_number config — interactive amount picker. Stores the entered value as
   // a chain variable read later via the VAR_<NAME> formula identifier (Blazing
   // Tether's move = prompt_number then two adjust_charges using VAR_MOVE_AMOUNT).
-  textCol("prompt_var", "Prompt Var", { tooltip: "prompt_number: variable name to store the entered amount under. Read later as VAR_<NAME> (e.g. prompt_var \"move_amount\" → VAR_MOVE_AMOUNT).", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_var", "Prompt Var", { tooltip: "prompt_number / prompt_element: variable name to store the chosen value under. Read later as VAR_<NAME> (e.g. prompt_var \"move_amount\" → VAR_MOVE_AMOUNT; \"element\" → VAR_ELEMENT).", vis: PROMPT_VAR_VIS }),
+  // prompt_element config — interactive damage-type picker. Stores the chosen
+  // element string under prompt_var; a later deal_damage reads damage_element
+  // "VAR_<NAME>". Blank Element Options → the 9 FU damage types.
+  textCol("element_options", "Element Options", { tooltip: "prompt_element: optional |/comma-separated element id list (e.g. \"fire|ice|bolt\"). Blank = all 9 FU types (physical, air, bolt, dark, earth, fire, ice, light, poison).", vis: PROMPT_ELEMENT_VIS }),
   textCol("prompt_label", "Prompt Label", { tooltip: "prompt_number: the dialog prompt text (e.g. \"Burn stacks to move?\").", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_min", "Prompt Min", { tooltip: "prompt_number: minimum (number or formula). Default 0.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_max", "Prompt Max", { tooltip: "prompt_number: maximum (number or formula, evaluated against Prompt Max Ref's actor). e.g. \"AE_CHARGES_BURN\". Blank = unbounded.", vis: PROMPT_NUMBER_VIS }),

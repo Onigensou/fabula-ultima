@@ -39,7 +39,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
-import { fireActivationEffect, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+import { fireActivationEffect, fireActivationEffectPre, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
@@ -414,6 +414,17 @@ async function resolveAction(director, ar, opts = {}) {
       ctx.resolvedTargets.set(ref, { ok: tokens.length > 0, tokens });
     }
   }
+  // pre_activate replay — rehydrate the choices the player made BEFORE the card
+  // (COMPUTE's capture pass) so the on_activate chain replays them with NO re-
+  // prompt: element vars onto _chainVars (read by deal_damage VAR_<NAME>), menu
+  // picks onto capturedMenuPicksByLabel (replayed by selectMenuPicks → applied).
+  if (ar?.preActivateVars && typeof ar.preActivateVars === "object") {
+    ctx.payload._chainVars = { ...(ctx.payload._chainVars ?? {}), ...ar.preActivateVars };
+  }
+  if (ar?.preActivateMenuPicks && typeof ar.preActivateMenuPicks === "object") {
+    ctx.capturedMenuPicksByLabel = { ...ar.preActivateMenuPicks };
+  }
+
   // Battle-log sink for THIS action: every commit (hits, via applyDamageToTarget's
   // logContext) + every miss (below) + any deal_damage riders fired through this
   // ctx push their {entry,row} here; we flush ONCE at the end → a Multi-N action
@@ -2869,6 +2880,45 @@ const Compute = {
       // (hit/crit/miss/multi), heal, legacy item, status-only spell, pure-buff —
       // see verify-profile-projection.mjs.
       const skill = await fromUuid(ar.skillUuid).catch(() => null);
+      const view = getRuntimeActionView(skill);
+
+      // ── pre_activate: capture player choices BEFORE the card is built ──
+      // Choice rows (prompt_element / open_action_menu) prompt now, in capture
+      // mode (record-only, nothing applied). Their picks are persisted onto the
+      // actionResult and replayed at RESOLVE so the cast animation flows straight
+      // into damage with no mid-resolve prompt. Cancelling a pick ABORTS the
+      // whole action (nothing spent — the card is never built). Only runs when
+      // the skill declares a pre_activate_effect_ref.
+      let preActivateVars = ar.preActivateVars ?? null;
+      let preActivateMenuPicks = ar.preActivateMenuPicks ?? null;
+      const preRef = String(view?.fire_points?.pre_activate_effect_ref
+        ?? skill?.system?.props?.pre_activate_effect_ref ?? "").trim();
+      if (preRef && !ar.preActivateDone) {
+        try {
+          const casterActor = await fromUuid(attacker.actorUuid).catch(() => null);
+          const capToken = canvas?.tokens?.get(attacker?.tokenId)?.document ?? null;
+          const allUuids = (allTargets ?? []).map((t) => t.tokenUuid);
+          const capCtx = makeChainContext({
+            reactorActor: casterActor, reactorToken: capToken, skill, dCombat: director.dCombat,
+            payload: { targets: allUuids, hitTargets: allUuids, actionIntent: ar.actionIntent },
+            actionTargetUuids: allUuids, hitActionTargetUuids: allUuids,
+            isPassive: false, runtimeEffectTable: view.effect_table, firePoints: view.fire_points,
+            harnessPicks: ar?._harnessPicks ?? null, harnessNumbers: ar?._harnessNumbers ?? null,
+          });
+          const pre = await fireActivationEffectPre(skill, capCtx);
+          if (pre?.abort) {
+            // Player cancelled a choice (element / status pick) → return to the
+            // Action Menu to re-pick, NOT a full abort. The card was never built,
+            // so nothing is spent. (COMPUTE → DECLARE via TARGET_BACK.)
+            log("Skill COMPUTE: pre_activate cancelled by player — back to Action Menu (nothing spent)");
+            director.enqueue({ type: INTENTS.TARGET_BACK });
+            return;
+          }
+          preActivateVars = capCtx.payload?._chainVars ?? null;
+          preActivateMenuPicks = capCtx.payload?._capturedMenuPicks ?? null;
+        } catch (e) { warn("Skill COMPUTE: pre_activate capture threw", e); }
+      }
+
       // Roll the Check dice here (the RNG); computeActionProfile derives total /
       // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
       let dice = null;
@@ -2880,13 +2930,17 @@ const Compute = {
         dice = { rA: c.rA, rB: c.rB };
       }
       const profile = await computeActionProfile({
-        view: getRuntimeActionView(skill), ar, attacker, targets: allTargets, dice,
-        ctx: { round: director.dCombat?.round ?? 0 },
+        view, ar, attacker, targets: allTargets, dice,
+        // chainVars lets the card preview resolve a VAR_<NAME> element (the
+        // pre_activate element pick) to its real type instead of "varies".
+        ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars },
       });
       director.ctx.actionResult = freezeActionResult({
         ...ar,
         ...projectProfileToActionResult(profile, ar, allTargets),
         targets: allTargets,
+        // Persist the captured pre_activate picks so RESOLVE replays them.
+        preActivateVars, preActivateMenuPicks, preActivateDone: true,
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
