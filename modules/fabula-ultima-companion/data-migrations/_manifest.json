@@ -550,6 +550,18 @@
     {
       "key": "2026-06-14-sharpshooter-double-arrow-author",
       "path": "data-migrations/2026-06-14-sharpshooter-double-arrow-author.js"
+    },
+    {
+      "key": "2026-06-14-rogue-see-you-later-author",
+      "path": "data-migrations/2026-06-14-rogue-see-you-later-author.js"
+    },
+    {
+      "key": "2026-06-14-zarg-zero-trigger-strategy-author",
+      "path": "data-migrations/2026-06-14-zarg-zero-trigger-strategy-author.js"
+    },
+    {
+      "key": "2026-06-14-tinkerer-deep-pockets-ae-author",
+      "path": "data-migrations/2026-06-14-tinkerer-deep-pockets-ae-author.js"
     }
   ]
 }
