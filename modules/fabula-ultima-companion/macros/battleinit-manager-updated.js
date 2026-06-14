@@ -395,9 +395,6 @@ devMode = Boolean(payload?.options?.devMode);
 log("devMode:", devMode);
 
 // ─── Dev Mode lean injection ────────────────────────────────────────────
-// Write lean=true to the scene flag so the Director Manager macro reads it
-// when it calls findPayload(). We clean it back out immediately after the
-// Director Manager returns so it never persists to the next battle.
 // Always write lean explicitly — Foundry mergeObject preserves absent keys,
 // so omitting lean when devMode=false lets stale lean:true from a prior run survive.
 const pWithLean = deepClone(payload);
@@ -426,16 +423,6 @@ if (String(payload?.options?.battleSystem ?? "legacy") === "director") {
   // and passed it into the director instance. The director holds its own copy
   // in ctx.payload; removing it here prevents stale lean=true from poisoning
   // the next battle's Normal Start.
-  if (devMode) {
-    try {
-      const pClean = deepClone(await readPayload(sourceScene));
-      if (pClean?.context?.lean !== undefined) {
-        delete pClean.context.lean;
-        await writePayload(sourceScene, pClean);
-        log("DevMode: lean cleaned from scene flag");
-      }
-    } catch (_) {}
-  }
   return;
 }
 
