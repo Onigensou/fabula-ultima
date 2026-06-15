@@ -557,6 +557,24 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const ids = [payload?.weaponUuid, payload?.spellUuid, payload?.skillUuid];
         return ids.some((u) => u && String(u).trim() === carrierUuid) ? 1 : 0;
       }
+      // SUBJECT_IS_SELF — 1 when the trigger's SUBJECT (the creature the event
+      // HAPPENED TO, e.g. the damage victim on creature_takes_damage) IS the
+      // reactor, else 0. The subject-side twin of the matcher's
+      // reaction_source:"self" — distinct from TRIGGER_IS_SELF, which tests the
+      // triggering ACTION's carrier, not the subject. Use `SUBJECT_IS_SELF == 0`
+      // to scope a reaction to "another creature" (RAW "when ANOTHER creature
+      // loses HP …", Beyond the Realms of Death). Correct for linked PCs (Keren);
+      // matches by actor uuid (with a resolved-actor fallback). Returns 0 when no
+      // subject is threaded.
+      case "SUBJECT_IS_SELF": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const selfUuid = String(actor?.uuid ?? "").trim();
+        if (selfUuid && subjectUuid === selfUuid) return 1;
+        const subj = _resolveActorByUuidSync(subjectUuid);
+        if (subj && actor && subj.uuid === actor.uuid) return 1;
+        return 0;
+      }
       default:
         // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
         // SAME effect chain. `prompt_number` stores the player's entered amount
@@ -713,6 +731,29 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           return effects.filter(
             (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
           ).length;
+        }
+        // Dynamic TARGET_SPECIES_IS_<X> — 1 when the trigger SUBJECT's species
+        // (enemy template `system.props.species`, e.g. "UNDEAD") matches <X>,
+        // else 0. Case-insensitive; underscores → spaces. Players/PCs carry NO
+        // species prop, so this returns 0 for them — i.e. a `... == 0` gate
+        // treats anything without species data as "not that species" (passes).
+        // Used by Beyond the Realms of Death's "if they are not undead" gate:
+        //   TARGET_SPECIES_IS_UNDEAD == 0
+        if (name.startsWith("TARGET_SPECIES_IS_")) {
+          const needle = name
+            .slice("TARGET_SPECIES_IS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const species = String(subject?.system?.props?.species ?? "")
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return species && species === needle ? 1 : 0;
         }
         // TARGET_GRAPPLED_BY_SELF — 1 when the trigger SUBJECT (the target) has a
         // "Grappled" AE whose grappler is THIS reactor (the acting creature),
