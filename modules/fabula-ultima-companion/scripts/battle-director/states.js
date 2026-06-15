@@ -46,6 +46,7 @@ export const STATES = Object.freeze({
   // See [[free-actions]] / [[continuation-stack]].
   FREE_ACTION_WINDOW: "FREE_ACTION_WINDOW",
   ABORTED:          "ABORTED",
+  BATTLE_ENDING:    "BATTLE_ENDING",
   STOPPED:          "STOPPED",
 });
 
@@ -81,6 +82,7 @@ export const STATE_TIMEOUT_MS = Object.freeze({
   [STATES.STANDALONE_REACTION_WINDOW]: null, // no timeout — GM may wait on multiple players resolving their reaction menus simultaneously
   [STATES.FREE_ACTION_WINDOW]: null,         // owns full compose+commit; same reasoning as the per-action input states
   [STATES.ABORTED]:         null,
+  [STATES.BATTLE_ENDING]:   null, // awaits GM dialog — no timeout
   [STATES.STOPPED]:         null,
 });
 
@@ -123,7 +125,7 @@ export const TRANSITIONS = Object.freeze({
   [STATES.ROUND_START]: {
     // round_start reactions fire unless combat is ending. ROUND_START.onEnter
     // sets ctx.standaloneTrigger="round_start" + ctx.standaloneAfter=TURN_START.
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.BATTLE_ENDING : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -131,7 +133,7 @@ export const TRANSITIONS = Object.freeze({
     // turn_start reactions fire unless combat ended on auto-fail (no
     // eligible). TURN_START.onEnter sets ctx.standaloneTrigger="turn_start"
     // + ctx.standaloneAfter=DECLARE.
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.BATTLE_ENDING : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -235,7 +237,7 @@ export const TRANSITIONS = Object.freeze({
   [STATES.ROUND_END]: {
     // round_end fires unless combat ended this round. ROUND_END.onEnter
     // sets ctx.standaloneTrigger="round_end" + ctx.standaloneAfter=ROUND_START.
-    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.STOPPED : STATES.STANDALONE_REACTION_WINDOW },
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.BATTLE_ENDING : STATES.STANDALONE_REACTION_WINDOW },
     [INTENTS.ABORT]: { next: STATES.ABORTED },
   },
 
@@ -279,6 +281,16 @@ export const TRANSITIONS = Object.freeze({
     // we fall back to the Foundry combat's `started` for backward compat
     // when manual-fallback entry skips PREP.
     INTERNAL_DONE: { next: (ctx) => (ctx.dCombat?.started || ctx.combat?.started) ? STATES.CLEANUP : STATES.STOPPED },
+  },
+
+  [STATES.BATTLE_ENDING]: {
+    // BattleEnding.onEnter runs the full cinematic pipeline (prompt, FX,
+    // SummaryLogic, RankComputation, SummaryUI, Transition, ResourceReset)
+    // then enqueues INTERNAL_DONE. Dev mode skips the pipeline and goes
+    // directly to STOPPED. ABORT also hard-exits to STOPPED so the GM can
+    // always escape a stuck sequence.
+    INTERNAL_DONE:   { next: STATES.STOPPED },
+    [INTENTS.ABORT]: { next: STATES.STOPPED },
   },
 
   [STATES.STOPPED]: {},

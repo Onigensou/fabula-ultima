@@ -9,6 +9,7 @@
 // which are deliberately out of scope for the prototype).
 
 import { log, warn, err } from "./logger.js";
+import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
 import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate } from "./snapshot.js";
@@ -4792,6 +4793,29 @@ const Animation = {
   },
 };
 
+// ─── BATTLE_ENDING ─────────────────────────────────────────────────────
+// Dev mode (payload.options.devMode or context.lean) skips the cinematic
+// pipeline entirely; the bare boot.stop() cleanup that follows is enough.
+// On cancel or any throw the sequence returns early and INTERNAL_DONE
+// still fires, routing to STOPPED where boot.stop() runs cleanup.
+const BattleEnding = {
+  async onEnter(director) {
+    log("BATTLE_ENDING");
+    const isDevMode = !!(
+      director.ctx.payload?.options?.devMode ||
+      director.ctx.payload?.context?.lean
+    );
+    if (!isDevMode) {
+      try {
+        await runBattleEndSequence(director);
+      } catch (e) {
+        warn("BATTLE_ENDING: sequence threw (continuing to STOPPED)", e);
+      }
+    }
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
+
 export const STATE_HANDLERS = Object.freeze({
   [STATES.PREP]:            Prep,
   [STATES.ROUND_START]:     RoundStart,
@@ -4810,5 +4834,6 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.STANDALONE_REACTION_WINDOW]: StandaloneReactionWindow,
   [STATES.FREE_ACTION_WINDOW]: FreeActionWindow,
   [STATES.ABORTED]:         Aborted,
+  [STATES.BATTLE_ENDING]:   BattleEnding,
   [STATES.STOPPED]:         Stopped,
 });

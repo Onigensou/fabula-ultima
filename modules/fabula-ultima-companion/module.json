@@ -362,7 +362,15 @@
     "scripts/refinement-system/refineOpen-backend.js",
     "scripts/refinement-system/refineWindow-app.js",
     "scripts/refinement-system/refineOpen-bootstrap.js",
-    "scripts/battle-director/director-boot.js"
+    "scripts/battle-director/director-boot.js",
+    "scripts/battle-director/battle-end/battle-end-orchestrator.js",
+    "scripts/battle-director/battle-end/battle-end-prompt.js",
+    "scripts/battle-director/battle-end/battle-end-fx.js",
+    "scripts/battle-director/battle-end/battle-end-summary-logic.js",
+    "scripts/battle-director/battle-end/battle-end-rank.js",
+    "scripts/battle-director/battle-end/battle-end-summary-ui.js",
+    "scripts/battle-director/battle-end/battle-end-transition.js",
+    "scripts/battle-director/battle-end/battle-end-cleanup.js"
   ],
   "styles": [
     "styles/style.css",
