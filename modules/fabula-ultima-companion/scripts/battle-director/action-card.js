@@ -4753,6 +4753,13 @@ export async function postActionCard({ director, kind, payload }) {
     // are rolled the player can't backtrack; GM-side undo lives elsewhere.
     keyListener = (ev) => {
       if (resolved) return;
+      // Don't steal keys while the user is typing in an input field, textarea,
+      // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
+      const ae = document.activeElement;
+      if (ae) {
+        const tag = ae.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
+      }
       if (ev.key === "Enter") { ev.preventDefault(); finish("confirm"); }
     };
     window.addEventListener("keydown", keyListener, true);

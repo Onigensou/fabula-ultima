@@ -704,6 +704,13 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     }
 
     function onKey(e) {
+      // Don't steal keys while the user is typing in an input field, textarea,
+      // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
+      const ae = document.activeElement;
+      if (ae) {
+        const tag = ae.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
+      }
       // X and Escape always cancel the whole operation.
       if (e.key === "Escape" || e.key === "x" || e.key === "X") {
         e.preventDefault(); e.stopPropagation();

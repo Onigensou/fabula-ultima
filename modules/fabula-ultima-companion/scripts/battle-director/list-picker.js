@@ -541,6 +541,13 @@ export async function pickFromList({
 
     keyListener = (ev) => {
       if (resolved) return;
+      // Don't steal keys while the user is typing in an input field, textarea,
+      // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
+      const ae = document.activeElement;
+      if (ae) {
+        const tag = ae.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
+      }
       if (ev.key === "Escape" || ev.key === "x" || ev.key === "X") { ev.preventDefault(); finish(null, true); return; }
       if (ev.key === "ArrowUp")   { ev.preventDefault(); setKbFocus(kbPos - 1); return; }
       if (ev.key === "ArrowDown") { ev.preventDefault(); setKbFocus(kbPos + 1); return; }

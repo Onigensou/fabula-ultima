@@ -591,6 +591,13 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
   rightA.addEventListener("click", (e) => { e.stopPropagation(); flipPage(+1); });
 
   const keyListener = (e) => {
+    // Don't steal keys while the user is typing in an input field, textarea,
+    // <select>, or any contenteditable surface (chat box, sheet fields, etc.).
+    const ae = document.activeElement;
+    if (ae) {
+      const tag = ae.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || ae.isContentEditable) return;
+    }
     // Left/Right: switch tab (Actions ↔ System) with dedicated tab SFX
     if (e.key === "ArrowLeft")  { e.preventDefault(); flipPage(-1); return; }
     if (e.key === "ArrowRight") { e.preventDefault(); flipPage(+1); return; }
