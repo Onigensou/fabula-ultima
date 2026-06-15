@@ -9,6 +9,7 @@
 // which are deliberately out of scope for the prototype).
 
 import { log, warn, err } from "./logger.js";
+import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
 import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate } from "./snapshot.js";
@@ -22,10 +23,11 @@ import { runDirectorInit } from "./director-init.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
-import { playRoundBanner } from "./director-round-banner.js";
+import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
 import { gatherConsumables, gatherCreatables, readActorIp, consumeOne, spendIp, getLinkedSkillUuid } from "./item-resource.js";
 import { saveDirectorState, installItemDeletionTracker, clearAllDirectorStateFlags } from "./persistence.js";
+import { computeBattleEndRewards } from "./battle-end/battle-end-rewards.js";
 // Phase B.1 Skill engine
 import { pickSkill, SkillPicker } from "./skill-picker.js";
 import { ListPicker } from "./list-picker.js";
@@ -168,6 +170,32 @@ export function installApplierReaperWatcher(director) {
   }, { label: "applier-reaper:remove" });
 
   log("Applier reaper watcher installed");
+}
+
+// Detects when all enemy combatants are defeated and ends dCombat so the
+// FSM routes to BATTLE_ENDING on the next TURN_END rather than continuing
+// into the "outnumbered" path where nextTurn() never signals `ended`.
+export function installEnemyWipeWatcher(director) {
+  director.hooks.on("updateActor", (actor, change) => {
+    try {
+      if (!game.user?.isGM) return;
+      const newHp = foundry.utils.getProperty(change, "system.props.current_hp");
+      if (newHp === undefined || newHp === null) return;
+      if (Number(newHp) > 0) return;
+
+      const dc = director.dCombat;
+      if (!dc?.started || dc.ended) return;
+
+      const enemies = dc.combatants.filter((c) => c.side === "enemy");
+      if (!enemies.length) return;
+      if (!enemies.every((c) => c.isDefeatedLive())) return;
+
+      log("EnemyWipeWatcher: all enemies defeated — ending dCombat");
+      dc.end();
+    } catch (e) { warn("EnemyWipeWatcher threw", e); }
+  }, { label: "enemy-wipe" });
+
+  log("Enemy wipe watcher installed");
 }
 
 // Build a short, human-readable description of an actionResult for the
@@ -998,6 +1026,19 @@ const Prep = {
       director.enqueue({ type: INTENTS.ABORT });
       return;
     }
+    // Capture A: pre-battle viewport — synchronous, before runDirectorInit switches scenes.
+    // Uses live PIXI stage values which are always accurate unlike _viewPosition.
+    try {
+      const _px = canvas?.stage?.pivot?.x;
+      const _py = canvas?.stage?.pivot?.y;
+      const _ps = canvas?.stage?.scale?.x;
+      if (typeof _px === "number" && typeof _ps === "number") {
+        game.settings.set("fabula-ultima-companion", "bdPreBattleViewport", {
+          x: _px, y: _py, scale: _ps, sceneId: canvas.scene?.id ?? null,
+        });
+      }
+    } catch (_) {}
+
     log("PREP: running director-owned battle init");
     let result = null;
     try {
@@ -1018,14 +1059,39 @@ const Prep = {
     // Hand the director-owned DirectorCombat to the FSM. From this point
     // forward all turn/round/current decisions read `director.dCombat`.
     director._setDirectorCombat(result.dCombat);
+
+    // Capture B: battle scene initial viewport — canvas is now on the battle scene,
+    // nothing has panned yet. Stored so transition can reset it after FX camera pan.
+    try {
+      const _bx = canvas?.stage?.pivot?.x;
+      const _by = canvas?.stage?.pivot?.y;
+      const _bs = canvas?.stage?.scale?.x;
+      if (typeof _bx === "number" && typeof _bs === "number") {
+        game.settings.set("fabula-ultima-companion", "bdBattleSceneViewport", {
+          x: _bx, y: _by, scale: _bs, sceneId: canvas.scene?.id ?? null,
+        });
+      }
+    } catch (_) {}
+
     // Install lifecycle watchers that need dCombat in place. Owned by
     // director.hooks → auto-disposed on director.stop().
     installGuardHpWatcher(director);
     // Reap orphaned applier-tied AEs when an applier is defeated/removed.
     installApplierReaperWatcher(director);
+    // End dCombat when all enemies are wiped so TURN_END routes to BATTLE_ENDING.
+    installEnemyWipeWatcher(director);
     // Rewind tool: buffer item deletions between snapshots so the
     // rewind UI can recreate consumed items. See [[director-rewind-tool-plan]].
     installItemDeletionTracker(director);
+    // Pre-compute EXP/Zenit rewards while all enemy tokens are guaranteed live.
+    // Stored in a world setting so it survives F5; read at BATTLE_ENDING to
+    // pre-fill the GM prompt.
+    try {
+      const _isBoss = !!(director.ctx.payload?.battlePlan?.isBoss) ||
+        String(director.ctx.payload?.battlePlan?.type ?? "").toLowerCase() === "boss";
+      const _snap = await computeBattleEndRewards(director.dCombat, _isBoss);
+      game.settings.set("fabula-ultima-companion", "bdRewardSnapshot", _snap);
+    } catch (e) { warn("PREP: reward pre-compute failed (prompt will default to 0)", e); }
     log(`PREP done: dCombat ${result.dCombat.id} with ${result.partyTokens} party + ${result.enemyTokens} enemies, sourceScene=${result.dCombat?.sourceSceneId ?? "(none)"}`);
     // Clear any leftover state/history from a prior battle that didn't
     // shut down cleanly. The director's stop() + the BattleEnd Cleanup
@@ -4792,6 +4858,41 @@ const Animation = {
   },
 };
 
+// ─── BATTLE_ENDING ─────────────────────────────────────────────────────
+// Dev mode (payload.options.devMode or context.lean) skips the cinematic
+// pipeline entirely; the bare boot.stop() cleanup that follows is enough.
+// On cancel or any throw the sequence returns early and INTERNAL_DONE
+// still fires, routing to STOPPED where boot.stop() runs cleanup.
+const BattleEnding = {
+  async onEnter(director) {
+    log("BATTLE_ENDING");
+
+    // Clear all battle UI before the cinematic starts. These are all
+    // no-ops if the respective components aren't open.
+    try { TurnUI.despawnAll(); } catch (e) { warn("BATTLE_ENDING: TurnUI.despawnAll threw", e); }
+    try { TurnPicker.despawnAll(); } catch (e) { warn("BATTLE_ENDING: TurnPicker.despawnAll threw", e); }
+    try { await clearAllStandaloneMenus(); } catch (e) { warn("BATTLE_ENDING: clearAllStandaloneMenus threw", e); }
+    try { hideRoundBanner(); } catch (e) { warn("BATTLE_ENDING: hideRoundBanner threw", e); }
+    try {
+      const scene = director.dCombat?.scene ?? canvas?.scene ?? null;
+      await destroyDirectorHud(scene);
+    } catch (e) { warn("BATTLE_ENDING: destroyDirectorHud threw", e); }
+
+    const isDevMode = !!(
+      director.ctx.payload?.options?.devMode ||
+      director.ctx.payload?.context?.lean
+    );
+    if (!isDevMode) {
+      try {
+        await runBattleEndSequence(director);
+      } catch (e) {
+        warn("BATTLE_ENDING: sequence threw (continuing to STOPPED)", e);
+      }
+    }
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  },
+};
+
 export const STATE_HANDLERS = Object.freeze({
   [STATES.PREP]:            Prep,
   [STATES.ROUND_START]:     RoundStart,
@@ -4810,5 +4911,6 @@ export const STATE_HANDLERS = Object.freeze({
   [STATES.STANDALONE_REACTION_WINDOW]: StandaloneReactionWindow,
   [STATES.FREE_ACTION_WINDOW]: FreeActionWindow,
   [STATES.ABORTED]:         Aborted,
+  [STATES.BATTLE_ENDING]:   BattleEnding,
   [STATES.STOPPED]:         Stopped,
 });
