@@ -1734,6 +1734,14 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
     const amt = Math.max(0, r.grantAmount);
+    // Target already at cap → the restore lands nothing. Say so explicitly
+    // instead of a green number that contradicts what happens (shields have no
+    // cap, so they always show the amount).
+    if (r.grantResource !== "shield"
+        && r.resourceCur != null && r.resourceMax != null
+        && r.resourceCur >= r.resourceMax) {
+      return "FULL · NO EFFECT";
+    }
     if (r.grantResource === "mp")     return `RESTORED ${amt} MP`;
     if (r.grantResource === "shield") return `SHIELDED ${amt}`;
     return `HEALED ${amt} HP`;
@@ -3307,6 +3315,36 @@ function buildSkillCard(payload) {
   };
 }
 
+// Re-render the card BODY in place from the (mutated) payload, using the SAME
+// kind-dispatched builder the spawn path uses. This is the single source of
+// truth for post-spawn result changes (Potion Rain heal-spread, and any future
+// add_target / Crossfire / recompute): a mutation updates `payload` + the
+// director's actionResult, then calls this — instead of hand-patching individual
+// panels (which is how the RESTORE headline drifted from the per-target rows).
+// Header (portraits/title), reaction pills, and buttons are siblings of
+// `.fud-bf-body` and are deliberately left untouched so pill/decision state
+// survives the re-render. Returns the rebuilt body HTML (for mirror broadcast)
+// or null on failure.
+function rerenderActionCardBody(root, kind, payload) {
+  const bodyEl = root?.querySelector?.(".fud-bf-body");
+  if (!bodyEl) return null;
+  let card = null;
+  try {
+    if (kind === "Attack")            card = buildAttackCard(payload);
+    else if (kind === "Guard")        card = buildGuardCard(payload);
+    else if (kind === "Study")        card = buildStudyCard(payload);
+    else if (kind === "Hinder")       card = buildHinderCard(payload);
+    else if (kind === "Equipment")    card = buildEquipmentCard(payload);
+    else /* Skill | Item | other */   card = buildSkillCard(payload);
+  } catch (e) {
+    warn("rerenderActionCardBody: builder threw", e);
+    return null;
+  }
+  if (!card?.body) return null;
+  bodyEl.innerHTML = card.body;
+  return card.body;
+}
+
 function stripHtmlForDesc(html) {
   if (!html) return "";
   try {
@@ -3455,7 +3493,7 @@ export async function postActionCard({ director, kind, payload }) {
         <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
       </div>
       ${card.subtitle ?? ""}
-      ${card.body}
+      <div class="fud-bf-body">${card.body}</div>
       ${reactionRowHtml}
       ${card.buttons}
     </div>
@@ -3830,7 +3868,46 @@ export async function postActionCard({ director, kind, payload }) {
             log(`recordPillDecision: add_target apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
             return;
           }
-          for (const r of (res.addedRows ?? [])) appendTargetRow(root, r, kind, payload);
+          if (Array.isArray(res.replaceRows)) {
+            // Potion Rain heal-spread: the WHOLE result changed (headline restore
+            // halved + per-target rows added/halved). Update the payload from the
+            // single source the handler returned, then RE-RENDER the card body
+            // from it — no per-panel patching, so the RESTORE headline and the
+            // Result rows can't drift apart.
+            log(`recordPillDecision: heal-spread replaceRows=${res.replaceRows.length} row(s) for ${rowKey}:${carrierUuid}`);
+            payload.perTargetResults = res.replaceRows;
+            if (res.damage !== undefined) payload.damage = res.damage;
+            if (res.hasHealing !== undefined) payload.hasHealing = res.hasHealing;
+            if (Array.isArray(res.targets)) payload.targets = res.targets;
+            const newBody = rerenderActionCardBody(root, kind, payload);
+            if (newBody) {
+              // The body swap drops anything added to the body DOM after spawn
+              // that ISN'T in payload — namely the reaction Effects panel + the
+              // damage-nullify strike (added by OTHER accepted reactions). Rebuild
+              // them from the accepted decisions (idempotent) so the re-render
+              // preserves them instead of wiping them.
+              try { applyReactionEffectPreview(); } catch (e) { warn("recordPillDecision: heal-spread effect preview threw", e); }
+              // Mirror the FINAL body (incl. restored decorations) to player
+              // clients so observers see the spread heal too (read-only).
+              const bodyEl = root.querySelector(".fud-bf-body");
+              const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
+              try {
+                const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+                for (const u of onlinePlayers) {
+                  director?.intentChannel?.broadcastMenuOpen({
+                    targetUserId: u.id,
+                    menuSpec: {
+                      kind: "action-card-body-update",
+                      combatId: director.combatId,
+                      bodyHtml: finalBody,
+                    },
+                  });
+                }
+              } catch (e) { warn("recordPillDecision: body-update broadcast threw", e); }
+            }
+          } else {
+            for (const r of (res.addedRows ?? [])) appendTargetRow(root, r, kind, payload);
+          }
         }
         // skip → no row added; just commit the decision.
         commitPillDecisionDom(rowKey, carrierUuid, decision);
@@ -4784,6 +4861,18 @@ export function registerPlayerActionCardHandler(channel) {
     }
   });
 
+  // Card body re-render handler — propagates a GM-side full-body rebuild
+  // (Potion Rain heal-spread, future result mutations) to the local mirror so
+  // the headline + per-target rows update together. Header/pills/buttons are
+  // left untouched (siblings of `.fud-bf-body`), preserving mirror pill state.
+  const offBodyUpdate = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-body-update") return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper || !menuSpec.bodyHtml) return;
+    const bodyEl = wrapper.querySelector(".fud-bf-body");
+    if (bodyEl) bodyEl.innerHTML = menuSpec.bodyHtml;
+  });
+
   const offOpen = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card") return;
     if (!menuSpec.html) {
@@ -5188,5 +5277,5 @@ export function registerPlayerActionCardHandler(channel) {
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} };
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} };
 }

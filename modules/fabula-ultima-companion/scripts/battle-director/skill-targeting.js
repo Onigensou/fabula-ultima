@@ -301,7 +301,8 @@ async function resolveTargetingRow(row, ctx) {
   const n = mode === "up_to" ? Math.min(count, pool.length) : Math.min(count, pool.length);
   if (pool.length <= n) {
     // No genuine choice (candidates ≤ needed) — assured. Auto-target governs
-    // whether to take it silently or lock-confirm it.
+    // whether to take it silently (GM / "skip") or lock-confirm it (player /
+    // "confirm").
     return assured(pool.slice(0, n));
   }
   const picked = await promptBdPick({ row, pool, n, mode, ctx });

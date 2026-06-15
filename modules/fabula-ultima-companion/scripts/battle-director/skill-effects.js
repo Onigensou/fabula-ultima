@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
@@ -2419,6 +2419,7 @@ const EFFECT_KIND_DISPATCH = {
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
   add_target:          applyAddTargetEffect,
+  adjust_grant:        applyAdjustGrantEffect,
   roll_loot_table:     applyRollLootTableEffect,
   deal_damage:         applyDealDamageEffect,
   equip_swap:          applyEquipSwapEffect,
@@ -2475,6 +2476,7 @@ export const EFFECT_KIND_LABELS = {
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
   add_target:          "Add Target",
+  adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
   deal_damage:         "Deal Damage",
   equip_swap:          "Equip Swap",
@@ -2529,6 +2531,11 @@ const EFFECT_KIND_PREVIEW = {
   // extra rows. Surface a neutral marker so a chain audit can list it.
   add_target: (row) => ({ type: "grant", what: "target", amount: 1,
     valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? null }),
+
+  // adjust_grant declares a restore op (e.g. Potion Rain's multiply 0.5) consumed
+  // by the add_target splice. No standalone card chip — the adjusted numbers show
+  // in the per-target rows the splice rebuilds.
+  adjust_grant: () => null,
 
   grant: (row, pctx) => {
     const resource = String(row.grant_resource ?? "").trim().toLowerCase();
@@ -2911,6 +2918,37 @@ async function applyAddTargetEffect(row, ctx) {
   return { ok: true, kind: "add_target", applied: added };
 }
 
+// ── adjust_grant ─────────────────────────────────────────────────────────────
+// The heal counterpart of adjust_damage's op model: a relative op on the action's
+// RESTORE (multiply / add / set / cap / floor). Authored as its OWN chain row
+// AFTER add_target (Potion Rain: pr_add → pr_halve = multiply 0.5), it writes the
+// op onto the add_target window sink so the splice (onAddTargetApply) rebuilds
+// every per-target row through it — and the splice persists it on the
+// actionResult so RESOLVE's applyGrantEffect adjusts identically (single-source:
+// preview == result). Absent → a normal restore is untouched.
+//
+// Row fields: grant_operation ("multiply"|"add"|"set"|"cap"|"floor", default
+//   "add"), grant_amount (formula, e.g. "0.5"), grant_round ("up"|"down", for
+//   fractional multiply; default "up").
+async function applyAdjustGrantEffect(row, ctx) {
+  const sink = ctx?.payload?._preRoll;
+  if (!sink) {
+    warn(`skill-effects.adjust_grant: no add_target window sink on "${row.effect_label}" — fired outside an add_target chain?`);
+    return { ok: false, kind: "adjust_grant", reason: "no-sink" };
+  }
+  const resolver = buildSkillResolver({
+    actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+  });
+  const adjust = {
+    op: String(row.grant_operation ?? "add").trim().toLowerCase(),
+    value: Number(evaluateFormula(row.grant_amount ?? "0", resolver, 0)) || 0,
+    round: String(row.grant_round ?? "up").trim().toLowerCase(),
+  };
+  sink.grantAdjust = adjust;
+  log(`skill-effects.adjust_grant: queued restore ${adjust.op} ${adjust.value} (round ${adjust.round}) for the add_target window`);
+  return { ok: true, kind: "adjust_grant", adjust };
+}
+
 // ── grant ──────────────────────────────────────────────────────────────
 
 async function applyGrantEffect(row, ctx) {
@@ -2948,6 +2986,10 @@ async function applyGrantEffect(row, ctx) {
   if (amount > 0 && (resource === "hp" || resource === "mp")) {
     const restoreBonus = sumRestoreParts(resolveRestoreParts({ actor: ctx.reactorActor, kind: ctx.actionResult?.kind }));
     if (restoreBonus > 0) amount += restoreBonus;
+    // Potion Rain spread (adjust_grant): apply the action's restore op to the
+    // FINAL amount (after Secret Formula) — e.g. multiply 0.5 round up. No-op
+    // when the action carries no grant adjustment.
+    amount = applyGrantAdjust(amount, ctx.actionResult?.grantAdjust);
   }
   if (amount === 0) {
     log(`skill-effects.grant: amount evaluated to 0 (row "${row.effect_label}"); skipping write`);

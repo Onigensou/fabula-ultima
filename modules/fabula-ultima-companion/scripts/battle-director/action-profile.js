@@ -17,7 +17,7 @@
 import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
-  resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts,
+  resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
@@ -430,7 +430,13 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
     ? resolveRestoreParts({ actor: liveAttacker, kind: ar?.kind })
     : [];
   const restoreBonus = sumRestoreParts(restoreParts);
-  const grantAmount = grantBase + (restoreBonus > 0 ? restoreBonus : 0);
+  // Potion Rain spread (adjust_grant): apply the action's restore op to the FINAL
+  // restore (after the modifier bonus) — same applyGrantAdjust RESOLVE uses, so
+  // the previewed heal and the applied heal match. No-op when absent.
+  const grantAmount = applyGrantAdjust(
+    grantBase + (restoreBonus > 0 ? restoreBonus : 0),
+    ar?.grantAdjust,
+  );
   if (!(grantAmount > 0) || !["hp", "mp"].includes(grantResource)) return { rows: out, healingObj: null };
 
   for (const e of targets) {

@@ -3374,10 +3374,13 @@ const Confirm = {
         for (const cand of cands) {
           if (cand.kind === "passive" && cand.mode === "off") continue;
           if (cand.usesAddTarget) {
-            // add_target (Barrage) only makes sense on an Attack — skip it on
-            // Skill/Spell/etc. so extending this trigger to all kinds doesn't
-            // leak Barrage onto a spell. Other reactions fire on any kind.
-            if (ar.kind !== "Attack") continue;
+            // add_target makes sense on an Attack (Barrage) OR a single-target
+            // HEALING item (Potion Rain — spread a created potion to allies).
+            // Skip every other kind so the tag doesn't leak onto spells/etc.
+            const isAttack = ar.kind === "Attack";
+            const isHealSpread = ar.kind === "Item" && !!ar.hasHealing
+              && (ar.targets?.length ?? 0) === 1;
+            if (!isAttack && !isHealSpread) continue;
             // Two-weapon attacks (Double Arrow's double shot, classic TWF) lose
             // the multi property and CANNOT gain it (RAW Two-Weapon Fighting).
             // Block EVERY add_target reaction on a two-weapon pass — generic, so
@@ -3611,6 +3614,91 @@ const Confirm = {
         // actionable (cost-last-in-chain means nothing was spent).
         onAddTargetApply: async (cand) => {
           try {
+            // ── Heal-spread variant (Potion Rain) ───────────────────────────
+            // Item-use restore: fire the reaction chain (add_target picks ≤SL
+            // allies; adjust_grant declares the ×0.5 round-up), then REBUILD the
+            // heal rows for the full set via the SAME computeActionProfile/
+            // buildHealPerTarget the card used (single source) — so every target
+            // (original + extras) shows the scaled amount. Returns replaceRows so
+            // the card re-renders all rows (not just appends). Cancel / no pick →
+            // nothing applied (cost-last → nothing spent).
+            const baseArH = director.ctx.actionResult ?? ar;
+            const isHealSpread = String(baseArH.kind ?? "").toLowerCase() === "item" && !!baseArH.hasHealing;
+            if (isHealSpread) {
+              const hSkill = baseArH.skillUuid ? await fromUuid(baseArH.skillUuid).catch(() => null) : null;
+              const hAttacker = director.ctx.turnSnapshot;
+              if (!hSkill || !hAttacker) {
+                warn(`CONFIRM onAddTargetApply(heal): missing ${!hSkill ? "skill" : "attacker"} (skillUuid=${baseArH.skillUuid}) — pill stays pending`);
+                return { ok: false };
+              }
+              const existingH = new Set((baseArH.targets ?? []).map((t) => t.tokenUuid));
+              const sinkH = { addedTokenUuids: [] };
+              const probeH = {
+                sourceActorUuid: baseArH.attackerActorRef, subjectActorUuid: baseArH.attackerActorRef,
+                sourceTokenUuid: baseArH.attacker?.tokenUuid ?? null,
+                targets: [...existingH], targetTokenUuids: [...existingH],
+                actionIntent: "beneficial", actionKind: "Item",
+                actionName: baseArH.skillName ?? "Item", _preRoll: sinkH,
+              };
+              const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
+              let resH = null;
+              try { resH = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probeH }); }
+              catch (e) { warn("CONFIRM onAddTargetApply(heal): chain threw", e); return { ok: false }; }
+              if (!resH?.ok) {
+                log(`CONFIRM onAddTargetApply(heal): chain ${resH?.cancelled ? "cancelled" : "returned not-ok"} — pill stays pending`);
+                return { ok: false, cancelled: !!resH?.cancelled };
+              }
+              // Resolve the picked allies into target snapshots. Build the pool
+              // fresh from the combat (any side) — director.ctx.eligibleTargets is
+              // populated by the attack/skill targeting paths but NOT for a plain
+              // Item action, so relying on it dropped every pick (Apply no-op).
+              const eligibleH = director.dCombat
+                ? snapshotEligibleTargetsFromDCombat(director.dCombat, hAttacker, { category: "any" })
+                : snapshotEligibleTargets(director.combat, hAttacker, { category: "any" });
+              const newSnapsH = [];
+              for (const u of sinkH.addedTokenUuids) {
+                if (existingH.has(u)) continue;
+                const snap = eligibleH.find((e) => e.tokenUuid === u);
+                if (snap && !newSnapsH.includes(snap)) newSnapsH.push(snap);
+              }
+              if (!newSnapsH.length) {
+                log(`CONFIRM onAddTargetApply(heal): no new targets resolved from picks [${sinkH.addedTokenUuids.join(", ")}] — pill stays pending`);
+                return { ok: false, cancelled: true };
+              }
+              const allSnapsH = [...(baseArH.targets ?? []), ...newSnapsH];
+              const grantAdjust = sinkH.grantAdjust ?? null;
+              const scaledAr = { ...baseArH, grantAdjust };
+              const viewH = getRuntimeActionView(hSkill);
+              const profileH = await computeActionProfile({
+                view: viewH, ar: scaledAr, attacker: hAttacker, targets: allSnapsH, dice: null,
+                ctx: { round: director.dCombat?.round ?? 0, chainVars: baseArH.preActivateVars },
+              });
+              const deltaH = projectProfileToActionResult(profileH, scaledAr, allSnapsH);
+              const newRowsH = deltaH.perTargetResults ?? [];
+              // Re-freeze the WHOLE action result from the rebuilt profile (single
+              // source): headline restore (damage=healingObj) + per-target rows +
+              // hit set all come from the SAME projection, so the card body
+              // re-renders consistently — no separate headline patch.
+              director.ctx.actionResult = freezeActionResult({
+                ...baseArH, grantAdjust,
+                targets: allSnapsH, perTargetResults: newRowsH,
+                damage: deltaH.damage, hasHealing: deltaH.hasHealing,
+                hasDamage: deltaH.hasDamage, damageResource: deltaH.damageResource,
+                hitTokenUuids: allSnapsH.map((s) => s.tokenUuid),
+              });
+              log(`CONFIRM onAddTargetApply(heal): Potion Rain spread +${newSnapsH.length} target(s), adjust ${grantAdjust?.op ?? "none"} ${grantAdjust?.value ?? ""}`);
+              return {
+                ok: true,
+                replaceRows: newRowsH,
+                // Headline restore for the card body re-render (single source).
+                damage: deltaH.damage, hasHealing: deltaH.hasHealing,
+                targets: allSnapsH.map((s) => ({
+                  name: s.name, actorUuid: s.actorUuid, tokenUuid: s.tokenUuid,
+                  tokenImg: s.tokenImg, disposition: s.disposition,
+                })),
+              };
+            }
+
             const fullAttacker = director.ctx.turnSnapshot;
             const fullWeapon = director.ctx.currentWeapon;
             if (!fullAttacker || !fullWeapon || !ar.roll) return { ok: false };

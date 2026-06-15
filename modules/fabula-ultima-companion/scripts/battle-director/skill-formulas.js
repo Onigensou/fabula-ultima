@@ -1337,6 +1337,27 @@ export function sumRestoreParts(parts) {
   return (Array.isArray(parts) ? parts : []).reduce((s, p) => s + (Number(p?.amount) || 0), 0);
 }
 
+// Apply an `adjust_grant` op to an already-final restore amount — the heal
+// counterpart of adjust_damage's op model (multiply / add / set / cap / floor).
+// `adjust` is { op, value, round } (e.g. Potion Rain: multiply 0.5 round up).
+// Absent / unparseable → no-op, so a non-adjusted heal is untouched. `round`
+// (up default, RAW "round up") only affects fractional multiply results.
+export function applyGrantAdjust(amount, adjust) {
+  const a = Number(amount) || 0;
+  if (!adjust) return a;
+  const v = Number(adjust.value);
+  if (!Number.isFinite(v)) return a;
+  const round = String(adjust.round ?? "up").toLowerCase();
+  switch (String(adjust.op ?? "add").toLowerCase()) {
+    case "multiply": { const r = a * v; return round === "down" ? Math.floor(r) : Math.ceil(r); }
+    case "set":   return v;
+    case "cap":   return Math.min(a, v);
+    case "floor": return Math.max(a, v);
+    case "add":
+    default:      return a + v;
+  }
+}
+
 // ── Crit detection ─────────────────────────────────────────────────────
 // Mirrors invokeButtons.js / checkRoller-core.js: a crit needs the two
 // dice within `critical_dice_range` of each other AND at least one die >=
