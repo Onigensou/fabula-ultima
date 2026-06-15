@@ -3,8 +3,9 @@
 // Emits ONI_BATTLEEND_SUMMARY_UI via the module socket channel so every
 // connected client runs the animation. Also fires locally on the GM since
 // the socket does not echo back to the sender.
-// Fire-and-forget: caller does NOT await — the transition can start while
-// players are still watching the summary screen.
+// The GM-local runner is awaited so the orchestrator holds until the animation
+// finishes before starting the scene transition. Players run the animation
+// independently via socket and are already watching when the black screen hits.
 
 import { log, warn } from "../logger.js";
 
@@ -14,7 +15,7 @@ const MSG_TYPE       = "ONI_BATTLEEND_SUMMARY_UI";
 
 const ZENIT_ICON_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
 
-export function runBattleEndSummaryUI(endCtx) {
+export async function runBattleEndSummaryUI(endCtx) {
   const { summaryResults, rank, totalRounds } = endCtx;
   if (!summaryResults) { warn("[BattleEnd:SummaryUI] No summaryResults — skipping"); return; }
 
@@ -70,13 +71,17 @@ export function runBattleEndSummaryUI(endCtx) {
     warn("[BattleEnd:SummaryUI] Socket emit failed:", e);
   }
 
-  // Run locally on GM (socket does not echo back to sender)
-  Promise.resolve()
-    .then(() => {
-      const runner = window.ONI_BattleEnd_SummaryUI?.run;
-      if (typeof runner === "function") return runner(uiPayload);
+  // Run locally on GM and await — orchestrator holds here until animation completes,
+  // then starts the scene transition (raiseCurtain → switch → dropCurtain).
+  try {
+    const runner = window.ONI_BattleEnd_SummaryUI?.run;
+    if (typeof runner === "function") {
+      await runner(uiPayload);
+    } else {
       warn("[BattleEnd:SummaryUI] Local runner missing (ONI_BattleEnd_SummaryUI.run)");
-    })
-    .then(() => log("[BattleEnd:SummaryUI] Local render complete"))
-    .catch(e => warn("[BattleEnd:SummaryUI] Local render threw:", e));
+    }
+  } catch (e) {
+    warn("[BattleEnd:SummaryUI] Local render threw:", e);
+  }
+  log("[BattleEnd:SummaryUI] Local render complete");
 }

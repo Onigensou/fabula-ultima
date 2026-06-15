@@ -280,7 +280,7 @@ export const TRANSITIONS = Object.freeze({
     // Authoritative source is DirectorCombat (the director-owned model);
     // we fall back to the Foundry combat's `started` for backward compat
     // when manual-fallback entry skips PREP.
-    INTERNAL_DONE: { next: (ctx) => (ctx.dCombat?.started || ctx.combat?.started) ? STATES.CLEANUP : STATES.STOPPED },
+    INTERNAL_DONE: { next: (ctx) => ctx.endOfCombat ? STATES.BATTLE_ENDING : (ctx.dCombat?.started || ctx.combat?.started) ? STATES.CLEANUP : STATES.STOPPED },
   },
 
   [STATES.BATTLE_ENDING]: {

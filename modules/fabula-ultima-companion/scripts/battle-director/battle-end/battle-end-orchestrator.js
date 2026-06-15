@@ -53,6 +53,24 @@ export async function runBattleEndSequence(director) {
     rank:           null,
   };
 
+  // Read snapshots pre-computed at PREP time.
+  const _bdSnap = (() => {
+    try { return game.settings.get("fabula-ultima-companion", "bdRewardSnapshot") ?? {}; }
+    catch { return {}; }
+  })();
+  endCtx.defaultRewards = {
+    expByActorId:   _bdSnap.expByActorId   ?? {},
+    zenitByActorId: _bdSnap.zenitByActorId ?? {},
+  };
+  endCtx.preBattleCamera = (() => {
+    try { return game.settings.get("fabula-ultima-companion", "bdPreBattleViewport") ?? null; }
+    catch { return null; }
+  })();
+  endCtx.battleSceneViewport = (() => {
+    try { return game.settings.get("fabula-ultima-companion", "bdBattleSceneViewport") ?? null; }
+    catch { return null; }
+  })();
+
   log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds });
 
   const promptResult = await showBattleEndPrompt(endCtx);
@@ -68,13 +86,18 @@ export async function runBattleEndSequence(director) {
   if (endCtx.outcome === "victory") {
     await runBattleEndSummaryLogic(endCtx);
     await runBattleEndRank(endCtx);
-    runBattleEndSummaryUI(endCtx); // fire-and-forget; players dismiss on their own
+    await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
   }
 
   await runBattleEndTransition(endCtx);
 
   // Resource reset fires after scene transition; token teardown is boot.stop()'s job
   runBattleEndResourceReset(endCtx).catch(e => warn("[BattleEnd] ResourceReset threw", e));
+
+  // Clear all snapshots.
+  try { game.settings.set("fabula-ultima-companion", "bdRewardSnapshot",      null); } catch (_) {}
+  try { game.settings.set("fabula-ultima-companion", "bdPreBattleViewport",   null); } catch (_) {}
+  try { game.settings.set("fabula-ultima-companion", "bdBattleSceneViewport", null); } catch (_) {}
 
   log("[BattleEnd] Sequence complete");
 }
