@@ -19,6 +19,7 @@ import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, ins
 import { installGrappledCoverWatcher } from "./grappled.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
+import { showBattleEndPrompt } from "./battle-end/battle-end-prompt.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -1055,8 +1056,12 @@ Hooks.once("ready", () => {
 
   // Wire battleEndManager on the module's top-level API so the sword-button in
   // combat-button-installer.js picks it up without falling back to the legacy macro.
-  // Calling this sets endOfCombat=true and force-transitions to BATTLE_ENDING so
-  // the full cinematic pipeline runs rather than the bare boot.stop() teardown.
+  //
+  // The prompt is shown HERE, outside the FSM, so gameplay is completely unaffected
+  // until the GM confirms. Cancel → zero side effects, battle continues. Confirm →
+  // store promptResult on ctx, set endOfCombat, enqueue ABORT; the FSM routes
+  // ABORTED → BATTLE_ENDING where the sequence picks up the pre-filled result and
+  // skips its own prompt step.
   const _mod = game.modules.get("fabula-ultima-companion");
   if (_mod) {
     _mod.api = _mod.api ?? {};
@@ -1068,6 +1073,50 @@ Hooks.once("ready", () => {
       if (!d?.dCombat?.started || d.dCombat.ended) {
         return { ok: false, error: "No active BD battle" };
       }
+      if (d.ctx.battleEndPromptOpen) {
+        return { ok: false, error: "Battle end prompt already open" };
+      }
+
+      // Build the minimal endCtx the prompt needs from current live director state.
+      const dc = d.dCombat;
+      const combatants = dc?.combatants ?? [];
+      const enemies = combatants.filter(c => c.side === "enemy");
+      const party  = combatants.filter(c => c.side === "party");
+      const detectedOutcome = (
+        party.length > 0 && party.every(c => c.isDefeatedLive?.()) &&
+        !(enemies.length > 0 && enemies.every(c => c.isDefeatedLive?.()))
+      ) ? "defeat" : "victory";
+
+      const _bdSnap = (() => {
+        try { return game.settings.get("fabula-ultima-companion", "bdRewardSnapshot") ?? {}; }
+        catch { return {}; }
+      })();
+
+      const promptEndCtx = {
+        outcome:      detectedOutcome,
+        sourceSceneId: dc?.sourceSceneId ?? null,
+        partyActorIds: party.map(c => c.actorDoc?.id).filter(Boolean),
+        defaultRewards: {
+          expByActorId:   _bdSnap.expByActorId   ?? {},
+          zenitByActorId: _bdSnap.zenitByActorId ?? {},
+        },
+      };
+
+      // Show the prompt — FSM keeps running normally while GM decides.
+      d.ctx.battleEndPromptOpen = true;
+      let promptResult;
+      try {
+        promptResult = await showBattleEndPrompt(promptEndCtx);
+      } finally {
+        d.ctx.battleEndPromptOpen = false;
+      }
+
+      if (!promptResult?.ok) {
+        return { ok: false, cancelled: true };
+      }
+
+      // GM confirmed — now commit: pass result to orchestrator and trigger abort.
+      d.ctx.battleEndPromptResult = promptResult;
       d.ctx.endOfCombat = true;
       d.enqueue({ type: INTENTS.ABORT });
       return { ok: true };

@@ -13,7 +13,7 @@ async function fetchVictoryBgmFromDb() {
   try {
     const api = window?.FUCompanion?.api;
     if (!api?.getCurrentGameDb) return "";
-    const { db } = await api.getCurrentGameDb();
+    const { source: db } = await api.getCurrentGameDb();
     const raw = db?.system?.props?.victory_bgm;
     return typeof raw === "string" ? raw.trim() : "";
   } catch {
@@ -35,7 +35,9 @@ function safeInt(v, fallback = 0) {
 }
 
 export async function showBattleEndPrompt(endCtx) {
-  const { outcome: detectedOutcome, sourceSceneId, partyActorIds } = endCtx;
+  const { outcome: detectedOutcome, sourceSceneId, partyActorIds, defaultRewards } = endCtx;
+  const defaultExpByActorId   = defaultRewards?.expByActorId   ?? {};
+  const defaultZenitByActorId = defaultRewards?.zenitByActorId ?? {};
 
   const dbVictoryBgm = await fetchVictoryBgmFromDb();
 
@@ -58,8 +60,12 @@ export async function showBattleEndPrompt(endCtx) {
 
   const rewardRowsHtml = partyActorIds.length
     ? partyActorIds.map(actorId => {
-        const actor = game.actors?.get?.(actorId);
-        const name = actor?.name ?? `(Missing: ${actorId})`;
+        const actor      = game.actors?.get?.(actorId);
+        const name       = actor?.name ?? `(Missing: ${actorId})`;
+        const defExp     = safeNumber(defaultExpByActorId[actorId],   0);
+        const defZenit   = safeInt(defaultZenitByActorId[actorId], 0);
+        const expVal     = defExp   > 0 ? defExp.toFixed(2)   : "0";
+        const zenitVal   = defZenit > 0 ? String(defZenit)    : "0";
         return `
           <tr>
             <td style="padding:6px 8px;vertical-align:middle;overflow:hidden;">
@@ -67,11 +73,11 @@ export async function showBattleEndPrompt(endCtx) {
               <div style="opacity:0.6;font-size:11px;word-break:break-all;">${actorId}</div>
             </td>
             <td style="padding:6px 8px;vertical-align:middle;">
-              <input type="number" step="0.01" min="0" name="exp_${actorId}" value="0"
+              <input type="number" step="0.01" min="0" name="exp_${actorId}" value="${expVal}"
                 style="width:100%;min-width:0;box-sizing:border-box;" />
             </td>
             <td style="padding:6px 8px;vertical-align:middle;">
-              <input type="number" step="1" min="0" name="zenit_${actorId}" value="0"
+              <input type="number" step="1" min="0" name="zenit_${actorId}" value="${zenitVal}"
                 style="width:100%;min-width:0;box-sizing:border-box;" />
             </td>
           </tr>`;
@@ -156,7 +162,7 @@ export async function showBattleEndPrompt(endCtx) {
             </thead>
             <tbody>${rewardRowsHtml}</tbody>
           </table>
-          <div style="opacity:0.75;font-size:12px;margin-top:6px;">Fill in rewards manually. Ignored on Defeat.</div>
+          <div style="opacity:0.75;font-size:12px;margin-top:6px;">Auto-computed from enemy data. GM can override. Ignored on Defeat.</div>
         </div>
 
       </div>

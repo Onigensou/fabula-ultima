@@ -73,10 +73,22 @@ export async function runBattleEndSequence(director) {
 
   log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds });
 
-  const promptResult = await showBattleEndPrompt(endCtx);
-  if (!promptResult.ok) {
-    log("[BattleEnd] Prompt cancelled — skipping cinematic");
-    return;
+  // Sword-button path: prompt was shown in battleEndManager before the FSM
+  // committed. Consume the pre-filled result and skip the prompt dialog.
+  // Auto-trigger path (enemy wipe → TURN_END → BATTLE_ENDING): no pre-fill,
+  // show prompt here as normal.
+  const prefilledResult = director.ctx.battleEndPromptResult ?? null;
+  director.ctx.battleEndPromptResult = null;
+
+  let promptResult;
+  if (prefilledResult) {
+    promptResult = prefilledResult;
+  } else {
+    promptResult = await showBattleEndPrompt(endCtx);
+    if (!promptResult.ok) {
+      log("[BattleEnd] Prompt cancelled — skipping cinematic");
+      return;
+    }
   }
   endCtx.promptResult = promptResult;
   endCtx.outcome = promptResult.outcome;
