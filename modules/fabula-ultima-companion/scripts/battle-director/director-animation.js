@@ -285,6 +285,21 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     const prevTargets = globalThis.__TARGETS;
     globalThis.__PAYLOAD = payload;
     globalThis.__TARGETS = targets;
+    // Bridge BD's caster + card targets onto Foundry's canvas selection / targeting
+    // for the duration of the animation. Legacy animation scripts (written for the
+    // pre-BD action system) read `canvas.tokens.controlled[0]` for the SOURCE and
+    // `game.user.targets` for the TARGETS — neither of which BD sets (it drives the
+    // caster/targets through its card, not the canvas selection). Without this they
+    // bail ("select a token first" / "target at least 1 token first"). Saved + restored.
+    const prevUserTargetIds = Array.from(game.user?.targets ?? []).map((t) => t.id);
+    const prevControlledIds = (canvas?.tokens?.controlled ?? []).map((t) => t.id);
+    const animTargetIds = targets.map((t) => t?.id).filter(Boolean);
+    const casterId = String(casterTokenUuid ?? "").split(".Token.").pop();
+    const casterTok = casterId ? (canvas?.tokens?.get?.(casterId) ?? null) : null;
+    try { if (animTargetIds.length) game.user?.updateTokenTargets(animTargetIds); }
+    catch (e) { warn("[BD Anim] target bridge (set) threw", e); }
+    try { if (casterTok) casterTok.control({ releaseOthers: true }); }
+    catch (e) { warn("[BD Anim] caster control bridge (set) threw", e); }
     try {
       const result = fn(payload, targets);
       if (result && typeof result.then === "function") await result;
@@ -293,6 +308,14 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     } finally {
       globalThis.__PAYLOAD = prevPayload;
       globalThis.__TARGETS = prevTargets;
+      try { game.user?.updateTokenTargets(prevUserTargetIds); }
+      catch (e) { warn("[BD Anim] target bridge (restore) threw", e); }
+      try {
+        if (casterTok) {
+          canvas?.tokens?.releaseAll?.();
+          for (const id of prevControlledIds) canvas?.tokens?.get?.(id)?.control?.({ releaseOthers: false });
+        }
+      } catch (e) { warn("[BD Anim] caster control bridge (restore) threw", e); }
     }
 
     await gatePromise;

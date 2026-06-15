@@ -99,9 +99,23 @@ Hooks.once("ready", () => {
       const localH = tex?.orig?.height ?? tex?.height ?? 64;
       if (!localW || !localH) return;
 
-      const minDim = Math.min(localW, localH);
-      const fontSize = Math.max(12, Math.round(minDim * 0.34));
-      const stroke   = Math.max(2, Math.round(fontSize * 0.2));
+      // Foundry packs effect icons into a small (~20 world-px) grid slot
+      // regardless of token size, so sizing the font off the icon's LOCAL
+      // texture made the badge scale with the (tiny) slot — unreadable on 1×1
+      // tokens carrying a stack of statuses. Instead, target a WORLD size
+      // (canvas px) with a legibility floor, then back out the local font size
+      // by dividing through the sprite's own scale (the badge is a child of the
+      // icon sprite, so it inherits that scale). Result: a badge of consistent
+      // on-screen size that still grows with bigger creatures and zooms with
+      // the canvas. Tune via WORLD_FLOOR (min world px) and SLOT_FRAC (fraction
+      // of the icon slot, which itself scales with token size).
+      const WORLD_FLOOR = 13;   // minimum badge height in canvas px
+      const SLOT_FRAC   = 0.5;  // badge as a fraction of the icon slot
+      const spriteScale = Math.abs(iconSprite.scale?.x || 1) || 1;
+      const slotWorld   = Math.min(localW, localH) * spriteScale; // icon on-canvas size
+      const targetWorld = Math.max(slotWorld * SLOT_FRAC, WORLD_FLOOR);
+      const fontSize = Math.max(12, Math.round(targetWorld / spriteScale));
+      const stroke   = Math.max(2, Math.round(fontSize * 0.18));
 
       // Gold when the charge pool is topped off (count ≥ max); white otherwise.
       // An unset max (unlimited) never reads as "full" → stays white.

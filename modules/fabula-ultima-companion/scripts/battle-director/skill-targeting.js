@@ -507,13 +507,19 @@ function collectCombatTokens(ctx) {
   }
   // Fallback to game.combat (manual-attach path, rare in director mode).
   const fc = game.combat;
-  if (!fc?.combatants?.size) return [];
-  const out = [];
-  for (const c of fc.combatants) {
-    const t = c.token;
-    if (t) out.push(t);
+  if (fc?.combatants?.size) {
+    const out = [];
+    for (const c of fc.combatants) {
+      const t = c.token;
+      if (t) out.push(t);
+    }
+    return out;
   }
-  return out;
+  // Last resort: canvas tokens. A chain ctx built WITHOUT dCombat (e.g. the
+  // card-mutation redirect picker) would otherwise see zero combatants when
+  // game.combat is also null — which is the normal BD case (director runs on
+  // its own dCombat). Mirrors the enemyActorsOf canvas fallback in skill-formulas.
+  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean);
 }
 
 async function uuidsToTokens(uuids) {

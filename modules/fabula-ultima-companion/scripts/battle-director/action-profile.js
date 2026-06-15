@@ -18,9 +18,10 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
-  applyCritDamage, resolveIncomingReduction,
+  applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
+import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp } from "./skill-effects.js";
@@ -66,9 +67,20 @@ function makeStudiedGate(attacker) {
 //
 // Returns { mode:"damage"|"heal"|"none", element, resource, damageBonus(number),
 //           isMpDamage, outgoingParts, outgoingTotal }.
+// Inherent action keywords (pierce, …) declared on the action's own item via
+// the `action_keywords` prop (comma/newline list). These are ALWAYS-on game
+// keywords — distinct from reaction-granted keywords (apply_action_keyword),
+// which are collected per-subject in computeSenderDamageBonuses. Both feed the
+// same damage-calc effects (pierce → Resistance treated as neutral).
+function parseActionKeywords(view) {
+  const raw = view?.source?.system?.props?.action_keywords ?? "";
+  return String(raw).split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+}
+
 function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = null, chainVars = null }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const props = liveAttacker?.system?.props ?? null;
+  const keywords = parseActionKeywords(view);
 
   if (kind === "Attack") {
     const native = weapon?.damageType ?? "Physical";
@@ -90,6 +102,7 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
       rangeKind, weaponKey, nativeElement: native, overriddenElement: overridden,
       pierce: !!weapon?.hasPierce,
+      keywords,
     };
   }
 
@@ -104,6 +117,18 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     const picked = chainVars?.[k];
     nativeDt = String(picked ?? "").toLowerCase() || nativeDt;
   }
+  // Collapse "no-damage" placeholders ("", "-", "none", "healing", "hp", …) to ""
+  // so a restore / status skill is never mis-read as a 0-damage hit. Real elements
+  // and "mp" (MP-damage) pass through. Single guard for the type_damage footgun.
+  nativeDt = normalizeDamageType(nativeDt);
+  const damageBonus = evaluateFormula(ar?.damageBonus, resolver, 0);
+  if (!nativeDt) {
+    // No damage element → not a damage action; restore/status is built downstream
+    // (buildHealPerTarget for a grant; effect chips otherwise). Skip the element
+    // override too, so an active spell-element buff can't turn a restore into damage.
+    return { mode: "none", element: null, resource: "hp", isMpDamage: false,
+      damageBonus, outgoingParts: [], outgoingTotal: 0 };
+  }
   const isMpDamage = nativeDt === "mp";
   const isSpell = String(ar?.skillType ?? "").toLowerCase() === "spell";
   const element = isMpDamage
@@ -111,7 +136,6 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     : String(resolveDamageElementOverride({ actor: liveAttacker, scope: "spell", native: nativeDt }) ?? nativeDt).toLowerCase();
   const isElemental = !!element && !NON_ELEMENTAL_DT.has(element) && !isMpDamage;
   const hasDamage = isMpDamage || isElemental;
-  const damageBonus = evaluateFormula(ar?.damageBonus, resolver, 0);
 
   if (!hasDamage) {
     return { mode: "none", element: null, resource: "hp", isMpDamage: false,
@@ -130,6 +154,7 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
     damageBonus,
     outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
     rangeKind: null, weaponKey: null,
+    keywords,
   };
 }
 
@@ -290,6 +315,10 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
         }
       }
+      // Inherent Pierce keyword: ignore Resistance (RS → NE) — VU/IM/AB are
+      // left untouched. Mirrors the reaction-side pierce in
+      // skill-effects.recomputePerTargetDamages so both paths agree.
+      if (primary.keywords?.includes("pierce") && aff === "RS") aff = "NE";
       return aff;
     };
 
@@ -437,35 +466,44 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
     grantBase + (restoreBonus > 0 ? restoreBonus : 0),
     ar?.grantAdjust,
   );
-  if (!(grantAmount > 0) || !["hp", "mp"].includes(grantResource)) return { rows: out, healingObj: null };
+  // Any RESTORABLE resource (hp/mp/ip/shield/zero_power/…) gets a restore preview —
+  // resolved from the shared registry, so adding a resource there makes it render
+  // here automatically. Non-restorable / unknown resources → no preview headline.
+  const resDef = resolveResourceDef(grantResource);
+  if (!(grantAmount > 0) || !resDef?.restorable) return { rows: out, healingObj: null };
+  const canonRes = resDef.key;
 
   for (const e of targets) {
     const tActor = await fromUuid(e.actorUuid).catch(() => null);
-    const curKey = grantResource === "mp" ? "current_mp" : "current_hp";
-    const maxKey = grantResource === "mp" ? "max_mp" : "max_hp";
-    const cur = Number(tActor?.system?.props?.[curKey] ?? 0) || 0;
-    const max = Number(tActor?.system?.props?.[maxKey] ?? 0) || 0;
+    const cur = Number(tActor?.system?.props?.[resDef.prop] ?? 0) || 0;
+    // null max for uncapped resources → the card's "FULL · NO EFFECT" check
+    // (gated on resourceMax != null) correctly skips them.
+    const max = resDef.max ? (Number(tActor?.system?.props?.[resDef.max] ?? 0) || 0) : null;
     const isCasterSelf = e.actorUuid === ar?.attackerActorRef;
-    const vismagusSuppress = !!ar?.vismagusHpPaid && isCasterSelf && grantResource === "hp";
-    const amount = vismagusSuppress ? 0 : grantAmount;
+    const vismagusSuppress = !!ar?.vismagusHpPaid && isCasterSelf && canonRes === "hp";
+    // Incoming-heal modifier (recipient side, e.g. Bleed -50%): mirror
+    // applyGrantEffect so the previewed heal matches the applied heal. HP only.
+    const recipMult = canonRes === "hp" ? healReceivingMultiplier(tActor) : 1;
+    const amount = vismagusSuppress ? 0 : (recipMult !== 1 ? Math.floor(grantAmount * recipMult) : grantAmount);
     out.push({
       target: { actorUuid: e.actorUuid, tokenUuid: e.tokenUuid, name: e.name, img: e.tokenImg,
         disposition: e.disposition, studied: true, defenseShown: 0 },
       outcome: { kind: "auto", hit: true, margin: null, tier: null, source: null },
       effects: [{
         id: `primary-heal:${e.tokenUuid}`, type: "heal", valence: "beneficial",
-        source: "skill", targetRef: e.tokenUuid, resource: grantResource, value: amount,
+        source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
       }],
       _parity: {
-        defense: 0, hit: true, crit: false, grantAmount: amount, grantResource,
+        defense: 0, hit: true, crit: false, grantAmount: amount, grantResource: canonRes,
         resourceCur: cur, resourceMax: max, affinity: "NE", studied: true,
         vismagusSuppressed: vismagusSuppress || undefined,
       },
     });
   }
   const healingObj = {
-    base: grantAmount, element: grantResource === "mp" ? "mp" : "healing", resource: grantResource,
-    ignoreHR: true, finalIfHit: grantAmount, declaresHealing: grantResource === "hp", isHealing: true,
+    base: grantAmount, element: canonRes, resource: canonRes,
+    resourceLabel: resDef.label, resourceColour: resDef.colour,
+    ignoreHR: true, finalIfHit: grantAmount, declaresHealing: canonRes === "hp", isHealing: true,
     // Itemized restore-modifier sources (e.g. "Secret Formula: +20") — the
     // Healing tooltip renders these under "Base bonus", same as damage baseParts.
     baseParts: restoreParts,
@@ -507,8 +545,11 @@ export async function computeActionProfile(input) {
   const liveAttacker = input.liveAttacker
     ?? (attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null);
   const skill = (ar?.skillUuid && await fromUuid(ar.skillUuid).catch(() => null)) || view?.source || null;
+  // Thread the action's targets onto the resolver payload so damage/heal
+  // formulas can read ACTION_TARGET_COUNT at compute time — e.g. an AoE that
+  // splits a fixed pool across its targets (Ruinous Breath: "300 / ACTION_TARGET_COUNT").
   const resolver = buildSkillResolver({
-    actor: liveAttacker, payload: null, skill, round: ctx?.round ?? 0,
+    actor: liveAttacker, payload: { targets }, skill, round: ctx?.round ?? 0,
   });
 
   const studiedGate = makeStudiedGate(attacker);

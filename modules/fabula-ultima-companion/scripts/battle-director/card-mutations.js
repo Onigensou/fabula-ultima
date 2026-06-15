@@ -284,6 +284,68 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
     return "failed";
   }
 
+  // INVERTED redirect (destination_ref present): the REACTOR is the SOURCE slot
+  // (the deciding target), and the action moves to a CHOSEN DESTINATION resolved
+  // via destination_ref — e.g. Condemn/Torment's "you may pass this to an ally"
+  // (target-owned reaction, reactor = the target). This is the mirror of the
+  // default Protect direction (source = target_ref, destination = reactor). The
+  // destination targeting row picks relative to the reactor (category "ally",
+  // exclude_self), so it offers the target's own allies.
+  const destRef = String(row?.destination_ref ?? "").trim();
+  if (destRef && destRef.toLowerCase() !== "self") {
+    const srcIdx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
+    if (srcIdx === -1) {
+      warn(`redirect(dest): reactor ${reactor.name} not in target list — nothing to redirect`);
+      return "failed";
+    }
+    const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+    // Cache the destination pick so a re-recompute pass doesn't re-prompt.
+    let destActorUuid = cand.pickedDestActorUuid ?? null;
+    let destTokDoc = null;
+    if (!destActorUuid) {
+      const chainCtx = makeBdChainContext({
+        reactorActor: reactor,
+        reactorToken: reactorTok,
+        skill: carrier,
+        actionTargetUuids: (ctx.ar?.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
+        payload: { sourceActorUuid: ctx.ar?.attackerActorRef ?? null },
+        isPassive: false,   // a real choice — prompt for the ally pick
+      });
+      const resolved = await resolveBdTargetRef(destRef, chainCtx);
+      if (resolved?.cancelled) { cand._pickerCancelled = true; return "cancelled"; }
+      const destTok = resolved?.tokens?.[0];
+      if (!resolved?.ok || !destTok?.actor) {
+        log(`redirect(dest): no destination for ${cand.carrierName} (${resolved?.reason ?? "empty"})`);
+        return "failed";
+      }
+      destActorUuid = destTok.actor.uuid;
+      destTokDoc = destTok.document ?? destTok;
+      cand.pickedDestActorUuid = destActorUuid;
+    }
+    const destActor = await fromUuid(destActorUuid).catch(() => null);
+    if (!destTokDoc) {
+      destTokDoc = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === destActorUuid)?.document
+        ?? destActor?.getActiveTokens?.()?.[0]?.document ?? null;
+    }
+    if (!destActor || !destTokDoc) { warn(`redirect(dest): destination actor/token unresolved`); return "failed"; }
+    const { applyAffinityToDamage } = await import("./snapshot.js");
+    const originalName = ctx.targets[srcIdx]?.name ?? "?";
+    const per = recomputePerTargetForRedirect({ ar: ctx.ar, reactor: destActor, reactorTok: destTokDoc, applyAffinityToDamage });
+    per.redirectedFrom = { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect", reactorName: destActor.name };
+    ctx.targets[srcIdx] = {
+      actorUuid: destActor.uuid,
+      tokenUuid: destTokDoc.uuid,
+      name: destActor.name,
+      tokenImg: destTokDoc.texture?.src ?? destActor.img,
+      disposition: destTokDoc.disposition,
+      defense: per.defense,
+      redirectedFrom: { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect" },
+    };
+    ctx.perTargets[srcIdx] = per;
+    log(`redirect(dest): slot ${srcIdx} ${originalName} → ${destActor.name} (chosen via ${cand.carrierName})`);
+    return "applied";
+  }
+
   // Distinguish cancel vs fall-through-fail by tagging the result with
   // a sentinel before resolveRedirectSubjects. Returns [] on player
   // cancel (paired with _pickerCancelled=true); array of uuids on

@@ -18,9 +18,10 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, healReceivingMultiplier } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
+import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-charges.js";
 import { readPropNum, resolveAffinity } from "./snapshot.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
@@ -30,18 +31,10 @@ const FLAG_NS = "fabula-ultima-companion";
 
 // Resource definitions — match skill-cost.js. Out-of-bounds writes
 // clamp to [0, max] when a max is defined.
-const RESOURCE_PROPS = {
-  hp:         { prop: "current_hp",    max: "max_hp"    },
-  mp:         { prop: "current_mp",    max: "max_mp"    },
-  ip:         { prop: "current_ip",    max: "max_ip"    },
-  zero_power: { prop: "zero_power_value", max: null, hardMin: 0, hardMax: 6 },
-  zenit:      { prop: "zenit",         max: null        },
-  enmity:     { prop: "enmity",        max: null        },
-  fp:         { prop: "fabula_point",  max: null        },
-  // Shield — temporary damage buffer (absorbed before HP in applyDamageToTarget).
-  // grant adds to it (Golem Soulstone "+10 Shield"); no max.
-  shield:     { prop: "shield_value",  max: null, hardMin: 0 },
-};
+// Resource storage map — now sourced from the shared registry (resources.js)
+// so grant/consume, restore-previews, and the card stay in lockstep. Keyed
+// lookup is unchanged: RESOURCE_PROPS[resource] → { prop, max, hardMin, hardMax }.
+const RESOURCE_PROPS = RESOURCE_REGISTRY;
 
 // ── Public entry points ─────────────────────────────────────────────────
 
@@ -1216,6 +1209,55 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   return out;
 }
 
+// Skill-granted, TARGET-owned reaction candidates (reaction_responder:
+// "target"). Unlike findPassiveCandidates — which walks a REACTOR's own items
+// /AEs (reactor = carrier owner) — these reactions live on the ACTING skill but
+// are answered by the action's TARGET. The skill grants its target a decision
+// (Condemn/Torment: "you may redirect this to an ally"). The caller injects one
+// candidate per target, stamping reactorActorUuid = that target, so the rest of
+// the reaction pipeline (pill ownership, accepted-mutation dispatch) treats the
+// target as the reactor. Condition/cost are evaluated RELATIVE TO THE TARGET
+// (the responder), keeping the "reactor-relative" contract intact.
+export async function findTargetOwnedCandidates({ skill, trigger, targetActor, payload, includeUnavailable = false }) {
+  if (!skill || !trigger || !targetActor) return [];
+  const rc = skill.system?.props?.reaction_config_table;
+  if (!rc || typeof rc !== "object") return [];
+  const effectTable = skill.system?.props?.effect_table ?? {};
+  const out = [];
+  for (const key of Object.keys(rc)) {
+    const row = rc[key];
+    if (!row || row.$deleted) continue;
+    if (String(row.reaction_trigger ?? "").trim() !== trigger) continue;
+    if (String(row.reaction_responder ?? "").trim().toLowerCase() !== "target") continue;
+    const refLabel = String(row.reaction_effect_ref ?? "").trim();
+    // Availability — cost + condition_formula, both vs the TARGET (reactor).
+    const cost = analyzeChainCost(effectTable, refLabel, targetActor, skill);
+    let available = true, unavailableReason = null;
+    if (cost.ok && !cost.sufficient) { available = false; unavailableReason = cost.badge; }
+    if (available) {
+      const cond = await evaluateConditionFormula(row, targetActor, payload, skill);
+      if (!cond.ok) { available = false; unavailableReason = "Conditions not met"; }
+    }
+    if (!includeUnavailable && !available) continue;
+    const mode = resolveReactionPassiveMode(row);
+    out.push({
+      carrierKind: "item",
+      carrierUuid: skill.uuid,
+      carrierName: skill.name,
+      carrierImg:  skill.img,
+      carrierDescription: skill.system?.props?.description ?? "",
+      rowKey: key,
+      kind: mode === "ask" ? "manual" : "passive",
+      mode,
+      ref: refLabel,
+      usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
+      available,
+      unavailableReason,
+    });
+  }
+  return out;
+}
+
 // Fire a single pre-evaluated candidate, given the same payload that
 // findPassiveCandidates was called with. Used by the resolve path to
 // apply pre-accepted candidates. Mirrors the dispatch in
@@ -1890,6 +1932,20 @@ export async function tickDirectorAEsForBearerTurnEnd(bearerActorUuid) {
     const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
     if (!stamp) continue;
     if (stamp.lifetimeMode !== "target_turn_end") continue;
+    // Charge-bearing target_turn_end AEs (Bleed): the VISIBLE charge IS the
+    // lifetime. Tick the token-badge count down at the END of each of the
+    // bearer's turns and delete at 0, so the player watches 3 → 2 → 1 → gone.
+    // Re-application (ae_duplicate_mode "replace") resets the count to the
+    // template's charges. Action-gating Advanced Debuffs (Frightened/Silence/
+    // Confused/Disarmed/Berserk) carry no charges flag → fall through to the
+    // invisible turnsRemaining counter below.
+    const curCharges = eff.flags?.[FLAG_NS]?.charges;
+    if (curCharges != null) {
+      const next = Number(curCharges) - 1;
+      if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
+      else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.charges`]: next });
+      continue;
+    }
     if (stamp.turnsRemaining == null) continue;
     const next = Number(stamp.turnsRemaining) - 1;
     if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
@@ -3012,7 +3068,15 @@ async function applyGrantEffect(row, ctx) {
       log(`skill-effects.grant: Vismagus suppresses caster self-heal on row "${row.effect_label}"`);
       continue;
     }
-    const result = await writeResourceDelta(actor, def, amount);
+    // Incoming-heal modifier (RECIPIENT side, e.g. Bleed's -50%): scale HP
+    // recovery by the healed actor's heal_receiving_mod_all. Per-target (each
+    // recipient may differ); HP "healing" only — MP restore is untouched.
+    let recipAmount = amount;
+    if (resource === "hp" && amount > 0) {
+      const mult = healReceivingMultiplier(actor);
+      if (mult !== 1) recipAmount = Math.floor(amount * mult);
+    }
+    const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
       // Recover VFX on a positive grant (heal / restore). A negative grant

@@ -29,6 +29,7 @@ import { log, warn } from "./logger.js";
 import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
+import { resourceLabel } from "./resources.js";
 
 // Resolve which active non-GM user owns the actor at `actorUuid`.
 // Returns userId or null. Used to gate which player's mirror card
@@ -1593,35 +1594,35 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   // palette so it visually reads as resource damage. Drives the
   // tooltip's affinity note too (MP damage is always NE — no sheet
   // supports MP affinity).
-  const isMpDamage = String(damage.resource ?? "").toLowerCase() === "mp";
+  const resourceKey = String(damage.resource ?? "").toLowerCase();
   const isHealing  = !!damage.isHealing || !!damage.declaresHealing;
-  const isHpHeal   = isHealing && !isMpDamage;
-  const isMpHeal   = isHealing && isMpDamage;
+  const isMpDamage = resourceKey === "mp" && !isHealing;
   const elemKey = String(damage.element ?? "physical").toLowerCase();
-  const color = isHpHeal
-    ? "#2a8a3a"   // healing green
-    : (isMpHeal || isMpDamage)
-      ? "#1e6cff" // mp blue (damage or restore — context distinguishes)
-      : (ELEMENT_COLOR[elemKey] ?? ELEMENT_COLOR.physical);
-  const glow  = isHpHeal
-    ? "rgba(42,138,58,0.45)"
-    : (isMpHeal || isMpDamage)
-      ? "rgba(30,108,255,0.45)"
-      : (ELEMENT_GLOW[elemKey]  ?? ELEMENT_GLOW.physical);
+  // Restore (ANY resource) takes its label + tint from the resource registry,
+  // passed on the healingObj as resourceLabel / resourceColour. Damage uses the
+  // element palette. So HP→green, MP→blue, IP/Shield/Zero Power/…→their colour.
+  const restoreLabel  = damage.resourceLabel || (resourceKey ? resourceKey.toUpperCase() : "HP");
+  const restoreColour = damage.resourceColour || "#2a8a3a";
+  const _hexGlow = (hex, a = 0.45) => {
+    const m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || ""));
+    if (!m) return "rgba(42,138,58,0.45)";
+    const n = parseInt(m[1], 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+  };
+  const color = isHealing
+    ? restoreColour
+    : (isMpDamage ? "#1e6cff" : (ELEMENT_COLOR[elemKey] ?? ELEMENT_COLOR.physical));
+  const glow  = isHealing
+    ? _hexGlow(restoreColour)
+    : (isMpDamage ? "rgba(30,108,255,0.45)" : (ELEMENT_GLOW[elemKey] ?? ELEMENT_GLOW.physical));
 
   // Final shown is HR + base. If the roll is a fumble, show "—".
   const shown = roll?.isFumble ? "—" : (damage.finalIfHit ?? 0);
   const hrPill = (damage.ignoreHR || roll?.isFumble) ? "" : `<span class="hr-pill">+HR</span>`;
-  const label = isHpHeal
-    ? "Heal"
-    : isMpHeal
-      ? "Restore"
-      : (isMpDamage ? "MP Damage" : "Damage");
-  const elementLabel = isHpHeal
-    ? "HP"
-    : isMpHeal
-      ? "MP"
-      : (isMpDamage ? "MP" : escapeHtml(cap(elemKey)));
+  const label = isHealing
+    ? (resourceKey === "hp" ? "Heal" : "Restore")
+    : (isMpDamage ? "MP Damage" : "Damage");
+  const elementLabel = isHealing ? restoreLabel : (isMpDamage ? "MP" : escapeHtml(cap(elemKey)));
   const suffix = legendSuffix ? ` <span style="opacity:0.7; font-weight: 700;">— ${escapeHtml(legendSuffix)}</span>` : "";
 
   // Calculation tooltip — surfaces base damage + HR contribution + how
@@ -1664,22 +1665,27 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
       + `</ul>`
     : "";
 
+  // Per-target affinity (VU/RS/IM/AB) applies ONLY to elemental damage — never to
+  // a restore (any resource) or MP damage.
+  const showAffinity = !isHealing && !isMpDamage;
   const tipBody = [
-    isMpDamage
-      ? `<p><b>Element:</b> MP damage (resource burn, no element)</p>`
-      : `<p><b>Element:</b> ${escapeHtml(cap(elemKey))}${damage.declaresHealing ? " (healing)" : ""}</p>`,
+    isHealing
+      ? `<p><b>Restores:</b> ${escapeHtml(restoreLabel)}</p>`
+      : isMpDamage
+        ? `<p><b>Element:</b> MP damage (resource burn, no element)</p>`
+        : `<p><b>Element:</b> ${escapeHtml(cap(elemKey))}</p>`,
     `<p style="margin-bottom:0;"><b>Base bonus:</b> ${baseStr}</p>${baseBreakdownHTML}`,
     hrLine,
     formula,
-    isMpDamage
-      ? `<p style="margin-top:6px; opacity:0.85;">MP damage skips elemental affinity — final number lands on each target's current MP unchanged.</p>`
-      : `<p style="margin-top:6px; opacity:0.85;"><b>Per-target affinity:</b></p>`,
-    isMpDamage ? "" : `<p style="opacity:0.85;">VU = ×2 &nbsp;•&nbsp; RS = ×0.5 (round up)</p>`,
-    isMpDamage ? "" : `<p style="opacity:0.85;">IM = 0 &nbsp;•&nbsp; AB = heals target</p>`,
+    isHealing
+      ? `<p style="margin-top:6px; opacity:0.85;">Restores ${escapeHtml(restoreLabel)} — no defense or affinity check.</p>`
+      : isMpDamage
+        ? `<p style="margin-top:6px; opacity:0.85;">MP damage skips elemental affinity — final number lands on each target's current MP unchanged.</p>`
+        : `<p style="margin-top:6px; opacity:0.85;"><b>Per-target affinity:</b></p>`,
+    showAffinity ? `<p style="opacity:0.85;">VU = ×2 &nbsp;•&nbsp; RS = ×0.5 (round up)</p>` : "",
+    showAffinity ? `<p style="opacity:0.85;">IM = 0 &nbsp;•&nbsp; AB = heals target</p>` : "",
   ].filter(Boolean).join("");
-  const tipName = damage.declaresHealing
-    ? "Healing"
-    : (isMpDamage ? "MP Damage Preview" : `${label} Preview`);
+  const tipName = isMpDamage ? "MP Damage Preview" : `${label} Preview`;
   const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="${escapeHtml(tipName)}"`;
 
   return `
@@ -1742,9 +1748,9 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
         && r.resourceCur >= r.resourceMax) {
       return "FULL · NO EFFECT";
     }
-    if (r.grantResource === "mp")     return `RESTORED ${amt} MP`;
+    if (r.grantResource === "hp")     return `HEALED ${amt} HP`;
     if (r.grantResource === "shield") return `SHIELDED ${amt}`;
-    return `HEALED ${amt} HP`;
+    return `RESTORED ${amt} ${resourceLabel(r.grantResource)}`;
   }
   // Non-damage Check (Soul Steal/Pillage, Torpor, Hallucination,
   // Enrage, future opposed-Check skills): the Check outcome IS the
@@ -4152,26 +4158,34 @@ export async function postActionCard({ director, kind, payload }) {
           // damage updates. Shared between GM (patch local DOM + broadcast
           // to mirrors) and player (patch the mirror wrapper). Single
           // patching function so GM and player can't diverge on layout.
-          const original = arSnapshot.perTargetResults;
+          // Build redirect deltas from the (mutated) TARGETS array — every
+          // swapped slot carries `redirectedFrom` there regardless of whether
+          // the action deals damage. A no-damage skill (Torment) has no/empty
+          // perTargetResults, so a perTargetResults-only loop would never patch
+          // the card even though the target genuinely changed. Per-target damage
+          // details (affinity/hit/crit/damage) come from recomputed[i] WHEN
+          // present; for no-damage skills those are simply absent (the result-
+          // label re-derive is gated on hasDamageRows downstream anyway).
+          const original = Array.isArray(arSnapshot.perTargetResults) ? arSnapshot.perTargetResults : [];
+          const mutTargets = Array.isArray(mutationResult.targets) ? mutationResult.targets : [];
           const redirects = [];
-          for (let i = 0; i < recomputed.length; i++) {
-            const origEntry = original[i];
-            const entry = recomputed[i];
-            if (!origEntry?.actorUuid || !entry) continue;
-            if (entry.redirectedFrom) {
-              redirects.push({
-                origUuid: origEntry.actorUuid,
-                newName: entry.name,
-                newImg: entry.tokenImg,
-                newDefense: entry.defense,
-                newAffinity: entry.affinity,
-                newHit: !!entry.hit,
-                newCrit: !!entry.crit,
-                newDamage: entry.damage,
-                fromName: entry.redirectedFrom.name,
-                via: entry.redirectedFrom.via,
-              });
-            }
+          for (let i = 0; i < mutTargets.length; i++) {
+            const t = mutTargets[i];
+            const rf = t?.redirectedFrom;
+            if (!rf?.actorUuid) continue;
+            const entry = recomputed[i] ?? {};
+            redirects.push({
+              origUuid: rf.actorUuid,
+              newName: t.name ?? entry.name,
+              newImg: t.tokenImg ?? entry.tokenImg,
+              newDefense: t.defense ?? entry.defense,
+              newAffinity: entry.affinity,
+              newHit: !!entry.hit,
+              newCrit: !!entry.crit,
+              newDamage: entry.damage,
+              fromName: rf.name,
+              via: rf.via,
+            });
           }
           const delta = {
             redirects,
@@ -4324,18 +4338,14 @@ export async function postActionCard({ director, kind, payload }) {
               if (newHTML) {
                 dmgFieldset.outerHTML = newHTML;
                 const refreshed = root.querySelector(".fud-bf-dmg");
-                if (refreshed) {
-                  if (wasBlocked) refreshed.classList.add("is-blocked-dmg");
-                  // Re-pin the headline number to the recomputed rawDamage
-                  // (post-reduction), matching the prior behaviour. Preserve
-                  // the HR pill.
-                  const numEl = refreshed.querySelector(".fud-bf-dmg-number");
-                  if (numEl && repEntry && typeof repEntry.rawDamage === "number") {
-                    const repBase = Math.max(0, Math.floor(repEntry.rawDamage));
-                    const pill = numEl.querySelector(".hr-pill");
-                    numEl.innerHTML = `${repBase}${pill ? pill.outerHTML : ""}`;
-                  }
-                }
+                if (refreshed && wasBlocked) refreshed.classList.add("is-blocked-dmg");
+                // Headline number is left as buildDamagePreviewHTML rendered it:
+                // damage.finalIfHit = base + attacker-side reaction bonuses, BEFORE
+                // any per-target incoming reduction. So an AoE shows the pre-split
+                // base (e.g. 150) and each per-target row shows its own reduced
+                // value. (Previously re-pinned to the representative target's
+                // post-reduction rawDamage, which leaked one target's reduction —
+                // e.g. Defensive Mastery -1 → headline 149 — into the shared number.)
               }
             }
           }

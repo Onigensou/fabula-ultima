@@ -305,6 +305,23 @@ export function isFormulaString(value) {
   return !/^-?\d+(\.\d+)?$/.test(s);
 }
 
+// "No-damage" placeholders that a `type_damage` field may carry to mean "this
+// action deals no damage" (so it's a restore / status, not a 0-damage hit).
+// Blanks, dashes, and resource/recovery words all collapse to "". "mp" is NOT
+// here — it's a real damage type (MP-damage). The single guard against the
+// "type_damage:'-' reads as an element → false damage mode" footgun.
+const _NO_DAMAGE_DT = new Set([
+  "", "-", "–", "—", "none", "n/a", "na", "/", "healing", "heal", "recovery", "hp", "restore",
+]);
+
+// Normalize a `type_damage` for DAMAGE classification. Returns "" when the value
+// is a no-damage placeholder, else the trimmed/lowercased value (real elements +
+// "mp" pass through). Use this as the single reader before deciding damage mode.
+export function normalizeDamageType(raw) {
+  const s = String(raw ?? "").trim().toLowerCase();
+  return _NO_DAMAGE_DT.has(s) ? "" : s;
+}
+
 // ── Context builder ─────────────────────────────────────────────────────
 //
 // Builds the standard resolver for skill activations + reactions. The
@@ -353,6 +370,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Strategy — "two or more DIFFERENT status effects"). Unions identities,
       // so two Dazed enemies = 1, one Dazed + one Slow = 2.
       case "ENEMY_DISTINCT_STATUS_COUNT": return countEnemyDistinctStatuses(actor);
+      // 1 if ANY enemy combatant is currently in Crisis, else 0 (Fafnir's
+      // "Zero Trigger: Suffering" — gain Zero Power at any turn start while an
+      // enemy is bloodied). Crisis = the canonical "Crisis" AE (crisis-reactor).
+      case "ENEMY_IN_CRISIS":
+      case "ANY_ENEMY_IN_CRISIS": return anyEnemyInCrisis(actor) ? 1 : 0;
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1126,21 +1148,56 @@ function collectDebuffStatusKeys(actor) {
   return out;
 }
 
-function countEnemyDistinctStatuses(actor) {
-  const combat = globalThis.game?.combat;
-  if (!actor || !combat?.combatants) return 0;
+// Enemy actors relative to `actor` (opposite disposition sign). Prefers the
+// Foundry combat roster, but FALLS BACK to canvas tokens — the Battle Director
+// runs on its own `dCombat` and often leaves `game.combat` null, so a combat-
+// only scan would miss every enemy mid-battle. Single source for every
+// enemy-iterating formula (ENEMY_DISTINCT_STATUS_COUNT, ENEMY_IN_CRISIS).
+function enemyActorsOf(actor) {
+  if (!actor) return [];
   const myDisp = _combatDisposition(actor);
-  if (myDisp == null) return 0;
+  if (myDisp == null) return [];
+  const out = [];
+  const seen = new Set();
+  const consider = (a, disp) => {
+    if (!a || a === actor || seen.has(a)) return;
+    const d = Number(disp);
+    if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
+    seen.add(a);
+    out.push(a);
+  };
+  const combat = globalThis.game?.combat;
+  const roster = combat?.combatants;
+  if (roster && (roster.size || roster.length)) {
+    for (const c of roster) consider(c.actor, c.token?.disposition ?? _combatDisposition(c.actor));
+    return out;
+  }
+  for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+    consider(t?.actor, t.document?.disposition ?? t.disposition);
+  }
+  return out;
+}
+
+function countEnemyDistinctStatuses(actor) {
   const union = new Set();
-  for (const c of combat.combatants) {
-    const a = c.actor;
-    if (!a || a === actor) continue;
-    const d = Number(c.token?.disposition ?? _combatDisposition(a));
-    // Enemy = opposite disposition sign (friendly PC vs hostile monster).
-    if (!Number.isFinite(d) || d * myDisp >= 0) continue;
+  for (const a of enemyActorsOf(actor)) {
     for (const k of collectDebuffStatusKeys(a)) union.add(k);
   }
   return union.size;
+}
+
+// True if any ENEMY of `actor` is in Crisis. Crisis is the canonical "Crisis"
+// AE applied by crisis-reactor.js — matched by the `bdCrisis` flag or the
+// literal name "crisis" (mirrors isCrisisAE), kept dependency-free to avoid a
+// circular import. Enemy iteration goes through enemyActorsOf (canvas fallback).
+function anyEnemyInCrisis(actor) {
+  const inCrisis = (a) =>
+    (a?.effects?.contents ?? []).some((e) => {
+      if (e?.disabled) return false;
+      if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
+      return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+    });
+  return enemyActorsOf(actor).some(inCrisis);
 }
 
 // Bond data lives at `actor.system.props.bond_N` / `emotion_N_M`.
@@ -1376,6 +1433,32 @@ export function resolveRestoreParts({ actor = null, props = null, kind = null } 
 // Sum a parts list (resolveRestoreParts output) to a flat bonus.
 export function sumRestoreParts(parts) {
   return (Array.isArray(parts) ? parts : []).reduce((s, p) => s + (Number(p?.amount) || 0), 0);
+}
+
+// ── Incoming-heal modifier (RECIPIENT side) ────────────────────────────
+// The heal counterpart of apply-damage-core's `damage_receiving_*` — read off
+// the HEALED actor (not the healer). `heal_receiving_mod_all` is a FRACTIONAL
+// modifier on HP recovery: the recovered amount is multiplied by (1 + sum), so
+// -0.5 = "incoming healing reduced by 50%" (Bleed). Clamped at 0 (a heal can
+// never become damage). Read by BOTH applyGrantEffect (apply) and
+// buildHealPerTarget (preview) so they can't drift. Resource-scoped by the
+// caller (HP recovery only — "healing"; MP restore is untouched).
+export function healReceivingMultiplier(targetActor) {
+  if (!targetActor) return 1;
+  // Sum the modifier straight off the bearer's active-effect changes rather than
+  // system.props: unlike the damage_receiving_* family, `heal_receiving_mod_all`
+  // is NOT a CSB template column, so it never surfaces to system.props (verified).
+  // Reading the AE changes is column-independent and self-contained.
+  let mod = 0;
+  const effects = targetActor.appliedEffects ?? targetActor.effects?.contents ?? targetActor.effects ?? [];
+  for (const e of effects) {
+    if (e?.disabled) continue;
+    for (const c of (e.changes ?? [])) {
+      if (c?.key === "heal_receiving_mod_all") mod += Number(c.value) || 0;
+    }
+  }
+  if (!mod) return 1;
+  return Math.max(0, 1 + mod);
 }
 
 // Apply an `adjust_grant` op to an already-final restore amount — the heal

@@ -3498,7 +3498,11 @@ const Confirm = {
         || (ar.kind === "Skill" && (ar.hasDamage || ar.hasHealing || ar.actionIntent === "harmful")));
     if (fireCreatureTargetedByAction) {
       try {
-        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const { findPassiveCandidates, findTargetOwnedCandidates } = await getSkillEffectsExtras();
+        // The ACTING skill — source of any TARGET-owned reactions (responder
+        // "target", e.g. Condemn/Torment's "you may redirect to an ally").
+        let actionItem = null;
+        try { if (ar.skillUuid) actionItem = await fromUuid(ar.skillUuid); } catch (_) { actionItem = null; }
         // DirectorCombatant exposes .actorDoc (live ref). Not Foundry's
         // Combat.combatants — that lives at .combat?.combatants for the
         // FSM's diagnostic mirror, not the authoritative participant list.
@@ -3579,6 +3583,45 @@ const Confirm = {
                 subjectTokenUuid,
                 payloadAtFire: payloadForTrigger,
               });
+            }
+          }
+
+          // Skill-granted, TARGET-owned reactions: the reaction lives on the
+          // ACTING skill but is answered by THIS target. Inject one candidate
+          // stamped reactorActorUuid = the target, so the existing pill flow
+          // routes ownership to the target and the accepted-mutation pipeline
+          // runs (redirect_target with destination_ref → chosen ally). The
+          // attacker is excluded from reactorActors, so these never double up
+          // via the reactor-walk above.
+          if (actionItem) {
+            try {
+              const targetActorDoc = await fromUuid(subjectActorUuid).catch(() => null);
+              if (targetActorDoc) {
+                const ownedCands = await findTargetOwnedCandidates({
+                  skill: actionItem,
+                  trigger: "creature_targeted_by_action",
+                  targetActor: targetActorDoc,
+                  payload: payloadForTrigger,
+                });
+                for (const cand of ownedCands ?? []) {
+                  const dedup = `${cand.rowKey}::${cand.carrierUuid}::${subjectActorUuid}`;
+                  if (seenKeys.has(dedup)) continue;
+                  seenKeys.add(dedup);
+                  log(`CONFIRM: target-owned reaction matched — target=${target?.name ?? subjectActorUuid} skill=${cand.carrierName}`);
+                  prePassives.push({
+                    ...cand,
+                    reactorActorUuid: subjectActorUuid,
+                    reactorActorName: target?.name ?? targetActorDoc.name,
+                    reactorActorImg:  targetActorDoc.img ?? cand.carrierImg,
+                    reactorIsPlayer:  !!targetActorDoc.hasPlayerOwner,
+                    subjectActorUuid,
+                    subjectTokenUuid,
+                    payloadAtFire: payloadForTrigger,
+                  });
+                }
+              }
+            } catch (e) {
+              warn("CONFIRM: target-owned reaction injection threw", e);
             }
           }
         }
@@ -4557,18 +4600,24 @@ const StandaloneReactionWindow = {
     try {
       if (PHASED) {
         if (!wasReentry) {
-          // FORCED pass — auto-fire force/on (Burn commits + populates the
-          // ledger; action-creating grants like High Speed enqueue freeActionQueue).
-          await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });
-          // Combat-start crisis seed — apply/remove Crisis on every combatant by
-          // current HP (the event-driven crisis reactor only fires on HP CHANGES,
-          // so a creature already below threshold at combat start needs this).
-          if (trigger === "conflict_start") {
+          // Crisis reconcile BEFORE the forced dispatch. The event-driven crisis
+          // reactor only fires on HP CHANGES, so it misses (a) a creature already
+          // below threshold at combat start, and (b) one whose HP settled below
+          // threshold via a path that didn't re-fire the reactor — e.g. an
+          // Unbreakable "reduce to 1" clamp after a would-be-lethal hit. Sweeping
+          // at conflict_start AND every turn_start makes Crisis self-correct, and
+          // — crucially — running it BEFORE the forced dispatch means force-mode
+          // turn_start reactions that gate on Crisis (Zero Trigger: Suffering's
+          // ENEMY_IN_CRISIS) evaluate against up-to-date Crisis AEs.
+          if (trigger === "conflict_start" || trigger === "turn_start") {
             try {
               const { sweepCrisis } = await import("./crisis-reactor.js");
               await sweepCrisis(director);
-            } catch (e) { warn("STANDALONE_REACTION_WINDOW: conflict_start crisis sweep threw", e); }
+            } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} crisis sweep threw`, e); }
           }
+          // FORCED pass — auto-fire force/on (Burn commits + populates the
+          // ledger; action-creating grants like High Speed enqueue freeActionQueue).
+          await dispatchStandaloneTrigger({ director, trigger, payload, phase: "forced" });
           // SETTLE (T1) — drain the resource ledger, re-firing to quiescence.
           try {
             const { settleInstance } = await import("./instance-settle.js");
