@@ -1179,8 +1179,9 @@ async function maybeRunBreakFree(director, snap) {
     if (snap.tokenUuid) actor = (await fromUuid(snap.tokenUuid).catch(() => null))?.actor ?? null;
     if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
     if (!actor || !isGrappled(actor)) return;
+    if (director?.ctx?.endOfCombat) return; // battle ending, skip break-free picker
 
-    const cfg = await pickAttributePair({
+    const _bfPromise = pickAttributePair({
       director,
       titleText: `${snap.name}: Break Free?`,
       subtitle: `Free action. DL 10 Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
@@ -1188,6 +1189,10 @@ async function maybeRunBreakFree(director, snap) {
       includeDL: true,
       defaultDL: 10,
     });
+    const _bfInterrupt = director?._battleEndInterruptPromise ?? null;
+    const cfg = _bfInterrupt
+      ? await Promise.race([_bfPromise, _bfInterrupt.then(() => ({ ok: false }))])
+      : await _bfPromise;
     if (!cfg.ok) { log(`Break Free: ${snap.name} declined the attempt`); return; }
 
     const A1 = cfg.A1;
@@ -1391,6 +1396,7 @@ const TurnStart = {
           }
 
           if (!pickedId) {
+            if (director.ctx.endOfCombat) return; // ABORT already queued by battleEndManager
             warn("TURN_START: picker cancelled — aborting turn");
             director.ctx.abortReason = "no combatant picked";
             director.enqueue({ type: INTENTS.ABORT });
@@ -1818,8 +1824,10 @@ const Declare = {
 
       if (result.result.cancelled) {
         log(`DECLARE: compose cancelled (winner=${winnerSource})`);
-        // Bounce back to TURN_END so the FSM can move on or End Battle.
-        director.enqueue({ type: INTENTS.TIMEOUT });
+        // Skip TIMEOUT when battle is ending — ABORT is already queued.
+        if (!director.ctx.endOfCombat) {
+          director.enqueue({ type: INTENTS.TIMEOUT });
+        }
         return;
       }
 
@@ -4785,7 +4793,9 @@ const Aborted = {
   async onEnter(director, { triggerIntent }) {
     const reason = director.ctx.abortReason ?? triggerIntent?.body?.reason ?? "aborted";
     log(`ABORTED — ${reason}`);
-    ui.notifications?.warn(`Director: action aborted (${reason})`);
+    if (!director.ctx.endOfCombat) {
+      ui.notifications?.warn(`Director: action aborted (${reason})`);
+    }
     director.ctx.abortReason = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },

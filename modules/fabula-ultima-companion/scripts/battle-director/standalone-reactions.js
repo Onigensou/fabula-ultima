@@ -473,6 +473,14 @@ export async function dispatchReactionMenu({
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
 
+  // When battle end is triggered mid-reaction, the director signals this
+  // one-shot promise. All in-flight dispatchReactionMenu calls race against
+  // it so their `closed` promise resolves immediately, releasing the lock.
+  const interruptPromise = director?._battleEndInterruptPromise ?? null;
+  if (interruptPromise) {
+    interruptPromise.then(() => resolveClose());
+  }
+
   let remaining = askable.slice();
   let cancelled = false;
   // Three-source disabled-blade overlay (merged at spawn + patch time):

@@ -96,6 +96,11 @@ export class BattleDirector {
     this._MAX_TRANSITIONS_PER_WINDOW = 50;
     this._TRANSITION_WINDOW_MS = 1000;
 
+    // One-shot signal resolved by _signalBattleEnd(). Lets battleEndManager
+    // unblock all pending dispatchReactionMenu `closed` Promises simultaneously
+    // so the FSM dispatch lock is released before ABORT is processed.
+    this._battleEndInterruptController = null;
+
     // Expose the latest instance globally so the user can inspect post-mortem
     // if the FSM gets stuck or crashes.
     try { globalThis.__fuDirector_lastInstance = this; } catch {}
@@ -106,6 +111,22 @@ export class BattleDirector {
   // no Foundry Combat doc in director mode, the dCombat id (assigned at
   // construction) is the canonical handle.
   get combatId() { return this.dCombat?.id ?? this.combat?.id ?? null; }
+
+  // Lazily-created one-shot Promise. Multiple callers (dispatchReactionMenu
+  // instances) each attach a .then() — all fire the moment _signalBattleEnd
+  // resolves the underlying promise.
+  get _battleEndInterruptPromise() {
+    if (!this._battleEndInterruptController) {
+      let resolve;
+      const promise = new Promise((r) => { resolve = r; });
+      this._battleEndInterruptController = { promise, resolve };
+    }
+    return this._battleEndInterruptController.promise;
+  }
+
+  _signalBattleEnd() {
+    this._battleEndInterruptController?.resolve?.();
+  }
 
   // Called by PrepState once the Combat document has been created so the
   // rest of the FSM (and any combat-keyed hooks) can pick it up.
