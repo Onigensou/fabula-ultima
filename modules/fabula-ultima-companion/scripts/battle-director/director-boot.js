@@ -1115,9 +1115,13 @@ Hooks.once("ready", () => {
         return { ok: false, cancelled: true };
       }
 
-      // GM confirmed — now commit: pass result to orchestrator and trigger abort.
+      // GM confirmed — now commit: actively interrupt all blocking UIs so
+      // the FSM dispatch lock is freed before ABORT is processed.
       d.ctx.battleEndPromptResult = promptResult;
       d.ctx.endOfCombat = true;
+      TurnPicker.despawn({ director: d });               // unblocks TURN_START (resolves show() promise → null)
+      d.ctx._composeCancelToken?.cancel?.("battle-end"); // unblocks DECLARE (compose → { cancelled: true })
+      d._signalBattleEnd();                              // unblocks SRW (resolves all dispatchReactionMenu closed promises)
       d.enqueue({ type: INTENTS.ABORT });
       return { ok: true };
     };
