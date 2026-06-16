@@ -3577,6 +3577,60 @@ function looksLikeNumericFormula(s) {
 // concrete debuff name from ctx.actionResult.statusValue at fire time.
 const HINDER_STATUS_NAMES = { dazed: "Dazed", shaken: "Shaken", slow: "Slow", weak: "Weak" };
 
+// ── AE-create batching (lever B) ─────────────────────────────────────────
+// Within a `chain`, consecutive apply_ae CREATES to the same actor are queued
+// and flushed in ONE createEmbeddedDocuments per actor — collapsing N CSB
+// re-derives + sheet/token repaints into 1. Big win for AoE multi-debuff ults
+// (Fafnir Torment = 6 AEs/target; Zarg Meteor Shower = 4).
+//
+// SAFETY MODEL — only fresh CREATES are deferred. Deletes, replace-in-place
+// updates (lever A), and add_charges stay IMMEDIATE (they touch committed
+// docs). The owning chain (applyChainEffect) flushes the batch (a) before any
+// NON-apply_ae step and (b) at chain end, so every read — condition_formula,
+// grant, deal_damage, findDuplicateAe on a committed doc — sees committed
+// state. A queued create that would COLLIDE (same name/status) with a later
+// apply_ae on the same actor forces a pre-flush, so dup detection never misses
+// a pending AE. Distinct-name multi-debuffs never collide → full batching.
+function makeAeBatch() {
+  // pending: Map<actorUuid, { actor, entries: [{ data, applied }] }>
+  return { pending: new Map() };
+}
+// True iff a queued (not-yet-committed) create on `actorUuid` shares the
+// template's name OR any of its status ids — i.e. would be seen by
+// findDuplicateAe (name) or findSameStatusAe (status/name). Forces a pre-flush
+// so the dup/skip/remove/replace logic runs against the committed AE.
+function aeBatchConflicts(batch, actorUuid, template) {
+  const bucket = batch?.pending?.get(actorUuid);
+  if (!bucket?.entries?.length) return false;
+  const wantName = String(template?.name ?? "").trim().toLowerCase();
+  const wantStatuses = new Set((Array.isArray(template?.statuses) ? template.statuses : []).map((s) => String(s).toLowerCase()));
+  for (const e of bucket.entries) {
+    const n = String(e.data?.name ?? "").trim().toLowerCase();
+    if (wantName && n === wantName) return true;
+    const st = Array.isArray(e.data?.statuses) ? e.data.statuses : [];
+    if (st.some((s) => wantStatuses.has(String(s).toLowerCase()))) return true;
+  }
+  return false;
+}
+// Commit every queued create — one createEmbeddedDocuments per actor. Clears
+// `pending` BEFORE awaiting so a re-entrant flush can't double-commit. Backfills
+// each queued `applied` record's aeId from the created doc (by reference, so the
+// chain's aggregated result reflects the real ids once the owner flush returns).
+async function flushAeBatch(batch) {
+  if (!batch?.pending?.size) return;
+  const buckets = Array.from(batch.pending.values());
+  batch.pending = new Map();
+  for (const { actor, entries } of buckets) {
+    if (!entries.length) continue;
+    try {
+      const created = await actor.createEmbeddedDocuments("ActiveEffect", entries.map((e) => e.data));
+      entries.forEach((e, i) => { if (e.applied) e.applied.aeId = created?.[i]?.id ?? null; });
+    } catch (e) {
+      warn(`skill-effects.apply_ae: batched createEmbeddedDocuments failed on ${actor?.name}`, e);
+    }
+  }
+}
+
 async function applyApplyAeEffect(row, ctx) {
   let aeRef = String(row.ae_template_ref ?? "").trim();
   // Dynamic ref: resolve the debuff name from the action's picked status
@@ -3632,6 +3686,21 @@ async function applyApplyAeEffect(row, ctx) {
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    // Lever B dup-visibility guard. If an earlier chain step queued a create
+    // that this row's dup/skip/remove/replace logic would need to see (same
+    // name or status), commit the batch NOW so findDuplicateAe / findSameStatusAe
+    // run against the committed AE. Distinct-name multi-debuffs never trip this.
+    if (ctx._aeBatch && aeBatchConflicts(ctx._aeBatch, actor.uuid, template)) {
+      await flushAeBatch(ctx._aeBatch);
+    }
+    // Refresh-in-place target. When `replace` mode finds an existing same-
+    // template AE, we UPDATE it in place (one write) instead of delete+create
+    // (two writes → two CSB re-derives + sheet re-renders). The fully-built
+    // `data` overwrites the existing AE's fields, so the result is identical to
+    // a fresh instance — but the AE keeps its id (rewind-snapshot friendly) and
+    // the target's sheet/token repaints once instead of twice. Stutter halver
+    // for the very common "re-cast a buff/debuff that's already on the target".
+    let replaceTarget = null;
     const chargeResolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
     const evalCharge = (raw) => {
       if (raw == null || String(raw).trim() === "") return null;
@@ -3689,7 +3758,10 @@ async function applyApplyAeEffect(row, ctx) {
       if (existing) {
         if (baseMode === "skip") { log(`skill-effects.apply_ae: ${actor.name} already has "${template.name}"${isPerCaster ? " from this caster" : ""} (skip)`); continue; }
         if (baseMode === "remove") { try { await existing.delete(); applied.push({ actorUuid: actor.uuid, removed: existing.name }); } catch (e) { warn("apply_ae remove failed", e); } continue; }
-        if (baseMode === "replace") { try { await existing.delete(); } catch (e) { warn("apply_ae replace-delete failed", e); } }
+        // replace → refresh in place (one write). Capture the existing AE; the
+        // create site below updates it with the fresh `data` instead of
+        // deleting + recreating. See replaceTarget declaration above.
+        if (baseMode === "replace") { replaceTarget = existing; }
         // "stack" falls through to create a new one
       }
     }
@@ -3959,11 +4031,37 @@ async function applyApplyAeEffect(row, ctx) {
         return true;
       });
     }
-    try {
-      const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);
-      applied.push({ actorUuid: actor.uuid, aeId: created?.id ?? null, name: data.name });
-    } catch (e) {
-      warn(`skill-effects.apply_ae: createEmbeddedDocuments failed on ${actor.name}`, e);
+    if (replaceTarget) {
+      // Refresh in place (one write). `data` carries no `_id` (deleted above),
+      // so the update merges the fresh template over the existing AE: name,
+      // changes[] (arrays overwrite wholesale — see [[no-dotted-array-updates]]),
+      // duration, statuses, and flags (directorAppliedBy / reactionConfig /
+      // charges are full objects in `data` → overwrite the stale ones). Same
+      // result as delete+create, but one CSB re-derive + one sheet repaint.
+      try {
+        await replaceTarget.update(data);
+        applied.push({ actorUuid: actor.uuid, aeId: replaceTarget.id, name: data.name, refreshedInPlace: true });
+      } catch (e) {
+        warn(`skill-effects.apply_ae: replace-in-place update failed on ${actor.name}`, e);
+      }
+    } else if (ctx._aeBatch) {
+      // Lever B — defer the fresh create. The owning chain flushes one
+      // createEmbeddedDocuments per actor (before any non-apply_ae step + at
+      // chain end). `appliedEntry` is shared with the batch so flush backfills
+      // its aeId. The conflict pre-flush above guarantees no committed dup was
+      // missed, so reaching here means a genuine create.
+      const appliedEntry = { actorUuid: actor.uuid, aeId: null, name: data.name, batched: true };
+      let bucket = ctx._aeBatch.pending.get(actor.uuid);
+      if (!bucket) { bucket = { actor, entries: [] }; ctx._aeBatch.pending.set(actor.uuid, bucket); }
+      bucket.entries.push({ data, applied: appliedEntry });
+      applied.push(appliedEntry);
+    } else {
+      try {
+        const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);
+        applied.push({ actorUuid: actor.uuid, aeId: created?.id ?? null, name: data.name });
+      } catch (e) {
+        warn(`skill-effects.apply_ae: createEmbeddedDocuments failed on ${actor.name}`, e);
+      }
     }
   }
   // Reciprocal AE (declarative, director-supervised). A template may carry
@@ -5623,25 +5721,48 @@ async function applyChainEffect(row, ctx) {
   const steps = parseEffectRefList(row.chain_steps);
   if (!steps.length) return { ok: false, kind: "chain", reason: "no-steps" };
 
+  // Lever B — open an AE-create batch for this chain. Consecutive apply_ae
+  // CREATES queue onto ctx._aeBatch and flush as ONE createEmbeddedDocuments
+  // per actor (see makeAeBatch / flushAeBatch). Nested chains REUSE the outer
+  // batch; only the owner flushes + clears it at the end. We flush before any
+  // non-apply_ae step so its reads see committed state, and in `finally` so an
+  // abort / step-failure / throw still commits whatever queued first.
+  const ownsBatch = !ctx._aeBatch;
+  if (ownsBatch) ctx._aeBatch = makeAeBatch();
+  const batch = ctx._aeBatch;
+
   const aggregated = [];
-  for (const label of steps) {
-    const r = await applyEffectByLabel(label, ctx);
-    aggregated.push({ label, result: r });
-    if (!r.ok) {
-      log(`skill-effects.chain: step "${label}" returned ok=false (${r.reason ?? "?"}); stopping chain`);
-      return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort };
+  try {
+    for (const label of steps) {
+      // Commit queued creates before a non-apply_ae step (any chain level) so
+      // formulas / grants / damage / dup checks in that step see committed AEs.
+      const stepRow = findEffectRow(ctx, label);
+      if (String(stepRow?.effect_kind ?? "").trim().toLowerCase() !== "apply_ae") {
+        await flushAeBatch(batch);
+      }
+      const r = await applyEffectByLabel(label, ctx);
+      aggregated.push({ label, result: r });
+      if (!r.ok) {
+        log(`skill-effects.chain: step "${label}" returned ok=false (${r.reason ?? "?"}); stopping chain`);
+        return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort };
+      }
+      if (r.abort) {
+        log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
+        return { ok: true, kind: "chain", applied: aggregated, abort: true };
+      }
+      if (r.skipBody) {
+        // `redirect_target` returns skipBody:true (B.2). We surface it
+        // upward but DON'T stop the chain — schema doc rationale: cost
+        // steps AFTER the redirect should still run.
+        // For B.1 redirect_target isn't implemented; this path is dead
+        // until B.2.
+      }
     }
-    if (r.abort) {
-      log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
-      return { ok: true, kind: "chain", applied: aggregated, abort: true };
-    }
-    if (r.skipBody) {
-      // `redirect_target` returns skipBody:true (B.2). We surface it
-      // upward but DON'T stop the chain — schema doc rationale: cost
-      // steps AFTER the redirect should still run.
-      // For B.1 redirect_target isn't implemented; this path is dead
-      // until B.2.
+    return { ok: true, kind: "chain", applied: aggregated };
+  } finally {
+    if (ownsBatch) {
+      await flushAeBatch(batch);
+      if (ctx._aeBatch === batch) delete ctx._aeBatch;
     }
   }
-  return { ok: true, kind: "chain", applied: aggregated };
 }
