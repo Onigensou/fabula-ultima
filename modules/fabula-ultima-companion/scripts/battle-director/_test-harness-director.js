@@ -53,13 +53,14 @@
 // read whatever was loaded at boot.
 async function loadDeps() {
   const bust = `?harness=${Date.now()}`;
-  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects] = await Promise.all([
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
     import(`./snapshot.js${bust}`),
     import(`./skill-intent.js${bust}`),
     import(`./skill-effects.js${bust}`),
+    import(`./action-profile.js${bust}`),
   ]);
   return {
     STATE_HANDLERS: stateHandlers.STATE_HANDLERS,
@@ -73,8 +74,9 @@ async function loadDeps() {
     applyAffinityToDamage: snapshot.applyAffinityToDamage,
     classifyActionIntent: skillIntent.classifyActionIntent,
     findPassiveCandidates: skillEffects.findPassiveCandidates,
-    computeSenderDamageBonuses: skillEffects.computeSenderDamageBonuses,
-    recomputePerTargetDamages: skillEffects.recomputePerTargetDamages,
+    // The single post-decision recompute (matches production CONFIRM); replaces
+    // the retired computeSenderDamageBonuses + recomputePerTargetDamages overlay.
+    recomputeActionProfile: actionProfile.recomputeActionProfile,
   };
 }
 
@@ -92,7 +94,7 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
   if (!prePassives) return ar;
   if (!Array.isArray(ar?.perTargetResults) || !ar.perTargetResults.length) return ar;
   if (!ar.hasDamage && ar.kind !== "Attack") return ar;
-  const { findPassiveCandidates, computeSenderDamageBonuses, recomputePerTargetDamages, applyAffinityToDamage, freezeActionResult } = deps;
+  const { findPassiveCandidates, recomputeActionProfile, freezeActionResult } = deps;
   const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
   const hitTargetUuids = ar.perTargetResults
     .filter((r) => r?.hit)
@@ -164,13 +166,14 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
   if (!applied.length) return ar;
   let recomputed = ar.perTargetResults;
   try {
-    const bonusMap = await computeSenderDamageBonuses({
-      casterActor: attackerActor,
-      acceptedPrePassives: applied,
-      dCombat,
+    // Single post-decision recompute — matches production CONFIRM. The `applied`
+    // candidates already carry appliesToTargetUuids (built above), so no separate
+    // refreshReactionSubjects pass is needed here.
+    const delta = await recomputeActionProfile({
+      ar, targets: ar.targets, acceptedReactions: applied, round: dCombat?.round ?? 0,
     });
-    if (bonusMap.size > 0) {
-      recomputed = recomputePerTargetDamages(ar.perTargetResults, bonusMap, applyAffinityToDamage);
+    if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
+      recomputed = delta.perTargetResults;
     }
   } catch (e) {
     console.warn(`${TAG} prePassives recompute threw`, e);

@@ -3134,6 +3134,15 @@ const Compute = {
           roll: delta.roll,
           damage: delta.damage,
           perTargetResults: delta.perTargetResults,
+          // The HIT-target token list — drives `hit_action_targets` reactions
+          // (Warning Shot's Shaken/Slow, Vanish, …) at RESOLVE. The Skill COMPUTE
+          // path keeps this by spreading the projection; the Attack path enumerates
+          // fields, so set it explicitly. Without it, ar.hitTokenUuids is undefined
+          // and a Barrage add_target splice (`[...(baseAr.hitTokenUuids ?? []),
+          // ...added]`) collapses the hit list to ONLY the added target — the AE
+          // then skips the primary. (Also stops a MISSED target getting hit-gated
+          // AEs via the resolve-time all-targets fallback.)
+          hitTokenUuids: delta.hitTokenUuids,
           ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0 } } : {}),
         });
         director.enqueue({ type: INTENTS.INTERNAL_DONE });
@@ -3259,6 +3268,7 @@ const Confirm = {
         prePassives = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_completes_spell",
+          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
             spellUuid: ar.skillUuid ?? null,
             spellName: ar.skillName ?? null,
@@ -3285,6 +3295,7 @@ const Confirm = {
         const itemCands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_uses_item",
+          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
             targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
             targets: (ar.targets ?? []).map((t) => t.tokenUuid),
@@ -3385,6 +3396,7 @@ const Confirm = {
             cands = await findPassiveCandidates({
               casterActor: attackerActor,
               trigger: "creature_will_deal_damage",
+              includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
               payload: payloadForTrigger,
             });
           } catch (e) {
@@ -3443,6 +3455,7 @@ const Confirm = {
         const cands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_performs_action",
+          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
             sourceActorUuid: ar.attackerActorRef,
             subjectActorUuid: ar.attackerActorRef,
@@ -3578,7 +3591,7 @@ const Confirm = {
                 casterActor: reactor,
                 trigger: "creature_targeted_by_action",
                 payload: payloadForTrigger,
-                includeUnavailable: false,
+                includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
               });
             } catch (e) {
               warn(`CONFIRM: creature_targeted_by_action findPassiveCandidates threw for ${reactor.name}`, e);
@@ -3618,6 +3631,7 @@ const Confirm = {
                   trigger: "creature_targeted_by_action",
                   targetActor: targetActorDoc,
                   payload: payloadForTrigger,
+                  includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
                 });
                 for (const cand of ownedCands ?? []) {
                   const dedup = `${cand.rowKey}::${cand.carrierUuid}::${subjectActorUuid}`;
@@ -3666,6 +3680,7 @@ const Confirm = {
         const guardCands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_guards",
+          includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
           payload: {
             sourceActorUuid:      guarderUuid,
             sourceTokenUuid:      ar.attacker?.tokenUuid ?? null,
@@ -3980,45 +3995,30 @@ const Confirm = {
         rowKey: d.rowKey,
       }));
 
-      // Phase 1: card-mutations (redirect_target today; change_element /
-      // replace_damage etc. as future work). These rewrite WHICH actor
-      // is in each target slot, so they run BEFORE add_damage recompute
-      // so the damage-bonus accumulator sees the redirected target.
+      // SINGLE target-set mutation entrypoint: redirect/accuracy/add_target
+      // rewrite the slots, will_deal_damage subjects re-resolve vs the mutated
+      // set, then ALL per-target rows re-derive through buildPerTarget with the
+      // accepted reactions folded in (accuracy override re-applied). Shared with
+      // the action-card preview recompute so the two CANNOT drift.
       let mutatedTargets = liveAr.targets ?? null;
-      let mutatedPerTargets = liveAr.perTargetResults ?? null;
+      let recomputedPerTargets = liveAr.perTargetResults ?? null;
       let accuracyOverride = null;
       let negated = false;
       try {
-        const { applyAcceptedCardMutations } = await import("./card-mutations.js?cb=" + Date.now());
-        const r = await applyAcceptedCardMutations(liveAr, applied);
-        negated = !!r.negated;
-        if (r.mutationsApplied > 0) {
-          mutatedTargets = r.targets;
-          mutatedPerTargets = r.perTargetResults;
-          accuracyOverride = r.accuracyOverride ?? null;
-          log(`CONFIRM: card mutations applied — ${r.mutationsApplied} (redirects + accuracy/element/damage hooks${negated ? "; NEGATED" : ""})`);
-        }
-      } catch (e) { warn("CONFIRM: card mutations threw", e); }
-
-      // Phase 2: add_damage recompute. Reads (possibly mutated)
-      // perTargetResults so a Cheap Shot-style add_damage on the
-      // redirected target works correctly.
-      let recomputedPerTargets = mutatedPerTargets;
-      try {
-        const { computeSenderDamageBonuses, recomputePerTargetDamages } = await getSkillEffectsExtras();
-        const bonusMap = await computeSenderDamageBonuses({
-          casterActor: attackerActor,
-          acceptedPrePassives: applied,
-          dCombat: director.dCombat,
+        const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
+        const r = await applyTargetSetMutation({
+          ar: liveAr, accepted: applied, attackerActor, round: director.dCombat?.round ?? 0,
         });
-        if (bonusMap.size > 0 && Array.isArray(mutatedPerTargets)) {
-          const { applyAffinityToDamage } = await import("./snapshot.js");
-          recomputedPerTargets = recomputePerTargetDamages(
-            mutatedPerTargets, bonusMap, applyAffinityToDamage,
-          );
-          log(`CONFIRM: add_damage recompute applied — ${bonusMap.size} subject(s) modified`);
+        negated = !!r.negated;
+        if (!r.cancelled) {
+          mutatedTargets = r.targets ?? mutatedTargets;
+          recomputedPerTargets = r.perTargetResults ?? recomputedPerTargets;
+          accuracyOverride = r.accuracyOverride ?? null;
+          if (r.mutationsApplied > 0 || negated) {
+            log(`CONFIRM: target-set mutation — ${r.mutationsApplied} applied${negated ? "; NEGATED" : ""}`);
+          }
         }
-      } catch (e) { warn("CONFIRM: add_damage recompute threw", e); }
+      } catch (e) { warn("CONFIRM: target-set mutation threw", e); }
       // Infusion element override (change_damage_element): if every hit now
       // shares a new element, reflect it on the action-level damageType so the
       // committed card + battle log read the new element (e.g. Physical → Fire).

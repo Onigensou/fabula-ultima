@@ -816,13 +816,37 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null) {
       return;
     }
     if (kind === "open_action_menu") {
-      // Options are player choices — NOT summed into the fixed cost. But if any
-      // option carries a self-cost, flag the action as variable-cost.
+      // Options are player choices — NOT summed into the fixed cost (you pick
+      // ONE). But if any option carries a self-cost, flag the action variable.
       if (row.free_mode !== true) {
-        if (parseEffectRefList(row.menu_option_refs).some((r) => hasCostUnder(r))) variable = true;
+        const optRefs = parseEffectRefList(row.menu_option_refs);
+        if (optRefs.some((r) => hasCostUnder(r))) variable = true;
         const inline = Array.isArray(row.menu_options) ? row.menu_options
           : (row.menu_options && typeof row.menu_options === "object" ? Object.values(row.menu_options) : []);
         if (inline.some((o) => ["consume_resource", "consume_charge"].includes(String(o?.effect_kind ?? "").toLowerCase()))) variable = true;
+        // Affordability: a menu is only usable if AT LEAST ONE option is
+        // affordable. When EVERY option costs more than the actor has, the menu
+        // can't be opened to anything — surface the CHEAPEST option's shortfall
+        // so the pill disables (Gadgets: all infusions cost 2 IP → unusable at
+        // 0 IP). A cost-free option is always affordable, so one free choice
+        // keeps the menu open. Per-option costs are still enforced at pick time;
+        // this only gates the all-unaffordable case. (Ref-based options only —
+        // inline-object option costs stay choice-gated via the variable flag.)
+        if (optRefs.length) {
+          let anyAffordable = false;
+          let cheapest = null;
+          for (const r of optRefs) {
+            const s = analyzeChainCost(effectTable, r, actor, skill);
+            if (!s.ok || s.sufficient) { anyAffordable = true; break; }
+            const tot = Object.values(s.debit).reduce((a, b) => a + b, 0)
+                      + Object.values(s.chargeDebit).reduce((a, b) => a + b, 0);
+            if (!cheapest || tot < cheapest.tot) cheapest = { debit: s.debit, chargeDebit: s.chargeDebit, tot };
+          }
+          if (!anyAffordable && cheapest) {
+            for (const [res, amt] of Object.entries(cheapest.debit)) debit[res] = (debit[res] ?? 0) + amt;
+            for (const [k, c] of Object.entries(cheapest.chargeDebit)) chargeDebit[k] = (chargeDebit[k] ?? 0) + c;
+          }
+        }
       }
       return;
     }
@@ -1126,21 +1150,24 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   }
 
   // Evaluate availability for a row that already passed the hard match
-  // gates. Returns { available, unavailableReason }.
+  // gates. Returns { available, unavailableKind, unavailableReason }.
   //
-  // Cost-walker wins over condition_formula failure when both indicate
-  // unavailable — the cost badge is more specific. condition_formula
-  // failure that ISN'T a cost issue falls back to "Conditions not met".
+  // CONDITION is checked FIRST: a row whose condition_formula is false doesn't
+  // apply to this trigger at all (callers hide it). Only once the condition
+  // passes does an unaffordable cost become a "could react, can't pay" state —
+  // which callers may SURFACE as a dimmed pill with the cost badge ("Low IP").
+  // `unavailableKind` lets the UI distinguish: "cost" → show dimmed; "condition"
+  // → keep hidden (trigger doesn't apply; surfacing it is noise / info-leak).
   async function evaluateAvailability(row, effectTable, refLabel, carrierForFormula) {
-    const cost = analyzeChainCost(effectTable, refLabel, casterActor, carrierForFormula);
-    if (cost.ok && !cost.sufficient) {
-      return { available: false, unavailableReason: cost.badge };
-    }
     const cond = await evaluateConditionFormula(row, casterActor, payload, carrierForFormula);
     if (!cond.ok) {
-      return { available: false, unavailableReason: "Conditions not met" };
+      return { available: false, unavailableKind: "condition", unavailableReason: "Conditions not met" };
     }
-    return { available: true, unavailableReason: null };
+    const cost = analyzeChainCost(effectTable, refLabel, casterActor, carrierForFormula);
+    if (cost.ok && !cost.sufficient) {
+      return { available: false, unavailableKind: "cost", unavailableReason: cost.badge };
+    }
+    return { available: true, unavailableKind: null, unavailableReason: null };
   }
 
   for (const item of casterActor.items?.contents ?? []) {
@@ -1153,7 +1180,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       if (!shouldKeep(row)) continue;
       if (!(await passesMatchFilters(row, item, casterActor, payload))) continue;
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
-      const { available, unavailableReason } =
+      const { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, item);
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
@@ -1169,6 +1196,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         ref: refLabel,
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
+        unavailableKind,
         unavailableReason,
       });
     }
@@ -1186,7 +1214,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       if (!shouldKeep(row)) continue;
       if (!(await passesMatchFilters(row, ae, casterActor, payload))) continue;
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
-      const { available, unavailableReason } =
+      const { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, fakeItem);
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
@@ -1202,6 +1230,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         ref: refLabel,
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
+        unavailableKind,
         unavailableReason,
       });
     }
@@ -1231,12 +1260,13 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
     if (String(row.reaction_responder ?? "").trim().toLowerCase() !== "target") continue;
     const refLabel = String(row.reaction_effect_ref ?? "").trim();
     // Availability — cost + condition_formula, both vs the TARGET (reactor).
-    const cost = analyzeChainCost(effectTable, refLabel, targetActor, skill);
-    let available = true, unavailableReason = null;
-    if (cost.ok && !cost.sufficient) { available = false; unavailableReason = cost.badge; }
+    // Condition first (hidden if it fails); then cost (surfaceable as dimmed).
+    let available = true, unavailableKind = null, unavailableReason = null;
+    const cond = await evaluateConditionFormula(row, targetActor, payload, skill);
+    if (!cond.ok) { available = false; unavailableKind = "condition"; unavailableReason = "Conditions not met"; }
     if (available) {
-      const cond = await evaluateConditionFormula(row, targetActor, payload, skill);
-      if (!cond.ok) { available = false; unavailableReason = "Conditions not met"; }
+      const cost = analyzeChainCost(effectTable, refLabel, targetActor, skill);
+      if (cost.ok && !cost.sufficient) { available = false; unavailableKind = "cost"; unavailableReason = cost.badge; }
     }
     if (!includeUnavailable && !available) continue;
     const mode = resolveReactionPassiveMode(row);
@@ -1252,6 +1282,7 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
       ref: refLabel,
       usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
       available,
+      unavailableKind,
       unavailableReason,
     });
   }
@@ -1434,6 +1465,9 @@ export async function computeSenderDamageBonuses({
   // keyword condition gates (e.g. pierce "FINAL_DAMAGE >= 100"). Same value the
   // recompute starts each entry from (entry.rawDamage).
   const subjectBaseRaw = new Map();
+  // actorUuid → tokenUuid aliases, applied AFTER Phase 2 so the same ops array is
+  // also reachable by tokenUuid (linked-token disambiguation).
+  const tokenAlias = new Map();
 
   for (const cand of acceptedPrePassives) {
     if (!cand?.ref) continue;
@@ -1469,6 +1503,13 @@ export async function computeSenderDamageBonuses({
       if (!single) continue;
       subjectUuids = [single];
     }
+    // Parallel token-uuid list (by index) when the candidate carries one — lets
+    // the opsMap also key by tokenUuid so buildPerTarget can disambiguate two
+    // LINKED tokens sharing one world actor (which collide on actorUuid).
+    // refreshReactionSubjects / the harness populate appliesToTokenUuids.
+    const subjectTokenUuids = Array.isArray(cand.appliesToTokenUuids)
+      && cand.appliesToTokenUuids.length === subjectUuids.length
+      ? cand.appliesToTokenUuids : null;
 
     // Effect-table label map — static across subjects, built once.
     const byLabel = new Map();
@@ -1488,7 +1529,9 @@ export async function computeSenderDamageBonuses({
     let formulas = null;
     try { formulas = await getSkillFormulas(); }
     catch (e) { warn(`computeSenderDamageBonuses: getSkillFormulas threw`, e); }
-    for (const uuid of subjectUuids) {
+    for (let si = 0; si < subjectUuids.length; si++) {
+      const uuid = subjectUuids[si];
+      const tokenUuid = subjectTokenUuids ? subjectTokenUuids[si] : null;
       const ops = []; // ordered outgoing damage operations for THIS subject
       if (formulas) {
         try {
@@ -1587,6 +1630,12 @@ export async function computeSenderDamageBonuses({
         }
       }
       out.set(uuid, (out.get(uuid) ?? []).concat(ops));
+      // Record the subject's tokenUuid so we can ALIAS the actor-keyed ops under
+      // the tokenUuid AFTER Phase 2 (below) — keyed by token, a per-token reader
+      // (buildPerTarget) can disambiguate linked tokens sharing one world actor.
+      // Aliasing after Phase 2 avoids the conditional-keyword gate processing the
+      // same ops twice with a mismatched FINAL_DAMAGE base.
+      if (tokenUuid && tokenUuid !== uuid) tokenAlias.set(uuid, tokenUuid);
       if (Number.isFinite(candBaseRaw) && !subjectBaseRaw.has(uuid)) subjectBaseRaw.set(uuid, candBaseRaw);
     }
   }
@@ -1617,70 +1666,107 @@ export async function computeSenderDamageBonuses({
       warn(`computeSenderDamageBonuses: keyword condition eval threw`, e);
     }
   }
+  // Alias the (post-Phase-2) actor-keyed ops under each subject's tokenUuid so a
+  // per-token reader can disambiguate linked tokens sharing one world actor.
+  for (const [actorUuid, tokenUuid] of tokenAlias) {
+    const ops = out.get(actorUuid);
+    if (ops && !out.has(tokenUuid)) out.set(tokenUuid, ops);
+  }
   return out;
 }
 
-// Phase 2: produce a recomputed perTargetResults array given a bonus
-// map from computeSenderDamageBonuses. For each entry:
-//   newRaw = entry.rawDamage + bonus
-//   newDamage = applyAffinityToDamage(newRaw, entry.affinity)
-// Entries without a bonus pass through unchanged (referential equality
-// preserved per-entry so DOM diffs stay minimal). Returns a new array
-// — callers (CONFIRM preview + RESOLVE applier) re-freeze actionResult
-// with this so downstream reads see the modified values.
+// Re-resolve which CURRENT action targets each accepted creature_will_deal_damage
+// reaction applies to (`appliesToTargetUuids`). That list is snapshotted at the
+// will_deal_damage dispatch against the ORIGINAL targets; a mid-card mutation
+// (add_target splash, redirect) changes the target set, so without this the
+// reaction's damage/element/keyword ops miss the new slots — e.g. a Tinkerer
+// Infusion's element change not reaching a Barrage-added target.
 //
-// `applyAffinity` is injected so this helper stays decoupled from the
-// snapshot module (snapshot has the affinity table). state-handlers
-// passes `applyAffinityToDamage` from snapshot.js at call sites.
-export function recomputePerTargetDamages(perTargetResults, opsMap, applyAffinity) {
-  if (!Array.isArray(perTargetResults) || !perTargetResults.length) return perTargetResults;
-  if (!opsMap || opsMap.size === 0) return perTargetResults;
-  if (typeof applyAffinity !== "function") {
-    warn("recomputePerTargetDamages: applyAffinity not supplied; returning original");
-    return perTargetResults;
+// Re-runs the SAME per-target matcher (findPassiveCandidates) against the live
+// HIT targets and rewrites `appliesToTargetUuids` IN PLACE on each accepted
+// will_deal_damage candidate. Idempotent (re-derives from current state every
+// call). Only touches creature_will_deal_damage candidates that carry a subject
+// list; everything else is left alone. Mutates the candidate objects so the
+// caller's subsequent computeSenderDamageBonuses sees the refreshed subjects.
+export async function refreshReactionSubjects({ acceptedPrePassives, ar, attackerActor } = {}) {
+  if (!Array.isArray(acceptedPrePassives) || !acceptedPrePassives.length || !attackerActor || !ar) return;
+  const hitRows = (ar.perTargetResults ?? []).filter((r) => r?.hit && r?.actorUuid);
+  if (!hitRows.length) return;
+  const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid).filter(Boolean);
+  const hitTokenUuids = hitRows.map((r) => r.tokenUuid).filter(Boolean);
+
+  for (const cand of acceptedPrePassives) {
+    if (!cand || !Array.isArray(cand.appliesToTargetUuids)) continue; // not a per-target aggregated cand
+    // Confirm this candidate is a creature_will_deal_damage reaction (only those
+    // carry the per-target subject list this function maintains).
+    let trigger = "";
+    try {
+      const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+      const rc = cand.carrierKind === "ae"
+        ? (carrier?.flags?.[FLAG_NS]?.reactionConfig?.reaction_config_table ?? carrier?.flags?.[FLAG_NS]?.reactionConfig?.reaction_effect_table)
+        : carrier?.system?.props?.reaction_config_table;
+      trigger = String(rc?.[cand.rowKey]?.reaction_trigger ?? "").trim();
+    } catch { /* carrier gone — leave the snapshot as-is */ }
+    if (trigger !== "creature_will_deal_damage") continue;
+
+    // Dedup by TOKEN (hitRows are per-token) so two LINKED tokens sharing one
+    // world actor each survive as a distinct subject — keyed by actorUuid they'd
+    // collapse to one. appliesToTargetUuids may therefore carry a repeated actor
+    // uuid (harmless: opsMap.set overwrites with the same ops; the parallel
+    // appliesToTokenUuids disambiguates downstream).
+    const matchedActors = [];
+    const matchedTokens = [];
+    const seenTok = new Set();
+    for (const r of hitRows) {
+      const payload = {
+        subjectActorUuid: r.actorUuid,
+        subjectTokenUuid: r.tokenUuid,
+        actionKind: ar.kind ?? null,
+        targets: allTargetUuids,
+        hitTargets: hitTokenUuids,
+        rawDamage: r.rawDamage,
+        damageType: ar.damageType ?? ar.damage?.element ?? null,
+        weaponType: ar.weapon?.weaponType ?? null,
+        weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+        affinity: r.affinity,
+        sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+        sourceActorUuid: ar.attackerActorRef,
+        actionIntent: ar.actionIntent,
+        targetTokenUuids: allTargetUuids,
+        hitTargetTokenUuids: hitTokenUuids,
+        skillUuid: ar.skillUuid ?? null,
+        weaponUuid: ar.weapon?.uuid ?? null,
+        sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+      };
+      let cands;
+      try {
+        cands = await findPassiveCandidates({
+          casterActor: attackerActor,
+          trigger: "creature_will_deal_damage",
+          payload,
+          includeUnavailable: true,
+        });
+      } catch { cands = []; }
+      if ((cands ?? []).some((c) => c.rowKey === cand.rowKey && c.carrierUuid === cand.carrierUuid)) {
+        const tk = r.tokenUuid ?? r.actorUuid;
+        if (seenTok.has(tk)) continue;
+        seenTok.add(tk);
+        matchedActors.push(r.actorUuid);
+        matchedTokens.push(r.tokenUuid ?? null);
+      }
+    }
+    cand.appliesToTargetUuids = matchedActors;
+    cand.appliesToTokenUuids = matchedTokens;
   }
-  return perTargetResults.map((entry) => {
-    const ops = opsMap.get(entry?.actorUuid);
-    if (!ops || !ops.length) return entry;
-    if (!entry.hit) return entry;  // misses don't take damage adjustments
-    const baseRaw = Number(entry.rawDamage) || 0;
-    // Separate numeric damage ops from action-keyword tags (pierce, …) and the
-    // element-override op (change_damage_element — Infusions).
-    const numericOps = ops.filter((o) => o.op !== "keyword" && o.op !== "element");
-    const keywords = new Set(ops.filter((o) => o.op === "keyword").map((o) => o.keyword));
-    // Element override (last one wins) — recompute affinity against the NEW
-    // element (resolved per-subject upstream in computeSenderDamageBonuses).
-    const elementOp = [...ops].reverse().find((o) => o.op === "element" && o.element);
-    let d = baseRaw;
-    for (const { op, amount } of numericOps) d = applyDamageOp(d, op, amount);
-    d = Math.max(0, Math.floor(d));
-    // Affinity: the overridden element's affinity if an Infusion changed it,
-    // else the entry's original affinity.
-    let affinity = elementOp ? String(elementOp.affinity ?? "NE") : String(entry.affinity ?? "NE");
-    // Action-keyword damage-calc effects. PIERCE ignores Resistance only — a
-    // pierced hit treats RS as neutral (full damage); VU / IM / AB are untouched.
-    // (New keywords add a branch here.)
-    if (keywords.has("pierce") && affinity === "RS") affinity = "NE";
-    const newDamage = applyAffinity(d, affinity);
-    return {
-      ...entry,
-      rawDamage: d,
-      damage: newDamage,
-      affinity,
-      // Action keywords applied to this hit (pierce, drain, …). Surfaced at the
-      // entry top-level so the RESOLVE damage loop can act on post-damage
-      // keywords (drain → heal the attacker 50% of the HP dealt). Pierce is
-      // already consumed above (affinity), but carrying it is harmless.
-      ...(keywords.size ? { keywords: [...keywords] } : {}),
-      // Surface the new element for the card / log when an Infusion changed it.
-      ...(elementOp ? { element: elementOp.element } : {}),
-      // Diagnostic — lets the action card show a "+X / ×0 (Skill)" hint and
-      // lets the RESOLVE log explain the change. `baseBonus` kept for back-compat
-      // with readers that show a simple delta. `keywords` surfaces applied tags.
-      bonusBreakdown: { ops: numericOps, from: baseRaw, to: d, baseBonus: d - baseRaw, keywords: [...keywords], ...(elementOp ? { element: elementOp.element, affinity } : {}) },
-    };
-  });
 }
+
+// RETIRED (2026-06-17, Action-Card single-line refactor Stage 5): the per-target
+// "apply opsMap over stored rows" overlay. Its logic now lives in ONE place —
+// action-profile.buildPerTarget (numeric + element + keyword fold), reached via
+// recomputeActionProfile — so there is no second per-target math path to drift.
+// `computeSenderDamageBonuses` (the opsMap producer) is still used: buildPerTarget
+// consumes its output. If you're looking for where reaction damage/element/keyword
+// ops are applied to a hit, see action-profile.buildPerTarget's targetOps fold.
 
 // Walk every reaction_config_table row on the reactor's items, fire any
 // passive rows matching `trigger`. Replaces the old passive_trigger-field

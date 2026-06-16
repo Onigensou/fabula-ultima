@@ -20,7 +20,7 @@ import {
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType,
 } from "./skill-formulas.js";
-import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
+import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
@@ -300,7 +300,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     // breakdown can itemize them (e.g. Bite's grappled +50%) rather than hiding
     // the delta inside the per-target total.
     const reactionParts = [];
-    const targetOps = opsMap?.get?.(e.actorUuid) ?? [];
+    // Reaction element override + applied action-keywords + the numeric-op
+    // breakdown — surfaced onto the flat row (parity with the retired
+    // recomputePerTargetDamages overlay) so the card / RESOLVE read them.
+    let reactionElement = null, reactionKeywords = null, reactionBreakdown = null;
+    // Per-subject reaction ops, keyed by tokenUuid first (unique per token) then
+    // actorUuid (back-compat / single-token actors). The tokenUuid key
+    // disambiguates two LINKED tokens that share one world actor — both would
+    // collide on actorUuid. computeSenderDamageBonuses emits both keys.
+    const targetOps = opsMap?.get?.(e.tokenUuid) ?? opsMap?.get?.(e.actorUuid) ?? [];
 
     // Affinity helper (MP damage / status-only → NE). Forced-VU is ATTACK-only
     // in COMPUTE today; gate to kind==="Attack". Guard's "RS to all" is NO LONGER
@@ -365,27 +373,14 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         }
       }
 
-      // Fold accepted-reaction outgoing damage ops (Hawkeye add, Cheap Shot,
-      // Bite's grappled +50%…) AFTER reduction/crit, on a hit only — mirrors
-      // recomputePerTargetDamages. Capture each op's integer contribution +
-      // source so the card can itemize it.
-      if (hit && targetOps.length) {
-        let d = rawDamage;
-        for (const o of targetOps) {
-          const next = applyDamageOp(d, o.op, o.amount);
-          const delta = Math.floor(next) - Math.floor(d);
-          if (delta !== 0) reactionParts.push({ source: o.source ?? "Reaction", amount: delta });
-          d = next;
-        }
-        rawDamage = Math.max(0, Math.floor(d));
-      }
-
       // Weapon efficiency — the target's per-weapon-type incoming multiplier (the
-      // INCOMING twin of element affinity, applied just before it to match the
-      // legacy order: DR → crit → efficiency → affinity). Weapon attacks only
-      // (`primary.weaponKey` is null for spells / skills / MP). Shares the
-      // readWeaponEfficiency resolver with the effect ruleset — one source of
-      // truth for the weapon-affinity axis.
+      // INCOMING twin of element affinity). Applied BEFORE the reaction ops +
+      // affinity so the fold order matches the post-decision recompute (which
+      // folds reaction ops over the stored rawDamage that already includes
+      // efficiency): DR → crit → efficiency → reaction ops → affinity. Weapon
+      // attacks only (`primary.weaponKey` is null for spells / skills / MP).
+      // Shares the readWeaponEfficiency resolver with the effect ruleset — one
+      // source of truth for the weapon-affinity axis.
       if (primary.weaponKey && liveTarget) {
         const effPct = readWeaponEfficiency(liveTarget, primary.weaponKey);
         if (effPct !== 100) {
@@ -395,14 +390,51 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         }
       }
 
+      // Fold accepted-reaction ops (numeric add/multiply + element override +
+      // action-keyword tags) on a hit only, as the LAST step before affinity.
+      // This is the SINGLE op-folding path — shared by COMPUTE (auto-fired on/
+      // force reactions) AND the post-decision recompute (was the separate
+      // skill-effects.recomputePerTargetDamages overlay). Numeric ops capture
+      // their integer contribution + source for the card breakdown; the element
+      // op overrides the affinity element below; pierce downgrades RS→NE.
+      if (hit && targetOps.length) {
+        const numericOps = targetOps.filter((o) => o.op !== "keyword" && o.op !== "element");
+        const kwSet = new Set(targetOps.filter((o) => o.op === "keyword").map((o) => o.keyword));
+        const elementOp = [...targetOps].reverse().find((o) => o.op === "element" && o.element);
+        const fromRaw = rawDamage;
+        let d = rawDamage;
+        for (const o of numericOps) {
+          const next = applyDamageOp(d, o.op, o.amount);
+          const delta = Math.floor(next) - Math.floor(d);
+          if (delta !== 0) reactionParts.push({ source: o.source ?? "Reaction", amount: delta });
+          d = next;
+        }
+        rawDamage = Math.max(0, Math.floor(d));
+        if (elementOp) reactionElement = elementOp.element;
+        if (kwSet.size) reactionKeywords = [...kwSet];
+        reactionBreakdown = {
+          ops: numericOps, from: fromRaw, to: rawDamage, baseBonus: rawDamage - fromRaw,
+          keywords: [...kwSet], ...(elementOp ? { element: elementOp.element, affinity: elementOp.affinity } : {}),
+        };
+      }
+
+      // Affinity — a reaction element override wins (use its per-subject-resolved
+      // affinity, falling back to the target snapshot's affinity for that element);
+      // else the native element's affinity. A reaction pierce keyword ALSO
+      // downgrades RS→NE (mirrors the inherent primary.keywords pierce).
       affinityCode = computeAffinity();
+      if (reactionElement) {
+        const eop = [...targetOps].reverse().find((o) => o.op === "element" && o.element === reactionElement);
+        affinityCode = (eop && eop.affinity != null) ? String(eop.affinity) : String(e.affinities?.[reactionElement] ?? "NE");
+      }
+      if (reactionKeywords?.includes("pierce") && affinityCode === "RS") affinityCode = "NE";
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
         type: "damage", valence: "harmful", source: kind === "Attack" ? "weapon" : "spell",
         targetRef: e.tokenUuid,
-        element: primary.element, resource: primary.resource, damageClass: "primary",
+        element: reactionElement ?? primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: damageModParts, preAffinity: rawDamage, affinity: affinityCode,
         value: damageVal,
       });
@@ -426,6 +458,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         defense: defStat, hit, crit: !!check.isCrit && hit, rawDamage, damage: damageVal,
         affinity: affinityCode, pierceMiss, resource: primary.resource,
         studied: studiedGate(e), damageModParts, reactionParts,
+        ...(reactionElement ? { element: reactionElement } : {}),
+        ...(reactionKeywords ? { keywords: reactionKeywords } : {}),
+        ...(reactionBreakdown ? { bonusBreakdown: reactionBreakdown } : {}),
       },
     });
   }
@@ -676,6 +711,14 @@ function flattenRow(r, kind) {
   };
   if (kind === "Attack") out.pierceMiss = !!p.pierceMiss;
   else out.resource = p.resource ?? "hp";
+  // Reaction-fold artifacts (element override / applied keywords / numeric-op
+  // breakdown) — only present when an accepted reaction touched this row, so the
+  // no-reaction COMPUTE row stays byte-identical to before. Mirrors the fields
+  // the retired recomputePerTargetDamages overlay stamped (element/keywords/
+  // bonusBreakdown) so the card + RESOLVE read them the same way.
+  if (p.element) out.element = p.element;
+  if (Array.isArray(p.keywords) && p.keywords.length) out.keywords = p.keywords;
+  if (p.bonusBreakdown) out.bonusBreakdown = p.bonusBreakdown;
   return out;
 }
 
@@ -783,4 +826,97 @@ export function diffProfileAgainstActionResult(profile, ar) {
     if (typeof r.grantAmount === "number") push(`perTarget[${r.name}].grantAmount`, p.grantAmount, r.grantAmount);
   }
   return { ok: diffs.length === 0, diffs };
+}
+
+// ── Action view from a live actionResult ─────────────────────────────────────
+// Reconstruct the runtime `view` (kind + effect_table + fire_points + source)
+// from an `ar` so a re-derivation (recomputeActionProfile, card-mutations'
+// per-target redirect re-derive) can run through buildPerTarget. Attack has no
+// item view (its primary comes from the weapon snapshot on the ar); Skill/Spell
+// rebuild from the skill item. Single source for this logic (was duplicated in
+// card-mutations.rederiveTargetRow).
+export async function buildActionViewFromAr(ar) {
+  const isAttack = String(ar?.kind ?? "").toLowerCase() === "attack";
+  if (isAttack) {
+    return { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null };
+  }
+  const skill = ar?.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+  if (skill) {
+    const sr = await import("./skill-recipes.js");
+    return sr.getRuntimeActionView(skill);
+  }
+  return { kind: ar?.kind ?? "Skill", effect_table: {}, fire_points: {}, source: null };
+}
+
+// ── Public: recomputeActionProfile ───────────────────────────────────────────
+// The SINGLE post-decision recompute entrypoint. Re-derives the per-target rows
+// (+ headline damage / hitTokenUuids) for a (possibly mutated) target set with
+// the accepted reactions folded in — all through buildPerTarget, so there is no
+// separate overlay math. Used by BOTH the action-card preview recompute AND the
+// CONFIRM recompute, replacing the computeSenderDamageBonuses +
+// recomputePerTargetDamages two-step.
+//
+// `targets` = the post-mutation target list (redirect / add_target applied);
+// defaults to ar.targets. Each is re-snapshotted from its live token so
+// buildPerTarget sees full affinity/condition/defense data even if the ar entry
+// was slim; the `redirectedFrom` swap marker is preserved across the re-snapshot
+// and re-attached to the flat output rows. `acceptedReactions` are the accepted
+// pre-passive candidates (their appliesToTargetUuids should already be refreshed
+// via skill-effects.refreshReactionSubjects). Returns the projected delta
+// (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null } = {}) {
+  if (!ar) return null;
+  try {
+    const srcTargets = Array.isArray(targets) ? targets : (Array.isArray(ar.targets) ? ar.targets : []);
+    const snaps = [];
+    for (const t of srcTargets) {
+      let snap = null;
+      try {
+        const tok = t?.tokenUuid ? await fromUuid(t.tokenUuid).catch(() => null) : null;
+        snap = tok ? snapshotTargetForToken(tok) : null;
+      } catch { snap = null; }
+      if (!snap) snap = t;
+      snaps.push(t?.redirectedFrom ? { ...snap, redirectedFrom: t.redirectedFrom } : snap);
+    }
+    const view = await buildActionViewFromAr(ar);
+    const dice = (ar.roll && typeof ar.roll.rA === "number") ? { rA: ar.roll.rA, rB: ar.roll.rB } : null;
+    const profile = await computeActionProfile({
+      view, ar, attacker: ar.attacker, weapon: ar.weapon ?? null,
+      targets: snaps, dice,
+      ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null },
+      acceptedReactions,
+    });
+    const delta = projectProfileToActionResult(profile, ar, snaps);
+    if (Array.isArray(delta?.perTargetResults)) {
+      for (let i = 0; i < delta.perTargetResults.length; i++) {
+        const rf = snaps[i]?.redirectedFrom;
+        if (rf) delta.perTargetResults[i].redirectedFrom = rf;
+      }
+    }
+    // Accuracy override (adjust_accuracy / Crossfire): card-mutations rewrote the
+    // effective Accuracy total and recomputed hit/miss, but buildPerTarget rebuilds
+    // hit/miss from the ORIGINAL roll. Re-apply the override on the rebuilt rows so
+    // a "set 0 → all miss" survives the recompute (the old overlay preserved it by
+    // skipping misses). Mirrors card-mutations.applyAdjustAccuracyMutation.
+    if (accuracyOverride && Array.isArray(delta?.perTargetResults)) {
+      const isCrit = !!ar.roll?.isCrit, isFumble = !!ar.roll?.isFumble;
+      const newTotal = Number(accuracyOverride.to ?? 0);
+      const newHits = [];
+      for (const row of delta.perTargetResults) {
+        const def = Number(row.defense ?? 10);
+        const newHit = isCrit ? true : (!isFumble && newTotal >= def);
+        row.hit = newHit;
+        row.crit = isCrit && newHit;
+        row.rawDamage = newHit ? row.rawDamage : 0;
+        row.damage = newHit ? row.damage : 0;
+        row.accuracyBlocked = !newHit;
+        if (newHit && row.tokenUuid) newHits.push(row.tokenUuid);
+      }
+      delta.hitTokenUuids = newHits;
+    }
+    return delta;
+  } catch (e) {
+    warn("recomputeActionProfile threw", e);
+    return null;
+  }
 }

@@ -682,20 +682,45 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-target-list {
       display: flex; flex-direction: column; gap: 1px;
     }
+    /* Two-row layout: name (row 1) + DEF (row 2) share the left column, and
+       the result spans BOTH rows on the right so its number can run large. */
     .fud-bf-card .fud-bf-target-row {
-      display: grid; grid-template-columns: 1fr auto auto;
-      gap: 8px;
-      padding: 3px 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 8px; row-gap: 0;
+      align-items: center;
+      padding: 4px 0;
       border-bottom: 1px dashed rgba(90, 106, 133, 0.28);
       font-size: 12px;
     }
     .fud-bf-card .fud-bf-target-row:last-child { border-bottom: none; }
-    .fud-bf-card .fud-bf-target-row .t-name { font-weight: 700; }
-    .fud-bf-card .fud-bf-target-row .t-def  { opacity: 0.6; }
+    .fud-bf-card .fud-bf-target-row .t-name { grid-column: 1; grid-row: 1; font-weight: 700; align-self: end; }
+    .fud-bf-card .fud-bf-target-row .t-def  { grid-column: 1; grid-row: 2; opacity: 0.6; font-size: 11px; align-self: start; }
+    .fud-bf-card .fud-bf-target-row .t-result {
+      grid-column: 2; grid-row: 1 / span 2;
+      align-self: center; text-align: right;
+      font-size: 12px; line-height: 1.05; white-space: nowrap;
+    }
+    /* The damage number is the headline — runs large; the verb (HIT/WEAK/…) and
+       the optional MP unit sit smaller beside it. */
+    .fud-bf-card .fud-bf-target-row .t-result .t-num  { font-size: 22px; font-weight: 900; vertical-align: -2px; margin-left: 2px; }
+    .fud-bf-card .fud-bf-target-row .t-result .t-unit { font-size: 11px; opacity: 0.8; }
     .fud-bf-card .fud-bf-target-row .t-result.hit    { color: #2a6e3d; font-weight: 800; }
     .fud-bf-card .fud-bf-target-row .t-result.crit   { color: #b40000; font-weight: 900; }
     .fud-bf-card .fud-bf-target-row .t-result.miss   { color: #9a4a4a; }
     .fud-bf-card .fud-bf-target-row .t-result.absorb { color: #2a8a3a; font-weight: 800; }
+    /* Vulnerable hit — glowing gold "WEAK", mirroring the Critical! float-banner
+       (gold fill + dark stroke + bloom). Resisted hit — muted slate "RESIST". */
+    .fud-bf-card .fud-bf-target-row .t-result.weak {
+      color: #ffd34d; font-weight: 900; font-style: italic;
+      -webkit-text-stroke: 0.9px rgba(90, 58, 18, 0.72);
+      text-shadow:
+        0 0 12px rgba(255, 207, 64, 0.7),
+        0 0 6px rgba(255, 207, 64, 0.85),
+        0 1px 0 #5a3a12;
+    }
+    .fud-bf-card .fud-bf-target-row .t-result.resist { color: #5a6a85; font-weight: 800; }
     /* Healing / resource-restore / shield rows — recipe-grant skills.
        Distinct hues from damage so a Heal vs an Attack reads at a glance. */
     .fud-bf-card .fud-bf-target-row .t-result.heal       { color: #2a8a3a; font-weight: 800; text-shadow: 0 0 6px rgba(42,138,58,0.25); }
@@ -778,6 +803,19 @@ export function ensureStyles() {
       background: rgba(220, 220, 220, 0.40);
       border-color: rgba(140, 140, 140, 0.45);
       opacity: 0.55;
+    }
+    /* Cost-unavailable reaction — surfaced but dimmed, non-interactive, with a
+       reason badge ("Low IP") so the player sees why it can't be used. */
+    .fud-bf-card .fud-bf-reaction-pill.is-unavailable {
+      opacity: 0.5;
+      filter: grayscale(0.6);
+      pointer-events: none;
+    }
+    .fud-bf-card .fud-bf-reaction-pill.is-unavailable .fud-bf-reaction-reason {
+      color: #9a4a4a;
+      font-weight: 700;
+      font-size: 11px;
+      white-space: nowrap;
     }
     /* Third-party reactor pills — a reaction owned by someone other than
        the action-taker (Protect on Attack(ally) card). Reactor name
@@ -1759,17 +1797,25 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
   // Use SUCCESS/FAILED so the card doesn't read as "NO EFFECT" (which
   // would only be correct for IM-affinity damage skills).
   if (!hasDamage) return r.hit ? "SUCCESS" : "FAILED";
-  // Damage skill — existing HIT/MISS/AB/IM/NO-EFFECT logic.
+  // Damage skill — HIT/MISS/AB/IM/NO-EFFECT logic, with affinity baked into
+  // the verb so the result line reads the outcome on its own (VU → "WEAK",
+  // RS → "RESIST") without relying on the separate affinity pill.
   if (!r.hit) return "MISS";
-  const unit = r.resource === "mp" ? "MP" : "dmg";
-  if (r.affinity === "AB") return `HEALS ${Math.max(0, r.damage)}`;
-  if (r.affinity === "IM" || r.damage <= 0) return "NO EFFECT";
-  return `HIT — ${r.damage} ${unit}`;
+  // The damage number is the headline — wrap it in `.t-num` so CSS can size it
+  // large. "dmg" is dropped (the panel is already labelled DAMAGE); the MP unit
+  // stays so MP-burn skills don't read as HP loss.
+  const unit = r.resource === "mp" ? ` <span class="t-unit">MP</span>` : "";
+  const big  = (v) => `<span class="t-num">${v}</span>`;
+  if (r.affinity === "AB") return `ABSORB ${big(Math.max(0, r.damage))}`;
+  if (r.affinity === "IM") return "IMMUNED";
+  if (r.damage <= 0) return "NO EFFECT";
+  if (r.affinity === "VU") return `WEAK ${big(r.damage)}${unit}`;
+  if (r.affinity === "RS") return `RESIST ${big(r.damage)}${unit}`;
+  return `HIT ${big(r.damage)}${unit}`;
 }
 
 function resultClsFor(r) {
   if (!r.hit) return "miss";
-  if (r.crit) return "crit";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
     if (r.grantResource === "mp")     return "restore-mp";
@@ -1778,6 +1824,11 @@ function resultClsFor(r) {
   }
   if (r.affinity === "AB") return "absorb";
   if (r.affinity === "IM") return "miss";  // visually muted
+  // Affinity hue takes precedence over crit so vulnerable (gold) / resist read
+  // at a glance — the crit's extra damage still shows in the number.
+  if (r.affinity === "VU") return "weak";
+  if (r.affinity === "RS") return "resist";
+  if (r.crit) return "crit";
   return "hit";
 }
 
@@ -1899,11 +1950,13 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     const tipBody = tipLines.join("");
     const tipAttrs = ` data-fud-equip-desc="${escapeHtml(tipBody)}" data-fud-equip-desc-name="${escapeHtml(r.name)}"`;
 
-    // Stable hooks for the live preview update (Phase 3 of Cheap Shot):
-    // the recompute helper finds the row by actor uuid and patches the
-    // result span's text + class when an add_damage pill toggles.
+    // Stable hooks for the live preview update (Phase 3 of Cheap Shot): the
+    // recompute helper finds the row to patch its result span. tokenUuid is the
+    // primary hook (unique per token — disambiguates linked tokens sharing one
+    // actor); actorUuid stays for back-compat / older queries.
     const rowDataAttrs =
-      ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`;
+      ` data-fud-target-token-uuid="${escapeHtml(String(r.tokenUuid ?? ""))}"`
+      + ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`;
     return `<div class="fud-bf-target-row"${rowDataAttrs}${tipAttrs}>
       <span class="t-name">${escapeHtml(r.name)}${aff ? ` ${aff}` : ""}</span>
       <span class="t-def">${defLabel}</span>
@@ -1935,8 +1988,14 @@ function appendTargetRow(root, r, kind, payload) {
     const defLabelTag = isSpellish ? "MDEF" : "DEF";
     const div = document.createElement("div");
     div.className = "fud-bf-target-row is-added";
+    div.setAttribute("data-fud-target-token-uuid", String(r.tokenUuid ?? ""));
     div.setAttribute("data-fud-target-actor-uuid", String(r.actorUuid ?? ""));
     if (r.studied === false) {
+      // Match buildPerTargetHTML's masked row — same "study to reveal" tooltip
+      // so an added (Barrage) masked row has the same hover detail as a normal
+      // masked row (no popup on the added row was a reported inconsistency).
+      div.setAttribute("data-fud-equip-desc", `<p>Study this target to identity tier (≥7) to reveal defense, damage, and affinity.</p>`);
+      div.setAttribute("data-fud-equip-desc-name", String(r.name ?? "?"));
       div.innerHTML =
         `<span class="t-name">${escapeHtml(r.name ?? "?")}</span>`
         + `<span class="t-def">${defLabelTag} ???</span>`
@@ -2241,22 +2300,14 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       if (hasDamageRows) {
         const resultSpan = rowEl.querySelector(".t-result");
         if (resultSpan) {
-          let label = "MISS";
-          let cls   = "miss";
-          if (r.newHit) {
-            if (r.newAffinity === "AB") {
-              label = `HEALS ${Math.max(0, r.newDamage)}`;
-              cls   = "absorb";
-            } else if (r.newAffinity === "IM" || r.newDamage <= 0) {
-              label = "NO EFFECT";
-              cls   = "miss";
-            } else {
-              label = `HIT — ${r.newDamage} dmg`;
-              cls   = r.newCrit ? "crit" : "hit";
-            }
-          }
-          resultSpan.className = `t-result ${cls}`;
-          resultSpan.textContent = label;
+          // Reuse the canonical label/class logic so the affinity verbs
+          // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
+          const shim = {
+            hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
+            damage: r.newDamage, resource: r.resource,
+          };
+          resultSpan.className = `t-result ${resultClsFor(shim)}`;
+          resultSpan.innerHTML = resultLabelFor(shim);
         }
       }
     }
@@ -3140,7 +3191,14 @@ function buildReactionPills(prePassives) {
   // player-meaningful (Bodyguard grants RS to all damage, etc.) so it
   // surfaces informationally with the same "Active" label as On. RESOLVE
   // still fires Force from the decision map regardless of UI state.
-  const visible = prePassives.filter((p) => p?.mode !== "off");
+  // Hide "off" (auto-rejected) and CONDITION-unavailable rows (their trigger
+  // doesn't apply — surfacing them is noise / can leak state). COST-unavailable
+  // rows DO surface, rendered dimmed with the cost reason ("Low IP") so the
+  // player sees the reaction exists and why they can't use it (vs it silently
+  // vanishing).
+  const visible = prePassives.filter((p) =>
+    p?.mode !== "off" && !(p?.available === false && p?.unavailableKind === "condition")
+  );
   if (!visible.length) return "";
   return visible.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
@@ -3182,6 +3240,19 @@ function buildReactionPills(prePassives) {
       `<div class="fud-bf-reaction-tip-foot">Mode: ${escapeHtml(modeLabel)}</div>`;
     const tipAttrs =
       ` data-fud-equip-desc="${escapeHtml(descBody)}" data-fud-equip-desc-name="${safeName}"`;
+    // Cost-unavailable → dimmed, non-interactive pill showing the reason badge
+    // ("Low IP"). No Apply/Skip (nothing to do) and not auto-applied (the
+    // on/force auto-accept skips available===false). Condition-unavailable was
+    // already filtered out above.
+    if (p.available === false) {
+      const reason = escapeHtml(p.unavailableReason ?? "Unavailable");
+      return `
+        <div class="fud-bf-reaction-pill is-unavailable ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs} aria-disabled="true">
+          ${iconHtml}
+          ${nameBlock}
+          <span class="fud-bf-reaction-status fud-bf-reaction-reason">${reason}</span>
+        </div>`;
+    }
     if (p.mode === "on" || p.mode === "force") {
       return `
         <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs}>
@@ -3404,7 +3475,7 @@ export async function postActionCard({ director, kind, payload }) {
   let effectivePayload = payload;
   {
     const autoPassives = (Array.isArray(payload?.prePassives) ? payload.prePassives : [])
-      .filter((p) => p?.mode === "on");
+      .filter((p) => p?.mode === "on" && p?.available !== false);
     if (autoPassives.length && payload?.attackerActor && Array.isArray(payload?.perTargetResults)) {
       try {
         const { computeSenderDamageBonuses } = await import("./skill-effects.js");
@@ -3496,7 +3567,11 @@ export async function postActionCard({ director, kind, payload }) {
   // shown as a chip without buttons; off-mode is skipped (no pill).
   // Confirm is locked while any ask pill is undecided.
   const prePassives = Array.isArray(payload?.prePassives) ? payload.prePassives : [];
-  const askPassives = prePassives.filter((p) => p?.mode === "ask");
+  // Only AVAILABLE ask pills are "pending" — they have Apply/Skip and gate
+  // Confirm. Unavailable ask pills (surfaced dimmed with a reason, e.g. "Low IP")
+  // are non-interactive, so counting them would lock Confirm forever (nothing to
+  // click). They're excluded here AND not rendered with Apply/Skip.
+  const askPassives = prePassives.filter((p) => p?.mode === "ask" && p?.available !== false);
   const reactionRowHtml = prePassives.length ? buildReactionPillRow(prePassives) : "";
   const initialPending = askPassives.length;
 
@@ -3635,8 +3710,11 @@ export async function postActionCard({ director, kind, payload }) {
     for (const p of prePassives) {
       const key = `${p.rowKey}:${p.carrierUuid}`;
       // "on" + "force" both auto-apply (force is engine-mandatory, on
-      // is player-set auto-apply; same effect on the decision map).
-      if (p.mode === "on" || p.mode === "force") reactionDecisionMap.set(key, "apply");
+      // is player-set auto-apply; same effect on the decision map) — but NOT
+      // when unavailable (can't pay cost): a surfaced-dimmed on/force pill must
+      // never auto-fire, or RESOLVE would try to consume a resource the actor
+      // doesn't have. It stays a dimmed informational pill instead.
+      if ((p.mode === "on" || p.mode === "force") && p.available !== false) reactionDecisionMap.set(key, "apply");
       if (p.mode === "off") reactionDecisionMap.set(key, "skip");
     }
 
@@ -4179,9 +4257,10 @@ export async function postActionCard({ director, kind, payload }) {
             const k = `${p.rowKey}:${p.carrierUuid}`;
             if (reactionDecisionMap.get(k) === "apply") accepted.push(p);
           }
-          // Lazy-import — cross-module cache-bust pattern.
+          // Lazy-import — cross-module cache-bust pattern. card-mutations owns the
+          // target-set mutation + recompute (applyTargetSetMutation); skill-effects
+          // is still needed for applyDamageOp in the headline breakdown below.
           const sk = await import("./skill-effects.js?cb=" + Date.now());
-          const sn = await import("./snapshot.js?cb=" + Date.now());
           const cm = await import("./card-mutations.js?cb=" + Date.now());
 
           // Phase 1: card-mutations (redirect_target). Computes the
@@ -4229,10 +4308,22 @@ export async function postActionCard({ director, kind, payload }) {
           // auto-confirm is microtask-fast and not visibly perceptible);
           // try/finally ensures we always reveal even if the pipeline
           // throws.
+          // SINGLE target-set mutation entrypoint — redirect/accuracy/add_target
+          // rewrite the slots, will_deal_damage subjects re-resolve vs the mutated
+          // set, then ALL per-target rows re-derive through buildPerTarget with the
+          // accepted reactions folded in (accuracy override re-applied). Shared with
+          // the CONFIRM recompute so the preview + commit CANNOT drift. `_cb` keeps
+          // its internal imports on this file's cross-module cache-bust pattern.
           root.classList.add("is-hidden-during-pick");
           let mutationResult;
           try {
-            mutationResult = await cm.applyAcceptedCardMutations(arSnapshot, accepted);
+            mutationResult = await cm.applyTargetSetMutation({
+              ar: arSnapshot,
+              accepted,
+              attackerActor: payload.attackerActor,
+              round: director?.dCombat?.round ?? 0,
+              _cb: Date.now(),
+            });
           } finally {
             root.classList.remove("is-hidden-during-pick");
           }
@@ -4242,17 +4333,11 @@ export async function postActionCard({ director, kind, payload }) {
             // don't apply partial mutation visuals or broadcast.
             return { cancelled: true };
           }
-
-          // Phase 2: add_damage recompute against the (possibly
-          // redirected) perTargetResults.
-          const bonusMap = await sk.computeSenderDamageBonuses({
-            casterActor: payload.attackerActor,
-            acceptedPrePassives: accepted,
-            dCombat: director?.dCombat,
-          });
-          const recomputed = sk.recomputePerTargetDamages(
-            mutationResult.perTargetResults, bonusMap, sn.applyAffinityToDamage,
-          );
+          // Per-target rows: the rebuild when present (damage actions), else the
+          // mutated rows (pure no-damage skill — keeps the redirect markers for
+          // the loop below).
+          const recomputed = Array.isArray(mutationResult.perTargetResults)
+            ? mutationResult.perTargetResults : [];
 
           // Build a `delta` describing per-slot mutations + non-mutation
           // damage updates. Shared between GM (patch local DOM + broadcast
@@ -4352,30 +4437,27 @@ export async function postActionCard({ director, kind, payload }) {
               const entry = recomputed[i];
               if (!origEntry?.actorUuid || !entry) continue;
               if (entry.redirectedFrom) continue; // already patched
-              const rowEl = root.querySelector(
+              // Unstudied target (player/friendly-attacker mask) → the result
+              // stays "???". The masked render hides DEF + outcome together;
+              // patching the result here would leak "HIT N" onto a row whose
+              // DEF still reads "???" (the inconsistency seen on Barrage-added
+              // rows, which DO carry an actor hook even when masked).
+              if (entry.studied === false) continue;
+              // Prefer the tokenUuid hook (unique per token — disambiguates two
+              // linked tokens of one actor); fall back to the actorUuid hook.
+              const rowEl = (origEntry.tokenUuid && root.querySelector(
+                `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(origEntry.tokenUuid))}"]`
+              )) || root.querySelector(
                 `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(origEntry.actorUuid))}"]`
               );
               if (!rowEl) continue;
               const resultSpan = rowEl.querySelector(".t-result");
               if (!resultSpan) continue;
-              const unit = entry.resource === "mp" ? "MP" : "dmg";
-              let label = "MISS";
-              let cls   = "miss";
-              if (entry.hit) {
-                if (typeof entry.grantAmount === "number") continue;
-                if (entry.affinity === "AB") {
-                  label = `HEALS ${Math.max(0, entry.damage)}`;
-                  cls   = "absorb";
-                } else if (entry.affinity === "IM" || entry.damage <= 0) {
-                  label = "NO EFFECT";
-                  cls   = "miss";
-                } else {
-                  label = `HIT — ${entry.damage} ${unit}`;
-                  cls   = entry.crit ? "crit" : "hit";
-                }
-              }
-              resultSpan.className = `t-result ${cls}`;
-              resultSpan.textContent = label;
+              if (typeof entry.grantAmount === "number") continue; // grant rows aren't damage
+              // Reuse the canonical label/class logic so affinity verbs
+              // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
+              resultSpan.className = `t-result ${resultClsFor(entry)}`;
+              resultSpan.innerHTML = resultLabelFor(entry);
             }
 
             // Headline damage preview — the prominent `.fud-bf-dmg` fieldset

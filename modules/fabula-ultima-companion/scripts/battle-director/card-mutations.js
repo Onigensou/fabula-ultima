@@ -685,6 +685,63 @@ export async function applyAddTargetSplices(arSnapshot, cands) {
   return { targets: ctx.targets, perTargetResults: ctx.perTargets, mutationsApplied };
 }
 
+// ── Single target-set mutation entrypoint ────────────────────────────────────
+// The ONE place a card's target set + per-target rows are mutated post-decision.
+// Composes the three steps that BOTH recompute callers (action-card preview +
+// CONFIRM) previously ran inline, so they can't drift in order or arguments:
+//   1. applyAcceptedCardMutations — redirect / accuracy / add_target rewrite the
+//      target SLOTS (which actor is in each slot, redirectedFrom, accuracyOverride).
+//   2. refreshReactionSubjects — re-resolve each accepted will_deal_damage
+//      reaction's subject list against the MUTATED target set (so element/damage
+//      ops reach an add_target/redirect slot added after the original dispatch).
+//   3. recomputeActionProfile — re-derive ALL per-target rows for the mutated set
+//      with the accepted reactions folded in, through buildPerTarget (the single
+//      per-target math path). The accuracy override is re-applied inside.
+//
+// Returns the FINAL { targets, perTargetResults, accuracyOverride, negated,
+// cancelled, mutationsApplied, hitTokenUuids }. `cancelled` (a picker cancel)
+// short-circuits before any recompute so the caller can revert the pill decision.
+// `negated` returns the real (display-only) rows — RESOLVE honors ar.negated.
+// The per-target rebuild is adopted only when non-empty; a pure no-damage skill
+// keeps the mutated rows (which still carry the redirect markers).
+// `_cb` is a TEST-ONLY cache-bust token for the dynamic imports (headless
+// harness iteration). Production callers omit it → plain boot-cached imports.
+export async function applyTargetSetMutation({ ar, accepted, attackerActor = null, round = 0, _cb = null } = {}) {
+  const sfx = _cb ? `?cb=${_cb}` : "";
+  const mut = await applyAcceptedCardMutations(ar, accepted);
+  if (mut.cancelled) return { cancelled: true };
+  const mutatedTargets = mut.targets;
+  let perTargetResults = mut.perTargetResults;
+  if (mut.negated) {
+    return {
+      targets: mutatedTargets, perTargetResults, accuracyOverride: null,
+      negated: true, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids: null,
+    };
+  }
+  const accuracyOverride = mut.accuracyOverride ?? null;
+  let hitTokenUuids = null;
+  try {
+    const mutatedAr = { ...ar, targets: mutatedTargets, perTargetResults };
+    if (attackerActor) {
+      const { refreshReactionSubjects } = await import("./skill-effects.js" + sfx);
+      try { await refreshReactionSubjects({ acceptedPrePassives: accepted, ar: mutatedAr, attackerActor }); }
+      catch (e) { warn("applyTargetSetMutation: refreshReactionSubjects threw", e); }
+    }
+    const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
+    const delta = await recomputeActionProfile({
+      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride,
+    });
+    if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
+      perTargetResults = delta.perTargetResults;
+      hitTokenUuids = delta.hitTokenUuids ?? null;
+    }
+  } catch (e) { warn("applyTargetSetMutation: recompute threw", e); }
+  return {
+    targets: mutatedTargets, perTargetResults, accuracyOverride,
+    negated: false, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids,
+  };
+}
+
 export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
