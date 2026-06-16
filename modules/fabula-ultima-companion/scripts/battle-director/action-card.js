@@ -4110,12 +4110,21 @@ export async function postActionCard({ director, kind, payload }) {
           // so the mutation engine picks the right defense (DEF for
           // Attack, MDEF for Spell-kind Skills) when recomputing the
           // redirected target's hit/damage.
+          //
+          // Use the live actionResult as the base when available — invoke
+          // updates director.ctx.actionResult but not payload, so without
+          // this, any pill Skip/Apply after an invoke would recompute from
+          // stale pre-invoke dice and overwrite the accuracy display.
+          // skillType + defenseTargetType are FSM-set constants and never
+          // invoke-modified, so they always come from payload.
+          const liveAr = director?.ctx?.actionResult ?? null;
+          const base   = liveAr ?? payload;
           const arSnapshot = {
             kind,
-            targets: Array.isArray(payload?.targets) ? payload.targets : [],
-            perTargetResults: Array.isArray(payload?.perTargetResults) ? payload.perTargetResults : [],
-            roll: payload?.roll ?? null,
-            damage: payload?.damage ?? null,
+            targets: Array.isArray(base?.targets) ? base.targets : [],
+            perTargetResults: Array.isArray(base?.perTargetResults) ? base.perTargetResults : [],
+            roll: base?.roll ?? null,
+            damage: base?.damage ?? null,
             skillType: payload?.skillType ?? null,
             defenseTargetType: payload?.defenseTargetType ?? null,
           };
