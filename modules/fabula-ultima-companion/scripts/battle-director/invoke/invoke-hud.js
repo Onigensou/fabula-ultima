@@ -143,9 +143,9 @@ function ensureStyles() {
     }
     .fud-invoke-particle {
       position: absolute;
-      width: 3px;
-      height: 30px;
-      border-radius: 2px;
+      width: 2px;
+      height: 22px;
+      border-radius: 1px;
       background: linear-gradient(to bottom,
         rgba(255,255,220,0)   0%,
         rgba(255,240,140,.9) 35%,
@@ -416,7 +416,7 @@ function _spawnAura(tokenUuid) {
   const rect = _getTokenScreenRect(tokenUuid);
   if (!rect) return; // token not on canvas — skip silently
 
-  const size = Math.max(rect.w, rect.h) * 2.2;
+  const size = Math.max(rect.w, rect.h) * 1.85;
   const el = document.createElement("div");
   el.id = AURA_ID;
   el.style.left   = `${rect.cx}px`;
