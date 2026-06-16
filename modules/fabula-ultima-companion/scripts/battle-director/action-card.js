@@ -1767,7 +1767,7 @@ function buildAffinityTagHTML({ affinity, hit, studied }) {
 // resource field) flips the unit label so MP-damage skills read
 // naturally on the card. Affinity rows are still gated NE for MP
 // damage, so AB / IM never appear there in practice.
-function resultLabelFor(r, { hasDamage = true } = {}) {
+export function resultLabelFor(r, { hasDamage = true } = {}) {
   // Recipe-grant rows (Heal, MP restore, future shield) — show what
   // the target will recover. `grantResource` picks the unit/verb. These
   // always succeed (no Check), so check the grant before hit semantics.
@@ -1814,7 +1814,7 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
   return `HIT ${big(r.damage)}${unit}`;
 }
 
-function resultClsFor(r) {
+export function resultClsFor(r) {
   if (!r.hit) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
@@ -3607,11 +3607,12 @@ export async function postActionCard({ director, kind, payload }) {
   // re-deriving the card on each client requires importing the whole
   // builder graph). Owner detection uses the attacker actor UUID
   // embedded in the payload.
+  let ownerUserId = null;
   try {
     const attackerActorUuid = payload?.attacker?.actorUuid
       ?? payload?.attackerActorRef
       ?? null;
-    const ownerUserId = attackerActorUuid
+    ownerUserId = attackerActorUuid
       ? (await resolveCardOwnerUserId(attackerActorUuid))
       : null;
     const cardHTML = root.outerHTML;
@@ -3627,6 +3628,7 @@ export async function postActionCard({ director, kind, payload }) {
             ownerUserId,
             attackerActorUuid,
             html: cardHTML,
+            actionResult: director.ctx.actionResult ?? null,
           },
         });
       } catch (e) { warn(`postActionCard: broadcast to ${u.name} threw`, e); }
@@ -4603,10 +4605,12 @@ export async function postActionCard({ director, kind, payload }) {
     let confirmAwait = null;
     let cancelAwait = null;
     let reactionAwait = null;
+    let invokeAwait = null;
     const abortPendingAwaits = () => {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
     };
     if (director?.intentChannel) {
       try {
@@ -4651,6 +4655,50 @@ export async function postActionCard({ director, kind, payload }) {
           });
         };
         armReactionAwait();
+
+        // Invoke-choice loop — re-arm after each pick so the player can use
+        // both Trait and Bond if their actor supports full invoke.
+        const armInvokeAwait = () => {
+          if (resolved) return;
+          invokeAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_CHOICE, {
+            timeoutMs: 30 * 60 * 1000,
+            fromUserId: ownerUserId ?? undefined,
+          });
+          invokeAwait.then(async (intent) => {
+            const body = intent?.body ?? {};
+            const type = body.type; // "trait" | "bond"
+            log(`postActionCard: remote INVOKE_CHOICE received (${type})`);
+            try {
+              const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+              if (type === "trait") {
+                await worker.handleInvokeTrait({
+                  director, ar: director.ctx.actionResult, root, invokeState,
+                  prePickedChoice: body.choice ?? null,
+                });
+              } else if (type === "bond") {
+                await worker.handleInvokeBond({
+                  director, ar: director.ctx.actionResult, root, invokeState,
+                  prePickedBondIndex: body.bondIndex ?? null,
+                });
+              }
+              const newAr = director.ctx.actionResult;
+              director.intentChannel?.broadcastMenuOpen({
+                targetUserId: ownerUserId,
+                menuSpec: {
+                  kind: "action-card-invoke-update",
+                  actionResult: newAr,
+                  invokeState: { ...invokeState },
+                },
+              });
+            } catch (e) {
+              warn("postActionCard: INVOKE_CHOICE handler threw", e);
+            }
+            armInvokeAwait();
+          }).catch((e) => {
+            if (!resolved) log(`postActionCard: INVOKE_CHOICE await aborted (${e?.message})`);
+          });
+        };
+        if (ownerUserId) armInvokeAwait();
       } catch (e) { warn("postActionCard: remote intent setup threw", e); }
     }
 
@@ -5057,6 +5105,25 @@ function cleanupMirror() {
 }
 
 export function registerPlayerActionCardHandler(channel) {
+  // Per-card closures — reset each time a new "action-card" MENU_OPEN arrives.
+  // playerAr holds the serialized actionResult broadcast with the card so the
+  // player can show the invoke HUD without accessing GM-only director state.
+  let playerAr = null;
+  let playerInvokeState = { trait: false, bond: false };
+
+  // Invoke-update handler — GM calls this after processing an INVOKE_CHOICE
+  // so the player's mirror card reflects the new roll/damage/target results.
+  const offInvokeUpdate = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-invoke-update") return;
+    playerAr = menuSpec.actionResult ?? playerAr;
+    playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper) return;
+    import(`./invoke/invoke-worker.js?cb=${Date.now()}`).then((w) => {
+      w.patchCardDom(wrapper, playerAr, playerInvokeState);
+    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
+  });
+
   // Lightweight patch handler for pill state changes broadcast from
   // recordPillDecision (GM side). Applies the same DOM transformation
   // — pending → resolved + status chip — to the local mirror so the
@@ -5132,6 +5199,10 @@ export function registerPlayerActionCardHandler(channel) {
     // Replace any prior mirror — only one card on screen at a time.
     cleanupMirror();
 
+    // Reset per-card state for the new card.
+    playerAr = menuSpec.actionResult ?? null;
+    playerInvokeState = { trait: false, bond: false };
+
     // Build a wrapper so we can hold both the imported HTML and the
     // event handlers. The imported HTML preserves the original DOM ids
     // (e.g. "fud-bf-action-card-root") so styles attach correctly.
@@ -5184,6 +5255,80 @@ export function registerPlayerActionCardHandler(channel) {
     let onClick = null;
     if (isOwner) {
       onClick = (ev) => {
+        // Invoke Trait / Bond — show local HUD then emit INVOKE_CHOICE to GM.
+        const invokeBtn = ev.target?.closest?.("[data-fud-invoke]");
+        if (invokeBtn) {
+          ev.stopPropagation();
+          if (invokeBtn.classList.contains("is-locked")) {
+            ui.notifications?.warn("Invoke cannot be used on a Fumble.");
+            return;
+          }
+          if (invokeBtn.classList.contains("is-resolved")) {
+            const t = invokeBtn.dataset.fudInvoke;
+            ui.notifications?.warn(`${t === "trait" ? "Trait" : "Bond"} already invoked for this action.`);
+            return;
+          }
+          const type = invokeBtn.dataset.fudInvoke;
+          (async () => {
+            try {
+              const hud = await import("./invoke/invoke-hud.js");
+              if (hud.getActiveType() === type) {
+                hud.dismissActive({ root: wrapper, ar: playerAr });
+                return;
+              }
+              if (!playerAr?.roll) return;
+              if (type === "trait") {
+                const choice = await hud.showTraitHUD({
+                  roll: playerAr.roll,
+                  root: wrapper,
+                  tokenUuid: menuSpec.attackerActorUuid ?? null,
+                });
+                if (!choice) return;
+                invokeBtn.classList.add("is-resolved");
+                channel.emit({
+                  type: INTENTS.INVOKE_CHOICE,
+                  body: { type: "trait", choice },
+                  combatId: menuSpec.combatId,
+                });
+              } else {
+                const attackerUuid = menuSpec.attackerActorUuid ?? null;
+                if (!attackerUuid) return;
+                let attacker = null;
+                try { attacker = await fromUuid(attackerUuid); } catch {}
+                if (!attacker) return;
+                const { readActorBonds, getInvokeCapability } = await import("./invoke/invoke-core.js");
+                if (getInvokeCapability(attacker) !== "full") {
+                  ui.notifications?.warn("Bond invoke is not available for this actor.");
+                  return;
+                }
+                const bonds = readActorBonds(attacker);
+                const viable = bonds.filter((b) => b.bonus > 0);
+                if (!viable.length) {
+                  ui.notifications?.warn("No eligible Bonds (all bonds need at least 1 filled emotion).");
+                  return;
+                }
+                const bondIndex = await hud.showBondHUD({
+                  bonds: viable,
+                  attacker,
+                  root: wrapper,
+                  ar: playerAr,
+                  tokenUuid: attackerUuid,
+                });
+                if (bondIndex == null) return;
+                invokeBtn.classList.add("is-resolved");
+                channel.emit({
+                  type: INTENTS.INVOKE_CHOICE,
+                  body: { type: "bond", bondIndex },
+                  combatId: menuSpec.combatId,
+                });
+              }
+            } catch (e) {
+              warn("mirror invoke handler threw", e);
+              ui.notifications?.error("Invoke failed (see console).");
+            }
+          })();
+          return;
+        }
         // "Open Character Sheet" — fire-and-forget; opens the actor's
         // sheet for the player to rearrange equipment manually.
         const openSheet = ev.target?.closest?.("[data-fud-open-sheet]");
@@ -5516,5 +5661,5 @@ export function registerPlayerActionCardHandler(channel) {
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} };
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} try { offInvokeUpdate?.(); } catch {} };
 }
