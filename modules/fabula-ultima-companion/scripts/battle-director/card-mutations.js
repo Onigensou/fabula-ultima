@@ -337,12 +337,15 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
   // destination targeting row picks relative to the reactor (category "ally",
   // exclude_self), so it offers the target's own allies.
   const destRef = String(row?.destination_ref ?? "").trim();
-  if (destRef && destRef.toLowerCase() !== "self") {
-    const srcIdx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
-    if (srcIdx === -1) {
-      warn(`redirect(dest): reactor ${reactor.name} not in target list — nothing to redirect`);
-      return "failed";
-    }
+  // Discriminator for the inverted/target-owned axis is whether the reactor is
+  // ACTUALLY one of the action's targets — NOT a string match on destination_ref.
+  // A self-resolving ref like Protect's "protect_self" must not be mistaken for
+  // target-owned; when the reactor isn't a target, srcIdx stays -1 and we fall
+  // through to the DEFAULT redirect below (target_ref ally's slot → reactor).
+  const srcIdx = (destRef && destRef.toLowerCase() !== "self")
+    ? ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid)
+    : -1;
+  if (srcIdx !== -1) {
     const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
     // Cache the destination pick so a re-recompute pass doesn't re-prompt.
     let destActorUuid = cand.pickedDestActorUuid ?? null;
