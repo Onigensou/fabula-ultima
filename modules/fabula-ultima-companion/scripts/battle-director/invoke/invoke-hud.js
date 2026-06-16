@@ -307,21 +307,23 @@ function _previewBondOnCard(root, ar, bonus) {
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = newTotal;
 
-  // Bonus pill (create if absent)
+  // Bonus pill — always keep it in the DOM (hide rather than remove) so moving
+  // between bond rows never triggers a DOM insert/remove cycle that flickers.
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
     let pill = accRow.querySelector(".bonus");
+    if (!pill) {
+      pill = document.createElement("span");
+      pill.className = "bonus fud-ih-preview-bonus";
+      const spacer = accRow.querySelector(".spacer");
+      if (spacer) accRow.insertBefore(pill, spacer);
+      else accRow.appendChild(pill);
+    }
     if (newCB !== 0) {
-      if (!pill) {
-        pill = document.createElement("span");
-        pill.className = "bonus fud-ih-preview-bonus";
-        const spacer = accRow.querySelector(".spacer");
-        if (spacer) accRow.insertBefore(pill, spacer);
-        else accRow.appendChild(pill);
-      }
       pill.textContent = newCB >= 0 ? `+${newCB}` : `${newCB}`;
-    } else if (pill) {
-      pill.remove();
+      pill.style.display = "";
+    } else {
+      pill.style.display = "none";
     }
   }
 
@@ -349,22 +351,27 @@ function _restoreCardFromAr(root, ar) {
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = roll.total;
 
-  // Bonus pill
+  // Bonus pill — hide instead of remove to prevent flicker on fast row transitions.
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
-    let pill = accRow.querySelector(".bonus");
+    const pill = accRow.querySelector(".bonus");
     const cb = Number(roll.checkBonus) || 0;
     if (cb !== 0) {
-      if (!pill) {
-        pill = document.createElement("span");
-        pill.className = "bonus";
+      if (pill) {
+        pill.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
+        pill.style.display = "";
+      } else {
+        // Pill wasn't created by preview (e.g. pre-existing from a prior invoke).
+        // Re-create it in the correct slot.
+        const p = document.createElement("span");
+        p.className = "bonus";
+        p.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
         const spacer = accRow.querySelector(".spacer");
-        if (spacer) accRow.insertBefore(pill, spacer);
-        else accRow.appendChild(pill);
+        if (spacer) accRow.insertBefore(p, spacer);
+        else accRow.appendChild(p);
       }
-      pill.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
     } else if (pill) {
-      pill.remove();
+      pill.style.display = "none";
     }
   }
 
@@ -413,7 +420,7 @@ export function showTraitHUD({ roll, root }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  _playHud(SFX.trait);
+  _playHud(SFX.trait, 0.5);
 
   const { A1, A2, dA, dB, rA, rB } = roll;
   const html = `<div class="fud-ih-card">
@@ -533,7 +540,7 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  _playHud(SFX.bond);
+  _playHud(SFX.bond, 0.5);
 
   let selectedIdx = 0;
 
