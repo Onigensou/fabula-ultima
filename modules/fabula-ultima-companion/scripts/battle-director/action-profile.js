@@ -24,7 +24,7 @@ import { applyAffinityToDamage, readWeaponEfficiency } from "./snapshot.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
-  computeSenderDamageBonuses, applyDamageOp } from "./skill-effects.js";
+  computeSenderDamageBonuses, applyDamageOp, describeGrant } from "./skill-effects.js";
 
 // Status conditions that force Vulnerability to a specific element (mirrors the
 // Attack COMPUTE table in state-handlers.js — keep in sync).
@@ -448,24 +448,19 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
   }
   if (!grantRow) return { rows: out, healingObj: null };
 
-  const grantResource = String(grantRow.grant_resource ?? "").toLowerCase();
-  const grantBase = evaluateFormula(grantRow.grant_amount, resolver, 0);
-  // Secret Formula (and any restore modifier): add the SHARED restore bonus —
-  // the SAME resolveRestoreParts that applyGrantEffect uses at resolve, so the
-  // card preview and the applied heal can't drift. The PARTS (attributed to each
-  // AE source, e.g. "Secret Formula") feed the Healing tooltip's itemized
-  // breakdown, mirroring the damage side. Positive restores only.
-  const restoreParts = grantBase > 0
-    ? resolveRestoreParts({ actor: liveAttacker, kind: ar?.kind })
-    : [];
-  const restoreBonus = sumRestoreParts(restoreParts);
-  // Potion Rain spread (adjust_grant): apply the action's restore op to the FINAL
-  // restore (after the modifier bonus) — same applyGrantAdjust RESOLVE uses, so
-  // the previewed heal and the applied heal match. No-op when absent.
-  const grantAmount = applyGrantAdjust(
-    grantBase + (restoreBonus > 0 ? restoreBonus : 0),
-    ar?.grantAdjust,
-  );
+  // Caster-side restore amount + itemized restore parts come from the SHARED
+  // describeGrant — the SAME derivation grantApply runs at RESOLVE — so the
+  // previewed heal headline and the applied heal CANNOT drift. The PARTS
+  // (attributed to each AE source, e.g. "Secret Formula") feed the Healing
+  // tooltip's itemized breakdown, mirroring the damage side. Per-recipient
+  // scaling (incoming-heal mult, Vismagus suppress) stays in the loop below.
+  const grant = describeGrant(grantRow, {
+    resolver, liveAttacker,
+    actionResult: { kind: ar?.kind, grantAdjust: ar?.grantAdjust },
+  });
+  const grantResource = grant.resource;
+  const grantAmount = grant.amount;
+  const restoreParts = grant.restoreParts;
   // Any RESTORABLE resource (hp/mp/ip/shield/zero_power/…) gets a restore preview —
   // resolved from the shared registry, so adding a resource there makes it render
   // here automatically. Non-restorable / unknown resources → no preview headline.

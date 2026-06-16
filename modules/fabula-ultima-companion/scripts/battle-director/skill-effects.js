@@ -2459,10 +2459,10 @@ async function applyNotifyEffect(row, ctx) {
 // the chain running so downstream cost steps still fire ([[consume-last-in-chain]]).
 const EFFECT_KIND_DISPATCH = {
   targeting:           applyTargetingEffect,
-  grant:               applyGrantEffect,
-  set_resource:        applySetResourceEffect,
+  grant:               grantRun,             // UNIFIED (see grantRun)
+  set_resource:        setResourceRun,       // UNIFIED (see setResourceRun)
   apply_ae:            applyApplyAeEffect,
-  consume_charge:      applyConsumeChargeEffect,
+  consume_charge:      consumeChargeRun,     // UNIFIED (see consumeChargeRun)
   chain:               applyChainEffect,
   open_action_menu:    applyOpenActionMenuEffect,
   free_action:         applyFreeActionEffect,
@@ -2471,13 +2471,13 @@ const EFFECT_KIND_DISPATCH = {
   prompt_element:      applyPromptElementEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   substitute_cost:     applySubstituteCostEffect,
-  consume_resource:    applyConsumeResourceEffect,
+  consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
   add_target:          applyAddTargetEffect,
   adjust_grant:        applyAdjustGrantEffect,
   roll_loot_table:     applyRollLootTableEffect,
-  deal_damage:         applyDealDamageEffect,
+  deal_damage:         dealDamageRun,        // UNIFIED (see dealDamageRun)
   equip_swap:          applyEquipSwapEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
@@ -2593,63 +2593,16 @@ const EFFECT_KIND_PREVIEW = {
   // in the per-target rows the splice rebuilds.
   adjust_grant: () => null,
 
-  grant: (row, pctx) => {
-    const resource = String(row.grant_resource ?? "").trim().toLowerCase();
-    const amount = _previewAmount(row.grant_amount, pctx);
-    // hp/mp grants render as heal; other resources (fp/ip/shield/charge) as grant.
-    if (resource === "hp" || resource === "mp") {
-      return { type: "heal", resource, value: amount,
-        valence: _valenceForResource(resource, amount), source: row.effect_label,
-        targetRef: row.target_ref ?? null };
-    }
-    return { type: "grant", what: resource, amount,
-      valence: _valenceForResource(resource, amount), source: row.effect_label,
-      targetRef: row.target_ref ?? null };
-  },
+  // grant: UNIFIED — preview lives in grantRun (mode:"preview"). Override below.
 
-  set_resource: (row, pctx) => {
-    const resource = String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase();
-    const value = _previewAmount(row.grant_amount ?? row.set_amount, pctx);
-    return { type: (resource === "hp" || resource === "mp") ? "heal" : "grant",
-      resource, what: resource, value, amount: value, valence: "beneficial",
-      source: row.effect_label, targetRef: row.target_ref ?? null };
-  },
+  // set_resource: UNIFIED — preview lives in setResourceRun (mode:"preview"). Override below.
 
-  deal_damage: (row, pctx) => {
-    // A VAR_<NAME> element is chosen via prompt_element. If the pick was already
-    // captured (pre_activate → pctx.chainVars), show the real type on the card;
-    // otherwise (RESOLVE-time pick) show "varies".
-    const rawEl = String(row.damage_element ?? row.element ?? "elementless").trim();
-    let element;
-    if (/^var_/i.test(rawEl)) {
-      const key = rawEl.slice(4).toLowerCase().trim();
-      const v = pctx?.chainVars?.[key];
-      element = (typeof v === "string" && v.trim()) ? v.toLowerCase() : "varies";
-    } else {
-      element = rawEl.toLowerCase();
-    }
-    return {
-      type: "damage",
-      element,
-      resource: "hp",
-      damageClass: "effect",
-      value: _previewAmount(row.damage_amount ?? row.amount, pctx),
-      valence: "harmful", source: row.effect_label, targetRef: row.target_ref ?? "self",
-    };
-  },
+  // deal_damage: UNIFIED — preview lives in dealDamageRun (mode:"preview"). Override below.
 
-  consume_resource: (row, pctx) => ({
-    type: "cost",
-    resource: String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase(),
-    amount: _previewAmount(row.consume_amount ?? row.grant_amount, pctx),
-    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self",
-  }),
+  // consume_resource: UNIFIED — preview lives in consumeResourceRun (mode:"preview").
+  // Kept out of this table; the override below points EFFECT_KIND at the run handler.
 
-  consume_charge: (row) => ({
-    type: "cost", resource: `charge:${String(row.charge_key ?? "").trim()}`,
-    amount: Math.max(1, Math.floor(Number(row.count ?? 1) || 1)),
-    valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self",
-  }),
+  // consume_charge: UNIFIED — preview lives in consumeChargeRun (mode:"preview"). Override below.
 
   apply_ae: (row) => ({
     type: "status",
@@ -2714,17 +2667,105 @@ const EFFECT_KIND_PREVIEW = {
   negate_action: () => null,
 };
 
+// ── Unified effect-kind registry (single source of truth) ────────────────────
+// The card's preview and RESOLVE's apply are TWO views of ONE behavior. This
+// registry is the seam that lets them be implemented once instead of twice.
+//
+// Each entry is one of:
+//   { run(row, ctx) }                       — UNIFIED. ctx.mode ∈ {"preview","apply"}.
+//                                             Derives its values ONCE and either
+//                                             returns an EffectPreview (preview)
+//                                             or performs the writes (apply). The
+//                                             number shown == the number applied,
+//                                             by construction.
+//   { preview(row, pctx), apply(row, ctx) } — LEGACY split (pre-migration). The
+//                                             two functions are kept in lockstep
+//                                             by hand until the kind is unified.
+//
+// Both `previewEffectRow` (card) and `applyEffectRow` (RESOLVE) dispatch through
+// `runEffectKind`, so a kind that has been unified can no longer drift.
+const EFFECT_KIND = {};
+for (const kind of new Set([...Object.keys(EFFECT_KIND_DISPATCH), ...Object.keys(EFFECT_KIND_PREVIEW)])) {
+  EFFECT_KIND[kind] = {
+    preview: EFFECT_KIND_PREVIEW[kind] ?? (() => null),
+    apply: EFFECT_KIND_DISPATCH[kind] ?? null,
+  };
+}
+
+// ── Unified kinds ────────────────────────────────────────────────────────────
+// As each effect_kind is collapsed to a single mode-aware `run`, register it
+// here. `run` takes precedence over the legacy {preview, apply} pair in
+// `runEffectKind`, so card and commit go through ONE function. Migrate kinds off
+// the legacy tables into this list one at a time (each independently testable).
+EFFECT_KIND.consume_resource = { run: consumeResourceRun };
+EFFECT_KIND.grant = { run: grantRun };
+EFFECT_KIND.deal_damage = { run: dealDamageRun };
+EFFECT_KIND.set_resource = { run: setResourceRun };
+EFFECT_KIND.consume_charge = { run: consumeChargeRun };
+
+// ── Parity guard (load-time) ─────────────────────────────────────────────────
+// The unified registry's whole purpose is that the card preview and RESOLVE apply
+// cannot diverge. This guard enforces the invariants that keep that true and
+// surfaces a regression as a console warning instead of a silent blanked chip or
+// an unhandled effect_kind:
+//   1. Every dispatched kind resolves to a handler (a unified `run`, or a legacy
+//      `apply`).
+//   2. Preview is SYNCHRONOUS. A kind whose preview returns a Promise — e.g. an
+//      `async run` that forgot to split preview (sync) from apply (async) — blanks
+//      the chip, because previewEffectRow doesn't await. This is the exact bug the
+//      consume_resource migration hit; the guard would have caught it at load.
+function assertEffectKindParity() {
+  const problems = [];
+  for (const kind of Object.keys(EFFECT_KIND)) {
+    const h = EFFECT_KIND[kind];
+    if (typeof h?.run !== "function" && typeof h?.apply !== "function") {
+      problems.push(`"${kind}": no run/apply handler`);
+      continue;
+    }
+    // Probe the preview path with a minimal synthetic row — must return sync.
+    try {
+      const out = runEffectKind(kind, { effect_kind: kind, effect_label: "__parity__" }, {}, "preview");
+      if (out && typeof out.then === "function") {
+        problems.push(`"${kind}": preview returned a Promise (async handler not split — chip will blank)`);
+      }
+    } catch { /* a throw on a synthetic row is fine; the guard only flags Promises */ }
+  }
+  if (problems.length) {
+    warn(`skill-effects: EFFECT_KIND parity guard found ${problems.length} issue(s):\n  - ${problems.join("\n  - ")}`);
+  } else {
+    log(`skill-effects: EFFECT_KIND parity guard OK (${Object.keys(EFFECT_KIND).length} kinds)`);
+  }
+  return problems;
+}
+assertEffectKindParity();
+
+// Single dispatch point for both modes. `mode` selects which view we want;
+// unified handlers branch internally, legacy handlers route to their twin.
+//   preview → EffectPreview | null   (never throws — defensive null on error)
+//   apply   → ApplyResult            ({ ok, kind, applied, ... })
+function runEffectKind(kind, row, ctx, mode) {
+  const h = EFFECT_KIND[kind];
+  if (!h) {
+    if (mode === "preview") return null;
+    warn(`skill-effects: unknown effect_kind "${kind}" on row "${row?.effect_label}"`);
+    return { ok: false, kind, reason: "unknown-kind" };
+  }
+  if (typeof h.run === "function") return h.run(row, { ...(ctx ?? {}), mode });
+  if (mode === "preview") return (h.preview ?? (() => null))(row, ctx ?? {});
+  if (h.apply) return h.apply(row, ctx);
+  warn(`skill-effects: unknown effect_kind "${kind}" on row "${row?.effect_label}"`);
+  return { ok: false, kind, reason: "unknown-kind" };
+}
+
 // Preview a single effect row. Returns an EffectPreview or null (nothing to
 // render). Defensive: an unknown kind returns null rather than throwing.
 export function previewEffectRow(row, pctx = {}) {
   if (!row) return null;
   const kind = String(row.effect_kind ?? "").trim().toLowerCase();
-  const fn = EFFECT_KIND_PREVIEW[kind];
-  if (!fn) return null;
   try {
-    const out = fn(row, pctx);
+    const out = runEffectKind(kind, row, pctx, "preview");
     if (out && out.id == null) out.id = `${kind}:${row.effect_label ?? ""}`;
-    return out;
+    return out ?? null;
   } catch (e) {
     warn(`skill-effects.previewEffectRow: "${kind}" threw on row "${row.effect_label}"`, e);
     return null;
@@ -2785,10 +2826,7 @@ export async function applyEffectRow(row, ctx) {
     }
   }
 
-  const handler = EFFECT_KIND_DISPATCH[kind];
-  if (handler) return handler(row, ctx);
-  warn(`skill-effects: unknown effect_kind "${kind}" on row "${row.effect_label}"`);
-  return { ok: false, kind, reason: "unknown-kind" };
+  return runEffectKind(kind, row, ctx, "apply");
 }
 
 // Fire the skill's `on_activate_effect_ref` hook — runs after the skill
@@ -3006,9 +3044,61 @@ async function applyAdjustGrantEffect(row, ctx) {
 }
 
 // ── grant ──────────────────────────────────────────────────────────────
-
-async function applyGrantEffect(row, ctx) {
+//
+// ── UNIFIED (preview chip + apply write + heal headline share one amount) ──
+// `describeGrant` is the SINGLE place that resolves a grant's CASTER-SIDE amount
+// (formula + restore-modifier bonus + action grant-adjust). The heal/grant chip
+// (preview), the resource write (apply), AND action-profile's heal headline all
+// read it, so the number can't drift. Per-RECIPIENT scaling (Bleed's incoming-
+// heal −50%, Vismagus self-suppress) is per target and stays in the apply loop /
+// per-target preview — it is NOT part of this caster-side figure.
+//
+// The restore-bonus / grant-adjust only apply when there's a numeric amount, a
+// caster to read the restore parts from (ctx.reactorActor at apply, or a threaded
+// ctx.liveAttacker at preview), and a positive HP/MP restore. Without a caster
+// (e.g. a bare effect-table audit) it degrades to the raw formula amount.
+export function describeGrant(row, ctx = {}) {
   const resource = String(row.grant_resource ?? "").trim().toLowerCase();
+  const targetRef = row.target_ref ?? null;
+  const casterActor = ctx.reactorActor ?? ctx.liveAttacker ?? null;
+  const resolver = ctx.resolver
+    ?? (casterActor
+      ? buildSkillResolver({ actor: casterActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 })
+      : null);
+  let amount = resolver != null
+    ? evaluateFormula(row.grant_amount, resolver, 0)
+    : _previewAmount(row.grant_amount, ctx);
+  // Itemized restore-modifier parts (e.g. "Secret Formula: +20") — returned so the
+  // heal headline's tooltip and the applied heal read ONE list. Positive HP/MP only.
+  let restoreParts = [];
+  if (typeof amount === "number" && amount > 0 && (resource === "hp" || resource === "mp") && casterActor) {
+    restoreParts = resolveRestoreParts({ actor: casterActor, kind: ctx.actionResult?.kind ?? ctx.actionKind });
+    const restoreBonus = sumRestoreParts(restoreParts);
+    if (restoreBonus > 0) amount += restoreBonus;
+    // Potion Rain spread (adjust_grant): apply the action's restore op to the
+    // FINAL amount (after Secret Formula). No-op when there's no grant adjustment.
+    amount = applyGrantAdjust(amount, ctx.actionResult?.grantAdjust ?? ctx.grantAdjust);
+  }
+  return { resource, targetRef, amount, restoreParts };
+}
+
+// Sync dispatcher (see consumeResourceRun for why this is NOT async): preview →
+// the heal/grant chip; apply → the async write path's promise.
+function grantRun(row, ctx) {
+  const { resource, targetRef, amount } = describeGrant(row, ctx);
+  if (ctx?.mode === "preview") {
+    // hp/mp render as a heal chip; other resources (fp/ip/shield/charge) as grant.
+    if (resource === "hp" || resource === "mp") {
+      return { type: "heal", resource, value: amount,
+        valence: _valenceForResource(resource, amount), source: row.effect_label, targetRef };
+    }
+    return { type: "grant", what: resource, amount,
+      valence: _valenceForResource(resource, amount), source: row.effect_label, targetRef };
+  }
+  return grantApply(row, ctx, { resource, targetRef, amount });
+}
+
+async function grantApply(row, ctx, { resource, targetRef, amount }) {
   const def = RESOURCE_PROPS[resource];
   if (!def) {
     warn(`skill-effects.grant: unknown resource "${row.grant_resource}" on row "${row.effect_label}"`);
@@ -3016,36 +3106,13 @@ async function applyGrantEffect(row, ctx) {
   }
 
   // target_ref resolves to a token list. Without one, fail.
-  const targetResult = await resolveTargetRef(row.target_ref, ctx);
+  const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok) {
     return { ok: false, kind: "grant", reason: targetResult.reason ?? "no-targets" };
   }
   const tokens = targetResult.tokens;
   if (!tokens.length) {
     return { ok: false, kind: "grant", reason: "no-targets" };
-  }
-
-  // Build the resolver freshly per consumer so DAMAGE_DEALT / HP_DEALT
-  // etc. reflect THIS event's payload. SL reads from ctx.skill.
-  const resolver = buildSkillResolver({
-    actor: ctx.reactorActor,
-    payload: ctx.payload,
-    skill: ctx.skill,
-    round: ctx.dCombat?.round ?? 0,
-  });
-  let amount = evaluateFormula(row.grant_amount, resolver, 0);
-  // Restore modifier (Secret Formula etc.): add the SHARED restore bonus via the
-  // SAME resolveRestoreParts the card preview (buildHealPerTarget) uses, so the
-  // preview and the applied heal can't drift. Scoped by action kind
-  // (item_restore_mod → item-use only) + a POSITIVE HP/MP restore (never a drain
-  // authored as a negative grant, never ip/shield/charge grants).
-  if (amount > 0 && (resource === "hp" || resource === "mp")) {
-    const restoreBonus = sumRestoreParts(resolveRestoreParts({ actor: ctx.reactorActor, kind: ctx.actionResult?.kind }));
-    if (restoreBonus > 0) amount += restoreBonus;
-    // Potion Rain spread (adjust_grant): apply the action's restore op to the
-    // FINAL amount (after Secret Formula) — e.g. multiply 0.5 round up. No-op
-    // when the action carries no grant adjustment.
-    amount = applyGrantAdjust(amount, ctx.actionResult?.grantAdjust);
   }
   if (amount === 0) {
     log(`skill-effects.grant: amount evaluated to 0 (row "${row.effect_label}"); skipping write`);
@@ -3103,14 +3170,36 @@ async function applyGrantEffect(row, ctx) {
 //
 // Row fields: grant_resource (hp|mp|shield|…), grant_amount (formula —
 //   evaluated per target so MAX_HP reads the VICTIM's sheet), target_ref.
-async function applySetResourceEffect(row, ctx) {
-  const resource = String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase();
+// ── UNIFIED set_resource ───────────────────────────────────────────────────
+// Shared field reads (resource / amount FORMULA / target). The value is
+// evaluated PER TARGET at apply (reads the victim's sheet), so describe carries
+// the formula; the preview chip shows _previewAmount of the same formula.
+function describeSetResource(row) {
+  return {
+    resource: String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase(),
+    amountFormula: row.grant_amount ?? row.set_amount,
+    targetRef: row.target_ref ?? null,
+  };
+}
+
+function setResourceRun(row, ctx) {
+  const d = describeSetResource(row);
+  if (ctx?.mode === "preview") {
+    const value = _previewAmount(d.amountFormula, ctx);
+    return { type: (d.resource === "hp" || d.resource === "mp") ? "heal" : "grant",
+      resource: d.resource, what: d.resource, value, amount: value, valence: "beneficial",
+      source: row.effect_label, targetRef: d.targetRef };
+  }
+  return setResourceApply(row, ctx, d);
+}
+
+async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }) {
   const def = RESOURCE_PROPS[resource];
   if (!def) {
     warn(`skill-effects.set_resource: unknown resource "${resource}" on row "${row.effect_label}"`);
     return { ok: false, kind: "set_resource", reason: "unknown-resource" };
   }
-  const targetResult = await resolveTargetRef(row.target_ref, ctx);
+  const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
     return { ok: false, kind: "set_resource", reason: targetResult.reason ?? "no-targets" };
   }
@@ -3119,7 +3208,7 @@ async function applySetResourceEffect(row, ctx) {
     const actor = token.actor;
     if (!actor) continue;
     const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
-    let value = Math.floor(Number(evaluateFormula(row.grant_amount ?? row.set_amount, resolver, 0)) || 0);
+    let value = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
     const maxVal = def.max ? (Number(actor.system?.props?.[def.max]) || null) : null;
     if (maxVal != null) value = Math.min(value, maxVal);
     value = Math.max(def.hardMin ?? 0, value);
@@ -3163,34 +3252,68 @@ async function applySetResourceEffect(row, ctx) {
 //  the hit surfaces via the director VFX + log. Re-add if a silent tick is needed.)
 // No attacker outgoing modifiers are applied (status/environmental damage),
 // so a self-tick is not inflated by the bearer's own damage bonuses.
-async function applyDealDamageEffect(row, ctx) {
+// ── UNIFIED deal_damage ────────────────────────────────────────────────────
+// describeDealDamage centralizes the row field reads — element, amount FORMULA,
+// target, ledger cause, ignore-affinity — shared by the damage chip (preview)
+// and the per-victim damage write (apply). The amount is evaluated PER TARGET at
+// apply (MAX_HP/CUR_HP read the victim's sheet), so describe carries the formula,
+// not a number. The VAR_<elem> fallback differs by mode: the preview shows
+// "varies" while the element pick is still pending, apply falls back to
+// "elementless" — so describe returns the raw resolution and each mode finishes.
+function describeDealDamage(row, ctx = {}) {
   // Element may be a literal ("fire") OR a chain-local variable reference
-  // ("VAR_ELEMENT") set earlier by a `prompt_element` row — so one deal_damage
-  // can deal whatever type the player just chose (Meteor Shower, Infusions),
-  // instead of one hard-coded row per element. VAR_ reads the STRING stashed on
-  // ctx.payload._chainVars (the same bag prompt_number uses for numbers).
+  // ("VAR_ELEMENT") set earlier by a `prompt_element` row, so one deal_damage can
+  // deal whatever type the player just chose (Meteor Shower, Infusions). VAR_
+  // reads the STRING stashed on _chainVars (preview: ctx.chainVars; apply:
+  // ctx.payload._chainVars — the same bag prompt_number uses for numbers).
   const rawElement = String(row.damage_element ?? row.element ?? "elementless").trim();
-  let element = rawElement.toLowerCase();
-  if (/^var_/i.test(rawElement)) {
+  const isVar = /^var_/i.test(rawElement);
+  let resolvedElement = null;
+  if (isVar) {
     const key = rawElement.slice(4).toLowerCase().trim();
-    const v = ctx?.payload?._chainVars?.[key];
-    element = String(v ?? "elementless").trim().toLowerCase() || "elementless";
+    const chainVars = ctx.chainVars ?? ctx.payload?._chainVars ?? null;
+    const v = chainVars?.[key];
+    resolvedElement = (typeof v === "string" && v.trim()) ? v.toLowerCase() : null;
+  } else {
+    resolvedElement = rawElement.toLowerCase();
   }
-  const amountFormula = row.damage_amount ?? row.amount ?? "0";
-  const targetRef = row.target_ref || "self";
+  return {
+    isVar, resolvedElement,
+    amountFormula: row.damage_amount ?? row.amount ?? "0",
+    targetRef: row.target_ref || "self",
+    // Opt-out of affinity (RS/VU/IM/AB) for flat/"true" effect damage — e.g. a
+    // fixed opposed-check consequence (Pounce's 20) that should land regardless of
+    // the target's resistances. Default off, so elemental ticks (Burn) respect it.
+    ignoreAffinity: row.damage_ignore_affinity === true || String(row.damage_ignore_affinity).toLowerCase() === "true",
+    // Resource-ledger cause: deal_damage is direct/elemental damage (status ticks,
+    // opposed-check consequences, riders), HAZARD by default so it doesn't trip
+    // "player-inflicted damage" reactions; authors set damage_cause:"damage" for
+    // inflicted deal_damage that should count as an attack.
+    damageCause: String(row.damage_cause ?? "").trim().toLowerCase() || "hazard",
+  };
+}
+
+function dealDamageRun(row, ctx) {
+  const d = describeDealDamage(row, ctx);
+  if (ctx?.mode === "preview") {
+    return {
+      type: "damage",
+      element: d.isVar ? (d.resolvedElement ?? "varies") : d.resolvedElement,
+      resource: "hp", damageClass: "effect",
+      value: _previewAmount(d.amountFormula, ctx),
+      valence: "harmful", source: row.effect_label, targetRef: d.targetRef,
+    };
+  }
+  return dealDamageApply(row, ctx, d);
+}
+
+async function dealDamageApply(row, ctx, d) {
+  const element = d.isVar ? (d.resolvedElement ?? "elementless") : d.resolvedElement;
+  const amountFormula = d.amountFormula;
+  const targetRef = d.targetRef;
   const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
-  // Opt-out of affinity (RS/VU/IM/AB) for flat/"true" effect damage — e.g. a
-  // fixed opposed-check consequence (Pounce's 20) that should land regardless of
-  // the target's resistances. Default off, so elemental ticks (Burn) still
-  // respect affinity. Reads the declarative `damage_ignore_affinity` checkbox.
-  const ignoreAffinity = row.damage_ignore_affinity === true || String(row.damage_ignore_affinity).toLowerCase() === "true";
-  // Resource-ledger cause: deal_damage is direct/elemental damage (status ticks,
-  // opposed-check consequences, riders), so it's HAZARD by default — it must NOT
-  // trip "player-inflicted damage" reactions the way a real attack does. Authors
-  // set damage_cause:"damage" for inflicted deal_damage that should count as an
-  // attack. (Real attacks route through applyDamageToTarget, which stamps
-  // cause:"damage" directly.)
-  const damageCause = String(row.damage_cause ?? "").trim().toLowerCase() || "hazard";
+  const ignoreAffinity = d.ignoreAffinity;
+  const damageCause = d.damageCause;
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
@@ -3303,25 +3426,55 @@ async function applyDealDamageEffect(row, ctx) {
 //
 // Used by High Speed (spend 10 MP for a free action), Stolen Time
 // (variable cost), and any other "spend X to fire next step" pattern.
-async function applyConsumeResourceEffect(row, ctx) {
+//
+// ── UNIFIED (preview + apply share one derivation) ───────────────────────
+// `describeConsumeResource` is the SINGLE place that reads resource / amount /
+// target from the row. The cost chip (preview mode) and the debit (apply mode)
+// both go through it, so the number the card shows is the number RESOLVE spends.
+// The amount formula is evaluated against the preview's resolver (built from the
+// live caster) or an apply-time resolver — identical math either way.
+function describeConsumeResource(row, ctx = {}) {
   const resource = String(row.consume_resource ?? row.grant_resource ?? "").trim().toLowerCase();
+  const targetRef = row.target_ref || "self";
+  const resolver = ctx.resolver
+    ?? (ctx.reactorActor
+      ? buildSkillResolver({ actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 })
+      : null);
+  const amount = resolver != null
+    ? evaluateFormula(row.consume_amount ?? row.grant_amount, resolver, 0)
+    : _previewAmount(row.consume_amount ?? row.grant_amount, ctx);
+  return { resource, targetRef, amount };
+}
+
+// Unified dispatcher. NOT async: preview must return a plain value synchronously
+// (previewEffectRow / the profile builder don't await), while apply returns the
+// async write path's promise. Mixing the two under one `async` would wrap the
+// preview in a Promise and silently blank the card chip.
+function consumeResourceRun(row, ctx) {
+  const derived = describeConsumeResource(row, ctx);
+
+  // ── preview: the cost chip the card renders (sync) ──
+  if (ctx?.mode === "preview") {
+    return {
+      type: "cost", resource: derived.resource, amount: derived.amount,
+      valence: "neutral", source: row.effect_label, targetRef: derived.targetRef,
+    };
+  }
+
+  // ── apply: debit the resource (async) ──
+  return consumeResourceApply(row, ctx, derived);
+}
+
+async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
   const def = RESOURCE_PROPS[resource];
   if (!def) {
     warn(`skill-effects.consume_resource: unknown resource "${resource}" on row "${row.effect_label}"`);
     return { ok: false, kind: "consume_resource", reason: "unknown-resource", abort: true };
   }
-  const targetRef = row.target_ref || "self";
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
     return { ok: false, kind: "consume_resource", reason: "no-targets", abort: true };
   }
-  const resolver = buildSkillResolver({
-    actor: ctx.reactorActor,
-    payload: ctx.payload,
-    skill: ctx.skill,
-    round: ctx.dCombat?.round ?? 0,
-  });
-  const amount = evaluateFormula(row.consume_amount ?? row.grant_amount, resolver, 0);
   if (amount <= 0) {
     log(`skill-effects.consume_resource: amount evaluated to ${amount} (row "${row.effect_label}"); no debit`);
     return { ok: true, kind: "consume_resource", applied: [], reason: "zero-amount" };
@@ -3984,16 +4137,32 @@ async function applyEncyclopediaRecordEffect(row, ctx) {
 
 // ── consume_charge ──────────────────────────────────────────────────────
 
-async function applyConsumeChargeEffect(row, ctx) {
-  const chargeKey = String(row.charge_key ?? "").trim();
+// ── UNIFIED consume_charge ─────────────────────────────────────────────────
+function describeConsumeCharge(row) {
+  return {
+    chargeKey: String(row.charge_key ?? "").trim(),
+    count: Math.max(1, Math.floor(Number(row.count ?? 1) || 1)),
+    targetRef: row.target_ref ?? null,
+  };
+}
+
+function consumeChargeRun(row, ctx) {
+  const d = describeConsumeCharge(row);
+  if (ctx?.mode === "preview") {
+    return { type: "cost", resource: `charge:${d.chargeKey}`, amount: d.count,
+      valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? "self" };
+  }
+  return consumeChargeApply(row, ctx, d);
+}
+
+async function consumeChargeApply(row, ctx, { chargeKey, count, targetRef }) {
   if (!chargeKey) {
     warn(`skill-effects.consume_charge: missing charge_key on "${row.effect_label}"`);
     return { ok: false, kind: "consume_charge", reason: "no-charge-key" };
   }
   const onEmpty = String(row.on_empty ?? "abort").trim().toLowerCase();
-  const count = Math.max(1, Math.floor(Number(row.count ?? 1) || 1));
 
-  const targetResult = await resolveTargetRef(row.target_ref, ctx);
+  const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok) return { ok: false, kind: "consume_charge", reason: targetResult.reason ?? "no-targets" };
   const tokens = targetResult.tokens;
   if (!tokens.length) return { ok: false, kind: "consume_charge", reason: "no-targets" };
