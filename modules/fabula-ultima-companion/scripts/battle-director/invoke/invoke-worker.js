@@ -152,6 +152,12 @@ export function patchCardDom(root, newAr, invokeState) {
       const btn = root.querySelector('[data-fud-invoke="bond"]');
       if (btn) { btn.classList.remove("is-locked"); btn.classList.add("is-resolved"); }
     }
+
+    // ── Invoke point counter (FP / UP remaining) ─────────────────────────────
+    const counterVal = root.querySelector("[data-fud-invoke-counter] .fud-invoke-count");
+    if (counterVal && newAr.attacker?.invokePointCount != null) {
+      counterVal.textContent = String(newAr.attacker.invokePointCount);
+    }
   } catch (e) {
     warn("[BD][Invoke] patchCardDom threw", e);
   }
@@ -203,9 +209,12 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
     return false;
   }
 
+  const arAfterPay = (spend.cur != null && ar.attacker)
+    ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
+    : ar;
   const oldTotal = ar.roll.total;
   const newRoll  = await rerollDice({ roll: ar.roll, choice, actor: attacker });
-  const newAr    = recomputeArAfterInvoke(ar, newRoll);
+  const newAr    = recomputeArAfterInvoke(arAfterPay, newRoll);
   playTraitOutcomeSfx(oldTotal, newRoll.total);
 
   invokeState.trait            = true;
@@ -270,8 +279,11 @@ export async function handleInvokeBond({ director, ar, root, invokeState, prePic
     return false;
   }
 
+  const arAfterPay = (spend.cur != null && ar.attacker)
+    ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
+    : ar;
   const newRoll = applyBondBonus({ roll: ar.roll, bonus: chosen.bonus });
-  const newAr   = recomputeArAfterInvoke(ar, newRoll);
+  const newAr   = recomputeArAfterInvoke(arAfterPay, newRoll);
 
   invokeState.bond             = true;
   invokeState.bondInfo         = { index: chosen.index, name: chosen.name, bonus: chosen.bonus };

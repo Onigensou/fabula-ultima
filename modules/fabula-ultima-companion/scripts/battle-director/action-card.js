@@ -2046,9 +2046,9 @@ function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability =
 
   const showCounter = hasRoll && invokeCapability !== "none" && invokePointCount !== null;
   const counterHtml = showCounter
-    ? `<span style="margin-left:auto;font-size:11px;opacity:0.6;letter-spacing:0.04em;white-space:nowrap;align-self:center;">
+    ? `<span data-fud-invoke-counter style="margin-left:auto;font-size:11px;opacity:0.6;letter-spacing:0.04em;white-space:nowrap;align-self:center;">
          <i class="fa-solid ${invokeCapability === "trait-only" ? "fa-eye" : "fa-star"}"
-            style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i>${invokePointCount}
+            style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i><span class="fud-invoke-count">${invokePointCount}</span>
        </span>`
     : "";
 
@@ -5281,7 +5281,7 @@ export function registerPlayerActionCardHandler(channel) {
                 const choice = await hud.showTraitHUD({
                   roll: playerAr.roll,
                   root: wrapper,
-                  tokenUuid: menuSpec.attackerActorUuid ?? null,
+                  tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                 });
                 if (!choice) return;
                 invokeBtn.classList.add("is-resolved");
@@ -5312,7 +5312,7 @@ export function registerPlayerActionCardHandler(channel) {
                   attacker,
                   root: wrapper,
                   ar: playerAr,
-                  tokenUuid: attackerUuid,
+                  tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                 });
                 if (bondIndex == null) return;
                 invokeBtn.classList.add("is-resolved");
