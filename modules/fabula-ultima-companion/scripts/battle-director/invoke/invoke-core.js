@@ -20,12 +20,13 @@ export function getPointResource(actor) {
 /**
  * Returns invoke capability for the actor:
  *   "full"       — player characters (can invoke trait + bond)
- *   "trait-only" — villain / champion / boss NPCs (trait only, no bond)
- *   "none"       — normal monsters (no invoke)
+ *   "trait-only" — NPCs with at least 1 Ultima Point (villain/boss/champion rank)
+ *   "none"       — NPCs with 0 Ultima Points (normal monsters)
  */
 export function getInvokeCapability(actor) {
   if (!actor || actor.type !== "npc") return "full";
-  return isVillainOrBoss(actor) ? "trait-only" : "none";
+  const up = Number(actor?.system?.props?.ultima_point ?? 0) || 0;
+  return up > 0 ? "trait-only" : "none";
 }
 
 export function canPay(actor) {
