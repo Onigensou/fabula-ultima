@@ -32,6 +32,9 @@ const SFX = Object.freeze({
   traitDown:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_down2.wav",
 });
 
+// All invoke SFX URLs exported so director-vfx can warm them at battle start.
+export const INVOKE_SFX_URLS = Object.values(SFX);
+
 // ── Singleton ─────────────────────────────────────────────────────────────────
 
 let _active   = null; // { type, el, _resolve }
@@ -140,16 +143,16 @@ function ensureStyles() {
     }
     .fud-invoke-particle {
       position: absolute;
-      width: 2px;
-      height: 18px;
-      border-radius: 1px;
+      width: 3px;
+      height: 30px;
+      border-radius: 2px;
       background: linear-gradient(to bottom,
         rgba(255,255,220,0)   0%,
         rgba(255,240,140,.9) 35%,
         rgba(255,255,210,1)  50%,
         rgba(255,240,140,.9) 65%,
         rgba(255,255,220,0) 100%);
-      box-shadow: 0 0 3px rgba(255,220,80,.8);
+      box-shadow: 0 0 4px rgba(255,220,80,.9);
       animation: fud-invoke-particle-rise 0.75s linear infinite both;
     }
 
@@ -376,20 +379,20 @@ function _despawnDimmer() {
 // Positions a glow + particle effect centered on the attacking token.
 // Pure DOM/CSS — no PIXI involvement.
 
-// 12 vertical-line particles: clustered near bottom, staggered across 0.75s cycle
+// 12 vertical-line particles: spread across token width, staggered across 0.75s cycle
 const _PARTICLES = [
-  { lp: 44, tp: 88, dx:  -6, delay: 0.00 },
+  { lp: 30, tp: 88, dx:  -6, delay: 0.00 },
   { lp: 55, tp: 85, dx:   4, delay: 0.14 },
-  { lp: 48, tp: 92, dx:   0, delay: 0.28 },
-  { lp: 62, tp: 87, dx:   8, delay: 0.40 },
-  { lp: 37, tp: 90, dx:  -9, delay: 0.55 },
+  { lp: 44, tp: 92, dx:   0, delay: 0.28 },
+  { lp: 70, tp: 87, dx:   8, delay: 0.40 },
+  { lp: 22, tp: 90, dx:  -9, delay: 0.55 },
   { lp: 51, tp: 84, dx:   5, delay: 0.08 },
-  { lp: 41, tp: 91, dx:  -4, delay: 0.68 },
-  { lp: 59, tp: 89, dx:   7, delay: 0.32 },
+  { lp: 38, tp: 91, dx:  -4, delay: 0.68 },
+  { lp: 63, tp: 89, dx:   7, delay: 0.32 },
   { lp: 46, tp: 86, dx:  -2, delay: 0.47 },
-  { lp: 54, tp: 93, dx:  -7, delay: 0.62 },
-  { lp: 65, tp: 88, dx:   3, delay: 0.22 },
-  { lp: 35, tp: 86, dx:   6, delay: 0.75 },
+  { lp: 76, tp: 93, dx:  -7, delay: 0.62 },
+  { lp: 15, tp: 88, dx:   3, delay: 0.22 },
+  { lp: 58, tp: 86, dx:   6, delay: 0.75 },
 ];
 
 function _getTokenScreenRect(tokenUuid) {
@@ -413,7 +416,7 @@ function _spawnAura(tokenUuid) {
   const rect = _getTokenScreenRect(tokenUuid);
   if (!rect) return; // token not on canvas — skip silently
 
-  const size = Math.max(rect.w, rect.h) * 1.65;
+  const size = Math.max(rect.w, rect.h) * 2.2;
   const el = document.createElement("div");
   el.id = AURA_ID;
   el.style.left   = `${rect.cx}px`;

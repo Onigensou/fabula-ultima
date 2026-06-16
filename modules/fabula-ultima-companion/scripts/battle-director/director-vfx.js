@@ -12,6 +12,7 @@
 
 import { log, warn } from "./logger.js";
 import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-sfx.js";
+import { INVOKE_SFX_URLS } from "./invoke/invoke-hud.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -652,6 +653,7 @@ export async function preloadDirectorSfx() {
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav", // UI hover cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/switch_mode.wav",    // UI click cue
+    ...INVOKE_SFX_URLS, // invoke-hud trait/bond/die/cancel/confirm cues
   ];
   try { await preloadSfx(urls); }
   catch (e) { warn("preloadDirectorSfx threw", e); }
