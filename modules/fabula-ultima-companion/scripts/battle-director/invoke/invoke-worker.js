@@ -11,8 +11,8 @@ import { freezeActionResult } from "../snapshot.js";
 import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
-  showTraitDialog, showBondDialog,
 } from "./invoke-core.js";
+import { showTraitHUD, showBondHUD } from "./invoke-hud.js";
 
 // ── Ownership gate ────────────────────────────────────────────────────────────
 
@@ -172,7 +172,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const choice = await showTraitDialog({ roll: ar.roll });
+  const choice = await showTraitHUD({ roll: ar.roll, root });
   if (!choice) {
     ui.notifications?.info("Trait invoke cancelled.");
     return false;
@@ -232,7 +232,7 @@ export async function handleInvokeBond({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const pickedIndex = await showBondDialog({ bonds: viable, attacker });
+  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root });
   if (pickedIndex == null) {
     ui.notifications?.info("Bond invoke cancelled.");
     return false;

@@ -4487,6 +4487,13 @@ export async function postActionCard({ director, kind, payload }) {
         const type = invokeBtn.dataset.fudInvoke;
         (async () => {
           try {
+            // Stable import (no cache-bust) so singleton HUD state persists
+            const hud = await import("./invoke/invoke-hud.js");
+            // Toggle: re-clicking an open invoke HUD closes it instead of reopening
+            if (hud.getActiveType() === type) {
+              hud.dismissActive();
+              return;
+            }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
             const ar = director.ctx.actionResult;
             if (type === "trait") {
