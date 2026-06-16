@@ -136,23 +136,23 @@ function ensureStyles() {
       inset: -15%;
       border-radius: 50%;
       background: radial-gradient(ellipse at center,
-        rgba(255,220,100,0.50) 0%,
-        rgba(255,180,50,0.25)  40%,
-        transparent            72%);
+        rgba(255,140,40,0.50) 0%,
+        rgba(255,90,20,0.22)  40%,
+        transparent           72%);
       animation: fud-invoke-glow-pulse 2s ease-in-out infinite;
     }
     .fud-invoke-particle {
       position: absolute;
-      width: 2px;
+      width: 1.5px;
       height: 22px;
       border-radius: 1px;
       background: linear-gradient(to bottom,
-        rgba(255,255,220,0)   0%,
-        rgba(255,240,140,.9) 35%,
-        rgba(255,255,210,1)  50%,
-        rgba(255,240,140,.9) 65%,
-        rgba(255,255,220,0) 100%);
-      box-shadow: 0 0 4px rgba(255,220,80,.9);
+        rgba(255,90,10,0)    0%,
+        rgba(255,120,30,.9) 35%,
+        rgba(255,170,60,1)  50%,
+        rgba(255,120,30,.9) 65%,
+        rgba(255,90,10,0)  100%);
+      box-shadow: 0 0 4px rgba(255,110,20,.9);
       animation: fud-invoke-particle-rise 0.75s linear infinite both;
     }
 
