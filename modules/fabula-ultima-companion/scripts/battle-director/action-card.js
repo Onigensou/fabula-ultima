@@ -1962,31 +1962,25 @@ function appendTargetRow(root, r, kind, payload) {
 }
 
 function buildButtonsHTML({ isFumble = false, hasRoll = true }) {
-  const lockedAttrs = isFumble
-    ? `class="fud-btn fud-btn-invoke is-locked" title="Locked: Invoke cannot be used on a Fumble."`
-    : `class="fud-btn fud-btn-invoke is-locked" title="Invoke Trait / Bond — coming in Phase E"`;
+  // Invoke buttons: active (clickable) on normal rolls; locked on Fumble.
+  // For no-Check skills the row is hidden — no roll = nothing to invoke.
+  // No Cancel: dice are already rolled; GM rewind is on the Rewind button.
+  const mkInvokeBtn = (type, icon, label) => isFumble
+    ? `<div class="fud-btn fud-btn-invoke is-locked" data-fud-invoke="${type}"
+           title="Locked: Invoke cannot be used on a Fumble." aria-disabled="true">
+         <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
+         <span class="lock-icon"><i class="fa-solid fa-lock"></i></span>
+       </div>`
+    : `<div class="fud-btn fud-btn-invoke" data-fud-invoke="${type}"
+           role="button" tabindex="0">
+         <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
+       </div>`;
 
-  // Invoke Trait + Invoke Bond are visually present but locked: legacy
-  // mirrors this on Fumble; we use the same lock for "not yet implemented"
-  // so they're easy to enable once Phase E lands.
-  //
-  // For no-Check skills (Heal, Reinforce, etc.) the Invoke row is hidden
-  // entirely — there's no roll to reroll, so the buttons are nonsense
-  // here, not just disabled.
-  //
-  // No Cancel button: once the dice are rolled the player can't normally
-  // backtrack. GM-side rewind belongs on a future Undo button.
   const invokeRow = hasRoll
     ? `
       <div class="fud-bf-btn-row">
-        <div ${lockedAttrs} data-fud-invoke="trait" aria-disabled="true">
-          <span class="btn-label"><span class="icon">🎭</span>Invoke Trait</span>
-          <span class="lock-icon"><i class="fa-solid fa-lock"></i></span>
-        </div>
-        <div ${lockedAttrs} data-fud-invoke="bond" aria-disabled="true">
-          <span class="btn-label"><span class="icon">🤝</span>Invoke Bond</span>
-          <span class="lock-icon"><i class="fa-solid fa-lock"></i></span>
-        </div>
+        ${mkInvokeBtn("trait", "🎭", "Invoke Trait")}
+        ${mkInvokeBtn("bond",  "🤝", "Invoke Bond")}
       </div>`
     : "";
   return `
@@ -3546,6 +3540,10 @@ export async function postActionCard({ director, kind, payload }) {
     }
   } catch (e) { warn("postActionCard: broadcast setup threw", e); }
 
+  // Tracks which invoke types have been used for this action card instance.
+  // Mutated by invoke-worker; read by patchCardDom and the click handler.
+  const invokeState = { trait: false, bond: false };
+
   return new Promise((resolve) => {
     let resolved = false;
     let despawnTid = null;
@@ -4464,10 +4462,34 @@ export async function postActionCard({ director, kind, payload }) {
     }
 
     const onClick = (ev) => {
-      const lockedInvoke = ev.target?.closest?.(".fud-btn-invoke.is-locked");
-      if (lockedInvoke) {
+      // ── Invoke Trait / Bond ────────────────────────────────────────────────
+      const invokeBtn = ev.target?.closest?.("[data-fud-invoke]");
+      if (invokeBtn) {
         ev.stopPropagation();
-        ui.notifications?.info("Invoke Trait / Bond arrive in Phase E.");
+        if (invokeBtn.classList.contains("is-locked")) {
+          ui.notifications?.warn("Invoke cannot be used on a Fumble.");
+          return;
+        }
+        if (invokeBtn.classList.contains("is-resolved")) {
+          const t = invokeBtn.dataset.fudInvoke;
+          ui.notifications?.warn(`${t === "trait" ? "Trait" : "Bond"} already invoked for this action.`);
+          return;
+        }
+        const type = invokeBtn.dataset.fudInvoke;
+        (async () => {
+          try {
+            const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+            const ar = director.ctx.actionResult;
+            if (type === "trait") {
+              await worker.handleInvokeTrait({ director, ar, root, invokeState });
+            } else {
+              await worker.handleInvokeBond({ director, ar, root, invokeState });
+            }
+          } catch (e) {
+            warn("postActionCard: invoke handler threw", e);
+            ui.notifications?.error("Invoke failed (see console).");
+          }
+        })();
         return;
       }
       // Reaction-pill click handling — Apply / Skip on a pre-resolve
