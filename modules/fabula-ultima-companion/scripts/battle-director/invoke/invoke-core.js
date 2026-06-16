@@ -6,26 +6,27 @@ import { deriveCheck } from "../check.js";
 
 // ── Resource detection ───────────────────────────────────────────────────────
 
-function isVillainOrBoss(actor) {
-  const P = actor?.system?.props ?? {};
-  return !!(P.isVillain || P.isBoss || P.isChampion);
+function _npcRank(actor) {
+  return String(actor?.system?.props?.npc_rank ?? "").trim();
 }
 
 export function getPointResource(actor) {
-  return isVillainOrBoss(actor)
+  // All NPCs (any npc_rank) spend Ultima Points; players spend Fabula Points.
+  return _npcRank(actor)
     ? { key: "ultima_point", label: "Ultima Point" }
     : { key: "fabula_point", label: "Fabula Point" };
 }
 
 /**
  * Returns invoke capability for the actor:
- *   "full"       — player characters (type === "character"; can invoke trait + bond)
- *   "trait-only" — non-player actors with at least 1 Ultima Point
- *   "none"       — non-player actors with 0 Ultima Points (normal monsters), or unknown
+ *   "full"       — player characters (no npc_rank prop)
+ *   "trait-only" — NPCs with npc_rank AND at least 1 Ultima Point (villain/boss rank)
+ *   "none"       — NPCs with npc_rank but 0 UP (normal/soldier monsters), or unknown
  */
 export function getInvokeCapability(actor) {
   if (!actor) return "none";
-  if (actor.type === "character") return "full";
+  const rank = _npcRank(actor);
+  if (!rank) return "full"; // no npc_rank → player character
   const up = Number(actor?.system?.props?.ultima_point ?? 0) || 0;
   return up > 0 ? "trait-only" : "none";
 }
