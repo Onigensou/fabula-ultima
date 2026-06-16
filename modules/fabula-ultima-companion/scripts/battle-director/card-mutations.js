@@ -172,6 +172,51 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
   };
 }
 
+// Re-derive ONE target's per-target row through the REAL per-target pipeline
+// (buildPerTarget, via computeActionProfile) so a redirected hit respects the
+// reactor's DR / crit scaling / weapon efficiency / affinity exactly like a
+// direct hit — instead of recomputePerTargetForRedirect's simplified clone
+// (which skipped DR/crit/efficiency). Single source of truth = buildPerTarget.
+//
+// `targetSnap` is a snapshotTargetForToken() snapshot for the destination.
+// Reaction damage ops are NOT folded here (no acceptedReactions): the caller's
+// add_damage pass (recomputePerTargetDamages) folds them uniformly across ALL
+// rows, so folding here too would double-count. Returns a flat perTargetResults
+// row, or null if the profile can't be rebuilt (caller falls back to the clone).
+async function rederiveTargetRow(ar, targetSnap) {
+  try {
+    if (!ar || !targetSnap) return null;
+    const ap = await import("./action-profile.js");
+    const isAttack = String(ar.kind ?? "").toLowerCase() === "attack";
+    let view;
+    if (isAttack) {
+      view = { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null };
+    } else {
+      const skill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+      if (skill) {
+        const sr = await import("./skill-recipes.js");
+        view = sr.getRuntimeActionView(skill);
+      } else {
+        view = { kind: ar.kind ?? "Skill", effect_table: {}, fire_points: {}, source: null };
+      }
+    }
+    const dice = (ar.roll && typeof ar.roll.rA === "number")
+      ? { rA: ar.roll.rA, rB: ar.roll.rB }
+      : null;
+    const profile = await ap.computeActionProfile({
+      view, ar, attacker: ar.attacker, weapon: ar.weapon ?? null,
+      targets: [targetSnap], dice,
+      ctx: { round: ar.round ?? 0, attackMode: ar.attackMode },
+    });
+    const delta = ap.projectProfileToActionResult(profile, ar, [targetSnap]);
+    const row = Array.isArray(delta?.perTargetResults) ? delta.perTargetResults[0] : null;
+    return row ?? null;
+  } catch (e) {
+    warn("card-mutations.rederiveTargetRow threw — falling back to redirect clone", e);
+    return null;
+  }
+}
+
 // Resolve the redirect's "source slots" — which targets on the action
 // card get moved to the reactor. Reads `target_ref` from the redirect_target
 // row, looks up the corresponding targeting row on the carrier item, and
@@ -328,17 +373,19 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
         ?? destActor?.getActiveTokens?.()?.[0]?.document ?? null;
     }
     if (!destActor || !destTokDoc) { warn(`redirect(dest): destination actor/token unresolved`); return "failed"; }
-    const { applyAffinityToDamage } = await import("./snapshot.js");
+    const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
     const originalName = ctx.targets[srcIdx]?.name ?? "?";
-    const per = recomputePerTargetForRedirect({ ar: ctx.ar, reactor: destActor, reactorTok: destTokDoc, applyAffinityToDamage });
+    // Re-derive the destination's row through buildPerTarget (full pipeline);
+    // fall back to the legacy clone only if the profile can't be rebuilt.
+    const destSnap = snapshotTargetForToken(destTokDoc);
+    const per = (destSnap && await rederiveTargetRow(ctx.ar, destSnap))
+      ?? recomputePerTargetForRedirect({ ar: ctx.ar, reactor: destActor, reactorTok: destTokDoc, applyAffinityToDamage });
     per.redirectedFrom = { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect", reactorName: destActor.name };
     ctx.targets[srcIdx] = {
-      actorUuid: destActor.uuid,
-      tokenUuid: destTokDoc.uuid,
-      name: destActor.name,
-      tokenImg: destTokDoc.texture?.src ?? destActor.img,
-      disposition: destTokDoc.disposition,
-      defense: per.defense,
+      ...(destSnap ?? {
+        actorUuid: destActor.uuid, tokenUuid: destTokDoc.uuid, name: destActor.name,
+        tokenImg: destTokDoc.texture?.src ?? destActor.img, disposition: destTokDoc.disposition, defense: per.defense,
+      }),
       redirectedFrom: { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect" },
     };
     ctx.perTargets[srcIdx] = per;
@@ -359,7 +406,14 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
     return "failed";
   }
 
-  const { applyAffinityToDamage } = await import("./snapshot.js");
+  const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
+
+  // Re-derive the reactor's row ONCE through buildPerTarget (full pipeline) — the
+  // reactor's defense/affinity/DR is identical across slots, so one derivation is
+  // cloned per slot (only redirectedFrom differs). Fall back to the legacy clone
+  // only if the profile can't be rebuilt.
+  const reactorSnap = snapshotTargetForToken(reactorTok);
+  const reactorRowBase = (reactorSnap && await rederiveTargetRow(ctx.ar, reactorSnap)) ?? null;
 
   // Iterate over each subject — Protect's single-target case swaps one
   // slot; Prophetic Defender's multi-target case ("take the place of
@@ -375,13 +429,11 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
     }
     const originalName = ctx.targets[idx]?.name ?? "?";
 
-    // Per-slot recompute. The reactor's defense/affinity is identical
-    // across slots, so the same shape applies; the redirectedFrom
-    // annotation differs per slot so the card-renderer can show "via
-    // PD, originally targeting Hina" etc. per row.
-    const perTargetForSlot = recomputePerTargetForRedirect({
-      ar: ctx.ar, reactor, reactorTok, applyAffinityToDamage,
-    });
+    // Clone the once-derived reactor row (redirectedFrom differs per slot so the
+    // card can show "via PD, originally targeting Hina"). Fallback = legacy clone.
+    const perTargetForSlot = reactorRowBase
+      ? { ...reactorRowBase }
+      : recomputePerTargetForRedirect({ ar: ctx.ar, reactor, reactorTok, applyAffinityToDamage });
     perTargetForSlot.redirectedFrom = {
       actorUuid: subjectUuid,
       name: originalName,
@@ -390,12 +442,10 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
     };
 
     ctx.targets[idx] = {
-      actorUuid: reactor.uuid,
-      tokenUuid: reactorTok.uuid,
-      name: reactor.name,
-      tokenImg: reactorTok.texture?.src ?? reactor.img,
-      disposition: reactorTok.disposition,
-      defense: perTargetForSlot.defense,
+      ...(reactorSnap ?? {
+        actorUuid: reactor.uuid, tokenUuid: reactorTok.uuid, name: reactor.name,
+        tokenImg: reactorTok.texture?.src ?? reactor.img, disposition: reactorTok.disposition, defense: perTargetForSlot.defense,
+      }),
       redirectedFrom: { actorUuid: subjectUuid, name: originalName, via: cand.carrierName ?? "redirect" },
     };
     ctx.perTargets[idx] = perTargetForSlot;
@@ -568,23 +618,25 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     return "failed";
   }
 
-  const { applyAffinityToDamage } = await import("./snapshot.js");
+  const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
   let added = 0;
   for (const tok of tokens) {
     const victim = tok?.actor;
     if (!victim) continue;
     // Dedup — skip a victim already in the target list (incl. the original).
     if (ctx.targets.some((t) => t?.tokenUuid === tok.uuid || t?.actorUuid === victim.uuid)) continue;
-    const per = recomputePerTargetForRedirect({ ar: ctx.ar, reactor: victim, reactorTok: tok, applyAffinityToDamage });
+    // Re-derive the splashed victim's row through buildPerTarget (full pipeline);
+    // fall back to the legacy clone if the profile can't be rebuilt.
+    const victimSnap = snapshotTargetForToken(tok);
+    const per = (victimSnap && await rederiveTargetRow(ctx.ar, victimSnap))
+      ?? recomputePerTargetForRedirect({ ar: ctx.ar, reactor: victim, reactorTok: tok, applyAffinityToDamage });
     const addedVia = { via: cand.carrierName ?? "Grappling", reactorName: reactor.name };
     per.addedVia = addedVia;
     ctx.targets.push({
-      actorUuid: victim.uuid,
-      tokenUuid: tok.uuid,
-      name: victim.name,
-      tokenImg: tok.texture?.src ?? victim.img,
-      disposition: tok.disposition,
-      defense: per.defense,
+      ...(victimSnap ?? {
+        actorUuid: victim.uuid, tokenUuid: tok.uuid, name: victim.name,
+        tokenImg: tok.texture?.src ?? victim.img, disposition: tok.disposition, defense: per.defense,
+      }),
       addedVia,
     });
     ctx.perTargets.push(per);

@@ -4145,6 +4145,17 @@ export async function postActionCard({ director, kind, payload }) {
             damage: base?.damage ?? null,
             skillType: payload?.skillType ?? null,
             defenseTargetType: payload?.defenseTargetType ?? null,
+            // Context the card-mutation layer needs to RE-DERIVE a redirected /
+            // added target through buildPerTarget (computeActionProfile) — the
+            // single per-target derivation. Without these the re-derive falls
+            // back to the legacy clone, so the card would drift from RESOLVE
+            // (which always has the full ar). Pull from the live actionResult.
+            skillUuid: base?.skillUuid ?? null,
+            attacker: base?.attacker ?? null,
+            attackerActorRef: base?.attackerActorRef ?? null,
+            weapon: base?.weapon ?? null,
+            attackMode: base?.attackMode ?? null,
+            round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 
           // Hide the action card while card-mutations runs — if a
