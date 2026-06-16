@@ -1961,20 +1961,29 @@ function appendTargetRow(root, r, kind, payload) {
   } catch (e) { warn("appendTargetRow threw", e); }
 }
 
-function buildButtonsHTML({ isFumble = false, hasRoll = true }) {
-  // Invoke buttons: active (clickable) on normal rolls; locked on Fumble.
+function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability = "full" }) {
+  // Invoke buttons: locked on Fumble, locked by actor rank (none/trait-only), or active.
   // For no-Check skills the row is hidden — no roll = nothing to invoke.
-  // No Cancel: dice are already rolled; GM rewind is on the Rewind button.
-  const mkInvokeBtn = (type, icon, label) => isFumble
-    ? `<div class="fud-btn fud-btn-invoke is-locked" data-fud-invoke="${type}"
-           title="Locked: Invoke cannot be used on a Fumble." aria-disabled="true">
-         <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
-         <span class="lock-icon"><i class="fa-solid fa-lock"></i></span>
-       </div>`
-    : `<div class="fud-btn fud-btn-invoke" data-fud-invoke="${type}"
-           role="button" tabindex="0">
-         <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
-       </div>`;
+  const mkInvokeBtn = (type, icon, label) => {
+    const lockedByFumble      = isFumble;
+    const lockedByCapability  = invokeCapability === "none" || (invokeCapability === "trait-only" && type === "bond");
+    const isLocked = lockedByFumble || lockedByCapability;
+    const lockTitle = lockedByFumble
+      ? "Locked: Invoke cannot be used on a Fumble."
+      : invokeCapability === "none"
+        ? "Locked: Monsters cannot Invoke."
+        : "Locked: Only Villain/Champion/Boss-rank monsters can Invoke Bond.";
+    return isLocked
+      ? `<div class="fud-btn fud-btn-invoke is-locked" data-fud-invoke="${type}"
+             title="${lockTitle}" aria-disabled="true">
+           <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
+           <span class="lock-icon"><i class="fa-solid fa-lock"></i></span>
+         </div>`
+      : `<div class="fud-btn fud-btn-invoke" data-fud-invoke="${type}"
+             role="button" tabindex="0">
+           <span class="btn-label"><span class="icon">${icon}</span>${label}</span>
+         </div>`;
+  };
 
   const invokeRow = hasRoll
     ? `
@@ -2317,7 +2326,7 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
       ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll }))}
       ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll }))}
     `,
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble }),
+    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full" }),
   };
 }
 
@@ -3311,7 +3320,7 @@ function buildSkillCard(payload) {
     // Spell card is a reactable trigger; allowing cancel would silently
     // undo passive reactions that have already fired. GM uses the
     // rewind tool to back out the whole turn.
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, hasRoll: !!roll }),
+    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, hasRoll: !!roll, invokeCapability: attacker?.invokeCapability ?? "full" }),
   };
 }
 

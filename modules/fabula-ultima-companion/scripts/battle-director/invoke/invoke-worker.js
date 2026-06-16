@@ -12,6 +12,10 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
+
+function _getStampedCapability(ar) {
+  return ar?.attacker?.invokeCapability ?? "full";
+}
 import { showTraitHUD, showBondHUD, playTraitOutcomeSfx, animateAccTotal } from "./invoke-hud.js";
 import { playCritCutin } from "../director-cutin.js";
 
@@ -160,6 +164,11 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
     ui.notifications?.warn("Trait already invoked for this action.");
     return false;
   }
+  const _cap = _getStampedCapability(ar);
+  if (_cap === "none") {
+    warn("[BD][Invoke] handleInvokeTrait blocked — actor invokeCapability is 'none'");
+    return false;
+  }
   if (!ar?.roll) {
     ui.notifications?.warn("No accuracy roll to reroll.");
     return false;
@@ -213,6 +222,11 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
 export async function handleInvokeBond({ director, ar, root, invokeState }) {
   if (invokeState.bond) {
     ui.notifications?.warn("Bond already invoked for this action.");
+    return false;
+  }
+  const _cap = _getStampedCapability(ar);
+  if (_cap !== "full") {
+    warn("[BD][Invoke] handleInvokeBond blocked — actor invokeCapability is not 'full'");
     return false;
   }
   if (!ar?.roll) {

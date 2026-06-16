@@ -8,13 +8,24 @@ import { deriveCheck } from "../check.js";
 
 function isVillainOrBoss(actor) {
   const P = actor?.system?.props ?? {};
-  return !!(P.isVillain || P.isBoss);
+  return !!(P.isVillain || P.isBoss || P.isChampion);
 }
 
 export function getPointResource(actor) {
   return isVillainOrBoss(actor)
     ? { key: "ultima_point", label: "Ultima Point" }
     : { key: "fabula_point", label: "Fabula Point" };
+}
+
+/**
+ * Returns invoke capability for the actor:
+ *   "full"       — player characters (can invoke trait + bond)
+ *   "trait-only" — villain / champion / boss NPCs (trait only, no bond)
+ *   "none"       — normal monsters (no invoke)
+ */
+export function getInvokeCapability(actor) {
+  if (!actor || actor.type !== "npc") return "full";
+  return isVillainOrBoss(actor) ? "trait-only" : "none";
 }
 
 export function canPay(actor) {
