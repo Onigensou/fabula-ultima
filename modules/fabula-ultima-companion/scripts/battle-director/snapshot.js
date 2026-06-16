@@ -886,6 +886,43 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
   return Object.freeze(out);
 }
 
+// Build ONE target snapshot for a single token, in the SAME shape
+// snapshotEligibleTargets / …FromDCombat produce (identity + defense /
+// magicDefense / affinities / conditions / targetingBlocks). The reaction-
+// mutation layer (redirect_target, add_target) uses this so a reactor or a
+// spliced-in target can be re-derived through `buildPerTarget` — the ONE
+// per-target derivation — instead of a hand-rolled clone
+// (recomputePerTargetForRedirect). Mirrors the per-target object built in the
+// loops above; keep the three in sync (they read the same actor props/helpers).
+//
+// Accepts a TokenDocument or a placeable Token. Returns null when the token has
+// no actor.
+export function snapshotTargetForToken(tokenLike) {
+  const token = tokenLike?.document ?? tokenLike;   // placeable → its document
+  const actor = token?.actor ?? null;
+  if (!token || !actor) return null;
+  const disp = token.disposition ?? 0;
+  return Object.freeze({
+    tokenId: token.id,
+    tokenUuid: token.uuid,
+    actorId: actor.id,
+    actorUuid: actor.uuid,
+    worldActorUuid: (game.actors?.get?.(token.actorId)?.uuid) ?? actor.uuid,
+    name: actor.name,
+    tokenImg: token.texture?.src ?? token.img ?? actor.img ?? null,
+    disposition: disp,
+    hp: readPropNum(actor, ["current_hp", "hp"]),
+    maxHp: readPropNum(actor, ["max_hp"]),
+    defense: readPropNum(actor, ["defense", "current_def", "def"]),
+    magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
+    affinities: readAffinities(actor),
+    conditions: Object.freeze(readActiveConditions(actor)),
+    targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
+      Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
+    )),
+  });
+}
+
 // Apply the Attack range gate to an eligible-targets array, preserving
 // the `excluded` side-channel that target-picker reads to render the
 // "🚫 <reason>" overlay (Vanish etc.).

@@ -117,6 +117,45 @@ Re-derivation must be **pick-stable**:
 - **Persisted dice** — confirm the COMPUTE dice survive on `ar.roll` through
   CONFIRM/RESOLVE so re-derivation is deterministic (no re-roll).
 
+## Finding (2026-06-16): the redirect drift is larger than first estimated
+
+Reading `buildPerTarget`'s post-roll path
+([action-profile.js:347-409](../scripts/battle-director/action-profile.js)) vs
+`recomputePerTargetForRedirect`: the real per-target damage pipeline is
+**DR (`resolveIncomingReduction`) → crit scaling (`applyCritDamage`) →
+reaction-op folding → weapon efficiency (`readWeaponEfficiency`) → affinity**,
+emitting a `damageModParts` breakdown. The redirect clone does **only** HR +
+damageBonus + affinity — it skips DR, crit, efficiency, reaction ops, and the
+breakdown entirely. So a redirected (Protect) hit applies a *materially
+different, simpler* calc than the same attack landing directly.
+
+Consequence: **the increments do NOT separate.** Patching the clone to "match
+better" is a losing game; the only single-source fix is to re-derive the
+redirected/added target through `buildPerTarget` itself, which requires the
+skill view + attacker + persisted dice — i.e. re-running `computeActionProfile`
+over the post-mutation target set. Steps 2-5 below collapse into ONE change:
+`applyAcceptedCardMutations` builds the new target SET (redirect swaps a
+`snapshotTargetForToken` snapshot into the slot; add appends one), then calls
+`computeActionProfile({ view, ar, attacker, weapon, targets: newSet, dice:
+persisted, acceptedReactions })` and projects to `perTargetResults`. That single
+move retires `recomputePerTargetForRedirect`, the inline `adjust_accuracy`
+recompute, and (likely) `recomputePerTargetDamages`.
+
+**Prerequisite now in place:** `snapshotTargetForToken` (snapshot.js) — verified
+to produce the canonical buildPerTarget-readable shape.
+
+**Behavior change (intended):** redirected hits will start respecting DR, crit
+scaling, weapon efficiency, reaction ops, and show a damage breakdown — i.e.
+"Protect takes the full attack as the attacker would deal it." Confirm this RAW
+reading with design before shipping.
+
+**Live-critical caution:** this rewrites the Protect / Prophetic Defender path
+AND interacts with the just-merged `recomputeTargetPreviews` reactive re-derive.
+Needs unit verification (call `applyAcceptedCardMutations` via bridge with a
+synthetic auto-resolving redirect candidate; assert the redirected row ==
+`computeActionProfile` for a DIRECT action on that reactor) PLUS a live Protect
+battle test before merge.
+
 ## Migration strategy (incremental, parity-safe)
 
 1. **Snapshot helper** — add `snapshotTargetForToken`; unit-check its output
