@@ -479,6 +479,14 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // getting populated post-reload.
   installItemDeletionTracker(director);
 
+  // Same reasoning: re-register the engine-mandatory transaction-settle reactors
+  // (crisis etc.). A hard reload rebuilds the instance-settle module with an EMPTY
+  // BUILTIN_REACTORS; the fresh-start path registers them in start() (above), but
+  // resume bypasses start(). Without this the crisis reactor never fires after a
+  // mid-combat reload, so creatures dropping below crisis_hp get no Crisis AE.
+  clearBuiltinReactors();
+  registerBuiltinReactor(crisisReactor);
+
   _instance = director;
 
   // Notify UI surfaces (rewind button, combat-button-installer, etc.) that
