@@ -136,23 +136,23 @@ function ensureStyles() {
       inset: -15%;
       border-radius: 50%;
       background: radial-gradient(ellipse at center,
-        rgba(255,140,40,0.50) 0%,
-        rgba(255,90,20,0.22)  40%,
+        rgba(255,153,36,0.50) 0%,
+        rgba(255,120,20,0.22) 40%,
         transparent           72%);
       animation: fud-invoke-glow-pulse 2s ease-in-out infinite;
     }
     .fud-invoke-particle {
       position: absolute;
-      width: 1.5px;
-      height: 22px;
+      width: 2px;
+      height: 30px;
       border-radius: 1px;
       background: linear-gradient(to bottom,
-        rgba(255,90,10,0)    0%,
-        rgba(255,120,30,.9) 35%,
-        rgba(255,170,60,1)  50%,
-        rgba(255,120,30,.9) 65%,
-        rgba(255,90,10,0)  100%);
-      box-shadow: 0 0 4px rgba(255,110,20,.9);
+        rgba(255,153,36,0)   0%,
+        rgba(255,153,36,.9) 35%,
+        rgba(255,203,66,1)  50%,
+        rgba(255,153,36,.9) 65%,
+        rgba(255,153,36,0) 100%);
+      box-shadow: 0 0 4px rgba(255,153,36,.9);
       animation: fud-invoke-particle-rise 0.75s linear infinite both;
     }
 
@@ -254,7 +254,7 @@ function ensureStyles() {
       0%   { opacity: 0;   transform: translateY(10px)   translateX(0); }
       12%  { opacity: 1; }
       75%  { opacity: 0.7; }
-      100% { opacity: 0;   transform: translateY(-130px) translateX(var(--pdx, 0px)); }
+      100% { opacity: 0;   transform: translateY(-200px) translateX(var(--pdx, 0px)); }
     }
   `;
   document.head.appendChild(s);
@@ -416,7 +416,7 @@ function _spawnAura(tokenUuid) {
   const rect = _getTokenScreenRect(tokenUuid);
   if (!rect) return; // token not on canvas — skip silently
 
-  const size = Math.max(rect.w, rect.h) * 1.85;
+  const size = Math.max(rect.w, rect.h) * 1.9;
   const el = document.createElement("div");
   el.id = AURA_ID;
   el.style.left   = `${rect.cx}px`;
