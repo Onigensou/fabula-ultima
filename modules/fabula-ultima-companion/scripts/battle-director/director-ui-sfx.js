@@ -94,6 +94,8 @@ function onClick(e) {
   try {
     const el = e.target?.closest?.(INTERACTIVE_SELECTOR);
     if (!el || isDisabled(el)) return;
+    // Invoke buttons play their own HUD-open SFX — suppress the generic click cue.
+    if (el.hasAttribute("data-fud-invoke")) return;
     playSfx(UI_CLICK_SFX_URL, CLICK_VOL);
   } catch (err) {
     warn("director-ui-sfx onClick threw", err);

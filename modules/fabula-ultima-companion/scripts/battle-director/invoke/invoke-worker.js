@@ -185,7 +185,8 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const choice = await showTraitHUD({ roll: ar.roll, root });
+  const tokenUuid = ar.attacker?.tokenUuid ?? null;
+  const choice = await showTraitHUD({ roll: ar.roll, root, tokenUuid });
   if (!choice) return false;
 
   const spend = await payPoint(attacker);
@@ -246,7 +247,7 @@ export async function handleInvokeBond({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root, ar });
+  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root, ar, tokenUuid: ar.attacker?.tokenUuid ?? null });
   if (pickedIndex == null) return false;
   const chosen = viable.find((b) => b.index === pickedIndex) ?? viable[0];
 

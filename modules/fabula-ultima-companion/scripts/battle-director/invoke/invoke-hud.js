@@ -12,8 +12,10 @@
 
 import { playSfx } from "../director-sfx.js";
 
-const HUD_ID = "fud-invoke-hud";
-const CSS_ID = "fud-invoke-hud-style";
+const HUD_ID    = "fud-invoke-hud";
+const DIMMER_ID = "fud-invoke-dimmer";
+const AURA_ID   = "fud-invoke-aura";
+const CSS_ID    = "fud-invoke-hud-style";
 
 // All SFX go through playSfx (Web Audio, same pipeline as main BD hits/heals).
 // dieSelect = longer cue (selecting), dieDeselect = short cue (unselecting).
@@ -32,26 +34,27 @@ const SFX = Object.freeze({
 
 // ── Singleton ─────────────────────────────────────────────────────────────────
 
-let _active = null; // { type: "trait"|"bond", el: HTMLElement, _resolve: fn }
+let _active   = null; // { type, el, _resolve }
+let _dimmerEl = null;
+let _auraEl   = null;
 
 export function getActiveType() {
   return _active?.type ?? null;
 }
 
 // Called externally (action-card toggle, or cleanup on card close).
-// Dismisses with cancel sound + animation; resolves the open Promise with null.
-// Pass root+ar to also restore any live bond preview on the action card.
 export function dismissActive({ root, ar } = {}) {
   if (!_active) return;
   const { el, _resolve } = _active;
   _active = null;
   if (root && ar) _restoreCardFromAr(root, ar);
   _playHud(SFX.cancel);
+  _despawnDimmer();
+  _despawnAura();
   _despawn(el, () => _resolve(null));
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
-// All sounds go through playSfx (Web Audio, same pipeline as main BD SFX).
 
 function _playHud(url, vol = 0.8) {
   try { playSfx(url, vol); } catch {}
@@ -72,6 +75,7 @@ function ensureStyles() {
   const s = document.createElement("style");
   s.id = CSS_ID;
   s.textContent = `
+    /* ── Invoke HUD panel ── */
     #${HUD_ID} {
       position: fixed;
       z-index: 96;
@@ -92,6 +96,56 @@ function ensureStyles() {
       transform: translateX(-16px) !important;
       pointer-events: none !important;
       transition: opacity 200ms ease-in, transform 200ms cubic-bezier(.8,0,.8,.3) !important;
+    }
+
+    /* ── Screen dimmer ── */
+    #${DIMMER_ID} {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(0,0,0,0.55);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 120ms ease-out;
+    }
+    #${DIMMER_ID}.is-visible { opacity: 1; }
+    #${DIMMER_ID}.is-dismissing {
+      opacity: 0 !important;
+      transition: opacity 450ms ease-in !important;
+    }
+
+    /* ── Token aura ── */
+    #${AURA_ID} {
+      position: fixed;
+      z-index: 41;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 250ms ease-out;
+    }
+    #${AURA_ID}.is-visible { opacity: 1; }
+    #${AURA_ID}.is-dismissing {
+      opacity: 0 !important;
+      transition: opacity 400ms ease-in !important;
+    }
+    .fud-invoke-aura-glow {
+      position: absolute;
+      inset: -15%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center,
+        rgba(255,220,100,0.50) 0%,
+        rgba(255,180,50,0.25)  40%,
+        transparent            72%);
+      animation: fud-invoke-glow-pulse 2s ease-in-out infinite;
+    }
+    .fud-invoke-particle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,235,130,0.9);
+      box-shadow: 0 0 5px rgba(255,210,80,0.9), 0 0 10px rgba(255,180,50,0.5);
+      animation: fud-invoke-particle-rise 2.4s ease-in-out infinite both;
     }
 
     /* ── Card shell ── */
@@ -182,12 +236,23 @@ function ensureStyles() {
       border: 1.5px solid rgba(87,58,33,.3);
     }
     .fud-ih-cancel:hover { background: rgba(87,58,33,.18); }
+
+    /* ── Aura keyframes ── */
+    @keyframes fud-invoke-glow-pulse {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50%      { opacity: 0.72; transform: scale(1.08); }
+    }
+    @keyframes fud-invoke-particle-rise {
+      0%   { opacity: 0;    transform: translateY(0)     translateX(0); }
+      12%  { opacity: 0.85; }
+      80%  { opacity: 0.55; }
+      100% { opacity: 0;    transform: translateY(-72px) translateX(var(--pdx, 0px)); }
+    }
   `;
   document.head.appendChild(s);
 }
 
 // ── Number bounce animation ───────────────────────────────────────────────────
-// Exported so patchCardDom (invoke-worker) can call it when patching .total.
 
 let _bounceStyleInjected = false;
 function _ensureBounceStyle() {
@@ -195,25 +260,18 @@ function _ensureBounceStyle() {
   _bounceStyleInjected = true;
   const s = document.createElement("style");
   s.id = "fud-num-anim-style";
-  // 4-stop spring: pop up, overshoot down, micro-bounce back
   s.textContent = `@keyframes fud-num-bounce{0%{transform:scale(1)}18%{transform:scale(1.5)}55%{transform:scale(0.88)}80%{transform:scale(1.04)}100%{transform:scale(1)}}`;
   document.head.appendChild(s);
 }
 
-// Tick the number in `el` from its current DOM value up to `toVal` over ~700ms,
-// with a scale-bounce that pops on impact. Safe to call before the element is
-// in a layout — uses performance.now() so the rAF loop always starts fresh.
 export function animateAccTotal(totalEl, toVal) {
   if (!totalEl) return;
   const fromVal = parseInt(totalEl.textContent, 10) || 0;
   if (fromVal === toVal) { totalEl.textContent = toVal; return; }
 
   _ensureBounceStyle();
-
-  // inline-block required for CSS transform on a <span>
   totalEl.style.display = "inline-block";
   totalEl.style.transformOrigin = "center";
-  // Force a style flush so removing then re-adding the animation resets it
   totalEl.style.animation = "none";
   void totalEl.offsetWidth;
   totalEl.style.animation = "fud-num-bounce 650ms cubic-bezier(.15,.8,.2,1) forwards";
@@ -222,18 +280,111 @@ export function animateAccTotal(totalEl, toVal) {
   const start = performance.now();
   function tick(now) {
     const t = Math.min((now - start) / duration, 1);
-    // easeOutCubic — fast start, slow settle
     const eased = 1 - Math.pow(1 - t, 3);
     totalEl.textContent = Math.round(fromVal + (toVal - fromVal) * eased);
     if (t < 1) {
       requestAnimationFrame(tick);
     } else {
       totalEl.textContent = toVal;
-      // remove animation so future bond hover preview patches aren't affected
       setTimeout(() => { if (totalEl) totalEl.style.animation = ""; }, 100);
     }
   }
   requestAnimationFrame(tick);
+}
+
+// ── Screen dimmer ─────────────────────────────────────────────────────────────
+
+function _spawnDimmer() {
+  if (_dimmerEl) return; // already alive — reuse (mutual-exclusion case)
+  const el = document.createElement("div");
+  el.id = DIMMER_ID;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-visible")));
+  _dimmerEl = el;
+}
+
+function _despawnDimmer() {
+  const el = _dimmerEl;
+  if (!el) return;
+  _dimmerEl = null;
+  el.classList.add("is-dismissing");
+  const cleanup = () => { try { el.remove(); } catch {} };
+  el.addEventListener("transitionend", cleanup, { once: true });
+  setTimeout(cleanup, 600);
+}
+
+// ── Token aura ────────────────────────────────────────────────────────────────
+// Positions a glow + particle effect centered on the attacking token.
+// Pure DOM/CSS — no PIXI involvement.
+
+// 8 particles: { left%, top%, horizontal-drift px, animation-delay s }
+const _PARTICLES = [
+  { lp: 50, tp: 12, dx:  -7, delay: 0.00 },
+  { lp: 74, tp: 24, dx:   5, delay: 0.35 },
+  { lp: 85, tp: 52, dx:  11, delay: 0.65 },
+  { lp: 68, tp: 78, dx:  -4, delay: 1.00 },
+  { lp: 32, tp: 80, dx: -10, delay: 1.30 },
+  { lp: 16, tp: 52, dx:  -7, delay: 0.18 },
+  { lp: 26, tp: 24, dx:   8, delay: 0.82 },
+  { lp: 52, tp: 50, dx:   3, delay: 1.55 },
+];
+
+function _getTokenScreenRect(tokenUuid) {
+  if (!tokenUuid) return null;
+  try {
+    const token = canvas?.tokens?.placeables?.find(t => t.document?.uuid === tokenUuid);
+    if (!token) return null;
+    const st = canvas.stage?.worldTransform;
+    if (!st) return null;
+    const scale = st.a;
+    const canvasEl = document.getElementById("board") ?? canvas.app?.view ?? null;
+    const bounds = canvasEl ? canvasEl.getBoundingClientRect() : { left: 0, top: 0 };
+    const cx = bounds.left + (token.x + token.w / 2) * scale + st.tx;
+    const cy = bounds.top  + (token.y + token.h / 2) * scale + st.ty;
+    return { cx, cy, w: token.w * scale, h: token.h * scale };
+  } catch { return null; }
+}
+
+function _spawnAura(tokenUuid) {
+  if (_auraEl) return;
+  const rect = _getTokenScreenRect(tokenUuid);
+  if (!rect) return; // token not on canvas — skip silently
+
+  const size = Math.max(rect.w, rect.h) * 1.65;
+  const el = document.createElement("div");
+  el.id = AURA_ID;
+  el.style.left   = `${rect.cx}px`;
+  el.style.top    = `${rect.cy}px`;
+  el.style.width  = `${size}px`;
+  el.style.height = `${size}px`;
+
+  const glow = document.createElement("div");
+  glow.className = "fud-invoke-aura-glow";
+  el.appendChild(glow);
+
+  for (const p of _PARTICLES) {
+    const span = document.createElement("span");
+    span.className = "fud-invoke-particle";
+    span.style.left = `${p.lp}%`;
+    span.style.top  = `${p.tp}%`;
+    span.style.setProperty("--pdx", `${p.dx}px`);
+    span.style.animationDelay = `${p.delay}s`;
+    el.appendChild(span);
+  }
+
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-visible")));
+  _auraEl = el;
+}
+
+function _despawnAura() {
+  const el = _auraEl;
+  if (!el) return;
+  _auraEl = null;
+  el.classList.add("is-dismissing");
+  const cleanup = () => { try { el.remove(); } catch {} };
+  el.addEventListener("transitionend", cleanup, { once: true });
+  setTimeout(cleanup, 600);
 }
 
 // ── DOM lifecycle ─────────────────────────────────────────────────────────────
@@ -247,7 +398,7 @@ function _positionHud(el, cardRoot) {
   const card = cardRoot?.querySelector?.(".fud-bf-card");
   if (card) {
     const r = card.getBoundingClientRect();
-    const hudW = 256 + 4; // width + border
+    const hudW = 256 + 4;
     const left = Math.min(r.right + 8, window.innerWidth - hudW - 8);
     el.style.left      = `${left}px`;
     el.style.top       = `${r.top}px`;
@@ -273,7 +424,6 @@ function _spawnEl(html, cardRoot) {
   document.body.appendChild(el);
   _positionHud(el, cardRoot);
   _attachHoverSfx(el);
-  // Double rAF: first frame renders at opacity:0, second triggers transition
   requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-visible")));
   return el;
 }
@@ -283,32 +433,29 @@ function _despawn(el, onDone) {
   el.classList.add("is-dismissing");
   const cleanup = () => { el.remove(); onDone?.(); };
   el.addEventListener("transitionend", cleanup, { once: true });
-  setTimeout(cleanup, 300); // safety fallback
+  setTimeout(cleanup, 300);
 }
 
+// Despawns the HUD panel, dimmer, and aura, then resolves the Promise.
 function _resolveHud(el, resolveFn, result, sfxKey) {
   if (_active?.el === el) _active = null;
   if (sfxKey) _playHud(SFX[sfxKey]);
+  _despawnDimmer();
+  _despawnAura();
   _despawn(el, () => resolveFn(result));
 }
 
 // ── Bond card preview helpers ─────────────────────────────────────────────────
-// Temporarily patch the action card DOM to show what accuracy / hit-miss
-// would look like if a given bond bonus were applied. Restored on mouseleave
-// or when the bond HUD closes.
 
 function _previewBondOnCard(root, ar, bonus) {
   if (!root || !ar?.roll) return;
-  const roll    = ar.roll;
-  const newCB   = (Number(roll.checkBonus) || 0) + bonus;
+  const roll     = ar.roll;
+  const newCB    = (Number(roll.checkBonus) || 0) + bonus;
   const newTotal = (Number(roll.rA) || 0) + (Number(roll.rB) || 0) + newCB;
 
-  // Total (no animation — preview should snap instantly)
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = newTotal;
 
-  // Bonus pill — always keep it in the DOM (hide rather than remove) so moving
-  // between bond rows never triggers a DOM insert/remove cycle that flickers.
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
     let pill = accRow.querySelector(".bonus");
@@ -327,18 +474,19 @@ function _previewBondOnCard(root, ar, bonus) {
     }
   }
 
-  // Per-target hit/miss
   const rows      = root.querySelectorAll(".fud-bf-target-row");
   const ptResults = ar.perTargetResults ?? [];
   rows.forEach((row, i) => {
     const r = ptResults[i];
     if (!r) return;
+    // DEF unknown — never reveal hit/miss in preview
+    if (r.studied === false) return;
     const resultEl = row.querySelector(".t-result");
     if (!resultEl) return;
     const hit   = roll.isCrit || (!roll.isFumble && newTotal >= (r.defense ?? 0));
     const cls   = roll.isCrit ? "crit" : hit ? "hit" : "miss";
     const label = roll.isCrit ? "Critical Hit" : hit ? "Hit" : "Miss";
-    resultEl.className  = `t-result ${cls}`;
+    resultEl.className   = `t-result ${cls}`;
     resultEl.textContent = label;
   });
 }
@@ -347,24 +495,20 @@ function _restoreCardFromAr(root, ar) {
   if (!root || !ar?.roll) return;
   const roll = ar.roll;
 
-  // Total (snap restore — no animation)
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = roll.total;
 
-  // Bonus pill — hide instead of remove to prevent flicker on fast row transitions.
   const accRow = root.querySelector(".fud-bf-acc-row");
   if (accRow) {
     const pill = accRow.querySelector(".bonus");
-    const cb = Number(roll.checkBonus) || 0;
+    const cb   = Number(roll.checkBonus) || 0;
     if (cb !== 0) {
       if (pill) {
-        pill.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
+        pill.textContent   = cb >= 0 ? `+${cb}` : `${cb}`;
         pill.style.display = "";
       } else {
-        // Pill wasn't created by preview (e.g. pre-existing from a prior invoke).
-        // Re-create it in the correct slot.
         const p = document.createElement("span");
-        p.className = "bonus";
+        p.className   = "bonus";
         p.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
         const spacer = accRow.querySelector(".spacer");
         if (spacer) accRow.insertBefore(p, spacer);
@@ -375,7 +519,6 @@ function _restoreCardFromAr(root, ar) {
     }
   }
 
-  // Per-target hit/miss
   const rows      = root.querySelectorAll(".fud-bf-target-row");
   const ptResults = ar.perTargetResults ?? [];
   rows.forEach((row, i) => {
@@ -385,13 +528,12 @@ function _restoreCardFromAr(root, ar) {
     if (!resultEl) return;
     const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
     const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
-    resultEl.className  = `t-result ${cls}`;
+    resultEl.className   = `t-result ${cls}`;
     resultEl.textContent = label;
   });
 }
 
-// ── Trait outcome sound (called by invoke-worker after reroll) ─────────────────
-// Plays Dice.wav via Web Audio, then after ~1800ms plays up/down outcome cue.
+// ── Trait outcome sound ───────────────────────────────────────────────────────
 
 export function playTraitOutcomeSfx(oldTotal, newTotal) {
   _playHud(SFX.dice, 0.85);
@@ -412,9 +554,8 @@ const iconFor = (attr) =>
   ATTR_ICONS[String(attr || "").toUpperCase()] ??
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png";
 
-export function showTraitHUD({ roll, root }) {
+export function showTraitHUD({ roll, root, tokenUuid = null }) {
   ensureStyles();
-  // Mutual exclusion: close any open HUD first (silent, no cancel sfx)
   if (_active) {
     const old = _active;
     _active = null;
@@ -446,6 +587,8 @@ export function showTraitHUD({ roll, root }) {
   </div>`;
 
   const el = _spawnEl(html, root);
+  _spawnDimmer();
+  _spawnAura(tokenUuid);
 
   return new Promise((resolve) => {
     _active = { type: "trait", el, _resolve: resolve };
@@ -461,7 +604,6 @@ export function showTraitHUD({ roll, root }) {
       const next = !dieEl.classList.contains("on");
       dieEl.classList.toggle("on", next);
       dieEl.setAttribute("aria-checked", String(next));
-      // dieSelect = longer cue (feels like "locking in"), dieDeselect = short cue
       _playHud(next ? SFX.dieSelect : SFX.dieDeselect, 0.7);
       updateConfirm();
     };
@@ -478,7 +620,6 @@ export function showTraitHUD({ roll, root }) {
       const aOn = dieA.classList.contains("on");
       const bOn = dieB.classList.contains("on");
       const choice = aOn && bOn ? "AB" : aOn ? "A" : bOn ? "B" : null;
-      // Dice sound plays now; outcome sound fires in invoke-worker after reroll
       _playHud(SFX.dice, 0.85);
       _resolveHud(el, resolve, choice, null);
     });
@@ -528,10 +669,9 @@ function _bondRowHTML(bond, i, selIdx, actor) {
   </div>`;
 }
 
-export async function showBondHUD({ bonds, attacker, root, ar }) {
+export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null }) {
   const viable = bonds.filter((b) => (b?.bonus || 0) > 0);
   if (!viable.length) return null;
-  // Skip dialog entirely for a single eligible bond
   if (viable.length === 1) return viable[0].index;
 
   ensureStyles();
@@ -543,7 +683,6 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
   _playHud(SFX.bond, 0.3);
 
   let selectedIdx = 0;
-
   const buildList = () =>
     viable.map((b, i) => _bondRowHTML(b, i, selectedIdx, attacker)).join("");
 
@@ -559,6 +698,8 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
   </div>`;
 
   const el = _spawnEl(html, root);
+  _spawnDimmer();
+  _spawnAura(tokenUuid);
 
   return new Promise((resolve) => {
     _active = { type: "bond", el, _resolve: resolve };
@@ -566,8 +707,6 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     const list       = el.querySelector(".fud-ih-bond-list");
     const confirmBtn = el.querySelector("[data-confirm]");
 
-    // Debounce the restore so fast mouse transitions between rows never
-    // produce a visible snap-back of the total and bonus pill.
     let _restoreTimer = null;
     const scheduleRestore = () => {
       _restoreTimer = setTimeout(() => {
@@ -585,9 +724,7 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
           playHoverSfx();
           if (ar && root) _previewBondOnCard(root, ar, viable[i].bonus);
         });
-        row.addEventListener("mouseleave", () => {
-          scheduleRestore();
-        });
+        row.addEventListener("mouseleave", () => { scheduleRestore(); });
         row.addEventListener("click", () => { selectedIdx = i; refresh(); });
         row.addEventListener("keydown", (ev) => {
           if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
