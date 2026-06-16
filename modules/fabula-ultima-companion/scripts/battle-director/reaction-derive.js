@@ -93,6 +93,83 @@ export async function deriveCascadeCandidates({ ledger, cardCtx, firedKeys, deps
   return out;
 }
 
+// Build the `creature_targeted_by_action` payload for ONE subject (a creature
+// that just BECAME a target via a mid-card mutation — redirect destination or
+// add_target splash). Mirrors the CONFIRM-time scan's payload so the same gates
+// resolve: `sourceActorUuid` = the subject (the reaction_source self/ally/enemy
+// filter keys off it), plus the attacker + roll context.
+export function buildTargetedPayload(subject, cardCtx) {
+  return {
+    sourceActorUuid:   subject?.actorUuid ?? null,
+    subjectActorUuid:  subject?.actorUuid ?? null,
+    subjectTokenUuid:  subject?.tokenUuid ?? null,
+    targetTokenUuids:  cardCtx?.targetTokenUuids ?? [],
+    attackerActorUuid: cardCtx?.attackerActorUuid ?? null,
+    attackerTokenUuid: cardCtx?.attackerTokenUuid ?? null,
+    actionIntent:      cardCtx?.actionIntent ?? null,
+    actionKind:        cardCtx?.actionKind ?? null,
+    actionName:        cardCtx?.actionName ?? null,
+    checkTotal:        cardCtx?.checkTotal ?? null,
+    isCrit:            cardCtx?.isCrit ?? null,
+    isFumble:          cardCtx?.isFumble ?? null,
+    weaponRange:       cardCtx?.weaponRange ?? null,
+    weaponType:        cardCtx?.weaponType ?? null,
+    damageType:        cardCtx?.damageType ?? null,
+  };
+}
+
+// Re-derive `creature_targeted_by_action` candidates for creatures that just
+// BECAME targets mid-card (redirect / add_target). For each new subject, scan
+// every reactor (live combatants, minus the action-taker) — this is how a
+// creature's own "when I'm targeted" reaction (reaction_source: self) finally
+// matches once a redirect makes it the target.
+//   newSubjects:  [{ actorUuid, tokenUuid }]  — the creatures now newly targeted
+//   reactorActors: live actor docs to scan (caller excludes the action-taker)
+//   cardCtx:      { attackerActorUuid, attackerTokenUuid, actionKind, ... }
+//   firedKeys:    candidateKeys already shown/resolved — NO-REUSE: a reaction
+//                 (rowKey:carrier:reactor) offered once is never re-offered.
+//   deps:         { findPassiveCandidates }
+// Returns deduped, tagged candidates in the same shape the CONFIRM scan pushes.
+export async function deriveTargetedCandidates({ newSubjects, reactorActors, cardCtx, firedKeys, deps } = {}) {
+  const out = [];
+  const seen = new Set(firedKeys ?? []);
+  if (!deps?.findPassiveCandidates) return out;
+  const attackerUuid = cardCtx?.attackerActorUuid ?? null;
+  for (const subject of newSubjects ?? []) {
+    if (!subject?.actorUuid) continue;
+    const payload = buildTargetedPayload(subject, cardCtx);
+    for (const reactor of reactorActors ?? []) {
+      if (!reactor || reactor.uuid === attackerUuid) continue;
+      let cands = [];
+      try {
+        cands = await deps.findPassiveCandidates({
+          casterActor: reactor,
+          trigger: "creature_targeted_by_action",
+          payload,
+          includeUnavailable: false,
+        });
+      } catch (_) { cands = []; }
+      for (const c of cands ?? []) {
+        const tagged = {
+          ...c,
+          reactorActorUuid: reactor.uuid,
+          reactorActorName: reactor.name,
+          reactorActorImg:  reactor.img ?? c.carrierImg,
+          reactorIsPlayer:  !!reactor.hasPlayerOwner,
+          subjectActorUuid: subject.actorUuid,
+          subjectTokenUuid: subject.tokenUuid ?? null,
+          payloadAtFire:    payload,
+        };
+        const k = candidateKey(tagged);
+        if (seen.has(k)) continue;   // no-reuse / convergence
+        seen.add(k);
+        out.push(tagged);
+      }
+    }
+  }
+  return out;
+}
+
 // Append a completed-skill entry to the ledger if not already present (by
 // reactor+skill). Pure helper for the caller's ledger bookkeeping.
 export function appendCompletion(ledger, entry) {

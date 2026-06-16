@@ -3848,6 +3848,70 @@ export async function postActionCard({ director, kind, payload }) {
       }
     }
 
+    // ── Re-scan "when targeted" reactions for creatures newly targeted by a
+    // mid-card mutation (redirect destination, add_target splash). Without this,
+    // a creature dragged into the action's target set never gets to use its own
+    // creature_targeted_by_action reactions (they were scanned at CONFIRM against
+    // the ORIGINAL targets). Models injectCascadeReactions; shares cascadeFiredKeys
+    // + diffCandidates so a reaction (rowKey:carrier:reactor) is offered at most
+    // once — NO REUSE — which also makes any redirect→react→redirect chain
+    // self-terminate.
+    async function injectTargetedReactionsForNewTargets(mutTargets, originalRows) {
+      try {
+        const rd = await import("./reaction-derive.js?cb=" + Date.now());
+        const se = await import("./skill-effects.js?cb=" + Date.now());
+        const origActorUuids = new Set((originalRows ?? []).map((r) => r?.actorUuid).filter(Boolean));
+        // New subjects = entries a mutation brought in: a redirected slot (carries
+        // redirectedFrom), an add_target splash (addedVia), or an actorUuid absent
+        // from the pre-mutation rows.
+        const newSubjects = (mutTargets ?? [])
+          .filter((t) => t && (t.redirectedFrom || t.addedVia || !origActorUuids.has(t.actorUuid)))
+          .map((t) => ({ actorUuid: t.actorUuid, tokenUuid: t.tokenUuid }));
+        if (!newSubjects.length) return;
+
+        const attackerActorUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
+        const combatants = Array.isArray(director?.dCombat?.combatants) ? director.dCombat.combatants : [];
+        const reactorActors = [];
+        for (const c of combatants) {
+          if (c?.defeated) continue;
+          const actor = c?.actorDoc ?? null;
+          if (!actor || actor.uuid === attackerActorUuid) continue;
+          reactorActors.push(actor);
+        }
+        if (!reactorActors.length) return;
+
+        const cardCtx = {
+          attackerActorUuid,
+          attackerTokenUuid: payload?.attacker?.tokenUuid ?? payload?.attackerTokenUuid ?? null,
+          actionIntent: payload?.actionIntent ?? (kind === "Attack" ? "harmful" : null),
+          actionKind: kind,
+          actionName: payload?.skillName ?? payload?.weapon?.name ?? kind,
+          checkTotal: payload?.roll?.total ?? payload?.checkTotal ?? null,
+          isCrit: !!payload?.roll?.isCrit,
+          isFumble: !!payload?.roll?.isFumble,
+          weaponRange: payload?.weaponRange ?? payload?.weapon?.range ?? null,
+          weaponType: payload?.weapon?.weaponType ?? null,
+          damageType: payload?.damage?.element ?? payload?.damageType ?? null,
+          targetTokenUuids: (mutTargets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
+        };
+
+        const derived = await rd.deriveTargetedCandidates({
+          newSubjects, reactorActors, cardCtx, firedKeys: cascadeFiredKeys,
+          deps: { findPassiveCandidates: se.findPassiveCandidates },
+        });
+        const { added } = rd.diffCandidates(prePassives, derived);
+        if (!added.length) return;
+        for (const c of added) {
+          cascadeFiredKeys.add(rd.candidateKey(c));
+          prePassives.push(c);
+        }
+        appendCascadePills(added);
+        log(`injectTargetedReactionsForNewTargets: +${added.length} reaction(s) for ${newSubjects.length} newly-targeted creature(s)`);
+      } catch (e) {
+        warn("injectTargetedReactionsForNewTargets threw", e);
+      }
+    }
+
     async function recordPillDecision(rowKey, carrierUuid, decision) {
       const pillEl = root.querySelector(
         `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
@@ -4232,6 +4296,15 @@ export async function postActionCard({ director, kind, payload }) {
             negated: !!mutationResult.negated,
           };
           applyCardTargetMutationDelta(root, delta);
+
+          // Creatures dragged into the target set by this mutation (redirect
+          // destination / add_target splash) can now use their own "when I'm
+          // targeted" reactions — re-scan + inject those as fresh pills. No-op
+          // when the mutation added no new targets; no-reuse via cascadeFiredKeys.
+          if (!mutationResult.negated) {
+            try { await injectTargetedReactionsForNewTargets(mutTargets, original); }
+            catch (e) { warn("recomputeTargetPreviews: targeted re-scan threw", e); }
+          }
 
           // Negated/Blocked action — auto-reject any still-pending (undecided) ask
           // pills. Reacting to a nullified action is moot, and skipping them clears
