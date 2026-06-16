@@ -89,9 +89,9 @@ function ensureStyles() {
     }
     #${HUD_ID}.is-dismissing {
       opacity: 0 !important;
-      transform: translateX(-14px) !important;
+      transform: translateX(-16px) !important;
       pointer-events: none !important;
-      transition: opacity 150ms ease-in, transform 150ms ease-in !important;
+      transition: opacity 200ms ease-in, transform 200ms cubic-bezier(.8,0,.8,.3) !important;
     }
 
     /* ── Card shell ── */
@@ -420,7 +420,7 @@ export function showTraitHUD({ roll, root }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  _playHud(SFX.trait, 0.5);
+  _playHud(SFX.trait, 0.3);
 
   const { A1, A2, dA, dB, rA, rB } = roll;
   const html = `<div class="fud-ih-card">
@@ -540,7 +540,7 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  _playHud(SFX.bond, 0.5);
+  _playHud(SFX.bond, 0.3);
 
   let selectedIdx = 0;
 
@@ -566,16 +566,27 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     const list       = el.querySelector(".fud-ih-bond-list");
     const confirmBtn = el.querySelector("[data-confirm]");
 
+    // Debounce the restore so fast mouse transitions between rows never
+    // produce a visible snap-back of the total and bonus pill.
+    let _restoreTimer = null;
+    const scheduleRestore = () => {
+      _restoreTimer = setTimeout(() => {
+        if (ar && root) _restoreCardFromAr(root, ar);
+      }, 60);
+    };
+    const cancelRestore = () => clearTimeout(_restoreTimer);
+
     const refresh = () => {
       list.innerHTML = buildList();
       for (const row of list.querySelectorAll(".fud-ih-bond-row")) {
         const i = Number(row.dataset.bidx);
         row.addEventListener("mouseenter", () => {
+          cancelRestore();
           playHoverSfx();
           if (ar && root) _previewBondOnCard(root, ar, viable[i].bonus);
         });
         row.addEventListener("mouseleave", () => {
-          if (ar && root) _restoreCardFromAr(root, ar);
+          scheduleRestore();
         });
         row.addEventListener("click", () => { selectedIdx = i; refresh(); });
         row.addEventListener("keydown", (ev) => {
@@ -592,12 +603,14 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     refresh();
 
     confirmBtn.addEventListener("click", () => {
+      cancelRestore();
       if (ar && root) _restoreCardFromAr(root, ar);
       const chosen = viable[selectedIdx];
       _resolveHud(el, resolve, chosen?.index ?? null, "confirm");
     });
 
     el.querySelector("[data-cancel]").addEventListener("click", () => {
+      cancelRestore();
       if (ar && root) _restoreCardFromAr(root, ar);
       _resolveHud(el, resolve, null, "cancel");
     });
