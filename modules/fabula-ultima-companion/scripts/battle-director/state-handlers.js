@@ -33,6 +33,7 @@ import { pickSkill, SkillPicker } from "./skill-picker.js";
 import { ListPicker } from "./list-picker.js";
 // Player-driven input: client-local compose chain runner.
 import { composeAction, makeCancelToken } from "./compose-action.js";
+import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
@@ -3164,6 +3165,21 @@ const Confirm = {
     let attackerActor = null;
     try { attackerActor = await fromUuid(ar.attackerActorRef ?? ar.attacker.actorUuid); } catch {}
 
+    // Resolve token actor (synthetic overlay for unlinked NPC tokens) to gate invoke capability.
+    // Must use the token doc's .actor, not the world actor, since unlinked tokens may differ.
+    let _tokenActor = attackerActor;
+    try {
+      if (ar.attacker?.tokenUuid) {
+        const _tokenDoc = await fromUuid(ar.attacker.tokenUuid);
+        if (_tokenDoc?.actor) _tokenActor = _tokenDoc.actor;
+      }
+    } catch {}
+    const invokeCapability = getInvokeCapability(_tokenActor);
+    const _iProps = _tokenActor?.system?.props ?? {};
+    const _up = Number(_iProps.ultima_point ?? 0) || 0;
+    const _fp = Number(_iProps.fabula_point ?? 0) || 0;
+    const invokePointCount = invokeCapability === "trait-only" ? _up : invokeCapability === "full" ? _fp : null;
+
     // Persistence checkpoint — "Action Posted / Card Live".
     //
     // Two reasons we save here for ALL kinds (not just Skill):
@@ -3709,7 +3725,7 @@ const Confirm = {
       director,
       kind: ar.kind,
       payload: {
-        attacker: ar.attacker,
+        attacker: { ...ar.attacker, invokeCapability, invokePointCount },
         attackerActor,
         weapon: ar.weapon,
         targets: cardTargets,
