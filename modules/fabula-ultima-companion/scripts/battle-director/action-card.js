@@ -715,9 +715,10 @@ export function ensureStyles() {
 
     /* Redirected target row — applied when a third-party reaction
        (Protect, Cover) moves the action's target slot to the reactor.
-       Side-tint signals "this row was changed mid-card"; the small
-       arrow text shows who was originally targeted. Visual continuity
-       with the third-party pill row (PC-blue accent). */
+       Side-tint signals "this row was changed mid-card"; the small swap
+       icon (🔄) marks the redirected target, with the original name on
+       hover. Visual continuity with the third-party pill row (PC-blue
+       accent). */
     .fud-bf-card .fud-bf-target-row.is-redirected {
       background: rgba(180, 215, 255, 0.18);
       border-left: 2px solid rgba(70, 120, 200, 0.65);
@@ -725,11 +726,10 @@ export function ensureStyles() {
       margin-left: -6px;
     }
     .fud-bf-card .fud-bf-target-row.is-redirected .t-redirect-from {
-      font-size: 10px;
-      font-weight: 600;
-      color: #4a2f87;
-      opacity: 0.7;
-      margin-left: 4px;
+      font-size: 11px;
+      opacity: 0.75;
+      margin-left: 3px;
+      cursor: help;
     }
 
     /* Pre-resolve reaction pill row (Healing Power / Support Magic /
@@ -2179,7 +2179,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     )) {
       span.innerHTML =
         `${escapeHtml(newName)} ` +
-        `<small class="t-redirect-from">← ${escapeHtml(fromName)}</small>`;
+        `<small class="t-redirect-from" title="Redirected from ${escapeHtml(fromName)}">🔄</small>`;
       span.classList.add("is-redirected");
     }
 
@@ -2215,7 +2215,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
       if (nameSpan) {
         nameSpan.innerHTML =
           `${escapeHtml(newName)} ` +
-          `<small class="t-redirect-from">← ${escapeHtml(fromName)}</small>`;
+          `<small class="t-redirect-from" title="Redirected from ${escapeHtml(fromName)}">🔄</small>`;
       }
       const defSpan = rowEl.querySelector(".t-def");
       if (defSpan) defSpan.textContent = `DEF ${r.newDefense}`;
