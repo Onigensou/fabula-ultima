@@ -130,10 +130,9 @@ export function patchCardDom(root, newAr, invokeState) {
     const ptResults  = newAr.perTargetResults ?? [];
     rows.forEach((row, i) => {
       const r = ptResults[i];
-      if (!r) return;
+      if (!r || r.studied === false) return; // keep ??? masking for unstudied targets
       const resultEl = row.querySelector(".t-result");
-      if (!resultEl) return;
-      // Use the hit flag from the recomputed result (already accounts for isCrit/isFumble)
+      if (!resultEl || resultEl.textContent.trim() === "???") return;
       const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
       const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
       resultEl.className = `t-result ${cls}`;

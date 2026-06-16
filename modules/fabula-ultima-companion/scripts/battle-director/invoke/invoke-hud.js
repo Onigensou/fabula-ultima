@@ -140,12 +140,17 @@ function ensureStyles() {
     }
     .fud-invoke-particle {
       position: absolute;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(255,235,130,0.9);
-      box-shadow: 0 0 5px rgba(255,210,80,0.9), 0 0 10px rgba(255,180,50,0.5);
-      animation: fud-invoke-particle-rise 2.4s ease-in-out infinite both;
+      width: 2px;
+      height: 18px;
+      border-radius: 1px;
+      background: linear-gradient(to bottom,
+        rgba(255,255,220,0)   0%,
+        rgba(255,240,140,.9) 35%,
+        rgba(255,255,210,1)  50%,
+        rgba(255,240,140,.9) 65%,
+        rgba(255,255,220,0) 100%);
+      box-shadow: 0 0 3px rgba(255,220,80,.8);
+      animation: fud-invoke-particle-rise 0.75s linear infinite both;
     }
 
     /* ── Card shell ── */
@@ -243,10 +248,10 @@ function ensureStyles() {
       50%      { opacity: 0.72; transform: scale(1.08); }
     }
     @keyframes fud-invoke-particle-rise {
-      0%   { opacity: 0;    transform: translateY(0)     translateX(0); }
-      12%  { opacity: 0.85; }
-      80%  { opacity: 0.55; }
-      100% { opacity: 0;    transform: translateY(-72px) translateX(var(--pdx, 0px)); }
+      0%   { opacity: 0;   transform: translateY(10px)   translateX(0); }
+      12%  { opacity: 1; }
+      75%  { opacity: 0.7; }
+      100% { opacity: 0;   transform: translateY(-130px) translateX(var(--pdx, 0px)); }
     }
   `;
   document.head.appendChild(s);
@@ -293,9 +298,48 @@ export function animateAccTotal(totalEl, toVal) {
 }
 
 // ── Screen dimmer ─────────────────────────────────────────────────────────────
+// Uses a PIXI Graphics rect injected into canvas.primary so it sits above the
+// scene background but below the token layer and all DOM HUDs.
+// Falls back to a DOM div if PIXI/canvas is unavailable.
 
 function _spawnDimmer() {
-  if (_dimmerEl) return; // already alive — reuse (mutual-exclusion case)
+  // If a prior PIXI graphic was orphaned (canvas rebuilt on scene change), clear ref.
+  if (_dimmerEl && !(_dimmerEl instanceof HTMLElement) && !_dimmerEl.parent) {
+    _dimmerEl = null;
+  }
+  if (_dimmerEl) return;
+
+  // ── PIXI path ──
+  try {
+    if (window.PIXI && canvas?.primary) {
+      const g = new PIXI.Graphics();
+      // PIXI v8 API; fall back to v7 if needed.
+      try { g.rect(-50000, -50000, 100000, 100000).fill(0x000000); }
+      catch { g.beginFill(0x000000).drawRect(-50000, -50000, 100000, 100000).endFill(); }
+      g.alpha = 0;
+      canvas.primary.addChild(g);
+      // If canvas.tokens is a sibling layer above canvas.primary in the stage,
+      // our graphic is already below tokens. If tokens are inside canvas.primary,
+      // push the graphic below them.
+      if (canvas.tokens?.parent === canvas.primary) {
+        try {
+          const ti = canvas.primary.getChildIndex(canvas.tokens);
+          canvas.primary.setChildIndex(g, ti);
+        } catch {}
+      }
+      _dimmerEl = g;
+      const TARGET = 0.5, DURATION = 120, t0 = performance.now();
+      const fi = (now) => {
+        if (_dimmerEl !== g) return;
+        g.alpha = Math.min((now - t0) / DURATION, 1) * TARGET;
+        if (g.alpha < TARGET) requestAnimationFrame(fi);
+      };
+      requestAnimationFrame(fi);
+      return;
+    }
+  } catch {}
+
+  // ── DOM fallback ──
   const el = document.createElement("div");
   el.id = DIMMER_ID;
   document.body.appendChild(el);
@@ -304,29 +348,48 @@ function _spawnDimmer() {
 }
 
 function _despawnDimmer() {
-  const el = _dimmerEl;
-  if (!el) return;
+  const d = _dimmerEl;
+  if (!d) return;
   _dimmerEl = null;
-  el.classList.add("is-dismissing");
-  const cleanup = () => { try { el.remove(); } catch {} };
-  el.addEventListener("transitionend", cleanup, { once: true });
-  setTimeout(cleanup, 600);
+
+  if (d instanceof HTMLElement) {
+    d.classList.add("is-dismissing");
+    const cleanup = () => { try { d.remove(); } catch {} };
+    d.addEventListener("transitionend", cleanup, { once: true });
+    setTimeout(cleanup, 600);
+  } else {
+    // PIXI Graphics — rAF fade-out then destroy
+    const startAlpha = d.alpha;
+    const DURATION = 450, t0 = performance.now();
+    const fo = (now) => {
+      if (!d.parent) { try { d.destroy(); } catch {} return; }
+      const t = Math.min((now - t0) / DURATION, 1);
+      d.alpha = startAlpha * (1 - t);
+      if (t < 1) requestAnimationFrame(fo);
+      else { try { d.parent.removeChild(d); d.destroy(); } catch {} }
+    };
+    requestAnimationFrame(fo);
+  }
 }
 
 // ── Token aura ────────────────────────────────────────────────────────────────
 // Positions a glow + particle effect centered on the attacking token.
 // Pure DOM/CSS — no PIXI involvement.
 
-// 8 particles: { left%, top%, horizontal-drift px, animation-delay s }
+// 12 vertical-line particles: clustered near bottom, staggered across 0.75s cycle
 const _PARTICLES = [
-  { lp: 50, tp: 12, dx:  -7, delay: 0.00 },
-  { lp: 74, tp: 24, dx:   5, delay: 0.35 },
-  { lp: 85, tp: 52, dx:  11, delay: 0.65 },
-  { lp: 68, tp: 78, dx:  -4, delay: 1.00 },
-  { lp: 32, tp: 80, dx: -10, delay: 1.30 },
-  { lp: 16, tp: 52, dx:  -7, delay: 0.18 },
-  { lp: 26, tp: 24, dx:   8, delay: 0.82 },
-  { lp: 52, tp: 50, dx:   3, delay: 1.55 },
+  { lp: 44, tp: 88, dx:  -6, delay: 0.00 },
+  { lp: 55, tp: 85, dx:   4, delay: 0.14 },
+  { lp: 48, tp: 92, dx:   0, delay: 0.28 },
+  { lp: 62, tp: 87, dx:   8, delay: 0.40 },
+  { lp: 37, tp: 90, dx:  -9, delay: 0.55 },
+  { lp: 51, tp: 84, dx:   5, delay: 0.08 },
+  { lp: 41, tp: 91, dx:  -4, delay: 0.68 },
+  { lp: 59, tp: 89, dx:   7, delay: 0.32 },
+  { lp: 46, tp: 86, dx:  -2, delay: 0.47 },
+  { lp: 54, tp: 93, dx:  -7, delay: 0.62 },
+  { lp: 65, tp: 88, dx:   3, delay: 0.22 },
+  { lp: 35, tp: 86, dx:   6, delay: 0.75 },
 ];
 
 function _getTokenScreenRect(tokenUuid) {
@@ -430,10 +493,19 @@ function _spawnEl(html, cardRoot) {
 
 function _despawn(el, onDone) {
   if (!el?.parentNode) { onDone?.(); return; }
-  el.classList.add("is-dismissing");
-  const cleanup = () => { el.remove(); onDone?.(); };
-  el.addEventListener("transitionend", cleanup, { once: true });
-  setTimeout(cleanup, 300);
+  el.style.pointerEvents = "none";
+  // Use WAAPI instead of CSS class-swap — avoids transition-property race
+  // that caused the cancel-button route to not animate.
+  const anim = el.animate(
+    [
+      { opacity: "1", transform: "translateX(0)" },
+      { opacity: "0", transform: "translateX(-16px)" },
+    ],
+    { duration: 200, easing: "cubic-bezier(.8,0,.8,.3)", fill: "forwards" }
+  );
+  const cleanup = () => { try { el.remove(); } catch {} onDone?.(); };
+  anim.addEventListener("finish", cleanup, { once: true });
+  setTimeout(cleanup, 350);
 }
 
 // Despawns the HUD panel, dimmer, and aura, then resolves the Promise.
@@ -523,9 +595,9 @@ function _restoreCardFromAr(root, ar) {
   const ptResults = ar.perTargetResults ?? [];
   rows.forEach((row, i) => {
     const r = ptResults[i];
-    if (!r) return;
+    if (!r || r.studied === false) return; // keep ??? masking for unstudied targets
     const resultEl = row.querySelector(".t-result");
-    if (!resultEl) return;
+    if (!resultEl || resultEl.textContent.trim() === "???") return;
     const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
     const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
     resultEl.className   = `t-result ${cls}`;
