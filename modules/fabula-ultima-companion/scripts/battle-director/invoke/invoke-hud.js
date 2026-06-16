@@ -10,17 +10,21 @@
 // Stable import URL (no ?cb= cache-bust) so the module singleton
 // persists across cache-busted invoke-worker loads.
 
+import { playSfx } from "../director-sfx.js";
+
 const HUD_ID = "fud-invoke-hud";
 const CSS_ID = "fud-invoke-hud-style";
 
+// All SFX go through playSfx (Web Audio, same pipeline as main BD hits/heals).
+// dieSelect = longer cue (selecting), dieDeselect = short cue (unselecting).
 const SFX = Object.freeze({
   trait:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Ougi1.ogg",
   bond:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg",
   cancel:      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav",
   hover:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
   confirm:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula_Point.ogg",
-  dieSelect:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5_Short.wav",
-  dieDeselect: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5.wav",
+  dieSelect:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5.wav",
+  dieDeselect: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5_Short.wav",
   dice:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Dice.wav",
   traitUp:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_up1.wav",
   traitDown:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_down2.wav",
@@ -42,14 +46,15 @@ export function dismissActive({ root, ar } = {}) {
   const { el, _resolve } = _active;
   _active = null;
   if (root && ar) _restoreCardFromAr(root, ar);
-  playUiSfx(SFX.cancel);
+  _playHud(SFX.cancel);
   _despawn(el, () => _resolve(null));
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
+// All sounds go through playSfx (Web Audio, same pipeline as main BD SFX).
 
-function playUiSfx(url, volume = 0.75) {
-  try { AudioHelper?.play?.({ src: url, volume, autoplay: true, loop: false }, false); } catch {}
+function _playHud(url, vol = 0.8) {
+  try { playSfx(url, vol); } catch {}
 }
 
 let _lastHoverMs = 0;
@@ -57,7 +62,7 @@ function playHoverSfx() {
   const now = Date.now();
   if (now - _lastHoverMs < 80) return;
   _lastHoverMs = now;
-  playUiSfx(SFX.hover, 0.4);
+  _playHud(SFX.hover, 0.4);
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -181,6 +186,56 @@ function ensureStyles() {
   document.head.appendChild(s);
 }
 
+// ── Number bounce animation ───────────────────────────────────────────────────
+// Exported so patchCardDom (invoke-worker) can call it when patching .total.
+
+let _bounceStyleInjected = false;
+function _ensureBounceStyle() {
+  if (_bounceStyleInjected) return;
+  _bounceStyleInjected = true;
+  const s = document.createElement("style");
+  s.id = "fud-num-anim-style";
+  // 4-stop spring: pop up, overshoot down, micro-bounce back
+  s.textContent = `@keyframes fud-num-bounce{0%{transform:scale(1)}18%{transform:scale(1.5)}55%{transform:scale(0.88)}80%{transform:scale(1.04)}100%{transform:scale(1)}}`;
+  document.head.appendChild(s);
+}
+
+// Tick the number in `el` from its current DOM value up to `toVal` over ~700ms,
+// with a scale-bounce that pops on impact. Safe to call before the element is
+// in a layout — uses performance.now() so the rAF loop always starts fresh.
+export function animateAccTotal(totalEl, toVal) {
+  if (!totalEl) return;
+  const fromVal = parseInt(totalEl.textContent, 10) || 0;
+  if (fromVal === toVal) { totalEl.textContent = toVal; return; }
+
+  _ensureBounceStyle();
+
+  // inline-block required for CSS transform on a <span>
+  totalEl.style.display = "inline-block";
+  totalEl.style.transformOrigin = "center";
+  // Force a style flush so removing then re-adding the animation resets it
+  totalEl.style.animation = "none";
+  void totalEl.offsetWidth;
+  totalEl.style.animation = "fud-num-bounce 650ms cubic-bezier(.15,.8,.2,1) forwards";
+
+  const duration = 700;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    // easeOutCubic — fast start, slow settle
+    const eased = 1 - Math.pow(1 - t, 3);
+    totalEl.textContent = Math.round(fromVal + (toVal - fromVal) * eased);
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      totalEl.textContent = toVal;
+      // remove animation so future bond hover preview patches aren't affected
+      setTimeout(() => { if (totalEl) totalEl.style.animation = ""; }, 100);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
 // ── DOM lifecycle ─────────────────────────────────────────────────────────────
 
 const esc = (v) =>
@@ -233,7 +288,7 @@ function _despawn(el, onDone) {
 
 function _resolveHud(el, resolveFn, result, sfxKey) {
   if (_active?.el === el) _active = null;
-  if (sfxKey) playUiSfx(SFX[sfxKey]);
+  if (sfxKey) _playHud(SFX[sfxKey]);
   _despawn(el, () => resolveFn(result));
 }
 
@@ -248,7 +303,7 @@ function _previewBondOnCard(root, ar, bonus) {
   const newCB   = (Number(roll.checkBonus) || 0) + bonus;
   const newTotal = (Number(roll.rA) || 0) + (Number(roll.rB) || 0) + newCB;
 
-  // Total
+  // Total (no animation — preview should snap instantly)
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = newTotal;
 
@@ -290,7 +345,7 @@ function _restoreCardFromAr(root, ar) {
   if (!root || !ar?.roll) return;
   const roll = ar.roll;
 
-  // Total
+  // Total (snap restore — no animation)
   const totalEl = root.querySelector(".fud-bf-acc-row .total");
   if (totalEl) totalEl.textContent = roll.total;
 
@@ -329,29 +384,13 @@ function _restoreCardFromAr(root, ar) {
 }
 
 // ── Trait outcome sound (called by invoke-worker after reroll) ─────────────────
-// Plays Dice.wav, waits for it to end, then plays up/down based on result.
+// Plays Dice.wav via Web Audio, then after ~1800ms plays up/down outcome cue.
 
 export function playTraitOutcomeSfx(oldTotal, newTotal) {
-  try {
-    const audio = new Audio(SFX.dice);
-    audio.volume = 0.75;
-    let fired = false;
-    const playOutcome = () => {
-      if (fired) return;
-      fired = true;
-      playUiSfx(newTotal >= oldTotal ? SFX.traitUp : SFX.traitDown);
-    };
-    audio.addEventListener("ended", playOutcome, { once: true });
-    audio.play().catch(() => {
-      // AudioHelper fallback if new Audio() is blocked
-      playUiSfx(SFX.dice);
-      setTimeout(playOutcome, 900);
-    });
-    // Safety fallback in case 'ended' never fires (e.g. very short file)
-    setTimeout(playOutcome, 3500);
-  } catch {
-    setTimeout(() => playUiSfx(newTotal >= oldTotal ? SFX.traitUp : SFX.traitDown), 900);
-  }
+  _playHud(SFX.dice, 0.85);
+  setTimeout(() => {
+    _playHud(newTotal >= oldTotal ? SFX.traitUp : SFX.traitDown, 0.9);
+  }, 1800);
 }
 
 // ── Trait HUD ─────────────────────────────────────────────────────────────────
@@ -374,7 +413,7 @@ export function showTraitHUD({ roll, root }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  playUiSfx(SFX.trait);
+  _playHud(SFX.trait);
 
   const { A1, A2, dA, dB, rA, rB } = roll;
   const html = `<div class="fud-ih-card">
@@ -415,7 +454,8 @@ export function showTraitHUD({ roll, root }) {
       const next = !dieEl.classList.contains("on");
       dieEl.classList.toggle("on", next);
       dieEl.setAttribute("aria-checked", String(next));
-      playUiSfx(next ? SFX.dieSelect : SFX.dieDeselect, 0.6);
+      // dieSelect = longer cue (feels like "locking in"), dieDeselect = short cue
+      _playHud(next ? SFX.dieSelect : SFX.dieDeselect, 0.7);
       updateConfirm();
     };
 
@@ -432,7 +472,7 @@ export function showTraitHUD({ roll, root }) {
       const bOn = dieB.classList.contains("on");
       const choice = aOn && bOn ? "AB" : aOn ? "A" : bOn ? "B" : null;
       // Dice sound plays now; outcome sound fires in invoke-worker after reroll
-      playUiSfx(SFX.dice);
+      _playHud(SFX.dice, 0.85);
       _resolveHud(el, resolve, choice, null);
     });
 
@@ -493,7 +533,7 @@ export async function showBondHUD({ bonds, attacker, root, ar }) {
     _active = null;
     _despawn(old.el, () => old._resolve(null));
   }
-  playUiSfx(SFX.bond);
+  _playHud(SFX.bond);
 
   let selectedIdx = 0;
 

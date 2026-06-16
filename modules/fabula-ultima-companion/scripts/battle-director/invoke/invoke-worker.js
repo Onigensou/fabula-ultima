@@ -12,7 +12,8 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
-import { showTraitHUD, showBondHUD, playTraitOutcomeSfx } from "./invoke-hud.js";
+import { showTraitHUD, showBondHUD, playTraitOutcomeSfx, animateAccTotal } from "./invoke-hud.js";
+import { playCritCutin } from "../director-cutin.js";
 
 // ── Ownership gate ────────────────────────────────────────────────────────────
 
@@ -60,9 +61,9 @@ export function patchCardDom(root, newAr, invokeState) {
     if (dieBlocks[0]) dieBlocks[0].querySelector(".die-result").textContent = roll.rA;
     if (dieBlocks[1]) dieBlocks[1].querySelector(".die-result").textContent = roll.rB;
 
-    // ── Accuracy: total ──────────────────────────────────────────────────────
+    // ── Accuracy: total (animated number roll + bounce) ──────────────────────
     const totalEl = root.querySelector(".fud-bf-acc-row .total");
-    if (totalEl) totalEl.textContent = roll.total;
+    if (totalEl) animateAccTotal(totalEl, roll.total);
 
     // ── Accuracy: checkBonus pill ─────────────────────────────────────────────
     const accRow = root.querySelector(".fud-bf-acc-row");
@@ -100,6 +101,18 @@ export function patchCardDom(root, newAr, invokeState) {
         banner.innerHTML = `<i class="fa-solid fa-skull"></i>Fumble!`;
       } else if (banner) {
         banner.remove();
+      }
+
+      // ── Opportunity note ─────────────────────────────────────────────────
+      let opp = accDiv.querySelector(".fud-bf-opportunity");
+      const showOpp = !!roll.opportunities && !roll.isFumble;
+      if (showOpp && !opp) {
+        opp = document.createElement("div");
+        opp.className = "fud-bf-opportunity";
+        opp.innerHTML = `<i class="fa-solid fa-bolt"></i> Opportunity!`;
+        accDiv.appendChild(opp);
+      } else if (!showOpp && opp) {
+        opp.remove();
       }
     }
 
@@ -191,6 +204,8 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
   director.ctx.invokeState     = { ...invokeState };
 
   patchCardDom(root, newAr, invokeState);
+  // Fire crit cut-in if the reroll produced a critical (fire-and-forget).
+  if (newAr.roll?.isCrit && !newAr.roll?.isFumble) playCritCutin(newAr);
   log(`[BD][Invoke] Trait — choice:${choice} rA:${ar.roll.rA}→${newRoll.rA} rB:${ar.roll.rB}→${newRoll.rB} total:${ar.roll.total}→${newRoll.total}`);
   return true;
 }
