@@ -1987,18 +1987,18 @@ function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability =
 
   const showCounter = hasRoll && invokeCapability !== "none" && invokePointCount !== null;
   const counterHtml = showCounter
-    ? `<div style="text-align:center;font-size:11px;opacity:0.6;margin:0 0 4px;letter-spacing:0.04em;">
+    ? `<span style="margin-left:auto;font-size:11px;opacity:0.6;letter-spacing:0.04em;white-space:nowrap;align-self:center;">
          <i class="fa-solid ${invokeCapability === "trait-only" ? "fa-eye" : "fa-star"}"
             style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i>${invokePointCount}
-       </div>`
+       </span>`
     : "";
 
   const invokeRow = hasRoll
     ? `
-      ${counterHtml}
       <div class="fud-bf-btn-row">
         ${mkInvokeBtn("trait", "🎭", "Invoke Trait")}
         ${mkInvokeBtn("bond",  "🤝", "Invoke Bond")}
+        ${counterHtml}
       </div>`
     : "";
   return `
