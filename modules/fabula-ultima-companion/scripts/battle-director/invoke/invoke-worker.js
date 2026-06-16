@@ -12,7 +12,7 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
-import { showTraitHUD, showBondHUD } from "./invoke-hud.js";
+import { showTraitHUD, showBondHUD, playTraitOutcomeSfx } from "./invoke-hud.js";
 
 // ── Ownership gate ────────────────────────────────────────────────────────────
 
@@ -173,10 +173,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
   }
 
   const choice = await showTraitHUD({ roll: ar.roll, root });
-  if (!choice) {
-    ui.notifications?.info("Trait invoke cancelled.");
-    return false;
-  }
+  if (!choice) return false;
 
   const spend = await payPoint(attacker);
   if (!spend.ok) {
@@ -184,8 +181,10 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const newRoll = await rerollDice({ roll: ar.roll, choice, actor: attacker });
-  const newAr   = recomputeArAfterInvoke(ar, newRoll);
+  const oldTotal = ar.roll.total;
+  const newRoll  = await rerollDice({ roll: ar.roll, choice, actor: attacker });
+  const newAr    = recomputeArAfterInvoke(ar, newRoll);
+  playTraitOutcomeSfx(oldTotal, newRoll.total);
 
   invokeState.trait            = true;
   director.ctx.actionResult    = newAr;
@@ -232,11 +231,8 @@ export async function handleInvokeBond({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root });
-  if (pickedIndex == null) {
-    ui.notifications?.info("Bond invoke cancelled.");
-    return false;
-  }
+  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root, ar });
+  if (pickedIndex == null) return false;
   const chosen = viable.find((b) => b.index === pickedIndex) ?? viable[0];
 
   const spend = await payPoint(attacker);

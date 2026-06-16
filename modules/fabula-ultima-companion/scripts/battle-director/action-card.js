@@ -4491,7 +4491,7 @@ export async function postActionCard({ director, kind, payload }) {
             const hud = await import("./invoke/invoke-hud.js");
             // Toggle: re-clicking an open invoke HUD closes it instead of reopening
             if (hud.getActiveType() === type) {
-              hud.dismissActive();
+              hud.dismissActive({ root, ar: director?.ctx?.actionResult });
               return;
             }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);

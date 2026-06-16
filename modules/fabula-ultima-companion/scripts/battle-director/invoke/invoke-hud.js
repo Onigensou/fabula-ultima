@@ -14,11 +14,16 @@ const HUD_ID = "fud-invoke-hud";
 const CSS_ID = "fud-invoke-hud-style";
 
 const SFX = Object.freeze({
-  trait:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Ougi1.ogg",
-  bond:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg",
-  cancel:  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav",
-  hover:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
-  confirm: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula_Point.ogg",
+  trait:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Ougi1.ogg",
+  bond:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg",
+  cancel:      "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav",
+  hover:       "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
+  confirm:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula_Point.ogg",
+  dieSelect:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5_Short.wav",
+  dieDeselect: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5.wav",
+  dice:        "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Dice.wav",
+  traitUp:     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_up1.wav",
+  traitDown:   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_down2.wav",
 });
 
 // ── Singleton ─────────────────────────────────────────────────────────────────
@@ -31,10 +36,12 @@ export function getActiveType() {
 
 // Called externally (action-card toggle, or cleanup on card close).
 // Dismisses with cancel sound + animation; resolves the open Promise with null.
-export function dismissActive() {
+// Pass root+ar to also restore any live bond preview on the action card.
+export function dismissActive({ root, ar } = {}) {
   if (!_active) return;
   const { el, _resolve } = _active;
   _active = null;
+  if (root && ar) _restoreCardFromAr(root, ar);
   playUiSfx(SFX.cancel);
   _despawn(el, () => _resolve(null));
 }
@@ -122,7 +129,7 @@ function ensureStyles() {
         rgba(255,255,255,.2) 30%, transparent 60%),
         linear-gradient(180deg, #fff3dc 0%, #e8cea0 100%);
     }
-    .fud-ih-die-icon  { width:32px; height:32px; object-fit:contain; border-radius:6px; }
+    .fud-ih-die-icon  { width:32px; height:32px; object-fit:contain; border:none; background:transparent; border-radius:0; box-shadow:none; outline:none; }
     .fud-ih-die-label { font-size:11px; font-weight:700; opacity:.65; line-height:1; }
     .fud-ih-die-val   { font-size:24px; font-weight:900; line-height:1; margin-top:1px; }
 
@@ -230,6 +237,123 @@ function _resolveHud(el, resolveFn, result, sfxKey) {
   _despawn(el, () => resolveFn(result));
 }
 
+// ── Bond card preview helpers ─────────────────────────────────────────────────
+// Temporarily patch the action card DOM to show what accuracy / hit-miss
+// would look like if a given bond bonus were applied. Restored on mouseleave
+// or when the bond HUD closes.
+
+function _previewBondOnCard(root, ar, bonus) {
+  if (!root || !ar?.roll) return;
+  const roll    = ar.roll;
+  const newCB   = (Number(roll.checkBonus) || 0) + bonus;
+  const newTotal = (Number(roll.rA) || 0) + (Number(roll.rB) || 0) + newCB;
+
+  // Total
+  const totalEl = root.querySelector(".fud-bf-acc-row .total");
+  if (totalEl) totalEl.textContent = newTotal;
+
+  // Bonus pill (create if absent)
+  const accRow = root.querySelector(".fud-bf-acc-row");
+  if (accRow) {
+    let pill = accRow.querySelector(".bonus");
+    if (newCB !== 0) {
+      if (!pill) {
+        pill = document.createElement("span");
+        pill.className = "bonus fud-ih-preview-bonus";
+        const spacer = accRow.querySelector(".spacer");
+        if (spacer) accRow.insertBefore(pill, spacer);
+        else accRow.appendChild(pill);
+      }
+      pill.textContent = newCB >= 0 ? `+${newCB}` : `${newCB}`;
+    } else if (pill) {
+      pill.remove();
+    }
+  }
+
+  // Per-target hit/miss
+  const rows      = root.querySelectorAll(".fud-bf-target-row");
+  const ptResults = ar.perTargetResults ?? [];
+  rows.forEach((row, i) => {
+    const r = ptResults[i];
+    if (!r) return;
+    const resultEl = row.querySelector(".t-result");
+    if (!resultEl) return;
+    const hit   = roll.isCrit || (!roll.isFumble && newTotal >= (r.defense ?? 0));
+    const cls   = roll.isCrit ? "crit" : hit ? "hit" : "miss";
+    const label = roll.isCrit ? "Critical Hit" : hit ? "Hit" : "Miss";
+    resultEl.className  = `t-result ${cls}`;
+    resultEl.textContent = label;
+  });
+}
+
+function _restoreCardFromAr(root, ar) {
+  if (!root || !ar?.roll) return;
+  const roll = ar.roll;
+
+  // Total
+  const totalEl = root.querySelector(".fud-bf-acc-row .total");
+  if (totalEl) totalEl.textContent = roll.total;
+
+  // Bonus pill
+  const accRow = root.querySelector(".fud-bf-acc-row");
+  if (accRow) {
+    let pill = accRow.querySelector(".bonus");
+    const cb = Number(roll.checkBonus) || 0;
+    if (cb !== 0) {
+      if (!pill) {
+        pill = document.createElement("span");
+        pill.className = "bonus";
+        const spacer = accRow.querySelector(".spacer");
+        if (spacer) accRow.insertBefore(pill, spacer);
+        else accRow.appendChild(pill);
+      }
+      pill.textContent = cb >= 0 ? `+${cb}` : `${cb}`;
+    } else if (pill) {
+      pill.remove();
+    }
+  }
+
+  // Per-target hit/miss
+  const rows      = root.querySelectorAll(".fud-bf-target-row");
+  const ptResults = ar.perTargetResults ?? [];
+  rows.forEach((row, i) => {
+    const r = ptResults[i];
+    if (!r) return;
+    const resultEl = row.querySelector(".t-result");
+    if (!resultEl) return;
+    const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
+    const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
+    resultEl.className  = `t-result ${cls}`;
+    resultEl.textContent = label;
+  });
+}
+
+// ── Trait outcome sound (called by invoke-worker after reroll) ─────────────────
+// Plays Dice.wav, waits for it to end, then plays up/down based on result.
+
+export function playTraitOutcomeSfx(oldTotal, newTotal) {
+  try {
+    const audio = new Audio(SFX.dice);
+    audio.volume = 0.75;
+    let fired = false;
+    const playOutcome = () => {
+      if (fired) return;
+      fired = true;
+      playUiSfx(newTotal >= oldTotal ? SFX.traitUp : SFX.traitDown);
+    };
+    audio.addEventListener("ended", playOutcome, { once: true });
+    audio.play().catch(() => {
+      // AudioHelper fallback if new Audio() is blocked
+      playUiSfx(SFX.dice);
+      setTimeout(playOutcome, 900);
+    });
+    // Safety fallback in case 'ended' never fires (e.g. very short file)
+    setTimeout(playOutcome, 3500);
+  } catch {
+    setTimeout(() => playUiSfx(newTotal >= oldTotal ? SFX.traitUp : SFX.traitDown), 900);
+  }
+}
+
 // ── Trait HUD ─────────────────────────────────────────────────────────────────
 
 const ATTR_ICONS = {
@@ -291,6 +415,7 @@ export function showTraitHUD({ roll, root }) {
       const next = !dieEl.classList.contains("on");
       dieEl.classList.toggle("on", next);
       dieEl.setAttribute("aria-checked", String(next));
+      playUiSfx(next ? SFX.dieSelect : SFX.dieDeselect, 0.6);
       updateConfirm();
     };
 
@@ -306,7 +431,9 @@ export function showTraitHUD({ roll, root }) {
       const aOn = dieA.classList.contains("on");
       const bOn = dieB.classList.contains("on");
       const choice = aOn && bOn ? "AB" : aOn ? "A" : bOn ? "B" : null;
-      _resolveHud(el, resolve, choice, "confirm");
+      // Dice sound plays now; outcome sound fires in invoke-worker after reroll
+      playUiSfx(SFX.dice);
+      _resolveHud(el, resolve, choice, null);
     });
 
     el.querySelector("[data-cancel]").addEventListener("click", () => {
@@ -354,7 +481,7 @@ function _bondRowHTML(bond, i, selIdx, actor) {
   </div>`;
 }
 
-export async function showBondHUD({ bonds, attacker, root }) {
+export async function showBondHUD({ bonds, attacker, root, ar }) {
   const viable = bonds.filter((b) => (b?.bonus || 0) > 0);
   if (!viable.length) return null;
   // Skip dialog entirely for a single eligible bond
@@ -396,7 +523,13 @@ export async function showBondHUD({ bonds, attacker, root }) {
       list.innerHTML = buildList();
       for (const row of list.querySelectorAll(".fud-ih-bond-row")) {
         const i = Number(row.dataset.bidx);
-        row.addEventListener("mouseenter", playHoverSfx);
+        row.addEventListener("mouseenter", () => {
+          playHoverSfx();
+          if (ar && root) _previewBondOnCard(root, ar, viable[i].bonus);
+        });
+        row.addEventListener("mouseleave", () => {
+          if (ar && root) _restoreCardFromAr(root, ar);
+        });
         row.addEventListener("click", () => { selectedIdx = i; refresh(); });
         row.addEventListener("keydown", (ev) => {
           if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
@@ -412,11 +545,13 @@ export async function showBondHUD({ bonds, attacker, root }) {
     refresh();
 
     confirmBtn.addEventListener("click", () => {
+      if (ar && root) _restoreCardFromAr(root, ar);
       const chosen = viable[selectedIdx];
       _resolveHud(el, resolve, chosen?.index ?? null, "confirm");
     });
 
     el.querySelector("[data-cancel]").addEventListener("click", () => {
+      if (ar && root) _restoreCardFromAr(root, ar);
       _resolveHud(el, resolve, null, "cancel");
     });
   });
