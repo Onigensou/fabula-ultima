@@ -1961,7 +1961,7 @@ function appendTargetRow(root, r, kind, payload) {
   } catch (e) { warn("appendTargetRow threw", e); }
 }
 
-function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability = "full" }) {
+function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability = "full", invokePointCount = null }) {
   // Invoke buttons: locked on Fumble, locked by actor rank (none/trait-only), or active.
   // For no-Check skills the row is hidden — no roll = nothing to invoke.
   const mkInvokeBtn = (type, icon, label) => {
@@ -1985,8 +1985,17 @@ function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability =
          </div>`;
   };
 
+  const showCounter = hasRoll && invokeCapability !== "none" && invokePointCount !== null;
+  const counterHtml = showCounter
+    ? `<div style="text-align:center;font-size:11px;opacity:0.6;margin:0 0 4px;letter-spacing:0.04em;">
+         <i class="fa-solid ${invokeCapability === "trait-only" ? "fa-eye" : "fa-star"}"
+            style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i>${invokePointCount}
+       </div>`
+    : "";
+
   const invokeRow = hasRoll
     ? `
+      ${counterHtml}
       <div class="fud-bf-btn-row">
         ${mkInvokeBtn("trait", "🎭", "Invoke Trait")}
         ${mkInvokeBtn("bond",  "🤝", "Invoke Bond")}
@@ -2326,7 +2335,7 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
       ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll }))}
       ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll }))}
     `,
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full" }),
+    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
   };
 }
 
@@ -3320,7 +3329,7 @@ function buildSkillCard(payload) {
     // Spell card is a reactable trigger; allowing cancel would silently
     // undo passive reactions that have already fired. GM uses the
     // rewind tool to back out the whole turn.
-    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, hasRoll: !!roll, invokeCapability: attacker?.invokeCapability ?? "full" }),
+    buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, hasRoll: !!roll, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
   };
 }
 

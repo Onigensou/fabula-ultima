@@ -3175,6 +3175,10 @@ const Confirm = {
       }
     } catch {}
     const invokeCapability = getInvokeCapability(_tokenActor);
+    const _iProps = _tokenActor?.system?.props ?? {};
+    const _up = Number(_iProps.ultima_point ?? 0) || 0;
+    const _fp = Number(_iProps.fabula_point ?? 0) || 0;
+    const invokePointCount = invokeCapability === "trait-only" ? _up : invokeCapability === "full" ? _fp : null;
 
     // Persistence checkpoint — "Action Posted / Card Live".
     //
@@ -3721,7 +3725,7 @@ const Confirm = {
       director,
       kind: ar.kind,
       payload: {
-        attacker: { ...ar.attacker, invokeCapability },
+        attacker: { ...ar.attacker, invokeCapability, invokePointCount },
         attackerActor,
         weapon: ar.weapon,
         targets: cardTargets,
