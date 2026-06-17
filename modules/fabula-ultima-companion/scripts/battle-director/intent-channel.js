@@ -93,6 +93,9 @@ export class IntentChannel {
   // (resume-after-F5 race condition).
   _onPlayerHello(data) {
     if (!game.user?.isGM) return;
+    // Secondary GM has no cached broadcasts — only the primary GM (who owns
+    // _recentBroadcasts) should replay. Skip silently to avoid log noise.
+    if (!this._recentBroadcasts.size) return;
     const userId = data.payload?.fromUserId;
     if (!userId) return;
     const cached = this._recentBroadcasts.get(userId);
@@ -121,6 +124,9 @@ export class IntentChannel {
   // the director (legacy v1 behavior).
   _onIntent(data) {
     if (!game.user?.isGM) return;
+    // Secondary GM: no director attached and no awaits pending — nothing to
+    // do. Skip silently to prevent spurious "no director match" warnings.
+    if (!this.director && this._pendingAwaits.size === 0) return;
     const payload = data.payload ?? {};
     if (!payload.fromUserId || !payload.type) {
       warn("IntentChannel: malformed intent from socket", data);

@@ -345,18 +345,16 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
     try { stopBattleBgm(_instance?.payload?.battleConfig?.bgm); } catch {}
   }
 
-  // Broadcast MENU_CLOSE to every online non-GM client so any player-side
-  // mirror overlays (action-card mirror, compose-action local Octopath /
-  // pickers) tear down too. The per-state onExit/onAbort that normally
-  // sends these doesn't run on End-Battle-mid-CONFIRM — director.stop()
-  // calls the current state's onAbort which doesn't exist for CONFIRM,
-  // so player overlays would otherwise linger forever.
-  // Passing no `kind` matches both registered close handlers
-  // (action-card + compose-action) — see their `if (payload?.kind && ...)` gates.
+  // Broadcast MENU_CLOSE to every online non-primary client (players AND
+  // secondary GMs) so any mirror overlays (action-card, Octopath, pickers)
+  // tear down too. The per-state onExit/onAbort that normally sends these
+  // doesn't run on End-Battle-mid-CONFIRM, so without this sweep those
+  // overlays would linger forever on all non-primary clients.
+  // Passing no `kind` matches all registered close handlers.
   try {
     const channel = getIntentChannel();
-    const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-    for (const u of onlinePlayers) {
+    const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+    for (const u of onlineNonPrimary) {
       try {
         channel.broadcastMenuClose({
           targetUserId: u.id,
@@ -364,7 +362,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
         });
       } catch (e) { warn(`stop: broadcastMenuClose to ${u.name} threw`, e); }
     }
-  } catch (e) { warn("stop: player-mirror MENU_CLOSE sweep threw", e); }
+  } catch (e) { warn("stop: mirror MENU_CLOSE sweep threw", e); }
 
   // Remove tokens we spawned during runDirectorInit. Only tokens flagged
   // with fabula-ultima-companion.directorSpawned are touched — manually
@@ -1172,50 +1170,52 @@ Hooks.once("ready", () => {
   // calling install() twice is a no-op.
   try {
     getIntentChannel().install();
-    // Player-side: wire up the per-surface MENU_OPEN handlers + a
-    // default catch-all logger for any kinds we haven't converted yet.
+
+    // Wire up per-surface MENU_OPEN handlers on ALL clients (GM + players).
+    // The primary GM (the one that called start() and owns _instance) skips
+    // each handler via the `isActiveDirector` guard — it spawns those surfaces
+    // locally in state-handlers rather than via socket. Secondary GMs and
+    // players both receive broadcasts and need these handlers.
+    const _isActiveDirector = () => !!_instance;
+
+    // Compose-action — run the full pick chain locally (Octopath → weapon
+    // mode → target picker) and emit ACTION_COMPOSED with the bundle.
+    // See [[director-player-driven-input]].
+    registerPlayerComposeActionHandler(getIntentChannel(), _isActiveDirector);
+    // Action-card mirror — render the GM's card on this client; owner
+    // sees interactive buttons, observers see read-only.
+    registerPlayerActionCardHandler(getIntentChannel(), _isActiveDirector);
+    // Turn picker — show "Take Action" pills so the recipient can pick
+    // which eligible combatant acts next on the current side.
+    registerPlayerTurnPickerHandler(getIntentChannel(), _isActiveDirector);
+    // Reaction menu — spawn the token-anchored menu for owned reactor +
+    // emit REACTION_CHOICE back to the GM on click.
+    // See [[reaction-menu-on-token]] §5 + [[reaction-architecture]] Rule 1.
+    registerPlayerReactionMenuHandler(getIntentChannel(), _isActiveDirector);
+    // Remote pick responder — render a reaction's secondary picker (Protect
+    // target / add-target / option-menu) routed to THIS client + emit
+    // REMOTE_PICK_RESULT back. See remote-pick.js + [[director-player-driven-input]].
+    registerRemotePickResponder(getIntentChannel());
+
+    // Catch-all observer for any other surface kinds we haven't wired
+    // up yet (future kinds). Primary GM skips — it never receives its
+    // own broadcasts.
+    getIntentChannel().onMenuOpen((menuSpec) => {
+      if (_isActiveDirector()) return;
+      const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator"]);
+      if (!wired.has(menuSpec?.kind)) {
+        log(`[non-primary] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
+      }
+    });
+    getIntentChannel().onMenuClose((payload) => {
+      if (_isActiveDirector()) return;
+      log(`[non-primary] MENU_CLOSE: kind=${payload?.kind ?? "?"} reason=${payload?.reason ?? "?"}`);
+    });
+
+    // Announce ready to GM AFTER all handlers are attached (players only).
+    // Secondary GMs don't need replay — they're present when the director
+    // starts and the primary GM broadcasts directly to them at turn time.
     if (!game.user?.isGM) {
-      // Compose-action — when the GM broadcasts that this player's PC's
-      // turn has started, run the full pick chain locally (Octopath →
-      // weapon mode → target picker) and emit ACTION_COMPOSED with the
-      // bundle. No per-pick socket traffic; one commit per action.
-      // See [[director-player-driven-input]].
-      registerPlayerComposeActionHandler(getIntentChannel());
-      // Action-card mirror — render the GM's card on this client; owner
-      // sees interactive buttons, observers see read-only.
-      registerPlayerActionCardHandler(getIntentChannel());
-      // Turn picker — show "Take Action" pills over the player's OWN
-      // eligible combatants so they can pick which of their PCs acts
-      // next on the current side.
-      registerPlayerTurnPickerHandler(getIntentChannel());
-      // Reaction menu — when the GM dispatches a standalone reaction
-      // (conflict_start, turn_start, etc.) for this player's owned
-      // reactor, spawn the token-anchored menu locally + emit
-      // REACTION_CHOICE back to the GM on click. See
-      // [[reaction-menu-on-token]] §5 + [[reaction-architecture]] Rule 1.
-      registerPlayerReactionMenuHandler(getIntentChannel());
-      // Remote pick responder — when the GM routes a reaction's secondary
-      // picker (Protect target / Barrage add-target / option-menu) to THIS
-      // player, render the local picker and emit REMOTE_PICK_RESULT back. So
-      // a player applying their own reaction makes its sub-choices on their
-      // own screen. See remote-pick.js + [[director-player-driven-input]].
-      registerRemotePickResponder(getIntentChannel());
-      // Catch-all observer for any other surface kinds we haven't wired
-      // up yet (future kinds). Lets us tell during testing that the
-      // broadcast arrived even before the UI exists.
-      getIntentChannel().onMenuOpen((menuSpec) => {
-        const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator", "reaction-pick-list", "reaction-pick-target"]);
-        if (!wired.has(menuSpec?.kind)) {
-          log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
-        }
-      });
-      getIntentChannel().onMenuClose((payload) => {
-        log(`[player] MENU_CLOSE: kind=${payload?.kind ?? "?"} reason=${payload?.reason ?? "?"}`);
-      });
-      // Announce ready to GM AFTER all handlers are attached. If the GM
-      // already broadcast a MENU_OPEN (e.g. resumeFromSavedState fired
-      // during our boot), this triggers a replay so we don't miss it.
-      // See IntentChannel._onPlayerHello.
       try { getIntentChannel().announceReady(); }
       catch (e) { warn("announceReady threw", e); }
     }
@@ -1303,6 +1303,9 @@ Hooks.once("ready", () => {
   Hooks.on("oni:reactionPhase", async (payload) => {
     try {
       if (!game.user?.isGM) return;
+      // Secondary GM: director runs on another client — skip to prevent
+      // double-firing passive triggers from two GM sockets.
+      if (!_instance) return;
       const trigger = payload?.trigger;
       if (!trigger || !LEGACY_BRIDGED_TRIGGERS.has(trigger)) return;
       // Resolve subject actor. The legacy payload uses `actorUuid` (some

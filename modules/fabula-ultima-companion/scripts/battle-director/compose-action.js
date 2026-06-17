@@ -228,7 +228,7 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
 // the race or End-Battled).
 //
 // Returns an unregister function (clean up on session end if desired).
-export function registerPlayerComposeActionHandler(channel) {
+export function registerPlayerComposeActionHandler(channel, isActiveDirector = () => false) {
   // Track the current chain's cancel token + a "session id" so that a
   // MENU_OPEN arriving while a prior chain is still running can cancel
   // and replace it cleanly.
@@ -236,6 +236,9 @@ export function registerPlayerComposeActionHandler(channel) {
 
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "compose-action") return;
+    // Primary GM runs the compose chain locally in state-handlers; skip here
+    // to avoid spawning a duplicate Octopath on top of the local one.
+    if (isActiveDirector()) return;
     if (!menuSpec.tokenUuid || !menuSpec.snap) {
       warn("compose-action MENU_OPEN: missing tokenUuid or snap");
       return;
@@ -491,7 +494,6 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
   // Target count. NPC attacks read the same `skill_target` text as skills
   // ("One Creature", "Up to two creatures", "All Enemy", "One Random Creature", etc.).
   const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
-
   let targetUuids;
   if (/\brandom\b/i.test(skillTargetText)) {
     // Random targeting is resolved GM-side via the roulette picker.
@@ -504,7 +506,7 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
       actor,
       payload: null,
       skill: attackItem,
-      round: director.dCombat?.round ?? 0,
+      round: director?.dCombat?.round ?? 0,
     });
     const isUpTo = /up\s+to/i.test(skillTargetText);
     let count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });

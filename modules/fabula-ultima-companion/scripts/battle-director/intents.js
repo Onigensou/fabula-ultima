@@ -32,6 +32,13 @@ export const INTENTS = Object.freeze({
   CONFIRM_ACTION:  "CONFIRM_ACTION",
   CANCEL_ACTION:   "CANCEL_ACTION",
 
+  // External — sent by the owner player's mirror card when they click
+  // Invoke Trait or Invoke Bond. GM-side postActionCard validates, pays
+  // FP/UP, rerolls, patches its DOM, then broadcasts the updated result
+  // back via action-card-invoke-update MENU_OPEN.
+  // Body: { type: "trait"|"bond", choice?: "A"|"B"|"AB", bondIndex?: number }
+  INVOKE_CHOICE: "INVOKE_CHOICE",
+
   // External — sent by Reaction UIs (pill on action card OR token-
   // anchored menu) when a player owner clicks Apply / Skip / Pass /
   // a specific reaction blade. Two body shapes share this intent type:

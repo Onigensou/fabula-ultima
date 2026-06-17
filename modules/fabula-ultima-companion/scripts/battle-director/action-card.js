@@ -1781,7 +1781,7 @@ function buildAffinityTagHTML({ affinity, hit, studied }) {
 // resource field) flips the unit label so MP-damage skills read
 // naturally on the card. Affinity rows are still gated NE for MP
 // damage, so AB / IM never appear there in practice.
-function resultLabelFor(r, { hasDamage = true } = {}) {
+export function resultLabelFor(r, { hasDamage = true } = {}) {
   // Recipe-grant rows (Heal, MP restore, future shield) — show what
   // the target will recover. `grantResource` picks the unit/verb. These
   // always succeed (no Check), so check the grant before hit semantics.
@@ -1828,7 +1828,7 @@ function resultLabelFor(r, { hasDamage = true } = {}) {
   return `HIT ${big(r.damage)}${unit}`;
 }
 
-function resultClsFor(r) {
+export function resultClsFor(r) {
   if (!r.hit) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
@@ -2060,9 +2060,9 @@ function buildButtonsHTML({ isFumble = false, hasRoll = true, invokeCapability =
 
   const showCounter = hasRoll && invokeCapability !== "none" && invokePointCount !== null;
   const counterHtml = showCounter
-    ? `<span style="margin-left:auto;font-size:11px;opacity:0.6;letter-spacing:0.04em;white-space:nowrap;align-self:center;">
+    ? `<span data-fud-invoke-counter style="margin-left:auto;font-size:11px;opacity:0.6;letter-spacing:0.04em;white-space:nowrap;align-self:center;">
          <i class="fa-solid ${invokeCapability === "trait-only" ? "fa-eye" : "fa-star"}"
-            style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i>${invokePointCount}
+            style="color:${invokeCapability === "trait-only" ? "#a855f7" : "#14b8a6"};margin-right:3px;"></i><span class="fud-invoke-count">${invokePointCount}</span>
        </span>`
     : "";
 
@@ -3646,16 +3646,18 @@ export async function postActionCard({ director, kind, payload }) {
   // re-deriving the card on each client requires importing the whole
   // builder graph). Owner detection uses the attacker actor UUID
   // embedded in the payload.
+  let ownerUserId = null;
   try {
     const attackerActorUuid = payload?.attacker?.actorUuid
       ?? payload?.attackerActorRef
       ?? null;
-    const ownerUserId = attackerActorUuid
+    ownerUserId = attackerActorUuid
       ? (await resolveCardOwnerUserId(attackerActorUuid))
       : null;
     const cardHTML = root.outerHTML;
-    const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-    for (const u of onlinePlayers) {
+    // Broadcast to ALL non-primary clients: players + secondary GMs.
+    const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+    for (const u of onlineNonPrimary) {
       try {
         director.intentChannel?.broadcastMenuOpen({
           targetUserId: u.id,
@@ -3666,6 +3668,7 @@ export async function postActionCard({ director, kind, payload }) {
             ownerUserId,
             attackerActorUuid,
             html: cardHTML,
+            actionResult: director.ctx.actionResult ?? null,
           },
         });
       } catch (e) { warn(`postActionCard: broadcast to ${u.name} threw`, e); }
@@ -3688,12 +3691,11 @@ export async function postActionCard({ director, kind, payload }) {
       // the next turn's matching intent. Defined below in this Promise
       // constructor; safe to reference via closure hoisting.
       try { abortPendingAwaits?.(); } catch {}
-      // Tell all player clients to close their mirror cards. The GM-side
-      // DOM is despawned by the timeout below; this just keeps the
-      // player's view in sync.
+      // Tell all non-primary clients (players + secondary GMs) to close
+      // their mirror cards. GM-side DOM despawns via the timeout below.
       try {
-        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-        for (const u of onlinePlayers) {
+        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        for (const u of onlineNonPrimary) {
           try {
             director.intentChannel?.broadcastMenuClose({
               targetUserId: u.id,
@@ -3841,11 +3843,11 @@ export async function postActionCard({ director, kind, payload }) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
       }
-      // Broadcast pill state change to every mirror so observers see the
-      // decision flip from "Waiting…" to "Applied"/"Skipped" in real time.
+      // Broadcast pill state change to every mirror (players + secondary GMs)
+      // so all observers see the decision flip in real time.
       try {
-        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-        for (const u of onlinePlayers) {
+        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        for (const u of onlineNonPrimary) {
           director?.intentChannel?.broadcastMenuOpen({
             targetUserId: u.id,
             menuSpec: {
@@ -4139,8 +4141,8 @@ export async function postActionCard({ director, kind, payload }) {
               const bodyEl = root.querySelector(".fud-bf-body");
               const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
               try {
-                const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-                for (const u of onlinePlayers) {
+                const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+                for (const u of onlineNonPrimary) {
                   director?.intentChannel?.broadcastMenuOpen({
                     targetUserId: u.id,
                     menuSpec: {
@@ -4512,8 +4514,8 @@ export async function postActionCard({ director, kind, payload }) {
           // (registerPlayerActionCardHandler → action-card-target-mutation).
           try {
             const channel = director?.intentChannel ?? null;
-            const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-            for (const u of onlinePlayers) {
+            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            for (const u of onlineNonPrimary) {
               channel?.broadcastMenuOpen({
                 targetUserId: u.id,
                 menuSpec: {
@@ -4702,10 +4704,12 @@ export async function postActionCard({ director, kind, payload }) {
     let confirmAwait = null;
     let cancelAwait = null;
     let reactionAwait = null;
+    let invokeAwait = null;
     const abortPendingAwaits = () => {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
     };
     if (director?.intentChannel) {
       try {
@@ -4752,6 +4756,56 @@ export async function postActionCard({ director, kind, payload }) {
           });
         };
         armReactionAwait();
+
+        // Invoke-choice loop — re-arm after each pick so the player can use
+        // both Trait and Bond if their actor supports full invoke.
+        const armInvokeAwait = () => {
+          if (resolved) return;
+          invokeAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_CHOICE, {
+            timeoutMs: 30 * 60 * 1000,
+            // No fromUserId filter — accept invoke from the acting owner OR
+            // from any secondary GM who clicked Invoke on their mirror card.
+          });
+          invokeAwait.then(async (intent) => {
+            const body = intent?.body ?? {};
+            const type = body.type; // "trait" | "bond"
+            log(`postActionCard: remote INVOKE_CHOICE received (${type})`);
+            try {
+              const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+              if (type === "trait") {
+                await worker.handleInvokeTrait({
+                  director, ar: director.ctx.actionResult, root, invokeState,
+                  prePickedChoice: body.choice ?? null,
+                });
+              } else if (type === "bond") {
+                await worker.handleInvokeBond({
+                  director, ar: director.ctx.actionResult, root, invokeState,
+                  prePickedBondIndex: body.bondIndex ?? null,
+                });
+              }
+              const newAr = director.ctx.actionResult;
+              // Broadcast invoke-update to the owner + any secondary GMs so
+              // all mirror cards reflect the rerolled numbers.
+              const invokeUpdateSpec = {
+                kind: "action-card-invoke-update",
+                actionResult: newAr,
+                invokeState: { ...invokeState },
+              };
+              if (ownerUserId) {
+                director.intentChannel?.broadcastMenuOpen({ targetUserId: ownerUserId, menuSpec: invokeUpdateSpec });
+              }
+              for (const u of (game.users?.contents ?? []).filter((u) => u.isGM && u.active && u.id !== game.user?.id)) {
+                try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec: invokeUpdateSpec }); } catch {}
+              }
+            } catch (e) {
+              warn("postActionCard: INVOKE_CHOICE handler threw", e);
+            }
+            armInvokeAwait();
+          }).catch((e) => {
+            if (!resolved) log(`postActionCard: INVOKE_CHOICE await aborted (${e?.message})`);
+          });
+        };
+        if (ownerUserId) armInvokeAwait();
       } catch (e) { warn("postActionCard: remote intent setup threw", e); }
     }
 
@@ -5157,7 +5211,26 @@ function cleanupMirror() {
   if (existing) try { existing.remove(); } catch {}
 }
 
-export function registerPlayerActionCardHandler(channel) {
+export function registerPlayerActionCardHandler(channel, isActiveDirector = () => false) {
+  // Per-card closures — reset each time a new "action-card" MENU_OPEN arrives.
+  // playerAr holds the serialized actionResult broadcast with the card so the
+  // player can show the invoke HUD without accessing GM-only director state.
+  let playerAr = null;
+  let playerInvokeState = { trait: false, bond: false };
+
+  // Invoke-update handler — GM calls this after processing an INVOKE_CHOICE
+  // so the player's mirror card reflects the new roll/damage/target results.
+  const offInvokeUpdate = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-invoke-update") return;
+    playerAr = menuSpec.actionResult ?? playerAr;
+    playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    if (!wrapper) return;
+    import(`./invoke/invoke-worker.js?cb=${Date.now()}`).then((w) => {
+      w.patchCardDom(wrapper, playerAr, playerInvokeState);
+    }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
+  });
+
   // Lightweight patch handler for pill state changes broadcast from
   // recordPillDecision (GM side). Applies the same DOM transformation
   // — pending → resolved + status chip — to the local mirror so the
@@ -5227,6 +5300,9 @@ export function registerPlayerActionCardHandler(channel) {
 
   const offOpen = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card") return;
+    // Primary GM renders the card locally in postActionCard; skip the mirror
+    // so there's no duplicate card on the director's own client.
+    if (isActiveDirector()) return;
     if (!menuSpec.html) {
       warn("action-card MENU_OPEN: missing html");
       return;
@@ -5245,6 +5321,10 @@ export function registerPlayerActionCardHandler(channel) {
     // Replace any prior mirror — only one card on screen at a time.
     cleanupMirror();
 
+    // Reset per-card state for the new card.
+    playerAr = menuSpec.actionResult ?? null;
+    playerInvokeState = { trait: false, bond: false };
+
     // Build a wrapper so we can hold both the imported HTML and the
     // event handlers. The imported HTML preserves the original DOM ids
     // (e.g. "fud-bf-action-card-root") so styles attach correctly.
@@ -5253,20 +5333,23 @@ export function registerPlayerActionCardHandler(channel) {
     wrapper.innerHTML = menuSpec.html;
     document.body.appendChild(wrapper);
 
-    // Permission gate. Two independent layers:
-    //  • Card-level (attacker) ownership — gates the acting actor's own
-    //    buttons (Confirm / Cancel / Invoke / equipment / item). Only the
-    //    action-taker's owner gets these.
-    //  • Per-pill (reactor) ownership — gates each reaction's Apply/Skip.
-    //    A player applies ONLY the pills carried by a creature THEY own,
-    //    even when the GM or another player owns the action being reacted
-    //    to (the common enemy-attacks-party case). See
-    //    [[director-player-driven-input]].
-    const isOwner = menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id;
+    // Permission gate. Two layers:
+    //  • Card-level (action-taker) — `isInteractive` gates the acting actor's
+    //    own buttons (Confirm / Cancel / Invoke / equipment / item). The player
+    //    owner OR a secondary GM (an active GM client that isn't the primary
+    //    director) gets these; secondary GMs route actions back to the primary
+    //    GM via socket intents just like a player owner would.
+    //  • Per-pill (reactor) — each reaction's Apply/Skip is gated by the
+    //    reactor's owner (`myUserId`), so a player applies ONLY pills carried
+    //    by a creature THEY own, even when the GM or another player owns the
+    //    action being reacted to. See [[director-player-driven-input]].
+    const isPlayerOwner = !!(menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id);
+    const isSecondaryGm = !!(game.user?.isGM && !isActiveDirector());
+    const isInteractive = isPlayerOwner || isSecondaryGm;
     const myUserId = game.user?.id ?? null;
     const card = wrapper.querySelector(".fud-bf-card");
 
-    if (!isOwner && card) {
+    if (!isInteractive && card) {
       // Visually mark the card as read-only — also disables click via
       // event guard below. The class is purely informational; the real
       // gate is the event listener.
@@ -5341,12 +5424,87 @@ export function registerPlayerActionCardHandler(channel) {
 
     // Click logic — replicates the GM-side onClick for interactive card
     // UI (Equipment dropdowns, Item tabs+rows, "Open Sheet" button,
-    // Confirm/Cancel buttons). Reaction pills are handled by
-    // onReactionClick above (per-pill owner); this layer is for the
-    // action-taker's own controls, gated on card (attacker) ownership.
+    // Confirm/Cancel buttons). Reaction pills are handled by onReactionClick
+    // above (per-pill owner); this layer is the action-taker's own controls,
+    // gated on `isInteractive` (player owner or secondary GM). Non-interactive
+    // observers get no bindings (.is-readonly-mirror visually disables them).
     let onClick = null;
-    if (isOwner) {
+    if (isInteractive) {
       onClick = (ev) => {
+        // Invoke Trait / Bond — show local HUD then emit INVOKE_CHOICE to GM.
+        const invokeBtn = ev.target?.closest?.("[data-fud-invoke]");
+        if (invokeBtn) {
+          ev.stopPropagation();
+          if (invokeBtn.classList.contains("is-locked")) {
+            ui.notifications?.warn("Invoke cannot be used on a Fumble.");
+            return;
+          }
+          if (invokeBtn.classList.contains("is-resolved")) {
+            const t = invokeBtn.dataset.fudInvoke;
+            ui.notifications?.warn(`${t === "trait" ? "Trait" : "Bond"} already invoked for this action.`);
+            return;
+          }
+          const type = invokeBtn.dataset.fudInvoke;
+          (async () => {
+            try {
+              const hud = await import("./invoke/invoke-hud.js");
+              if (hud.getActiveType() === type) {
+                hud.dismissActive({ root: wrapper, ar: playerAr });
+                return;
+              }
+              if (!playerAr?.roll) return;
+              if (type === "trait") {
+                const choice = await hud.showTraitHUD({
+                  roll: playerAr.roll,
+                  root: wrapper,
+                  tokenUuid: playerAr.attacker?.tokenUuid ?? null,
+                });
+                if (!choice) return;
+                invokeBtn.classList.add("is-resolved");
+                channel.emit({
+                  type: INTENTS.INVOKE_CHOICE,
+                  body: { type: "trait", choice },
+                  combatId: menuSpec.combatId,
+                });
+              } else {
+                const attackerUuid = menuSpec.attackerActorUuid ?? null;
+                if (!attackerUuid) return;
+                let attacker = null;
+                try { attacker = await fromUuid(attackerUuid); } catch {}
+                if (!attacker) return;
+                const { readActorBonds, getInvokeCapability } = await import("./invoke/invoke-core.js");
+                if (getInvokeCapability(attacker) !== "full") {
+                  ui.notifications?.warn("Bond invoke is not available for this actor.");
+                  return;
+                }
+                const bonds = readActorBonds(attacker);
+                const viable = bonds.filter((b) => b.bonus > 0);
+                if (!viable.length) {
+                  ui.notifications?.warn("No eligible Bonds (all bonds need at least 1 filled emotion).");
+                  return;
+                }
+                const bondIndex = await hud.showBondHUD({
+                  bonds: viable,
+                  attacker,
+                  root: wrapper,
+                  ar: playerAr,
+                  tokenUuid: playerAr.attacker?.tokenUuid ?? null,
+                });
+                if (bondIndex == null) return;
+                invokeBtn.classList.add("is-resolved");
+                channel.emit({
+                  type: INTENTS.INVOKE_CHOICE,
+                  body: { type: "bond", bondIndex },
+                  combatId: menuSpec.combatId,
+                });
+              }
+            } catch (e) {
+              warn("mirror invoke handler threw", e);
+              ui.notifications?.error("Invoke failed (see console).");
+            }
+          })();
+          return;
+        }
         // "Open Character Sheet" — fire-and-forget; opens the actor's
         // sheet for the player to rearrange equipment manually.
         const openSheet = ev.target?.closest?.("[data-fud-open-sheet]");
@@ -5636,7 +5794,7 @@ export function registerPlayerActionCardHandler(channel) {
       try { mirrorTipCleanup?.(); } catch {}
     };
 
-    log(`action-card mirror rendered (owner=${isOwner ? "yes" : "observer"})`);
+    log(`action-card mirror rendered (owner=${isPlayerOwner ? "yes" : "observer"}, interactive=${isInteractive ? "yes" : "no"})`);
   });
 
   const offClose = channel.onMenuClose((payload) => {
@@ -5644,5 +5802,5 @@ export function registerPlayerActionCardHandler(channel) {
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} };
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} try { offInvokeUpdate?.(); } catch {} };
 }

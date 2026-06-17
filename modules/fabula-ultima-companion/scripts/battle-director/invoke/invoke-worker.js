@@ -12,6 +12,7 @@ import {
   canPay, payPoint, readActorBonds,
   rerollDice, applyBondBonus,
 } from "./invoke-core.js";
+import { resultLabelFor, resultClsFor } from "../action-card.js";
 
 function _getStampedCapability(ar) {
   return ar?.attacker?.invokeCapability ?? "full";
@@ -132,15 +133,14 @@ export function patchCardDom(root, newAr, invokeState) {
     // ── Per-target result rows (index-ordered, same order as perTargetResults) ─
     const rows       = root.querySelectorAll(".fud-bf-target-row");
     const ptResults  = newAr.perTargetResults ?? [];
+    const hasDmg     = !!newAr.damage;
     rows.forEach((row, i) => {
       const r = ptResults[i];
       if (!r || r.studied === false) return; // keep ??? masking for unstudied targets
       const resultEl = row.querySelector(".t-result");
       if (!resultEl || resultEl.textContent.trim() === "???") return;
-      const cls   = r.isCrit ? "crit" : r.hit ? "hit" : "miss";
-      const label = r.isCrit ? "Critical Hit" : r.hit ? "Hit" : "Miss";
-      resultEl.className = `t-result ${cls}`;
-      resultEl.textContent = label;
+      resultEl.className = `t-result ${resultClsFor(r)}`;
+      resultEl.innerHTML  = resultLabelFor(r, { hasDamage: hasDmg });
     });
 
     // ── Invoke button states ──────────────────────────────────────────────────
@@ -152,6 +152,12 @@ export function patchCardDom(root, newAr, invokeState) {
       const btn = root.querySelector('[data-fud-invoke="bond"]');
       if (btn) { btn.classList.remove("is-locked"); btn.classList.add("is-resolved"); }
     }
+
+    // ── Invoke point counter (FP / UP remaining) ─────────────────────────────
+    const counterVal = root.querySelector("[data-fud-invoke-counter] .fud-invoke-count");
+    if (counterVal && newAr.attacker?.invokePointCount != null) {
+      counterVal.textContent = String(newAr.attacker.invokePointCount);
+    }
   } catch (e) {
     warn("[BD][Invoke] patchCardDom threw", e);
   }
@@ -159,7 +165,7 @@ export function patchCardDom(root, newAr, invokeState) {
 
 // ── Main handlers ─────────────────────────────────────────────────────────────
 
-export async function handleInvokeTrait({ director, ar, root, invokeState }) {
+export async function handleInvokeTrait({ director, ar, root, invokeState, prePickedChoice = null }) {
   if (invokeState.trait) {
     ui.notifications?.warn("Trait already invoked for this action.");
     return false;
@@ -194,7 +200,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
   }
 
   const tokenUuid = ar.attacker?.tokenUuid ?? null;
-  const choice = await showTraitHUD({ roll: ar.roll, root, tokenUuid });
+  const choice = prePickedChoice ?? await showTraitHUD({ roll: ar.roll, root, tokenUuid });
   if (!choice) return false;
 
   const spend = await payPoint(attacker);
@@ -203,9 +209,12 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
     return false;
   }
 
+  const arAfterPay = (spend.cur != null && ar.attacker)
+    ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
+    : ar;
   const oldTotal = ar.roll.total;
   const newRoll  = await rerollDice({ roll: ar.roll, choice, actor: attacker });
-  const newAr    = recomputeArAfterInvoke(ar, newRoll);
+  const newAr    = recomputeArAfterInvoke(arAfterPay, newRoll);
   playTraitOutcomeSfx(oldTotal, newRoll.total);
 
   invokeState.trait            = true;
@@ -219,7 +228,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState }) {
   return true;
 }
 
-export async function handleInvokeBond({ director, ar, root, invokeState }) {
+export async function handleInvokeBond({ director, ar, root, invokeState, prePickedBondIndex = null }) {
   if (invokeState.bond) {
     ui.notifications?.warn("Bond already invoked for this action.");
     return false;
@@ -260,7 +269,7 @@ export async function handleInvokeBond({ director, ar, root, invokeState }) {
     return false;
   }
 
-  const pickedIndex = await showBondHUD({ bonds: viable, attacker, root, ar, tokenUuid: ar.attacker?.tokenUuid ?? null });
+  const pickedIndex = prePickedBondIndex ?? await showBondHUD({ bonds: viable, attacker, root, ar, tokenUuid: ar.attacker?.tokenUuid ?? null });
   if (pickedIndex == null) return false;
   const chosen = viable.find((b) => b.index === pickedIndex) ?? viable[0];
 
@@ -270,8 +279,11 @@ export async function handleInvokeBond({ director, ar, root, invokeState }) {
     return false;
   }
 
+  const arAfterPay = (spend.cur != null && ar.attacker)
+    ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
+    : ar;
   const newRoll = applyBondBonus({ roll: ar.roll, bonus: chosen.bonus });
-  const newAr   = recomputeArAfterInvoke(ar, newRoll);
+  const newAr   = recomputeArAfterInvoke(arAfterPay, newRoll);
 
   invokeState.bond             = true;
   invokeState.bondInfo         = { index: chosen.index, name: chosen.name, bonus: chosen.bonus };
