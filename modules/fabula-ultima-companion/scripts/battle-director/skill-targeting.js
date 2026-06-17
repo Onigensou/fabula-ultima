@@ -31,6 +31,7 @@
 import { log, warn } from "./logger.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 import { isGrappled, tokensGrappledBy } from "./grappled.js";
+import { getAllegianceOverrides, applyAllegianceOverride } from "./snapshot.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -46,6 +47,10 @@ const RESERVED_REFS = {
   // Guard's optional covered ally (resolveAction-unification). mode "all" takes
   // the (0 or 1) token collectCoverTarget yields without prompting.
   cover_target:          { candidate_source: "cover_target", mode: "all" },
+  // Creatures that FAILED the most recent `save_check` this chain (populated on
+  // ctx.saveFailedTokenUuids). Used by follow-up apply_ae rows (Dreadwyrm: the
+  // failures suffer Frightened/Paralyzed/Silence). mode "all" → every failure.
+  save_failed_targets:   { candidate_source: "save_failed_targets", mode: "all" },
 };
 
 // Public — resolve a target_ref to a token list within a chain context.
@@ -326,12 +331,10 @@ async function resolveTargetingRow(row, ctx) {
 // `protect_incoming`, Mercy's redirect, etc.) all flow through here
 // so the UX matches across the whole game.
 //
-// TODO (owner-side routing): the BD picker is rendered on the calling
-// client (typically GM). For player-owned reactors the prompt should
-// appear on the reactor's owner's screen instead. Tracked as a
-// separate enhancement; depends on adding a server-roundtrip to
-// `target-picker.js` or an IntentChannel message to ferry the pick
-// across clients.
+// Owner-side routing: when ctx.remotePrompt is set (reaction applied by a
+// player), the BD picker renders on that player's client via the `remote`
+// param instead of locally on the GM. requestTargeting handles the round-trip;
+// the value comes back in the same { ok, cancelled, tokenUuids } shape.
 async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
   // Convert the token-doc pool into target-picker.js's "eligible
   // snapshot" shape — minimum required fields are `tokenId` + `tokenUuid`
@@ -367,6 +370,8 @@ async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
       count: locked ? eligible.length : n,
       lockSelection: locked,
       titleText,
+      // Route to the reaction owner's client when applying a player's reaction.
+      remote: ctx?.remotePrompt ?? null,
     });
     if (!result?.ok) {
       return {
@@ -398,6 +403,7 @@ async function buildCandidatePool(source, ctx) {
     case "trigger_subject":     return collectTriggerSubject(ctx);
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
+    case "save_failed_targets": return collectSaveFailedTargets(ctx);
     case "combat":
     default:                    return collectCombatTokens(ctx);
   }
@@ -405,6 +411,13 @@ async function buildCandidatePool(source, ctx) {
 
 function collectSelfTokens(ctx) {
   return ctx.reactorToken ? [ctx.reactorToken] : [];
+}
+
+// Tokens that FAILED the most recent save_check this chain. save_check stamps
+// ctx.saveFailedTokenUuids (token uuids, resolved from each failing actor); we
+// map them back to TokenDocuments here.
+async function collectSaveFailedTargets(ctx) {
+  return await uuidsToTokens(ctx.saveFailedTokenUuids ?? []);
 }
 
 async function collectActionTargets(ctx) {
@@ -552,6 +565,21 @@ function matchesCategory(token, category, ctx) {
 
   const cat = category.toLowerCase();
   if (cat === "creature" || cat === "") return true;
+
+  // Allegiance overrides on the acting creature reclassify a candidate's side
+  // (e.g. Charm/Domination: allies count as enemies). Applied to the NATURAL
+  // side before the disposition rules below; only short-circuits ally/enemy when
+  // an override is actually present (no behavior change otherwise).
+  if (cat === "ally" || cat === "enemy") {
+    const tokUuid = token.uuid ?? token.document?.uuid;
+    const isSelf = !!tokUuid && tokUuid === reactor.uuid;   // never reclassify self
+    const overrides = isSelf ? [] : getAllegianceOverrides(ctx.reactorActor);
+    if (overrides.length) {
+      const natSide = ((targetDisp === reactorDisp) && (targetDisp !== 0)) ? "ally" : "enemy";
+      const effSide = applyAllegianceOverride(natSide, tokUuid, token.actor?.uuid, overrides);
+      return effSide === cat;
+    }
+  }
   if (cat === "ally") {
     if (targetDisp === reactorDisp) return true;
     if (targetDisp === 0) return true;             // neutral counts as ally
@@ -623,6 +651,12 @@ export function makeChainContext({
   // so a headless sim never hangs. Shape: { move_amount: 3, ... }. Live play
   // never sets this. See FUCompanion.api.test.runDirectorSkillSimulate.
   harnessNumbers = null,
+  // When set, interactive picks (target picker, option-menu) route to a
+  // remote player's client instead of rendering on the calling (GM) client.
+  // Shape: { channel, targetUserId, combatId }. Set by the reaction apply
+  // path so a player resolves their OWN reaction's secondary UI. Null for
+  // GM/NPC-local resolution. See remote-pick.js + [[director-player-driven-input]].
+  remotePrompt = null,
 } = {}) {
   return {
     reactorActor,
@@ -641,6 +675,7 @@ export function makeChainContext({
     harnessPicks,
     menuPicks,
     harnessNumbers,
+    remotePrompt,
     resolvedTargets: new Map(),
   };
 }

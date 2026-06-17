@@ -272,6 +272,7 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
       sourceActorUuid: ctx.ar?.attackerActorRef ?? null,
     },
     isPassive: false,
+    remotePrompt: ctx.remotePrompt ?? null,
   });
   const resolved = await resolveBdTargetRef(targetRef, chainCtx);
   if (!resolved?.ok || !resolved.tokens?.length) {
@@ -298,166 +299,123 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
   return pickedUuids;
 }
 
-// Apply a single redirect_target mutation to ctx. The "source slot" is
-// resolved via the BD-native effect-targeting resolver (auto-confirm
-// when 1 valid candidate, BD picker prompt otherwise — see
-// `resolvePickedSubject`). The "destination" is the reactor's actor
-// (Protect's canonical "you take their place" semantic). Future
-// variants with destination_ref pointing elsewhere can extend here.
+// Apply a single redirect_target mutation to ctx.
 //
-// Returns:
-//   "applied"   — mutation landed
-//   "cancelled" — player cancelled the target picker (caller should
-//                 revert the provisional pill decision)
-//   "failed"    — hard failure (missing data, no token, etc.)
+// redirect_target is ONE symmetric operation: replace the slot(s) of SOURCE with
+// DESTINATION. Both are DECLARED by the row's refs — the direction is never
+// inferred from "who happens to be a target" (that proxy mis-fired on an
+// all-target AoE, where a reactor-owned Protect's protector is ALSO a target):
+//   - SOURCE  = `target_ref` resolved → the action slot(s) to move. Absent → the
+//               REACTOR is the source (a target-owned reaction whose answering
+//               target redirects its OWN slot — Condemn/Torment).
+//   - DEST    = `destination_ref` resolved → the replacement creature. Absent →
+//               the REACTOR ("you take their place" — plain Protect shorthand).
+// So Protect (target_ref = the protected ally, dest = protect_self → the Guardian)
+// moves the ally's slot to the Guardian whether or not the Guardian is also caught
+// in the AoE; Torment (no target_ref, dest = a chosen ally) moves the answering
+// target's own slot to that ally. No branching, no discriminator.
+//
+// Returns "applied" | "cancelled" (player aborted a picker) | "failed".
 async function applyRedirectTargetMutation(ctx, cand, row) {
   const reactorUuid = cand.reactorActorUuid;
-  if (!reactorUuid) {
-    warn(`redirect: missing reactor on candidate`);
-    return "failed";
-  }
+  if (!reactorUuid) { warn(`redirect: missing reactor on candidate`); return "failed"; }
   const reactor = await fromUuid(reactorUuid);
-  if (!reactor) {
-    warn(`redirect: reactor actor ${reactorUuid} not resolvable`);
-    return "failed";
-  }
+  if (!reactor) { warn(`redirect: reactor actor ${reactorUuid} not resolvable`); return "failed"; }
   const reactorTok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === reactor.uuid)?.document
     ?? reactor?.getActiveTokens?.()?.[0]?.document
     ?? null;
-  if (!reactorTok) {
-    warn(`redirect: no token for reactor ${reactor.name}`);
-    return "failed";
-  }
+  if (!reactorTok) { warn(`redirect: no token for reactor ${reactor.name}`); return "failed"; }
 
-  // INVERTED redirect (destination_ref present): the REACTOR is the SOURCE slot
-  // (the deciding target), and the action moves to a CHOSEN DESTINATION resolved
-  // via destination_ref — e.g. Condemn/Torment's "you may pass this to an ally"
-  // (target-owned reaction, reactor = the target). This is the mirror of the
-  // default Protect direction (source = target_ref, destination = reactor). The
-  // destination targeting row picks relative to the reactor (category "ally",
-  // exclude_self), so it offers the target's own allies.
-  const destRef = String(row?.destination_ref ?? "").trim();
-  // Discriminator for the inverted/target-owned axis is whether the reactor is
-  // ACTUALLY one of the action's targets — NOT a string match on destination_ref.
-  // A self-resolving ref like Protect's "protect_self" must not be mistaken for
-  // target-owned; when the reactor isn't a target, srcIdx stays -1 and we fall
-  // through to the DEFAULT redirect below (target_ref ally's slot → reactor).
-  const srcIdx = (destRef && destRef.toLowerCase() !== "self")
-    ? ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid)
-    : -1;
-  if (srcIdx !== -1) {
-    const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
-    // Cache the destination pick so a re-recompute pass doesn't re-prompt.
+  const targetRef = String(row?.target_ref ?? "").trim();
+  const destRef   = String(row?.destination_ref ?? "").trim();
+
+  // ── SOURCE: which slot(s) to move ──
+  // target_ref → the chosen/auto-resolved subject(s); absent → the reactor's own
+  // slot (target-owned reaction). resolveRedirectSubjects caches the pick so a
+  // re-recompute pass doesn't re-prompt.
+  let sourceActorUuids;
+  if (targetRef) {
+    cand._pickerCancelled = false;
+    sourceActorUuids = await resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx });
+    if (cand._pickerCancelled) return "cancelled";
+  } else {
+    sourceActorUuids = [reactorUuid];
+  }
+  if (!sourceActorUuids.length) return "failed";
+
+  // ── DESTINATION: the replacement creature ──
+  // destination_ref → resolved (cached); absent → the reactor.
+  let destActor = reactor, destTokDoc = reactorTok;
+  if (destRef) {
     let destActorUuid = cand.pickedDestActorUuid ?? null;
-    let destTokDoc = null;
     if (!destActorUuid) {
+      const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
       const chainCtx = makeBdChainContext({
         reactorActor: reactor,
         reactorToken: reactorTok,
         skill: carrier,
         actionTargetUuids: (ctx.ar?.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
         payload: { sourceActorUuid: ctx.ar?.attackerActorRef ?? null },
-        isPassive: false,   // a real choice — prompt for the ally pick
+        isPassive: false,   // a real choice — prompt when ambiguous
+        remotePrompt: ctx.remotePrompt ?? null,
       });
       const resolved = await resolveBdTargetRef(destRef, chainCtx);
       if (resolved?.cancelled) { cand._pickerCancelled = true; return "cancelled"; }
       const destTok = resolved?.tokens?.[0];
       if (!resolved?.ok || !destTok?.actor) {
-        log(`redirect(dest): no destination for ${cand.carrierName} (${resolved?.reason ?? "empty"})`);
+        log(`redirect: no destination for ${cand.carrierName} (${resolved?.reason ?? "empty"})`);
         return "failed";
       }
       destActorUuid = destTok.actor.uuid;
       destTokDoc = destTok.document ?? destTok;
       cand.pickedDestActorUuid = destActorUuid;
+    } else {
+      destTokDoc = null;   // resolve from the cached uuid below
     }
-    const destActor = await fromUuid(destActorUuid).catch(() => null);
+    const a = await fromUuid(destActorUuid).catch(() => null);
+    if (a) destActor = a;
     if (!destTokDoc) {
       destTokDoc = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === destActorUuid)?.document
         ?? destActor?.getActiveTokens?.()?.[0]?.document ?? null;
     }
-    if (!destActor || !destTokDoc) { warn(`redirect(dest): destination actor/token unresolved`); return "failed"; }
-    const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
-    const originalName = ctx.targets[srcIdx]?.name ?? "?";
-    // Re-derive the destination's row through buildPerTarget (full pipeline);
-    // fall back to the legacy clone only if the profile can't be rebuilt.
-    const destSnap = snapshotTargetForToken(destTokDoc);
-    const per = (destSnap && await rederiveTargetRow(ctx.ar, destSnap))
-      ?? recomputePerTargetForRedirect({ ar: ctx.ar, reactor: destActor, reactorTok: destTokDoc, applyAffinityToDamage });
-    per.redirectedFrom = { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect", reactorName: destActor.name };
-    ctx.targets[srcIdx] = {
+    if (!destActor || !destTokDoc) { warn(`redirect: destination actor/token unresolved`); return "failed"; }
+  }
+
+  // ── SWAP each source slot → destination ──
+  // Re-derive the destination's row ONCE through buildPerTarget (its defense/
+  // affinity/DR is identical across slots); clone per slot (redirectedFrom differs
+  // so the card can show "via Protect, originally targeting Hina"). Fall back to
+  // the legacy clone only if the profile can't be rebuilt.
+  const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
+  const destSnap = snapshotTargetForToken(destTokDoc);
+  const destRowBase = (destSnap && await rederiveTargetRow(ctx.ar, destSnap)) ?? null;
+
+  let touchedSlots = 0;
+  for (const srcUuid of sourceActorUuids) {
+    const idx = ctx.targets.findIndex((t) => t?.actorUuid === srcUuid);
+    if (idx === -1) {
+      warn(`redirect: source ${srcUuid} not found in ar.targets — skipping slot`);
+      continue;
+    }
+    const originalName = ctx.targets[idx]?.name ?? "?";
+    const per = destRowBase
+      ? { ...destRowBase }
+      : recomputePerTargetForRedirect({ ar: ctx.ar, reactor: destActor, reactorTok: destTokDoc, applyAffinityToDamage });
+    per.redirectedFrom = { actorUuid: srcUuid, name: originalName, via: cand.carrierName ?? "redirect", reactorName: destActor.name };
+    ctx.targets[idx] = {
       ...(destSnap ?? {
         actorUuid: destActor.uuid, tokenUuid: destTokDoc.uuid, name: destActor.name,
         tokenImg: destTokDoc.texture?.src ?? destActor.img, disposition: destTokDoc.disposition, defense: per.defense,
       }),
-      redirectedFrom: { actorUuid: reactorUuid, name: originalName, via: cand.carrierName ?? "redirect" },
+      redirectedFrom: { actorUuid: srcUuid, name: originalName, via: cand.carrierName ?? "redirect" },
     };
-    ctx.perTargets[srcIdx] = per;
-    log(`redirect(dest): slot ${srcIdx} ${originalName} → ${destActor.name} (chosen via ${cand.carrierName})`);
-    return "applied";
-  }
-
-  // Distinguish cancel vs fall-through-fail by tagging the result with
-  // a sentinel before resolveRedirectSubjects. Returns [] on player
-  // cancel (paired with _pickerCancelled=true); array of uuids on
-  // success / fail-fallback.
-  cand._pickerCancelled = false;
-  const subjectUuids = await resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx });
-  if (cand._pickerCancelled) {
-    return "cancelled";
-  }
-  if (!subjectUuids.length) {
-    return "failed";
-  }
-
-  const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
-
-  // Re-derive the reactor's row ONCE through buildPerTarget (full pipeline) — the
-  // reactor's defense/affinity/DR is identical across slots, so one derivation is
-  // cloned per slot (only redirectedFrom differs). Fall back to the legacy clone
-  // only if the profile can't be rebuilt.
-  const reactorSnap = snapshotTargetForToken(reactorTok);
-  const reactorRowBase = (reactorSnap && await rederiveTargetRow(ctx.ar, reactorSnap)) ?? null;
-
-  // Iterate over each subject — Protect's single-target case swaps one
-  // slot; Prophetic Defender's multi-target case ("take the place of
-  // all those allies") swaps every matching slot, so the damage
-  // pipeline applies the action once per original target against the
-  // reactor's stats.
-  let touchedSlots = 0;
-  for (const subjectUuid of subjectUuids) {
-    const idx = ctx.targets.findIndex((t) => t?.actorUuid === subjectUuid);
-    if (idx === -1) {
-      warn(`redirect: picked subject ${subjectUuid} not found in ar.targets — skipping slot`);
-      continue;
-    }
-    const originalName = ctx.targets[idx]?.name ?? "?";
-
-    // Clone the once-derived reactor row (redirectedFrom differs per slot so the
-    // card can show "via PD, originally targeting Hina"). Fallback = legacy clone.
-    const perTargetForSlot = reactorRowBase
-      ? { ...reactorRowBase }
-      : recomputePerTargetForRedirect({ ar: ctx.ar, reactor, reactorTok, applyAffinityToDamage });
-    perTargetForSlot.redirectedFrom = {
-      actorUuid: subjectUuid,
-      name: originalName,
-      via: cand.carrierName ?? "redirect",
-      reactorName: reactor.name,
-    };
-
-    ctx.targets[idx] = {
-      ...(reactorSnap ?? {
-        actorUuid: reactor.uuid, tokenUuid: reactorTok.uuid, name: reactor.name,
-        tokenImg: reactorTok.texture?.src ?? reactor.img, disposition: reactorTok.disposition, defense: perTargetForSlot.defense,
-      }),
-      redirectedFrom: { actorUuid: subjectUuid, name: originalName, via: cand.carrierName ?? "redirect" },
-    };
-    ctx.perTargets[idx] = perTargetForSlot;
+    ctx.perTargets[idx] = per;
     touchedSlots += 1;
-    log(`redirect: slot ${idx} ${originalName} → ${reactor.name} (via ${cand.carrierName})`);
+    log(`redirect: slot ${idx} ${originalName} → ${destActor.name} (via ${cand.carrierName})`);
   }
 
   if (touchedSlots === 0) {
-    warn(`redirect: no matching slots found for picked subjects [${subjectUuids.join(", ")}]`);
+    warn(`redirect: no matching source slots for [${sourceActorUuids.join(", ")}]`);
     return "failed";
   }
   return "applied";
@@ -613,6 +571,7 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     runtimeEffectTable: effectTable ?? null,
     payload: { attackerActorUuid, attackerTokenUuid },
     isPassive: true,
+    remotePrompt: ctx.remotePrompt ?? null,
   });
   const resolved = await resolveBdTargetRef(targetRef, chainCtx);
   const tokens = resolved?.tokens ?? [];
@@ -706,9 +665,9 @@ export async function applyAddTargetSplices(arSnapshot, cands) {
 // keeps the mutated rows (which still carry the redirect markers).
 // `_cb` is a TEST-ONLY cache-bust token for the dynamic imports (headless
 // harness iteration). Production callers omit it → plain boot-cached imports.
-export async function applyTargetSetMutation({ ar, accepted, attackerActor = null, round = 0, _cb = null } = {}) {
+export async function applyTargetSetMutation({ ar, accepted, attackerActor = null, round = 0, _cb = null, remotePrompt = null } = {}) {
   const sfx = _cb ? `?cb=${_cb}` : "";
-  const mut = await applyAcceptedCardMutations(ar, accepted);
+  const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt);
   if (mut.cancelled) return { cancelled: true };
   const mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
@@ -742,10 +701,13 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   };
 }
 
-export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives) {
+export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives, remotePrompt = null) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
-  const ctx = { ar: arSnapshot, targets, perTargets };
+  // `remotePrompt` rides on the mutation ctx so the redirect/add_target chain
+  // ctxs (makeBdChainContext below) route their target picks to the reaction
+  // owner's client. Null = local (GM/NPC). See remote-pick.js.
+  const ctx = { ar: arSnapshot, targets, perTargets, remotePrompt };
   let mutationsApplied = 0;
   let cancelled = false;
 

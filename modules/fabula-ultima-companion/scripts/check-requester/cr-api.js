@@ -533,13 +533,13 @@
 
     // Roll buttons (hidden when all dice are in)
     const rollBtns = isSingle
-      ? `<button class="oni-cr-roll-btn" data-die="A" data-uuid="${pd.actorUuid}">d${pd.dieA}</button>`
-      : `<button class="oni-cr-roll-btn" data-die="A" data-uuid="${pd.actorUuid}">d${pd.dieA}</button>
+      ? `<button class="oni-cr-roll-btn" data-die="A" data-slot="${pd.slotId}">d${pd.dieA}</button>`
+      : `<button class="oni-cr-roll-btn" data-die="A" data-slot="${pd.slotId}">d${pd.dieA}</button>
          <div class="oni-cr-plus-sep">+</div>
-         <button class="oni-cr-roll-btn" data-die="B" data-uuid="${pd.actorUuid}">d${pd.dieB}</button>`;
+         <button class="oni-cr-roll-btn" data-die="B" data-slot="${pd.slotId}">d${pd.dieB}</button>`;
 
     return `
-      <div class="oni-cr-panel" data-uuid="${pd.actorUuid}">
+      <div class="oni-cr-panel" data-slot="${pd.slotId}">
         <div class="oni-cr-portrait">${tokenMedia}</div>
         <div class="oni-cr-actor-name" title="${esc(pd.actorName)}">${esc(pd.actorName)}</div>
 
@@ -564,14 +564,14 @@
         <div class="oni-cr-sep" data-zone="sep1" style="display:none"></div>
 
         <div class="oni-cr-invoke-area" data-zone="invoke" style="display:none">
-          <button class="oni-cr-invoke-btn" data-action="trait"      data-uuid="${pd.actorUuid}">🎭 Invoke Trait</button>
-          <button class="oni-cr-invoke-btn" data-action="bond"       data-uuid="${pd.actorUuid}">🤝 Invoke Bond</button>
-          <button class="oni-cr-invoke-btn" data-action="divination" data-uuid="${pd.actorUuid}">🔮 Divination</button>
+          <button class="oni-cr-invoke-btn" data-action="trait"      data-slot="${pd.slotId}">🎭 Invoke Trait</button>
+          <button class="oni-cr-invoke-btn" data-action="bond"       data-slot="${pd.slotId}">🤝 Invoke Bond</button>
+          <button class="oni-cr-invoke-btn" data-action="divination" data-slot="${pd.slotId}">🔮 Divination</button>
         </div>
 
         <div class="oni-cr-sep" data-zone="sep2" style="display:none"></div>
 
-        <button class="oni-cr-confirm-btn" data-uuid="${pd.actorUuid}" data-zone="confirm" style="display:none">✓ Confirm</button>
+        <button class="oni-cr-confirm-btn" data-slot="${pd.slotId}" data-zone="confirm" style="display:none">✓ Confirm</button>
         <div class="oni-cr-confirmed" data-zone="confirmed" style="display:none">Confirmed ✓</div>
         <div class="oni-cr-waiting"   data-zone="waiting">Waiting…</div>
       </div>`;
@@ -580,8 +580,8 @@
   // =========================================================================
   // DOM helpers
   // =========================================================================
-  const getPanelEl = uuid =>
-    _session?.backdropEl?.querySelector(`.oni-cr-panel[data-uuid="${CSS.escape(uuid)}"]`);
+  const getPanelEl = slot =>
+    _session?.backdropEl?.querySelector(`.oni-cr-panel[data-slot="${CSS.escape(slot)}"]`);
 
   const zone     = (el, name) => el?.querySelector(`[data-zone="${name}"]`);
   const showZone = (el, name, visible) => { const z = zone(el, name); if (z) z.style.display = visible ? "" : "none"; };
@@ -589,14 +589,14 @@
   // =========================================================================
   // Sync panel DOM
   // =========================================================================
-  function syncPanel(uuid) {
+  function syncPanel(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
-    const el = getPanelEl(uuid);
+    const st = ses.panelStates.get(slot);
+    const el = getPanelEl(slot);
     if (!st || !el) return;
 
-    const isOwner   = canOwnerAct(uuid);
+    const isOwner   = canOwnerAct(st.actorUuid);
     const isSingle  = !!st.singleDie;
     const hasA      = st.rollA !== null;
     const hasB      = st.rollB !== null;
@@ -956,22 +956,22 @@
       // Stagger each panel's verdict badge reveal for anticipation.
       // Gaps: 420ms between each participant, plus an extra 380ms pause before
       // the last one when there are multiple participants (roulette decel feel).
-      const uuids = [...ses.panelStates.keys()];
-      const n     = uuids.length;
+      const slots = [...ses.panelStates.keys()];
+      const n     = slots.length;
       let lastDelay = 0;
 
       // Base delay ensures even single-actor checks have a beat before the badge
       // appears (0ms felt instant/mechanical vs. group check's natural stagger).
       const BASE_REVEAL = 420;
-      uuids.forEach((uuid, i) => {
+      slots.forEach((slot, i) => {
         const isLast = n > 1 && i === n - 1 && !ses.opts?.skipGroupOutcomeSound;
         const delay  = BASE_REVEAL + i * 420 + (isLast ? 380 : 0);
         if (i === n - 1) lastDelay = delay;
         setTimeout(() => {
-          const st = ses.panelStates.get(uuid);
+          const st = ses.panelStates.get(slot);
           if (!st || _session?.sessionId !== ses.sessionId) return;
           st._revealed = true;
-          syncPanel(uuid);
+          syncPanel(slot);
         }, delay);
       });
 
@@ -1036,7 +1036,7 @@
 
     const panelStates = new Map();
     for (const pd of panels) {
-      panelStates.set(pd.actorUuid, {
+      panelStates.set(pd.slotId, {
         ...pd,
         rollA: null, rollB: null,
         result: null, modifierParts: [...(opts?.modifiers ?? [])],
@@ -1059,44 +1059,44 @@
       if (confirmBtn) await onConfirmClick(confirmBtn).catch(e => console.error(TAG, e));
     });
 
-    for (const [uuid] of panelStates) {
-      syncPanel(uuid);
-      loadActorCheckMods(uuid);
-      if (canOwnerAct(uuid) && opts?.allowInvokes !== false) loadInvokeAvailability(uuid);
+    for (const [slot, st] of panelStates) {
+      syncPanel(slot);
+      loadActorCheckMods(slot);
+      if (canOwnerAct(st.actorUuid) && opts?.allowInvokes !== false) loadInvokeAvailability(slot);
     }
   }
 
   // =========================================================================
   // Load actor check modifiers into panel state (unconditional, all actors)
   // =========================================================================
-  async function loadActorCheckMods(uuid) {
+  async function loadActorCheckMods(slot) {
     const ses = _session;
-    const st = ses?.panelStates?.get(uuid);
+    const st = ses?.panelStates?.get(slot);
     if (!st) return;
-    const actor = await resolveActor(uuid);
+    const actor = await resolveActor(st.actorUuid);
     if (!actor || !_session || _session.sessionId !== ses.sessionId) return;
     const mods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, ses.opts?.context?.checkContext ?? null) ?? [];
     if (!mods.length) return;
     st.modifierParts = [...mods, ...(st.modifierParts ?? [])];
-    syncPanel(uuid);
+    syncPanel(slot);
   }
 
   // =========================================================================
   // Load invoke availability
   // =========================================================================
-  async function loadInvokeAvailability(uuid) {
+  async function loadInvokeAvailability(slot) {
     const ses = _session;
     if (!ses || ses.opts?.allowInvokes === false) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st) return;
-    const actor = await resolveActor(uuid);
+    const actor = await resolveActor(st.actorUuid);
     if (!actor || !_session || _session.sessionId !== ses.sessionId) return;
     const fp = getFP(actor), bonds = collectBonds(actor);
     st._actor = actor; st._bonds = bonds;
     st.canTrait = fp >= 1;
     st.canBond  = fp >= 1 && bonds.length > 0;
     st.canDivination = !!findDivinationAe(actor);
-    syncPanel(uuid);
+    syncPanel(slot);
   }
 
   // =========================================================================
@@ -1113,11 +1113,11 @@
   async function onRollClick(btn) {
     const ses  = _session;
     if (!ses) return;
-    const uuid = btn.dataset.uuid;
+    const slot = btn.dataset.slot;
     const die  = btn.dataset.die;
-    if (!canOwnerAct(uuid)) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st || st.confirmed) return;
+    if (!canOwnerAct(st.actorUuid)) return;
     const isSingle = !!st.singleDie;
     if (die === "A" && st.rollA !== null) return;
     if (die === "B" && (st.rollB !== null || isSingle)) return;
@@ -1127,21 +1127,21 @@
     if (isSingle && die === "A") {
       const vA = await rollDie(st.dieA), vB = await rollDie(st.dieA);
       st.rollA = vA; st.rollB = vB;
-      game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, uuid, die: "BOTH", rollA: vA, rollB: vB } });
-      const panelEl = getPanelEl(uuid);
+      game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, slot, die: "BOTH", rollA: vA, rollB: vB } });
+      const panelEl = getPanelEl(slot);
       if (panelEl) {
         const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
         await animateDie(panelEl, "A", vA, st.dieA, { intense: pickIntense(ses.dl, vA + modTotal) });
       }
-      afterAllRolled(uuid);
+      afterAllRolled(slot);
       return;
     }
 
     const faces = die === "A" ? st.dieA : st.dieB;
     const value = await rollDie(faces);
     if (die === "A") st.rollA = value; else st.rollB = value;
-    game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, uuid, die, value } });
-    const panelEl = getPanelEl(uuid);
+    game.socket.emit(SOCKET_CH, { type: MSG_ROLL, payload: { sessionId: ses.sessionId, slot, die, value } });
+    const panelEl = getPanelEl(slot);
     if (panelEl) {
       let intense = false;
       if (die === "B" && st.rollA !== null) {
@@ -1150,34 +1150,34 @@
       }
       await animateDie(panelEl, die, value, faces, { intense });
     }
-    afterAllRolled(uuid);
+    afterAllRolled(slot);
   }
 
-  function afterAllRolled(uuid) {
+  function afterAllRolled(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st) return;
     const isSingle = !!st.singleDie;
     const allDone  = st.rollA !== null && (isSingle || st.rollB !== null);
-    if (!allDone) { syncPanel(uuid); return; }
+    if (!allDone) { syncPanel(slot); return; }
     const rB = isSingle ? st.rollA : (st.rollB ?? st.rollA);
     st.result = computeCheck(st.rollA, rB, st.modifierParts, ses.dl, ses.opts?.singleDie);
     // Record pre-invoke pass state so doConfirm can detect outcome flips
     if (st.initialPass === undefined) st.initialPass = st.result.pass;
-    syncPanel(uuid);
-    if (canOwnerAct(uuid)) scheduleAutoConfirm(uuid);
+    syncPanel(slot);
+    if (canOwnerAct(st.actorUuid)) scheduleAutoConfirm(slot);
   }
 
   // =========================================================================
   // Auto-confirm
   // =========================================================================
-  async function scheduleAutoConfirm(uuid) {
+  async function scheduleAutoConfirm(slot) {
     const ses = _session;
     if (!ses) return;
     await wait(400);
     if (!_session || _session.sessionId !== ses.sessionId) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st || st.confirmed) return;
 
     const isFumble  = st.result?.isFumble;
@@ -1188,10 +1188,10 @@
     if (isFumble || noOptions) {
       const delay = timedOut ? Math.min(ses.opts.timeout, 900) : 900;
       await wait(delay);
-      if (_session?.sessionId === ses.sessionId && !st.confirmed) await doConfirm(uuid);
+      if (_session?.sessionId === ses.sessionId && !st.confirmed) await doConfirm(slot);
     } else if (timedOut) {
       await wait(ses.opts.timeout);
-      if (_session?.sessionId === ses.sessionId && !st.confirmed) await doConfirm(uuid);
+      if (_session?.sessionId === ses.sessionId && !st.confirmed) await doConfirm(slot);
     }
   }
 
@@ -1199,20 +1199,21 @@
   // Invoke handlers
   // =========================================================================
   async function onInvokeClick(btn) {
-    const { action, uuid } = btn.dataset;
-    if (!canOwnerAct(uuid)) return;
+    const { action, slot } = btn.dataset;
+    const st0 = _session?.panelStates.get(slot);
+    if (!st0 || !canOwnerAct(st0.actorUuid)) return;
     globalThis.ONI?.CheckRequester?.Sound?.playInvoke();
-    if (action === "trait")      await invokeTrait(uuid);
-    else if (action === "bond")  await invokeBond(uuid);
-    else if (action === "divination") await invokeDivination(uuid);
+    if (action === "trait")      await invokeTrait(slot);
+    else if (action === "bond")  await invokeBond(slot);
+    else if (action === "divination") await invokeDivination(slot);
   }
 
-  async function invokeTrait(uuid) {
+  async function invokeTrait(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st || st.usedTrait || st.result?.isFumble) return;
-    const actor = st._actor ?? await resolveActor(uuid);
+    const actor = st._actor ?? await resolveActor(st.actorUuid);
     if (!actor || getFP(actor) < 1) { ui.notifications?.warn("Not enough Fabula Points (need 1)."); return; }
 
     const isSingle = !!st.singleDie;
@@ -1243,14 +1244,14 @@
       const effA = choice === "AB" ? newA : (st.rollA ?? 0);
       animateDice.push({ die: "B", value: newB, faces: st.dieB, intense: pickIntense(ses.dl, effA + newB + modTotal) });
     }
-    const panelEl = getPanelEl(uuid);
+    const panelEl = getPanelEl(slot);
     if (panelEl) {
       showZone(panelEl, "result", false);
       for (const { die, value, faces, intense } of animateDice) {
         await animateDie(panelEl, die, value, faces, { intense });
       }
     }
-    broadcastUpdate(uuid, animateDice.length ? animateDice : null); syncPanel(uuid);
+    broadcastUpdate(slot, animateDice.length ? animateDice : null); syncPanel(slot);
   }
 
   async function animateTotalRollup(panelEl, fromVal, toVal) {
@@ -1265,12 +1266,12 @@
     }
   }
 
-  async function invokeBond(uuid) {
+  async function invokeBond(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st || st.usedBond || st.result?.isFumble) return;
-    const actor = st._actor ?? await resolveActor(uuid);
+    const actor = st._actor ?? await resolveActor(st.actorUuid);
     if (!actor || getFP(actor) < 1) { ui.notifications?.warn("Not enough Fabula Points (need 1)."); return; }
     const bonds = st._bonds ?? collectBonds(actor);
     if (!bonds.length) { ui.notifications?.warn("No bonds found."); return; }
@@ -1294,18 +1295,18 @@
     st.usedBond = true; st.canBond = false;
     const newTotal = st.result.total;
     const totalRollup = oldTotal !== null && oldTotal !== newTotal ? { from: oldTotal, to: newTotal } : null;
-    const panelEl = getPanelEl(uuid);
+    const panelEl = getPanelEl(slot);
     if (panelEl && totalRollup) await animateTotalRollup(panelEl, totalRollup.from, totalRollup.to);
-    broadcastUpdate(uuid, null, totalRollup); syncPanel(uuid);
+    broadcastUpdate(slot, null, totalRollup); syncPanel(slot);
   }
 
-  async function invokeDivination(uuid) {
+  async function invokeDivination(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st || st.usedDivination) return;
     if (st.result?.isCrit || st.result?.isFumble) { ui.notifications?.warn("Cannot reroll Critical or Fumble."); return; }
-    const actor = st._actor ?? await resolveActor(uuid);
+    const actor = st._actor ?? await resolveActor(st.actorUuid);
     if (!actor) return;
     if (!findDivinationAe(actor)) { ui.notifications?.warn("No Divination charges remaining."); return; }
 
@@ -1324,25 +1325,25 @@
       ? [{ die: "A", value: newA, faces: st.dieA, intense: pickIntense(ses.dl, newA + modTotal) }]
       : [{ die: "A", value: newA, faces: st.dieA, intense: false },
          { die: "B", value: newB, faces: st.dieB, intense: pickIntense(ses.dl, newA + newB + modTotal) }];
-    const panelEl = getPanelEl(uuid);
+    const panelEl = getPanelEl(slot);
     if (panelEl) {
       showZone(panelEl, "result", false);
       for (const { die, value, faces, intense } of animateDice) {
         await animateDie(panelEl, die, value, faces, { intense });
       }
     }
-    broadcastUpdate(uuid, animateDice); syncPanel(uuid);
+    broadcastUpdate(slot, animateDice); syncPanel(slot);
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
   }
 
-  function broadcastUpdate(uuid, animateDice = null, totalRollup = null) {
+  function broadcastUpdate(slot, animateDice = null, totalRollup = null) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
+    const st = ses.panelStates.get(slot);
     if (!st) return;
     game.socket.emit(SOCKET_CH, {
       type: MSG_UPDATE,
-      payload: { sessionId: ses.sessionId, uuid, rollA: st.rollA, rollB: st.rollB,
+      payload: { sessionId: ses.sessionId, slot, rollA: st.rollA, rollB: st.rollB,
         modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
         animateDice: animateDice ?? null, totalRollup: totalRollup ?? null },
     });
@@ -1352,16 +1353,18 @@
   // Confirm
   // =========================================================================
   async function onConfirmClick(btn) {
-    if (!canOwnerAct(btn.dataset.uuid)) return;
+    const slot = btn.dataset.slot;
+    const st = _session?.panelStates.get(slot);
+    if (!st || !canOwnerAct(st.actorUuid)) return;
     globalThis.ONI?.CheckRequester?.Sound?.playConfirm();
-    await doConfirm(btn.dataset.uuid);
+    await doConfirm(slot);
   }
 
-  async function doConfirm(uuid) {
+  async function doConfirm(slot) {
     const ses = _session;
     if (!ses) return;
-    const st = ses.panelStates.get(uuid);
-    if (!st || st.confirmed || !canOwnerAct(uuid)) return;
+    const st = ses.panelStates.get(slot);
+    if (!st || st.confirmed || !canOwnerAct(st.actorUuid)) return;
 
     const isSingle  = !!st.singleDie;
     const singleDie = ses.opts?.singleDie ?? false;
@@ -1370,11 +1373,11 @@
     const res = st.result ?? computeCheck(rA, rB, st.modifierParts, ses.dl, singleDie);
 
     st.confirmed = true;
-    syncPanel(uuid);
+    syncPanel(slot);
 
     const anyInvokeUsed = st.usedTrait || st.usedBond || st.usedDivination;
     const cp = {
-      sessionId: ses.sessionId, actorUuid: uuid,
+      sessionId: ses.sessionId, slotId: slot, actorUuid: st.actorUuid,
       actorName: st.actorName, tokenImg: st.tokenImg ?? "",
       attrA: st.attrA, attrB: st.attrB, dieA: st.dieA, dieB: st.dieB,
       rollA: rA, rollB: rB, modifierParts: st.modifierParts,
@@ -1390,7 +1393,7 @@
     // socket.emit doesn't echo to the sender; collect directly on GM
     if (game.user?.isGM) {
       const pending = _pendingSessions.get(ses.sessionId);
-      if (pending) { pending.confirms.set(uuid, cp); pending.checkComplete(); }
+      if (pending) { pending.confirms.set(slot, cp); pending.checkComplete(); }
     }
   }
 
@@ -1483,38 +1486,38 @@
       }
 
       if (msg.type === MSG_ROLL) {
-        const { sessionId, uuid, die, value, rollA, rollB } = msg.payload ?? {};
+        const { sessionId, slot, die, value, rollA, rollB } = msg.payload ?? {};
         const ses = _session;
         if (!ses || ses.sessionId !== sessionId) return;
-        const st = ses.panelStates.get(uuid);
+        const st = ses.panelStates.get(slot);
         if (!st) return;
         if (die === "BOTH") {
           if (st.rollA !== null) return;
           st.rollA = rollA; st.rollB = rollB;
-          const el = getPanelEl(uuid);
+          const el = getPanelEl(slot);
           if (el) await animateDie(el, "A", rollA, st.dieA);
-          afterAllRolled(uuid);
+          afterAllRolled(slot);
         } else {
           if (die === "A" && st.rollA !== null) return;
           if (die === "B" && st.rollB !== null) return;
           if (die === "A") st.rollA = value; else st.rollB = value;
-          const el = getPanelEl(uuid);
+          const el = getPanelEl(slot);
           if (el) await animateDie(el, die, value, die === "A" ? st.dieA : st.dieB);
-          afterAllRolled(uuid);
+          afterAllRolled(slot);
         }
         return;
       }
 
       if (msg.type === MSG_UPDATE) {
-        const { sessionId, uuid, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice, totalRollup } = msg.payload ?? {};
+        const { sessionId, slot, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice, totalRollup } = msg.payload ?? {};
         const ses = _session;
         if (!ses || ses.sessionId !== sessionId) return;
-        const st = ses.panelStates.get(uuid);
+        const st = ses.panelStates.get(slot);
         if (!st) return;
         Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
         const isSingle = !!st.singleDie;
         if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
-        const panelEl = getPanelEl(uuid);
+        const panelEl = getPanelEl(slot);
         if (animateDice?.length && panelEl) {
           showZone(panelEl, "result", false);
           for (const { die, value, faces, intense } of animateDice) {
@@ -1524,20 +1527,20 @@
         if (totalRollup?.from !== undefined && panelEl) {
           await animateTotalRollup(panelEl, totalRollup.from, totalRollup.to);
         }
-        syncPanel(uuid);
+        syncPanel(slot);
         return;
       }
 
       if (msg.type === MSG_CONFIRM) {
-        const { sessionId, actorUuid } = msg.payload ?? {};
+        const { sessionId, slotId } = msg.payload ?? {};
         const ses = _session;
         if (ses && ses.sessionId === sessionId) {
-          const st = ses.panelStates.get(actorUuid);
-          if (st) { st.confirmed = true; syncPanel(actorUuid); }
+          const st = ses.panelStates.get(slotId);
+          if (st) { st.confirmed = true; syncPanel(slotId); }
         }
         if (game.user?.isGM) {
           const pending = _pendingSessions.get(sessionId);
-          if (pending) { pending.confirms.set(actorUuid, msg.payload); pending.checkComplete(); }
+          if (pending) { pending.confirms.set(slotId, msg.payload); pending.checkComplete(); }
         }
         return;
       }
@@ -1628,21 +1631,27 @@
     const { attrA, attrB, dl, label, context } = opts;
     const sessionId = foundry.utils.randomID();
 
-    const panels = actors.map(actor => {
+    // slotId — a per-PARTICIPANT identity distinct from actorUuid, so the same
+    // actor can occupy multiple panels (e.g. a Protector who takes a redirected
+    // save in addition to their own rolls twice). All panel/confirm/socket
+    // bookkeeping keys on slotId; actorUuid stays a data field for actor ops.
+    const panels = actors.map((actor, i) => {
       const dieA = getDieSize(actor, attrA);
       return {
+        slotId: `${actor.uuid}#${i}`,
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
         attrA, attrB, singleDie: opts.singleDie ?? false,
         dieA, dieB: opts.singleDie ? dieA : getDieSize(actor, attrB),
       };
     });
+    const expectedCount = panels.length;
 
     let _resolve;
     const done = new Promise(res => { _resolve = res; });
     const confirms = new Map();
     _pendingSessions.set(sessionId, {
       confirms,
-      checkComplete() { if (confirms.size >= actors.length) _resolve(Array.from(confirms.values())); },
+      checkComplete() { if (confirms.size >= expectedCount) _resolve(Array.from(confirms.values())); },
     });
 
     const overlayData = { sessionId, panels, dl, tileLabel: label };

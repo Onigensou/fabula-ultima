@@ -288,7 +288,7 @@ function clearTargetingDim(dimState) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, remote = null } = {}) {
   // `lockSelection`: render the picker with EVERY eligible target pre-selected
   // and locked (ring clicks ignored), so an "obvious" target (self / all) still
   // gets a confirm/cancel pass instead of auto-resolving. Confirm is always
@@ -319,6 +319,25 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
   // action card in COMPUTE/CONFIRM provides the visual target summary.
   if (mode === "all") {
     return Promise.resolve({ ok: true, cancelled: false, tokenUuids: eligible.map((e) => e.tokenUuid) });
+  }
+
+  // Remote routing — render the picker on the initiating player's client and
+  // await their result, instead of locally (on the GM). Only the interactive
+  // modes reach here (self/all already auto-resolved above with no UI). The
+  // player's responder calls requestTargeting WITHOUT `remote`, so no loop.
+  // See remote-pick.js + [[director-player-driven-input]].
+  if (remote && remote.channel && remote.targetUserId) {
+    return import("./remote-pick.js").then(({ remotePick, REMOTE_PICK_KINDS }) =>
+      remotePick({
+        channel: remote.channel,
+        targetUserId: remote.targetUserId,
+        combatId: remote.combatId ?? null,
+        kind: REMOTE_PICK_KINDS.TARGET,
+        externalCancel,
+        onTimeoutValue: { ok: false, cancelled: true, tokenUuids: [] },
+        spec: { eligible, mode, count, titleText, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection },
+      })
+    );
   }
 
   ensureStyles();

@@ -9,7 +9,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Equipment",
         "skill_type": "Active",
@@ -51,7 +51,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Guard",
         "skill_type": "Active",
@@ -113,7 +113,62 @@
         "statuses": [
           "guard"
         ],
-        "changes": [],
+        "changes": [
+          {
+            "key": "affinity_1",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_2",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_3",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_4",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_5",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_6",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_7",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_8",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          },
+          {
+            "key": "affinity_9",
+            "mode": 5,
+            "value": "aeAffinityFloor(\"RS\")",
+            "priority": 20
+          }
+        ],
         "flags": {
           "fabula-ultima-companion": {
             "category": "buff"
@@ -215,7 +270,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Hinder",
         "skill_type": "Active",
@@ -224,17 +279,63 @@
         "skill_target": "One Enemy",
         "cost": "",
         "max_level": "1",
-        "on_activate_effect_ref": "hinder_apply",
+        "on_activate_effect_ref": "hinder_menu",
         "description": "<p>Make an attribute Check against a creature. On a success, it suffers a status of your choice (Dazed, Shaken, Slow, or Weak).</p>",
         "effect_table": {
           "0": {
-            "effect_label": "hinder_apply",
-            "effect_kind": "apply_ae",
+            "effect_label": "hinder_menu",
+            "effect_kind": "open_action_menu",
             "ae_template_ref": "status_value",
+            "target_ref": "action_targets",
+            "ae_duplicate_mode": "replace_same_status",
+            "menu_title": "Hinder",
+            "menu_subtitle": "Choose a status to inflict.",
+            "menu_option_refs": "hinder_dazed,hinder_shaken,hinder_slow,hinder_weak",
+            "menu_option_labels": "Dazed|Shaken|Slow|Weak",
+            "menu_option_descriptions": "Lowers Insight|Lowers Willpower|Lowers Dexterity|Lowers Might",
+            "menu_option_icons": "icons/svg/daze.svg|icons/svg/terror.svg|icons/svg/clockwork.svg|icons/svg/degen.svg",
+            "menu_option_colors": "#9b59b6|#5a6a85|#8b5e3c|#c44a2a",
+            "menu_pick_count": 1
+          },
+          "1": {
+            "effect_label": "hinder_dazed",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dazed",
+            "target_ref": "action_targets",
+            "ae_duplicate_mode": "replace_same_status"
+          },
+          "2": {
+            "effect_label": "hinder_shaken",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Shaken",
+            "target_ref": "action_targets",
+            "ae_duplicate_mode": "replace_same_status"
+          },
+          "3": {
+            "effect_label": "hinder_slow",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Slow",
+            "target_ref": "action_targets",
+            "ae_duplicate_mode": "replace_same_status"
+          },
+          "4": {
+            "effect_label": "hinder_weak",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Weak",
             "target_ref": "action_targets",
             "ae_duplicate_mode": "replace_same_status"
           }
-        }
+        },
+        "uuid": "Item.FjwC9WmxPnKYDT3C",
+        "id": "FjwC9WmxPnKYDT3C",
+        "img": "icons/svg/net.svg",
+        "details_roller": "Show",
+        "action_command": "hinder",
+        "check_mode": "difficulty",
+        "check_difficulty_level": 10,
+        "rolled_atr1": "DEX",
+        "rolled_atr2": "INS",
+        "picker": "attribute_pair"
       },
       "unique": true,
       "uniqueId": "FjwC9WmxPnKYDT3C"
@@ -259,7 +360,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Study",
         "skill_type": "Active",
@@ -277,7 +378,13 @@
             "effect_label": "study_record",
             "effect_kind": "encyclopedia_record"
           }
-        }
+        },
+        "uuid": "Item.07LyIguZFDhEh3Wk",
+        "id": "07LyIguZFDhEh3Wk",
+        "img": "icons/svg/eye.svg",
+        "details_roller": "Show",
+        "action_command": "study",
+        "check_mode": "open"
       },
       "unique": true,
       "uniqueId": "07LyIguZFDhEh3Wk"
@@ -303,7 +410,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -826,7 +933,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -959,7 +1066,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1152,7 +1259,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1231,7 +1338,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1333,7 +1440,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isCheck": false,
@@ -1412,7 +1519,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Active",
         "isCheck": false,
@@ -1604,6 +1711,89 @@
     ]
   },
   {
+    "name": "Double Arrow",
+    "type": "equippableItem",
+    "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+    "folderPath": [
+      "Battle Director",
+      "Hybrid Heroic Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Passive",
+        "isHeroic": true,
+        "level": 1,
+        "max_level": "1",
+        "skill_target": "-",
+        "skill_range": "-",
+        "cost": "",
+        "isCheck": false,
+        "isReaction": false,
+        "on_activate_effect_ref": "",
+        "description": "<p>When you perform the <strong>Attack</strong> action with a ranged weapon that belongs to the <strong>bow</strong> Category, if you have <strong>no other weapon equipped</strong>, you may perform <strong>two separate attacks</strong> instead of one (against the same target or against different targets).</p><p>If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as 0 when determining damage dealt by it.</p><p><em>This Heroic Skill does not stack with a custom weapon's quick customization.</em></p>",
+        "heroic_requirement": "You must have mastered one or more Classes among Commander and Sharpshooter.",
+        "name": "Double Arrow"
+      },
+      "unique": false,
+      "uniqueId": "yBIG5gXrwvGr8kiN"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Double Arrow",
+        "description": "<p><em>Double Arrow:</em> attack twice with a lone bow (two-weapon fighting; HR as 0).</p>",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [],
+        "changes": [],
+        "flags": {
+          "fabula-ultima-companion": {
+            "twoWeaponGrant": {
+              "soloWeapon": true,
+              "category": "bow"
+            }
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "yBIG5gXrwvGr8kiN",
+            "originalId": "SjLPRxbCfnPBgxaX",
+            "originalUuid": "Item.yBIG5gXrwvGr8kiN.ActiveEffect.SjLPRxbCfnPBgxaX",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": []
+        },
+        "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
     "name": "Hoplite",
     "type": "equippableItem",
     "img": "icons/equipment/shield/heater-steel-gray.webp",
@@ -1613,7 +1803,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
@@ -1708,7 +1898,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isHeroic": true,
@@ -1922,7 +2112,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Active",
         "isHeroic": true,
@@ -2034,6 +2224,272 @@
     ]
   },
   {
+    "name": "Elemental Shard",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+    "folderPath": [
+      "Battle Director",
+      "Items",
+      "Consumable"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "name": "Elemental Shard",
+        "isOffensiveSpell": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "class": "",
+        "skill_type": "Item",
+        "cost": "-",
+        "skill_target": "One Creature",
+        "duration": "Instantaneous",
+        "skill_range": "Any",
+        "level": "1",
+        "max_level": "1",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "10",
+        "type_damage": "VAR_ELEMENT",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "isCheck": false,
+        "isReaction": false,
+        "isFacet": false,
+        "isHeroic": false,
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_script": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "description": "<p>One creature suffers 10 damage of a type of your choice (Air, Bolt, Earth, Fire, or Ice).</p>",
+        "reaction_config_table": {},
+        "on_activate_effect_ref": "",
+        "container": "",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+        "pre_activate_effect_ref": "esh_pick",
+        "effect_table": {
+          "0": {
+            "effect_label": "esh_pick",
+            "effect_kind": "prompt_element",
+            "prompt_var": "element",
+            "menu_title": "Elemental Shard — Choose a Damage Type",
+            "element_options": "air|bolt|earth|fire|ice"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "dQq1DsQ1nkurbQlG"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.4"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Elixir",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+    "folderPath": [
+      "Battle Director",
+      "Items",
+      "Consumable"
+    ],
+    "system": {
+      "template": "ZoiV53VaLzeRsEps",
+      "templateSystemUniqueVersion": 987283855,
+      "props": {
+        "name": "Elixir",
+        "item_type": "recipe",
+        "description": "<p>Target creature recovers 50 Mind Points.</p>",
+        "ip_cost": "3",
+        "item_skill_active": {
+          "nTD1ZUzaAOV9TGT8": {
+            "uuid": "Item.nTD1ZUzaAOV9TGT8",
+            "name": "Elixir",
+            "id": "${item.id}",
+            "skill_maxLevel": 1,
+            "skill_cost": "-",
+            "skill_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>"
+          }
+        },
+        "related_item_list": {
+          "nTD1ZUzaAOV9TGT8": {
+            "name": "Elixir",
+            "id": "${item.id}",
+            "uuid": "Item.nTD1ZUzaAOV9TGT8",
+            "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 MP</strong></p></li></ul>"
+          }
+        },
+        "isRelatedItem": false,
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png"
+      },
+      "unique": false,
+      "uniqueId": "NlUsrJJRcIOWJVWc"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      },
+      "fucompanion": {
+        "itemMigratorBackup": {
+          "ts": 1769647435537,
+          "itemId": "H4XNJ67N8XSVnRcj",
+          "itemName": "Elixir",
+          "fromTemplate": "VJCHYWOx1mPsMSip",
+          "detectedType": "recipe",
+          "pickedOldProps": {
+            "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+            "recipe_flavor": "",
+            "recipe_ip": "3",
+            "recipe_label": ""
+          }
+        }
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Remedy",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+    "folderPath": [
+      "Battle Director",
+      "Items",
+      "Consumable"
+    ],
+    "system": {
+      "template": "ZoiV53VaLzeRsEps",
+      "templateSystemUniqueVersion": 987283855,
+      "props": {
+        "name": "Remedy",
+        "item_type": "recipe",
+        "description": "<p>Target creature recovers 50 Hit Points.</p>",
+        "ip_cost": "3",
+        "item_skill_active": {
+          "jNN7WCFgjvU9wXr4": {
+            "uuid": "Item.jNN7WCFgjvU9wXr4",
+            "name": "Remedy",
+            "id": "${item.id}",
+            "skill_maxLevel": 1,
+            "skill_cost": "-",
+            "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>"
+          }
+        },
+        "related_item_list": {
+          "jNN7WCFgjvU9wXr4": {
+            "name": "Remedy",
+            "id": "${item.id}",
+            "uuid": "Item.jNN7WCFgjvU9wXr4",
+            "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>"
+          }
+        },
+        "isRelatedItem": false,
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png"
+      },
+      "unique": false,
+      "uniqueId": "G2cjE5FjEIntUewf"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      },
+      "fucompanion": {
+        "itemMigratorBackup": {
+          "ts": 1769647435537,
+          "itemId": "H4XNJ67N8XSVnRcj",
+          "itemName": "Elixir",
+          "fromTemplate": "VJCHYWOx1mPsMSip",
+          "detectedType": "recipe",
+          "pickedOldProps": {
+            "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+            "recipe_flavor": "",
+            "recipe_ip": "3",
+            "recipe_label": ""
+          }
+        }
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Tonic",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
+    "folderPath": [
+      "Battle Director",
+      "Items",
+      "Consumable"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "name": "Tonic",
+        "isOffensiveSpell": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "class": "",
+        "skill_type": "Item",
+        "cost": "-",
+        "skill_target": "One Creature",
+        "duration": "Instantaneous",
+        "skill_range": "Any",
+        "level": "1",
+        "max_level": "1",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "0",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "isCheck": false,
+        "isReaction": false,
+        "isFacet": false,
+        "isHeroic": false,
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_script": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "description": "<p>One creature recovers from a single status effect.</p>",
+        "reaction_config_table": {},
+        "effect_table": {
+          "0": {
+            "effect_label": "cure",
+            "effect_kind": "remove_tagged_ae",
+            "filter_tag": "debuff",
+            "count": "1",
+            "target_ref": "action_targets",
+            "menu_title": "Tonic — Cure a Status",
+            "menu_subtitle": "Remove one status effect"
+          }
+        },
+        "on_activate_effect_ref": "cure",
+        "container": "",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
+        "pre_activate_effect_ref": "cure"
+      },
+      "unique": false,
+      "uniqueId": "jqRkGcwdDDVWWVhS"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.4"
+      }
+    },
+    "effects": []
+  },
+  {
     "name": "Elegance Showmanship",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/reverse_cascade.png",
@@ -2044,7 +2500,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Elegance Showmanship",
         "isOffensiveSpell": false,
@@ -2091,6 +2547,262 @@
     "effects": []
   },
   {
+    "name": "Beyond the Realms of Death",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+    "folderPath": [
+      "Battle Director",
+      "Necromancer",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "name": "Beyond the Realms of Death",
+        "level": "1",
+        "max_level": "5",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "isOffensiveSpell": false,
+        "isCheck": false,
+        "isHeroic": false,
+        "isFacet": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "class": "Necromancer",
+        "skill_type": "Passive",
+        "cost": "",
+        "skill_target": "",
+        "duration": "",
+        "skill_range": "",
+        "heroic_requirement": "",
+        "type_damage": "",
+        "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+        "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Grave Points</strong></p></td><td><p><strong>Max Heal on first time you hit 0 HP in a scene</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>6</p></td><td><p>30</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Heal = <em>SL × Grave Points lost</em>; values above assume you lost all Grave Points.)</p>",
+        "skill_animation_mode": "default",
+        "ignore_hr": false,
+        "active_effect_config_table": {},
+        "defense_target_type": "def",
+        "isReaction": true,
+        "isZeroPower": false,
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "passive_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[PL-RES][BeyondTheRealmsOfDeath]\";</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : {};</p><p>const globalTargets = (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS : [];</p><p>p.meta = p.meta || {};</p><p>const log = (...args) =&gt; {</p><p>if (DEBUG) console.log(TAG, ...args);</p><p>};</p><p>const warn = (...args) =&gt; {</p><p>if (DEBUG) console.warn(TAG, ...args);</p><p>};</p><p>// Use this whenever the passive should NOT show a passive UI card.</p><p>const quietStop = (reason = \"\") =&gt; {</p><p>if (DEBUG &amp;&amp; reason) console.log(TAG, \"SKIP:\", reason);</p><p>// Main intended passive-system cancel helper.</p><p>if (ctx.skipPassive) {</p><p>return ctx.skipPassive(reason || \"No effect.\", { notify: false });</p><p>}</p><p>// Fallback markers, just in case this script runs in a lighter context.</p><p>p.meta.__skipPassive = true;</p><p>p.meta.__skipPassiveCard = true;</p><p>p.meta.__passiveNoEffect = true;</p><p>p.meta.__passiveSkipReason = reason || \"No effect.\";</p><p>return undefined;</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const toNumber = (v, fallback = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : fallback;</p><p>};</p><p>const collectionValues = (collectionLike) =&gt; {</p><p>if (!collectionLike) return [];</p><p>if (Array.isArray(collectionLike)) return collectionLike;</p><p>if (typeof collectionLike.values === \"function\") return Array.from(collectionLike.values());</p><p>return Array.from(collectionLike);</p><p>};</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch (err) {</p><p>warn(\"fromUuid failed\", { ref, err });</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>async function resolveTokenDoc(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\" || doc.documentName === \"TokenDocument\") return doc;</p><p>if (doc.document?.documentName === \"Token\") return doc.document;</p><p>if (doc.token?.document) return doc.token.document;</p><p>return null;</p><p>}</p><p>function activeTokenUuidForActor(actor) {</p><p>try {</p><p>const tok =</p><p>actor?.getActiveTokens?.(true, true)?.[0] ??</p><p>actor?.getActiveTokens?.()?.[0] ??</p><p>null;</p><p>return tok?.document?.uuid ?? null;</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Read trigger payload.</p><p>// This passive should only care about creature_takes_damage.</p><p>// --------------------------------------------------</p><p>const phaseRoot =</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const phaseByTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const passiveTriggerKey =</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>phaseRoot?.trigger ??</p><p>null;</p><p>const phase =</p><p>phaseByTrigger?.creature_takes_damage ??</p><p>(passiveTriggerKey &amp;&amp; phaseByTrigger?.[passiveTriggerKey]) ??</p><p>phaseRoot ??</p><p>{};</p><p>const triggerName = phase?.trigger ?? passiveTriggerKey ?? \"\";</p><p>if (triggerName !== \"creature_takes_damage\") {</p><p>return quietStop(`Wrong trigger: ${triggerName || \"none\"}`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Resolve passive owner and this skill item.</p><p>// --------------------------------------------------</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>(ctx.helpers?.getPassiveOwnerActor ? await ctx.helpers.getPassiveOwnerActor() : null) ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null) ??</p><p>await resolveActor(</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>if (!owner) {</p><p>return quietStop(\"Could not resolve passive owner.\");</p><p>}</p><p>const passiveItem =</p><p>ctx.passiveItem ??</p><p>(ctx.helpers?.getPassiveItem ? await ctx.helpers.getPassiveItem() : null) ??</p><p>((typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null) ??</p><p>collectionValues(owner.items).find(i =&gt; norm(i?.name) === \"beyond the realms of death\");</p><p>if (!passiveItem) {</p><p>return quietStop(\"Could not resolve Beyond the Realms of Death item.\");</p><p>}</p><p>const skillLevel = Math.max(0, parseInt(passiveItem.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (skillLevel &lt;= 0) {</p><p>return quietStop(\"Beyond the Realms of Death SL is 0.\");</p><p>}</p><p>const maxGrave = Math.max(1, skillLevel + 1);</p><p>// --------------------------------------------------</p><p>// 3) Resolve damaged creature.</p><p>// For creature_takes_damage, the target side is the creature losing HP.</p><p>// --------------------------------------------------</p><p>const damagedActorUuid =</p><p>phase?.targetActorUuid ??</p><p>asArray(phase?.targetActorUuids)[0] ??</p><p>null;</p><p>const damagedTokenUuid =</p><p>phase?.targetTokenUuid ??</p><p>phase?.targetUuid ??</p><p>asArray(phase?.targetTokenUuids)[0] ??</p><p>asArray(phase?.targets)[0] ??</p><p>globalTargets[0] ??</p><p>null;</p><p>let damagedActor = null;</p><p>if (damagedActorUuid) {</p><p>damagedActor = await resolveActor(damagedActorUuid);</p><p>}</p><p>if (!damagedActor &amp;&amp; damagedTokenUuid) {</p><p>damagedActor = await resolveActor(damagedTokenUuid);</p><p>}</p><p>if (!damagedActor) {</p><p>return quietStop(\"Could not resolve damaged creature.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) \"Another creature\" check.</p><p>// Owner should not gain Grave Point when the owner is the damaged creature.</p><p>// --------------------------------------------------</p><p>const ownerActorUuid = owner.uuid ?? null;</p><p>const ownerTokenUuid = activeTokenUuidForActor(owner);</p><p>const damagedTokenDoc = damagedTokenUuid ? await resolveTokenDoc(damagedTokenUuid) : null;</p><p>const damagedTokenUuidResolved = damagedTokenDoc?.uuid ?? damagedTokenUuid ?? null;</p><p>if (ownerActorUuid &amp;&amp; damagedActor.uuid === ownerActorUuid) {</p><p>return quietStop(\"Damaged creature is the passive owner.\");</p><p>}</p><p>if (ownerTokenUuid &amp;&amp; damagedTokenUuidResolved &amp;&amp; ownerTokenUuid === damagedTokenUuidResolved) {</p><p>return quietStop(\"Damaged token is the passive owner's token.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 5) Confirm real HP loss.</p><p>// Shield-only damage should not count as losing Hit Points.</p><p>// --------------------------------------------------</p><p>const hpBefore = toNumber(phase?.gmChanges?.hp?.from, NaN);</p><p>const hpAfter = toNumber(phase?.gmChanges?.hp?.to, NaN);</p><p>let hpLost = 0;</p><p>if (Number.isFinite(hpBefore) &amp;&amp; Number.isFinite(hpAfter)) {</p><p>hpLost = Math.max(0, hpBefore - hpAfter);</p><p>} else {</p><p>hpLost = Math.max(</p><p>0,</p><p>Math.abs(toNumber(phase?.finalValue, 0)) ||</p><p>Math.abs(toNumber(phase?.displayedAmount, 0)) ||</p><p>Math.abs(toNumber(phase?.baseValue, 0))</p><p>);</p><p>}</p><p>if (phase?.affected === false || hpLost &lt;= 0) {</p><p>return quietStop(\"Damage event did not cause HP loss.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 6) Check Crisis Active Effect.</p><p>// ID first, name/status fallback.</p><p>// --------------------------------------------------</p><p>const CRISIS_EFFECT_UUID = \"Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr\";</p><p>const CRISIS_EFFECT_ID = CRISIS_EFFECT_UUID.split(\".\").pop();</p><p>function isTruthy(v) {</p><p>return v === true || v === 1 || v === \"1\" || norm(v) === \"true\" || norm(v) === \"yes\";</p><p>}</p><p>function actorHasCrisis(actor) {</p><p>if (!actor) return false;</p><p>const effects = collectionValues(actor.effects);</p><p>// ID/source UUID first.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effId = String(eff.id ?? eff._id ?? \"\");</p><p>const effUuid = String(eff.uuid ?? \"\");</p><p>const effOrigin = String(eff.origin ?? \"\");</p><p>if (effId === CRISIS_EFFECT_ID) return true;</p><p>if (effUuid === CRISIS_EFFECT_UUID) return true;</p><p>if (effOrigin === CRISIS_EFFECT_UUID) return true;</p><p>}</p><p>// Name/status fallback.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effName = norm(eff.name ?? eff.label ?? \"\");</p><p>if (effName === \"crisis\") return true;</p><p>const statuses = Array.from(eff.statuses ?? []).map(norm);</p><p>if (statuses.includes(\"crisis\")) return true;</p><p>}</p><p>// Sheet mirror fallback, if your sheet has it.</p><p>const props = actor.system?.props ?? {};</p><p>if (isTruthy(props.isCrisis) || isTruthy(props.crisis)) return true;</p><p>return false;</p><p>}</p><p>if (!actorHasCrisis(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is not in Crisis.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 7) Undead check.</p><p>// Clean rule:</p><p>// - Check actor.system.props.species</p><p>// - If species is exactly UNDEAD, cancel.</p><p>// - If missing or anything else, assume not undead.</p><p>// --------------------------------------------------</p><p>function actorIsUndead(actor) {</p><p>const species = String(actor?.system?.props?.species ?? \"\").trim().toUpperCase();</p><p>return species === \"UNDEAD\";</p><p>}</p><p>if (actorIsUndead(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is UNDEAD.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 8) Gain 1 Grave Point, capped at SL + 1.</p><p>// If no point is actually gained, cancel silently so no passive card appears.</p><p>// --------------------------------------------------</p><p>const props = owner.system?.props ?? {};</p><p>const graveBefore = Math.max(0, toNumber(props.clock_grave, 0));</p><p>const graveAfter = Math.min(maxGrave, graveBefore + 1);</p><p>const graveGained = Math.max(0, graveAfter - graveBefore);</p><p>if (graveGained &lt;= 0) {</p><p>return quietStop(`No Grave Point gained. Already at max (${graveBefore}/${maxGrave}).`);</p><p>}</p><p>await owner.update({</p><p>\"system.props.clock_grave\": graveAfter</p><p>});</p><p>log(\"APPLIED\", {</p><p>owner: owner.name,</p><p>damagedCreature: damagedActor.name,</p><p>damagedCreatureSpecies: damagedActor.system?.props?.species ?? null,</p><p>hpLost,</p><p>skillLevel,</p><p>maxGrave,</p><p>graveBefore,</p><p>graveAfter,</p><p>graveGained</p><p>});</p>",
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_lose_resource",
+            "reaction_source": "all",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_passive_target": "self",
+            "reaction_passive_mode": "force",
+            "reaction_resource_filter": "hp",
+            "condition_formula": "SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0",
+            "reaction_effect_ref": "bortd_gain"
+          },
+          "1": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_effect_ref": "bortd_seed",
+            "reaction_passive_mode": "force",
+            "reaction_passive_target": "self"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "bortd_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "1": {
+            "effect_label": "bortd_gain",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Grave Points",
+            "target_ref": "bortd_self",
+            "ae_duplicate_mode": "add_charges",
+            "ae_initial_charges": "1",
+            "ae_initial_charges_max": "SL + 1"
+          },
+          "2": {
+            "effect_label": "bortd_seed",
+            "effect_kind": "chain",
+            "chain_steps": "bortd_seed_gp, bortd_seed_mark"
+          },
+          "3": {
+            "effect_label": "bortd_seed_gp",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Grave Points",
+            "target_ref": "bortd_self",
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges_max": "SL + 1"
+          },
+          "4": {
+            "effect_label": "bortd_seed_mark",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Beyond the Realms of Death",
+            "target_ref": "bortd_self",
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges": "1",
+            "ae_initial_charges_max": "1"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "qdGOPTKJQ2YI6LUl"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": [
+      {
+        "name": "Grave Points",
+        "img": "icons/magic/death/skull-energy-light-purple.webp",
+        "changes": [],
+        "disabled": false,
+        "transfer": false,
+        "statuses": [
+          "fud-grave-points"
+        ],
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "Other",
+            "charges": 0,
+            "chargesMax": 2,
+            "chargeKey": "grave",
+            "lifetimeMode": "on_activation",
+            "reactionConfig": {
+              "reaction_config_table": {},
+              "effect_table": {}
+            }
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "qdGOPTKJQ2YI6LUl",
+            "originalId": "RjuPzSEVXVHPNE22",
+            "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.RjuPzSEVXVHPNE22",
+            "isFromTemplate": false
+          }
+        },
+        "type": "base",
+        "system": {},
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      },
+      {
+        "name": "Beyond the Realms of Death",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+        "changes": [],
+        "disabled": false,
+        "transfer": false,
+        "statuses": [
+          "fud-beyond-realms"
+        ],
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "Other",
+            "charges": 1,
+            "chargesMax": 1,
+            "chargeKey": "bortd_death_save",
+            "lifetimeMode": "on_activation",
+            "reactionConfig": {
+              "reaction_config_table": {
+                "0": {
+                  "reaction_trigger": "creature_lose_resource",
+                  "reaction_source": "self",
+                  "reaction_resource_filter": "hp",
+                  "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
+                  "reaction_effect_ref": "bortd_death",
+                  "reaction_passive_mode": "on",
+                  "reaction_passive_target": "self",
+                  "consume_self": true
+                }
+              },
+              "effect_table": {
+                "0": {
+                  "effect_label": "bortd_self",
+                  "effect_kind": "targeting",
+                  "candidate_source": "self"
+                },
+                "1": {
+                  "effect_label": "bortd_death",
+                  "effect_kind": "chain",
+                  "chain_steps": "bortd_b_heal, bortd_b_zero"
+                },
+                "2": {
+                  "effect_label": "bortd_b_heal",
+                  "effect_kind": "grant",
+                  "grant_resource": "hp",
+                  "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
+                  "target_ref": "bortd_self"
+                },
+                "3": {
+                  "effect_label": "bortd_b_zero",
+                  "effect_kind": "adjust_charges",
+                  "charge_ae_name": "Grave Points",
+                  "charge_operation": "set",
+                  "charge_amount": "0",
+                  "target_ref": "bortd_self"
+                }
+              }
+            }
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "qdGOPTKJQ2YI6LUl",
+            "originalId": "7Gs3jJ2pHzcKD0il",
+            "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.7Gs3jJ2pHzcKD0il",
+            "isFromTemplate": false
+          }
+        },
+        "type": "base",
+        "system": {},
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
     "name": "Pillage",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvaricePassive1.png",
@@ -2101,7 +2813,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Pillage",
         "skill_type": "Passive",
@@ -2160,7 +2872,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Vanish",
         "skill_type": "Passive",
@@ -2319,7 +3031,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Cheap Shot",
         "skill_type": "Passive",
@@ -2378,7 +3090,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Dodge",
         "skill_type": "Passive",
@@ -2491,7 +3203,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "High Speed",
         "skill_type": "Passive",
@@ -2578,6 +3290,73 @@
     "effects": []
   },
   {
+    "name": "See you later",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
+    "folderPath": [
+      "Battle Director",
+      "Rogue",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Active",
+        "level": 1,
+        "max_level": "1",
+        "skill_target": "Self",
+        "skill_range": "-",
+        "cost": "",
+        "isCheck": false,
+        "isReaction": false,
+        "isHeroic": false,
+        "on_activate_effect_ref": "syl_root",
+        "class": "Rogue",
+        "description": "<p>Spend <strong>1 Fabula Point</strong> to leave the current conflict. You slip away from this scene and play resumes without you — you reappear in a later scene, as the story dictates.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "syl_root",
+            "effect_kind": "chain",
+            "chain_steps": "syl_confirm,syl_cost,syl_leave"
+          },
+          "1": {
+            "effect_label": "syl_confirm",
+            "effect_kind": "confirm",
+            "confirm_title": "See you later?",
+            "confirm_message": "Leave the battle for 1 Fabula Point? You'll slip away from this scene and reappear in a later one.",
+            "confirm_ok_label": "See you later!",
+            "confirm_ok_style": "danger",
+            "confirm_cancel_label": "Stay",
+            "confirm_cancel_style": "default"
+          },
+          "2": {
+            "effect_label": "syl_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "fp",
+            "consume_amount": "1",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "3": {
+            "effect_label": "syl_leave",
+            "effect_kind": "leave_combat",
+            "target_ref": "self"
+          }
+        },
+        "name": "See you later"
+      },
+      "unique": true,
+      "uniqueId": "x7RoCErd12Udc8RZ"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
     "name": "See You Later",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
@@ -2588,7 +3367,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "See You Later",
         "skill_type": "Active",
@@ -2626,7 +3405,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Soul Steal",
         "skill_type": "Active",
@@ -2699,9 +3478,173 @@
     "effects": []
   },
   {
+    "name": "Bullet Break",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Heroic Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "isCheck": false,
+        "isReaction": true,
+        "isFacet": false,
+        "isHeroic": true,
+        "isZeroPower": false,
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "class": "Sharpshooter",
+        "cost": "Special",
+        "skill_target": "-",
+        "skill_range": "",
+        "type_damage": "",
+        "damage_bonus": "0",
+        "check_bonus": "0",
+        "defense_target_type": "def",
+        "duration": "-",
+        "on_activate_effect_ref": "",
+        "post_damage_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_completes_skill",
+            "reaction_source": "self",
+            "reaction_source_skill": "Crossfire",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "bullet_break_do",
+            "condition_formula": "ATTACK_IS_RANGED == 1 && ATTACK_CHECK_RESULT % 2 == 0 && HAS_FIREARM"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "bullet_break_do",
+            "effect_kind": "free_action",
+            "action_ref": "Attack",
+            "target_ref": "trigger_attacker",
+            "free_hr_as_zero": "true",
+            "menu_label": "Bullet Break",
+            "menu_description": "Free firearm attack against the attacker (treat HR as 0 for damage)."
+          }
+        },
+        "active_effect_config_table": {},
+        "skill_type": "Passive",
+        "level": "1",
+        "max_level": "1",
+        "heroic_requirement": "You must have learned the Crossfire Skill, and have mastered one or more Classes among Commander and Sharpshooter.",
+        "description": "<p>After you negate a <strong>ranged attack</strong> with the <strong>Crossfire</strong> Skill, if the Result of the Accuracy Check was an <strong>even number</strong>, you may perform a <strong>free attack</strong> against the attacker with a <strong>ranged firearm</strong> weapon you have equipped.</p><p>This attack must have that enemy as its <strong>only target</strong>; treat your <strong>High Roll (HR) as 0</strong> when calculating damage dealt by it.</p>",
+        "name": "Bullet Break",
+        "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp"
+      },
+      "unique": false,
+      "uniqueId": "g1Sq9oZngBkRUW0f"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Powerful Shot",
+    "type": "equippableItem",
+    "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+    "folderPath": [
+      "Battle Director",
+      "Sharpshooter",
+      "Heroic Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Passive",
+        "isHeroic": true,
+        "level": 1,
+        "max_level": "1",
+        "skill_target": "-",
+        "skill_range": "-",
+        "cost": "",
+        "isCheck": false,
+        "isReaction": false,
+        "on_activate_effect_ref": "",
+        "class": "Sharpshooter",
+        "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong>, that attack deals <strong>5 extra damage</strong> to each creature.</p><p>The amount of extra damage increases to <strong>10</strong> if you are <strong>level 40</strong> or higher.</p>",
+        "heroic_requirement": "You must have learned all the Skills offered by the Sharpshooter Class.",
+        "name": "Powerful Shot"
+      },
+      "unique": false,
+      "uniqueId": "iOyodA5kN67TFUMk"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Powerful Shot",
+        "description": "<p><em>Powerful Shot:</em> ranged attacks deal +5 damage (10 at level 40+).</p>",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [],
+        "changes": [
+          {
+            "key": "extra_damage_mod_ranged",
+            "value": "propAtLeast(\"level\", 40, 10, 5)",
+            "mode": 2,
+            "priority": 20
+          }
+        ],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "iOyodA5kN67TFUMk",
+            "originalId": "ii8MFeVoW9AZ8mhR",
+            "originalUuid": "Item.iOyodA5kN67TFUMk.ActiveEffect.ii8MFeVoW9AZ8mhR",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
     "name": "Barrage",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/arrows-flying-salvo-blue.webp",
+    "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -2709,7 +3652,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "rolled_atr1": "-",
         "rolled_atr2": "-",
@@ -2731,6 +3674,16 @@
         "duration": "-",
         "on_activate_effect_ref": "",
         "post_damage_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "barrage_do",
+            "condition_formula": "ATTACK_IS_RANGED == 1",
+            "reaction_action_kind": "Attack"
+          }
+        },
         "effect_table": {
           "0": {
             "effect_label": "barrage_do",
@@ -2770,19 +3723,10 @@
         "max_level": "1",
         "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
         "name": "Barrage",
-        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_performs_action",
-            "reaction_source": "self",
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "barrage_do",
-            "condition_formula": "ATTACK_IS_RANGED == 1"
-          }
-        }
+        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
       },
       "unique": false,
-      "uniqueId": "52VzMivQ0jClbxFZ"
+      "uniqueId": "yh4vm3wru6nAkkaN"
     },
     "flags": {
       "custom-system-builder": {
@@ -2802,7 +3746,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "rolled_atr1": "-",
         "rolled_atr2": "-",
@@ -2824,6 +3768,17 @@
         "duration": "-",
         "on_activate_effect_ref": "",
         "post_damage_effect_ref": "",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_targeted_by_action",
+            "reaction_source": "all",
+            "reaction_action_intent": "harmful",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "crossfire_do",
+            "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
+            "reaction_action_kind": "Attack"
+          }
+        },
         "effect_table": {
           "0": {
             "effect_label": "crossfire_do",
@@ -2853,20 +3808,10 @@
         "max_level": "1",
         "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
         "name": "Crossfire",
-        "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_targeted_by_action",
-            "reaction_source": "all",
-            "reaction_action_intent": "harmful",
-            "reaction_effect_ref": "crossfire_do",
-            "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
-            "reaction_passive_mode": "ask"
-          }
-        }
+        "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp"
       },
       "unique": false,
-      "uniqueId": "0yilViGrOcWuhZqt"
+      "uniqueId": "7ypQRfO8hlmuZQXT"
     },
     "flags": {
       "custom-system-builder": {
@@ -2886,7 +3831,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "skill_type": "Passive",
         "isReaction": true,
@@ -2898,6 +3843,15 @@
         "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you may choose one option:</p><ul><li>the next <strong>ranged attack</strong> you perform before the end of the current scene will deal <strong>【SL】× 2</strong> extra damage; or</li><li>you may immediately perform a <strong>free attack</strong> with a bow or firearm you have equipped, treating your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</li></ul>",
         "on_activate_effect_ref": "",
         "name": "Hawkeye",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_guards",
+            "reaction_source": "self",
+            "condition_formula": "DID_COVER_ALLY == 0",
+            "reaction_effect_ref": "hawkeye_choose",
+            "reaction_passive_mode": "ask"
+          }
+        },
         "effect_table": {
           "0": {
             "effect_label": "hawkeye_choose",
@@ -2920,6 +3874,7 @@
             "effect_kind": "open_action_menu",
             "free_mode": true,
             "allowed_types": "Attack",
+            "free_hr_as_zero": true,
             "menu_label": "Free attack — bow or firearm (High Roll treated as 0)",
             "menu_description": "Immediately perform a free bow/firearm attack."
           },
@@ -2927,15 +3882,6 @@
             "effect_label": "hawkeye_self_skill",
             "effect_kind": "targeting",
             "candidate_source": "self"
-          }
-        },
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_guards",
-            "reaction_source": "self",
-            "condition_formula": "DID_COVER_ALLY == 0",
-            "reaction_effect_ref": "hawkeye_choose",
-            "reaction_passive_mode": "ask"
           }
         }
       },
@@ -3052,7 +3998,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Perfect Aim",
         "skill_type": "Passive",
@@ -3104,7 +4050,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "rolled_atr1": "-",
         "rolled_atr2": "-",
@@ -3136,7 +4082,7 @@
         "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp"
       },
       "unique": false,
-      "uniqueId": "ykleffiOg9Mygaok"
+      "uniqueId": "Q2T7Zz0lECrQ4win"
     },
     "flags": {
       "custom-system-builder": {
@@ -3196,7 +4142,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "rolled_atr1": "-",
         "rolled_atr2": "-",
@@ -3238,21 +4184,23 @@
             "menu_title": "Warning Shot",
             "menu_subtitle": "The attack deals no damage — choose an effect.",
             "menu_option_refs": "ws_shaken,ws_slow,ws_mp",
-            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM",
-            "menu_option_labels": "Inflict Shaken | Inflict Slow | Drain Mind Points",
-            "menu_option_descriptions": "Each target hit by the attack becomes Shaken. | Each target hit by the attack becomes Slow. | Each target hit loses SL × 10 Mind Points."
+            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM"
           },
           "3": {
             "effect_label": "ws_shaken",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Shaken",
-            "target_ref": "hit_action_targets"
+            "target_ref": "hit_action_targets",
+            "menu_label": "Inflict Shaken",
+            "menu_description": "Each target hit by the attack becomes Shaken."
           },
           "4": {
             "effect_label": "ws_slow",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Slow",
-            "target_ref": "hit_action_targets"
+            "target_ref": "hit_action_targets",
+            "menu_label": "Inflict Slow",
+            "menu_description": "Each target hit by the attack becomes Slow."
           },
           "5": {
             "effect_label": "ws_mp",
@@ -3260,7 +4208,9 @@
             "consume_resource": "mp",
             "consume_amount": "SL * 10",
             "target_ref": "hit_action_targets",
-            "on_empty": "skip"
+            "on_empty": "skip",
+            "menu_label": "Drain Mind Points",
+            "menu_description": "Each target hit loses SL × 10 Mind Points."
           }
         },
         "active_effect_config_table": {},
@@ -3281,7 +4231,7 @@
         }
       },
       "unique": false,
-      "uniqueId": "OUQ2e6KO9IxwVKOF"
+      "uniqueId": "7opUr817pDyJZsJt"
     },
     "flags": {
       "custom-system-builder": {
@@ -3301,7 +4251,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Bimagus",
         "skill_type": "Passive",
@@ -3340,7 +4290,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Healing Power",
         "level": "1",
@@ -3429,7 +4379,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Ritual Spiritism",
         "level": "1",
@@ -3485,7 +4435,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Spiritual Magic",
         "skill_type": "Other",
@@ -3521,7 +4471,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Support Magic",
         "level": "1",
@@ -3681,7 +4631,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Vismagus",
         "level": "1",
@@ -3773,7 +4723,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Aura",
         "skill_type": "Spell",
@@ -3876,7 +4826,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Awaken",
         "skill_type": "Spell",
@@ -3953,7 +4903,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Barrier",
         "level": "1",
@@ -4071,7 +5021,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Cleanse",
         "skill_type": "Spell",
@@ -4120,7 +5070,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Enrage",
         "skill_type": "Spell",
@@ -4189,7 +5139,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "class": "Spiritist",
         "cost": "5 x T MP",
@@ -4267,7 +5217,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Heal",
         "skill_type": "Spell",
@@ -4326,7 +5276,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Lux",
         "skill_type": "Spell",
@@ -4385,7 +5335,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Mercy",
         "level": "1",
@@ -4527,7 +5477,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Reinforce",
         "skill_type": "Spell",
@@ -4858,7 +5808,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Soul Weapon",
         "skill_type": "Spell",
@@ -4983,7 +5933,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Torpor",
         "skill_type": "Spell",
@@ -5074,7 +6024,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Deep Pockets",
         "skill_type": "Passive",
@@ -5088,11 +6038,405 @@
         "damage_bonus": "0",
         "level": 1,
         "max_level": 1,
-        "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p><p><em>Engine note: IP-cost discount infrastructure not yet wired; resolve at the table for now.</em></p>",
+        "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p>",
         "class": "Tinkerer"
       },
       "unique": true,
       "uniqueId": "04XUHlRJhyvJIaGb"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Deep Pockets",
+        "description": "<p><em>Deep Pockets:</em> spend 1 less Inventory Point (minimum 1).</p>",
+        "transfer": true,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [],
+        "changes": [
+          {
+            "key": "ip_reduction_value",
+            "value": "1",
+            "mode": 2,
+            "priority": 20
+          }
+        ],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "04XUHlRJhyvJIaGb",
+            "originalId": "hkQh8SjJJRnTDwwv",
+            "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.hkQh8SjJJRnTDwwv",
+            "isFromTemplate": false
+          }
+        },
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+        "type": "base",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Emergency Item",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+    "folderPath": [
+      "Battle Director",
+      "Tinkerer",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Passive",
+        "level": 1,
+        "max_level": "1",
+        "cost": "-",
+        "skill_target": "-",
+        "skill_range": "-",
+        "isCheck": false,
+        "isReaction": false,
+        "isHeroic": false,
+        "class": "Tinkerer",
+        "description": "<p>Once per conflict, when you enter <strong>Crisis</strong>, you may immediately perform a free <strong>Inventory (Item) action</strong>.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "em_use",
+            "effect_kind": "chain",
+            "chain_steps": "em_consume,em_free"
+          },
+          "1": {
+            "effect_label": "em_consume",
+            "effect_kind": "consume_charge",
+            "charge_key": "emergency_item",
+            "target_ref": "self",
+            "count": "1",
+            "on_empty": "abort"
+          },
+          "2": {
+            "effect_label": "em_free",
+            "effect_kind": "free_action",
+            "action_ref": "item"
+          },
+          "3": {
+            "effect_label": "em_refresh",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Emergency Item Ready",
+            "target_ref": "self",
+            "ae_duplicate_mode": "replace"
+          }
+        },
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_status_applied",
+            "reaction_source": "self",
+            "reaction_status_filter": "Crisis",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "em_use"
+          },
+          "1": {
+            "reaction_trigger": "conflict_start",
+            "reaction_source": "",
+            "reaction_passive_mode": "force",
+            "reaction_effect_ref": "em_refresh"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "lmVVp510JjCT0H0c"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Emergency Item Ready",
+        "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
+        "transfer": false,
+        "disabled": false,
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null,
+          "combat": null
+        },
+        "statuses": [
+          "fud-emergency-item-ready"
+        ],
+        "changes": [],
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff",
+            "chargeKey": "emergency_item",
+            "charges": 1,
+            "chargesMax": 1,
+            "directorPermanent": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "lmVVp510JjCT0H0c",
+            "originalId": "nnWAoBsrDZGLvdOK",
+            "originalUuid": "Item.lmVVp510JjCT0H0c.ActiveEffect.nnWAoBsrDZGLvdOK",
+            "isFromTemplate": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+        "type": "base",
+        "system": {},
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Gadgets",
+    "type": "equippableItem",
+    "img": "icons/svg/item-bag.svg",
+    "folderPath": [
+      "Battle Director",
+      "Tinkerer",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268158,
+      "props": {
+        "skill_type": "Active",
+        "level": "1",
+        "max_level": "1",
+        "isCheck": false,
+        "isReaction": false,
+        "isHeroic": false,
+        "isFacet": false,
+        "class": "Tinkerer",
+        "cost": "2 IP",
+        "skill_target": "Special",
+        "skill_range": "-",
+        "duration": "Instantaneous",
+        "on_activate_effect_ref": "gadget_active_root",
+        "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_action_kind": "Attack",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "inf_offer"
+          }
+        },
+        "name": "Gadgets",
+        "effect_table": {
+          "0": {
+            "effect_label": "inf_offer",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Produce an Infusion",
+            "menu_subtitle": "Spend 2 IP — the attack's damage changes",
+            "menu_pick_count": "1",
+            "menu_option_refs": "inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire",
+            "menu_option_labels": "Cryo|Pyro|Volt|Cyclone|Exorcism|Seismic|Shadow|Venom|Vampire",
+            "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt"
+          },
+          "1": {
+            "effect_label": "inf_cryo",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_ice,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 1",
+            "menu_label": "Cryo"
+          },
+          "2": {
+            "effect_label": "inf_pyro",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_fire,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 1",
+            "menu_label": "Pyro"
+          },
+          "3": {
+            "effect_label": "inf_volt",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_bolt,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 1",
+            "menu_label": "Volt"
+          },
+          "4": {
+            "effect_label": "inf_cyclone",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_air,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 2",
+            "menu_label": "Cyclone"
+          },
+          "5": {
+            "effect_label": "inf_exorcism",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_light,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 2",
+            "menu_label": "Exorcism"
+          },
+          "6": {
+            "effect_label": "inf_seismic",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_earth,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 2",
+            "menu_label": "Seismic"
+          },
+          "7": {
+            "effect_label": "inf_shadow",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_dark,inf_plus5",
+            "condition_formula": "GADGET_INFUSION_TIER >= 2",
+            "menu_label": "Shadow"
+          },
+          "8": {
+            "effect_label": "inf_venom",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_el_poison,inf_plus5,inf_poison",
+            "condition_formula": "GADGET_INFUSION_TIER >= 3",
+            "menu_label": "Venom"
+          },
+          "9": {
+            "effect_label": "inf_pay",
+            "effect_kind": "consume_resource",
+            "consume_resource": "ip",
+            "consume_amount": "2",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "10": {
+            "effect_label": "inf_plus5",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "add",
+            "damage_amount": "5",
+            "damage_stage": "outgoing"
+          },
+          "11": {
+            "effect_label": "inf_el_ice",
+            "effect_kind": "change_damage_element",
+            "change_element": "ice"
+          },
+          "12": {
+            "effect_label": "inf_el_fire",
+            "effect_kind": "change_damage_element",
+            "change_element": "fire"
+          },
+          "13": {
+            "effect_label": "inf_el_bolt",
+            "effect_kind": "change_damage_element",
+            "change_element": "bolt"
+          },
+          "14": {
+            "effect_label": "inf_el_air",
+            "effect_kind": "change_damage_element",
+            "change_element": "air"
+          },
+          "15": {
+            "effect_label": "inf_el_light",
+            "effect_kind": "change_damage_element",
+            "change_element": "light"
+          },
+          "16": {
+            "effect_label": "inf_el_earth",
+            "effect_kind": "change_damage_element",
+            "change_element": "earth"
+          },
+          "17": {
+            "effect_label": "inf_el_dark",
+            "effect_kind": "change_damage_element",
+            "change_element": "dark"
+          },
+          "18": {
+            "effect_label": "inf_el_poison",
+            "effect_kind": "change_damage_element",
+            "change_element": "poison"
+          },
+          "19": {
+            "effect_label": "inf_poison",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Poisoned",
+            "target_ref": "hit_action_targets",
+            "ae_duplicate_mode": "replace"
+          },
+          "20": {
+            "effect_label": "gadget_active_root",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Use a Gadget",
+            "menu_subtitle": "Choose a gadget branch",
+            "menu_pick_count": "1",
+            "menu_option_refs": "stub_alchemy,stub_magitech",
+            "menu_option_labels": "Alchemy|Magitech",
+            "menu_option_descriptions": "Mix a potion|Build a magitech device"
+          },
+          "21": {
+            "effect_label": "stub_alchemy",
+            "effect_kind": "notify",
+            "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
+            "notify_type": "info",
+            "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
+            "menu_label": "Alchemy"
+          },
+          "22": {
+            "effect_label": "stub_magitech",
+            "effect_kind": "notify",
+            "notify_message": "Magitech gadgets are not yet implemented.",
+            "notify_type": "info",
+            "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+            "menu_label": "Magitech"
+          },
+          "23": {
+            "effect_label": "inf_vampire",
+            "effect_kind": "chain",
+            "chain_steps": "inf_pay,inf_drain",
+            "condition_formula": "GADGET_INFUSION_TIER >= 3 && HIT_COUNT == 1",
+            "menu_label": "Vampire"
+          },
+          "24": {
+            "effect_label": "inf_drain",
+            "effect_kind": "apply_action_keyword",
+            "action_keyword": "drain"
+          }
+        }
+      },
+      "unique": true,
+      "uniqueId": "1w2LjUOVhlbLR8nn"
     },
     "flags": {
       "custom-system-builder": {
@@ -5112,7 +6456,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268155,
+      "templateSystemUniqueVersion": 3023268157,
       "props": {
         "name": "Status Immunity",
         "skill_type": "Passive",
@@ -5131,6 +6475,184 @@
       },
       "unique": true,
       "uniqueId": "AwsFia1QQRoedLw4"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Zero Power: Meteor Shower",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213404.080.png",
+    "folderPath": [
+      "Battle Director",
+      "Zero Power",
+      "Zarg"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Active",
+        "level": 1,
+        "max_level": "1",
+        "skill_target": "All Enemy",
+        "skill_range": "Any",
+        "cost": "",
+        "isCheck": false,
+        "isReaction": false,
+        "isHeroic": false,
+        "on_activate_effect_ref": "ms_root",
+        "class": "NPC",
+        "description": "<p>Choose a damage type among <strong>air, bolt, dark, earth, fire, ice, light, or poison</strong>, and <strong>two status effects</strong> among <strong>dazed, shaken, slow, and weak</strong>.</p><p>Each enemy you can see suffers damage of the chosen type equal to <strong>30 + half your level</strong> and the two chosen status effects.</p>",
+        "reaction_config_table": {},
+        "name": "Zero Power: Meteor Shower",
+        "effect_table": {
+          "0": {
+            "effect_label": "ms_pre",
+            "effect_kind": "chain",
+            "chain_steps": "ms_pick_type,ms_pick_status"
+          },
+          "1": {
+            "effect_label": "ms_pick_type",
+            "effect_kind": "prompt_element",
+            "prompt_var": "element",
+            "menu_title": "Meteor Shower — choose damage type",
+            "element_options": "air|bolt|dark|earth|fire|ice|light|poison"
+          },
+          "2": {
+            "effect_label": "ms_pick_status",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Meteor Shower — choose two status effects",
+            "menu_pick_count": "2",
+            "menu_option_refs": "ms_dazed,ms_shaken,ms_slow,ms_weak",
+            "menu_option_labels": "Dazed|Shaken|Slow|Weak"
+          },
+          "3": {
+            "effect_label": "ms_root",
+            "effect_kind": "chain",
+            "chain_steps": "ms_strike,ms_pick_status,ms_cost"
+          },
+          "4": {
+            "effect_label": "ms_strike",
+            "effect_kind": "deal_damage",
+            "damage_element": "VAR_ELEMENT",
+            "damage_amount": "30 + CHAR_LEVEL/2",
+            "target_ref": "enemy_action_targets",
+            "damage_cause": "damage"
+          },
+          "5": {
+            "effect_label": "ms_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "zero_power",
+            "consume_amount": "6",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "6": {
+            "effect_label": "ms_dazed",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dazed",
+            "target_ref": "enemy_action_targets",
+            "menu_label": "Dazed"
+          },
+          "7": {
+            "effect_label": "ms_shaken",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Shaken",
+            "target_ref": "enemy_action_targets",
+            "menu_label": "Shaken"
+          },
+          "8": {
+            "effect_label": "ms_slow",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Slow",
+            "target_ref": "enemy_action_targets",
+            "menu_label": "Slow"
+          },
+          "9": {
+            "effect_label": "ms_weak",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Weak",
+            "target_ref": "enemy_action_targets",
+            "menu_label": "Weak"
+          }
+        },
+        "pre_activate_effect_ref": "ms_pre"
+      },
+      "unique": true,
+      "uniqueId": "hTb8c9ZREooiKs9k"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Zero Trigger: Strategy",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeElectraSkill1.png",
+    "folderPath": [
+      "Battle Director",
+      "Zero Power",
+      "Zarg"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "skill_type": "Passive",
+        "level": 1,
+        "max_level": "1",
+        "skill_target": "-",
+        "skill_range": "-",
+        "cost": "-",
+        "isCheck": false,
+        "isReaction": false,
+        "isHeroic": false,
+        "on_activate_effect_ref": "",
+        "class": "NPC",
+        "description": "<p>At the <strong>end of your turn</strong>, if there are <strong>two or more distinct debuffs</strong> present among your enemies, you gain <strong>1 Zero Power</strong>.</p>",
+        "effect_table": {
+          "0": {
+            "effect_kind": "grant",
+            "effect_label": "ZP Strategy",
+            "grant_resource": "zero_power",
+            "grant_amount": "1",
+            "target_ref": "zts_self"
+          },
+          "1": {
+            "effect_kind": "targeting",
+            "effect_label": "zts_self",
+            "candidate_source": "self",
+            "category": "",
+            "mode": "exact",
+            "count": 1,
+            "exclude_self": false,
+            "auto_confirm_when_obvious": true,
+            "skip_when_passive": true,
+            "iteration_mode": "together"
+          }
+        },
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "turn_end",
+            "reaction_source": "self",
+            "reaction_passive_mode": "force",
+            "reaction_effect_ref": "ZP Strategy",
+            "condition_formula": "ENEMY_DISTINCT_STATUS_COUNT >= 2",
+            "reaction_passive_target": "self"
+          }
+        },
+        "name": "Zero Trigger: Strategy"
+      },
+      "unique": true,
+      "uniqueId": "yAEud7M3MV4edahv"
     },
     "flags": {
       "custom-system-builder": {

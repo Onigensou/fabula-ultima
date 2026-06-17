@@ -26,6 +26,7 @@ import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
 import { TurnPicker, registerPlayerTurnPickerHandler } from "./turn-picker.js";
 import { registerPlayerReactionMenuHandler } from "./reaction-menu-player.js";
+import { registerRemotePickResponder } from "./remote-pick.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
@@ -44,7 +45,7 @@ import { crisisReactor } from "./crisis-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
-import { sweepTransientAEsAtSceneEnd, firePassiveTriggers } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { clearAllStandaloneMenus } from "./standalone-reactions.js";
@@ -819,6 +820,10 @@ Hooks.once("ready", () => {
   // Session-global, idempotent — install once here (path-independent of
   // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
   installGrappledCoverWatcher();
+  // Generic rider-AE linkage: an AE flagged `riderOf: "<parent>"` is removed
+  // when its parent AE leaves the bearer (first consumer: Draconic Domination
+  // riding Charmed). Session-global, idempotent. See [[reference_rider_ae_linkage]].
+  installRiderAeLinkage();
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   const exp = (api.experimental = api.experimental ?? {});
@@ -1189,11 +1194,17 @@ Hooks.once("ready", () => {
       // REACTION_CHOICE back to the GM on click. See
       // [[reaction-menu-on-token]] §5 + [[reaction-architecture]] Rule 1.
       registerPlayerReactionMenuHandler(getIntentChannel());
+      // Remote pick responder — when the GM routes a reaction's secondary
+      // picker (Protect target / Barrage add-target / option-menu) to THIS
+      // player, render the local picker and emit REMOTE_PICK_RESULT back. So
+      // a player applying their own reaction makes its sub-choices on their
+      // own screen. See remote-pick.js + [[director-player-driven-input]].
+      registerRemotePickResponder(getIntentChannel());
       // Catch-all observer for any other surface kinds we haven't wired
       // up yet (future kinds). Lets us tell during testing that the
       // broadcast arrived even before the UI exists.
       getIntentChannel().onMenuOpen((menuSpec) => {
-        const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator"]);
+        const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator", "reaction-pick-list", "reaction-pick-target"]);
         if (!wired.has(menuSpec?.kind)) {
           log(`[player] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
         }

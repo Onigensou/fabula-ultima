@@ -14,6 +14,7 @@ import { parseSkillCost, resolveCost, checkAffordable, formatParsedCost } from "
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { analyzeChainCost } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
+import { classifyActionIntent } from "./skill-intent.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -179,6 +180,9 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     name: skill.name ?? "(unnamed)",
     img: skill.img ?? "icons/svg/sun.svg",
     skillType: String(p.skill_type ?? "").trim() || "—",
+    // Classified intent (harmful | aid | neutral) — drives the per-entry
+    // `disable_action_intent` filter (e.g. Charm/Domination hides aid spells).
+    intent: classifyActionIntent(skill),
     element: String(p.type_damage ?? "").trim(),
     range: String(p.skill_range ?? "").trim(),
     skillTarget: resolveDisplayFormula(String(p.skill_target ?? "").trim(), actor, skill),
@@ -262,14 +266,17 @@ function candidateToRow(c) {
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
   const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
 
+  // Intent-disabled (e.g. Charm/Domination): dim + red-stamp the reason, taking
+  // precedence over the cost badge (it's a hard block, not an affordability one).
+  const intentDisabled = c._intentDisabled || null;
   return {
     value: { skillUuid: c.uuid, sourceItemUuid: c.sourceItemUuid || null },
     imageUrl: safeImg,
     primary: `${sourceTag}${escapeHtml(c.name)}`,
     secondary,
-    badge: escapeHtml(costLabel),
-    badgeTone: isFree ? "free" : (c.affordable ? null : "danger"),
-    disabled: !c.affordable,
+    badge: intentDisabled ? escapeHtml(intentDisabled) : escapeHtml(costLabel),
+    badgeTone: intentDisabled ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
+    disabled: !!intentDisabled || !c.affordable,
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),
@@ -288,9 +295,18 @@ export async function pickSkill({
   allowedSkillTypes = ["active"],
   emptyMessage = null,
   externalCancel = null,
+  // `disable_action_intent` filter — Map<intent, reason>. Entries whose
+  // classified intent is in this map are shown DIMMED + labelled with the reason
+  // (NOT hidden), matching the disabled-menu style. Null/empty = no filtering.
+  excludeIntents = null,
 }) {
   const all = await gatherSkillsForActor(actor);
   const candidates = filterBySkillTypes(all, allowedSkillTypes);
+  if (excludeIntents && excludeIntents.size) {
+    for (const c of candidates) {
+      if (excludeIntents.has(c.intent)) c._intentDisabled = excludeIntents.get(c.intent) || "Disabled";
+    }
+  }
   if (!candidates.length) {
     const typesText = (allowedSkillTypes ?? []).map((t) => String(t).toLowerCase()).join(" / ") || "matching";
     ui.notifications?.warn(emptyMessage ?? `${actor?.name ?? "Combatant"} has no ${typesText} skills available.`);

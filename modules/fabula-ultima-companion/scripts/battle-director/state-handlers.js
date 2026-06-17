@@ -3760,7 +3760,7 @@ const Confirm = {
         // perTargetResults) and returns them so the card appends rows.
         // Cancel / empty pick / unaffordable → { ok:false } leaves the pill
         // actionable (cost-last-in-chain means nothing was spent).
-        onAddTargetApply: async (cand) => {
+        onAddTargetApply: async (cand, remotePrompt = null) => {
           try {
             // ── Heal-spread variant (Potion Rain) ───────────────────────────
             // Item-use restore: fire the reaction chain (add_target picks ≤SL
@@ -3790,7 +3790,7 @@ const Confirm = {
               };
               const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
               let resH = null;
-              try { resH = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probeH }); }
+              try { resH = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probeH, remotePrompt }); }
               catch (e) { warn("CONFIRM onAddTargetApply(heal): chain threw", e); return { ok: false }; }
               if (!resH?.ok) {
                 log(`CONFIRM onAddTargetApply(heal): chain ${resH?.cancelled ? "cancelled" : "returned not-ok"} — pill stays pending`);
@@ -3865,7 +3865,7 @@ const Confirm = {
             };
             const { firePreAcceptedCandidate } = await getSkillEffectsExtras();
             let res = null;
-            try { res = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probePayload }); }
+            try { res = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probePayload, remotePrompt }); }
             catch (e) { warn("CONFIRM onAddTargetApply: firePreAcceptedCandidate threw", e); return { ok: false }; }
             if (!res?.ok) return { ok: false, cancelled: !!res?.cancelled };
 

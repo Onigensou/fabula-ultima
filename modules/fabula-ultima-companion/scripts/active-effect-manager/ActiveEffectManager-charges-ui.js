@@ -179,5 +179,31 @@
     Hooks.on(hookName, onRenderConfig);
   }
 
+  // Preserve director `fud-*` token statuses across AE-config sheet saves.
+  // The standard sheet rebuilds `statuses` from the registered-status checkboxes,
+  // which silently drops UNREGISTERED ids — the `fud-<slug>` convention every
+  // Director AE uses for its token icon (Grave Points, the death-save marker, …).
+  // Without this, hand-editing a charge in the injected panel above wipes the
+  // token icon + its charge badge. We re-merge any `fud-*` status the update
+  // would remove that the effect currently carries, so editing a Director AE no
+  // longer strips its icon. Adds NOTHING to CONFIG.statusEffects (no palette
+  // clutter). To intentionally drop a `fud-*` status, change it programmatically
+  // (how the director already manages these — apply/consume/delete, not the sheet).
+  Hooks.on("preUpdateActiveEffect", (effect, changes) => {
+    try {
+      if (!Array.isArray(changes?.statuses)) return;
+      const current = Array.from(effect?.statuses ?? []);
+      const droppedFud = current.filter(
+        (s) => typeof s === "string" && s.startsWith("fud-") && !changes.statuses.includes(s)
+      );
+      if (droppedFud.length) {
+        changes.statuses = [...changes.statuses, ...droppedFud];
+        console.debug(`${TAG} preserved fud- status across update:`, droppedFud);
+      }
+    } catch (e) {
+      console.warn(`${TAG} preUpdate fud-status preserve failed`, e);
+    }
+  });
+
   console.debug(`${TAG} Installed; will inject on:`, HOOK_NAMES.join(", "));
 })();

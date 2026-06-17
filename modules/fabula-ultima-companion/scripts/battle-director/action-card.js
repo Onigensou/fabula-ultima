@@ -31,23 +31,30 @@ import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
 import { resourceLabel } from "./resources.js";
 
+// Resolve which active non-GM user owns the given actor doc. Returns
+// userId or null. Deterministic on multi-owner actors (sort by id).
+function ownerUserIdForActor(actor) {
+  if (!actor) return null;
+  const candidates = (game.users?.contents ?? []).filter((u) => {
+    if (u.isGM) return false;
+    if (!u.active) return false;
+    try { return actor.testUserPermission?.(u, "OWNER"); }
+    catch { return false; }
+  });
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.id.localeCompare(b.id));
+  return candidates[0].id;
+}
+
 // Resolve which active non-GM user owns the actor at `actorUuid`.
 // Returns userId or null. Used to gate which player's mirror card
-// has interactive Confirm/Cancel buttons. Deterministic on
-// multi-owner actors (sort by id).
+// has interactive Confirm/Cancel buttons (card-level, attacker actor)
+// AND which player may apply each reaction pill (per-pill, reactor actor).
 async function resolveCardOwnerUserId(actorUuid) {
   try {
+    if (!actorUuid) return null;
     const actor = await fromUuid(actorUuid);
-    if (!actor) return null;
-    const candidates = (game.users?.contents ?? []).filter((u) => {
-      if (u.isGM) return false;
-      if (!u.active) return false;
-      try { return actor.testUserPermission?.(u, "OWNER"); }
-      catch { return false; }
-    });
-    if (!candidates.length) return null;
-    candidates.sort((a, b) => a.id.localeCompare(b.id));
-    return candidates[0].id;
+    return ownerUserIdForActor(actor);
   } catch { return null; }
 }
 
@@ -803,6 +810,13 @@ export function ensureStyles() {
       background: rgba(220, 220, 220, 0.40);
       border-color: rgba(140, 140, 140, 0.45);
       opacity: 0.55;
+    }
+    /* Submitting — the owner clicked Apply/Skip and the GM is resolving it
+       (possibly awaiting a secondary pick on this client). Dim + block the
+       Apply/Skip buttons until the GM broadcasts the final state or a revert. */
+    .fud-bf-card .fud-bf-reaction-pill.is-submitting .fud-bf-reaction-actions {
+      opacity: 0.5;
+      pointer-events: none;
     }
     /* Cost-unavailable reaction — surfaced but dimmed, non-interactive, with a
        reason badge ("Low IP") so the player sees why it can't be used. */
@@ -3231,6 +3245,15 @@ function buildReactionPills(prePassives) {
     const reactorAttr = isThirdParty
       ? ` data-fud-reactor-uuid="${escapeHtml(String(p.reactorActorUuid))}"`
       : "";
+    // Per-pill owner — the active non-GM user who owns the REACTOR (not
+    // the action-taker). Drives mirror-side interactivity: a player may
+    // apply ONLY the reaction pills carried by a creature they own, even
+    // when the GM or another player owns the action being reacted to.
+    // Empty when no player owns the reactor (GM creature) — then only the
+    // GM's real card can apply it. See [[director-player-driven-input]].
+    const ownerAttr = p.reactorOwnerUserId
+      ? ` data-fud-reaction-owner="${escapeHtml(String(p.reactorOwnerUserId))}"`
+      : "";
 
     // Skill descriptions in CSB are rich HTML; trusted (local actor
     // data, not user input). Bundle a mode footer chip so the player
@@ -3247,7 +3270,7 @@ function buildReactionPills(prePassives) {
     if (p.available === false) {
       const reason = escapeHtml(p.unavailableReason ?? "Unavailable");
       return `
-        <div class="fud-bf-reaction-pill is-unavailable ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs} aria-disabled="true">
+        <div class="fud-bf-reaction-pill is-unavailable ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr}${tipAttrs} aria-disabled="true">
           ${iconHtml}
           ${nameBlock}
           <span class="fud-bf-reaction-status fud-bf-reaction-reason">${reason}</span>
@@ -3255,14 +3278,14 @@ function buildReactionPills(prePassives) {
     }
     if (p.mode === "on" || p.mode === "force") {
       return `
-        <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${tipAttrs}>
+        <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr}${tipAttrs}>
           ${iconHtml}
           ${nameBlock}
           <span class="fud-bf-reaction-status">Active</span>
         </div>`;
     }
     return `
-      <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr} data-fud-reaction-pending="1"${tipAttrs}>
+      <div class="fud-bf-reaction-pill is-ask ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr} data-fud-reaction-pending="1"${tipAttrs}>
         ${iconHtml}
         ${nameBlock}
         <div class="fud-bf-reaction-actions">
@@ -3567,6 +3590,22 @@ export async function postActionCard({ director, kind, payload }) {
   // shown as a chip without buttons; off-mode is skipped (no pill).
   // Confirm is locked while any ask pill is undecided.
   const prePassives = Array.isArray(payload?.prePassives) ? payload.prePassives : [];
+  // Stamp each reaction candidate with the user who owns its REACTOR so
+  // the mirror can gate Apply/Skip per-pill (a player applies only their
+  // own creature's reactions). Self-reactions (no reactorActorUuid) react
+  // as the action-taker, so they resolve against the attacker actor.
+  {
+    const attackerActorUuid = payload?.attacker?.actorUuid
+      ?? payload?.attackerActorRef
+      ?? payload?.attackerActor?.uuid
+      ?? payload?.attackerActorUuid
+      ?? null;
+    for (const p of prePassives) {
+      try {
+        p.reactorOwnerUserId = await resolveCardOwnerUserId(p.reactorActorUuid ?? attackerActorUuid);
+      } catch { p.reactorOwnerUserId = null; }
+    }
+  }
   // Only AVAILABLE ask pills are "pending" — they have Apply/Skip and gate
   // Confirm. Unavailable ask pills (surfaced dimmed with a reason, e.g. "Low IP")
   // are non-interactive, so counting them would lock Confirm forever (nothing to
@@ -3912,10 +3951,16 @@ export async function postActionCard({ director, kind, payload }) {
         });
         const { added } = rd.diffCandidates(prePassives, derived);
         if (!added.length) return;
+        const cascadeAttackerUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
         for (const c of added) {
           const reactor = c.reactorActorUuid ? await fromUuid(c.reactorActorUuid).catch(() => null) : null;
           c.reactorActorName = reactor?.name ?? "Reactor";
           c.reactorIsPlayer = !!reactor?.hasPlayerOwner;
+          // Per-pill owner (see initial enrichment) — reactor if known, else
+          // the action-taker for self-cascades (Bullet Break after Crossfire).
+          c.reactorOwnerUserId = reactor
+            ? ownerUserIdForActor(reactor)
+            : await resolveCardOwnerUserId(cascadeAttackerUuid);
           cascadeFiredKeys.add(rd.candidateKey(c));
           prePassives.push(c);
         }
@@ -3980,6 +4025,11 @@ export async function postActionCard({ director, kind, payload }) {
         const { added } = rd.diffCandidates(prePassives, derived);
         if (!added.length) return;
         for (const c of added) {
+          // Per-pill owner (see initial enrichment) — these are reactions of
+          // newly-targeted creatures, so they gate on the reactor's owner.
+          try {
+            c.reactorOwnerUserId = await resolveCardOwnerUserId(c.reactorActorUuid ?? attackerActorUuid);
+          } catch { c.reactorOwnerUserId = null; }
           cascadeFiredKeys.add(rd.candidateKey(c));
           prePassives.push(c);
         }
@@ -3990,12 +4040,43 @@ export async function postActionCard({ director, kind, payload }) {
       }
     }
 
-    async function recordPillDecision(rowKey, carrierUuid, decision) {
+    async function recordPillDecision(rowKey, carrierUuid, decision, routeUserId = null) {
       const pillEl = root.querySelector(
         `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
       );
       if (!pillEl) return;
       if (pillEl.dataset.fudReactionPending !== "1") return;
+
+      // Remote-prompt routing — when a PLAYER applied this reaction (routeUserId
+      // is their non-GM userId), any secondary picker (Protect target, Barrage
+      // add-target, option-menu) renders on THEIR client instead of the GM's,
+      // and nothing commits until they confirm. The GM clicking their own card
+      // passes no routeUserId → local picks, card stays as-is. See remote-pick.js.
+      const remotePrompt = (routeUserId
+        && routeUserId !== game.user?.id
+        && !game.users?.get(routeUserId)?.isGM)
+        ? { channel: director.intentChannel, targetUserId: routeUserId, combatId: director.combatId }
+        : null;
+      // When routed remotely the GM's card must STAY visible (the player picks
+      // on their own screen); only hide locally for GM/NPC-local picks.
+      const hideDuringPick = !remotePrompt;
+      // Player applied but their pill is mid-flight ("submitting" — pending=0,
+      // buttons dimmed): if the secondary pick is cancelled, tell THEIR client
+      // to restore the actionable pill (revert). No-op for GM-local picks.
+      const revertRemotePill = () => {
+        if (!remotePrompt) return;
+        try {
+          director.intentChannel?.broadcastMenuOpen({
+            targetUserId: routeUserId,
+            menuSpec: {
+              kind: "action-card-pill-update",
+              combatId: director.combatId,
+              rowKey, carrierUuid,
+              decision: "revert",
+            },
+          });
+        } catch (e) { warn("recordPillDecision: revert broadcast threw", e); }
+      };
 
       // Provisional set so recompute / card-mutations see the decision.
       // If "apply" needs a picker and the player cancels, we rewind this
@@ -4020,15 +4101,17 @@ export async function postActionCard({ director, kind, payload }) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
             return;
           }
-          // Hide the card while the targeting picker is up so it doesn't
-          // overlap the JRPG targeting UI — same as every other picker site.
+          // Hide the GM card while a LOCAL targeting picker is up so it doesn't
+          // overlap the JRPG targeting UI. When routed to a player, the picker
+          // is on THEIR screen — keep the GM card visible.
           let res = null;
-          root.classList.add("is-hidden-during-pick");
-          try { res = await payload.onAddTargetApply(addTargetCand); }
+          if (hideDuringPick) root.classList.add("is-hidden-during-pick");
+          try { res = await payload.onAddTargetApply(addTargetCand, remotePrompt); }
           catch (e) { warn("recordPillDecision: onAddTargetApply threw", e); }
-          finally { root.classList.remove("is-hidden-during-pick"); }
+          finally { if (hideDuringPick) root.classList.remove("is-hidden-during-pick"); }
           if (!res?.ok) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+            revertRemotePill();
             log(`recordPillDecision: add_target apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
             return;
           }
@@ -4094,7 +4177,7 @@ export async function postActionCard({ director, kind, payload }) {
               ? await fromUuid(cand.reactorActorUuid).catch(() => null)
               : (payload?.attackerActor ?? null);
             if (reactorActor) {
-              root.classList.add("is-hidden-during-pick");
+              if (hideDuringPick) root.classList.add("is-hidden-during-pick");
               let menuRes;
               try {
                 menuRes = await se.previewReactionMenu({
@@ -4102,12 +4185,14 @@ export async function postActionCard({ director, kind, payload }) {
                   candidate: cand,
                   payload: cand.payloadAtFire ?? null,
                   dCombat: director?.dCombat ?? null,
+                  remotePrompt,
                 });
               } finally {
-                root.classList.remove("is-hidden-during-pick");
+                if (hideDuringPick) root.classList.remove("is-hidden-during-pick");
               }
               if (menuRes?.cancelled) {
                 reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
+                revertRemotePill();
                 log(`recordPillDecision: ${rowKey}:${carrierUuid} menu cancelled — pill stays pending`);
                 return;
               }
@@ -4127,7 +4212,7 @@ export async function postActionCard({ director, kind, payload }) {
         // rewinds the decision so the pill is still actionable.
         let cancelled = false;
         try {
-          const r = await recomputeTargetPreviews();
+          const r = await recomputeTargetPreviews(remotePrompt);
           cancelled = !!r?.cancelled;
         } catch (e) {
           warn(`recordPillDecision: recompute threw for ${rowKey}:${carrierUuid}`, e);
@@ -4135,6 +4220,7 @@ export async function postActionCard({ director, kind, payload }) {
         if (cancelled) {
           reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
           if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
+          revertRemotePill();
           log(`recordPillDecision: ${rowKey}:${carrierUuid} apply cancelled — pill stays pending`);
           return;
         }
@@ -4239,7 +4325,7 @@ export async function postActionCard({ director, kind, payload }) {
     // Serialised via a single in-flight Promise — fast clicks queue
     // behind the previous recompute instead of racing the DOM.
     let _previewInFlight = null;
-    async function recomputeTargetPreviews() {
+    async function recomputeTargetPreviews(remotePrompt = null) {
       // Run recompute when the card has a target list (Attack OR damage-
       // dealing Skill). Non-damage Skills (Soul Steal, Torpor, etc.)
       // shouldn't have their SUCCESS/FAILED labels overwritten — but
@@ -4248,7 +4334,16 @@ export async function postActionCard({ director, kind, payload }) {
       // on `hasDamageRows`.
       const hasDamageRows = !!payload?.hasDamage || kind === "Attack";
       const hasTargetRows = Array.isArray(payload?.perTargetResults) && payload.perTargetResults.length > 0;
-      if (!hasTargetRows) return { cancelled: false };
+      // Run whenever the card has TARGETS — not only when it has damage ROWS. A
+      // no-damage Skill (Torment, Dreadwyrm) has EMPTY perTargetResults but still
+      // renders target portraits/rows from ar.targets, and a redirect/add_target
+      // mutation must update them. Gating on perTargetResults silently skipped the
+      // recompute for those, so a redirect never reflected on the card even though
+      // the mechanic applied. (Result-span patching stays gated on hasDamageRows.)
+      const liveTargets = director?.ctx?.actionResult?.targets;
+      const hasTargets = (Array.isArray(liveTargets) && liveTargets.length > 0)
+        || (Array.isArray(payload?.targets) && payload.targets.length > 0);
+      if (!hasTargetRows && !hasTargets) return { cancelled: false };
       if (_previewInFlight) { try { await _previewInFlight; } catch {} }
       _previewInFlight = (async () => {
         try {
@@ -4314,7 +4409,10 @@ export async function postActionCard({ director, kind, payload }) {
           // accepted reactions folded in (accuracy override re-applied). Shared with
           // the CONFIRM recompute so the preview + commit CANNOT drift. `_cb` keeps
           // its internal imports on this file's cross-module cache-bust pattern.
-          root.classList.add("is-hidden-during-pick");
+          // When the pick is routed to a player (remotePrompt), the picker is
+          // on THEIR screen — keep the GM card visible. Hide only for local picks.
+          const hideHere = !remotePrompt;
+          if (hideHere) root.classList.add("is-hidden-during-pick");
           let mutationResult;
           try {
             mutationResult = await cm.applyTargetSetMutation({
@@ -4323,9 +4421,10 @@ export async function postActionCard({ director, kind, payload }) {
               attackerActor: payload.attackerActor,
               round: director?.dCombat?.round ?? 0,
               _cb: Date.now(),
+              remotePrompt,
             });
           } finally {
-            root.classList.remove("is-hidden-during-pick");
+            if (hideHere) root.classList.remove("is-hidden-during-pick");
           }
           if (mutationResult?.cancelled) {
             // Caller (recordPillDecision) reads `cancelled` to rewind
@@ -4643,7 +4742,9 @@ export async function postActionCard({ director, kind, payload }) {
             const body = intent?.body ?? {};
             log(`postActionCard: remote REACTION_CHOICE received (${body.rowKey ?? "?"}/${body.decision ?? "?"})`);
             const decision = body.decision === "apply" ? "apply" : "skip";
-            recordPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), decision);
+            // intent.fromUserId = the player who applied → route their secondary
+            // pickers back to their client (recordPillDecision builds remotePrompt).
+            recordPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), decision, intent?.fromUserId ?? null);
             // Re-arm for the next pill click (or no-op if none left).
             armReactionAwait();
           }).catch((e) => {
@@ -5083,7 +5184,19 @@ export function registerPlayerActionCardHandler(channel) {
       `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(menuSpec.rowKey ?? ""))}"][data-fud-reaction-carrier="${CSS.escape(String(menuSpec.carrierUuid ?? ""))}"]`
     );
     if (!pillEl) return;
+    // "revert" — the owner's secondary pick was cancelled; restore the pill to
+    // its actionable (pending) state so they can click Apply/Skip again. The
+    // Apply/Skip buttons were left in place during "submitting", so we only
+    // clear the in-flight flags.
+    if (menuSpec.decision === "revert") {
+      pillEl.dataset.fudReactionPending = "1";
+      delete pillEl.dataset.fudReactionSubmitting;
+      pillEl.classList.remove("is-submitting");
+      return;
+    }
     const decision = menuSpec.decision === "apply" ? "apply" : "skip";
+    delete pillEl.dataset.fudReactionSubmitting;
+    pillEl.classList.remove("is-submitting");
     pillEl.dataset.fudReactionPending = "0";
     pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
     // Replace whatever's in the actions slot ("Waiting for…" chip on
@@ -5140,9 +5253,17 @@ export function registerPlayerActionCardHandler(channel) {
     wrapper.innerHTML = menuSpec.html;
     document.body.appendChild(wrapper);
 
-    // Permission gate. Owner of the acting actor gets interactive
-    // buttons; non-owners see them but clicks are no-ops with a hint.
+    // Permission gate. Two independent layers:
+    //  • Card-level (attacker) ownership — gates the acting actor's own
+    //    buttons (Confirm / Cancel / Invoke / equipment / item). Only the
+    //    action-taker's owner gets these.
+    //  • Per-pill (reactor) ownership — gates each reaction's Apply/Skip.
+    //    A player applies ONLY the pills carried by a creature THEY own,
+    //    even when the GM or another player owns the action being reacted
+    //    to (the common enemy-attacks-party case). See
+    //    [[director-player-driven-input]].
     const isOwner = menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id;
+    const myUserId = game.user?.id ?? null;
     const card = wrapper.querySelector(".fud-bf-card");
 
     if (!isOwner && card) {
@@ -5150,37 +5271,79 @@ export function registerPlayerActionCardHandler(channel) {
       // event guard below. The class is purely informational; the real
       // gate is the event listener.
       card.classList.add("is-readonly-mirror");
-      // No "Observing" banner — non-owners may soon have a role to play
-      // (reaction skills etc.), so we don't pre-label the card as passive.
+      // No "Observing" banner — non-owners may still own a reaction pill
+      // on this card, so we don't pre-label it as passive.
 
       // Hide the action buttons (Confirm / Cancel / Invoke / status grid)
-      // entirely for non-owner observers — they can't act, so the buttons
-      // shouldn't show at all. The acting owner (interactive branch) and the
-      // GM (renders its own card, never this mirror) keep theirs.
+      // entirely for non-owner observers — they can't act on the action
+      // itself. Reaction pills live OUTSIDE .fud-bf-btn-row, so this does
+      // NOT touch a player's own reaction Apply/Skip (handled below).
       for (const row of wrapper.querySelectorAll(".fud-bf-btn-row")) {
         row.style.display = "none";
       }
+    }
 
-      // Hide reaction Apply/Skip buttons on non-owner mirror — they're
-      // not actionable from this client, so they shouldn't look like
-      // they are. Replace each pending pill's button row with a
-      // "Waiting for [Owner]…" status chip. Already-resolved pills
-      // (post-decision) carry .is-resolved + a status chip from the
-      // GM-side recordPillDecision DOM patch — leave those alone.
-      const ownerName = game.users.get(menuSpec.ownerUserId)?.name ?? "Player";
-      for (const pill of wrapper.querySelectorAll(".fud-bf-reaction-pill.is-ask")) {
-        if (pill.dataset.fudReactionPending !== "1") continue;
-        const actions = pill.querySelector(".fud-bf-reaction-actions");
-        if (actions) {
-          actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
-        }
+    // Reaction Apply/Skip — gate EACH pending pill on the reactor's owner,
+    // independent of card ownership. Pills the local player owns keep their
+    // buttons; everyone else's collapse to a "Waiting for [Owner]…" chip.
+    // Already-resolved pills carry .is-resolved + a status chip from the
+    // GM-side recordPillDecision DOM patch — leave those alone.
+    for (const pill of wrapper.querySelectorAll(".fud-bf-reaction-pill.is-ask")) {
+      if (pill.dataset.fudReactionPending !== "1") continue;
+      const pillOwner = pill.dataset.fudReactionOwner ?? "";
+      if (pillOwner && pillOwner === myUserId) continue;  // mine — keep buttons
+      const ownerName = pillOwner
+        ? (game.users.get(pillOwner)?.name ?? "Player")
+        : "GM";
+      const actions = pill.querySelector(".fud-bf-reaction-actions");
+      if (actions) {
+        actions.outerHTML = `<span class="fud-bf-reaction-status is-waiting">Waiting for ${escapeHtml(ownerName)}…</span>`;
       }
     }
 
+    // Reaction-pill click — bound for EVERY client (card owner or not).
+    // A player applies only the pills carried by a creature they own; the
+    // per-pill owner stamp gates it. Emits REACTION_CHOICE so the GM-side
+    // card records the decision. Card-level buttons (Confirm/Cancel/etc.)
+    // remain attacker-owner-only via the handler(s) below.
+    const onReactionClick = (ev) => {
+      const reactionBtn = ev.target?.closest?.("[data-fud-reaction-action]");
+      if (!reactionBtn) return;
+      ev.stopPropagation();
+      const pill = reactionBtn.closest(".fud-bf-reaction-pill");
+      if (!pill) return;
+      if (pill.dataset.fudReactionPending !== "1") return;
+      // Per-pill ownership gate — only the reactor's owner may act on it.
+      const pillOwner = pill.dataset.fudReactionOwner ?? "";
+      if (!pillOwner || pillOwner !== myUserId) return;
+      const rowKey  = pill.dataset.fudReactionKey ?? "";
+      const carrier = pill.dataset.fudReactionCarrier ?? "";
+      const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
+      // Do NOT commit visually yet. The GM resolves the reaction — running any
+      // secondary picker (target select / option-menu) on THIS client first —
+      // and only then broadcasts the final Applied/Skipped via pill-update. This
+      // is the "don't commit until the secondary menu is confirmed" contract.
+      // Mark the pill "submitting" so it can't be re-clicked mid-flight; if the
+      // player cancels the secondary pick, the GM broadcasts a "revert" that
+      // restores the actionable pill. See recordPillDecision + remote-pick.js.
+      pill.dataset.fudReactionPending = "0";
+      pill.dataset.fudReactionSubmitting = "1";
+      pill.classList.add("is-submitting");
+      // Card-level pending counter is owned by the GM's pill-update broadcasts —
+      // don't decrement locally (a cancelled pick would leave it wrong).
+      channel.emit({
+        type: INTENTS.REACTION_CHOICE,
+        body: { rowKey, carrierUuid: carrier, decision },
+        combatId: menuSpec.combatId,
+      });
+    };
+    wrapper.addEventListener("click", onReactionClick);
+
     // Click logic — replicates the GM-side onClick for interactive card
     // UI (Equipment dropdowns, Item tabs+rows, "Open Sheet" button,
-    // Confirm/Cancel buttons). Non-owner observers get no bindings at
-    // all (.is-readonly-mirror set above visually disables hover/focus).
+    // Confirm/Cancel buttons). Reaction pills are handled by
+    // onReactionClick above (per-pill owner); this layer is for the
+    // action-taker's own controls, gated on card (attacker) ownership.
     let onClick = null;
     if (isOwner) {
       onClick = (ev) => {
@@ -5296,43 +5459,8 @@ export function registerPlayerActionCardHandler(channel) {
           if (confirmBtn) confirmBtn.classList.remove("is-disabled");
           return;
         }
-        // Reaction-pill click on the mirror — emit REACTION_CHOICE so
-        // the GM-side card updates the pill state + unlocks Confirm
-        // when all asks are decided. The pill also updates locally so
-        // the player sees the immediate visual change.
-        const reactionBtn = ev.target?.closest?.("[data-fud-reaction-action]");
-        if (reactionBtn) {
-          ev.stopPropagation();
-          const pill = reactionBtn.closest(".fud-bf-reaction-pill");
-          if (!pill) return;
-          if (pill.dataset.fudReactionPending !== "1") return;
-          const rowKey  = pill.dataset.fudReactionKey ?? "";
-          const carrier = pill.dataset.fudReactionCarrier ?? "";
-          const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
-          // Mirror-side visual update: flip the pill to its resolved
-          // state immediately so the player sees instant feedback. The
-          // GM-side card handles its own visual update via the intent
-          // listener.
-          pill.dataset.fudReactionPending = "0";
-          pill.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
-          const actions = pill.querySelector(".fud-bf-reaction-actions");
-          if (actions) {
-            actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
-          }
-          const mirrorCardEl = wrapper.querySelector(".fud-bf-card");
-          if (mirrorCardEl) {
-            const cur = Number(mirrorCardEl.dataset?.fudReactionsPending ?? 0);
-            const next = Math.max(0, cur - 1);
-            if (next > 0) mirrorCardEl.dataset.fudReactionsPending = String(next);
-            else delete mirrorCardEl.dataset.fudReactionsPending;
-          }
-          channel.emit({
-            type: INTENTS.REACTION_CHOICE,
-            body: { rowKey, carrierUuid: carrier, decision },
-            combatId: menuSpec.combatId,
-          });
-          return;
-        }
+        // (Reaction-pill clicks handled by onReactionClick — bound for
+        // every client and gated per-pill on the reactor's owner.)
         // Final Confirm / Cancel button — collect extras + emit intent.
         const btn = ev.target?.closest?.("[data-fud-action]");
         if (!btn) return;

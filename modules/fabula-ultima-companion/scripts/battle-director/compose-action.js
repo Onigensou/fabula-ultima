@@ -734,9 +734,12 @@ async function composeItem({ director, snap, eligible, cancelSentinel }) {
     return { cancelled: true, reason: "no actor" };
   }
 
-  // Step 1: source picker (the item menu).
+  // Step 1: source picker (the item menu). A `disable_action_intent` filter on
+  // the actor (Charm/Domination) DIMS + labels consumables with no allowed use
+  // (shown, not hidden). Map intent→reason for the dimmed-row stamp.
+  const excludeIntents = new Map((snap?.disabledActionIntents ?? []).map((d) => [d.intent, d.reason]));
   const pick = await raceCancel(
-    pickItem({ director, actor, externalCancel: cancelSentinel }),
+    pickItem({ director, actor, externalCancel: cancelSentinel, excludeIntents }),
     cancelSentinel,
   );
   if (!pick) return { cancelled: true, reason: "item-cancelled" };
@@ -792,7 +795,10 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
     return { cancelled: true, reason: "no actor" };
   }
 
-  // Step 1: skill picker.
+  // Step 1: skill picker. A `disable_action_intent` filter on the actor (e.g.
+  // Charm/Domination) DIMS + labels aid/neutral entries (shown, not hidden).
+  // Map intent→reason so the picker can stamp the source-AE name on dimmed rows.
+  const excludeIntents = new Map((snap?.disabledActionIntents ?? []).map((d) => [d.intent, d.reason]));
   const pick = await raceCancel(
     pickSkill({
       director,
@@ -803,6 +809,7 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
         ? `${actor.name ?? "Combatant"} knows no spells.`
         : `${actor.name ?? "Combatant"} has no Active skills available.`,
       externalCancel: cancelSentinel,
+      excludeIntents,
     }),
     cancelSentinel,
   );

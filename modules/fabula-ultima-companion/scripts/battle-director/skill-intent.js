@@ -80,6 +80,16 @@ export function classifyActionIntent(skill) {
   const hasDamage = damageType && !NONDAMAGING_TYPES.has(damageType);
   if (hasDamage) return "harmful";
 
+  // 6b. No damage, but targets enemies and applies an ActiveEffect → harmful.
+  //     This is the durable replacement for hand-set `action_intent: "harmful"`
+  //     on no-damage debuff skills (Fafnir Dreadwyrm Descent / Torment): they
+  //     inflict Frightened/Paralyzed/Silence via apply_ae with no damage prop.
+  //     `skill_target` is a real template FIELD and `effect_table` is
+  //     dynamic-table DATA — both survive templateSystem.reloadTemplate(),
+  //     unlike the non-template `action_intent` prop (which reload strips).
+  const targetsEnemies = /enemy/i.test(String(p.skill_target ?? ""));
+  if (targetsEnemies && hasApplyAe(skill)) return "harmful";
+
   // 7. Non-offensive spell → aid.
   if (skillType === "spell") return "aid";
 
@@ -119,6 +129,23 @@ function hasAidGrant(skill) {
       const n = Number(amt);
       if (Number.isFinite(n) && n > 0) return true;
     }
+  }
+  return false;
+}
+
+// Look at the skill's effect_table for an apply_ae row — used by step 6b to
+// detect "inflicts a status/effect" on no-damage skills. Mirrors hasAidGrant:
+// walks the CSB-keyed table, skips $deleted rows, matches effect_kind apply_ae.
+// (reaction_effect_table is the legacy alias for the same table.)
+function hasApplyAe(skill) {
+  const table = skill?.system?.props?.effect_table
+            ?? skill?.system?.props?.reaction_effect_table  // legacy alias
+            ?? null;
+  if (!table) return false;
+  for (const key of Object.keys(table)) {
+    const row = table[key];
+    if (!row || row.$deleted) continue;
+    if (row.effect_kind === "apply_ae") return true;
   }
   return false;
 }

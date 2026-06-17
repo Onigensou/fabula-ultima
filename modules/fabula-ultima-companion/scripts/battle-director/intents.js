@@ -48,6 +48,13 @@ export const INTENTS = Object.freeze({
   // historically been single-reactor (caster = reactor).
   REACTION_CHOICE: "REACTION_CHOICE",
 
+  // External — sent by a player client to return the result of a secondary
+  // picker (target selection / option-menu) the GM routed to them mid-
+  // reaction. Body: { requestId, value }. Resolved by a GM-side awaitIntent
+  // inside remote-pick.js (remotePick); never reaches the FSM transition
+  // table. See [[director-player-driven-input]] + remote-pick.js.
+  REMOTE_PICK_RESULT: "REMOTE_PICK_RESULT",
+
   // External — sent by GM or API to skip the currently playing animation
   // and advance directly to RESOLVE. Also acts as the transition key when
   // the animation controller is already null (i.e. gate already resolved).

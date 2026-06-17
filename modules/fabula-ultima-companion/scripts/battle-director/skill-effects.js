@@ -1294,7 +1294,7 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
 // apply pre-accepted candidates. Mirrors the dispatch in
 // firePassiveTriggers' main loop, minus the matcher/mode gating
 // (caller has already done both).
-export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload }) {
+export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload, remotePrompt = null }) {
   if (!candidate?.ref) return { ok: false, reason: "no-ref" };
   const { makeChainContext } = await import("./skill-targeting.js");
   const reactorToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
@@ -1318,7 +1318,21 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     aeReactionCfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
     runtimeEffectTable = aeReactionCfg.effect_table ?? aeReactionCfg.reaction_effect_table ?? {};
     firePoints = null;
+    // Resolve the AE's ORIGIN skill so formula ids that need the source skill —
+    // notably SL — and apply_ae-by-name (resolveAeTemplate searches ctx.skill's
+    // embedded AEs) resolve in AE-carried reactions. Without it ctx.skill is null
+    // → SL falls back to 1, so an AE reaction's "SL × …" effect under-scales at
+    // higher skill levels (e.g. Beyond the Realms of Death's "SL × Grave Points"
+    // death-save heal). Only DIRECTOR-applied AEs carry a recorded skillUuid;
+    // manually-placed AEs keep the null/SL-1 behavior.
     skillForCtx = null;
+    const originSkillUuid = carrier.flags?.[FLAG_NS]?.directorAppliedBy?.skillUuid ?? null;
+    if (originSkillUuid) {
+      try {
+        const originSkill = await fromUuid(originSkillUuid);
+        if (originSkill?.documentName === "Item") skillForCtx = originSkill;
+      } catch { /* origin skill gone — fall back to null/SL-1 */ }
+    }
   }
   const ctx = makeChainContext({
     reactorActor: casterActor,
@@ -1353,6 +1367,9 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     // (previewReactionMenu cached them on the candidate). With these set,
     // open_action_menu dispatches the chosen options without re-prompting.
     menuPicks: Array.isArray(candidate.chosenMenuPicks) ? candidate.chosenMenuPicks : null,
+    // Route any RESOLVE-time / add_target pick to the reaction owner's client
+    // when the GM is firing a player-applied reaction. Null = local (GM/NPC).
+    remotePrompt: remotePrompt ?? null,
   });
   const r = await applyEffectByLabel(candidate.ref, ctx);
 
@@ -2090,6 +2107,56 @@ export async function reapApplierTiedAEs(applierActorUuid) {
   return { reaped: names.length, names };
 }
 
+// ── Generic rider-AE linkage ─────────────────────────────────────────────
+//
+// A "rider" AE declares `flags.fabula-ultima-companion.riderOf = "<parent>"`
+// (the parent AE's NAME or chargeKey). When the parent AE leaves the bearer —
+// by ANY means: turn-tick expiry, early cleanse, manual removal — every rider
+// of it on the SAME actor is removed too. This is the generic, declarative
+// equivalent of the bespoke Guard Cover→riders linkage (grappled.js): author a
+// rider purely by stamping `riderOf` on its template, no per-skill code.
+//
+// First consumer: Draconic Domination — the boss's domination effect rides the
+// generic "Charmed" status (riderOf "Charmed"), so cleansing Charm also ends
+// the domination, while the domination AE itself is NOT a debuff (won't be
+// swept by generic debuff-removal).
+//
+// GM-authoritative + idempotent (guarded). The handler is cheap: it only scans
+// the deleting AE's own bearer, and only when that bearer still carries a rider.
+let _riderLinkageInstalled = false;
+export function installRiderAeLinkage() {
+  if (_riderLinkageInstalled) return;
+  _riderLinkageInstalled = true;
+  Hooks.on("deleteActiveEffect", (effect, _options, _userId) => {
+    try {
+      if (!game.user?.isGM) return;                 // GM owns AE cascades
+      const actor = effect?.parent;
+      if (!actor || actor.documentName !== "Actor") return;
+      // Identify the departing AE by name + chargeKey (riders may key on either).
+      const deadName   = String(effect?.name ?? "").trim().toLowerCase();
+      const deadCharge = String(effect?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();
+      if (!deadName && !deadCharge) return;
+      const riderIds = [];
+      for (const eff of (actor.effects ?? [])) {
+        if (eff.id === effect.id) continue;          // skip the one being removed
+        const rof = String(eff?.flags?.[FLAG_NS]?.riderOf ?? "").trim().toLowerCase();
+        if (!rof) continue;
+        if (rof === deadName || (deadCharge && rof === deadCharge)) riderIds.push(eff.id);
+      }
+      if (!riderIds.length) return;
+      // Re-check existence at delete time (a bulk sweep may already be removing them).
+      const live = riderIds.filter((id) => actor.effects.get(id));
+      if (!live.length) return;
+      actor.deleteEmbeddedDocuments("ActiveEffect", live)
+        .then(() => log(`rider-linkage: "${effect.name}" removed → reaped ${live.length} rider(s) on ${actor.name}`))
+        .catch((e) => warn(`rider-linkage: rider delete failed on ${actor.name}`, e));
+    } catch (e) {
+      warn("rider-linkage: hook threw", e);
+    }
+  });
+  log("rider-linkage: deleteActiveEffect cascade installed");
+}
+
 // Apply an effect by its `effect_label`. Looks up the row in the
 // skill's effect_table and dispatches to the right handler.
 // Returns `{ ok, kind, applied, reason?, abort?, skipBody? }`.
@@ -2561,6 +2628,7 @@ const EFFECT_KIND_DISPATCH = {
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
   add_target:          applyAddTargetEffect,
+  save_check:          applySaveCheckEffect,
   adjust_grant:        applyAdjustGrantEffect,
   roll_loot_table:     applyRollLootTableEffect,
   deal_damage:         dealDamageRun,        // UNIFIED (see dealDamageRun)
@@ -2618,6 +2686,7 @@ export const EFFECT_KIND_LABELS = {
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
   add_target:          "Add Target",
+  save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
   roll_loot_table:     "Roll Loot Table",
   deal_damage:         "Deal Damage",
@@ -2729,6 +2798,10 @@ const EFFECT_KIND_PREVIEW = {
   // free_action enqueues a free turn-action (drained by FREE_ACTION_WINDOW) —
   // not a target-facing inline row. No standalone card preview.
   free_action: () => null,
+
+  // save_check rolls per-target saves at RESOLVE (via ONI.CheckRequester) — the
+  // outcome isn't known at card time, so no inline preview row.
+  save_check: () => null,
 
   // adjust_charges mutates a target's charge-AE at apply time — no card row.
   adjust_charges: () => null,
@@ -4023,6 +4096,15 @@ async function applyApplyAeEffect(row, ctx) {
     // string literals; only bake true numeric formulas). Reusable for any
     // SL-scaling applied-buff reaction, not just Hawkeye.
     const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount"];
+    // FIRE-TIME-volatile identifiers: their value at apply-time differs from
+    // fire-time, so baking them freezes the WRONG value. AE_CHARGES_*/AE_COUNT_*
+    // count charges/stacks the bearer accrues AFTER this AE lands; CUR_*/TARGET_*/
+    // *_DEALT/STATUS_COUNT/HIT_* read fire-time state. Example: Beyond the Realms
+    // of Death's death-save heal "SL × AE_CHARGES_GRAVE_POINTS" would bake to 0 at
+    // SEED (Grave Points are 0 then) and never scale with the points held at death.
+    // SL and other apply-time-stable ids stay resolvable at fire-time via the AE's
+    // origin skill (see firePreAcceptedCandidate), so they don't need baking.
+    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|CUR_HP|CUR_MP|CUR_IP|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
     const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
     const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
     if (rcfgTable && typeof rcfgTable === "object") {
@@ -4032,6 +4114,7 @@ async function applyApplyAeEffect(row, ctx) {
           const raw = erow[f];
           if (typeof raw !== "string") continue;
           if (!isFormulaString(raw) || !looksLikeNumericFormula(raw)) continue;
+          if (REACTION_FORMULA_VOLATILE.test(raw)) continue;   // resolve at fire-time, not seed-time
           const resolved = evaluateFormula(raw, getBakeResolver(), null);
           if (resolved == null || !Number.isFinite(resolved)) continue;
           log(`apply_ae bake (reactionConfig.${f}): "${raw}" → ${resolved} (target=${actor.name})`);
@@ -4705,12 +4788,28 @@ async function selectMenuPicks(row, ctx, options) {
         ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
         : baseSubtitle;
       const remOptions = remainingIdx.map((i) => options[i]);
-      const pickedLocal = await pickFromList({
+      const listArgs = {
         title: String(row.menu_title ?? "Choose an option"),
         subtitle,
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
-      });
+      };
+      // Route the menu to the reaction owner's client when applying a
+      // player's reaction (ctx.remotePrompt set); else render locally on GM.
+      let pickedLocal;
+      if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
+        const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+        pickedLocal = await remotePick({
+          channel: ctx.remotePrompt.channel,
+          targetUserId: ctx.remotePrompt.targetUserId,
+          combatId: ctx.remotePrompt.combatId ?? null,
+          kind: REMOTE_PICK_KINDS.LIST,
+          onTimeoutValue: null,
+          spec: listArgs,
+        });
+      } else {
+        pickedLocal = await pickFromList(listArgs);
+      }
       if (pickedLocal == null) {
         if (pick === 0) return { chosenIndices: [], cancelled: true };
         // Capture mode (pre_activate wizard): a multi-pick menu steps BACK one
@@ -4781,7 +4880,7 @@ function describeMenuOptionEffect(optionRow, ctx) {
 // ctx.menuPicks) plus human-readable effect descriptors (for the card's Effect
 // panel). COMMITS NOTHING — the AEs / costs apply later at RESOLVE. Returns
 // { ok, cancelled, hasMenu, picks: string[], effects: [...] }.
-export async function previewReactionMenu({ casterActor, candidate, payload, dCombat, picks = null, isPassive = false } = {}) {
+export async function previewReactionMenu({ casterActor, candidate, payload, dCombat, picks = null, isPassive = false, remotePrompt = null } = {}) {
   if (!candidate?.ref || !casterActor) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [] };
 
   // Resolve the carrier's effect_table (mirror firePreAcceptedCandidate).
@@ -4818,6 +4917,8 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     // Optional pre-supplied picks (tests / auto-callers) → selectMenuPicks
     // consumes them instead of prompting. Omitted in real apply-click use.
     menuPicks: Array.isArray(picks) ? picks : null,
+    // Route the option-menu to the reaction owner's client (player apply).
+    remotePrompt: remotePrompt ?? null,
   });
 
   // Collect open_action_menu rows reachable from candidate.ref (chain-aware,
@@ -5095,6 +5196,112 @@ async function applyFreeActionEffect(row, ctx) {
   });
   log(`free_action: enqueued "${sourceLabel}" for ${reactor.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: reactor.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
+}
+
+// ── save_check ──────────────────────────────────────────────────────────────
+//
+// Each creature in `target_ref` rolls a Difficulty-Level Check (via the legacy
+// ONI.CheckRequester UI — interactive player rolls with Trait/Bond invokes); the
+// creatures that FAIL are recorded on ctx so the `save_failed_targets` target
+// source routes follow-up effects to them. Mirrors FU "all enemies roll a DL X
+// 【A】+【B】 Check; on a failure they suffer …".
+//
+// Author shape (effect_table row):
+//   { effect_label, effect_kind: "save_check",
+//     target_ref: "action_targets",          // who rolls (default action_targets)
+//     save_attr1: "mig", save_attr2: "wlp",  // the two Check attributes
+//     save_dl:    "15",                        // Difficulty Level (number OR formula)
+//     save_mode:  "interactive" }              // "interactive" (default) | "silent"
+//
+// Runs at RESOLVE (on_activate / chain), AFTER the Action Card is confirmed — so a
+// Protect-style redirect has already mutated the target set and the roll lands on
+// the FINAL slots. A target with no returned result (offline / no client) defaults
+// to FAIL (RAW: a save you don't make, you fail).
+async function applySaveCheckEffect(row, ctx) {
+  const targetRef = String(row.target_ref ?? "action_targets").trim() || "action_targets";
+  let tokens = [];
+  try {
+    const tr = await resolveTargetRef(targetRef, ctx);
+    if (tr.ok && Array.isArray(tr.tokens)) tokens = tr.tokens;
+  } catch (e) { warn(`save_check: target_ref "${targetRef}" resolve threw`, e); }
+
+  // Reset pools so a re-run / empty set doesn't leak a prior result.
+  ctx.saveFailedTargetUuids = [];
+  ctx.saveFailedTokenUuids  = [];
+  ctx.savePassedTargetUuids = [];
+  if (!tokens.length) {
+    log(`save_check: no targets for "${row.effect_label}"`);
+    return { ok: true, kind: "save_check", failed: [], passed: [] };
+  }
+
+  // Per-SLOT actor list — deliberately NOT deduped. The same actor can occupy
+  // multiple target slots (a Protector who redirects an ally's slot onto
+  // themselves while already targeted rolls a save for EACH exposure, per FU
+  // rules). One entry per slot → CheckRequester opens one panel per slot.
+  // actorToToken keeps the first token per actor so the failed pool (a per-token
+  // effect set) resolves back to a token.
+  const actorToToken = new Map();
+  const slotActorUuids = [];
+  const slotCount = new Map();
+  for (const tok of tokens) {
+    const a = tok.actor; if (!a) continue;
+    const tokUuid = tok.document?.uuid ?? tok.uuid ?? null;
+    slotActorUuids.push(a.uuid);
+    slotCount.set(a.uuid, (slotCount.get(a.uuid) ?? 0) + 1);
+    if (!actorToToken.has(a.uuid)) actorToToken.set(a.uuid, tokUuid);
+  }
+  const uniqueActorUuids = [...slotCount.keys()];
+
+  const attrA = (String(row.save_attr1 ?? "mig").trim().toUpperCase()) || "MIG";
+  const attrB = (String(row.save_attr2 ?? "wlp").trim().toUpperCase()) || "WLP";
+  let dl = 10;
+  try {
+    const resolver = buildSkillResolver({ actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    dl = Number(evaluateFormula(String(row.save_dl ?? "10"), resolver, 10)) || 10;
+  } catch (e) { warn(`save_check: save_dl eval threw`, e); }
+  const label = ctx.skill?.name ?? row.effect_label ?? "Save";
+  const mode = String(row.save_mode ?? "interactive").trim().toLowerCase() === "silent" ? "silent" : "interactive";
+
+  const CR = globalThis.ONI?.CheckRequester;
+  let results = null;
+  if (CR?.request) {
+    try {
+      results = await CR.request(slotActorUuids, { attrA, attrB, dl, label, mode, allowInvokes: true, postChat: true });
+    } catch (e) { warn(`save_check: CheckRequester threw`, e); }
+  } else {
+    warn(`save_check: ONI.CheckRequester unavailable`);
+  }
+
+  // No Request Check / it threw → every target FAILS (the effect still lands —
+  // better than silently doing nothing).
+  if (!Array.isArray(results)) {
+    ctx.saveFailedTargetUuids = [...uniqueActorUuids];
+    ctx.saveFailedTokenUuids  = [...actorToToken.values()].filter(Boolean);
+    log(`save_check: no results — defaulting ${uniqueActorUuids.length} target(s) to FAIL`);
+    return { ok: true, kind: "save_check", failed: [...uniqueActorUuids], passed: [], reason: "no-results" };
+  }
+
+  // Aggregate per-slot results back to per-token outcomes. A token FAILS if ANY
+  // of its slot-saves failed (or an expected result is missing). The same status
+  // applied twice is idempotent, so the failed/passed pools stay token-level even
+  // though the rolls are per-slot.
+  const passByActor = new Map();   // actorUuid → array of per-slot pass booleans
+  for (const r of results) {
+    if (!r?.actorUuid) continue;
+    const arr = passByActor.get(r.actorUuid) ?? [];
+    arr.push(!!r.pass);
+    passByActor.set(r.actorUuid, arr);
+  }
+  const failed = uniqueActorUuids.filter((u) => {
+    const arr = passByActor.get(u) ?? [];
+    return arr.length < (slotCount.get(u) ?? 1) || arr.some((p) => !p);   // missing or any-fail = FAIL
+  });
+  const passed = uniqueActorUuids.filter((u) => !failed.includes(u));
+  ctx.saveFailedTargetUuids = failed;
+  ctx.saveFailedTokenUuids  = failed.map((u) => actorToToken.get(u)).filter(Boolean);
+  ctx.savePassedTargetUuids = passed;
+  log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${failed.length} target(s) failed / ${passed.length} passed`);
+  return { ok: true, kind: "save_check", failed, passed };
 }
 
 // ── remove_tagged_ae ────────────────────────────────────────────────────

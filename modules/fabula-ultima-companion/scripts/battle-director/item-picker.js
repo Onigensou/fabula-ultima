@@ -12,6 +12,34 @@
 import { gatherConsumables, gatherCreatables, readActorIp, describeCandidateForTooltip } from "./item-resource.js";
 import { pickFromList } from "./list-picker.js";
 import { log, warn } from "./logger.js";
+import { classifyActionIntent } from "./skill-intent.js";
+
+// Does a consumable survive a `disable_action_intent` filter? FAIL-OPEN: a
+// consumable is blocked ONLY when we can POSITIVELY prove it's non-harmful —
+//   1. it has linked activation skills and EVERY one is filtered (all aid), OR
+//   2. it's genuinely skill-shaped (`skill_type` set) and classifies as filtered.
+// Everything else SHOWS. Legacy/flavor consumables carry no machine-readable
+// intent (most inherit a junk weapon-template `type_damage: "Physical"`, with
+// empty effect tables), so we CANNOT distinguish a damaging shard from a heal —
+// and over-blocking would wrongly hide harmful items the dominated creature
+// should be able to use (e.g. an elemental shard on a now-enemy ally). Reliable
+// per-consumable enforcement needs an explicit intent tag on the items (future
+// work). Async (linked skills resolve via fromUuid).
+async function consumableSurvivesIntentFilter(c, excludeIntents) {
+  if (!excludeIntents || !excludeIntents.size) return true;
+  const uuids = Array.isArray(c?.skillUuids) ? c.skillUuids.filter(Boolean) : [];
+  if (uuids.length) {
+    for (const u of uuids) {
+      const sk = await fromUuid(u).catch(() => null);
+      if (sk && !excludeIntents.has(classifyActionIntent(sk))) return true;
+    }
+    return false;   // has links and ALL are filtered → positively non-harmful
+  }
+  const item = await fromUuid(c?.uuid).catch(() => null);
+  const skillType = String(item?.system?.props?.skill_type ?? "").trim();
+  if (item && skillType && excludeIntents.has(classifyActionIntent(item))) return false;
+  return true;   // no positive non-harmful signal → fail OPEN (don't over-block)
+}
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({
@@ -46,13 +74,16 @@ function metaSecondary(c) {
 // Consumable → row. The value object IS pickItem's return contract for "use".
 function useRow(c) {
   const qty = c.isUnique ? "∞" : (c.quantity ?? 0);
+  const intentDisabled = c._intentDisabled || null;
   return {
     value: { mode: "use", key: c.id, cost: 0, uuid: c.uuid, name: c.name },
     imageUrl: safeImg(c.img, "icons/svg/potion.svg"),
     primary: escapeHtml(c.name),
     secondary: metaSecondary(c),
     secondaryNoWrap: true,
-    badge: `x${qty}`,
+    badge: intentDisabled ? escapeHtml(intentDisabled) : `x${qty}`,
+    badgeTone: intentDisabled ? "danger" : undefined,
+    disabled: !!intentDisabled,
     tooltip: { name: c.name, body: stripHtml(describeCandidateForTooltip(c) || "(no description)") },
   };
 }
@@ -60,26 +91,42 @@ function useRow(c) {
 // Recipe → row. Disabled + danger badge when its IP cost exceeds current IP.
 function createRow(c, curIp) {
   const unaffordable = Number(c.ipCost) > curIp;
+  const intentDisabled = c._intentDisabled || null;
   return {
     value: { mode: "create", key: c.key, cost: c.ipCost, uuid: c.itemUuid, name: c.name },
     imageUrl: safeImg(c.img, "icons/svg/item-bag.svg"),
     primary: escapeHtml(c.name),
     secondary: metaSecondary(c),
     secondaryNoWrap: true,
-    badge: `${c.ipCost} IP`,
-    badgeTone: unaffordable ? "danger" : null,
-    disabled: unaffordable,
+    badge: intentDisabled ? escapeHtml(intentDisabled) : `${c.ipCost} IP`,
+    badgeTone: (intentDisabled || unaffordable) ? "danger" : null,
+    disabled: !!intentDisabled || unaffordable,
     tooltip: { name: c.name, body: stripHtml(describeCandidateForTooltip(c) || "(no description)"), cost: `${c.ipCost} IP` },
   };
 }
 
-export async function pickItem({ director, actor, externalCancel = null } = {}) {
+export async function pickItem({ director, actor, externalCancel = null, excludeIntents = null } = {}) {
   if (!actor) return null;
 
-  const [useList, createList] = await Promise.all([
+  let [useList, createList] = await Promise.all([
     gatherConsumables(actor).catch((e) => { warn("pickItem: gatherConsumables threw", e); return []; }),
     gatherCreatables(actor).catch((e) => { warn("pickItem: gatherCreatables threw", e); return []; }),
   ]);
+
+  // `disable_action_intent` filter (e.g. Charm/Domination): DIM + label (don't
+  // hide) consumables/recipes with no allowed use. Crafting an ATTACK item (e.g.
+  // an Elemental Shard) IS a harmful action, so Create rows are classified per
+  // recipe — by the item they PRODUCE (itemUuid) — not blanket-dimmed. Rows stay
+  // visible, matching the disabled menu.
+  if (excludeIntents && excludeIntents.size) {
+    const reason = [...excludeIntents.values()][0] || "Disabled";
+    const useSurv = await Promise.all(useList.map((c) => consumableSurvivesIntentFilter(c, excludeIntents)));
+    useList.forEach((c, i) => { if (!useSurv[i]) c._intentDisabled = reason; });
+    const createSurv = await Promise.all(createList.map((c) =>
+      consumableSurvivesIntentFilter({ skillUuids: c.skillUuids, uuid: c.itemUuid }, excludeIntents)));
+    createList.forEach((c, i) => { if (!createSurv[i]) c._intentDisabled = reason; });
+  }
+
   if (!useList.length && !createList.length) {
     ui.notifications?.warn("No consumables to use and no recipes to create.");
     return null;

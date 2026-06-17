@@ -572,6 +572,9 @@ export function snapshotDirectorCombatant(dc) {
       // Action-gating debuffs (Frightened/Silence/Confused/Disarmed/Berserk) →
       // frozen Array<{label, reason}>; the Octopath menu greys + red-stamps these.
       blockedActions: snapshotBlockedActions(actor),
+      // Intent-filter set (`disable_action_intent`) — the compose-action pickers
+      // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
+      disabledActionIntents: snapshotDisabledActionIntents(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -617,6 +620,9 @@ export function snapshotCombatant(combat) {
       }),
       fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
       blockedActions: snapshotBlockedActions(actor),
+      // Intent-filter set (`disable_action_intent`) — the compose-action pickers
+      // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
+      disabledActionIntents: snapshotDisabledActionIntents(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -675,6 +681,15 @@ export const GATEABLE_ACTION_LABELS = Object.freeze([
   "Equipment", "Study", "Hinder", "Objective",
 ]);
 const _ACTION_LABEL_CANON = new Map(GATEABLE_ACTION_LABELS.map((l) => [l.toLowerCase(), l]));
+
+// Static classified intent of each gateable top-level action — used by the
+// `disable_action_intent` filter (the "force close by intent" gate, e.g.
+// Charm/Domination). Spell / Skill / Item are MIXED (intent varies per entry)
+// so they're absent here and handled per-entry instead.
+const ACTION_LABEL_INTENT = Object.freeze({
+  Attack: "harmful", Hinder: "harmful",
+  Guard: "aid", Study: "neutral", Objective: "neutral", Equipment: "neutral",
+});
 function canonActionLabel(raw) {
   const k = String(raw ?? "").trim().toLowerCase();
   return _ACTION_LABEL_CANON.get(k) ?? String(raw ?? "").trim();
@@ -720,7 +735,62 @@ export function getBlockedActionLabels(actor) {
       }
     }
   }
+
+  // ── Intent filter (`disable_action_intent`) — "force close by intent" ──────
+  // Default-open model: each AE may disable actions whose CLASSIFIED intent is
+  // in its filter list (e.g. Charm/Domination → "aid, neutral" leaves only
+  // harmful). Only the UNAMBIGUOUS static-intent top-level labels block here
+  // (Guard/Study/Objective/Equipment). The mixed Spell/Skill/Item blades stay
+  // OPEN — their submenu pickers dim + label the individual filtered entries
+  // (shown, not hidden), matching the disabled-menu style. `snap.disabledActionIntents`
+  // carries the intent→reason set the pickers re-apply per-entry.
+  const disabledIntents = getDisabledActionIntents(actor);
+  if (disabledIntents.size) {
+    for (const [label, intent] of Object.entries(ACTION_LABEL_INTENT)) {
+      if (disabledIntents.has(intent)) add(label, disabledIntents.get(intent));
+    }
+  }
   return out;
+}
+
+// Walk an actor's active effects and collect every `disable_action_intent`
+// change → Map<intent, reason> (reason = source-AE name, for the menu stamp).
+// Value is a comma/space list of intents ("harmful" | "aid" | "neutral").
+// Mirrors getBlockedActionLabels' per-AE union. See [[reference_disable_action_intent]].
+export function getDisabledActionIntents(actor) {
+  const out = new Map();
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    const reason = String(ae?.name ?? "").trim() || "Disabled";
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "disable_action_intent") continue;
+      for (const tok of String(ch.value ?? "").split(/[\s,]+/)) {
+        const t = tok.trim().toLowerCase();
+        if (t && !out.has(t)) out.set(t, reason);
+      }
+    }
+  }
+  return out;
+}
+
+// Serializable form of the disabled-intent set for the frozen snapshot — the
+// compose-action pickers re-apply it per-entry (dim + label) on the player
+// client. Each entry { intent, reason } so the picker can stamp the source-AE
+// name on the dimmed row, exactly like the disabled-menu stamp.
+function snapshotDisabledActionIntents(actor) {
+  try {
+    return Object.freeze(
+      [...getDisabledActionIntents(actor).entries()].map(
+        ([intent, reason]) => Object.freeze({ intent, reason }),
+      ),
+    );
+  } catch (e) {
+    warn("snapshotDisabledActionIntents threw", e);
+    return Object.freeze([]);
+  }
 }
 
 // Serializable form of getBlockedActionLabels for the frozen snapshot (a Map
@@ -788,6 +858,48 @@ export function getCannotTargetReasons(actor) {
   return out;
 }
 
+// ── Allegiance override (relative side reclassification) ───────────────────
+// An AE change `{ key: "allegiance_override", value: "<target>:<override_to>" }`
+// on the ACTING creature reclassifies how IT sees other units' side. target =
+// "ally" | "enemy" | "self" (relative to the actor) OR a token/actor UUID;
+// override_to = "ally" | "enemy". RECLASSIFY (not duplicate) semantics, matched
+// against the NATURAL side with NO cascade (first match wins) — so a full swap =
+// two rows (`ally:enemy` + `enemy:ally`), no hardcoded swap. Read at the
+// targeting classifier alongside cannot_target_uuids. First user: Fafnir
+// Draconic Domination (`ally:enemy` → charmed creature's allies count as enemies
+// to it). See [[reference_allegiance_override]].
+export function getAllegianceOverrides(actor) {
+  const out = [];
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "allegiance_override") continue;
+      const raw = String(ch.value ?? "").trim();
+      const i = raw.indexOf(":");
+      if (i <= 0) continue;
+      const target = raw.slice(0, i).trim().toLowerCase();
+      const to = raw.slice(i + 1).trim().toLowerCase();
+      if (target && (to === "ally" || to === "enemy")) out.push({ target, to });
+    }
+  }
+  return out;
+}
+
+// Resolve a candidate's EFFECTIVE side relative to the acting creature, applying
+// allegiance overrides to its NATURAL side (∈ {"ally","enemy"}). First matching
+// override wins (no cascade). Overrides match by natural-side keyword OR the
+// candidate's token/actor UUID.
+export function applyAllegianceOverride(naturalSide, tokenUuid, actorUuid, overrides) {
+  if (!overrides || !overrides.length) return naturalSide;
+  for (const o of overrides) {
+    if (o.target === naturalSide || o.target === tokenUuid || o.target === actorUuid) return o.to;
+  }
+  return naturalSide;
+}
+
 // Snapshot eligible targets read from a DirectorCombat (the no-Foundry-doc
 // path). Same returned shape as `snapshotEligibleTargets` so callers can swap
 // without changing downstream code.
@@ -816,6 +928,9 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
   const exclusionReasons = (category === "self")
     ? new Map()
     : getCannotTargetReasons(attackerActor);
+  // Allegiance overrides — reclassify a candidate's effective side relative to
+  // the attacker (e.g. Charm/Domination: allies count as enemies).
+  const allegianceOverrides = (category === "self") ? [] : getAllegianceOverrides(attackerActor);
   const out = [];
   const excluded = [];
   for (const c of combatants) {
@@ -826,10 +941,13 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue;
     let ok = true;
-    if (category === "ally") {
-      ok = (disp === attackerDisp) && (disp !== 0);
-    } else if (category === "enemy") {
-      ok = (disp !== attackerDisp) || (disp === 0);
+    if (category === "ally" || category === "enemy") {
+      const isSelf = c.id === attackerSnapshot?.combatantId;
+      const natSide = ((disp === attackerDisp) && (disp !== 0)) ? "ally" : "enemy";
+      // Never reclassify the acting creature itself (self-targeting is identity-
+      // based; an ally:enemy override must not sweep the actor into its own AoE).
+      const effSide = isSelf ? natSide : applyAllegianceOverride(natSide, token.uuid, actor.uuid, allegianceOverrides);
+      ok = effSide === category;
     } else if (category === "self") {
       ok = c.id === attackerSnapshot?.combatantId;
     }
@@ -1006,6 +1124,7 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
   const exclusionReasons = (category === "self")
     ? new Map()
     : getCannotTargetReasons(attackerActor);
+  const allegianceOverrides = (category === "self") ? [] : getAllegianceOverrides(attackerActor);
   const out = [];
   const excluded = [];
   for (const c of combatants) {
@@ -1016,10 +1135,13 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     if (hp <= 0) continue; // defeated combatants are not targetable in v1
     let ok = true;
-    if (category === "ally") {
-      ok = (disp === attackerDisp) && (disp !== 0);
-    } else if (category === "enemy") {
-      ok = (disp !== attackerDisp) || (disp === 0);
+    if (category === "ally" || category === "enemy") {
+      const isSelf = c.id === attackerSnapshot?.combatantId;
+      const natSide = ((disp === attackerDisp) && (disp !== 0)) ? "ally" : "enemy";
+      // Never reclassify the acting creature itself (self-targeting is identity-
+      // based; an ally:enemy override must not sweep the actor into its own AoE).
+      const effSide = isSelf ? natSide : applyAllegianceOverride(natSide, token.uuid, actor.uuid, allegianceOverrides);
+      ok = effSide === category;
     } else if (category === "self") {
       ok = c.id === attackerSnapshot?.combatantId;
     }
