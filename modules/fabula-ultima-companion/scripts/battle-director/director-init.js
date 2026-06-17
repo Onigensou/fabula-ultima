@@ -29,6 +29,7 @@ import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, preload
 import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
+import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
 import { buildDirectorHud } from "./director-player-hud.js";
 import { extractAnimationUrlsFromActors } from "./director-animation.js";
 
@@ -879,6 +880,13 @@ export async function runDirectorInit(payload) {
   // ── 2. Raise curtain — black screen for the entire prep phase.
   if (!lean) await raiseCurtain();
 
+  // ── 2b. Eye-catcher loader — render the "PREPARING BATTLE…" flourish ON TOP
+  // of the black curtain (z 26 vs curtain 25) so the scene-activate + preload
+  // pause below is covered by motion instead of dead air. Fire-and-forget; it
+  // is dismissed (with a min on-screen floor) just before the curtain drops.
+  // Broadcasts so every client sees it during their own canvas rebuild.
+  if (!lean) showBattleLoader({ broadcast: true });
+
   // ── 3. Resolve encounter (manual / random / fixed). All of this runs
   // BEHIND the curtain so the user sees nothing until step 9.
   const enemies = await resolveEncounter(payload);
@@ -969,6 +977,12 @@ export async function runDirectorInit(payload) {
   // reveal on it. Ports the legacy BattleInit BGM start (plays the chosen
   // track name from whichever playlist holds it).
   if (!lean) playBattleBgm(payload).catch((e) => warn("PREP: playBattleBgm threw", e));
+
+  // ── 8c. Dismiss the eye-catcher loader BEFORE the curtain drops. Enforces a
+  // minimum on-screen floor (so a fully-cached load doesn't flash for a frame)
+  // then fades out, handing off cleanly into the curtain's own fade — the
+  // overlay is always gone before the battlefield is revealed.
+  if (!lean) await hideBattleLoader({ broadcast: true });
 
   // ── 9. Drop curtain — only now, after preload ACKs are in. Tokens are
   // positioned but still alpha=0 (invisible) underneath the curtain; the

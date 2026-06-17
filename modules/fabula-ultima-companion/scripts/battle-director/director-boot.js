@@ -34,6 +34,7 @@ import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance, spawnLiveDirectorTokens } from "./director-init.js";
 import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
+import { initDirectorBattleLoader } from "./director-battle-loader.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
@@ -1234,6 +1235,12 @@ Hooks.once("ready", () => {
   // Director-native start-of-round banner — same all-clients registration.
   try { initDirectorRoundBanner(); }
   catch (e) { warn("initDirectorRoundBanner on ready threw", e); }
+
+  // Battle-init eye-catcher loader — registered on every client so the GM can
+  // broadcast the "PREPARING BATTLE…" flourish that covers the scene-activate
+  // + asset-preload pause behind the curtain.
+  try { initDirectorBattleLoader(); }
+  catch (e) { warn("initDirectorBattleLoader on ready threw", e); }
 
   // Director per-client broadcast channel (SFX + sidebar collapse) — registered
   // on every client so the GM-side director can fan cues / UI sync out to all.
