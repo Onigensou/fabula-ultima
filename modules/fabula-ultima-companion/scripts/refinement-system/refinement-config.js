@@ -2,15 +2,16 @@
 
 const REFINEMENT_CONFIG = {
   MAX_LEVEL: {
-    weapon:    10,
-    armor:      2,
-    shield:     2,
+    weapon:     7,
+    armor:      6,
+    shield:     5,
     accessory:  0,
   },
 
-  // Weapon damage bonus at each refinement level (index = level, 0–10).
-  // Tops out at +7 bonus damage at +10 refinement.
-  WEAPON_BONUS_TABLE: [0, 0, 1, 1, 2, 2, 3, 4, 5, 6, 7],
+  // Bonus at each refinement level (index = level). Flat linear progression.
+  WEAPON_BONUS_TABLE: [0, 1, 2, 3, 4, 5, 6, 7],   // index = level, +1 dmg per level
+  ARMOR_BONUS_TABLE:  [0, 5, 10, 15, 20, 25, 30],  // index = level, +5 max_hp per level
+  SHIELD_BONUS_TABLE: [0, 1, 2, 3, 4, 5],          // index = level, +1 physical DR per level
 
   // 10-entry success rate arrays: index 0 = target +1, index 9 = target +10.
   // Armor/shield use offset = (10 - maxLevel) = 8, mapping their low max level
