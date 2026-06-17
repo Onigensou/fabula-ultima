@@ -95,9 +95,9 @@ function resolveReactorOwnerUserId(actor) {
   return candidates[0].id;
 }
 
-// Every active non-GM user EXCEPT the reactor's owner. These clients
-// get the dimmed ally indicator (Rule 1 stage 2) so they know someone
-// is deciding without seeing the candidate list.
+// Every active non-GM non-primary client EXCEPT the reactor's owner.
+// Secondary GMs receive the full reaction-menu (same as the primary GM)
+// so they are excluded here — they are NOT spectators to reactions.
 function resolveAllyIndicatorRecipients(ownerUserId) {
   return (game.users?.contents ?? [])
     .filter((u) => !u.isGM && u.active && u.id !== ownerUserId)
@@ -519,6 +519,12 @@ export async function dispatchReactionMenu({
   }
 
   const ownerUserId = resolveReactorOwnerUserId(reactor);
+  // Active GMs other than the primary director. They receive the full
+  // reaction-menu (same path as the player owner) so they can resolve
+  // reactions just like the primary GM.
+  const secondaryGmIds = (game.users?.contents ?? [])
+    .filter((u) => u.isGM && u.active && u.id !== game.user?.id)
+    .map((u) => u.id);
   const channel = director?.intentChannel ?? null;
   const indicatorRecipients = resolveAllyIndicatorRecipients(ownerUserId);
   const ownerLabel = ownerUserId
@@ -537,6 +543,15 @@ export async function dispatchReactionMenu({
             reason: "fired-or-passed",
           });
         } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu) threw`, e); }
+      }
+      for (const gmId of secondaryGmIds) {
+        try {
+          channel.broadcastMenuClose({
+            targetUserId: gmId,
+            kind: "reaction-menu",
+            reason: "fired-or-passed",
+          });
+        } catch (e) { warn(`reaction[${trigger}]: broadcastMenuClose(menu,secondary GM) threw`, e); }
       }
       const indicatorTokenUuid = token.document?.uuid ?? token.uuid ?? null;
       for (const uid of indicatorRecipients) {
@@ -698,17 +713,35 @@ export async function dispatchReactionMenu({
     remaining = [];
   }
 
-  function armRemoteAwait() {
-    if (!ownerUserId || !channel) return null;
-    try {
-      return channel.awaitIntent(INTENTS.REACTION_CHOICE, {
-        fromUserId: ownerUserId,
-        timeoutMs: 30 * 60 * 1000,
-      });
-    } catch (e) {
-      warn(`reaction[${trigger}]: awaitIntent threw`, e);
-      return null;
-    }
+  // Race an intent await across all remote reaction-menu participants:
+  // the player owner (if any) + every secondary GM. Returns a combined
+  // object whose .then/.catch race via Promise.race and whose .abort
+  // cancels every individual await so orphaned awaits don't consume
+  // future REACTION_CHOICE intents from the next reaction window.
+  function armRemoteAwaits() {
+    if (!channel) return null;
+    const participantIds = [
+      ...(ownerUserId ? [ownerUserId] : []),
+      ...secondaryGmIds,
+    ];
+    if (!participantIds.length) return null;
+    const awaits = participantIds.map((uid) => {
+      try {
+        return channel.awaitIntent(INTENTS.REACTION_CHOICE, {
+          fromUserId: uid,
+          timeoutMs: 30 * 60 * 1000,
+        });
+      } catch (e) {
+        warn(`reaction[${trigger}]: awaitIntent(${uid}) threw`, e);
+        return null;
+      }
+    }).filter(Boolean);
+    if (!awaits.length) return null;
+    return {
+      abort(reason) { for (const a of awaits) try { a.abort?.(reason); } catch {} },
+      then(fn) { return Promise.race(awaits).then(fn); },
+      catch(fn) { return Promise.race(awaits).catch(fn); },
+    };
   }
 
   const renderMenu = () => {
@@ -725,6 +758,11 @@ export async function dispatchReactionMenu({
         });
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen threw`, e); }
     }
+    for (const gmId of secondaryGmIds) {
+      try {
+        channel?.broadcastMenuOpen({ targetUserId: gmId, menuSpec: buildPlayerMenuSpec() });
+      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(secondary GM) threw`, e); }
+    }
     if (channel && indicatorRecipients.length) {
       const spec = buildIndicatorSpec();
       for (const uid of indicatorRecipients) {
@@ -733,7 +771,7 @@ export async function dispatchReactionMenu({
         } catch (e) { warn(`reaction[${trigger}]: broadcastMenuOpen(indicator) threw`, e); }
       }
     }
-    const remoteAwait = armRemoteAwait();
+    const remoteAwait = armRemoteAwaits();
     let localPickFired = false;
 
     ReactionMenu.spawn({
@@ -766,6 +804,9 @@ export async function dispatchReactionMenu({
       remoteAwait.then(async (intent) => {
         if (localPickFired) return;
         localPickFired = true;
+        // Abort remaining awaits so orphaned remote windows don't consume
+        // future REACTION_CHOICE intents from the next reaction window.
+        try { remoteAwait.abort("remote-won"); } catch {}
         const body = intent?.body ?? {};
         if (body.decision === "pass") {
           await processPass();
@@ -863,6 +904,19 @@ export async function dispatchReactionMenu({
           },
         });
       } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch threw`, e); }
+    }
+    for (const gmId of secondaryGmIds) {
+      try {
+        channel?.broadcastMenuPatch({
+          targetUserId: gmId,
+          patch: {
+            kind: "reaction-menu-disabled",
+            combatId,
+            tokenId: token.id,
+            disabledLabels: mergedDisabledLabels(),
+          },
+        });
+      } catch (e) { warn(`reaction[${trigger}]: broadcastMenuPatch(secondary GM) threw`, e); }
     }
   };
   _dispatchCoordinator.addEventListener("stop-others", stopHandler);

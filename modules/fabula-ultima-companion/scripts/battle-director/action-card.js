@@ -3616,8 +3616,9 @@ export async function postActionCard({ director, kind, payload }) {
       ? (await resolveCardOwnerUserId(attackerActorUuid))
       : null;
     const cardHTML = root.outerHTML;
-    const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-    for (const u of onlinePlayers) {
+    // Broadcast to ALL non-primary clients: players + secondary GMs.
+    const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+    for (const u of onlineNonPrimary) {
       try {
         director.intentChannel?.broadcastMenuOpen({
           targetUserId: u.id,
@@ -3651,12 +3652,11 @@ export async function postActionCard({ director, kind, payload }) {
       // the next turn's matching intent. Defined below in this Promise
       // constructor; safe to reference via closure hoisting.
       try { abortPendingAwaits?.(); } catch {}
-      // Tell all player clients to close their mirror cards. The GM-side
-      // DOM is despawned by the timeout below; this just keeps the
-      // player's view in sync.
+      // Tell all non-primary clients (players + secondary GMs) to close
+      // their mirror cards. GM-side DOM despawns via the timeout below.
       try {
-        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-        for (const u of onlinePlayers) {
+        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        for (const u of onlineNonPrimary) {
           try {
             director.intentChannel?.broadcastMenuClose({
               targetUserId: u.id,
@@ -3804,11 +3804,11 @@ export async function postActionCard({ director, kind, payload }) {
         if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
         else delete cardEl.dataset.fudReactionsPending;
       }
-      // Broadcast pill state change to every mirror so observers see the
-      // decision flip from "Waiting…" to "Applied"/"Skipped" in real time.
+      // Broadcast pill state change to every mirror (players + secondary GMs)
+      // so all observers see the decision flip in real time.
       try {
-        const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-        for (const u of onlinePlayers) {
+        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        for (const u of onlineNonPrimary) {
           director?.intentChannel?.broadcastMenuOpen({
             targetUserId: u.id,
             menuSpec: {
@@ -4058,8 +4058,8 @@ export async function postActionCard({ director, kind, payload }) {
               const bodyEl = root.querySelector(".fud-bf-body");
               const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
               try {
-                const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-                for (const u of onlinePlayers) {
+                const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+                for (const u of onlineNonPrimary) {
                   director?.intentChannel?.broadcastMenuOpen({
                     targetUserId: u.id,
                     menuSpec: {
@@ -4415,8 +4415,8 @@ export async function postActionCard({ director, kind, payload }) {
           // (registerPlayerActionCardHandler → action-card-target-mutation).
           try {
             const channel = director?.intentChannel ?? null;
-            const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
-            for (const u of onlinePlayers) {
+            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            for (const u of onlineNonPrimary) {
               channel?.broadcastMenuOpen({
                 targetUserId: u.id,
                 menuSpec: {
@@ -4662,7 +4662,8 @@ export async function postActionCard({ director, kind, payload }) {
           if (resolved) return;
           invokeAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_CHOICE, {
             timeoutMs: 30 * 60 * 1000,
-            fromUserId: ownerUserId ?? undefined,
+            // No fromUserId filter — accept invoke from the acting owner OR
+            // from any secondary GM who clicked Invoke on their mirror card.
           });
           invokeAwait.then(async (intent) => {
             const body = intent?.body ?? {};
@@ -4682,14 +4683,19 @@ export async function postActionCard({ director, kind, payload }) {
                 });
               }
               const newAr = director.ctx.actionResult;
-              director.intentChannel?.broadcastMenuOpen({
-                targetUserId: ownerUserId,
-                menuSpec: {
-                  kind: "action-card-invoke-update",
-                  actionResult: newAr,
-                  invokeState: { ...invokeState },
-                },
-              });
+              // Broadcast invoke-update to the owner + any secondary GMs so
+              // all mirror cards reflect the rerolled numbers.
+              const invokeUpdateSpec = {
+                kind: "action-card-invoke-update",
+                actionResult: newAr,
+                invokeState: { ...invokeState },
+              };
+              if (ownerUserId) {
+                director.intentChannel?.broadcastMenuOpen({ targetUserId: ownerUserId, menuSpec: invokeUpdateSpec });
+              }
+              for (const u of (game.users?.contents ?? []).filter((u) => u.isGM && u.active && u.id !== game.user?.id)) {
+                try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec: invokeUpdateSpec }); } catch {}
+              }
             } catch (e) {
               warn("postActionCard: INVOKE_CHOICE handler threw", e);
             }
@@ -5104,7 +5110,7 @@ function cleanupMirror() {
   if (existing) try { existing.remove(); } catch {}
 }
 
-export function registerPlayerActionCardHandler(channel) {
+export function registerPlayerActionCardHandler(channel, isActiveDirector = () => false) {
   // Per-card closures — reset each time a new "action-card" MENU_OPEN arrives.
   // playerAr holds the serialized actionResult broadcast with the card so the
   // player can show the invoke HUD without accessing GM-only director state.
@@ -5181,6 +5187,9 @@ export function registerPlayerActionCardHandler(channel) {
 
   const offOpen = channel.onMenuOpen((menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "action-card") return;
+    // Primary GM renders the card locally in postActionCard; skip the mirror
+    // so there's no duplicate card on the director's own client.
+    if (isActiveDirector()) return;
     if (!menuSpec.html) {
       warn("action-card MENU_OPEN: missing html");
       return;
@@ -5211,12 +5220,16 @@ export function registerPlayerActionCardHandler(channel) {
     wrapper.innerHTML = menuSpec.html;
     document.body.appendChild(wrapper);
 
-    // Permission gate. Owner of the acting actor gets interactive
-    // buttons; non-owners see them but clicks are no-ops with a hint.
-    const isOwner = menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id;
+    // Permission gate. The acting actor's owner gets interactive buttons.
+    // Secondary GMs (active GM clients that are not the primary director)
+    // also get the full interactive view — they route actions back to the
+    // primary GM via socket intents just like a player owner would.
+    const isPlayerOwner = !!(menuSpec.ownerUserId && menuSpec.ownerUserId === game.user?.id);
+    const isSecondaryGm = !!(game.user?.isGM && !isActiveDirector());
+    const isInteractive = isPlayerOwner || isSecondaryGm;
     const card = wrapper.querySelector(".fud-bf-card");
 
-    if (!isOwner && card) {
+    if (!isInteractive && card) {
       // Visually mark the card as read-only — also disables click via
       // event guard below. The class is purely informational; the real
       // gate is the event listener.
@@ -5250,10 +5263,10 @@ export function registerPlayerActionCardHandler(channel) {
 
     // Click logic — replicates the GM-side onClick for interactive card
     // UI (Equipment dropdowns, Item tabs+rows, "Open Sheet" button,
-    // Confirm/Cancel buttons). Non-owner observers get no bindings at
-    // all (.is-readonly-mirror set above visually disables hover/focus).
+    // Confirm/Cancel buttons). Non-interactive observers get no bindings
+    // (.is-readonly-mirror set above visually disables hover/focus).
     let onClick = null;
-    if (isOwner) {
+    if (isInteractive) {
       onClick = (ev) => {
         // Invoke Trait / Bond — show local HUD then emit INVOKE_CHOICE to GM.
         const invokeBtn = ev.target?.closest?.("[data-fud-invoke]");

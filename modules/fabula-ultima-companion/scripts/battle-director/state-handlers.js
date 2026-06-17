@@ -1285,47 +1285,59 @@ const TurnStart = {
           // player). Pills appear over ALL eligible.
           const localPromise = TurnPicker.show({ director, eligible });
 
-          // Per-user broadcast: each online non-GM user gets a MENU_OPEN
-          // with ONLY the eligible combatants they own. Players see pills
-          // only over their own PCs. Owner-less combatants (NPC allies on
-          // the party side, etc.) are GM-only.
+          // Per-user broadcast: each online non-primary client gets MENU_OPEN.
+          // Players see pills only over their own PCs (owner-filter). Secondary
+          // GMs see ALL eligible combatants — same as the local GM picker, so
+          // they can pick on behalf of any combatant just like the primary GM.
           const channel = director.intentChannel;
-          const onlinePlayers = (game.users?.contents ?? []).filter((u) => u.active && !u.isGM);
+          const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
           const sceneUuid = director.dCombat?.scene?.uuid ?? null;
           const broadcastedUserIds = [];
-          log(`TURN_START: ${onlinePlayers.length} online non-GM user(s); channel=${channel ? "attached" : "MISSING"}`);
+          log(`TURN_START: ${onlineNonPrimary.length} online non-primary client(s); channel=${channel ? "attached" : "MISSING"}`);
           if (channel) {
-            for (const u of onlinePlayers) {
-              // Filter eligible to ones this user has OWNER permission on.
-              // Use the live actorDoc on the combatant — it was resolved
-              // either at PREP/RECONSTRUCT time. Falling back to fromUuid
-              // is a defensive fallback in case actorDoc went stale.
-              const myEligible = [];
-              for (const dc2 of eligible) {
-                try {
-                  let actor = dc2.actorDoc ?? null;
-                  if (!actor && dc2.actorUuid) {
-                    actor = await fromUuid(dc2.actorUuid).catch(() => null);
-                  }
-                  if (!actor) {
-                    log(`TURN_START owner-filter[${u.name}]: ${dc2.name} — no actor doc`);
-                    continue;
-                  }
-                  const owns = actor.testUserPermission?.(u, "OWNER");
-                  log(`TURN_START owner-filter[${u.name}]: ${dc2.name} (${actor.uuid}) → owns=${owns}`);
-                  if (owns) {
-                    myEligible.push({
-                      combatantId: dc2.id,
-                      name: dc2.name,
-                      side: dc2.side,
-                      tokenUuid: dc2.tokenUuid ?? null,
-                      tokenId: dc2.tokenId ?? null,
-                    });
-                  }
-                } catch (e) { warn("TURN_START: owner check threw", e); }
+            // Pre-build the serialized form once for secondary GMs (full list).
+            const allEligibleSerialized = eligible.map((dc2) => ({
+              combatantId: dc2.id,
+              name: dc2.name,
+              side: dc2.side,
+              tokenUuid: dc2.tokenUuid ?? null,
+              tokenId: dc2.tokenId ?? null,
+            }));
+            for (const u of onlineNonPrimary) {
+              let eligibleForUser;
+              if (u.isGM) {
+                // Secondary GM sees every eligible combatant.
+                eligibleForUser = allEligibleSerialized;
+              } else {
+                // Player sees only the combatants they own.
+                const myEligible = [];
+                for (const dc2 of eligible) {
+                  try {
+                    let actor = dc2.actorDoc ?? null;
+                    if (!actor && dc2.actorUuid) {
+                      actor = await fromUuid(dc2.actorUuid).catch(() => null);
+                    }
+                    if (!actor) {
+                      log(`TURN_START owner-filter[${u.name}]: ${dc2.name} — no actor doc`);
+                      continue;
+                    }
+                    const owns = actor.testUserPermission?.(u, "OWNER");
+                    log(`TURN_START owner-filter[${u.name}]: ${dc2.name} (${actor.uuid}) → owns=${owns}`);
+                    if (owns) {
+                      myEligible.push({
+                        combatantId: dc2.id,
+                        name: dc2.name,
+                        side: dc2.side,
+                        tokenUuid: dc2.tokenUuid ?? null,
+                        tokenId: dc2.tokenId ?? null,
+                      });
+                    }
+                  } catch (e) { warn("TURN_START: owner check threw", e); }
+                }
+                eligibleForUser = myEligible;
               }
-              if (!myEligible.length) {
-                log(`TURN_START: no owned eligible for ${u.name} — skipping broadcast`);
+              if (!eligibleForUser.length) {
+                log(`TURN_START: no eligible for ${u.name} — skipping broadcast`);
                 continue;
               }
               try {
@@ -1334,12 +1346,12 @@ const TurnStart = {
                   menuSpec: {
                     kind: "turn-picker",
                     combatId: director.combatId,
-                    eligible: myEligible,
+                    eligible: eligibleForUser,
                     sceneUuid,
                   },
                 });
                 broadcastedUserIds.push(u.id);
-                log(`TURN_START: broadcast turn-picker to ${u.name} (${myEligible.length} pills)`);
+                log(`TURN_START: broadcast turn-picker to ${u.name} (${eligibleForUser.length} pills)`);
               } catch (e) { warn(`TURN_START: broadcast to ${u.name} threw`, e); }
             }
           }
@@ -1697,17 +1709,27 @@ const Declare = {
       return { cancelled: true, reason: "exception" };
     });
 
-    // Remote chain (if owner is online): broadcast MENU_OPEN + await
-    // ACTION_COMPOSED. The player's composeAction emits this when they
-    // finish.
-    let remoteAwait = null;
+    // Remote compose participants: the acting actor's owner (if an active
+    // non-GM user) + any secondary GMs (active GMs other than this client).
+    // Each participant gets a MENU_OPEN broadcast and an awaitIntent entry
+    // in the race pool. Whoever completes their compose chain first wins.
+    //
+    // Secondary GMs receive the full eligible list (same view as local GM);
+    // players receive their personally owned subset per the existing logic.
+    const freeActionGrant = freeActions.get(snap.actorId) ?? null;
+    const secondaryGmIds = (game.users?.contents ?? [])
+      .filter((u) => u.isGM && u.active && u.id !== game.user?.id)
+      .map((u) => u.id);
+
+    // remoteParticipants: [{ userId, awaitP }]
+    const remoteParticipants = [];
+
     if (ownerUserId) {
       log(`DECLARE: broadcasting compose-action to player ${ownerUserId} (${snap.name})`);
       // Free-action grant — the registry is GM-side memory. Plumb the
       // grant fields into the menuSpec so the player's composeAction
       // applies the Octopath filter + budget label without needing the
       // local freeActions singleton populated.
-      const freeActionGrant = freeActions.get(snap.actorId) ?? null;
       try {
         director.intentChannel?.broadcastMenuOpen({
           targetUserId: ownerUserId,
@@ -1721,27 +1743,50 @@ const Declare = {
             freeActionGrant,
           },
         });
-        // 30-minute timeout — practically forever. The race will resolve
-        // sooner via GM-local OR the player will eventually act.
-        remoteAwait = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
+        const awaitP = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
           fromUserId: ownerUserId,
           timeoutMs: 30 * 60 * 1000,
         });
+        remoteParticipants.push({ userId: ownerUserId, awaitP });
         director.ctx._activeRemoteMenu = { kind: "compose-action", targetUserId: ownerUserId };
       } catch (e) {
-        warn("DECLARE: broadcast/await setup threw, GM-local only", e);
-        remoteAwait = null;
+        warn("DECLARE: player broadcast/await setup threw, GM-local only", e);
+      }
+    }
+
+    // Secondary GMs: broadcast the same compose-action MENU_OPEN so they
+    // see and can interact with the Octopath. They receive ALL eligibles —
+    // same as the local GM — since they can act on behalf of any combatant.
+    for (const gmId of secondaryGmIds) {
+      log(`DECLARE: broadcasting compose-action to secondary GM ${gmId} (${snap.name})`);
+      try {
+        director.intentChannel?.broadcastMenuOpen({
+          targetUserId: gmId,
+          menuSpec: {
+            kind: "compose-action",
+            combatId: director.combatId,
+            tokenUuid: token.document.uuid,
+            actorUuid: snap.actorUuid,
+            snap,
+            eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+            freeActionGrant,
+          },
+        });
+        const awaitP = director.intentChannel.awaitIntent(INTENTS.ACTION_COMPOSED, {
+          fromUserId: gmId,
+          timeoutMs: 30 * 60 * 1000,
+        });
+        remoteParticipants.push({ userId: gmId, awaitP });
+      } catch (e) {
+        warn(`DECLARE: secondary GM ${gmId} broadcast/await setup threw`, e);
       }
     }
 
     // Mirror of [[reaction-architecture]] Rule 1 stage 2 for turn-action
-    // composition: every active player who is NOT the action owner sees a
-    // dimmed "Hina taking action…" indicator over the acting token while
-    // composeAction is open. Reuses the reaction-indicator MENU_OPEN
-    // surface ("turn-action-indicator" kind) which the player-side handler
-    // in reaction-menu-player.js renders via ReactionIndicator.spawn.
-    // Owner-tracked turn (no human owner — NPC) sends to every active
-    // player so the table still sees what the GM is composing.
+    // composition: non-GM players who are NOT the action owner see a dimmed
+    // "Hina taking action…" indicator. Secondary GMs are excluded — they
+    // receive compose-action and run the TurnUI themselves (participants,
+    // not spectators), so they must not also receive the spectator indicator.
     const turnActionIndicatorRecipients = (game.users?.contents ?? [])
       .filter((u) => !u.isGM && u.active && u.id !== ownerUserId)
       .map((u) => u.id);
@@ -1783,48 +1828,64 @@ const Declare = {
     broadcastTurnActionIndicatorOpen();
     director.ctx._closeTurnActionIndicator = broadcastTurnActionIndicatorClose;
 
-    // Race. If only GM is running (no remote), the remote side is a
-    // never-resolving Promise so localCompose alone determines the
-    // winner.
+    // N-way race: local GM compose vs all remote participants (player + secondary
+    // GMs). Whoever resolves first wins; all others are aborted and get
+    // MENU_CLOSE. If there are no remotes, the race array contains only the
+    // local side and it dominates immediately on completion.
     let winnerSource = null;
     let winnerBundle = null;
-    // Wrap the remote await so we can abort it on local-wins. Without
-    // this, an unresolved awaitIntent for ACTION_COMPOSED would linger
-    // in _pendingAwaits and the NEXT turn's emit would resolve the
-    // stale entry first (Map insertion order). See [[director-player-driven-input]].
     try {
       const result = await Promise.race([
-        localCompose.then((r) => ({ source: "local", result: r })),
-        remoteAwait
-          ? remoteAwait.then((intent) => ({ source: "remote", result: { cancelled: !intent?.body?.bundle, bundle: intent?.body?.bundle ?? null } }))
-          : new Promise(() => {}),
+        localCompose.then((r) => ({ source: "local", userId: game.user?.id, result: r })),
+        ...remoteParticipants.map(({ userId, awaitP }) =>
+          awaitP.then((intent) => ({
+            source: "remote",
+            userId,
+            result: { cancelled: !intent?.body?.bundle, bundle: intent?.body?.bundle ?? null },
+          }))
+        ),
+        // If no remotes exist this extra sentinel is never needed, but
+        // Promise.race([single]) is fine — keeping for clarity.
       ]);
       winnerSource = result.source;
+      const winnerUserId = result.userId;
 
-      // Cancel the loser.
+      // Abort all losing remotes and close their UI.
       if (winnerSource === "local") {
-        // Abort the dangling remote awaitIntent so it doesn't leak.
-        try { remoteAwait?.abort?.("local-won"); } catch {}
-        if (ownerUserId) {
+        for (const { userId, awaitP } of remoteParticipants) {
+          try { awaitP?.abort?.("local-won"); } catch {}
           try {
             director.intentChannel?.broadcastMenuClose({
-              targetUserId: ownerUserId,
+              targetUserId: userId,
               kind: "compose-action",
               reason: "local-won",
             });
-          } catch (e) { warn("DECLARE: broadcastMenuClose (local-won) threw", e); }
-          director.ctx._activeRemoteMenu = null;
+          } catch (e) { warn(`DECLARE: broadcastMenuClose (local-won) to ${userId} threw`, e); }
         }
+        director.ctx._activeRemoteMenu = null;
       } else {
         // Remote won — cancel GM's local compose so its overlays close.
         cancelToken.cancel("remote-won");
         // Wait for local to actually unwind so its UI is gone before we
         // move to TARGET (avoids dangling Octopath).
         try { await localCompose; } catch {}
+        // Close every OTHER remote participant that lost the race.
+        for (const { userId, awaitP } of remoteParticipants) {
+          if (userId === winnerUserId) continue;
+          try { awaitP?.abort?.("lost-race"); } catch {}
+          try {
+            director.intentChannel?.broadcastMenuClose({
+              targetUserId: userId,
+              kind: "compose-action",
+              reason: "lost-race",
+            });
+          } catch (e) { warn(`DECLARE: broadcastMenuClose (lost-race) to ${userId} threw`, e); }
+        }
+        director.ctx._activeRemoteMenu = null;
       }
 
       if (result.result.cancelled) {
-        log(`DECLARE: compose cancelled (winner=${winnerSource})`);
+        log(`DECLARE: compose cancelled (winner=${winnerSource} user=${winnerUserId})`);
         // Skip TIMEOUT when battle is ending — ABORT is already queued.
         if (!director.ctx.endOfCombat) {
           director.enqueue({ type: INTENTS.TIMEOUT });

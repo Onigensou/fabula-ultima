@@ -307,9 +307,11 @@ export const TurnPicker = {
 //
 // On click → emits TURN_COMBATANT_PICKED over IntentChannel. GM's
 // TURN_START races this against its own local picker click.
-export function registerPlayerTurnPickerHandler(channel) {
+export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () => false) {
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "turn-picker") return;
+    // Primary GM spawns the turn-picker locally in TURN_START; skip here.
+    if (isActiveDirector()) return;
     log(`turn-picker MENU_OPEN received: ${menuSpec.eligible?.length ?? 0} eligible, sceneUuid=${menuSpec.sceneUuid ?? "none"}`);
     if (!Array.isArray(menuSpec.eligible) || !menuSpec.eligible.length) {
       log("turn-picker MENU_OPEN: empty eligible list, skipping");

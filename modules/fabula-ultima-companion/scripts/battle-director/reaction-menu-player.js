@@ -31,7 +31,7 @@ import { ReactionIndicator } from "./reaction-indicator.js";
 // client because the GM spawns the menu directly via the dispatcher.
 //
 // Returns an unregister callback.
-export function registerPlayerReactionMenuHandler(channel) {
+export function registerPlayerReactionMenuHandler(channel, isActiveDirector = () => false) {
   if (!channel) return () => {};
 
   // Resolve a token doc → on-canvas PIXI Token. Switches the local view
@@ -58,10 +58,10 @@ export function registerPlayerReactionMenuHandler(channel) {
 
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
     if (!menuSpec) return;
-    // GM-side spawns directly via the dispatcher's local path; the
-    // broadcast is for non-GM players only. Skipping here prevents
-    // the GM from getting a duplicate menu / indicator.
-    if (game.user?.isGM) return;
+    // Primary GM spawns menus directly via the dispatcher's local path;
+    // skip here to avoid duplicates. Secondary GMs (no active director)
+    // receive menus via socket just like players.
+    if (isActiveDirector()) return;
 
     // Indicator branch — dimmed dashed pill rendered to non-owner
     // allies. Stage 2 visibility (Rule 1). No interaction.
@@ -145,7 +145,7 @@ export function registerPlayerReactionMenuHandler(channel) {
   // client missed the prior MENU_OPEN — we just drop the patch; the
   // next MENU_OPEN will carry the fresh disabledLabels baked in).
   const offPatch = channel.onMenuPatch((patch) => {
-    if (game.user?.isGM) return;
+    if (isActiveDirector()) return;
     if (!patch || patch.kind !== "reaction-menu-disabled") return;
     try {
       ReactionMenu.updateDisabledLabels({
@@ -159,7 +159,7 @@ export function registerPlayerReactionMenuHandler(channel) {
   });
 
   const offClose = channel.onMenuClose((payload) => {
-    if (game.user?.isGM) return;
+    if (isActiveDirector()) return;
     const kind = payload?.kind;
     if (kind === "reaction-indicator" || kind === "turn-action-indicator") {
       // Per-actor close when the GM carries a tokenUuid; otherwise
