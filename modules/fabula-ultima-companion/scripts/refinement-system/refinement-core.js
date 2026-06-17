@@ -107,8 +107,14 @@ function rfComputeWeaponBonus(level) {
   return table[Math.min(table.length - 1, Math.max(0, level))] ?? 0;
 }
 
-function rfComputeArmorBonus(_level)  { return "pending"; }
-function rfComputeShieldBonus(_level) { return "pending"; }
+function rfComputeArmorBonus(level) {
+  const table = REFINEMENT_CONFIG.ARMOR_BONUS_TABLE;
+  return table[Math.min(table.length - 1, Math.max(0, level))] ?? 0;
+}
+function rfComputeShieldBonus(level) {
+  const table = REFINEMENT_CONFIG.SHIELD_BONUS_TABLE;
+  return table[Math.min(table.length - 1, Math.max(0, level))] ?? 0;
+}
 
 function rfComputeBonus(item, level) {
   switch (rfGetItemType(item)) {
