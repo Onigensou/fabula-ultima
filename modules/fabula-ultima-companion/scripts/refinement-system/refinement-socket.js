@@ -99,6 +99,50 @@ class RefinementSocketHandler {
       // "fail" → no level/name changes
 
       await item.update(updates);
+
+      // Armor/shield refinement bonus is applied via a transferable Active Effect
+      // on the item (keyed by flag) rather than a plain field, so it can be found-
+      // or-created and kept in sync with the absolute bonus at the current level —
+      // staying correct after breaks too.
+      if (outcome === "success" || outcome === "break") {
+        let aeKey = null;
+        let bonusValue = 0;
+        if (result.itemType === "armor") {
+          aeKey      = "system.props.max_hp";
+          bonusValue = rfComputeArmorBonus(result.newRefineLevel);
+        } else if (result.itemType === "shield") {
+          aeKey      = "system.props.damage_receiving_mod_physical";
+          bonusValue = rfComputeShieldBonus(result.newRefineLevel);
+        }
+
+        if (aeKey) {
+          const existingAe = item.effects?.find(
+            e => e.flags?.["fabula-ultima-companion"]?.refinementBonus === true
+          );
+
+          if (result.newRefineLevel === 0) {
+            if (existingAe) await existingAe.delete();
+          } else {
+            const changes = [{
+              key:      aeKey,
+              mode:     CONST.ACTIVE_EFFECT_MODES.ADD,
+              value:    bonusValue,
+              priority: 20,
+            }];
+            if (existingAe) {
+              await existingAe.update({ changes });
+            } else {
+              await item.createEmbeddedDocuments("ActiveEffect", [{
+                name:     "Refinement Bonus",
+                transfer: true,
+                flags:    { "fabula-ultima-companion": { refinementBonus: true } },
+                changes,
+              }]);
+            }
+          }
+        }
+      }
+
       await _rfPostChatCard(actor, result);
 
       return { ok: true, result };
