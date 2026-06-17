@@ -103,15 +103,22 @@ class RefinementSocketHandler {
       // Armor/shield refinement bonus is applied via a transferable Active Effect
       // on the item (keyed by flag) rather than a plain field, so it can be found-
       // or-created and kept in sync with the absolute bonus at the current level —
-      // staying correct after breaks too.
+      // staying correct after breaks too. Name/description/icon are set per type so
+      // players can see where the bonus comes from (and refreshed on update so any
+      // previously-refined items pick up the labelling on their next refine).
+      const REFINE_AE_IMG = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp";
       if (outcome === "success" || outcome === "break") {
-        let aeKey = null;
+        let aeKey = null, aeName = null, aeDesc = null;
         let bonusValue = 0;
         if (result.itemType === "armor") {
           aeKey      = "system.props.max_hp";
+          aeName     = "Armor Refinement";
+          aeDesc     = "Increase Max HP";
           bonusValue = rfComputeArmorBonus(result.newRefineLevel);
         } else if (result.itemType === "shield") {
           aeKey      = "system.props.damage_receiving_mod_physical";
+          aeName     = "Shield Refinement";
+          aeDesc     = "Boost Physical damage reduction";
           bonusValue = rfComputeShieldBonus(result.newRefineLevel);
         }
 
@@ -130,12 +137,14 @@ class RefinementSocketHandler {
               priority: 20,
             }];
             if (existingAe) {
-              await existingAe.update({ changes });
+              await existingAe.update({ name: aeName, description: aeDesc, img: REFINE_AE_IMG, changes });
             } else {
               await item.createEmbeddedDocuments("ActiveEffect", [{
-                name:     "Refinement Bonus",
-                transfer: true,
-                flags:    { "fabula-ultima-companion": { refinementBonus: true } },
+                name:        aeName,
+                description: aeDesc,
+                img:         REFINE_AE_IMG,
+                transfer:    true,
+                flags:       { "fabula-ultima-companion": { refinementBonus: true } },
                 changes,
               }]);
             }
