@@ -1371,6 +1371,22 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     // when the GM is firing a player-applied reaction. Null = local (GM/NPC).
     remotePrompt: remotePrompt ?? null,
   });
+  // Visual-first: show passive card before the effect applies so players
+  // see the trigger before it acts. Only for auto-fire rows (on / force);
+  // ask-mode rows already have a blade menu as visual feedback.
+  if ((candidate.mode === "on" || candidate.mode === "force") && ctx.reactorToken) {
+    try {
+      const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
+      await enqueuePassiveCard({
+        title:       candidate.carrierName,
+        casterToken: ctx.reactorToken,
+        icon:        candidate.carrierImg,
+      });
+    } catch (e) {
+      warn("firePreAcceptedCandidate: passive card threw", e);
+    }
+  }
+
   const r = await applyEffectByLabel(candidate.ref, ctx);
 
   // ── AE post-fire bookkeeping ─────────────────────────────────────────

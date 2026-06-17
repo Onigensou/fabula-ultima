@@ -48,6 +48,7 @@ import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, cle
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
+import { initPassiveCardUi, passiveCardQueue } from "./passive-card-ui/director-passive-card-ui.js";
 import { clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { freezeActionResult, snapshotDirectorCombatant, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 import {
@@ -328,6 +329,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   // _instances map dedupes — and guarantees no stranded menu DOM across
   // rewind / End Battle.
   try { await clearAllStandaloneMenus(); } catch (e) { warn("stop: clearAllStandaloneMenus threw", e); }
+  try { passiveCardQueue.clear(); } catch {}
   // The next two are TRUE-teardown cleanups (End Battle), NOT re-mount
   // cleanups (rewind / reload). The rewind path stops the live instance only
   // to reconstruct it a beat later via resumeFromSavedState — the conflict is
@@ -1237,6 +1239,11 @@ Hooks.once("ready", () => {
   // on every client so the GM-side director can fan cues / UI sync out to all.
   try { initDirectorSfx(); }
   catch (e) { warn("initDirectorSfx on ready threw", e); }
+
+  // Passive Card UI — registers socket handler on every client so all players
+  // see the token-anchored passive trigger card when a passive auto-fires.
+  try { initPassiveCardUi(); }
+  catch (e) { warn("initPassiveCardUi on ready threw", e); }
 
   // Developer Tools launcher — single bottom-left button (above the Players
   // list) that bundles the dev tools below; each registers itself into it.
