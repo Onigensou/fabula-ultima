@@ -144,7 +144,11 @@ class SuggestView {
     const $from = sel.$from;
     if (!$from.parent || !$from.parent.isTextblock) return this.hide();
     const before = $from.parent.textBetween(0, $from.parentOffset, "\n", " ");
-    const m = before.match(/([A-Za-z][A-Za-z ]*)$/);
+    // Trailing run of 1+ words that ENDS on a letter (cursor mid/end of a word).
+    // Requiring a letter at the end means a completed word followed by a space —
+    // e.g. the just-accepted "Unleash " — no longer matches, so accepting closes
+    // the dropdown instead of re-opening on the finished word.
+    const m = before.match(/([A-Za-z]+(?: [A-Za-z]+)*)$/);
     if (!m) return this.hide();
 
     const words = m[1].trim().split(/\s+/).filter(Boolean);
