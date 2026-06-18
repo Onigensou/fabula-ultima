@@ -3833,30 +3833,34 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 
 // ── apply_ae ───────────────────────────────────────────────────────────
 
-// Status-immunity gate. Returns true if any element of `statuses` matches
-// a `condition_<id>` prop on `actor` whose value is "IM" (immune). Used
-// by apply_ae to refuse applying a status AE to an actor that's immune
-// (Rampart's "cannot suffer status effects" mechanic + future per-actor
-// permanent immunities).
+// Status-immunity gate. Returns true if any of `statuses` resolves to a
+// `condition_<slug>` prop on `actor` whose value is "IM" (immune). Used by
+// apply_ae to refuse applying a status AE to an actor that's immune (Rampart's
+// "cannot suffer status effects" mechanic + per-actor permanent immunities).
 //
-// Convention: a status id like "slow" or "dazed" maps to actor prop
-// `condition_slow` / `condition_dazed`. The CSB template carries these
-// fields as `label` type (post 2026-06-03 surgery) so AEs can write
-// "NA" / "RS" / "IM" / "AB" into them.
+// `statuses` entries may be canonical slugs ("slow", "dazed") OR Foundry status
+// ids ("hhqoSNhWfVD4KR7g") — AEs cloned from CONFIG.statusEffects carry the
+// opaque id, so we resolve id → registered name → slug before the lookup. The
+// CSB template carries the `condition_<slug>` fields as `label` type (post
+// 2026-06-03 surgery) so AEs/sheets can write "NA" / "RS" / "IM" / "AB".
 //
-// Custom non-status template ids ("fud-bodyguard", "fud-aura", etc.)
-// have no matching `condition_*` prop, so the lookup returns undefined
-// and the gate doesn't trigger.
-function isTargetImmuneToStatuses(actor, statuses) {
+// Custom non-status ids ("fud-bodyguard", "reinforced-slow", …) resolve to no
+// `condition_*` prop, so the lookup returns nothing and the gate doesn't trigger.
+export function isTargetImmuneToStatuses(actor, statuses) {
   if (!actor) return false;
   if (!Array.isArray(statuses) || !statuses.length) return false;
   const props = actor.system?.props ?? {};
+  const cfg = globalThis.CONFIG?.statusEffects ?? [];
+  const immuneToSlug = (slug) => {
+    const key = `condition_${slug}`;
+    return (key in props) && String(props[key] ?? "").trim().toUpperCase() === "IM";
+  };
   for (const sid of statuses) {
-    const id = String(sid ?? "").trim().toLowerCase();
-    if (!id) continue;
-    const propKey = `condition_${id}`;
-    if (!(propKey in props)) continue;  // not a known status condition
-    if (String(props[propKey] ?? "").trim().toUpperCase() === "IM") return true;
+    const raw = String(sid ?? "").trim();
+    if (!raw) continue;
+    if (immuneToSlug(raw.toLowerCase())) return true;                 // already a slug
+    const entry = cfg.find((e) => e.id === raw);                      // Foundry status id → name → slug
+    if (entry?.name && immuneToSlug(String(entry.name).trim().toLowerCase())) return true;
   }
   return false;
 }
