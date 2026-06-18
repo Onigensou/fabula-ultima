@@ -3402,6 +3402,17 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
   const suppressSelfHpHeal = !!ctx.payload?.vismagusHpPaid
     && resource === "hp"
     && amount > 0;
+  // Apply-from-profile: for the PRIMARY grant (the one the COMPUTE profile previewed),
+  // the per-target amount is already final — incoming-heal mult, Vismagus suppress, and
+  // the per-target grant bonus are all baked into perTargetResults[].grantAmount. Consume
+  // it instead of recomputing, so preview == applied by construction (one source).
+  // Secondary / chain grants (no matching profile row) keep recomputing below.
+  const primaryLabel = ctx.actionResult?.damage?.sourceLabel ?? null;
+  const fromProfile = (primaryLabel && row.effect_label === primaryLabel)
+    ? new Map((ctx.actionResult?.perTargetResults ?? [])
+        .filter((r) => typeof r.grantAmount === "number")
+        .map((r) => [r.tokenUuid, r.grantAmount]))
+    : null;
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) {
@@ -3414,22 +3425,27 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       log(`skill-effects.grant: Vismagus suppresses caster self-heal on row "${row.effect_label}"`);
       continue;
     }
-    // Incoming-heal modifier (RECIPIENT side, e.g. Bleed's -50%): scale HP
-    // recovery by the healed actor's heal_receiving_mod_all. Per-target (each
-    // recipient may differ); HP "healing" only — MP restore is untouched.
-    let recipAmount = amount;
-    if (resource === "hp" && amount > 0) {
-      const mult = healReceivingMultiplier(actor);
-      if (mult !== 1) recipAmount = Math.floor(amount * mult);
-    }
-    // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
-    // SAME helper buildHealPerTarget uses at preview → applied heal can't drift.
-    if (recipAmount > 0) {
-      const ptBonus = resolvePerTargetGrantBonus({
-        healer: ctx.reactorActor, targetActor: actor, resource,
-        sourceTokenUuid: ctx.reactorToken?.uuid ?? null, round: ctx.dCombat?.round ?? 0,
-      });
-      if (ptBonus) recipAmount += ptBonus;
+    let recipAmount;
+    if (fromProfile && fromProfile.has(token.uuid)) {
+      // Single source: the precomputed per-target amount (already fully scaled).
+      recipAmount = fromProfile.get(token.uuid);
+    } else {
+      // Re-exec path (secondary / chain grants). Incoming-heal modifier (RECIPIENT
+      // side, e.g. Bleed's -50%): scale HP recovery by the healed actor's
+      // heal_receiving_mod_all. Per-target; HP "healing" only — MP restore untouched.
+      recipAmount = amount;
+      if (resource === "hp" && amount > 0) {
+        const mult = healReceivingMultiplier(actor);
+        if (mult !== 1) recipAmount = Math.floor(amount * mult);
+      }
+      // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
+      if (recipAmount > 0) {
+        const ptBonus = resolvePerTargetGrantBonus({
+          healer: ctx.reactorActor, targetActor: actor, resource,
+          sourceTokenUuid: ctx.reactorToken?.uuid ?? null, round: ctx.dCombat?.round ?? 0,
+        });
+        if (ptBonus) recipAmount += ptBonus;
+      }
     }
     const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {

@@ -583,6 +583,9 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
   const healingObj = {
     base: grantAmount, element: canonRes, resource: canonRes,
     resourceLabel: resDef.label, resourceColour: resDef.colour,
+    // Primary grant row label — lets RESOLVE's grantApply match THIS grant and
+    // apply the precomputed per-target amount from the profile (single source).
+    sourceLabel: grantRow.effect_label,
     ignoreHR: true, finalIfHit: grantAmount, declaresHealing: canonRes === "hp", isHealing: true,
     // Itemized restore-modifier sources (e.g. "Secret Formula: +20") — the
     // Healing tooltip renders these under "Base bonus", same as damage baseParts.
