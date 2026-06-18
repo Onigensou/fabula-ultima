@@ -32,25 +32,23 @@ function injectStyles() {
   s.id = STYLE_ID;
   s.textContent = `
 #oni-heal-feedback {
-  position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+  position: fixed; top: 56px; left: 0; width: 100%;
   z-index: 2147483600; pointer-events: none;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 8px;
 }
 .oni-heal-fb-card {
-  min-width: 320px; max-width: 70vw; padding: 11px 22px; border-radius: 11px;
+  width: 100%; padding: 13px 28px; border-radius: 10px;
   background: linear-gradient(180deg, #f6ebd3 0%, #efdfc3 100%);
-  border: 2px solid #8d5f38; box-shadow: 0 0 0 1px #6f4526, 0 10px 28px rgba(0,0,0,0.45);
-  color: #3b2a19; font: 700 16px/1.35 "Signika", sans-serif; text-align: center;
-  white-space: nowrap;
+  border: 2px solid #8d5f38; box-shadow: 0 0 0 1px #6f4526, 0 8px 24px rgba(0,0,0,0.45);
+  color: #3b2a19; font: 300 18px/1.3 "Signika", sans-serif; text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-sizing: border-box;
   opacity: 0; transform: translateX(-44px);
   transition: opacity ${ANIM_MS}ms ease, transform ${ANIM_MS}ms cubic-bezier(.22,.8,.3,1);
 }
 .oni-heal-fb-card.in  { opacity: 1; transform: translateX(0); }
 .oni-heal-fb-card.out { opacity: 0; transform: translateX(44px); }
-.oni-heal-fb-card .caster { color: #5a3800; font-style: italic; }
-.oni-heal-fb-card .amount { color: #2f7d32; }
-.oni-heal-fb-card .target { color: #b8392f; font-style: italic; }
-.oni-heal-fb-card .band   { color: #6f4526; font-weight: 700; margin-left: 8px; opacity: .85; }
+.oni-heal-fb-card b { font-weight: 700; }
+.oni-heal-fb-card i { font-style: italic; opacity: .9; margin-left: 6px; }
 `;
   document.head.appendChild(s);
 }
@@ -67,13 +65,23 @@ function playSpawnSfx() {
   } catch {}
 }
 
-// Build the card HTML for one heal line.
+// Build the card HTML for one heal line. Thin base font; only the actor name,
+// target name, restore value + resource are bolded (no colour); cur/max italic.
 function cardHtml({ casterName, targetName, resource, amount, after, max }) {
   const res = HEAL_RESOURCE[resource]?.label ?? String(resource ?? "").toUpperCase();
-  return `<span class="caster">${escapeHtml(casterName)}</span> restore `
-       + `<span class="amount">${amount} ${res}</span> to `
-       + `<span class="target">${escapeHtml(targetName)}</span>`
-       + `<span class="band">${after} / ${max}</span>`;
+  return `<b>${escapeHtml(casterName)}</b> restore <b>${amount} ${res}</b> to `
+       + `<b>${escapeHtml(targetName)}</b> <i>${after} / ${max}</i>`;
+}
+
+// Size the banner to the play area (canvas), stopping before the sidebar so it
+// doesn't slide under it — FF-style near-full-width announcer.
+function sizeContainer(el) {
+  const margin = 16;
+  const sidebar = document.getElementById("sidebar");
+  const sbRect = sidebar?.getBoundingClientRect?.();
+  const rightBound = (sbRect && sbRect.width > 0 && sbRect.left > 100) ? sbRect.left : window.innerWidth;
+  el.style.left = `${margin}px`;
+  el.style.width = `${Math.max(200, rightBound - margin * 2)}px`;
 }
 
 function showNext() {
@@ -83,6 +91,7 @@ function showNext() {
 
   injectStyles();
   const container = ensureContainer();
+  sizeContainer(container);
   const card = document.createElement("div");
   card.className = "oni-heal-fb-card";
   card.innerHTML = cardHtml(data);
