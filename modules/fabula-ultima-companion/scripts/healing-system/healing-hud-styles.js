@@ -18,7 +18,7 @@ export function injectHealingStyles() {
   --hl-wood-1: #a87649; --hl-wood-2: #8d5f38; --hl-wood-3: #6f4526;
   --hl-gold-1: #f4d488; --hl-gold-2: #caa44d; --hl-gold-3: #9a7a2b;
   --hl-ink: #3b2a19; --hl-glow: rgba(250,230,160,.55);
-  --hl-hp: #2f7d32; --hl-mp: #2f5fae; --hl-ip: #9a7a2b;
+  --hl-hp: #b8392f; --hl-mp: #2f5fae; --hl-ip: #9a7a2b; --hl-heal: #2f7d32;
   position: fixed; inset: 0; z-index: 120;
   display: flex; align-items: center; justify-content: center;
   background: rgba(18, 10, 5, 0.66);
@@ -29,7 +29,7 @@ export function injectHealingStyles() {
 
 .oni-heal-frame {
   display: flex; flex-direction: column;
-  width: min(1040px, 94vw); height: min(640px, 90vh);
+  width: min(1040px, 94vw); height: auto; max-height: 90vh;
   background: var(--hl-parch-1);
   border: 2.5px solid var(--hl-wood-2); border-radius: 14px;
   box-shadow: 0 0 0 1px var(--hl-wood-3), 0 18px 60px rgba(0,0,0,0.55), inset 0 0 26px rgba(160,118,73,0.18);
@@ -58,7 +58,7 @@ export function injectHealingStyles() {
 }
 .oni-heal-close:hover { background: rgba(180,57,47,0.85); color: #fff; }
 
-.oni-heal-body { display: flex; flex: 1; min-height: 0; }
+.oni-heal-body { display: flex; flex: 1; min-height: 0; align-items: stretch; }
 
 /* ── Left: action list with tabs ── */
 .oni-heal-left {
@@ -101,7 +101,7 @@ export function injectHealingStyles() {
 .oni-heal-row .sub { font-size: 11px; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .oni-heal-row .src-tag { color: var(--hl-wood-2); margin-right: 4px; }
 .oni-heal-row .badges { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: 0 0 auto; }
-.oni-heal-row .heal-badge { font-size: 12px; font-weight: 800; color: var(--hl-hp); }
+.oni-heal-row .heal-badge { font-size: 12px; font-weight: 800; color: var(--hl-heal); }
 .oni-heal-row .cost-badge { font-size: 11px; opacity: .85; color: var(--hl-wood-3); }
 .oni-heal-row.disabled .cost-badge { color: #a83232; }
 .oni-heal-empty { opacity: .55; text-align: center; padding: 30px 10px; font-size: 13px; }
@@ -114,22 +114,23 @@ export function injectHealingStyles() {
 }
 .oni-heal-banner.armed { background: linear-gradient(180deg,#d8f0c4,#bfe3a6); border-color: #6fa04a; color: #1f4a14; font-weight: 700; }
 .oni-heal-grid {
-  flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 112px;
-  align-content: start; gap: 22px 16px; min-height: 0; padding: 24px 6px 6px 12px;
+  flex: none; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 96px;
+  align-content: start; gap: 40px 16px; min-height: 0; padding: 20px 6px 8px 12px;
   overflow: visible;
 }
 /* Rectangle cell: short + wide. Left area is reserved (padding-left) for the
    floating battle sprite that pops out beyond the panel edge. */
 .oni-heal-cell {
-  display: flex; align-items: center; height: 112px;
-  padding: 10px 16px 10px 118px;
+  display: flex; align-items: center; height: 96px;
+  padding: 10px 16px 10px 100px;
   border-radius: 12px; border: 1.5px solid rgba(120,86,40,.45);
   background: var(--hl-parch-1);
   box-shadow: inset 0 0 18px rgba(160,118,73,0.12);
-  cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease, background .12s ease, transform .12s ease;
+  cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease, background .12s ease, transform .12s ease, opacity .12s ease;
   position: relative; overflow: visible;
 }
 .oni-heal-cell.empty { opacity: .35; cursor: default; }
+.oni-heal-cell.dim-full { opacity: .5; }   /* armed but this target can't benefit */
 .oni-heal-cell.sel.targeting {
   border-color: var(--hl-wood-2);
   box-shadow: 0 0 0 2px var(--hl-gold-2), 0 0 22px var(--hl-glow);
@@ -138,7 +139,7 @@ export function injectHealingStyles() {
 /* Floating, detached battle sprite — larger than the cell, anchored to the
    bottom-left and overflowing the top so it "pops out" of the panel. */
 .oni-heal-sprite-wrap {
-  position: absolute; left: -10px; bottom: -2px; width: 130px; height: 150px;
+  position: absolute; left: -8px; bottom: -2px; width: 104px; height: 122px;
   display: flex; align-items: flex-end; justify-content: center;
   pointer-events: none; z-index: 3;
 }

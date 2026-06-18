@@ -89,6 +89,8 @@ function buildDescriptor({ caster, category, displayItem, effectItem, costItem, 
     source,                 // "actor" | "equipment" | "consumable"
     sourceItemName,         // granting equipment / carrier name (for the ⚔ tag)
     quantity,               // consumable count (null = not a consumable / unique)
+    // structured grants (resource + amount) — used to gate full targets:
+    grants: resolved.grants,
     // display:
     healLabel: formatGrants(resolved.grants),
     costLabel: consumableUuid ? "1 Use" : formatCostMap(resolved.costMap),

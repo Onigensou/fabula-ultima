@@ -226,8 +226,10 @@ const HealingHUD = {
     for (let i = 0; i < 4; i++) {
       const entry = this._members[i] ?? null;
       const cell = document.createElement("div");
+      const dimFull = entry && this._armed && !this._canBenefit(entry.actor, this._armed);
       cell.className = "oni-heal-cell" + (entry ? "" : " empty")
         + (entry && i === this._targetIndex && this._zone === "targets" ? " sel targeting" : "")
+        + (dimFull ? " dim-full" : "")
         + (intro && entry ? " intro-cell" : "");
       cell.dataset.idx = String(i);
       cell.style.animationDelay = `${i * 70}ms`;   // stagger (reused on exit)
@@ -249,6 +251,21 @@ const HealingHUD = {
       });
       gridEl.appendChild(cell);
     }
+  },
+
+  // Would this action actually restore anything on this target? True if any of
+  // the action's grant resources is below the target's max. Drives both the
+  // confirm gate and the dimmed "can't benefit" cell styling.
+  _canBenefit(actor, desc) {
+    const grants = desc?.grants ?? [];
+    if (!grants.length) return false;
+    return grants.some((g) => {
+      const def = HEAL_RESOURCE[g.resource];
+      if (!def) return false;
+      const cur = Number(actor.system?.props?.[def.cur] ?? 0) || 0;
+      const max = Number(actor.system?.props?.[def.max] ?? 0) || 0;
+      return cur < max;
+    });
   },
 
   _resHtml(actor, key) {
@@ -326,6 +343,8 @@ const HealingHUD = {
     const entry = this._members[this._targetIndex];
     if (!desc || !entry?.actor) return;
     if (!desc.affordable) { playHealSfx("DENY"); return; }
+    // Gate full / unhealable targets: SFX is the warning (no notification).
+    if (!this._canBenefit(entry.actor, desc)) { playHealSfx("FULL"); return; }
 
     const payload = {
       casterUuid: this._caster.uuid,

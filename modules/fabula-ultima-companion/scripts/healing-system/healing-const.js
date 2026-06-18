@@ -54,6 +54,7 @@ export const HEAL_SFX = Object.freeze({
   CANCEL:  { src: `${_SND_BASE}BattleCursor_2.wav`,     volume: 0.4 },
   DENY:    { src: `${_SND_BASE}BattleCursor_4.wav`,     volume: 0.35 },
   EXIT:    { src: `${_SND_BASE}bond_cleared.wav`,       volume: 0.6 },
+  FULL:    { src: `${_SND_BASE}bond_cleared.wav`,       volume: 0.55 },  // target unhealable (full / can't benefit)
 });
 
 // Play a healing SFX locally. `key` is one of HEAL_SFX's keys (string) or a
