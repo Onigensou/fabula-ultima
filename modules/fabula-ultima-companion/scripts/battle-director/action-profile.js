@@ -25,7 +25,8 @@ import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } f
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
-  computeSenderDamageBonuses, applyDamageOp, describeGrant } from "./skill-effects.js";
+  computeSenderDamageBonuses, applyDamageOp, describeGrant,
+  isTargetImmuneToStatuses } from "./skill-effects.js";
 
 // Status conditions that force Vulnerability to a specific element (mirrors the
 // Attack COMPUTE table in state-handlers.js — keep in sync).
@@ -653,6 +654,29 @@ export async function computeActionProfile(input) {
   }
 
   const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, chainVars: ctx?.chainVars ?? null });
+
+  // Per-target status fan-out (additive): surface each targeted status AE on the
+  // roster rows it applies to, tagged with a per-target `immune` flag — the status
+  // analogue of damage affinity. `appliedEffects` is kept (the card still reads it);
+  // this adds the unified per-target view, and flattenRow ignores status effects so
+  // flat parity holds. Only fans onto EXISTING rows (damage/check/heal targets);
+  // pure-status no-roster skills keep status in appliedEffects until row creation is
+  // wired (would change perTarget.count, so deferred).
+  for (const eff of targetedEffects) {
+    if (eff?.type !== "status") continue;
+    const ref = String(eff.targetRef ?? "").trim().toLowerCase();
+    if (!ref.endsWith("action_targets")) continue;   // only the action-target family maps to the roster
+    const hitOnly = ref.startsWith("hit_");
+    for (const row of perTarget) {
+      if (hitOnly && !row.outcome?.hit) continue;
+      const tActor = await fromUuid(row.target.actorUuid).catch(() => null);
+      const immune = tActor ? isTargetImmuneToStatuses(tActor, [eff.status]) : false;
+      row.effects.push({
+        type: "status", status: eff.status, valence: eff.valence,
+        source: eff.source, targetRef: eff.targetRef, immune,
+      });
+    }
+  }
 
   const profile = {
     action: {
