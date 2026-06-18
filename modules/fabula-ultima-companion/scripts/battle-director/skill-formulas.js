@@ -1701,6 +1701,22 @@ export function applyAdjustOp(base, op, value) {
   }
 }
 
+// Unified adjustment row reader — maps a namespaced adjustment row
+// (<prefix>_operation / _amount / _round / _stage / _scope) onto ONE descriptor,
+// so adjust_accuracy ("accuracy", defaultOp "set"), adjust_damage ("damage") and
+// adjust_grant ("grant") parse the same way. Each handler consumes the fields it
+// cares about (damage: stage; grant: round; accuracy: op/amount). `scope`
+// (per_action | per_target) is the shared knob for scope-aware adjustments.
+export function readAdjustment(row, prefix, { defaultOp = "add" } = {}) {
+  return {
+    op: String(row[`${prefix}_operation`] ?? defaultOp).trim().toLowerCase(),
+    amountFormula: String(row[`${prefix}_amount`] ?? "0"),
+    round: String(row[`${prefix}_round`] ?? "up").trim().toLowerCase(),
+    stage: String(row[`${prefix}_stage`] ?? "outgoing").trim().toLowerCase(),
+    scope: String(row[`${prefix}_scope`] ?? "per_target").trim().toLowerCase(),
+  };
+}
+
 export function applyGrantAdjust(amount, adjust) {
   const a = Number(amount) || 0;
   if (!adjust) return a;

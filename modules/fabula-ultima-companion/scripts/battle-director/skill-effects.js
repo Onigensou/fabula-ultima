@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
@@ -1484,11 +1484,7 @@ export function applyDamageOp(d, op, amount) {
   return applyAdjustOp(d, op, amount); // shared op table (skill-formulas)
 }
 function readAdjustRow(row) {
-  return {
-    op: String(row.damage_operation ?? "add").trim().toLowerCase(),
-    amountFormula: String(row.damage_amount ?? "0"),
-    stage: String(row.damage_stage ?? "outgoing").trim().toLowerCase(),
-  };
+  return readAdjustment(row, "damage"); // {op, amountFormula, stage, …} — damage uses op/amountFormula/stage
 }
 
 // Phase 2: sender-side damage accumulator for pre-resolve outgoing
@@ -3304,10 +3300,11 @@ async function applyAdjustGrantEffect(row, ctx) {
   const resolver = buildSkillResolver({
     actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
   });
+  const a = readAdjustment(row, "grant");
   const adjust = {
-    op: String(row.grant_operation ?? "add").trim().toLowerCase(),
-    value: Number(evaluateFormula(row.grant_amount ?? "0", resolver, 0)) || 0,
-    round: String(row.grant_round ?? "up").trim().toLowerCase(),
+    op: a.op,
+    value: Number(evaluateFormula(a.amountFormula, resolver, 0)) || 0,
+    round: a.round,
   };
   sink.grantAdjust = adjust;
   log(`skill-effects.adjust_grant: queued restore ${adjust.op} ${adjust.value} (round ${adjust.round}) for the add_target window`);

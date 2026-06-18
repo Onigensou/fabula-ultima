@@ -447,12 +447,12 @@ function applyAccuracyOp(total, op, amount) {
 // hit would need full HR/damage recompute; left out until a skill needs it.)
 // Records `ctx.accuracyOverride` so the caller + card UI can show "Blocked".
 async function applyAdjustAccuracyMutation(ctx, cand, row) {
-  const op = String(row.accuracy_operation ?? "set").trim().toLowerCase();
+  const { readAdjustment } = await import("./skill-formulas.js");
+  const { op, amountFormula } = readAdjustment(row, "accuracy", { defaultOp: "set" });
   if (!ACCURACY_OPS.has(op)) {
     warn(`adjust_accuracy: unknown accuracy_operation "${op}" — skipping`);
     return "failed";
   }
-  const amountFormula = String(row.accuracy_amount ?? "0");
 
   // Resolve the operand. A bare number short-circuits; otherwise evaluate the
   // formula against the reactor + the candidate's fire-time payload (so e.g.
