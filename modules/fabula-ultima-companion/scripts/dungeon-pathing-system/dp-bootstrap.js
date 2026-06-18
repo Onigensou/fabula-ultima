@@ -608,6 +608,7 @@
       await activate();
       // Sync FT button visibility (flag may have changed since last activate)
       DP.ScanMode?.updateFtBtnVisibility?.();
+      DP.ScanMode?.showHealBtn?.();
     } else {
       if (state.active) deactivate();
       // Exploration mode: show travel button if FT is enabled; hide otherwise
@@ -619,8 +620,10 @@
         } else {
           DP.ScanMode?.hideTravelBtn?.();
         }
+        DP.ScanMode?.showHealBtn?.();   // healing available in exploration too
       } else {
         DP.ScanMode?.hideTravelBtn?.();
+        DP.ScanMode?.hideHealBtn?.();
       }
     }
   }

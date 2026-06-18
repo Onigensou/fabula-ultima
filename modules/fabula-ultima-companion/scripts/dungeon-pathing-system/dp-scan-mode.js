@@ -110,9 +110,8 @@
     return DP.UI?.FAST_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 168, FONT_SIZE: "28px" };
   }
   function cfgHeal() {
-    // Stacked one row ABOVE the scan row so it never collides with the
-    // horizontally-variable travel button.
-    return DP.UI?.HEAL_BUTTON ?? { SIZE: 64, BOTTOM: 154, LEFT: 20, FONT_SIZE: "28px" };
+    // Docked as the second button (right of Scan), same row.
+    return DP.UI?.HEAL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 94, FONT_SIZE: "28px" };
   }
   function cfgTravel() {
     return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
@@ -374,7 +373,21 @@
       document.body.appendChild(_ftBtn);
     }
 
-    // Healing button — opens the out-of-combat Healing HUD (Skill/Spell/Item).
+    syncHelperBtn();
+    syncFtBtn();
+    installEsc();
+
+    requestAnimationFrame(() => {
+      _scanBtn?.classList.add("dp-scan-visible");
+      _helperBtn?.classList.add("dp-scan-visible");
+      _ftBtn?.classList.add("dp-scan-visible");
+    });
+  }
+
+  // ── Healing button (independent — shown in dungeon AND exploration) ─────────
+  function showHealBtn() {
+    injectStyles();
+    if (_healBtn) return;
     _healBtn = makeBtn(
       "oni-dp-heal-btn",
       "❤️",
@@ -388,17 +401,15 @@
       },
     );
     document.body.appendChild(_healBtn);
+    requestAnimationFrame(() => _healBtn?.classList.add("dp-scan-visible"));
+  }
 
-    syncHelperBtn();
-    syncFtBtn();
-    installEsc();
-
-    requestAnimationFrame(() => {
-      _scanBtn?.classList.add("dp-scan-visible");
-      _helperBtn?.classList.add("dp-scan-visible");
-      _ftBtn?.classList.add("dp-scan-visible");
-      _healBtn?.classList.add("dp-scan-visible");
-    });
+  function hideHealBtn() {
+    if (!_healBtn) return;
+    _healBtn.classList.remove("dp-scan-visible");
+    const btn = _healBtn;
+    setTimeout(() => btn.remove(), 280);
+    _healBtn = null;
   }
 
   function hide() {
@@ -408,7 +419,7 @@
     }
     removeEsc();
 
-    for (const btn of [_scanBtn, _helperBtn, _ftBtn, _healBtn]) {
+    for (const btn of [_scanBtn, _helperBtn, _ftBtn]) {
       if (!btn) continue;
       btn.classList.remove("dp-scan-visible");
       setTimeout(() => btn.remove(), 280);
@@ -416,7 +427,6 @@
     _scanBtn   = null;
     _helperBtn = null;
     _ftBtn     = null;
-    _healBtn   = null;
   }
 
   // Show/hide the FT + travel buttons when the scene config fastTravelEnabled flag changes.
@@ -512,5 +522,9 @@
     showTravelBtn,
     /** Hide the scene travel button. */
     hideTravelBtn,
+    /** Show the healing HUD button (dungeon + exploration). */
+    showHealBtn,
+    /** Hide the healing HUD button. */
+    hideHealBtn,
   };
 })();
