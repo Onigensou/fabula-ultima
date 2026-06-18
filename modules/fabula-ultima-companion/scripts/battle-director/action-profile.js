@@ -18,7 +18,6 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
-  resolvePerTargetGrantBonus,
   applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
@@ -550,13 +549,11 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     // applyGrantEffect so the previewed heal matches the applied heal. HP only.
     const recipMult = canonRes === "hp" ? healReceivingMultiplier(tActor) : 1;
     const recipBase = vismagusSuppress ? 0 : (recipMult !== 1 ? Math.floor(grantAmount * recipMult) : grantAmount);
-    // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
-    // SAME helper grantApply uses at RESOLVE → preview can't drift from the apply.
-    const ptBonus = (recipBase > 0 && liveAttacker)
-      ? resolvePerTargetGrantBonus({ healer: liveAttacker, targetActor: tActor, resource: canonRes,
-          sourceTokenUuid: ar?.attacker?.tokenUuid ?? null, round: ar?.round ?? 0 })
-      : 0;
-    const amount = recipBase + ptBonus;
+    // Performer-side per-target heal boosts (Cognitive Focus "+SL×2 to my focus")
+    // are NO LONGER a standing prop read here — they ride the adjust_grant
+    // card-mutation (a reaction), folded into this amount post-recompute via
+    // grantOverride in recomputeActionProfile. Uniform with adjust_accuracy.
+    const amount = recipBase;
     const healEffect = {
       id: `primary-heal:${e.tokenUuid}`, type: "resource_delta", valence: "beneficial", actionKind: kind,
       source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
@@ -959,7 +956,7 @@ export async function buildActionViewFromAr(ar) {
 // pre-passive candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
-export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null } = {}) {
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null } = {}) {
   if (!ar) return null;
   try {
     const srcTargets = Array.isArray(targets) ? targets : (Array.isArray(ar.targets) ? ar.targets : []);
@@ -1008,6 +1005,19 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         if (newHit && row.tokenUuid) newHits.push(row.tokenUuid);
       }
       delta.hitTokenUuids = newHits;
+    }
+    // Grant override (adjust_grant reaction, e.g. Cognitive Focus "+SL×2 healing to
+    // my focus"): card-mutations boosted the matching targets' grant amount, but
+    // buildHealPerTarget rebuilt it from the BASE formula (no longer carries a
+    // standing per-target bonus). Re-apply each token's op on the rebuilt amount so
+    // the boost survives the recompute. Mirrors the accuracyOverride re-apply above.
+    if (grantOverride?.perToken && Array.isArray(delta?.perTargetResults)) {
+      for (const row of delta.perTargetResults) {
+        if (typeof row.grantAmount !== "number") continue;
+        const ov = grantOverride.perToken[row.tokenUuid];
+        if (!ov) continue;
+        row.grantAmount = Math.max(0, applyGrantAdjust(row.grantAmount, { op: ov.op, value: ov.value, round: ov.round }));
+      }
     }
     return delta;
   } catch (e) {

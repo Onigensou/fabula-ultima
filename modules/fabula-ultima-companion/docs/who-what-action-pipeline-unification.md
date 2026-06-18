@@ -257,6 +257,24 @@ over one *shared record*, not three stages:
    effect with a `target_ref`; no separate buckets).
 
 ## Decision log
+- **2026-06-19 (heal-amp MIGRATED — done):** Cognitive Focus's heal-amp moved OFF
+  the standing `per_target_grant_bonus` passive ONTO a card-stage `adjust_grant`
+  reaction, uniform with `adjust_accuracy`. New `applyAdjustGrantMutation`
+  (card-mutations.js) reads `readAdjustment(row,"grant")`, applies `applyGrantAdjust`
+  per matching target (gated per-target by `condition_formula` with the target as
+  subject), records `ctx.grantOverride`; `recomputeActionProfile` re-applies each
+  token's op on the rebuilt grant so the boost survives recompute (mirror of the
+  accuracy override re-apply); RESOLVE applies it from the frozen profile (Phase 4 —
+  no re-exec). RETIRED: `per_target_grant_bonus` effect_kind + `resolvePerTargetGrantBonus`
+  walker + its two call-sites (buildHealPerTarget / grantApply). Data: Cognitive Focus
+  effect row `cf_heal` → `adjust_grant add "SL * 2"` (condition `TARGET_HAS_MY_FOCUS == 1`,
+  `grant_scope` defaults per_target) + a new force reaction
+  (`creature_performs_action`/self, `ANY_TARGET_HAS_MY_FOCUS == 1` → cf_heal).
+  Bridge-verified (SL3): focus +6, non-focus/other-applier untouched, itemized parts;
+  accuracy path regression-clean. NOTE: this is the always-on/FREE variant — the
+  optional/costed on-card heal DRIVER (Phase 5 step 3) is still unbuilt; this migration
+  proves the per_target `adjust_grant` mechanism it will reuse. ⚠ Live e2e (Keren
+  actually healing her focus) pending a heal source (Life Transference unbuilt).
 - **2026-06-18 (branch removal):** Decided to REMOVE the re-execute branch entirely
   rather than keep it as a backstop. Rationale: the dice are the only randomness, so
   every grant-affecting choice is expressible pre-card; a mid-chain prompt-into-grant

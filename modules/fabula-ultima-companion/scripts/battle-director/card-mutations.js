@@ -440,6 +440,37 @@ function applyAccuracyOp(total, op, amount) {
   }
 }
 
+// Resolve the reactor + carrier SKILL for a performer/self OR third-party
+// card-mutation reaction, so a formula in the row (`SL`, payload-derived ids)
+// evaluates against the right actor + skill. Performer-side (self) reactions
+// carry NO `reactorActorUuid` (only the third-party scan stamps it) — the
+// reactor IS the action-taker. The carrier is an Item (skill/weapon reaction)
+// or an AE; an AE-carried reaction resolves its origin skill via
+// `directorAppliedBy.skillUuid` (then the AE's parent item). Mirrors
+// firePreAcceptedCandidate's skill resolution. Shared by adjust_accuracy +
+// adjust_grant so `SL` doesn't fall back to 1.
+async function resolveReactionReactorSkill(ctx, cand) {
+  let reactor = cand?.reactorActorUuid
+    ? await fromUuid(cand.reactorActorUuid).catch(() => null)
+    : null;
+  if (!reactor) {
+    const takerUuid = ctx?.ar?.attackerActorRef ?? ctx?.ar?.attacker?.actorUuid ?? null;
+    if (takerUuid) reactor = await fromUuid(takerUuid).catch(() => null);
+  }
+  const carrier = cand?.carrierUuid
+    ? await fromUuid(cand.carrierUuid).catch(() => null)
+    : null;
+  let skill = null;
+  if (carrier?.documentName === "Item") {
+    skill = carrier;
+  } else if (carrier?.documentName === "ActiveEffect") {
+    const sUuid = carrier.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.skillUuid;
+    skill = (sUuid ? await fromUuid(sUuid).catch(() => null) : null)
+      ?? (carrier.parent?.documentName === "Item" ? carrier.parent : null);
+  }
+  return { reactor, skill };
+}
+
 // Override the action's Accuracy total and recompute hit/miss for every
 // existing target against its own defense. Damage is only re-derived on the
 // MISS side (zeroed) — Crossfire's `set 0` makes everything miss, which is the
@@ -460,33 +491,7 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   let amount = Number(amountFormula);
   if (!Number.isFinite(amount)) {
     try {
-      let reactor = cand?.reactorActorUuid
-        ? await fromUuid(cand.reactorActorUuid).catch(() => null)
-        : null;
-      // Performer-side (self) reaction carries NO reactorActorUuid (only the
-      // third-party scan stamps it) — the reactor IS the action-taker. Lets a
-      // self adjust_accuracy (Cognitive Focus "+SL when attacking your focus")
-      // resolve its reactor + own AEs.
-      if (!reactor) {
-        const takerUuid = ctx?.ar?.attackerActorRef ?? ctx?.ar?.attacker?.actorUuid ?? null;
-        if (takerUuid) reactor = await fromUuid(takerUuid).catch(() => null);
-      }
-      // Resolve the carrier SKILL so `SL` (and other skill-scoped ids) in the
-      // amount formula reflect the reaction's source skill — not fall back to 1.
-      // carrier is an Item for skill/weapon reactions; for an AE-carried reaction
-      // resolve the origin skill via directorAppliedBy.skillUuid (then the AE's
-      // parent item). Mirrors firePreAcceptedCandidate's skill resolution.
-      const carrier = cand?.carrierUuid
-        ? await fromUuid(cand.carrierUuid).catch(() => null)
-        : null;
-      let skillForResolver = null;
-      if (carrier?.documentName === "Item") {
-        skillForResolver = carrier;
-      } else if (carrier?.documentName === "ActiveEffect") {
-        const sUuid = carrier.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.skillUuid;
-        skillForResolver = (sUuid ? await fromUuid(sUuid).catch(() => null) : null)
-          ?? (carrier.parent?.documentName === "Item" ? carrier.parent : null);
-      }
+      const { reactor, skill: skillForResolver } = await resolveReactionReactorSkill(ctx, cand);
       const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
       const resolver = buildSkillResolver({
         actor: reactor,
@@ -545,6 +550,80 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   };
   log(`adjust_accuracy: ${op} ${amount} — total ${runningTotal} → ${newTotal} (via ${via})`);
   return "applied";
+}
+
+// ── Grant adjustment (effect_kind: "adjust_grant", card-mutation path) ───
+// The heal/restore counterpart of adjust_accuracy: a performer/self reaction
+// (Cognitive Focus "+SL×2 healing to my focus") adjusts the in-flight action's
+// PER-TARGET grant amount on the card, so RESOLVE applies the boosted heal from
+// the frozen profile (Phase 4 — no re-exec). `scope: per_target` (default) gates
+// each target by the row's condition_formula (the focus target only); `per_action`
+// boosts every grant target. Composes across sources via ctx.grantOverride; the
+// boosted amount surfaces in the per-target "HEALED N" chip like a damage chip.
+//   { effect_kind: "adjust_grant",
+//     grant_operation: "add"|"multiply"|"set"|"cap"|"floor",  // default add
+//     grant_amount:    <number|formula>,                       // operand (e.g. "SL * 2")
+//     grant_scope:     "per_target"|"per_action",              // default per_target
+//     grant_resource:  "hp"|"mp"|""|"all",                     // optional resource filter
+//     condition_formula: "TARGET_HAS_MY_FOCUS == 1" }          // per-target gate
+async function applyAdjustGrantMutation(ctx, cand, row) {
+  const { readAdjustment, applyGrantAdjust, buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+  const { op, amountFormula, scope, round } = readAdjustment(row, "grant");
+  const { reactor, skill } = await resolveReactionReactorSkill(ctx, cand);
+  const resFilter = String(row.grant_resource ?? "").trim().toLowerCase();
+  const cond = String(row.condition_formula ?? "").trim();
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
+
+  // The operand formula (e.g. "SL * 2") is target-independent — resolve it ONCE
+  // against the reactor + carrier skill. The per-target gate (condition_formula)
+  // is what varies per target, evaluated below with the target as subject.
+  let amount = Number(amountFormula);
+  if (!Number.isFinite(amount)) {
+    try {
+      const resolver = buildSkillResolver({
+        actor: reactor, payload: cand?.payloadAtFire ?? null, skill, round: ctx.ar?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+    } catch (e) { warn("adjust_grant: amount formula eval threw — treating as 0", e); amount = 0; }
+  }
+
+  const prevOv = ctx.grantOverride ?? { perToken: {} };
+  const perToken = { ...prevOv.perToken };
+  let mutated = 0;
+  for (let i = 0; i < ctx.perTargets.length; i++) {
+    const pt = ctx.perTargets[i];
+    if (!pt || typeof pt.grantAmount !== "number") continue;        // grant/heal targets only
+    const ptRes = String(pt.grantResource ?? "").trim().toLowerCase();
+    if (resFilter && resFilter !== "all" && ptRes && resFilter !== ptRes) continue;
+    // per_target: gate each candidate by the row condition with the TARGET as
+    // subject (TARGET_HAS_MY_FOCUS reads payload.subjectActorUuid). per_action:
+    // every grant target qualifies.
+    if (scope !== "per_action" && cond) {
+      try {
+        const gateResolver = buildSkillResolver({
+          actor: reactor, skill, round: ctx.ar?.round ?? 0,
+          payload: { ...(cand?.payloadAtFire ?? {}), subjectActorUuid: pt.actorUuid, sourceActorUuid: reactor?.uuid ?? null },
+        });
+        if (!(Number(evaluateFormula(cond, gateResolver, 0)) > 0)) continue;
+      } catch { continue; }
+    }
+    const from = Number(pt.grantAmount) || 0;
+    const to = Math.max(0, applyGrantAdjust(from, { op, value: amount, round }));
+    if (to === from) continue;
+    // REPLACE the row (the frozen actionResult's rows are read-only — mutating in
+    // place throws, exactly like adjust_accuracy replaces rather than mutates).
+    // The recompute re-applies the op authoritatively; this is the card-mutation-
+    // time value + the fallback when recompute returns nothing.
+    ctx.perTargets[i] = { ...pt, grantAmount: to };
+    const prevTok = perToken[pt.tokenUuid];
+    const parts = Array.isArray(prevTok?.parts) ? [...prevTok.parts] : [];
+    parts.push({ source: via, amount: to - from });
+    perToken[pt.tokenUuid] = { from: prevTok?.from ?? from, to, op, value: amount, round, parts };
+    mutated += 1;
+  }
+  ctx.grantOverride = { perToken };
+  log(`adjust_grant: ${op} ${amount} (scope ${scope}) — boosted ${mutated} grant target(s) (via ${via})`);
+  return mutated ? "applied" : "skipped";
 }
 
 // Phase dispatch — orchestrates accepted card-mutations against an
@@ -714,6 +793,7 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     };
   }
   const accuracyOverride = mut.accuracyOverride ?? null;
+  const grantOverride = mut.grantOverride ?? null;
   let hitTokenUuids = null;
   try {
     const mutatedAr = { ...ar, targets: mutatedTargets, perTargetResults };
@@ -724,7 +804,7 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     }
     const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
     const delta = await recomputeActionProfile({
-      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride,
+      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride,
     });
     if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
       perTargetResults = delta.perTargetResults;
@@ -752,7 +832,7 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   }
   const accuracyIsSpellish = String(ar?.skillType ?? "").toLowerCase() === "spell";
   return {
-    targets: mutatedTargets, perTargetResults, accuracyOverride,
+    targets: mutatedTargets, perTargetResults, accuracyOverride, grantOverride,
     accuracyRoll, accuracyIsSpellish,
     negated: false, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids,
   };
@@ -839,6 +919,12 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       if (kind === "adjust_accuracy") {
         const result = await applyAdjustAccuracyMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
+      } else if (kind === "adjust_grant") {
+        // Performer/self reaction heal-boost (Cognitive Focus). Reaction-context
+        // adjust_grant ONLY — Potion Rain's in-chain adjust_grant never appears as
+        // an accepted reaction candidate, so the two paths never collide.
+        const result = await applyAdjustGrantMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
       }
     }
   }
@@ -856,6 +942,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     mutationsApplied,
     cancelled,
     accuracyOverride: ctx.accuracyOverride ?? null,
+    grantOverride: ctx.grantOverride ?? null,
     negated: false,
   };
 }

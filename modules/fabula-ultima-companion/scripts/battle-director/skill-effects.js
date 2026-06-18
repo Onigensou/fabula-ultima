@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, healReceivingMultiplier } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
@@ -2744,13 +2744,6 @@ const EFFECT_KIND_DISPATCH = {
   // (skips outcome + effect/reaction firing when ar.negated). The reaction's OTHER
   // rows (Frightened, consume_self) still fire normally.
   negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
-  // per_target_grant_bonus: STANDING config, never fired. The healer's owned-skill
-  // rows are READ by resolvePerTargetGrantBonus (skill-formulas.js) during the
-  // grant computation (buildHealPerTarget preview + grantApply RESOLVE) to add a
-  // per-target heal/restore bonus gated by the row's condition_formula (e.g.
-  // Cognitive Focus "+SL×2 to my focus": grant_amount "SL * 2", condition
-  // "TARGET_HAS_MY_FOCUS == 1"). No-op if a chain ever dispatches it.
-  per_target_grant_bonus: (row) => ({ ok: true, kind: "per_target_grant_bonus", applied: [], reason: "standing-config-read-by-grant-pipeline" }),
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -2793,7 +2786,6 @@ export const EFFECT_KIND_LABELS = {
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
   negate_action:       "Negate Action (block — no outcome/reactions)",
-  per_target_grant_bonus: "Per-Target Grant Bonus (standing: add to heal/restore this skill's owner causes, gated per target)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
@@ -2842,11 +2834,6 @@ const EFFECT_KIND_PREVIEW = {
   // by the add_target splice. No standalone card chip — the adjusted numbers show
   // in the per-target rows the splice rebuilds.
   adjust_grant: () => null,
-
-  // per_target_grant_bonus: standing config read by the grant pipeline; the boost
-  // shows inside the per-target heal rows (buildHealPerTarget folds it in), so no
-  // standalone chip.
-  per_target_grant_bonus: () => null,
 
   // grant: UNIFIED — preview lives in grantRun (mode:"preview"). Override below.
 
@@ -3294,8 +3281,12 @@ async function applyAddTargetEffect(row, ctx) {
 async function applyAdjustGrantEffect(row, ctx) {
   const sink = ctx?.payload?._preRoll;
   if (!sink) {
-    warn(`skill-effects.adjust_grant: no add_target window sink on "${row.effect_label}" — fired outside an add_target chain?`);
-    return { ok: false, kind: "adjust_grant", reason: "no-sink" };
+    // No add_target sink → this is a REACTION-context adjust_grant (Cognitive
+    // Focus's per-target heal boost): the card-mutation phase
+    // (card-mutations.applyAdjustGrantMutation) owns it, so the in-chain handler
+    // is a clean no-op here. (Pre-#6 this was treated as an authoring slip.)
+    log(`skill-effects.adjust_grant: no add_target sink on "${row.effect_label}" — handled at card-mutation phase`);
+    return { ok: true, kind: "adjust_grant", applied: [], reason: "card-mutation-or-no-sink" };
   }
   const resolver = buildSkillResolver({
     actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
@@ -3427,14 +3418,10 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
         const mult = healReceivingMultiplier(actor);
         if (mult !== 1) recipAmount = Math.floor(amount * mult);
       }
-      // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
-      if (recipAmount > 0) {
-        const ptBonus = resolvePerTargetGrantBonus({
-          healer: ctx.reactorActor, targetActor: actor, resource,
-          sourceTokenUuid: ctx.reactorToken?.uuid ?? null, round: ctx.dCombat?.round ?? 0,
-        });
-        if (ptBonus) recipAmount += ptBonus;
-      }
+      // Performer-side per-target heal boosts (Cognitive Focus "+SL×2 to my focus")
+      // are NOT re-derived here — they ride the adjust_grant card-mutation and are
+      // already baked into the PRIMARY grant's perTargetResults (the fromProfile
+      // branch above). Secondary/chain grants don't carry the boost by design.
     }
     const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {

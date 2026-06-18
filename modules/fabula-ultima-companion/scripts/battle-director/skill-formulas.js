@@ -1537,50 +1537,6 @@ export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
   return parts;
 }
 
-// ── Per-target performer-side grant (heal/restore) bonus ──────────────────
-// Walks the HEALER's owned skills for standing `per_target_grant_bonus` rows in
-// their `effect_table` — a flat bonus ADDED to the recovery THIS healer causes on
-// THIS target, gated PER TARGET by the row's `condition_formula` (e.g. Cognitive
-// Focus's "TARGET_HAS_MY_FOCUS == 1" → only the focus target is boosted) and
-// optionally filtered by `grant_resource` ("hp"/"mp"/"all"/blank = any). `SL`
-// resolves per owning skill. Stored as an effect_table ROW (a dynamic-table field
-// IS scriptable + sheet-editable; top-level props are NOT — see
-// [[reference_csb_reload_template_after_column_surgery]]). The row is never FIRED
-// (no reaction/fire-point references it; its registry handler is a no-op) — it is
-// pure standing config READ here. SINGLE source of truth for both the card preview
-// (buildHealPerTarget) AND RESOLVE (grantApply), so they can't drift.
-export function resolvePerTargetGrantBonus({ healer = null, targetActor = null, resource = null, sourceTokenUuid = null, round = 0 } = {}) {
-  if (!healer || !targetActor) return 0;
-  const items = healer.items?.contents ?? Array.from(healer.items ?? []);
-  const res = String(resource ?? "").trim().toLowerCase();
-  let total = 0;
-  for (const item of items) {
-    const tbl = item.system?.props?.effect_table;
-    if (!tbl || typeof tbl !== "object") continue;
-    for (const k of Object.keys(tbl)) {
-      const row = tbl[k];
-      if (!row || row.$deleted) continue;
-      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "per_target_grant_bonus") continue;
-      const resFilter = String(row.grant_resource ?? "").trim().toLowerCase();
-      if (resFilter && res && resFilter !== "all" && resFilter !== res) continue;
-      const payload = {
-        subjectActorUuid: targetActor.uuid,
-        sourceActorUuid: healer.uuid,
-        sourceTokenUuid: sourceTokenUuid ?? null,
-      };
-      const resolver = buildSkillResolver({ actor: healer, skill: item, payload, round });
-      const cond = String(row.condition_formula ?? "").trim();
-      if (cond) {
-        try { if (!(Number(evaluateFormula(cond, resolver, 0)) > 0)) continue; }
-        catch { continue; }
-      }
-      const amt = Number(evaluateFormula(row.grant_amount ?? "0", resolver, 0)) || 0;
-      if (amt) total += amt;
-    }
-  }
-  return total;
-}
-
 // ── Accuracy (added to the attack/spell Check total) ───────────────────
 // `kind`: "melee" | "ranged" | "magic". `check_mod_all` applies to EVERY
 // check — and an Attack is a Check — so it is included for attacks too

@@ -469,6 +469,18 @@
             "reaction_damage_type": "",
             "reaction_damage_amount": "",
             "reaction_passive_target": ""
+          },
+          "2": {
+            "$deleted": false,
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_passive_mode": "force",
+            "reaction_action_kind": "Item",
+            "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+            "reaction_effect_ref": "cf_heal",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_passive_target": ""
           }
         },
         "effect_table": {
@@ -509,9 +521,10 @@
           "3": {
             "$deleted": false,
             "effect_label": "cf_heal",
-            "effect_kind": "per_target_grant_bonus",
+            "effect_kind": "adjust_grant",
             "grant_amount": "SL * 2",
-            "condition_formula": "TARGET_HAS_MY_FOCUS == 1"
+            "condition_formula": "TARGET_HAS_MY_FOCUS == 1",
+            "grant_operation": "add"
           }
         }
       },

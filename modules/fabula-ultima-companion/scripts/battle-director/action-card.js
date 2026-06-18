@@ -2365,6 +2365,38 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
     }
   }
 
+  // Per-target HEAL/RESTORE chips + headline — a performer-side grant reaction
+  // (Cognitive Focus adjust_grant "+SL×2 to my focus") boosts the per-target
+  // grantAmount. Repaint here (NOT inside the redirect loop, which only touches
+  // redirected slots) so the GM card AND the broadcast player mirror stay in
+  // sync. Driven purely by the serializable delta (works on the player side too).
+  if (Array.isArray(delta.grantRows) && delta.grantRows.length) {
+    for (const g of delta.grantRows) {
+      if (!g || g.studied === false) continue;
+      const rowEl = (g.tokenUuid && rootEl.querySelector(
+        `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(g.tokenUuid))}"]`
+      )) || (g.actorUuid && rootEl.querySelector(
+        `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(g.actorUuid))}"]`
+      ));
+      if (!rowEl) continue;
+      const resultSpan = rowEl.querySelector(".t-result");
+      if (!resultSpan) continue;
+      resultSpan.className = `t-result ${resultClsFor(g)}`;
+      resultSpan.innerHTML = resultLabelFor(g);
+    }
+    // Headline heal number (the `.fud-bf-dmg` fieldset is reused for heals) —
+    // re-pin to the representative boosted target so it agrees with the chip.
+    if (delta.grantHeadline != null && delta.healHeadlineObj
+        && (delta.healHeadlineObj.isHealing || delta.healHeadlineObj.declaresHealing)) {
+      const healFieldset = rootEl.querySelector(".fud-bf-dmg");
+      if (healFieldset) {
+        const patchedHeal = { ...delta.healHeadlineObj, base: delta.grantHeadline, finalIfHit: delta.grantHeadline };
+        const newHTML = buildDamagePreviewHTML({ damage: patchedHeal, roll: delta.healHeadlineRoll ?? null });
+        if (newHTML) healFieldset.outerHTML = newHTML;
+      }
+    }
+  }
+
   // Negated — UNIFIED treatment for both Shadow Possession (negate_action) and
   // Crossfire (adjust_accuracy → accuracyOverride.blocked). Both fully nullify the
   // action; we keep the REAL accuracy/damage/result numbers, dim them, and plaster
@@ -4625,6 +4657,30 @@ export async function postActionCard({ director, kind, payload }) {
               via: rf.via,
             });
           }
+          // Per-target HEAL/RESTORE boosts (Cognitive Focus's adjust_grant) —
+          // surfaced on the delta so the SHARED applyCardTargetMutationDelta
+          // repaints the heal chips + headline for BOTH the GM card and the
+          // broadcast player mirror (the redirect loop only touches redirected
+          // slots; a pure heal has none, and the damage loop skips grant rows).
+          // Serializable plain data only (broadcast is structured-clone-safe).
+          const grantRows = [];
+          let grantHeadline = null;
+          for (let i = 0; i < recomputed.length; i++) {
+            const entry = recomputed[i], orig = original[i];
+            if (!entry || typeof entry.grantAmount !== "number") continue;
+            grantRows.push({
+              tokenUuid: entry.tokenUuid ?? orig?.tokenUuid ?? null,
+              actorUuid: entry.actorUuid ?? orig?.actorUuid ?? null,
+              grantAmount: entry.grantAmount, grantResource: entry.grantResource,
+              resourceCur: entry.resourceCur, resourceMax: entry.resourceMax,
+              vismagusSuppressed: !!entry.vismagusSuppressed,
+              studied: entry.studied, hit: entry.hit, crit: entry.crit,
+            });
+            // First boosted target drives the headline (common single-target heal).
+            if (grantHeadline == null && typeof orig?.grantAmount === "number" && entry.grantAmount !== orig.grantAmount) {
+              grantHeadline = entry.grantAmount;
+            }
+          }
           const delta = {
             redirects,
             hasDamageRows,
@@ -4636,6 +4692,11 @@ export async function postActionCard({ director, kind, payload }) {
             accuracyRoll: mutationResult.accuracyRoll ?? null,
             accuracyIsSpellish: !!mutationResult.accuracyIsSpellish,
             negated: !!mutationResult.negated,
+            // Grant boost (heal/restore) — chips always; headline only when boosted.
+            grantRows,
+            grantHeadline,
+            healHeadlineObj: (grantHeadline != null && payload?.damage) ? payload.damage : null,
+            healHeadlineRoll: (grantHeadline != null && payload?.roll) ? payload.roll : null,
           };
           applyCardTargetMutationDelta(root, delta);
 
