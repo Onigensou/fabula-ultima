@@ -396,8 +396,10 @@
       () => {
         const api = globalThis.FUCompanion?.api?.healing
           ?? game.modules?.get("fabula-ultima-companion")?.api?.healing;
-        if (api?.open) api.open();
-        else ui.notifications?.warn("Healing system not available.");
+        if (!api?.open) { ui.notifications?.warn("Healing system not available."); return; }
+        // Toggle: open if closed, close if already open.
+        if (api.isOpen) api.close();
+        else api.open();
       },
     );
     document.body.appendChild(_healBtn);
