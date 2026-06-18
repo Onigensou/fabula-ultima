@@ -58,6 +58,15 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // Item action, items-as-skill-shaped). Lets reactions hook "when a creature
   // uses an item". Payload carries actionKind/actionName + targets.
   "creature_completes_item",
+  // Unified post-resolve hook — fires ONCE per action (Attack / Spell / Skill)
+  // that caused at least one creature to LOSE HP, regardless of action kind.
+  // Distinct from creature_lose_resource (per HP-loss EVENT, so multi-target
+  // fires N times) and from the kind-specific completes_attack/spell/item: this
+  // is the "after you cause a creature to lose HP, once per action" primitive.
+  // Payload carries actionKind + the HP-losing target list (targetActorUuids /
+  // targetTokenUuids) so ACTION_IS_SPELL and ANY_TARGET_HAS_<STATUS> resolve.
+  // First consumers: Consume (spell + weapon loadout) and Fear Is the Key.
+  "creature_completes_action",
   // "A specific skill (or reaction) completed" hook — fires when a NAMED skill
   // resolves, so follow-up combos ("after you use <Skill>, you may …") are
   // authorable as DATA via the `reaction_source_skill` name filter. Generic:
@@ -194,6 +203,7 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_deals_damage":      "post-resolve",
   "creature_completes_attack":  "post-resolve",
   "creature_completes_item":    "post-resolve",
+  "creature_completes_action":  "post-resolve",
   "creature_takes_damage":      "post-resolve",
   "creature_guards":            "post-resolve",
   // Resource-ledger family (post-commit, subject = the changed creature).

@@ -62,6 +62,7 @@ import {
   findHistorySnapshot,
   rewindToHistorySnapshot,
   hydrateContinuationState,
+  saveDirectorState,
 } from "./persistence.js";
 import { peekTop, topIsFreeAction, topIsSrwDetour, stackDepth } from "./continuation-stack.js";
 // Test harness — side-effect import (registers
@@ -925,6 +926,7 @@ Hooks.once("ready", () => {
       if (n) {
         try { bannerRefreshTurnActions(dc); } catch (_e) {}
         try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "prune" }); } catch (_e) {}
+        saveDirectorState(_instance, { skipHistory: true }).catch((e) => warn("prune: saveDirectorState failed", e));
       }
       return { ok: true, removed: n };
     },
@@ -950,6 +952,10 @@ Hooks.once("ready", () => {
         const c = dc.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor ?? actor, side: sd, disposition });
         try { bannerRefreshTurnActions(dc); } catch (_e) {}
         try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add", combatantId: c.id }); } catch (_e) {}
+        // Persist the roster change to the reload-survival flag immediately so the
+        // new combatant isn't lost on F5 before the next FSM checkpoint save.
+        // skipHistory: a mid-turn roster edit shouldn't push a rewind entry.
+        saveDirectorState(d, { skipHistory: true }).catch((e) => warn("addCombatant: saveDirectorState failed", e));
         log(`live addCombatant: ${c.name} (${sd})`);
         return { ok: true, combatantId: c.id, tokenUuid: c.tokenUuid, name: c.name };
       } catch (e) {
@@ -973,6 +979,7 @@ Hooks.once("ready", () => {
         }
         try { bannerRefreshTurnActions(dc); } catch (_e) {}
         try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "remove", combatantId: c.id }); } catch (_e) {}
+        saveDirectorState(d, { skipHistory: true }).catch((e) => warn("removeCombatant: saveDirectorState failed", e));
         log(`live removeCombatant: ${c.name}`);
         return { ok: true, removedId: c.id, name: c.name };
       } catch (e) {

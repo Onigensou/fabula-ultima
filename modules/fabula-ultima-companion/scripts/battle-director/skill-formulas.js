@@ -423,6 +423,25 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const t = payload?.targets;
         return Array.isArray(t) && t.length === 1 ? 1 : 0;
       }
+      // 1 if the acting creature (reactor) is among the action's own targets,
+      // else 0. Reads the action target list (token OR actor uuids resolve).
+      // Used by Nocebo Weapon to grant its free attack only when you imbue your
+      // OWN weapon (cast on self) — skipped when cast on an ally.
+      case "ACTION_TARGETS_SELF": {
+        if (!actor) return 0;
+        const list = payload?.targetActorUuids ?? payload?.targets
+          ?? payload?.targetTokenUuids ?? payload?.actionTargetUuids
+          ?? (payload?.targetUuid ? [payload.targetUuid] : []);
+        const selfUuid = String(actor.uuid ?? "");
+        const selfId = String(actor.id ?? "");
+        for (const ref of (Array.isArray(list) ? list : [])) {
+          const s = String(ref);
+          if (selfUuid && s === selfUuid) return 1;
+          const a = _resolveActorByUuidSync(s);
+          if (a && (a.uuid === actor.uuid || (selfId && a.id === selfId))) return 1;
+        }
+        return 0;
+      }
       // Status (debuff) count on the trigger's SUBJECT creature — the
       // target of the action that fired the trigger. Used by per-target
       // damage reactions like Cheap Shot's "deal +X if target is statused".
@@ -463,6 +482,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Returns 0 on creature_deals_damage (per-target) — use this identifier
       // only in creature_completes_attack rows.
       case "ALL_TARGETS_HIT": return payload?.allTargetsHit ? 1 : 0;
+      // 1 if the completing action was a Spell — reads payload.actionKind, set on
+      // the post-resolve completion payloads (creature_completes_action et al.).
+      // Used by Consume's "deal damage WITH A SPELL" gate. 0 for Attack/Skill/Item.
+      case "ACTION_IS_SPELL":  return String(payload?.actionKind ?? "").toLowerCase() === "spell" ? 1 : 0;
       // Roll-derived identifiers — populated whenever the action's roll
       // is threaded onto `payload` (Skill resolveSkillAction does this
       // via makeChainContext.payload and the firePostDamageEffect
@@ -649,6 +672,41 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return hasNamedSkill(actor, needle) ? 1 : 0;
+        }
+        // Dynamic HAS_WEAPON_CATEGORY_<X> — 1 if the actor has an EQUIPPED weapon
+        // of family <X> (dagger, flail, sword, …), else 0. Generalizes the fixed
+        // HAS_ARCANE_WEAPON / HAS_FIREARM cases to ANY category so authors don't
+        // need a per-family hardcoded identifier. Name grammar mirrors HAS_SKILL_:
+        //   HAS_WEAPON_CATEGORY_DAGGER → "dagger".  HAS_WEAPON_CATEGORY_FLAIL → "flail".
+        // Used by Consume's "arcane, dagger or flail weapon equipped" gate.
+        if (name.startsWith("HAS_WEAPON_CATEGORY_")) {
+          const fam = name
+            .slice("HAS_WEAPON_CATEGORY_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return hasEquippedWeaponOfType(actor, fam) ? 1 : 0;
+        }
+        // Dynamic ANY_TARGET_HAS_<STATUS> — 1 if ANY creature in the trigger's
+        // target list has the named status, else 0. Scans payload.targetActorUuids
+        // (falls back to hitTargets / targets / targetTokenUuids — token OR actor
+        // uuids both resolve via _resolveActorByUuidSync). Matches by FU status id
+        // (statuses[] contains the needle, so "weak" matches "fud-weak") OR by AE
+        // name. Used by Fear Is the Key's "at least one [damaged enemy] is Shaken
+        // and/or Weak" gate on the per-action creature_completes_action trigger.
+        if (name.startsWith("ANY_TARGET_HAS_")) {
+          const needle = name
+            .slice("ANY_TARGET_HAS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const list = payload?.targetActorUuids
+            ?? payload?.hitTargets ?? payload?.targets ?? payload?.targetTokenUuids ?? [];
+          for (const ref of (Array.isArray(list) ? list : [])) {
+            const a = _resolveActorByUuidSync(String(ref));
+            if (a && actorHasNamedStatus(a, needle)) return 1;
+          }
+          return 0;
         }
         // Dynamic SL_<NAME> — current SL of a named owned skill, 0 if
         // not owned. Cross-skill arithmetic gate: Dual Shieldbearer's
@@ -1046,6 +1104,22 @@ function _resolveActorByUuidSync(uuid) {
     if (doc.documentName === "Actor") return doc;
     return null;
   } catch (_e) { return null; }
+}
+
+// True if the actor carries a non-disabled status/AE matching `needle`
+// (lowercased, spaces). Matches by FU status id — `statuses[]` contains the
+// needle as a substring, so "weak" matches both "weak" and "fud-weak" — or by
+// exact AE name ("Weak"). Powers the ANY_TARGET_HAS_<STATUS> identifier.
+function actorHasNamedStatus(actor, needle) {
+  if (!actor?.effects || !needle) return false;
+  const effects = actor.effects.contents ?? Array.from(actor.effects);
+  for (const e of effects) {
+    if (e.disabled) continue;
+    const statuses = e.statuses ? Array.from(e.statuses) : [];
+    if (statuses.some((s) => String(s).toLowerCase().includes(needle))) return true;
+    if (String(e?.name ?? "").trim().toLowerCase() === needle) return true;
+  }
+  return false;
 }
 
 // Count active, non-disabled debuff-classified effects on the actor.

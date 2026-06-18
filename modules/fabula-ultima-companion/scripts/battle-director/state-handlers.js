@@ -491,6 +491,13 @@ async function resolveAction(director, ar, opts = {}) {
   // them. A Skill/Spell deals damage when COMPUTE set ar.hasDamage.
   const isAttackAction = ar.kind === "Attack" || view.kind === "Attack";
   const isDamagingAction = isAttackAction || !!ar.hasDamage;
+  // Accumulate the creatures that actually LOSE HP this action — fed to the
+  // once-per-action `creature_completes_action` trigger below (Consume / Fear
+  // Is the Key). Per-target creature_lose_resource still fires inside the loop;
+  // this is the action-level roll-up so a multi-target hit fires the passive
+  // once, not N times.
+  const hpLossTargetTokenUuids = [];
+  const hpLossTargetActorUuids = [];
   if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
@@ -558,6 +565,13 @@ async function resolveAction(director, ar, opts = {}) {
         const valueType = dmgRes.resource;
         const valueDirection = dmgRes.valueDirection;
         const damageTypeForPayload = valueDirection === "recover" ? "healing" : ar.damageType;
+
+        // Roll-up for the per-action creature_completes_action trigger: record
+        // any target whose HP actually dropped (positive HP loss).
+        if (valueType === "hp" && valueDirection === "loss" && finalValue > 0) {
+          hpLossTargetTokenUuids.push(r.tokenUuid);
+          hpLossTargetActorUuids.push(r.actorUuid);
+        }
 
         // Per-target post_damage payload — HP_DEALT / MP_DEALT resolve
         // here. Roll-derived identifiers (HR / CRIT / FUMBLE / TOTAL)
@@ -841,6 +855,26 @@ async function resolveAction(director, ar, opts = {}) {
       casterActor,
       trigger: "creature_completes_item",
       payload: payloadForPassives,
+    });
+  }
+
+  // 7c. Unified per-action HP-loss completion trigger. Fires ONCE per action
+  //     (any kind) that caused ≥1 creature to lose HP. The payload's target list
+  //     is narrowed to the HP-losing creatures (not all targeted) so
+  //     ANY_TARGET_HAS_<STATUS> scans exactly "the creatures that lost HP", per
+  //     RAW "after you cause one or more enemies to lose Hit Points…". Queued for
+  //     post-save firing like the other completion triggers.
+  if (hpLossTargetTokenUuids.length) {
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_completes_action",
+      payload: {
+        ...payloadForPassives,
+        targetTokenUuids: hpLossTargetTokenUuids,
+        targetActorUuids: hpLossTargetActorUuids,
+        hitTargets: hpLossTargetTokenUuids,
+        targets: hpLossTargetTokenUuids,
+      },
     });
   }
 
