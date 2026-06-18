@@ -255,6 +255,30 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
   return check;
 }
 
+// ── Per-target hit determination (shared) ────────────────────────────────────
+// Pure. Given a target's defense stat and the (optional) check context, returns
+// the hit / pierceMiss flags plus the `outcome` object: auto-hit when no roll,
+// crit/fumble overrides, Attack pierce-on-miss. Extracted from the per-target
+// builder so the hit rule lives in one place and every effect kind shares it.
+function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll }) {
+  let hit = !rolled;            // auto-hit when no roll required
+  let pierceMiss = false;
+  if (rolled) {
+    if (check.isFumble) hit = false;
+    else if (check.isCrit) hit = true;
+    else hit = check.total >= defStat;
+    if (!hit && kind === "Attack" && primary.pierce) pierceMiss = true;
+  }
+  const outcome = {
+    kind: isPreRoll ? "pending" : (!rolled ? "auto" : (hit ? "hit" : "miss")),
+    hit: isPreRoll ? null : (rolled ? hit : true),
+    crit: !!check.isCrit && hit, pierceMiss,
+    margin: rolled ? (check.total - defStat) : null,
+    tier: null, source: null,
+  };
+  return { hit, pierceMiss, outcome };
+}
+
 // ── Per-target outcome + primary EffectPreview ───────────────────────────────
 async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
@@ -284,15 +308,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
   for (const e of targets) {
     const defStat = pickDef(e);
-    // Hit determination.
-    let hit = !rolled;          // auto-hit when no roll required
-    let pierceMiss = false;
-    if (rolled) {
-      if (check.isFumble) hit = false;
-      else if (check.isCrit) hit = true;
-      else hit = check.total >= defStat;
-      if (!hit && kind === "Attack" && primary.pierce) pierceMiss = true;
-    }
+    const { hit, pierceMiss, outcome } = resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll });
 
     const effects = [];
     let damageVal = 0, rawDamage = 0, affinityCode = "NE", damageRange = null;
@@ -438,6 +454,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         element: reactionElement ?? primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: damageModParts, preAffinity: rawDamage, affinity: affinityCode,
         value: damageVal,
+        // Reaction-fold artifacts (was on _parity) so flattenRow + the headline
+        // breakdown can rebuild from effects alone. overrideElement is null unless
+        // a reaction overrode the element — flatten emits `element` only when set,
+        // matching the legacy mirror exactly. reactionParts feeds the headline's
+        // representative in-flight bonus (projectProfileToActionResult).
+        overrideElement: reactionElement ?? null,
+        reactionParts,
+        ...(reactionKeywords ? { keywords: reactionKeywords } : {}),
+        ...(reactionBreakdown ? { bonusBreakdown: reactionBreakdown } : {}),
       });
     }
 
@@ -446,33 +471,21 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         actorUuid: e.actorUuid, tokenUuid: e.tokenUuid, name: e.name, img: e.tokenImg,
         disposition: e.disposition, studied: studiedGate(e), defenseShown: defStat,
       },
-      outcome: {
-        kind: isPreRoll ? "pending" : (!rolled ? "auto" : (hit ? "hit" : "miss")),
-        hit: isPreRoll ? null : (rolled ? hit : true),
-        margin: rolled ? (check.total - defStat) : null,
-        tier: null, source: null,
-      },
+      outcome,
       effects,
-      // Parity mirror fields (flat, matching perTargetResults) so the diff test
-      // can compare without reshaping.
-      _parity: {
-        defense: defStat, hit, crit: !!check.isCrit && hit, rawDamage, damage: damageVal,
-        affinity: affinityCode, pierceMiss, resource: primary.resource,
-        studied: studiedGate(e), damageModParts, reactionParts,
-        ...(reactionElement ? { element: reactionElement } : {}),
-        ...(reactionKeywords ? { keywords: reactionKeywords } : {}),
-        ...(reactionBreakdown ? { bonusBreakdown: reactionBreakdown } : {}),
-      },
     });
   }
   return out;
 }
 
-// ── Heal synthesis (no-damage skills with a grant) ───────────────────────────
-// Mirrors COMPUTE's heal preview: find the first grant row (recipe / on_activate)
-// and produce per-target heal EffectPreviews.
-async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = null }) {
-  const out = [];
+// ── Heal effects (no-damage skills with a grant) ─────────────────────────────
+// Finds the first grant row (recipe / on_activate) and attaches a per-target heal
+// effect to each roster row, creating rows (auto-hit) for targets that have none
+// yet (pure heal). Heal shares the roster's hit determination instead of producing
+// a separate row set. Mutates `rows`; returns { healingObj }.
+async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary }) {
+  const rolled = !!(check?.required && check?.total != null);
+  const isPreRoll = !!(check?.required && check?.total == null);
   const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
   const tbl = view?.effect_table ?? {};
   let grantRow = null;
@@ -482,7 +495,7 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
     if (fireLabel && row.effect_label === fireLabel) { grantRow = row; break; }
     if (!grantRow) grantRow = row;
   }
-  if (!grantRow) return { rows: out, healingObj: null };
+  if (!grantRow) return { healingObj: null };
 
   // Caster-side restore amount + itemized restore parts come from the SHARED
   // describeGrant — the SAME derivation grantApply runs at RESOLVE — so the
@@ -501,7 +514,7 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
   // resolved from the shared registry, so adding a resource there makes it render
   // here automatically. Non-restorable / unknown resources → no preview headline.
   const resDef = resolveResourceDef(grantResource);
-  if (!(grantAmount > 0) || !resDef?.restorable) return { rows: out, healingObj: null };
+  if (!(grantAmount > 0) || !resDef?.restorable) return { healingObj: null };
   const canonRes = resDef.key;
 
   for (const e of targets) {
@@ -523,20 +536,28 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
           sourceTokenUuid: ar?.attacker?.tokenUuid ?? null, round: ar?.round ?? 0 })
       : 0;
     const amount = recipBase + ptBonus;
-    out.push({
-      target: { actorUuid: e.actorUuid, tokenUuid: e.tokenUuid, name: e.name, img: e.tokenImg,
-        disposition: e.disposition, studied: true, defenseShown: 0 },
-      outcome: { kind: "auto", hit: true, margin: null, tier: null, source: null },
-      effects: [{
-        id: `primary-heal:${e.tokenUuid}`, type: "heal", valence: "beneficial",
-        source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
-      }],
-      _parity: {
-        defense: 0, hit: true, crit: false, grantAmount: amount, grantResource: canonRes,
-        resourceCur: cur, resourceMax: max, affinity: "NE", studied: true,
-        vismagusSuppressed: vismagusSuppress || undefined,
-      },
-    });
+    const healEffect = {
+      id: `primary-heal:${e.tokenUuid}`, type: "heal", valence: "beneficial",
+      source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
+      // Recipient resource snapshot + Vismagus marker so flattenRow can rebuild
+      // the flat grant row from effects alone.
+      resourceCur: cur, resourceMax: max,
+      ...(vismagusSuppress ? { vismagusSuppressed: true } : {}),
+    };
+    // Attach to the target's existing roster row (shares its hit determination);
+    // create an auto-hit row only when none exists yet (pure heal — no damage/check).
+    const existing = rows.find((r) => r.target?.actorUuid === e.actorUuid);
+    if (existing) {
+      existing.effects.push(healEffect);
+    } else {
+      const { outcome } = resolveTargetOutcome({ check, kind, primary, defStat: 0, rolled, isPreRoll });
+      rows.push({
+        target: { actorUuid: e.actorUuid, tokenUuid: e.tokenUuid, name: e.name, img: e.tokenImg,
+          disposition: e.disposition, studied: true, defenseShown: 0 },
+        outcome,
+        effects: [healEffect],
+      });
+    }
   }
   const healingObj = {
     base: grantAmount, element: canonRes, resource: canonRes,
@@ -546,7 +567,7 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
     // Healing tooltip renders these under "Base bonus", same as damage baseParts.
     baseParts: restoreParts,
   };
-  return { rows: out, healingObj };
+  return { healingObj };
 }
 
 // ── Effects gather (effect_table → self/applied previews) ─────────────────────
@@ -627,8 +648,8 @@ export async function computeActionProfile(input) {
     perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap });
   }
   if (primary.mode !== "damage") {
-    const heal = await buildHealPerTarget({ view, ar, targets, resolver, liveAttacker });
-    if (heal.rows.length) { perTarget = perTarget.concat(heal.rows); healingObj = heal.healingObj; }
+    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary });
+    healingObj = heal.healingObj;
   }
 
   const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, chainVars: ctx?.chainVars ?? null });
@@ -692,41 +713,51 @@ export async function computeActionProfile(input) {
 // perTargetResults, …); pass-through TARGET fields stay on baseAr. Phase 2/3
 // gate: the full-field diff test must be zero-diff before any caller switches.
 //
-// flattenRow rebuilds the flat perTargetResults entry from the structured row +
-// its _parity mirror, kind-aware (Attack carries pierceMiss; heal rows differ).
+// flattenRow rebuilds the flat perTargetResults entry from the structured row
+// (target = WHO, effects = WHAT, outcome = roll result), kind-aware (Attack
+// carries pierceMiss; heal rows differ).
 function flattenRow(r, kind) {
-  const p = r._parity ?? {};
   const t = r.target ?? {};
-  const baseFields = {
-    tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
-    disposition: t.disposition, defense: p.defense ?? t.defenseShown ?? 0,
-    hit: !!p.hit, crit: !!p.crit, affinity: p.affinity ?? "NE", studied: p.studied ?? true,
-  };
-  if (typeof p.grantAmount === "number") {
-    // Heal/grant row.
+  const o = r.outcome ?? {};
+  // Heal/grant rows — WHO from target/outcome, WHAT from the heal effect entry.
+  // effects[] is the source of truth (was _parity). A heal effect is emitted for
+  // every restorable resource (hp/mp/ip/shield/…), so its presence is the grant
+  // marker (mirrors the old "grantAmount is a number" test). Heal/restore has no
+  // element affinity → always "NE".
+  const heal = (r.effects ?? []).find((x) => x.type === "heal");
+  if (heal) {
     return {
-      ...baseFields, grantAmount: p.grantAmount, grantResource: p.grantResource,
-      resourceCur: p.resourceCur, resourceMax: p.resourceMax,
-      ...(p.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
+      tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
+      disposition: t.disposition, defense: t.defenseShown ?? 0,
+      hit: !!o.hit, crit: !!o.crit, affinity: "NE", studied: t.studied ?? true,
+      grantAmount: heal.value, grantResource: heal.resource,
+      resourceCur: heal.resourceCur, resourceMax: heal.resourceMax,
+      ...(heal.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
     };
   }
-  // Damage row. Attack rows carry pierceMiss but NOT resource; Skill/Spell rows
-  // carry resource (hp/mp) but not pierceMiss — match COMPUTE exactly.
-  const out = {
-    damageModParts: p.damageModParts ?? [],
-    ...baseFields,
-    rawDamage: p.rawDamage ?? 0, damage: p.damage ?? 0,
+  // Damage row — WHO from target/outcome, WHAT from the primary damage effect.
+  // effects[] is now the source of truth (was _parity). Attack rows carry
+  // pierceMiss but NOT resource; Skill/Spell rows carry resource (hp/mp) but not
+  // pierceMiss — match COMPUTE exactly.
+  const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.damageClass === "primary") ?? {};
+  const baseFields = {
+    tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
+    disposition: t.disposition, defense: t.defenseShown ?? 0,
+    hit: !!o.hit, crit: !!o.crit, affinity: dmg.affinity ?? "NE", studied: t.studied ?? true,
   };
-  if (kind === "Attack") out.pierceMiss = !!p.pierceMiss;
-  else out.resource = p.resource ?? "hp";
+  const out = {
+    damageModParts: dmg.breakdown ?? [],
+    ...baseFields,
+    rawDamage: dmg.preAffinity ?? 0, damage: dmg.value ?? 0,
+  };
+  if (kind === "Attack") out.pierceMiss = !!o.pierceMiss;
+  else out.resource = dmg.resource ?? "hp";
   // Reaction-fold artifacts (element override / applied keywords / numeric-op
   // breakdown) — only present when an accepted reaction touched this row, so the
-  // no-reaction COMPUTE row stays byte-identical to before. Mirrors the fields
-  // the retired recomputePerTargetDamages overlay stamped (element/keywords/
-  // bonusBreakdown) so the card + RESOLVE read them the same way.
-  if (p.element) out.element = p.element;
-  if (Array.isArray(p.keywords) && p.keywords.length) out.keywords = p.keywords;
-  if (p.bonusBreakdown) out.bonusBreakdown = p.bonusBreakdown;
+  // no-reaction COMPUTE row stays byte-identical to before.
+  if (dmg.overrideElement) out.element = dmg.overrideElement;
+  if (Array.isArray(dmg.keywords) && dmg.keywords.length) out.keywords = dmg.keywords;
+  if (dmg.bonusBreakdown) out.bonusBreakdown = dmg.bonusBreakdown;
   return out;
 }
 
@@ -765,8 +796,9 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // omitting it. Per-target rows still carry their own exact numbers.
   const repReactionParts = (() => {
     for (const r of (profile.perTarget ?? [])) {
-      const p = r._parity ?? {};
-      if (p.hit && Array.isArray(p.reactionParts) && p.reactionParts.length) return p.reactionParts;
+      if (!r.outcome?.hit) continue;
+      const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.damageClass === "primary");
+      if (dmg && Array.isArray(dmg.reactionParts) && dmg.reactionParts.length) return dmg.reactionParts;
     }
     return [];
   })();
@@ -789,8 +821,12 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   // hitTokenUuids — for a Check, the hit rows; with NO Check, ALL action
   // targets (matches COMPUTE: no-Check skills auto-hit every target, even
   // pure-buff skills that produce zero per-target rows).
+  // `outcome.hit` is null in pre-roll (kind "pending") where the legacy
+  // `_parity.hit` was true (hit = !rolled); reconstruct that so pre-roll
+  // hitTokenUuids stays identical.
+  const rowHit = (r) => r.outcome?.hit ?? (r.outcome?.kind === "pending");
   const hitTokenUuids = check.required
-    ? (profile.perTarget ?? []).filter((r) => !!r._parity?.hit).map((r) => r.target.tokenUuid)
+    ? (profile.perTarget ?? []).filter(rowHit).map((r) => r.target.tokenUuid)
     : allTargets.map((t) => t.tokenUuid);
 
   return {
@@ -820,9 +856,14 @@ export function diffProfileAgainstActionResult(profile, ar) {
     push("check.isFumble", !!profile.check.isFumble, !!ar.roll.isFumble);
   }
 
+  // Flatten the profile through the SAME flattenRow the runtime uses, then compare
+  // to the live ar rows. Profile + ar are independent computations, so this still
+  // catches compute/projection drift; flatten-logic correctness is covered by the
+  // dedicated synthetic regression test (_parity-flattenrow).
+  const kind = profile.action?.kind ?? ar?.kind ?? "Skill";
   const arRows = ar?.perTargetResults ?? [];
   const byUuid = new Map();
-  for (const r of profile.perTarget ?? []) byUuid.set(r.target.actorUuid, r._parity ?? {});
+  for (const r of profile.perTarget ?? []) byUuid.set(r.target.actorUuid, flattenRow(r, kind));
   push("perTarget.count", (profile.perTarget ?? []).length, arRows.length);
   for (const r of arRows) {
     const p = byUuid.get(r.actorUuid);
