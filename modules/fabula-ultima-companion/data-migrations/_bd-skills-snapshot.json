@@ -400,6 +400,176 @@
     "effects": []
   },
   {
+    "name": "Cognitive Focus",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
+    "folderPath": [
+      "Battle Director",
+      "Esper",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268157,
+      "props": {
+        "name": "Cognitive Focus",
+        "level": "1",
+        "max_level": "5",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "isOffensiveSpell": false,
+        "isCheck": false,
+        "isHeroic": false,
+        "isFacet": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "class": "Esper",
+        "skill_type": "Passive",
+        "cost": "",
+        "skill_target": "",
+        "duration": "",
+        "skill_range": "",
+        "heroic_requirement": "",
+        "type_damage": "",
+        "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span>, and/or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>. Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.</p><p>You gain a bonus equal to <strong>【SL】</strong> to <strong>Checks</strong> you perform to examine your <strong>focus</strong>, as well as to your <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong> for 【⚔️Attack】 and 【⚡Offensive Spell】 that include your <strong>focus</strong> among the targets. When you cause your <strong>focus</strong> to recover <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, they recover <strong>【SL × 2】</strong> additional <strong>HP</strong> and/or <strong>MP</strong>, respectively.</p>",
+        "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Checks Bonus</strong></p></td><td><p><strong>Extra HP/MP to Focus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>+2</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>+4</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>+6</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>+8</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td><td><p>+10</p></td></tr></tbody></table>",
+        "skill_animation_mode": "default",
+        "active_effect_config_table": {},
+        "ignore_hr": false,
+        "defense_target_type": "def",
+        "isReaction": true,
+        "isZeroPower": false,
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "custom_logic_action": "",
+        "custom_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[CL-RES][CognitiveFocus]\";</p><p>const ICON_URL = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png\";</p><p>const STATUS_ID = \"oni-cognitive-focus\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>if (DEBUG) console.warn(TAG, \"Missing __PAYLOAD\");</p><p>return;</p><p>}</p><p>const attackerDoc = await fromUuid(p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\");</p><p>const casterActor = attackerDoc?.actor ?? attackerDoc;</p><p>const casterTokenUuid = attackerDoc?.document?.uuid ?? attackerDoc?.uuid ?? \"\";</p><p>const targetUuids = Array.isArray(p?.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? \"\";</p><p>if (!firstTargetUuid) {</p><p>if (DEBUG) console.warn(TAG, \"No target found.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>const targetTokenUuid = targetDoc?.document?.uuid ?? targetDoc?.uuid ?? \"\";</p><p>if (!casterActor || !targetActor) {</p><p>if (DEBUG) {</p><p>console.warn(TAG, \"Missing caster or target.\", {</p><p>caster: casterActor?.name ?? null,</p><p>target: targetActor?.name ?? null</p><p>});</p><p>}</p><p>return;</p><p>}</p><p>const cognitiveFocusItem = casterActor.items.find(i =&gt; i.name === \"Cognitive Focus\");</p><p>const skillLevel = Math.max(</p><p>0,</p><p>parseInt(cognitiveFocusItem?.system?.props?.level ?? \"0\", 10) || 0</p><p>);</p><p>// Register visible token status icon once</p><p>if (!CONFIG.statusEffects.some(se =&gt; se.id === STATUS_ID)) {</p><p>CONFIG.statusEffects.push({</p><p>id: STATUS_ID,</p><p>name: \"Focus\",</p><p>img: ICON_URL</p><p>});</p><p>}</p><p>// Remove previous Focus from THIS same caster on this target</p><p>const previousFocus = targetActor.effects.filter(e =&gt;</p><p>e.name === \"Focus\" &amp;&amp;</p><p>String(e.getFlag(\"oni\", \"cognitiveFocus\")?.casterActorId ?? \"\") === String(casterActor.id)</p><p>);</p><p>if (previousFocus.length &gt; 0) {</p><p>await targetActor.deleteEmbeddedDocuments(</p><p>\"ActiveEffect\",</p><p>previousFocus.map(e =&gt; e.id)</p><p>);</p><p>}</p><p>const effectData = {</p><p>name: \"Focus\",</p><p>img: ICON_URL,</p><p>description: `Focus applied by ${casterActor.name}. Removed at the start of ${casterActor.name}'s next turn.`,</p><p>disabled: false,</p><p>changes: [],</p><p>statuses: [STATUS_ID],</p><p>duration: {},</p><p>flags: {</p><p>oni: {</p><p>cognitiveFocus: {</p><p>active: true,</p><p>sourceSkill: \"Cognitive Focus\",</p><p>casterActorId: casterActor.id,</p><p>casterTokenUuid,</p><p>targetTokenUuid,</p><p>skillLevel,</p><p>appliedAt: Date.now()</p><p>}</p><p>}</p><p>}</p><p>};</p><p>const [effect] = await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Focus applied.\", {</p><p>caster: casterActor.name,</p><p>target: targetActor.name,</p><p>skillLevel,</p><p>effectId: effect?.id</p><p>});</p><p>}</p><p>// Auto-remove at the START of the caster's NEXT turn</p><p>const combat = game.combat;</p><p>const casterCombatant = combat?.combatants?.find(c =&gt; c.actor?.id === casterActor.id) ?? null;</p><p>const casterCombatantId = casterCombatant?.id ?? null;</p><p>if (!combat || !casterCombatantId) {</p><p>if (DEBUG) {</p><p>console.log(TAG, \"No combat / no caster combatant. Focus applied without combat auto-removal hook.\");</p><p>}</p><p>return;</p><p>}</p><p>let hasPassedAwayFromCaster = false;</p><p>let lastSeenKey = null;</p><p>const hookId = Hooks.on(\"updateCombat\", async (updatedCombat, changed) =&gt; {</p><p>if (changed.turn === undefined) return;</p><p>if (typeof updatedCombat.turn !== \"number\") return;</p><p>const activeCombatantId = updatedCombat.combatant?.id ?? null;</p><p>const dedupeKey = `${updatedCombat.id}:${updatedCombat.round}:${updatedCombat.turn}:${activeCombatantId}`;</p><p>if (dedupeKey === lastSeenKey) return;</p><p>lastSeenKey = dedupeKey;</p><p>// Wait until combat has moved away from the caster at least once</p><p>if (activeCombatantId !== casterCombatantId) {</p><p>hasPassedAwayFromCaster = true;</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Turn moved away from caster. Waiting for caster next turn start.\", {</p><p>activeCombatantId,</p><p>casterCombatantId</p><p>});</p><p>}</p><p>return;</p><p>}</p><p>// Ignore the current/original caster turn when the effect was first created</p><p>if (!hasPassedAwayFromCaster) {</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Still on original caster turn. Ignoring.\");</p><p>}</p><p>return;</p><p>}</p><p>Hooks.off(\"updateCombat\", hookId);</p><p>const liveEffect = targetActor.effects.get(effect.id);</p><p>if (liveEffect) {</p><p>await liveEffect.delete();</p><p>}</p><p>if (DEBUG) {</p><p>console.log(TAG, \"Focus removed at start of caster next turn.\", {</p><p>caster: casterActor.name,</p><p>target: targetActor.name</p><p>});</p><p>}</p><p>});</p>",
+        "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "turn_start",
+            "reaction_source": "self",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_passive_target": "",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "cf_apply"
+          },
+          "1": {
+            "$deleted": false,
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_passive_mode": "force",
+            "reaction_action_kind": "Attack,Spell",
+            "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
+            "reaction_effect_ref": "cf_acc",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_passive_target": ""
+          }
+        },
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "cf_pick",
+            "effect_kind": "targeting",
+            "menu_title": "Cognitive Focus",
+            "menu_option_refs": "cf_ally, cf_enemy",
+            "menu_option_labels": "Focus an ally|Focus a Dazed / Enraged / Shaken enemy",
+            "candidate_source": "combat",
+            "mode": "exact",
+            "count": 1,
+            "exclude_self": true,
+            "target_filter": "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED + HAS_STATUS_SHAKEN)",
+            "skip_when_passive": false,
+            "auto_target": "confirm"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "cf_apply",
+            "effect_kind": "apply_ae",
+            "candidate_source": "combat",
+            "category": "ally",
+            "mode": "exact",
+            "count": 1,
+            "ae_template_ref": "Cognitive Focus",
+            "target_ref": "cf_pick",
+            "ae_duplicate_mode": "replace_per_caster"
+          },
+          "2": {
+            "$deleted": false,
+            "effect_label": "cf_acc",
+            "effect_kind": "adjust_accuracy",
+            "accuracy_operation": "add",
+            "accuracy_amount": "SL"
+          },
+          "3": {
+            "$deleted": false,
+            "effect_label": "cf_heal",
+            "effect_kind": "per_target_grant_bonus",
+            "grant_amount": "SL * 2",
+            "condition_formula": "TARGET_HAS_MY_FOCUS == 1"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "8ta8kqa1PLv1b04D"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": [
+      {
+        "name": "Cognitive Focus",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/OvermindMaster1.png",
+        "transfer": false,
+        "disabled": false,
+        "statuses": [
+          "fud-focus"
+        ],
+        "duration": {
+          "rounds": 1,
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "description": "<p><em>Cognitive Focus:</em> You are the focus of the creature that applied this.</p>",
+        "changes": [],
+        "flags": {
+          "fabula-ultima-companion": {
+            "tags": []
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "0Up4BNAxtoUC23jq",
+            "originalId": "u9T5z4naBYQrVOgf",
+            "originalUuid": "Item.0Up4BNAxtoUC23jq.ActiveEffect.u9T5z4naBYQrVOgf",
+            "isFromTemplate": false
+          }
+        },
+        "type": "base",
+        "system": {},
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
     "name": "Rampart",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
@@ -2557,7 +2727,7 @@
     ],
     "system": {
       "template": "j0F5Msw5RZ8aIB3j",
-      "templateSystemUniqueVersion": 3023268157,
+      "templateSystemUniqueVersion": 2666163372,
       "props": {
         "name": "Beyond the Realms of Death",
         "level": "1",
@@ -2603,21 +2773,40 @@
             "reaction_passive_mode": "force",
             "reaction_resource_filter": "hp",
             "condition_formula": "SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0",
-            "reaction_effect_ref": "bortd_gain"
+            "reaction_effect_ref": "bortd_gain",
+            "requires_skill": "",
+            "reaction_isPassive": false,
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": ""
           },
           "1": {
             "reaction_trigger": "conflict_start",
             "reaction_source": "",
             "reaction_effect_ref": "bortd_seed",
             "reaction_passive_mode": "force",
-            "reaction_passive_target": "self"
+            "reaction_passive_target": "self",
+            "condition_formula": "",
+            "requires_skill": "",
+            "reaction_isPassive": false,
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_debuff_count_target": "",
+            "reaction_debuff_count_min": ""
           }
         },
         "effect_table": {
           "0": {
             "effect_label": "bortd_self",
             "effect_kind": "targeting",
-            "candidate_source": "self"
+            "candidate_source": "self",
+            "auto_confirm_when_obvious": true,
+            "exclude_self": false,
+            "skip_when_passive": true,
+            "target_prompt": "",
+            "category": "",
+            "mode": "exact",
+            "count": "1",
+            "iteration_mode": "together"
           },
           "1": {
             "effect_label": "bortd_gain",
@@ -2650,7 +2839,8 @@
             "ae_initial_charges": "1",
             "ae_initial_charges_max": "1"
           }
-        }
+        },
+        "on_activate_effect_ref": ""
       },
       "unique": false,
       "uniqueId": "qdGOPTKJQ2YI6LUl"
