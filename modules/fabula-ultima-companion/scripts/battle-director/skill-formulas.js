@@ -1686,20 +1686,33 @@ export function healReceivingMultiplier(targetActor) {
 // `adjust` is { op, value, round } (e.g. Potion Rain: multiply 0.5 round up).
 // Absent / unparseable → no-op, so a non-adjusted heal is untouched. `round`
 // (up default, RAW "round up") only affects fractional multiply results.
+// Shared adjustment arithmetic — the ONE op table used by both damage ops
+// (applyDamageOp, which delegates here) and grant adjustments (applyGrantAdjust).
+// Pure integer/float math; rounding for a fractional multiply is the caller's call.
+export function applyAdjustOp(base, op, value) {
+  switch (op) {
+    case "add":      return base + value;
+    case "subtract": return base - value;
+    case "multiply": return base * value;
+    case "set":      return value;
+    case "cap":      return Math.min(base, value); // upper bound
+    case "floor":    return Math.max(base, value); // lower bound
+    default:         return base;
+  }
+}
+
 export function applyGrantAdjust(amount, adjust) {
   const a = Number(amount) || 0;
   if (!adjust) return a;
   const v = Number(adjust.value);
   if (!Number.isFinite(v)) return a;
-  const round = String(adjust.round ?? "up").toLowerCase();
-  switch (String(adjust.op ?? "add").toLowerCase()) {
-    case "multiply": { const r = a * v; return round === "down" ? Math.floor(r) : Math.ceil(r); }
-    case "set":   return v;
-    case "cap":   return Math.min(a, v);
-    case "floor": return Math.max(a, v);
-    case "add":
-    default:      return a + v;
-  }
+  // Grant ops are {multiply,set,cap,floor}; anything else (incl. "add"/unknown)
+  // is add — matches the legacy switch's default. Multiply rounds up unless "down".
+  const op = String(adjust.op ?? "add").toLowerCase();
+  const eff = (op === "multiply" || op === "set" || op === "cap" || op === "floor") ? op : "add";
+  const r = applyAdjustOp(a, eff, v);
+  if (eff === "multiply") return String(adjust.round ?? "up").toLowerCase() === "down" ? Math.floor(r) : Math.ceil(r);
+  return r;
 }
 
 // ── Crit detection ─────────────────────────────────────────────────────

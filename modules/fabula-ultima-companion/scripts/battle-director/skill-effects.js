@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
@@ -1481,15 +1481,7 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
 // lower bound. Mercy ("survive at 1") = incoming cap at `CUR_HP - 1`.
 const DAMAGE_OPS = new Set(["add", "subtract", "multiply", "set", "cap", "floor"]);
 export function applyDamageOp(d, op, amount) {
-  switch (op) {
-    case "add":      return d + amount;
-    case "subtract": return d - amount;
-    case "multiply": return d * amount;
-    case "set":      return amount;
-    case "cap":      return Math.min(d, amount); // upper bound
-    case "floor":    return Math.max(d, amount); // lower bound
-    default:         return d;
-  }
+  return applyAdjustOp(d, op, amount); // shared op table (skill-formulas)
 }
 function readAdjustRow(row) {
   return {
