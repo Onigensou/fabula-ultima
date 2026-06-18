@@ -596,36 +596,40 @@ export function ensureStyles() {
       color: #15489c;
     }
 
-    /* ── Effect section: Action Keyword + status chips ──
-       Keywords are the card-game-style headline (MTG keyword vibe) — bold,
-       uppercase, accent-bordered, icon-prefixed, sitting in their own row at
-       the top of the Effect section. Status chips are the inline term tags
-       inside the prose. Both are clickable → open the explanation tooltip. */
+    /* ── Effect section: Action Keyword + status terms ──
+       No pill badges — inline bold+underline text with a small icon prefix, so
+       the terms read as part of the prose without eating its focus. Keywords
+       sit in their own row at the top of the Effect section and add a stylized
+       diamond bullet + accent tint to mark them as the card's headline rule.
+       Both are clickable → open the explanation tooltip. */
     .fud-bf-card .fud-bf-keyword-row {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+      display: flex; flex-wrap: wrap; gap: 3px 14px; margin-bottom: 7px;
     }
-    .fud-bf-card .fud-bf-effect-chip .fud-kw-chip-icon {
-      width: 16px; height: 16px; object-fit: contain;
-      margin-right: 5px; border: none; background: transparent;
-      border-radius: 0; box-shadow: none; flex-shrink: 0;
+    .fud-bf-card .fud-kw-term {
+      display: inline-flex; align-items: center; gap: 4px;
+      cursor: pointer; user-select: none; vertical-align: text-bottom;
+      transition: filter .1s ease, opacity .1s ease, transform .06s ease;
     }
-    .fud-bf-card .fud-bf-effect-chip.is-clickable,
-    .fud-bf-card .fud-bf-effect-chip.is-keyword {
-      cursor: pointer; user-select: none;
-      transition: filter .1s ease, box-shadow .12s ease, transform .06s ease;
+    .fud-bf-card .fud-kw-term:active { transform: translateY(1px); }
+    .fud-bf-card .fud-kw-term .fud-kw-term-icon {
+      width: 15px; height: 15px; object-fit: contain;
+      border: none; background: transparent; border-radius: 0; box-shadow: none;
+      flex-shrink: 0;
     }
-    .fud-bf-card .fud-bf-effect-chip.is-clickable:hover,
-    .fud-bf-card .fud-bf-effect-chip.is-keyword:hover { filter: brightness(1.06); }
-    .fud-bf-card .fud-bf-effect-chip.is-clickable:active,
-    .fud-bf-card .fud-bf-effect-chip.is-keyword:active { transform: translateY(1px); }
-    .fud-bf-card .fud-bf-effect-chip.is-keyword {
-      padding: 3px 11px;
-      font-size: 12px; font-weight: 900;
-      letter-spacing: .5px; text-transform: uppercase;
-      border-color: #c98a2a;
-      background: linear-gradient(180deg, rgba(255,213,128,.30), rgba(201,138,42,.20));
-      color: #7a4e12;
-      box-shadow: 0 1px 3px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.4);
+    .fud-bf-card .fud-kw-term .fud-kw-label {
+      font-weight: 800; text-decoration: underline; text-underline-offset: 2px;
+    }
+    .fud-bf-card .fud-kw-term:hover .fud-kw-label { filter: brightness(1.18); opacity: .82; }
+    /* Status term — reads in the prose ink color. */
+    .fud-bf-card .fud-kw-term.is-status { color: var(--fud-ink, #3a3228); }
+    /* Action keyword — uppercase accent text + diamond bullet prefix. */
+    .fud-bf-card .fud-kw-term.is-keyword { color: #8a5a12; }
+    .fud-bf-card .fud-kw-term.is-keyword .fud-kw-label {
+      text-transform: uppercase; letter-spacing: .3px; font-size: 12px;
+    }
+    .fud-bf-card .fud-kw-term .fud-kw-bullet {
+      color: #c98a2a; font-size: 9px; line-height: 1;
+      transform: translateY(-1px); flex-shrink: 0;
     }
 
     /* Crit / Fumble float banner */
@@ -3356,21 +3360,26 @@ function buildReactionPillRow(prePassives) {
 // Every chip carries `data-fud-kw="<registry-key>"` so the card click handler
 // can open the explanation tooltip (and director-ui-sfx plays the click cue).
 
-// Build the small icon fragment for a chip from a registry entry. Returns ""
+// Build the small icon prefix for a term from a registry entry. Returns ""
 // when the icon URL is missing or unsafe for inline src injection.
 function chipIconHTML(icon) {
   const safe = safeImgUrl(icon);
-  return safe ? `<img class="fud-kw-chip-icon" src="${escapeHtml(safe)}" alt="">` : "";
+  return safe ? `<img class="fud-kw-term-icon" src="${escapeHtml(safe)}" alt="">` : "";
 }
 
+// Action Keyword — diamond bullet + icon + bold/underline uppercase label.
 function keywordChipHTML({ key, label, icon }) {
-  return `<span class="fud-bf-effect-chip is-keyword" role="button" tabindex="0" `
-    + `data-fud-kw="${escapeHtml(key)}">${chipIconHTML(icon)}${escapeHtml(label)}</span>`;
+  return `<span class="fud-kw-term is-keyword" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
+    + `<span class="fud-kw-bullet" aria-hidden="true">◆</span>`
+    + `${chipIconHTML(icon)}`
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
 }
 
+// Status term — icon + bold/underline label, inline in the prose.
 function statusChipHTML({ key, label, icon }) {
-  return `<span class="fud-bf-effect-chip is-status is-clickable" role="button" tabindex="0" `
-    + `data-fud-kw="${escapeHtml(key)}">${chipIconHTML(icon)}${escapeHtml(label)}</span>`;
+  return `<span class="fud-kw-term is-status" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}">`
+    + `${chipIconHTML(icon)}`
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
 }
 
 // Parse a description HTML string: extract Action Keywords, swap status links
