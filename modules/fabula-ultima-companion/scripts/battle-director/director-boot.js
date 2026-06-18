@@ -44,6 +44,7 @@ import { initTestBattleTool } from "./test-battle-tool.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
+import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
@@ -1272,6 +1273,13 @@ Hooks.once("ready", () => {
   // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
   try { initDirectorUiSfx(); }
   catch (e) { warn("initDirectorUiSfx on ready threw", e); }
+
+  // Keyword smart-suggestion — GM-only ProseMirror autocomplete that suggests
+  // registry keywords/statuses as you type in any rich-text editor and inserts
+  // the content-link. Independent of the Active Effect key-suggestion script
+  // (different hook + surface).
+  try { initKeywordSuggest(); }
+  catch (e) { warn("initKeywordSuggest on ready threw", e); }
 
   // Director UI surface registry — DOM observer that tracks which director UI
   // components are on screen, per client. Queryable via the surfaces API.

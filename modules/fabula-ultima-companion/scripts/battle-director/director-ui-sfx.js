@@ -41,6 +41,8 @@ const INTERACTIVE_SELECTOR = [
   "[data-fud-reaction-action]",
   ".fud-bf-equip-option",
   ".fud-bf-reaction-pill",
+  // Keyword / status chips in the Effect section (open the term tooltip).
+  "[data-fud-kw]",
   // Pickers.
   ".fud-app-attr-btn", ".fud-app-dl-step", ".fud-app-dl-preset", ".fud-app-btn",
   ".fud-target-btn",
