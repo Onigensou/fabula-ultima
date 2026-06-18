@@ -4790,7 +4790,14 @@ function buildMenuOptions(row, ctx) {
         warn(`skill-effects.open_action_menu: ref "${ref}" → no matching effect_table row; skipping`);
         continue;
       }
-      if (!optionGatePasses(refRow)) continue;
+      const _gatePass = optionGatePasses(refRow);
+      // condition_formula gates the option. A FAILED gate is HIDDEN by default,
+      // OR — when `disable_ui_type` is set ("dim"/"disabled") — shown greyed and
+      // non-clickable with a `disabled_reason` badge (the Action-Menu look). So
+      // Tinkerer Gadgets keeps hiding tier-locked options, while Create Phantasm
+      // dims "Command an existing Phantasm" + "No Phantasm on the field" when none.
+      const _uiType = String(refRow?.disable_ui_type ?? "").trim().toLowerCase();
+      if (!_gatePass && (!_uiType || _uiType === "hide")) continue;
       // Menu-row text wins; fall back to the option row's legacy fields, then
       // to the ref label. (Empty entries in the |-list also fall through.)
       const label = (rowLabels[i] && rowLabels[i] !== "")
@@ -4808,7 +4815,8 @@ function buildMenuOptions(row, ctx) {
       const color = (rowColors[i] && rowColors[i] !== "")
         ? rowColors[i]
         : (refRow.menu_color ?? null);
-      options.push({ label, description: desc ? String(desc) : null, icon: icon || null, color: color || null });
+      options.push({ label, description: desc ? String(desc) : null, icon: icon || null, color: color || null,
+        disabled: !_gatePass, badge: _gatePass ? null : String(refRow?.disabled_reason ?? "Unavailable") });
       optionRows.push(refRow);
     }
   }
@@ -4818,14 +4826,22 @@ function buildMenuOptions(row, ctx) {
     const inline = Array.isArray(optsRaw)
       ? optsRaw
       : (optsRaw && typeof optsRaw === "object" ? Object.values(optsRaw) : []);
-    const valid = inline.filter((o) => o && typeof o === "object" && o.label && optionGatePasses(o));
-    options = valid.map((o) => ({
-      label: String(o.label),
-      description: o.description ? String(o.description) : null,
-      icon: o.menu_icon ?? o.icon ?? null,
-      color: o.menu_color ?? o.color ?? null,
-    }));
-    optionRows = valid;
+    const named = inline.filter((o) => o && typeof o === "object" && o.label);
+    options = []; optionRows = [];
+    for (const o of named) {
+      const gatePass = optionGatePasses(o);
+      const uiType = String(o?.disable_ui_type ?? "").trim().toLowerCase();
+      if (!gatePass && (!uiType || uiType === "hide")) continue;
+      options.push({
+        label: String(o.label),
+        description: o.description ? String(o.description) : null,
+        icon: o.menu_icon ?? o.icon ?? null,
+        color: o.menu_color ?? o.color ?? null,
+        disabled: !gatePass,
+        badge: gatePass ? null : String(o?.disabled_reason ?? "Unavailable"),
+      });
+      optionRows.push(o);
+    }
   }
   return { options, optionRows };
 }
@@ -4855,6 +4871,11 @@ function menuOptionsToRows(opts) {
     secondary: o.description ? escapeMenuHtml(o.description) : null,
     imageUrl: o.icon ?? null,
     color: o.color ?? null,
+    // disable_ui_type:"dim" options arrive disabled + reason-badged (greyed,
+    // non-clickable, skipped by keyboard nav — see list-picker).
+    disabled: !!o.disabled,
+    badge: o.badge ? escapeMenuHtml(o.badge) : null,
+    badgeTone: o.badge ? "danger" : undefined,
   }));
 }
 
@@ -5665,6 +5686,13 @@ async function applySummonEffect(row, ctx) {
   const count = Math.max(1, Number(row.summon_count ?? 1) || 1);
   const actThisRound = row.summon_act_this_round === true
     || String(row.summon_act_this_round ?? "").trim().toLowerCase() === "true";
+  // summon_type — generic kind tag. "phantasm" = Illusionist summon that NEVER
+  // takes its own turn (acts on the summoner's turn per FU rules); the token is
+  // stamped isPhantasm so director-combat pins it to 0 turns/round (reload-safe)
+  // and own_summons targeting can find it. Empty / any other value = today's
+  // full own-turn combatant (Numen, Fafnir drakes).
+  const summonType = String(row.summon_type ?? "").trim().toLowerCase();
+  const asPhantasm = summonType === "phantasm";
 
   const director = ctx.director
     ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
@@ -5719,18 +5747,24 @@ async function applySummonEffect(row, ctx) {
       let c = null;
       try {
         c = dc.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor ?? actor, side, disposition });
+        // Phantasm: never takes its own turn (acts on the summoner's turn). Pin
+        // 0 turns/round now; director-combat._effectiveActivation also returns 0
+        // for isPhantasm tokens so it stays 0 across round resets + reload.
+        if (asPhantasm && c) { c.turnsPerRound = 0; c.turnsRemaining = 0; }
         // act-this-round gate: false → ineligible until the next round wrap, which
         // refills turnsRemaining = turnsPerRound via _resetRoundCounters.
-        if (!actThisRound && c) c.turnsRemaining = 0;
+        else if (!actThisRound && c) c.turnsRemaining = 0;
       } catch (e) { warn(`skill-effects.summon: addCombatant threw for ${actor.name}`, e); }
-      // Tag the spawned token so the battle-end summon sweep reaps it.
+      // Tag the spawned token so the battle-end summon sweep reaps it (+ isPhantasm
+      // so _effectiveActivation pins it to 0 turns and own_summons can find it).
       try {
         await tokenDoc.update({
           [`flags.${FLAG_NS}.summonedBy`]: summonerUuid,
           [`flags.${FLAG_NS}.isSummon`]: true,
+          ...(asPhantasm ? { [`flags.${FLAG_NS}.isPhantasm`]: true } : {}),
         });
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
-      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound });
+      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm });
     }
   }
 

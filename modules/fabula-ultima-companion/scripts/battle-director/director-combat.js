@@ -68,6 +68,15 @@ function readActivations(actor) {
   return Math.max(0, base + bonus);
 }
 
+// A combatant is a Phantasm when its actor carries `isPhantasm` (the Fox fire
+// template) OR its token was stamped `isPhantasm` by summon_type:"phantasm".
+// Reads only persistent state so the 0-turns/round result survives reload.
+function combatantIsPhantasm(c) {
+  if (c?.actorDoc?.system?.props?.isPhantasm) return true;
+  try { return !!c?.tokenDoc?.getFlag?.("fabula-ultima-companion", "isPhantasm"); }
+  catch { return false; }
+}
+
 function readBool(actor, keys) {
   for (const k of keys) {
     const v = actor?.system?.props?.[k];
@@ -380,6 +389,10 @@ export class DirectorCombat {
   // changing `activation`/`bonus_activation` is picked up at the next round.
   _effectiveActivation(c) {
     if (this.soloPlayerActorUuid && c.actorUuid !== this.soloPlayerActorUuid) return 0;
+    // Phantasms (Illusionist summons) never take their own turn — they act on
+    // the summoner's turn (FU summon rules). 0 turns/round, recomputed every
+    // round + after reload from persistent state (actor prop or token flag).
+    if (combatantIsPhantasm(c)) return 0;
     return readActivations(c.actorDoc);
   }
 

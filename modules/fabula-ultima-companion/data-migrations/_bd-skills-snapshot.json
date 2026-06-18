@@ -781,7 +781,7 @@
               "type": "default"
             },
             "value": 0,
-            "visible": true
+            "visible": false
           }
         },
         "type": "base",
@@ -2721,7 +2721,70 @@
       "props": {
         "skill_type": "Spell",
         "reaction_config_table": {},
-        "effect_table": {}
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "cps_menu",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Create Phantasm: Strike",
+            "menu_option_refs": "cps_create, cps_existing",
+            "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "cps_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "2": {
+            "$deleted": false,
+            "effect_label": "cps_create",
+            "effect_kind": "chain",
+            "chain_steps": "cps_cost, cps_summon",
+            "condition_formula": "CUR_MP >= 10",
+            "disable_ui_type": "dim",
+            "disabled_reason": "Not enough MP"
+          },
+          "3": {
+            "$deleted": false,
+            "effect_label": "cps_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "10",
+            "target_ref": "cps_self",
+            "on_empty": "abort"
+          },
+          "4": {
+            "$deleted": false,
+            "effect_label": "cps_summon",
+            "effect_kind": "summon",
+            "summon_actor": "Fox fire",
+            "summon_count": 1,
+            "summon_type": "phantasm"
+          },
+          "5": {
+            "$deleted": false,
+            "effect_label": "cps_existing",
+            "effect_kind": "targeting",
+            "candidate_source": "own_summons",
+            "mode": "exact",
+            "count": 1,
+            "condition_formula": "OWN_SUMMON_COUNT >= 1",
+            "disable_ui_type": "dim",
+            "disabled_reason": "No Phantasm on the field"
+          }
+        },
+        "isCheck": true,
+        "rolled_atr1": "INS",
+        "rolled_atr2": "WLP",
+        "defense_target_type": "mdef",
+        "type_damage": "Elementaless",
+        "damage_bonus": "12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2",
+        "action_keywords": "pierce",
+        "skill_target": "One Enemy",
+        "cost": "",
+        "pre_activate_effect_ref": "cps_menu",
+        "on_activate_effect_ref": "cps_menu"
       },
       "unique": false,
       "uniqueId": "feHphjgfvJqxp7Qa"
@@ -3335,7 +3398,7 @@
               "type": "default"
             },
             "value": 0,
-            "visible": true
+            "visible": false
           },
           "custom-system-builder": {
             "originalParentId": "qdGOPTKJQ2YI6LUl",

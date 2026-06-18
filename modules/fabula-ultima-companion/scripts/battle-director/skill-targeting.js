@@ -409,6 +409,7 @@ async function buildCandidatePool(source, ctx) {
   switch (source) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
+    case "own_summons":         return collectOwnSummons(ctx);
     case "action_targets":      return collectActionTargets(ctx);
     case "hit_action_targets":  return collectHitActionTargets(ctx);
     case "trigger_actor":       return collectTriggerActor(ctx);
@@ -424,6 +425,26 @@ async function buildCandidatePool(source, ctx) {
 
 function collectSelfTokens(ctx) {
   return ctx.reactorToken ? [ctx.reactorToken] : [];
+}
+
+// "own_summons" — combatant tokens THIS actor summoned (token flag
+// summonedBy == me) that are still summons/phantasms (isSummon / isPhantasm).
+// Powers "Command an existing Phantasm" (Create Phantasm: Strike) and is reused
+// by Detonate / Illusory Shield / Zero Power. Empty pool → the targeting row
+// aborts the chain cleanly (no phantasm to command).
+function collectOwnSummons(ctx) {
+  const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+  if (!meUuid) return [];
+  const NS = "fabula-ultima-companion";
+  const out = [];
+  for (const t of collectCombatTokens(ctx)) {
+    if (!t?.actor) continue;
+    const f = t.flags?.[NS] ?? {};
+    if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (!(f.isSummon || f.isPhantasm)) continue;
+    out.push(t);
+  }
+  return out;
 }
 
 // "self OR my (ally) focus" — the reactor's own token plus any ALLY carrying a

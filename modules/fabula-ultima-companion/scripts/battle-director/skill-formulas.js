@@ -402,6 +402,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // ally focus. Per-applier match (actorHasNamedStatusFromApplier) so a
       // sibling Esper's focus doesn't qualify.
       case "MY_FOCUS_IN_CRISIS": return myFocusInCrisis(actor, payload) ? 1 : 0;
+      // Number of live summons (incl. phantasms) THIS actor put on the field —
+      // tokens flagged summonedBy == me + isSummon/isPhantasm. Gates Create
+      // Phantasm: Strike's "Command an existing Phantasm" menu option
+      // (OWN_SUMMON_COUNT >= 1). General (not per-skill); reused for the 4-cap.
+      case "OWN_SUMMON_COUNT": return ownSummonCount(actor);
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1422,6 +1427,24 @@ function myFocusInCrisis(actor, payload) {
     if (consider(t?.actor, t.document?.disposition ?? t.disposition)) return true;
   }
   return false;
+}
+
+// Count live summons (incl. phantasms) THIS actor put on the field — canvas
+// tokens whose `summonedBy` flag == the actor's uuid and that still carry
+// isSummon/isPhantasm. Powers OWN_SUMMON_COUNT.
+function ownSummonCount(actor) {
+  const meUuid = String(actor?.uuid ?? "").trim();
+  if (!meUuid) return 0;
+  const NS = "fabula-ultima-companion";
+  let n = 0;
+  for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+    const td = t?.document;
+    if (!td?.actor) continue;
+    const f = td.flags?.[NS] ?? {};
+    if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (f.isSummon || f.isPhantasm) n++;
+  }
+  return n;
 }
 
 // Bond data lives at `actor.system.props.bond_N` / `emotion_N_M`.
