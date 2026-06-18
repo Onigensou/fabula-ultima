@@ -392,6 +392,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // enemy is bloodied). Crisis = the canonical "Crisis" AE (crisis-reactor).
       case "ENEMY_IN_CRISIS":
       case "ANY_ENEMY_IN_CRISIS": return anyEnemyInCrisis(actor) ? 1 : 0;
+      // 1 if an ALLY who is THIS actor's focus (carries a Focus AE — status
+      // fud-focus — that this actor applied) is currently in Crisis, else 0.
+      // Life Transference's eligibility half: "you may heal yourself or an ALLY
+      // who is your focus, IF in Crisis" → gate the reaction on
+      // `HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1` (self OR ally-focus).
+      // Ally-restricted because the focus can be an enemy (Cognitive Focus may
+      // mark a Dazed/Enraged/Shaken enemy) but Life Transference only heals an
+      // ally focus. Per-applier match (actorHasNamedStatusFromApplier) so a
+      // sibling Esper's focus doesn't qualify.
+      case "MY_FOCUS_IN_CRISIS": return myFocusInCrisis(actor, payload) ? 1 : 0;
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1201,7 +1211,7 @@ function actorHasNamedStatus(actor, needle) {
 // have been applied by the given applier — matched TOKEN-first, then actor uuid
 // (same discriminator as TARGET_GRAPPLED_BY_SELF, so one NPC token's mark doesn't
 // credit a sibling token sharing the base actor). Powers ANY_TARGET_HAS_MY_<STATUS>.
-function actorHasNamedStatusFromApplier(actor, needle, applierTokenUuid, applierActorUuid) {
+export function actorHasNamedStatusFromApplier(actor, needle, applierTokenUuid, applierActorUuid) {
   if (!actor?.effects || !needle) return false;
   const effects = actor.effects.contents ?? Array.from(actor.effects);
   for (const e of effects) {
@@ -1374,6 +1384,44 @@ function anyEnemyInCrisis(actor) {
       return String(e?.name ?? "").trim().toLowerCase() === "crisis";
     });
   return enemyActorsOf(actor).some(inCrisis);
+}
+
+// 1 if an ALLY who carries THIS actor's Focus AE (status fud-focus, applied by
+// `actor` — per-applier match) is in Crisis, else 0. Powers MY_FOCUS_IN_CRISIS
+// (Life Transference's "heal an ally focus in Crisis" eligibility). Ally =
+// same/neutral disposition (mirrors enemyActorsOf's `d * myDisp >= 0` test);
+// self is skipped (the caller's HAS_STATUS_CRISIS covers the self branch).
+function myFocusInCrisis(actor, payload) {
+  if (!actor) return false;
+  const selfTokenUuid = String(payload?.sourceTokenUuid ?? "").trim();
+  const selfActorUuid = String(actor?.uuid ?? "").trim();
+  const myDisp = _combatDisposition(actor);
+  const isCrisis = (a) =>
+    (a?.effects?.contents ?? []).some((e) => {
+      if (e?.disabled) return false;
+      if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
+      return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+    });
+  const consider = (a, disp) => {
+    if (!a || a === actor) return false;
+    const d = Number(disp);
+    // ally/neutral: not an enemy (same rule as enemyActorsOf, inverted)
+    const isAlly = myDisp == null || !Number.isFinite(d) || d * myDisp >= 0;
+    if (!isAlly) return false;
+    if (!actorHasNamedStatusFromApplier(a, "focus", selfTokenUuid, selfActorUuid)) return false;
+    return isCrisis(a);
+  };
+  const roster = globalThis.game?.combat?.combatants;
+  if (roster && (roster.size || roster.length)) {
+    for (const c of roster) {
+      if (consider(c.actor, c.token?.disposition ?? _combatDisposition(c.actor))) return true;
+    }
+    return false;
+  }
+  for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+    if (consider(t?.actor, t.document?.disposition ?? t.disposition)) return true;
+  }
+  return false;
 }
 
 // Bond data lives at `actor.system.props.bond_N` / `emotion_N_M`.

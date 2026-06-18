@@ -37,6 +37,7 @@ import { getAllegianceOverrides, applyAllegianceOverride } from "./snapshot.js";
 // — saves a row from the effect_table for the most common case.
 const RESERVED_REFS = {
   self:                  { candidate_source: "self" },
+  self_or_my_focus:      { candidate_source: "self_or_my_focus", mode: "exact", count: 1 },
   action_targets:        { candidate_source: "action_targets", mode: "all" },
   hit_action_targets:    { candidate_source: "hit_action_targets", mode: "all" },
   ally_action_targets:   { candidate_source: "action_targets", category: "ally", mode: "all" },
@@ -407,6 +408,7 @@ async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
 async function buildCandidatePool(source, ctx) {
   switch (source) {
     case "self":                return collectSelfTokens(ctx);
+    case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "action_targets":      return collectActionTargets(ctx);
     case "hit_action_targets":  return collectHitActionTargets(ctx);
     case "trigger_actor":       return collectTriggerActor(ctx);
@@ -422,6 +424,32 @@ async function buildCandidatePool(source, ctx) {
 
 function collectSelfTokens(ctx) {
   return ctx.reactorToken ? [ctx.reactorToken] : [];
+}
+
+// "self OR my (ally) focus" — the reactor's own token plus any ALLY carrying a
+// Focus AE (status `fud-focus`) that THIS reactor applied (per-applier match,
+// the same discriminator ANY_TARGET_HAS_MY_FOCUS uses). The Esper focus is the
+// single creature Cognitive Focus marked; this pool lets Life Transference
+// offer "yourself or an ally who is your focus" as one pick. The focus is
+// ally-restricted because Cognitive Focus may mark an ENEMY (Dazed/Enraged/
+// Shaken) and Life Transference only heals an ally focus. Self is always first;
+// the focus is appended only when present (so a Keren with no live ally-focus
+// just heals self). A per-recipient gate (e.g. Crisis) layers on via
+// `target_filter`.
+async function collectSelfOrMyFocusTokens(ctx) {
+  const out = [];
+  const self = ctx.reactorToken;
+  if (self) out.push(self);
+  const selfTokenUuid = String(self?.uuid ?? "").trim();
+  const selfActorUuid = String(ctx.reactorActor?.uuid ?? self?.actor?.uuid ?? "").trim();
+  const { actorHasNamedStatusFromApplier } = await import("./skill-formulas.js");
+  for (const t of collectCombatTokens(ctx)) {
+    if (!t?.actor) continue;
+    if (selfTokenUuid && t.uuid === selfTokenUuid) continue;   // self already added
+    if (!matchesCategory(t, "ally", ctx)) continue;            // ally focuses only
+    if (actorHasNamedStatusFromApplier(t.actor, "focus", selfTokenUuid, selfActorUuid)) out.push(t);
+  }
+  return out;
 }
 
 // Tokens that FAILED the most recent save_check this chain. save_check stamps
