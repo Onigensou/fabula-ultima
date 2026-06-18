@@ -424,6 +424,18 @@ export async function pickFromList({
   document.body.appendChild(root);
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
+  // Tell any on-screen action-card overlay to hide while this menu is up — and
+  // ONLY while it's up. Paired with the close signal in finish()/cleanup() so
+  // the card hides exactly when a picker is genuinely visible (no speculative
+  // out-and-in flash on a pickerless recompute). Idempotent via the flag.
+  let _pickerSignalLive = false;
+  try { Hooks.callAll("fud.actionPickerOpen"); _pickerSignalLive = true; } catch {}
+  const firePickerClose = () => {
+    if (!_pickerSignalLive) return;
+    _pickerSignalLive = false;
+    try { Hooks.callAll("fud.actionPickerClose"); } catch {}
+  };
+
   log(`list-picker: spawned "${title}" with ${flat.length} options`);
 
   // Indices that can receive keyboard focus / number selection (skip disabled).
@@ -504,6 +516,7 @@ export async function pickFromList({
       if (hoverDwellTid) { clearTimeout(hoverDwellTid); hoverDwellTid = null; }
       root.classList.remove("is-visible");
       root.classList.add("is-resolving");
+      firePickerClose();
       despawnTid = setTimeout(() => { try { root.remove(); } catch {} _overlays.delete(key); }, 200);
       if (keyListener) { try { window.removeEventListener("keydown", keyListener, true); } catch {} keyListener = null; }
       resolve(cancelled ? null : value);
@@ -576,6 +589,7 @@ export async function pickFromList({
       try { clearTimeout(despawnTid); } catch {}
       try { clearTimeout(hoverDwellTid); } catch {}
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
+      firePickerClose();
       try { root.remove(); } catch {}
       _overlays.delete(key);
       hideTip();

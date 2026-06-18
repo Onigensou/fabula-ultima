@@ -63,6 +63,20 @@ export async function settleInstance(director, { reason = "", maxIters = 8 } = {
   const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
 
   const firedKeys = new Set();   // reactor-level dedup, shared across passes
+
+  // Re-entrancy guard — "a reaction doesn't trigger from itself by default".
+  // An authored ledger reaction that DEALS damage (Searing Brand's mark =
+  // creature_lose_resource → deal_damage to the bearer) emits a NEW lose_resource
+  // event into the next pass; without a guard that event re-matches the SAME
+  // reaction → it explodes every pass until maxIters drops the residue. We
+  // accumulate each authored reaction's (carrierUuid:rowKey) once it fires and
+  // pass them as `skipEvaluated` on SUBSEQUENT passes, so a reaction never fires
+  // on its own cascade. Crucially the skip set is built from PRIOR passes only —
+  // every event already queued when a pass begins (e.g. a multi-hit attack's
+  // per-hit losses, all in pass 1) still fires the reaction once each; only the
+  // reaction's OWN downstream emission (pass 2+) is suppressed.
+  const authoredFiredEntries = [];     // [{ carrierUuid, rowKey }] for skipEvaluated
+  const authoredFiredSeen = new Set();  // dedup `${carrierUuid}:${rowKey}`
   let iters = 0;
   let fired = 0;
 
@@ -73,6 +87,10 @@ export async function settleInstance(director, { reason = "", maxIters = 8 } = {
     // Take the batch; a fresh sink collects cascade events appended during the
     // drain, which the next pass picks up.
     ctx._postResolveTriggers = [];
+
+    // Snapshot the prior-pass fired set — only these are skipped this pass.
+    const skipEvaluated = authoredFiredEntries.slice();
+    const firedThisPass = [];
 
     for (const cfg of batch) {
       // Built-in engine reactors first (crisis etc.) — they read the event and
@@ -88,8 +106,13 @@ export async function settleInstance(director, { reason = "", maxIters = 8 } = {
         if (LEDGER_FAMILY.has(cfg?.trigger)) {
           const reactors = await collectReactors(director);
           for (const { actor, token } of reactors) {
-            const r = await dispatchReactionMenu({ director, reactor: actor, token, trigger: cfg.trigger, payload: cfg.payload });
-            fired += r?.fired?.length ?? 0;
+            const r = await dispatchReactionMenu({ director, reactor: actor, token, trigger: cfg.trigger, payload: cfg.payload, skipEvaluated });
+            for (const f of (r?.fired ?? [])) {
+              fired += 1;
+              if (f?.carrierUuid != null && f?.rowKey != null) {
+                firedThisPass.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
+              }
+            }
           }
         } else {
           const res = await firePassiveTriggers({ director, ...cfg });
@@ -98,6 +121,14 @@ export async function settleInstance(director, { reason = "", maxIters = 8 } = {
       } catch (e) {
         warn(`settleInstance(${reason}): drain threw for ${cfg?.trigger}`, e);
       }
+    }
+
+    // Promote this pass's authored firings so the NEXT pass skips them (the
+    // self-cascade guard). Deferred to pass end so same-pass siblings aren't
+    // suppressed.
+    for (const e of firedThisPass) {
+      const key = `${e.carrierUuid}:${e.rowKey}`;
+      if (!authoredFiredSeen.has(key)) { authoredFiredSeen.add(key); authoredFiredEntries.push(e); }
     }
   }
 

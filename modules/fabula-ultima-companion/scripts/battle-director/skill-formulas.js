@@ -364,6 +364,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "MAX_MP": return readProp(actor, "max_mp");
       case "CUR_IP": return readProp(actor, "current_ip");
       case "MAX_IP": return readProp(actor, "max_ip");
+      // Boss Zero Power pool (Fafnir). CUR_ZERO_POWER / ZERO_POWER read the
+      // current stack count; used to cap an accumulator trigger (Zero Trigger:
+      // Suffering gains ZP only while ZERO_POWER < 3).
+      case "ZERO_POWER":
+      case "CUR_ZERO_POWER": return readProp(actor, "zero_power_value");
+      case "MAX_ZERO_POWER": return readProp(actor, "max_zero");
       // Status / bond counts
       case "STATUS_COUNT": return countStatusDebuffs(actor);
       // Distinct debuff TYPES across all enemy combatants (Zero Trigger:

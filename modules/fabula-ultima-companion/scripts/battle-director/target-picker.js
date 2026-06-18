@@ -390,6 +390,18 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     `;
     document.body.appendChild(banner);
 
+    // Tell any on-screen action-card overlay to hide while this picker banner
+    // is up — and ONLY while it's up. Paired with the close signal in finish()
+    // so the card hides exactly when a picker is genuinely visible (rather than
+    // being speculatively hidden around every recompute). Idempotent via flag.
+    let _pickerSignalLive = false;
+    try { Hooks.callAll("fud.actionPickerOpen"); _pickerSignalLive = true; } catch {}
+    const firePickerClose = () => {
+      if (!_pickerSignalLive) return;
+      _pickerSignalLive = false;
+      try { Hooks.callAll("fud.actionPickerClose"); } catch {}
+    };
+
     const labelEl = banner.querySelector(".label-line");
     const confirmBtn = banner.querySelector(".fud-target-btn.confirm");
 
@@ -895,6 +907,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         for (const rec of rings.values()) rec.el.classList.remove("is-roulette");
       }
       clearTargetingDim(dimState);
+      firePickerClose();
       try { window.removeEventListener("keydown", onKey, true); } catch {}
       try { canvas.app.view.removeEventListener("pointerdown", handlerClick, true); } catch {}
       try { banner.remove(); } catch {}

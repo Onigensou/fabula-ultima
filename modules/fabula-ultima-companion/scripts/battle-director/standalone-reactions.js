@@ -115,7 +115,14 @@ function scopeKeyFor(trigger, payload) {
   if (trigger === "round_start" || trigger === "round_end") return `${trigger}::r${round}`;
   if (trigger === "turn_start" || trigger === "turn_end") {
     const actingUuid = payload?.actingActorUuid ?? payload?.currentActorUuid ?? "?";
-    return `${trigger}::r${round}::${actingUuid}`;
+    // Per-ACTIVATION discriminator. A boss/elite with multiple activations per
+    // round acts several times as the SAME actor in the SAME round; a bare
+    // round+actor scope would dedup a force turn_start reaction (Zero Trigger:
+    // Suffering's per-turn ZP gain) to ONCE per round. The current combatant's
+    // turnsRemaining differs each activation, so it separates them while still
+    // deduping re-entry WITHIN one activation (free-action detour → SRW re-entry).
+    const act = payload?.actingActivationsRemaining ?? "?";
+    return `${trigger}::r${round}::${actingUuid}::a${act}`;
   }
   return trigger;
 }
@@ -253,6 +260,12 @@ function buildStandalonePayload(director, trigger, extras) {
     currentTokenUuid: director?.dCombat?.current?.tokenUuid ?? null,
     sourceActorUuid: subjectActorUuid,
     sourceTokenUuid: subjectTokenUuid,
+    // Current combatant's remaining activations this round — the per-activation
+    // discriminator the fired-set scope uses so multi-activation bosses re-fire
+    // turn_start/turn_end reactions each activation (see scopeKeyFor).
+    actingActivationsRemaining: subjectTriggers
+      ? (director?.dCombat?.current?.turnsRemaining ?? null)
+      : null,
     ...(extras ?? {}),
   };
 }

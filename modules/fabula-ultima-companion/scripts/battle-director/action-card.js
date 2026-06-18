@@ -4059,9 +4059,6 @@ export async function postActionCard({ director, kind, payload }) {
         && !game.users?.get(routeUserId)?.isGM)
         ? { channel: director.intentChannel, targetUserId: routeUserId, combatId: director.combatId }
         : null;
-      // When routed remotely the GM's card must STAY visible (the player picks
-      // on their own screen); only hide locally for GM/NPC-local picks.
-      const hideDuringPick = !remotePrompt;
       // Player applied but their pill is mid-flight ("submitting" — pending=0,
       // buttons dimmed): if the secondary pick is cancelled, tell THEIR client
       // to restore the actionable pill (revert). No-op for GM-local picks.
@@ -4103,14 +4100,13 @@ export async function postActionCard({ director, kind, payload }) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
             return;
           }
-          // Hide the GM card while a LOCAL targeting picker is up so it doesn't
-          // overlap the JRPG targeting UI. When routed to a player, the picker
-          // is on THEIR screen — keep the GM card visible.
+          // The card auto-hides while the LOCAL targeting picker is up via the
+          // picker-overlay hooks (onPickerOpen/onPickerClose). When routed to a
+          // player, the picker is on THEIR screen and fires the hooks there, so
+          // the GM card correctly stays visible.
           let res = null;
-          if (hideDuringPick) root.classList.add("is-hidden-during-pick");
           try { res = await payload.onAddTargetApply(addTargetCand, remotePrompt); }
           catch (e) { warn("recordPillDecision: onAddTargetApply threw", e); }
-          finally { if (hideDuringPick) root.classList.remove("is-hidden-during-pick"); }
           if (!res?.ok) {
             reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
             revertRemotePill();
@@ -4179,19 +4175,16 @@ export async function postActionCard({ director, kind, payload }) {
               ? await fromUuid(cand.reactorActorUuid).catch(() => null)
               : (payload?.attackerActor ?? null);
             if (reactorActor) {
-              if (hideDuringPick) root.classList.add("is-hidden-during-pick");
-              let menuRes;
-              try {
-                menuRes = await se.previewReactionMenu({
-                  casterActor: reactorActor,
-                  candidate: cand,
-                  payload: cand.payloadAtFire ?? null,
-                  dCombat: director?.dCombat ?? null,
-                  remotePrompt,
-                });
-              } finally {
-                if (hideDuringPick) root.classList.remove("is-hidden-during-pick");
-              }
+              // The card auto-hides while the option-menu is up via the
+              // picker-overlay hooks — only when a menu actually renders (a
+              // no-menu reaction shows nothing, so the card no longer flashes).
+              const menuRes = await se.previewReactionMenu({
+                casterActor: reactorActor,
+                candidate: cand,
+                payload: cand.payloadAtFire ?? null,
+                dCombat: director?.dCombat ?? null,
+                remotePrompt,
+              });
               if (menuRes?.cancelled) {
                 reactionDecisionMap.delete(`${rowKey}:${carrierUuid}`);
                 revertRemotePill();
@@ -4398,13 +4391,6 @@ export async function postActionCard({ director, kind, payload }) {
             round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 
-          // Hide the action card while card-mutations runs — if a
-          // picker prompt fires for a redirect with multiple eligible
-          // targets, the card would otherwise overlap the picker
-          // banner. The hide is unconditional (a single-target
-          // auto-confirm is microtask-fast and not visibly perceptible);
-          // try/finally ensures we always reveal even if the pipeline
-          // throws.
           // SINGLE target-set mutation entrypoint — redirect/accuracy/add_target
           // rewrite the slots, will_deal_damage subjects re-resolve vs the mutated
           // set, then ALL per-target rows re-derive through buildPerTarget with the
@@ -4413,21 +4399,18 @@ export async function postActionCard({ director, kind, payload }) {
           // its internal imports on this file's cross-module cache-bust pattern.
           // When the pick is routed to a player (remotePrompt), the picker is
           // on THEIR screen — keep the GM card visible. Hide only for local picks.
-          const hideHere = !remotePrompt;
-          if (hideHere) root.classList.add("is-hidden-during-pick");
-          let mutationResult;
-          try {
-            mutationResult = await cm.applyTargetSetMutation({
-              ar: arSnapshot,
-              accepted,
-              attackerActor: payload.attackerActor,
-              round: director?.dCombat?.round ?? 0,
-              _cb: Date.now(),
-              remotePrompt,
-            });
-          } finally {
-            if (hideHere) root.classList.remove("is-hidden-during-pick");
-          }
+          // Card visibility is driven by the picker-overlay hooks
+          // (onPickerOpen/onPickerClose) — the card hides ONLY while a redirect
+          // target-picker is actually on-screen. A pickerless recompute (the
+          // common case) therefore no longer fades the card out-and-back-in.
+          const mutationResult = await cm.applyTargetSetMutation({
+            ar: arSnapshot,
+            accepted,
+            attackerActor: payload.attackerActor,
+            round: director?.dCombat?.round ?? 0,
+            _cb: Date.now(),
+            remotePrompt,
+          });
           if (mutationResult?.cancelled) {
             // Caller (recordPillDecision) reads `cancelled` to rewind
             // the provisional pill decision. Stop the recompute here —
@@ -4669,15 +4652,14 @@ export async function postActionCard({ director, kind, payload }) {
               ? await fromUuid(p.reactorActorUuid).catch(() => null)
               : (payload?.attackerActor ?? null);
             if (!reactorActor) continue;
-            root.classList.add("is-hidden-during-pick");
-            let menuRes;
-            try {
-              menuRes = await se.previewReactionMenu({
-                casterActor: reactorActor, candidate: p, payload: p.payloadAtFire ?? null,
-                dCombat: director?.dCombat ?? null,
-                isPassive: true,   // honor skip_when_passive; still prompts a real choice
-              });
-            } finally { root.classList.remove("is-hidden-during-pick"); }
+            // Auto-hides while an option-menu actually renders (picker-overlay
+            // hooks); an auto-resolved menu shows no UI, so the freshly-spawned
+            // card no longer flashes out-and-in on appearance.
+            const menuRes = await se.previewReactionMenu({
+              casterActor: reactorActor, candidate: p, payload: p.payloadAtFire ?? null,
+              dCombat: director?.dCombat ?? null,
+              isPassive: true,   // honor skip_when_passive; still prompts a real choice
+            });
             if (menuRes?.hasMenu && !menuRes.cancelled) {
               p.chosenMenuPicks = Array.isArray(menuRes.picks) ? menuRes.picks : [];
               p.previewEffects = Array.isArray(menuRes.effects) ? menuRes.effects : [];
@@ -5151,7 +5133,28 @@ export async function postActionCard({ director, kind, payload }) {
     };
     window.addEventListener("keydown", keyListener, true);
 
+    // Hide the card ONLY while a picker/menu overlay (target-picker banner,
+    // list-picker menu) is genuinely on-screen. The pickers broadcast open/close
+    // hooks; we ref-count so overlapping/nested picks keep the card hidden until
+    // the LAST one closes. This replaces the old pattern of speculatively hiding
+    // the card around every recompute — which faded it out-and-back-in even when
+    // no picker ever appeared. Remote picks render on the player's client and
+    // fire the hooks there, so the GM card correctly stays visible.
+    let _pickDepth = 0;
+    const onPickerOpen = () => {
+      _pickDepth += 1;
+      root.classList.add("is-hidden-during-pick");
+    };
+    const onPickerClose = () => {
+      _pickDepth = Math.max(0, _pickDepth - 1);
+      if (_pickDepth === 0) root.classList.remove("is-hidden-during-pick");
+    };
+    Hooks.on("fud.actionPickerOpen", onPickerOpen);
+    Hooks.on("fud.actionPickerClose", onPickerClose);
+
     const cleanup = () => {
+      try { Hooks.off("fud.actionPickerOpen", onPickerOpen); } catch {}
+      try { Hooks.off("fud.actionPickerClose", onPickerClose); } catch {}
       try { clearTimeout(despawnTid); } catch {}
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
       try { hideDescTip(); } catch {}

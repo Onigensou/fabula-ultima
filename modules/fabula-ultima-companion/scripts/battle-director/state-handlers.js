@@ -42,7 +42,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
-import { fireActivationEffect, fireActivationEffectPre, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+import { fireActivationEffect, fireActivationEffectPre, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsForBearerTurnStart, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
@@ -1461,6 +1461,18 @@ const TurnStart = {
       }
     } catch (e) { warn("TURN_START: AE tick threw", e); }
 
+    // Bearer-turn-START tick: AEs the CURRENT combatant BEARS whose lifetimeMode
+    // is "target_turn_start" decrement now — BEFORE the turn_start reaction
+    // window (handed off to STANDALONE_REACTION_WINDOW below) — so a mark that
+    // runs out this turn is gone before its own "transfer" prompt would show
+    // (Searing Brand). Distinct from the applier tick above (keyed to who CAST it).
+    try {
+      const bearerUuid = snap?.actorUuid;
+      if (bearerUuid) {
+        await tickDirectorAEsForBearerTurnStart(bearerUuid);
+      }
+    } catch (e) { warn("TURN_START: bearer-turn-start AE tick threw", e); }
+
     // Release any Guard / Covered AEs whose guarder is this combatant.
     // RAW Core p.70: Guard ends at the start of the guarder's next turn.
     // dCombat.activeGuards is the authoritative ledger (see director-combat.js).
@@ -1655,6 +1667,31 @@ const Declare = {
     // Resolve owner. fromUuid is async but cheap; on error, only GM runs.
     let actor = null;
     try { actor = await fromUuid(snap.actorUuid); } catch {}
+
+    // Free-action grant integrity guard. A grant in the freeActions registry
+    // carries an action's preset + bonuses, but a grant is only LEGITIMATE
+    // while its owning FREE_ACTION_WINDOW frame is in flight — `topIsFreeAction`
+    // is the authoritative "we are inside a free action" signal, and FAW
+    // pushes that frame BEFORE routing here, so every real free-action DECLARE
+    // sees it on top. The registry is persisted across reloads (see
+    // persistence.js) and is only torn down by FAW's pop; any path that
+    // bypasses that pop (reload routing, rewind, abort mid-free-action) can
+    // leave a grant ORPHANED in the registry with no backing frame. Read on a
+    // NORMAL turn's DECLARE, an orphaned grant would be staged as the actor's
+    // real turn action — and with no free-action frame on the stack, RESOLVE's
+    // gate (`!topIsFreeAction`) marks the turn consumed, eating the main action
+    // (and, since the preset path never clears the grant, repeating every
+    // turn). Grant-without-frame is therefore never valid: drop it so neither
+    // the preset shortcut nor the compose-filter path below can consume it.
+    // (Regression surfaced by Dreadwyrm Descent's conflict_start free_action;
+    // the grant outlived its conflict_start window and hijacked Fafnir's turn.)
+    if (!topIsFreeAction(director.ctx)) {
+      const orphan = freeActions.get(snap.actorId);
+      if (orphan) {
+        warn(`DECLARE: orphaned free-action grant "${orphan.sourceLabel ?? "?"}" for ${snap.name} — no active free-action frame; clearing so it cannot consume the turn`);
+        freeActions.clear(snap.actorId);
+      }
+    }
 
     // free_action PRESET shortcut — a fully-determined free action (action_ref =
     // skill name / "self") skips composeAction entirely: stage the exact action

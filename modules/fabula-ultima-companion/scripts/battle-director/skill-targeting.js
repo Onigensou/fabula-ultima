@@ -657,6 +657,15 @@ export function makeChainContext({
   // path so a player resolves their OWN reaction's secondary UI. Null for
   // GM/NPC-local resolution. See remote-pick.js + [[director-player-driven-input]].
   remotePrompt = null,
+  // Applier attribution for AE-carried reactions: the actor/token that ORIGINALLY
+  // applied the carrier AE (e.g. Searing Brand's caster = Fafnir). A deal_damage
+  // fired from such a reaction credits this applier as the damage CAUSE so the
+  // hit reads as caster-inflicted (reflect/leech reactions point back at the
+  // caster; the battle log names them) even though the REACTOR is the bearer.
+  // Set by firePreAcceptedCandidate from the carrier AE's directorAppliedBy.
+  // Null for item-carried reactions / unattributed effects.
+  appliedByActorUuid = null,
+  appliedByTokenUuid = null,
 } = {}) {
   return {
     reactorActor,
@@ -676,6 +685,8 @@ export function makeChainContext({
     menuPicks,
     harnessNumbers,
     remotePrompt,
+    appliedByActorUuid,
+    appliedByTokenUuid,
     resolvedTargets: new Map(),
   };
 }

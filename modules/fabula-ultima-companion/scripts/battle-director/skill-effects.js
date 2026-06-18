@@ -150,7 +150,7 @@ export async function sweepTransientAEsAtSceneEnd() {
 //     if (ae) await ae.delete();
 //   }
 export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
-  const result = { newHp: Math.max(0, curHp - rawDamage), consumedAeIds: [], fired: [] };
+  const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [] };
   if (!target || rawDamage <= 0) return result;
 
   // Running landed-damage value the incoming adjust_damage rows mutate.
@@ -214,6 +214,10 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
     }
   }
   result.newHp = Math.max(0, curHp - dmg);
+  // The TRUE damage dealt to HP (post-reaction), NOT clamped to the HP floor —
+  // so the floating number reads "100" for 100 dmg onto a 50-HP target, even
+  // though HP only drops by 50.
+  result.dealtDamage = dmg;
   return result;
 }
 
@@ -391,7 +395,7 @@ export async function applyDamageToTarget({
     }
 
     // Overflow → HP, via the reaction AEs (Mercy clamp etc.).
-    const { newHp, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
+    const { newHp, dealtDamage, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
     await target.update(update);
@@ -405,7 +409,7 @@ export async function applyDamageToTarget({
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
-    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: curHp - newHp, affinity });
+    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity });
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
@@ -1304,6 +1308,11 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   let skillForCtx;
   let carrier;
   let aeReactionCfg = null;  // Captured for AE post-fire bookkeeping below.
+  // Applier attribution — for AE-carried reactions, the actor/token that applied
+  // the AE (e.g. Searing Brand's caster). Threaded into ctx so a deal_damage rider
+  // credits the caster, not the bearer. Null for item-carried reactions.
+  let appliedByActorUuid = null;
+  let appliedByTokenUuid = null;
   if (candidate.carrierKind === "item") {
     carrier = await fromUuid(candidate.carrierUuid);
     if (!carrier) return { ok: false, reason: "carrier-gone" };
@@ -1326,13 +1335,16 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     // death-save heal). Only DIRECTOR-applied AEs carry a recorded skillUuid;
     // manually-placed AEs keep the null/SL-1 behavior.
     skillForCtx = null;
-    const originSkillUuid = carrier.flags?.[FLAG_NS]?.directorAppliedBy?.skillUuid ?? null;
+    const dab = carrier.flags?.[FLAG_NS]?.directorAppliedBy ?? null;
+    const originSkillUuid = dab?.skillUuid ?? null;
     if (originSkillUuid) {
       try {
         const originSkill = await fromUuid(originSkillUuid);
         if (originSkill?.documentName === "Item") skillForCtx = originSkill;
       } catch { /* origin skill gone — fall back to null/SL-1 */ }
     }
+    appliedByActorUuid = dab?.reactorActorUuid ?? null;
+    appliedByTokenUuid = dab?.reactorTokenUuid ?? null;
   }
   const ctx = makeChainContext({
     reactorActor: casterActor,
@@ -1370,6 +1382,10 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     // Route any RESOLVE-time / add_target pick to the reaction owner's client
     // when the GM is firing a player-applied reaction. Null = local (GM/NPC).
     remotePrompt: remotePrompt ?? null,
+    // Caster attribution for AE-carried deal_damage riders (Searing Brand's
+    // explosion credits Fafnir, not the bearer). Null for item carriers.
+    appliedByActorUuid,
+    appliedByTokenUuid,
   });
   // Visual-first: show passive card before the effect applies so players
   // see the trigger before it acts. Only for auto-fire rows (on / force);
@@ -1993,9 +2009,9 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
       if (!stamp) continue;
       if (stamp.reactorActorUuid !== applierActorUuid) continue;
       if (stamp.turnsRemaining == null) continue;  // explicit opt-out
-      // "target_turn_end" AEs are owned by the bearer-turn-end tick, not the
-      // applier-turn-start tick — skip so they're not double-counted.
-      if (stamp.lifetimeMode === "target_turn_end") continue;
+      // "target_turn_end" / "target_turn_start" AEs are owned by the bearer
+      // ticks, not the applier-turn-start tick — skip so they're not double-counted.
+      if (stamp.lifetimeMode === "target_turn_end" || stamp.lifetimeMode === "target_turn_start") continue;
       const next = Number(stamp.turnsRemaining) - 1;
       ticked += 1;
       if (next <= 0) {
@@ -2076,6 +2092,46 @@ export async function tickDirectorAEsForBearerTurnEnd(bearerActorUuid) {
   } catch (e) { warn(`tickDirectorAEsForBearerTurnEnd: write failed for ${bearerActorUuid}`, e); }
   const ticked = updates.length + deletes.length;
   if (ticked) log(`tickDirectorAEsForBearerTurnEnd: ticked ${ticked} AE(s) on ${actor.name}; expired ${expiredNames.length}: ${expiredNames.join(", ")}`);
+  return { ticked, expired: expiredNames };
+}
+
+// Bearer-turn-START twin of tickDirectorAEsForBearerTurnEnd. Ticks AEs OWNED BY
+// the given bearer whose lifetimeMode is "target_turn_start" — called from
+// TURN_START for the actor whose turn just began, BEFORE the turn_start reaction
+// window dispatches. Placement matters: a mark that expires this turn must be
+// gone before its own turn_start "transfer" prompt would appear (Searing Brand).
+// Charge-driven AEs decrement the visible charge (3 → 2 → 1 → gone) and re-apply
+// resets it; charge-less AEs fall back to the invisible turnsRemaining counter.
+// AEs reaching 0 are deleted. Returns `{ ticked, expired: [names] }`.
+export async function tickDirectorAEsForBearerTurnStart(bearerActorUuid) {
+  if (!bearerActorUuid) return { ticked: 0, expired: [] };
+  const actor = await fromUuid(bearerActorUuid).catch(() => null);
+  if (!actor?.effects) return { ticked: 0, expired: [] };
+  const updates = [];
+  const deletes = [];
+  const expiredNames = [];
+  for (const eff of actor.effects) {
+    const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
+    if (!stamp) continue;
+    if (stamp.lifetimeMode !== "target_turn_start") continue;
+    const curCharges = eff.flags?.[FLAG_NS]?.charges;
+    if (curCharges != null) {
+      const next = Number(curCharges) - 1;
+      if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
+      else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.charges`]: next });
+      continue;
+    }
+    if (stamp.turnsRemaining == null) continue;
+    const next = Number(stamp.turnsRemaining) - 1;
+    if (next <= 0) { deletes.push(eff.id); expiredNames.push(eff.name); }
+    else updates.push({ _id: eff.id, [`flags.${FLAG_NS}.directorAppliedBy.turnsRemaining`]: next });
+  }
+  try {
+    if (updates.length) await actor.updateEmbeddedDocuments("ActiveEffect", updates);
+    if (deletes.length) await actor.deleteEmbeddedDocuments("ActiveEffect", deletes);
+  } catch (e) { warn(`tickDirectorAEsForBearerTurnStart: write failed for ${bearerActorUuid}`, e); }
+  const ticked = updates.length + deletes.length;
+  if (ticked) log(`tickDirectorAEsForBearerTurnStart: ticked ${ticked} AE(s) on ${actor.name}; expired ${expiredNames.length}: ${expiredNames.join(", ")}`);
   return { ticked, expired: expiredNames };
 }
 
@@ -2639,6 +2695,8 @@ const EFFECT_KIND_DISPATCH = {
   prompt_number:       applyPromptNumberEffect,
   prompt_element:      applyPromptElementEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
+  transfer_ae:         applyTransferAeEffect,
+  summon:              applySummonEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
@@ -2697,6 +2755,8 @@ export const EFFECT_KIND_LABELS = {
   prompt_number:       "Prompt Number (ask the user for an amount)",
   prompt_element:      "Prompt Element (ask the user for a damage type)",
   remove_tagged_ae:    "Remove Tagged AE",
+  transfer_ae:         "Transfer AE (move an AE to another creature, keeping charges)",
+  summon:              "Summon (spawn actor(s) as own-turn combatants)",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
@@ -2787,6 +2847,14 @@ const EFFECT_KIND_PREVIEW = {
     type: "cleanse", filter: String(row.filter_tag ?? "").trim().toLowerCase() || null,
     valence: "beneficial", source: row.effect_label, targetRef: row.target_ref ?? null,
   }),
+
+  // transfer_ae moves an existing AE between creatures (mark relocation) — it
+  // fires inside a reaction, never on the casting card, so there is nothing to
+  // surface in the action-profile preview.
+  transfer_ae: () => null,
+
+  // summon spawns combatants at RESOLVE — nothing to surface on the casting card.
+  summon: () => null,
 
   encyclopedia_record: (row) => ({
     type: "reveal", aspect: "encyclopedia", tier: null,
@@ -3486,9 +3554,20 @@ async function dealDamageApply(row, ctx, d) {
   const element = d.isVar ? (d.resolvedElement ?? "elementless") : d.resolvedElement;
   const amountFormula = d.amountFormula;
   const targetRef = d.targetRef;
-  const attackerName = row.attacker_name || ctx.skill?.name || "Effect";
   const ignoreAffinity = d.ignoreAffinity;
   const damageCause = d.damageCause;
+  // Caster attribution — for an AE-carried reaction rider (Searing Brand's
+  // explosion), credit the AE's applier (Fafnir) as the damage CAUSE so the hit
+  // reads as caster-inflicted: reflect/leech reactions on the bearer point back
+  // at the caster, and the battle log names them. Falls back to the carrier/skill
+  // name when no applier is attributed (status ticks, self-effects).
+  const applierActor = ctx.appliedByActorUuid
+    ? await fromUuid(ctx.appliedByActorUuid).catch(() => null)
+    : null;
+  const attackerName = row.attacker_name || applierActor?.name || ctx.skill?.name || "Effect";
+  const causeSource = ctx.appliedByActorUuid
+    ? { actorUuid: ctx.appliedByActorUuid, tokenUuid: ctx.appliedByTokenUuid ?? null }
+    : {};
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
@@ -3531,7 +3610,7 @@ async function dealDamageApply(row, ctx, d) {
         affinity: ruled.affinity,
         resource: "hp",
         targetName: actor.name,
-        tokenUuid: token.document?.uuid ?? null,
+        tokenUuid: token.uuid ?? token.document?.uuid ?? null,
         logPrefix: `${attackerName}:`,
         // Effect/tick damage → Battle Log (one row per target, flushed once
         // below). sourceType "effect" so the log distinguishes ticks/riders
@@ -3559,7 +3638,7 @@ async function dealDamageApply(row, ctx, d) {
           fireResourceChangeTrigger({
             director: _director,
             actor,
-            tokenUuid: token.document?.uuid ?? null,
+            tokenUuid: token.uuid ?? token.document?.uuid ?? null,
             resource: "hp",
             direction: delta < 0 ? "loss" : "recover",
             amount: Math.abs(delta),
@@ -3570,6 +3649,9 @@ async function dealDamageApply(row, ctx, d) {
             // the generic damage label.
             originLabel: row.attacker_name || ctx.sourceLabel || ctx.skill?.name || attackerName,
             originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+            // Who CAUSED the loss — the AE's applier (Fafnir) for an attributed
+            // rider, so reflect/leech reactions on the bearer point at the caster.
+            source: causeSource,
           });
         }
       }
@@ -4164,12 +4246,16 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
     } else if (lifetimeMode === "on_activation") {
       turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
-    } else if (lifetimeMode === "target_turn_end") {
-      // "Lasts N of the AFFECTED creature's turns, decrement at the END of each
-      // of the bearer's turns" — the homebrew action-gating Advanced Debuffs
-      // (Frightened/Silence/Confused/Disarmed/Berserk). Counted here (default 3,
-      // override via duration.rounds) but ticked by tickDirectorAEsForBearerTurnEnd
-      // at TURN_END, NOT by the applier-turn-start tick (which skips this mode).
+    } else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start") {
+      // "Lasts N of the AFFECTED creature's turns, decrement at the END (…_end)
+      // or START (…_start) of each of the bearer's turns." `target_turn_end` is
+      // the homebrew action-gating Advanced Debuffs (Frightened/Silence/…);
+      // `target_turn_start` is the bearer-turn-START twin (Searing Brand's mark,
+      // which must tick BEFORE the same turn's transfer prompt). Counted here
+      // (default 3, override via duration.rounds) but ticked by the matching
+      // bearer ticker (tickDirectorAEsForBearerTurnEnd at TURN_END /
+      // tickDirectorAEsForBearerTurnStart at TURN_START), NOT by the
+      // applier-turn-start tick (which skips both modes).
       turnsRemaining = Number.isFinite(explicit) && explicit > 0 ? explicit : 3;
     } else if (Number.isFinite(explicit) && explicit > 0) {
       turnsRemaining = explicit;
@@ -4731,6 +4817,33 @@ function menuOptionsToRows(opts) {
   }));
 }
 
+// Resolve the active non-GM users who own a creature on the OPPOSITE side from
+// `casterActor` — the "enemy players" who answer a `menu_responder:"enemy"` menu
+// (Cruel Ultimatum's victim-side choice). Disposition is read from the caster's
+// active token; enemies are tokens of the negated disposition. Returns distinct
+// active owner user ids (empty if the caster is neutral or no enemy is owned by
+// an online player → caller falls back to a GM-local pick).
+function resolveEnemyPlayerUserIds(casterActor, casterToken = null) {
+  if (!casterActor) return [];
+  const tok = casterToken
+    ?? casterActor.getActiveTokens?.()?.[0]?.document
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === casterActor.uuid)?.document
+    ?? null;
+  const casterDisp = Number(tok?.disposition ?? -1);
+  if (casterDisp === 0) return [];   // neutral caster → no defined enemy side
+  const userIds = new Set();
+  for (const t of (canvas?.tokens?.placeables ?? [])) {
+    if (Number(t.document?.disposition ?? 0) !== -casterDisp) continue;
+    const actor = t.actor;
+    if (!actor) continue;
+    for (const u of (game.users?.contents ?? [])) {
+      if (u.isGM || !u.active) continue;
+      try { if (actor.testUserPermission(u, "OWNER")) userIds.add(u.id); } catch {}
+    }
+  }
+  return Array.from(userIds);
+}
+
 async function selectMenuPicks(row, ctx, options) {
   // Replay captured picks — the pre_activate window recorded these BEFORE the
   // card was built; RESOLVE replays them so the menu applies without re-
@@ -4810,10 +4923,48 @@ async function selectMenuPicks(row, ctx, options) {
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
       };
-      // Route the menu to the reaction owner's client when applying a
-      // player's reaction (ctx.remotePrompt set); else render locally on GM.
+      // Pick routing, in priority order:
+      //   1. menu_responder:"enemy" — the VICTIM side chooses (Cruel Ultimatum).
+      //      Broadcast to every enemy player; the first to answer wins
+      //      ("loudest wins"). No enemy online / no answer → GM resolves locally
+      //      so the action never stalls.
+      //   2. ctx.remotePrompt — single reaction-owner routing (player's reaction).
+      //   3. Local — render on the GM (NPC casts, GM-owned reactions).
       let pickedLocal;
-      if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
+      const responder = String(row.menu_responder ?? "").trim().toLowerCase();
+      if (responder === "enemy" && !ctx?.remotePrompt) {
+        const director = ctx.director
+          ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+          ?? null;
+        const channel = director?.intentChannel ?? null;
+        const enemyUserIds = resolveEnemyPlayerUserIds(ctx.reactorActor, ctx.reactorToken);
+        if (channel && enemyUserIds.length) {
+          const { remotePickAny, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+          log(`open_action_menu: routing "${row.effect_label}" to ${enemyUserIds.length} enemy player(s) — loudest wins`);
+          const res = await remotePickAny({
+            channel,
+            targetUserIds: enemyUserIds,
+            combatId: director?.combatId ?? null,
+            kind: REMOTE_PICK_KINDS.LIST,
+            onTimeoutValue: null,
+            spec: listArgs,
+          });
+          pickedLocal = res?.value ?? null;
+          // Route this action's FOLLOW-ON picks (e.g. branch A's "which enemy
+          // takes 300") to the SAME player who answered — set ctx.remotePrompt so
+          // the dispatched option's targeting/menu rows render on their client.
+          if (pickedLocal != null && res?.winnerUserId) {
+            ctx.remotePrompt = { channel, targetUserId: res.winnerUserId, combatId: director?.combatId ?? null };
+          }
+          if (pickedLocal == null) {
+            log(`open_action_menu: no enemy answered "${row.effect_label}" — GM-local fallback`);
+            pickedLocal = await pickFromList(listArgs);
+          }
+        } else {
+          // No online enemy player owns a target → GM picks on their behalf.
+          pickedLocal = await pickFromList(listArgs);
+        }
+      } else if (ctx?.remotePrompt?.channel && ctx.remotePrompt.targetUserId) {
         const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
         pickedLocal = await remotePick({
           channel: ctx.remotePrompt.channel,
@@ -5356,6 +5507,202 @@ function recordCapturedRemovals(ctx, label, names) {
   if (!ctx.payload._capturedMenuPicks) ctx.payload._capturedMenuPicks = {};
   const cur = Array.isArray(ctx.payload._capturedMenuPicks[label]) ? ctx.payload._capturedMenuPicks[label] : [];
   ctx.payload._capturedMenuPicks[label] = [...cur, ...names];
+}
+
+// ── transfer_ae ──────────────────────────────────────────────────────────
+// MOVE an existing AE (matched by name = `ae_template_ref`) from a source
+// creature to a destination, PRESERVING its remaining charges / turnsRemaining /
+// directorAppliedBy stamp. Unlike apply_ae (which clones a fresh template and
+// resets the charge to the template default), transfer_ae carries the live
+// instance over — so a 2-charge mark stays a 2-charge mark on its new bearer.
+//
+// Rows:
+//   { effect_kind: "transfer_ae",
+//     ae_template_ref: "Searing Brand",   // AE name to move
+//     from_ref: "self",                   // source target_ref (default "self" = the reactor/bearer)
+//     target_ref: "sb_pick" }             // destination target_ref (a targeting row)
+//
+// First consumer: Searing Brand — at the marked creature's turn-start they MAY
+// hand the mark to an ally; the mark keeps its remaining charge.
+async function applyTransferAeEffect(row, ctx) {
+  if (ctx?.mode === "preview") {
+    return { ok: true, kind: "transfer_ae", applied: [], reason: "preview" };
+  }
+  const aeName = String(row.ae_template_ref ?? "").trim();
+  if (!aeName) {
+    warn(`skill-effects.transfer_ae: missing ae_template_ref on "${row.effect_label}"`);
+    return { ok: false, kind: "transfer_ae", reason: "no-ae-ref" };
+  }
+
+  // Source bearer(s) — default "self" (the reactor whose turn started).
+  const fromRef = String(row.from_ref ?? "self").trim() || "self";
+  const fromResult = await resolveTargetRef(fromRef, ctx);
+  if (!fromResult.ok || !fromResult.tokens.length) {
+    return { ok: false, kind: "transfer_ae", reason: fromResult.reason ?? "no-source" };
+  }
+
+  // Destination — the chosen ally. Honors a cancel from the picker (the player
+  // declined the optional transfer) as a clean no-op.
+  const destResult = await resolveTargetRef(row.target_ref, ctx);
+  if (destResult?.cancelled) {
+    return { ok: true, kind: "transfer_ae", applied: [], reason: "cancelled", cancelled: true };
+  }
+  if (!destResult?.ok || !destResult.tokens.length) {
+    return { ok: false, kind: "transfer_ae", reason: destResult?.reason ?? "no-dest" };
+  }
+  const dest = destResult.tokens[0]?.actor;
+  if (!dest) return { ok: false, kind: "transfer_ae", reason: "no-dest-actor" };
+
+  const moved = [];
+  for (const token of fromResult.tokens) {
+    const src = token.actor;
+    if (!src?.effects) continue;
+    if (src.uuid === dest.uuid) {
+      log(`skill-effects.transfer_ae: source == destination (${src.name}); skipping`);
+      continue;
+    }
+    const eff = Array.from(src.effects).find((e) => e.name === aeName);
+    if (!eff) {
+      log(`skill-effects.transfer_ae: ${src.name} has no "${aeName}" AE to move; skipping`);
+      continue;
+    }
+    // Snapshot the LIVE instance (charges, turnsRemaining, directorAppliedBy,
+    // reactionConfig all ride along). Drop _id so it can re-key on the dest.
+    const data = eff.toObject();
+    delete data._id;
+    // If the dest already bears this AE, refresh it in place with the moved
+    // (preserved-charge) data; else create. Remove from source either way.
+    const existing = Array.from(dest.effects ?? []).find((e) => e.name === aeName);
+    try {
+      await src.deleteEmbeddedDocuments("ActiveEffect", [eff.id]);
+    } catch (e) {
+      warn(`skill-effects.transfer_ae: delete from ${src.name} failed`, e);
+      continue;
+    }
+    try {
+      if (existing) await existing.update(data);
+      else await dest.createEmbeddedDocuments("ActiveEffect", [data]);
+      moved.push({
+        from: src.uuid, to: dest.uuid, name: aeName,
+        charges: data.flags?.[FLAG_NS]?.charges ?? null,
+      });
+    } catch (e) {
+      warn(`skill-effects.transfer_ae: apply to ${dest.name} failed`, e);
+    }
+  }
+  if (moved.length) {
+    log(`skill-effects.transfer_ae: moved "${aeName}" to ${dest.name} (${moved.length}; charges ${moved[0]?.charges ?? "—"})`);
+  }
+  return { ok: true, kind: "transfer_ae", applied: moved };
+}
+
+// ── summon ───────────────────────────────────────────────────────────────
+// Spawn one or more actors as FULL own-turn combatants on the CASTER's side
+// (Fafnir's Summon Elemental Drake → Flame + Lightning Drake). Reuses the live
+// add-combatant path (spawnLiveDirectorTokens + dc.addCombatant), so each summon
+// reads its own activation stat and takes real turns — unlike phantasm.markSummon,
+// which pins activations to 0 (acts only on the summoner's turn).
+//
+// Rows:
+//   { effect_kind: "summon",
+//     summon_actor: "Flame Drake,Lightning Drake", // uuid / bare id / NAME, comma-list
+//     summon_count: "1",                           // copies of EACH ref (default 1)
+//     summon_act_this_round: false }               // true = acts THIS round; false = next round
+//
+// Side/disposition mirror the caster (summons are its allies). Spawned tokens are
+// tagged summonedBy/isSummon for the battle-end summon sweep.
+async function applySummonEffect(row, ctx) {
+  if (ctx?.mode === "preview") {
+    return { ok: true, kind: "summon", applied: [], reason: "preview" };
+  }
+  const refsRaw = String(row.summon_actor ?? "").trim();
+  if (!refsRaw) {
+    warn(`skill-effects.summon: missing summon_actor on "${row.effect_label}"`);
+    return { ok: false, kind: "summon", reason: "no-actor" };
+  }
+  const refs = refsRaw.split(",").map((s) => s.trim()).filter(Boolean);
+  const count = Math.max(1, Number(row.summon_count ?? 1) || 1);
+  const actThisRound = row.summon_act_this_round === true
+    || String(row.summon_act_this_round ?? "").trim().toLowerCase() === "true";
+
+  const director = ctx.director
+    ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+    ?? null;
+  const dc = director?.dCombat;
+  if (!dc?.started || dc.ended) {
+    warn(`skill-effects.summon: no active battle — cannot summon (row "${row.effect_label}")`);
+    return { ok: false, kind: "summon", reason: "no-combat" };
+  }
+  const scene = dc.scene;
+  if (!scene) {
+    warn(`skill-effects.summon: director combat has no scene (row "${row.effect_label}")`);
+    return { ok: false, kind: "summon", reason: "no-scene" };
+  }
+
+  // Side/disposition inherited from the caster — summons are its allies.
+  const casterTok = ctx.reactorToken
+    ?? ctx.reactorActor?.getActiveTokens?.()?.[0]?.document
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === ctx.reactorActor?.uuid)?.document
+    ?? null;
+  const disposition = Number(casterTok?.disposition ?? -1) === 1 ? 1 : -1;
+  const side = disposition === -1 ? "enemy" : "party";
+  const summonerUuid = ctx.reactorActor?.uuid ?? null;
+
+  // Robust ref resolver — full uuid, bare actor id, or NAME. spawnLiveDirectorTokens'
+  // own resolveActor only handles uuid("Actor.x")/name and SILENTLY no-ops on a bare
+  // id, so we resolve to a concrete actor (→ actor.uuid) up front.
+  const resolveRef = async (ref) => {
+    if (ref.includes(".")) {
+      const d = await fromUuid(ref).catch(() => null);
+      if (d?.documentName === "Actor") return d;
+    }
+    const byId = await fromUuid(`Actor.${ref}`).catch(() => null);
+    if (byId?.documentName === "Actor") return byId;
+    return game.actors?.get?.(ref) ?? game.actors?.getName?.(ref) ?? null;
+  };
+
+  // Canonical import (no cache-bust) — director-init isn't the unit under edit.
+  const { spawnLiveDirectorTokens } = await import("./director-init.js");
+
+  const applied = [];
+  for (const ref of refs) {
+    const actor = await resolveRef(ref);
+    if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
+    for (let i = 0; i < count; i++) {
+      let tokenDoc = null;
+      try {
+        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition });
+        tokenDoc = out?.[0] ?? null;
+      } catch (e) { warn(`skill-effects.summon: spawn threw for ${actor.name}`, e); }
+      if (!tokenDoc) { warn(`skill-effects.summon: spawn produced no token for ${actor.name}`); continue; }
+      let c = null;
+      try {
+        c = dc.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor ?? actor, side, disposition });
+        // act-this-round gate: false → ineligible until the next round wrap, which
+        // refills turnsRemaining = turnsPerRound via _resetRoundCounters.
+        if (!actThisRound && c) c.turnsRemaining = 0;
+      } catch (e) { warn(`skill-effects.summon: addCombatant threw for ${actor.name}`, e); }
+      // Tag the spawned token so the battle-end summon sweep reaps it.
+      try {
+        await tokenDoc.update({
+          [`flags.${FLAG_NS}.summonedBy`]: summonerUuid,
+          [`flags.${FLAG_NS}.isSummon`]: true,
+        });
+      } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
+      applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound });
+    }
+  }
+
+  // Refresh the turn tracker so the new combatant(s) appear immediately.
+  if (applied.length) {
+    try {
+      const { refreshTurnActions } = await import("./director-round-banner.js");
+      refreshTurnActions?.(dc);
+    } catch (e) { warn("skill-effects.summon: banner refresh threw", e); }
+    try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add" }); } catch (_e) {}
+    log(`skill-effects.summon: row "${row.effect_label}" summoned ${applied.length} (${applied.map((a) => a.actor).join(", ")}; actThisRound=${actThisRound})`);
+  }
+  return { ok: true, kind: "summon", applied };
 }
 
 async function applyRemoveTaggedAeEffect(row, ctx) {
