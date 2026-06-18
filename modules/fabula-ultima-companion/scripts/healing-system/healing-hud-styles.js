@@ -29,7 +29,7 @@ export function injectHealingStyles() {
 
 .oni-heal-frame {
   display: flex; flex-direction: column;
-  width: min(1040px, 94vw); height: auto; max-height: 90vh;
+  width: min(1200px, 95vw); height: auto; max-height: 92vh;
   background: var(--hl-parch-1);
   border: 2.5px solid var(--hl-wood-2); border-radius: 14px;
   box-shadow: 0 0 0 1px var(--hl-wood-3), 0 18px 60px rgba(0,0,0,0.55), inset 0 0 26px rgba(160,118,73,0.18);
@@ -47,7 +47,7 @@ export function injectHealingStyles() {
   background: linear-gradient(180deg, var(--hl-gold-1) 0%, var(--hl-gold-2) 60%, var(--hl-gold-3) 100%);
   color: #4b3517;
 }
-.oni-heal-header .title { font-size: 20px; font-weight: 700; letter-spacing: .5px; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
+.oni-heal-header .title { font-size: 23px; font-weight: 700; letter-spacing: .5px; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
 .oni-heal-header .title .heart { color: #b8392f; margin-right: 6px; }
 .oni-heal-header .caster { margin-left: auto; font-size: 13px; }
 .oni-heal-header .caster b { color: #5a3800; }
@@ -114,21 +114,21 @@ export function injectHealingStyles() {
 }
 .oni-heal-banner.armed { background: linear-gradient(180deg,#d8f0c4,#bfe3a6); border-color: #6fa04a; color: #1f4a14; font-weight: 700; }
 .oni-heal-grid {
-  flex: none; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 96px;
-  align-content: start; gap: 26px 16px; min-height: 0; padding: 30px 8px 22px 12px;
+  flex: none; display: grid; grid-template-columns: 1fr; grid-auto-rows: auto;
+  align-content: start; gap: 14px; min-height: 0; padding: 18px 10px 16px 12px;
   overflow: hidden;
 }
-/* Rectangle cell: short + wide. Sprite sits inside, on the left. */
+/* Full-width row: sprite on the left, info on the right. */
 .oni-heal-cell {
-  display: flex; align-items: center; gap: 12px; height: 96px;
-  padding: 8px 16px;
+  display: flex; align-items: center; gap: 18px; min-height: 118px;
+  padding: 12px 20px;
   border-radius: 12px; border: 1.5px solid rgba(120,86,40,.45);
   background: var(--hl-parch-1);
   box-shadow: inset 0 0 18px rgba(160,118,73,0.12);
   cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease, background .12s ease, transform .12s ease, opacity .12s ease;
   position: relative; overflow: hidden;
 }
-.oni-heal-cell.empty { opacity: .35; cursor: default; }
+.oni-heal-cell.empty { opacity: .35; cursor: default; min-height: 60px; }
 .oni-heal-cell.dim-full { opacity: .5; }   /* armed but this target can't benefit */
 .oni-heal-cell.sel.targeting {
   border-color: var(--hl-wood-2);
@@ -137,7 +137,7 @@ export function injectHealingStyles() {
 }
 /* Battle sprite — contained inside the panel, anchored to the bottom. */
 .oni-heal-sprite-wrap {
-  flex: 0 0 auto; width: 72px; height: 84px;
+  flex: 0 0 auto; width: 104px; height: 116px;
   display: flex; align-items: flex-end; justify-content: center;
   pointer-events: none;
 }
@@ -146,11 +146,30 @@ export function injectHealingStyles() {
   object-fit: contain; object-position: bottom;
   filter: drop-shadow(0 4px 5px rgba(40,24,10,.5));
 }
-.oni-heal-cell .pc-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
-.oni-heal-cell .pc-name { font-size: 18px; font-weight: 800; color: var(--hl-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-.oni-heal-res { display: flex; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
-.oni-heal-res .rlabel { width: 28px; font-size: 12px; font-weight: 800; letter-spacing: .5px; }
-.oni-heal-res .rval { font-size: 15px; font-weight: 700; color: var(--hl-ink); }
+.oni-heal-cell .pc-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.oni-heal-cell .pc-name { font-size: 21px; font-weight: 800; color: var(--hl-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.oni-heal-res { display: flex; align-items: baseline; gap: 10px; font-variant-numeric: tabular-nums; }
+.oni-heal-res .rlabel { width: 30px; font-size: 13px; font-weight: 800; letter-spacing: .5px; }
+.oni-heal-res .rval { font-size: 17px; font-weight: 700; color: var(--hl-ink); }
+/* Debuff row (below IP) — icons only; hover for tooltip. */
+.oni-heal-debuffs { display: flex; align-items: center; gap: 6px; margin-top: 6px; min-height: 26px; flex-wrap: wrap; }
+.oni-heal-debuff {
+  width: 24px; height: 24px; border-radius: 5px; object-fit: cover; cursor: help;
+  border: 1px solid rgba(90,60,34,.55); background: rgba(120,86,40,.15);
+  box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .1s ease;
+}
+.oni-heal-debuff:hover { transform: scale(1.12); border-color: var(--hl-wood-2); }
+.oni-heal-debuffs .none { font-size: 11px; opacity: .4; font-style: italic; }
+/* Debuff tooltip (DOM, follows cursor). */
+#oni-heal-ae-tooltip {
+  position: fixed; z-index: 2147483646; max-width: 300px; min-width: 160px;
+  padding: 9px 11px; border-radius: 9px; display: none;
+  background: var(--hl-parch-1); color: var(--hl-ink);
+  border: 1.5px solid var(--hl-wood-2); box-shadow: 0 8px 22px rgba(0,0,0,.4);
+  font: 12px/1.45 "Signika", sans-serif; pointer-events: none;
+}
+#oni-heal-ae-tooltip .tt-title { font-weight: 800; font-size: 13px; margin-bottom: 4px; color: var(--hl-hp); }
+#oni-heal-ae-tooltip .tt-body p { margin: 0 0 4px; }
 .oni-heal-res.hp .rlabel { color: var(--hl-hp); }
 .oni-heal-res.mp .rlabel { color: var(--hl-mp); }
 .oni-heal-res.ip .rlabel { color: var(--hl-ip); }

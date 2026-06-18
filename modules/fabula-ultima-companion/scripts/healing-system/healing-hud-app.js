@@ -44,6 +44,8 @@ const HealingHUD = {
   _refreshing: false,
   _cursorEl: null,
   _cursorReady: false,
+  _aeTooltipEl: null,
+  _aeHooks: [],
 
   get isOpen() { return !!this._root; },
 
@@ -53,7 +55,9 @@ const HealingHUD = {
     if (this._root) {
       if (this._keyHandler) { window.removeEventListener("keydown", this._keyHandler, true); this._keyHandler = null; }
       if (this._updateHook) { Hooks.off("updateActor", this._updateHook); this._updateHook = null; }
+      this._teardownAeHooks();
       this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
+      this._aeTooltipEl?.remove(); this._aeTooltipEl = null;
       this._root.remove(); this._root = null; this._armed = null;
     }
     injectHealingStyles();
@@ -103,7 +107,9 @@ const HealingHUD = {
     const root = this._root;
     this._root = null;
     this._armed = null;
+    this._teardownAeHooks();
     this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
+    this._aeTooltipEl?.remove(); this._aeTooltipEl = null;
     if (!root) return;
     // Reverse of the entrance: frame slides down + fades, cells slide out
     // staggered (their inline animation-delay is reused by the closing rule).
@@ -161,9 +167,29 @@ const HealingHUD = {
     this._cursorEl.src = HEAL_CURSOR_SRC;
     document.body.appendChild(this._cursorEl);
 
+    // Debuff tooltip element.
+    this._aeTooltipEl = document.createElement("div");
+    this._aeTooltipEl.id = "oni-heal-ae-tooltip";
+    document.body.appendChild(this._aeTooltipEl);
+
     root.querySelector(".oni-heal-close").addEventListener("click", () => { this.close(); });
     // Click on the dark backdrop (outside the frame) closes.
     root.addEventListener("pointerdown", (ev) => { if (ev.target === root) this.close(); });
+
+    // Debuff-icon hover tooltip (event delegation on the grid).
+    const grid = root.querySelector(".oni-heal-grid");
+    grid.addEventListener("mouseover", (ev) => {
+      const icon = ev.target.closest?.(".oni-heal-debuff");
+      if (!icon) return;
+      const cell = icon.closest(".oni-heal-cell");
+      this._showAeTooltip(Number(cell?.dataset.idx), icon.dataset.effId, ev.clientX, ev.clientY);
+    });
+    grid.addEventListener("mousemove", (ev) => {
+      if (this._aeTooltipEl?.style.display === "block") this._placeAeTooltip(ev.clientX, ev.clientY);
+    });
+    grid.addEventListener("mouseout", (ev) => {
+      if (ev.target.closest?.(".oni-heal-debuff")) this._hideAeTooltip();
+    });
 
     this._renderTabs();
     this._renderList();
@@ -262,6 +288,7 @@ const HealingHUD = {
           ${this._resHtml(a, "hp")}
           ${this._resHtml(a, "mp")}
           ${this._resHtml(a, "ip")}
+          <div class="oni-heal-debuffs">${this._debuffsHtml(a)}</div>
         </div>`;
       cell.addEventListener("click", () => {
         if (!this._armed) { this._zone = "targets"; this._targetIndex = i; this._updateCellStates(); return; }
@@ -332,6 +359,72 @@ const HealingHUD = {
         <span class="rval">${cur} / ${max}</span>
       </div>`;
   },
+
+  // An ActiveEffect is a debuff if any of its tag sources contains "debuff".
+  // (Verified live: Dazed carries system.tags + tags === ["debuff"].)
+  _isDebuff(e) {
+    if (!e || e.disabled) return false;
+    const f = e.flags ?? {};
+    const tags = [
+      ...(Array.isArray(e.system?.tags) ? e.system.tags : []),
+      ...(Array.isArray(e.tags) ? e.tags : []),
+      ...(Array.isArray(f["fabula-ultima-companion"]?.tags) ? f["fabula-ultima-companion"].tags : []),
+      ...(Array.isArray(f["custom-system-builder"]?.tags) ? f["custom-system-builder"].tags : []),
+    ].map((t) => String(t).toLowerCase());
+    return tags.includes("debuff");
+  },
+
+  _actorDebuffs(actor) {
+    return (actor?.effects?.contents ?? actor?.effects ?? []).filter((e) => this._isDebuff(e));
+  },
+
+  // Icon-only row of the actor's debuff effects (empty placeholder when none).
+  _debuffsHtml(actor) {
+    const debuffs = this._actorDebuffs(actor);
+    if (!debuffs.length) return `<span class="none">No debuffs</span>`;
+    return debuffs.map((e) => {
+      const img = e.img || e.icon || "icons/svg/downgrade.svg";
+      return `<img class="oni-heal-debuff" data-eff-id="${escapeHtml(e.id)}" src="${escapeHtml(img)}" />`;
+    }).join("");
+  },
+
+  // Rebuild only the debuff rows (no sprite touch) — called on AE create/delete/update.
+  _updateDebuffs() {
+    const cells = this._root?.querySelectorAll(".oni-heal-cell") ?? [];
+    cells.forEach((cell) => {
+      const i = Number(cell.dataset.idx);
+      const a = this._members[i]?.actor;
+      const row = cell.querySelector(".oni-heal-debuffs");
+      if (a && row) row.innerHTML = this._debuffsHtml(a);
+    });
+  },
+
+  // ── Debuff tooltip (follows cursor; mirrors active-effect-tooltip) ──────────
+  _showAeTooltip(actorIdx, effId, clientX, clientY) {
+    const a = this._members[actorIdx]?.actor;
+    const eff = a?.effects?.get?.(effId) ?? this._actorDebuffs(a).find((e) => e.id === effId);
+    if (!eff || !this._aeTooltipEl) return;
+    let desc = eff.description ?? eff.system?.description ?? "";
+    if (typeof desc === "object") desc = desc?.value ?? "";
+    this._aeTooltipEl.innerHTML = `
+      <div class="tt-title">${escapeHtml(eff.name ?? "Effect")}</div>
+      <div class="tt-body">${desc || "<em>(no description)</em>"}</div>`;
+    this._aeTooltipEl.style.display = "block";
+    this._placeAeTooltip(clientX, clientY);
+  },
+
+  _placeAeTooltip(x, y) {
+    const el = this._aeTooltipEl;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    let left = x + 16, top = y + 16;
+    if (left + r.width + 14 > window.innerWidth) left = x - r.width - 16;
+    if (top + r.height + 14 > window.innerHeight) top = y - r.height - 16;
+    el.style.left = `${Math.max(8, left)}px`;
+    el.style.top = `${Math.max(8, top)}px`;
+  },
+
+  _hideAeTooltip() { if (this._aeTooltipEl) this._aeTooltipEl.style.display = "none"; },
 
   // Feather cursor — points at the focused element (selected list row, or the
   // targeted party cell). Same mechanism as the Save/Load UI: position via
@@ -411,13 +504,12 @@ const HealingHUD = {
     return true;
   },
 
-  _moveTarget(dCol, dRow) {
-    const i = this._targetIndex;
-    let col = i % 2, row = Math.floor(i / 2);
-    if (dCol) col = Math.max(0, Math.min(1, col + dCol));
-    if (dRow) row = Math.max(0, Math.min(1, row + dRow));
-    const next = row * 2 + col;
-    if (this._members[next] && next !== i) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
+  // Linear navigation for the 1-column party list.
+  _moveTarget(dir) {
+    const n = this._members.length;
+    if (n <= 1) return;
+    const next = Math.max(0, Math.min(n - 1, this._targetIndex + dir));
+    if (next !== this._targetIndex) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
   },
 
   async _confirmHeal() {
@@ -492,6 +584,24 @@ const HealingHUD = {
       if (actor.id === this._caster.id) this._refreshActions();
     };
     Hooks.on("updateActor", this._updateHook);
+
+    // Refresh the debuff icon rows when effects change on a watched actor.
+    const onAe = (effect) => {
+      if (!this._root) return;
+      const parent = effect?.parent;
+      if (parent && watched.has(parent.id)) this._updateDebuffs();
+    };
+    this._aeHooks = [
+      ["createActiveEffect", onAe],
+      ["deleteActiveEffect", onAe],
+      ["updateActiveEffect", onAe],
+    ];
+    for (const [name, fn] of this._aeHooks) Hooks.on(name, fn);
+  },
+
+  _teardownAeHooks() {
+    for (const [name, fn] of (this._aeHooks ?? [])) Hooks.off(name, fn);
+    this._aeHooks = [];
   },
 
   _installKeyboard() {
@@ -517,11 +627,9 @@ const HealingHUD = {
         if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._cycleTab(-1); return; }
         if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._cycleTab(+1); return; }
         if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._armAction(); return; }
-      } else { // targets
-        if (keyMatch(ev, HEAL_KEYS.UP))    { this._moveTarget(0, -1); return; }
-        if (keyMatch(ev, HEAL_KEYS.DOWN))  { this._moveTarget(0, +1); return; }
-        if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._moveTarget(-1, 0); return; }
-        if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._moveTarget(+1, 0); return; }
+      } else { // targets (1-column list)
+        if (keyMatch(ev, HEAL_KEYS.UP) || keyMatch(ev, HEAL_KEYS.LEFT))    { this._moveTarget(-1); return; }
+        if (keyMatch(ev, HEAL_KEYS.DOWN) || keyMatch(ev, HEAL_KEYS.RIGHT)) { this._moveTarget(+1); return; }
         if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._confirmHeal(); return; }
       }
     };
