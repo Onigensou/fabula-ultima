@@ -92,6 +92,7 @@
   let _ftBtn            = null;   // 🦅 DOM element
   let _travelBtn        = null;   // scene travel DOM element
   let _travelBtnMode    = null;   // "dungeon" | "exploration"
+  let _healBtn          = null;   // ❤️ out-of-combat healing DOM element
   let _scanning         = false;
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
@@ -107,6 +108,11 @@
   }
   function cfgFT() {
     return DP.UI?.FAST_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 168, FONT_SIZE: "28px" };
+  }
+  function cfgHeal() {
+    // Stacked one row ABOVE the scan row so it never collides with the
+    // horizontally-variable travel button.
+    return DP.UI?.HEAL_BUTTON ?? { SIZE: 64, BOTTOM: 154, LEFT: 20, FONT_SIZE: "28px" };
   }
   function cfgTravel() {
     return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
@@ -368,6 +374,21 @@
       document.body.appendChild(_ftBtn);
     }
 
+    // Healing button — opens the out-of-combat Healing HUD (Skill/Spell/Item).
+    _healBtn = makeBtn(
+      "oni-dp-heal-btn",
+      "❤️",
+      "Healing — heal party members",
+      cfgHeal(),
+      () => {
+        const api = globalThis.FUCompanion?.api?.healing
+          ?? game.modules?.get("fabula-ultima-companion")?.api?.healing;
+        if (api?.open) api.open();
+        else ui.notifications?.warn("Healing system not available.");
+      },
+    );
+    document.body.appendChild(_healBtn);
+
     syncHelperBtn();
     syncFtBtn();
     installEsc();
@@ -376,6 +397,7 @@
       _scanBtn?.classList.add("dp-scan-visible");
       _helperBtn?.classList.add("dp-scan-visible");
       _ftBtn?.classList.add("dp-scan-visible");
+      _healBtn?.classList.add("dp-scan-visible");
     });
   }
 
@@ -386,7 +408,7 @@
     }
     removeEsc();
 
-    for (const btn of [_scanBtn, _helperBtn, _ftBtn]) {
+    for (const btn of [_scanBtn, _helperBtn, _ftBtn, _healBtn]) {
       if (!btn) continue;
       btn.classList.remove("dp-scan-visible");
       setTimeout(() => btn.remove(), 280);
@@ -394,6 +416,7 @@
     _scanBtn   = null;
     _helperBtn = null;
     _ftBtn     = null;
+    _healBtn   = null;
   }
 
   // Show/hide the FT + travel buttons when the scene config fastTravelEnabled flag changes.
