@@ -28,27 +28,29 @@ import { HEAL_TAG, HEAL_CATEGORY, HEAL_CREATE_PRESETS } from "./healing-const.js
 import { classifyActionIntent } from "../battle-director/skill-intent.js";
 import { resolveHealAction, formatCostMap, formatGrants } from "./healing-resolve.js";
 
-function asEntries(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value.filter(Boolean);
-  if (typeof value === "object") return Object.values(value).filter(Boolean);
-  return [];
-}
-
 function entryUuid(entry) {
   return entry?.uuid ?? entry?.skillUuid ?? entry?.skill_uuid ?? entry?.itemUuid ?? null;
 }
 
 // Union of an item's linked-action entries (the embedded healing action).
+// Each entry SHOULD carry a `uuid`, but CSB sometimes leaves it blank on world
+// items while the entry's KEY is the linked item's id — fall back to `Item.<key>`
+// in that case. (Actor-embedded carriers like Apple Juice have a populated,
+// actor-scoped uuid, so the fallback never overrides a real link.)
 function grantedActionUuids(item) {
   const p = item?.system?.props ?? {};
-  const uuids = [
-    ...asEntries(p.item_skill_active),
-    ...asEntries(p.related_item_list),
-    ...asEntries(p.active_skill_list),
-    ...asEntries(p.skill_active_list),
-  ].map(entryUuid).filter(Boolean);
-  return [...new Set(uuids)];
+  const uuids = new Set();
+  for (const tableKey of ["item_skill_active", "related_item_list", "active_skill_list", "skill_active_list"]) {
+    const table = p[tableKey];
+    if (!table || typeof table !== "object") continue;
+    for (const [key, entry] of Object.entries(table)) {
+      if (!entry || entry.$deleted) continue;
+      let u = entryUuid(entry);
+      if ((!u || !String(u).trim()) && /^[A-Za-z0-9]{16}$/.test(key)) u = `Item.${key}`;
+      if (u) uuids.add(u);
+    }
+  }
+  return [...uuids];
 }
 
 function categoryForSkillType(skillType) {
