@@ -170,6 +170,40 @@ uniform with accuracy.
 - `perTargetResults` is read in many places (card render, battle log, rewind
   snapshots) — Phase 1's record split must keep them working.
 
+## Implementation status (2026-06-19) — branch `feat/action-who-what-unification`
+
+DONE + committed + verified (6 commits): Phase 1 (WHAT record split, `_parity`
+retired), Phase 2 (one WHO pass `resolveTargetOutcome` + single-roster merge
+`attachHealEffects`), Phase 3 (#1 AE immunity gate fix + AE per-target on the
+roster with immunity preview; #2 damage+heal → one `resource_delta` effect by
+valence + `actionKind`), Phase 4 (#7 pre-card precondition guard that THROWS on a
+grant amount reading a mid-chain VAR; apply primary grant from the profile at
+RESOLVE — live-confirmed Remedy +50hp / Elixir +50mp). All behavior-neutral except
+AE-immunity (now enforced) and verified via the parity harness + live simulate.
+
+**Phase 5 plan (NOT started — feature build, 7 files):**
+1. **#6 unify adjustments** — fold `adjust_accuracy` (card-mutations), `adjust_damage`
+   (recompute ops), `adjust_grant` (`applyAdjustGrantEffect`) into ONE adjustment
+   mechanism: `{ op, value, round, scope: per_action|per_target, targetKind }`.
+   Code-unified; the three authoring kinds differ only at the UI/template layer.
+   Parity-verifiable refactor — do this FIRST.
+2. **Card-stage reaction for any effect kind** — extend the card-mutation/reaction
+   framework so a reaction can offer an optional/costed adjustment against a chosen
+   effect on the card (apply/skip + `consume_resource`), not just accuracy. The
+   adjustment mutates the profile effect; Phase 4 means RESOLVE then applies the
+   adjusted amount (no re-exec needed).
+3. **THE DRIVER** — an on-card heal-boost reaction (e.g. "pay N MP: +X healing"),
+   uniform with `adjust_damage`/`adjust_accuracy`. This is the feature the whole
+   refactor exists for.
+   Verification: the card interaction is a DOM overlay (not harness-visible), so
+   needs live/Playwright UI testing — best taken with fresh context.
+
+## Deferred / folded into Phase 6 (consumer migration)
+- #4 one headline derived from effects[]; #8 selfEffects/appliedEffects → single
+  effect-with-target_ref; #1b pure-status row creation (changes perTarget.count);
+  migrate the 134 `perTargetResults` consumers + card off the flat shape, then
+  delete `flattenRow` / flat `perTargetResults`.
+
 ## WHO model refinement + stage audit (decisions 2026-06-19)
 
 **Refined WHO model (supersedes the 3-layer framing).** Targeting is two *stages*
