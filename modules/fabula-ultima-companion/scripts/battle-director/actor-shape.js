@@ -108,6 +108,10 @@ export function buildPseudoWeaponFromNpcAttack(item) {
     range,
     weaponType: String(p.weapon_type ?? p.category ?? ""),
     imageUrl: item?.img ?? null,
+    // Effect prose (e.g. "On hit, inflicts Bleed") — surfaced in the action
+    // card's Effect section. Normal Attacks can carry on-hit effects too, so
+    // the attack card renders this just like a Skill's description.
+    descriptionHtml: String(p.description ?? ""),
     // Carry the source Item UUID so the action card can deep-link back to
     // the attack sheet, and so rewind can attribute the action correctly.
     npcAttackItemUuid: item?.uuid ?? null,

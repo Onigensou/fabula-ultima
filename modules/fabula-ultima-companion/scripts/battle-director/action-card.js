@@ -30,6 +30,8 @@ import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
 import { resourceLabel } from "./resources.js";
+import { lookupTerm } from "./keyword-registry.js";
+import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -592,6 +594,38 @@ export function ensureStyles() {
       border-color: #1e6cff;
       background: rgba(30, 108, 255, 0.14);
       color: #15489c;
+    }
+
+    /* ── Effect section: Action Keyword + status chips ──
+       Keywords are the card-game-style headline (MTG keyword vibe) — bold,
+       uppercase, accent-bordered, icon-prefixed, sitting in their own row at
+       the top of the Effect section. Status chips are the inline term tags
+       inside the prose. Both are clickable → open the explanation tooltip. */
+    .fud-bf-card .fud-bf-keyword-row {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+    }
+    .fud-bf-card .fud-bf-effect-chip .fud-kw-chip-icon {
+      width: 16px; height: 16px; object-fit: contain;
+      margin-right: 5px; border: none; background: transparent;
+      border-radius: 0; box-shadow: none; flex-shrink: 0;
+    }
+    .fud-bf-card .fud-bf-effect-chip.is-clickable,
+    .fud-bf-card .fud-bf-effect-chip.is-keyword {
+      cursor: pointer; user-select: none;
+      transition: filter .1s ease, box-shadow .12s ease, transform .06s ease;
+    }
+    .fud-bf-card .fud-bf-effect-chip.is-clickable:hover,
+    .fud-bf-card .fud-bf-effect-chip.is-keyword:hover { filter: brightness(1.06); }
+    .fud-bf-card .fud-bf-effect-chip.is-clickable:active,
+    .fud-bf-card .fud-bf-effect-chip.is-keyword:active { transform: translateY(1px); }
+    .fud-bf-card .fud-bf-effect-chip.is-keyword {
+      padding: 3px 11px;
+      font-size: 12px; font-weight: 900;
+      letter-spacing: .5px; text-transform: uppercase;
+      border-color: #c98a2a;
+      background: linear-gradient(180deg, rgba(255,213,128,.30), rgba(201,138,42,.20));
+      color: #7a4e12;
+      box-shadow: 0 1px 3px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.4);
     }
 
     /* Crit / Fumble float banner */
@@ -2399,6 +2433,7 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
       ${tryBuild("accuracy", () => buildAccuracyHTML({ roll, isSpellish: false }))}
       ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll }))}
       ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll }))}
+      ${tryBuild("attackEffect", () => buildEffectSectionHTML({ descriptionHtml: weapon?.descriptionHtml }))}
     `,
     buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
   };
@@ -3307,6 +3342,119 @@ function buildReactionPillRow(prePassives) {
   `;
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// Effect section — Action Keyword headline + status chips + prose
+// ─────────────────────────────────────────────────────────────────────
+//
+// A skill/attack description is authored prose with embedded content-links
+// (e.g. <a data-uuid="JournalEntry.…">Unleash</a>). We classify each link via
+// the static keyword-registry:
+//   - keyword → promoted to a prominent badge in a row above the prose (the
+//     card-game keyword headline) and removed from the body.
+//   - status  → swapped inline for a small clickable chip (icon + name).
+//   - unknown → flattened to plain text (no dead Foundry link in the overlay).
+// Every chip carries `data-fud-kw="<registry-key>"` so the card click handler
+// can open the explanation tooltip (and director-ui-sfx plays the click cue).
+
+// Build the small icon fragment for a chip from a registry entry. Returns ""
+// when the icon URL is missing or unsafe for inline src injection.
+function chipIconHTML(icon) {
+  const safe = safeImgUrl(icon);
+  return safe ? `<img class="fud-kw-chip-icon" src="${escapeHtml(safe)}" alt="">` : "";
+}
+
+function keywordChipHTML({ key, label, icon }) {
+  return `<span class="fud-bf-effect-chip is-keyword" role="button" tabindex="0" `
+    + `data-fud-kw="${escapeHtml(key)}">${chipIconHTML(icon)}${escapeHtml(label)}</span>`;
+}
+
+function statusChipHTML({ key, label, icon }) {
+  return `<span class="fud-bf-effect-chip is-status is-clickable" role="button" tabindex="0" `
+    + `data-fud-kw="${escapeHtml(key)}">${chipIconHTML(icon)}${escapeHtml(label)}</span>`;
+}
+
+// Parse a description HTML string: extract Action Keywords, swap status links
+// for chips, flatten unknown links. Returns { keywords:[{key,label,icon}],
+// bodyHtml:string }. Never throws — on any failure falls back to the old
+// plain-text strip so the Effect section still renders something.
+function parseEffectDescription(html) {
+  const empty = { keywords: [], bodyHtml: "" };
+  if (!html) return empty;
+  try {
+    const root = document.createElement("div");
+    root.innerHTML = String(html);
+
+    const keywords = [];
+    const seenKw = new Set();
+
+    for (const a of Array.from(root.querySelectorAll("a.content-link[data-uuid], a[data-uuid]"))) {
+      const uuid = a.getAttribute("data-uuid") || "";
+      const text = (a.textContent || "").trim();
+      const entry = lookupTerm(uuid) || lookupTerm(text);
+
+      // Prefer the link's own text for the displayed label (e.g. "Ice Shield"
+      // when the variant shares the base "Shield" journal uuid); fall back to
+      // the registry label for plain-text matches.
+      const label = text || entry?.label || "";
+
+      if (entry?.kind === "keyword") {
+        const key = entry.key ?? uuid;
+        const dedup = `${key}|${label}`;
+        if (!seenKw.has(dedup)) {
+          seenKw.add(dedup);
+          keywords.push({ key, label, icon: entry.icon ?? null });
+        }
+        a.remove();
+        continue;
+      }
+      if (entry?.kind === "status") {
+        const span = document.createElement("span");
+        span.innerHTML = statusChipHTML({ key: entry.key ?? uuid, label, icon: entry.icon ?? null });
+        a.replaceWith(span.firstElementChild ?? document.createTextNode(text));
+        continue;
+      }
+      // Unknown link — drop the anchor, keep its text.
+      a.replaceWith(document.createTextNode(text));
+    }
+
+    // Tidy up: a leading keyword list (<ul><li><a>Unleash</a></li></ul>) is now
+    // empty after keyword extraction — strip empty list items / lists so the
+    // prose doesn't start with a stray bullet.
+    for (const li of Array.from(root.querySelectorAll("li"))) {
+      if (!li.textContent.trim() && !li.querySelector("img, .fud-bf-effect-chip")) li.remove();
+    }
+    for (const ul of Array.from(root.querySelectorAll("ul, ol"))) {
+      if (!ul.querySelector("li")) ul.remove();
+    }
+
+    const bodyHtml = root.innerHTML.trim();
+    return { keywords, bodyHtml };
+  } catch (e) {
+    warn("parseEffectDescription threw — falling back to plain text", e);
+    return { keywords: [], bodyHtml: escapeHtml(stripHtmlForDesc(html)) };
+  }
+}
+
+// Build the full Effect <fieldset> (keyword headline row + status-chip prose)
+// shared by buildSkillCard and buildAttackCard. Returns "" when there is no
+// keyword and no body content.
+function buildEffectSectionHTML({ descriptionHtml }) {
+  const { keywords, bodyHtml } = parseEffectDescription(descriptionHtml);
+  const hasBody = !!bodyHtml && !!stripHtmlForDesc(bodyHtml);
+  if (!keywords.length && !hasBody) return "";
+
+  const keywordRow = keywords.length
+    ? `<div class="fud-bf-keyword-row">${keywords.map(keywordChipHTML).join("")}</div>`
+    : "";
+  const bodyBlock = hasBody
+    ? `<div style="font-size:11.5px; line-height:1.5; opacity:0.92;">${bodyHtml}</div>`
+    : "";
+  return `<fieldset class="fud-bf-section">
+        <legend>Effect</legend>
+        ${keywordRow}${bodyBlock}
+      </fieldset>`;
+}
+
 function buildSkillCard(payload) {
   const {
     attacker, skillName, skillImg, skillType, skillRange,
@@ -3381,17 +3529,10 @@ function buildSkillCard(payload) {
       }))
     : "";
 
-  // Effect text — surfaced as a fieldset like legacy's collapsible
-  // Effect section, but flat (no collapse) and length-clamped for the
-  // overlay's compact width. Keeps the GM / players reminded of the
-  // skill's prose without flipping back to the sheet.
-  const descText = stripHtmlForDesc(descriptionHtml);
-  const descHTML = descText
-    ? `<fieldset class="fud-bf-section">
-        <legend>Effect</legend>
-        <div style="font-size:11.5px; line-height:1.4; opacity:0.9;">${escapeHtml(descText)}</div>
-      </fieldset>`
-    : "";
+  // Effect section — Action Keyword headline + status chips + prose. Shared
+  // with buildAttackCard via buildEffectSectionHTML so keywords/statuses render
+  // identically wherever a description appears.
+  const descHTML = tryBuild("skillEffect", () => buildEffectSectionHTML({ descriptionHtml }));
 
   // Portrait slots: use perTargetResults if we have damage rows,
   // otherwise synthesise from targets so a no-damage skill still gets
@@ -4792,6 +4933,19 @@ export async function postActionCard({ director, kind, payload }) {
     }
 
     const onClick = (ev) => {
+      // ── Keyword / status chip → explanation tooltip ───────────────────────
+      // Toggles a left-side panel with the term's rules text (from the static
+      // keyword-registry). The click SFX is played by the delegated
+      // director-ui-sfx listener (the chip carries [data-fud-kw]).
+      const kwChip = ev.target?.closest?.("[data-fud-kw]");
+      if (kwChip) {
+        ev.stopPropagation();
+        const key = kwChip.getAttribute("data-fud-kw");
+        const entry = lookupTerm(key);
+        if (entry) toggleKeywordTooltip({ key, entry, cardRoot: root });
+        return;
+      }
+
       // ── Invoke Trait / Bond ────────────────────────────────────────────────
       const invokeBtn = ev.target?.closest?.("[data-fud-invoke]");
       if (invokeBtn) {
@@ -5159,6 +5313,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
       try { hideDescTip(); } catch {}
       try { descTip?.remove(); } catch {}
+      try { dismissKeywordTooltip(); } catch {}
       try { root.remove(); } catch {}
       _overlays.delete(director.combatId);
       if (!resolved) {
@@ -5210,6 +5365,7 @@ function cleanupMirror() {
     try { _mirrorCleanup(); } catch {}
     _mirrorCleanup = null;
   }
+  try { dismissKeywordTooltip(); } catch {}
   const existing = document.getElementById(MIRROR_ROOT_ID);
   if (existing) try { existing.remove(); } catch {}
 }
@@ -5424,6 +5580,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       });
     };
     wrapper.addEventListener("click", onReactionClick);
+
+    // Keyword / status chip → explanation tooltip. Bound for EVERY client,
+    // including non-interactive observers — reading a term's rules text is
+    // informational and not gated by card ownership. Same toggle behavior +
+    // click SFX (via [data-fud-kw] in director-ui-sfx) as the GM-side card.
+    const onKeywordClick = (ev) => {
+      const kwChip = ev.target?.closest?.("[data-fud-kw]");
+      if (!kwChip) return;
+      ev.stopPropagation();
+      const key = kwChip.getAttribute("data-fud-kw");
+      const entry = lookupTerm(key);
+      if (entry) toggleKeywordTooltip({ key, entry, cardRoot: wrapper });
+    };
+    wrapper.addEventListener("click", onKeywordClick);
 
     // Click logic — replicates the GM-side onClick for interactive card
     // UI (Equipment dropdowns, Item tabs+rows, "Open Sheet" button,

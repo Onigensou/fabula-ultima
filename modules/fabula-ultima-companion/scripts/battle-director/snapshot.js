@@ -251,6 +251,10 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // Attack TARGET branch honors a weapon's own skill_target (e.g. a whip that
     // hits all enemies). Blank → the branch falls back to "One Enemy".
     skillTarget: String(weaponItem?.system?.props?.skill_target ?? "").trim().toLowerCase(),
+    // Effect prose (e.g. "On hit, inflicts Bleed") — surfaced in the action
+    // card's Effect section. Mirrors the NPC pseudo-weapon so a PC weapon with
+    // an on-hit effect shows it on the attack card too.
+    descriptionHtml: String(weaponItem?.system?.props?.description ?? ""),
   });
 }
 
