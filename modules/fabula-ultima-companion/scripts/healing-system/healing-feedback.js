@@ -65,12 +65,19 @@ function playSpawnSfx() {
   } catch {}
 }
 
-// Build the card HTML for one heal line. Thin base font; only the actor name,
-// target name, restore value + resource are bolded (no colour); cur/max italic.
-function cardHtml({ casterName, targetName, resource, amount, after, max }) {
-  const res = HEAL_RESOURCE[resource]?.label ?? String(resource ?? "").toUpperCase();
-  return `<b>${escapeHtml(casterName)}</b> restore <b>${amount} ${res}</b> to `
-       + `<b>${escapeHtml(targetName)}</b> <i>(${after} / ${max})</i>`;
+// Build the card HTML for one line. Thin base font; only the actor name, target
+// name, value/resource (or debuff) are bolded (no colour); cur/max italic.
+function cardHtml(line) {
+  const caster = `<b>${escapeHtml(line.casterName)}</b>`;
+  const target = `<b>${escapeHtml(line.targetName)}</b>`;
+  if (line.kind === "cleanse-one") {
+    return `${caster} cures <b>${escapeHtml(line.debuff ?? "a status")}</b> from ${target}`;
+  }
+  if (line.kind === "cleanse-all") {
+    return `${caster} cleanses ${target}`;
+  }
+  const res = HEAL_RESOURCE[line.resource]?.label ?? String(line.resource ?? "").toUpperCase();
+  return `${caster} restore <b>${line.amount} ${res}</b> to ${target} <i>(${line.after} / ${line.max})</i>`;
 }
 
 // Center a fixed-fraction banner over the play area (canvas), clear of the
@@ -108,26 +115,25 @@ function showNext() {
 }
 
 export const HealingFeedback = {
-  // payload: { casterName, targetName, entries: [{resource, healed, after, max}] }
+  // payload: { casterName, lines: [ { kind:"heal"|"cleanse-one"|"cleanse-all",
+  //   casterName, targetName, resource?, amount?, after?, max?, debuff? } ] }
   enqueue(payload) {
-    const entries = Array.isArray(payload?.entries) ? payload.entries : [];
-    for (const e of entries) {
-      if (!(Number(e?.healed) > 0)) continue;   // only show actual recovery
-      _queue.push({
-        casterName: payload.casterName ?? "Someone",
-        targetName: payload.targetName ?? "an ally",
-        resource: e.resource,
-        amount: e.healed,
-        after: e.after,
-        max: e.max,
-      });
+    const lines = Array.isArray(payload?.lines) ? payload.lines : [];
+    for (const line of lines) {
+      _queue.push({ casterName: payload.casterName ?? "Someone", ...line });
     }
-    if (!_showing) showNext();
+    if (lines.length && !_showing) showNext();
   },
 
-  // Local test helper.
+  // Local test helpers.
   _test() {
-    this.enqueue({ casterName: "Hina", targetName: "Zarg", entries: [{ resource: "hp", healed: 50, after: 75, max: 75 }] });
+    this.enqueue({ casterName: "Hina", lines: [{ kind: "heal", targetName: "Zarg", resource: "hp", amount: 50, after: 75, max: 75 }] });
+  },
+  _testCleanse() {
+    this.enqueue({ casterName: "Hina", lines: [
+      { kind: "cleanse-one", targetName: "Zarg", debuff: "Dazed" },
+      { kind: "cleanse-all", targetName: "Keren" },
+    ] });
   },
 };
 

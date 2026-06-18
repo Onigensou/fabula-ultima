@@ -21,6 +21,7 @@ import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, HEAL_CURSOR_SRC, HEA
 import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
 import { requestApply, broadcastHealFeedback } from "./healing-socket.js";
+import { actorDebuffs } from "./healing-cleanse.js";
 
 const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM, HEAL_CATEGORY.CREATE];
 
@@ -36,14 +37,17 @@ const HealingHUD = {
   _actions: { Skill: [], Spell: [], Item: [], Create: [] },
   _category: HEAL_CATEGORY.SKILL,
   _listIndex: 0,
-  _zone: "list",          // "list" | "targets"
+  _zone: "list",          // "list" | "targets" | "debuffs"
   _armed: null,           // descriptor
   _targetIndex: 0,
+  _targetMode: "single",  // "single" | "all" | "self" (from armed.targeting)
+  _debuffIndex: 0,        // index within the targeted actor's debuff list (picker)
   _keyHandler: null,
   _updateHook: null,
   _refreshing: false,
   _cursorEl: null,
   _cursorReady: false,
+  _extraCursors: [],      // additional feather cursors for "all" targeting
   _aeTooltipEl: null,
   _aeHooks: [],
 
@@ -56,6 +60,7 @@ const HealingHUD = {
       if (this._keyHandler) { window.removeEventListener("keydown", this._keyHandler, true); this._keyHandler = null; }
       if (this._updateHook) { Hooks.off("updateActor", this._updateHook); this._updateHook = null; }
       this._teardownAeHooks();
+      this._clearExtraCursors();
       this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
       this._aeTooltipEl?.remove(); this._aeTooltipEl = null;
       this._root.remove(); this._root = null; this._armed = null;
@@ -108,6 +113,7 @@ const HealingHUD = {
     this._root = null;
     this._armed = null;
     this._teardownAeHooks();
+    this._clearExtraCursors();
     this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
     this._aeTooltipEl?.remove(); this._aeTooltipEl = null;
     if (!root) return;
@@ -190,6 +196,15 @@ const HealingHUD = {
     });
     grid.addEventListener("mouseout", (ev) => {
       if (ev.target.closest?.(".oni-heal-debuff")) this._hideAeTooltip();
+    });
+    // Click a debuff icon while in the picker → cleanse that debuff.
+    grid.addEventListener("click", (ev) => {
+      const icon = ev.target.closest?.(".oni-heal-debuff");
+      if (!icon || this._zone !== "debuffs") return;
+      const cell = icon.closest(".oni-heal-cell");
+      if (Number(cell?.dataset.idx) !== this._targetIndex) return;
+      const target = this._members[this._targetIndex]?.actor;
+      if (target && icon.dataset.effId) this._applyCleanseOne(target, icon.dataset.effId);
     });
 
     this._renderTabs();
@@ -292,9 +307,11 @@ const HealingHUD = {
           <div class="oni-heal-debuffs">${this._debuffsHtml(a)}</div>
         </div>`;
       cell.addEventListener("click", () => {
-        if (!this._armed) { this._zone = "targets"; this._targetIndex = i; this._updateCellStates(); return; }
+        if (!this._armed) { return; }   // must arm an action first
+        if (this._zone === "debuffs") return;   // debuff icons handle their own clicks
+        if (this._targetMode === "all") { this._onConfirmTargets(); return; }
         this._targetIndex = i; this._updateCellStates();
-        this._confirmHeal();
+        this._onConfirmTargets();
       });
       gridEl.appendChild(cell);
     }
@@ -303,13 +320,17 @@ const HealingHUD = {
 
   // Update only the selection / dim classes on existing cells — does NOT rebuild
   // innerHTML, so the battle-sprite <video>s never reload (no blink on navigate).
+  // In "all" targeting every benefiting cell shows as targeted.
   _updateCellStates() {
+    const inTargets = this._zone === "targets" || this._zone === "debuffs";
     const cells = this._root?.querySelectorAll(".oni-heal-cell") ?? [];
     cells.forEach((cell) => {
       const i = Number(cell.dataset.idx);
       const entry = this._members[i] ?? null;
-      const targeting = !!entry && i === this._targetIndex && this._zone === "targets";
-      const dimFull = !!entry && !!this._armed && !this._canBenefit(entry.actor, this._armed);
+      const canBenefit = !!entry && (!this._armed || this._canBenefit(entry.actor, this._armed));
+      const targeting = !!entry && inTargets && !!this._armed
+        && (this._targetMode === "all" ? canBenefit : i === this._targetIndex);
+      const dimFull = !!entry && !!this._armed && !canBenefit;
       cell.classList.toggle("sel", targeting);
       cell.classList.toggle("targeting", targeting);
       cell.classList.toggle("dim-full", dimFull);
@@ -338,7 +359,7 @@ const HealingHUD = {
   // the action's grant resources is below the target's max. Drives both the
   // confirm gate and the dimmed "can't benefit" cell styling.
   _canBenefit(actor, desc) {
-    if (desc?.cleanse) return true;   // status cleanse (Tonic) — always usable (placeholder)
+    if (desc?.kind === "cleanse") return this._actorDebuffs(actor).length > 0;   // needs a debuff to remove
     const grants = desc?.grants ?? [];
     if (!grants.length) return false;
     return grants.some((g) => {
@@ -361,23 +382,7 @@ const HealingHUD = {
       </div>`;
   },
 
-  // An ActiveEffect is a debuff if any of its tag sources contains "debuff".
-  // (Verified live: Dazed carries system.tags + tags === ["debuff"].)
-  _isDebuff(e) {
-    if (!e || e.disabled) return false;
-    const f = e.flags ?? {};
-    const tags = [
-      ...(Array.isArray(e.system?.tags) ? e.system.tags : []),
-      ...(Array.isArray(e.tags) ? e.tags : []),
-      ...(Array.isArray(f["fabula-ultima-companion"]?.tags) ? f["fabula-ultima-companion"].tags : []),
-      ...(Array.isArray(f["custom-system-builder"]?.tags) ? f["custom-system-builder"].tags : []),
-    ].map((t) => String(t).toLowerCase());
-    return tags.includes("debuff");
-  },
-
-  _actorDebuffs(actor) {
-    return (actor?.effects?.contents ?? actor?.effects ?? []).filter((e) => this._isDebuff(e));
-  },
+  _actorDebuffs(actor) { return actorDebuffs(actor); },
 
   // Icon-only row of the actor's debuff effects (empty placeholder when none).
   _debuffsHtml(actor) {
@@ -390,13 +395,19 @@ const HealingHUD = {
   },
 
   // Rebuild only the debuff rows (no sprite touch) — called on AE create/delete/update.
+  // While the picker is open, highlight the selected debuff icon on the target cell.
   _updateDebuffs() {
     const cells = this._root?.querySelectorAll(".oni-heal-cell") ?? [];
     cells.forEach((cell) => {
       const i = Number(cell.dataset.idx);
       const a = this._members[i]?.actor;
       const row = cell.querySelector(".oni-heal-debuffs");
-      if (a && row) row.innerHTML = this._debuffsHtml(a);
+      if (!a || !row) return;
+      row.innerHTML = this._debuffsHtml(a);
+      if (this._zone === "debuffs" && i === this._targetIndex) {
+        const icons = row.querySelectorAll(".oni-heal-debuff");
+        icons[this._debuffIndex]?.classList.add("picker-sel");
+      }
     });
   },
 
@@ -430,29 +441,54 @@ const HealingHUD = {
   // Feather cursor — points at the focused element (selected list row, or the
   // targeted party cell). Same mechanism as the Save/Load UI: position via
   // getBoundingClientRect, smooth transition, float animation, no-anim first show.
+  _placeCursorAt(el, rect) {
+    const x = rect.right, y = rect.bottom;
+    if (!this._cursorReady) {
+      el.classList.add("no-anim"); el.style.left = `${x}px`; el.style.top = `${y}px`; el.classList.add("is-visible");
+      requestAnimationFrame(() => el?.classList.remove("no-anim"));
+      this._cursorReady = true;
+    } else {
+      el.style.left = `${x}px`; el.style.top = `${y}px`; el.classList.add("is-visible");
+    }
+  },
+
+  _clearExtraCursors() {
+    for (const c of this._extraCursors) c.remove();
+    this._extraCursors = [];
+  },
+
   _updateCursor() {
     if (!this._cursorEl || !this._root) return;
+
+    // "All" targeting → one feather per benefiting cell; hide the single cursor.
+    if (this._zone === "targets" && this._targetMode === "all") {
+      this._cursorEl.classList.remove("is-visible");
+      this._clearExtraCursors();
+      const cells = this._root.querySelectorAll(".oni-heal-cell.targeting");
+      cells.forEach((cell) => {
+        const cur = document.createElement("img");
+        cur.className = "oni-heal-cursor";
+        cur.src = HEAL_CURSOR_SRC;
+        document.body.appendChild(cur);
+        this._extraCursors.push(cur);
+        const r = cell.getBoundingClientRect();
+        cur.style.left = `${r.right}px`; cur.style.top = `${r.bottom}px`; cur.classList.add("is-visible");
+      });
+      return;
+    }
+    this._clearExtraCursors();
+
     let targetEl = null;
-    if (this._zone === "targets") {
+    if (this._zone === "debuffs") {
+      const icons = this._root.querySelectorAll(`.oni-heal-cell[data-idx="${this._targetIndex}"] .oni-heal-debuff`);
+      targetEl = icons[this._debuffIndex] ?? icons[0] ?? null;
+    } else if (this._zone === "targets") {
       targetEl = this._root.querySelector(`.oni-heal-cell[data-idx="${this._targetIndex}"]`);
     } else {
       targetEl = this._root.querySelectorAll(".oni-heal-row")[this._listIndex] ?? null;
     }
     if (!targetEl) { this._cursorEl.classList.remove("is-visible"); return; }
-    const rect = targetEl.getBoundingClientRect();
-    const x = rect.right, y = rect.bottom;
-    if (!this._cursorReady) {
-      this._cursorEl.classList.add("no-anim");
-      this._cursorEl.style.left = `${x}px`;
-      this._cursorEl.style.top = `${y}px`;
-      this._cursorEl.classList.add("is-visible");
-      requestAnimationFrame(() => this._cursorEl?.classList.remove("no-anim"));
-      this._cursorReady = true;
-    } else {
-      this._cursorEl.style.left = `${x}px`;
-      this._cursorEl.style.top = `${y}px`;
-      this._cursorEl.classList.add("is-visible");
-    }
+    this._placeCursorAt(this._cursorEl, targetEl.getBoundingClientRect());
   },
 
   // Push the live-tunable layout constants (HEAL_TUNE) onto the overlay root as
@@ -466,13 +502,19 @@ const HealingHUD = {
   _renderBanner() {
     const el = this._root?.querySelector(".oni-heal-banner");
     if (!el) return;
-    if (this._armed) {
-      el.className = "oni-heal-banner armed";
-      el.innerHTML = `Using <b>${escapeHtml(this._armed.name)}</b> (${escapeHtml(this._armed.healLabel)}) — choose a target`;
-    } else {
+    if (!this._armed) {
       el.className = "oni-heal-banner";
       el.textContent = "Select a healing action on the left.";
+      return;
     }
+    el.className = "oni-heal-banner armed";
+    const a = this._armed;
+    let tail;
+    if (this._zone === "debuffs") tail = "choose a debuff to cleanse";
+    else if (this._targetMode === "all") tail = "confirm to apply to all";
+    else if (a.targeting === "self") tail = "confirm on self";
+    else tail = "choose a target";
+    el.innerHTML = `Using <b>${escapeHtml(a.name)}</b> (${escapeHtml(a.healLabel)}) — ${tail}`;
   },
 
   // ── Interaction ───────────────────────────────────────────────────────────
@@ -493,20 +535,35 @@ const HealingHUD = {
     this._switchTab(next);
   },
 
+  _casterIndex() {
+    const idx = this._members.findIndex((m) => m.actor?.id === this._caster?.id);
+    return idx >= 0 ? idx : 0;
+  },
+
   _armAction() {
     const desc = this._currentRows()[this._listIndex];
     if (!desc) return;
     if (!desc.affordable) { playHealSfx("DENY"); ui.notifications?.warn(`Cannot use ${desc.name}: not enough resources.`); return; }
     this._armed = desc;
+    this._targetMode = desc.targeting ?? "single";
     this._zone = "targets";
-    if (!this._members[this._targetIndex]) this._targetIndex = 0;
+    if (this._targetMode === "self") this._targetIndex = this._casterIndex();
+    else if (!this._members[this._targetIndex]) this._targetIndex = 0;
     playHealSfx("ARM");
     this._renderList(); this._updateCellStates(); this._renderBanner();
   },
 
   _disarm() {
     if (!this._armed && this._zone === "list") return false;
+    // From the debuff picker, X backs out to target selection (not all the way).
+    if (this._zone === "debuffs") {
+      this._zone = "targets";
+      playHealSfx("CANCEL");
+      this._updateDebuffs(); this._updateCellStates(); this._renderBanner();
+      return true;
+    }
     this._armed = null;
+    this._targetMode = "single";
     this._zone = "list";
     playHealSfx("CANCEL");
     this._renderList(); this._updateCellStates(); this._renderBanner();
@@ -514,7 +571,9 @@ const HealingHUD = {
   },
 
   // 2x2 grid navigation: up/down move between rows, left/right between columns.
+  // Disabled in "all" (everyone targeted) and "self" (locked to caster).
   _moveTarget(dCol, dRow) {
+    if (this._targetMode === "all" || this._targetMode === "self") return;
     const i = this._targetIndex;
     let col = i % 2, row = Math.floor(i / 2);
     if (dCol) col = Math.max(0, Math.min(1, col + dCol));
@@ -523,47 +582,136 @@ const HealingHUD = {
     if (this._members[next] && next !== i) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
   },
 
-  async _confirmHeal() {
-    const desc = this._armed;
+  // Move within the targeted actor's debuff icons (picker mode).
+  _moveDebuff(dir) {
+    const debuffs = this._actorDebuffs(this._members[this._targetIndex]?.actor);
+    if (debuffs.length <= 1) return;
+    const next = Math.max(0, Math.min(debuffs.length - 1, this._debuffIndex + dir));
+    if (next !== this._debuffIndex) { this._debuffIndex = next; playHealSfx("MOVE"); this._updateDebuffs(); this._updateCursor(); }
+  },
+
+  // List of target entries for the armed action's targeting mode.
+  _resolvedTargets() {
+    if (this._targetMode === "all") return this._members.filter((m) => m?.actor);
     const entry = this._members[this._targetIndex];
-    if (!desc || !entry?.actor) return;
-    if (!desc.affordable) { playHealSfx("DENY"); return; }
-    // Gate full / unhealable targets: SFX is the warning (no notification).
-    if (!this._canBenefit(entry.actor, desc)) { playHealSfx("FULL"); return; }
+    return entry?.actor ? [entry] : [];
+  },
 
-    const payload = {
-      casterUuid: this._caster.uuid,
-      targetUuid: entry.actor.uuid,
-      effectItemUuid: desc.effectItemUuid,
-      costItemUuid: desc.costItemUuid,
-      consumableUuid: desc.consumableUuid ?? null,
-      mode: desc.mode ?? "use",
-      ipCost: desc.ipCost ?? 0,
-      cleanse: !!desc.cleanse,
-    };
-    const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
-
-    if (!result?.ok) {
-      playHealSfx("DENY");
-      ui.notifications?.warn(`Heal failed: ${result?.reason ?? "unknown"}.`);
+  // Z on a target. Routes to the debuff picker for single-target cleanse-one,
+  // else applies directly.
+  _onConfirmTargets() {
+    const desc = this._armed;
+    if (!desc) return;
+    if (desc.kind === "cleanse" && desc.cleanseScope === "one" && this._targetMode !== "all") {
+      this._enterDebuffPicker();
       return;
     }
-    playHealSfx("HEAL");
-    this._flashCell(this._targetIndex);
-    // Spectator feedback: tell every OTHER client an ally is being healed.
-    broadcastHealFeedback({
-      casterName: this._caster.name,
-      targetName: entry.actor.name,
-      entries: (result.applied ?? []).filter((a) => a.healed > 0),
-    });
-    const healed = (result.applied ?? []).filter((a) => a.healed > 0).map((a) => `+${a.healed} ${HEAL_RESOURCE[a.resource]?.label ?? a.resource}`).join(", ");
-    const verb = result.created ? "created" : "used";
-    const summary = result.placeholder ? "(status cleanse — coming soon)" : (healed || "fully recovered");
-    ui.notifications?.info(`${desc.name} ${verb}: ${entry.actor.name} ${summary}.`);
+    this._applyAction();
+  },
 
-    // Update bars + states now (hook also fires) and re-evaluate caster affordability/stock.
-    this._updateResources(); this._updateCellStates();
-    await this._refreshActions();   // cost spent / consumable count changed → stay armed if still usable
+  // Single-target cleanse-one: auto-resolve when the target has exactly one
+  // debuff; otherwise open the picker.
+  _enterDebuffPicker() {
+    const target = this._members[this._targetIndex]?.actor;
+    if (!target) return;
+    const debuffs = this._actorDebuffs(target);
+    if (!debuffs.length) { playHealSfx("FULL"); return; }
+    if (debuffs.length === 1) { this._applyCleanseOne(target, debuffs[0].id); return; }
+    this._zone = "debuffs";
+    this._debuffIndex = 0;
+    playHealSfx("ARM");
+    this._updateDebuffs(); this._updateCellStates(); this._renderBanner();
+  },
+
+  // Build the cost/source fields shared by every apply payload.
+  _costFields() {
+    const d = this._armed;
+    return {
+      casterUuid: this._caster.uuid,
+      effectItemUuid: d.effectItemUuid,
+      costItemUuid: d.costItemUuid,
+      consumableUuid: d.consumableUuid ?? null,
+      mode: d.mode ?? "use",
+      ipCost: d.ipCost ?? 0,
+    };
+  },
+
+  // Apply heal / cleanse-all to the resolved target(s) (one request).
+  async _applyAction() {
+    const desc = this._armed;
+    if (!desc) return;
+    const targets = this._resolvedTargets().filter((t) => this._canBenefit(t.actor, desc));
+    if (!targets.length) { playHealSfx("FULL"); return; }
+
+    const payload = {
+      ...this._costFields(),
+      kind: desc.kind,
+      cleanseScope: desc.cleanseScope ?? null,
+      targetUuids: targets.map((t) => t.actor.uuid),
+      targetCount: targets.length,
+    };
+    const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
+    this._afterApply(desc, result, targets.map((t) => this._members.indexOf(t)));
+  },
+
+  // Apply a single picked debuff removal (cleanse-one).
+  async _applyCleanseOne(target, debuffId) {
+    const desc = this._armed;
+    if (!desc) return;
+    const payload = {
+      ...this._costFields(),
+      kind: "cleanse",
+      cleanseScope: "one",
+      targetUuids: [target.uuid],
+      cleansePicks: { [target.uuid]: debuffId },
+      targetCount: 1,
+    };
+    const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
+    this._afterApply(desc, result, [this._targetIndex]);
+
+    // Picker persists: stay if the target still has debuffs, else back to targets.
+    if (result?.ok && this._zone === "debuffs") {
+      const left = this._actorDebuffs(target);
+      if (!left.length) this._zone = "targets";
+      else this._debuffIndex = Math.min(this._debuffIndex, left.length - 1);
+      this._updateDebuffs(); this._updateCellStates(); this._renderBanner();
+    }
+  },
+
+  // Shared post-apply: SFX, flash, spectator broadcast, notification, refresh.
+  _afterApply(desc, result, cellIdxs) {
+    if (!result?.ok) { playHealSfx("DENY"); ui.notifications?.warn(`${desc.kind === "cleanse" ? "Cleanse" : "Heal"} failed: ${result?.reason ?? "unknown"}.`); return; }
+    playHealSfx(desc.kind === "cleanse" ? "CLEANSE" : "HEAL");
+    for (const i of cellIdxs) if (i >= 0) this._flashCell(i);
+
+    const lines = this._feedbackLines(desc, result);
+    if (lines.length) broadcastHealFeedback({ casterName: this._caster.name, lines });
+    if (lines.length) ui.notifications?.info(lines[0].text ?? `${desc.name} used.`);
+
+    this._updateResources(); this._updateDebuffs(); this._updateCellStates();
+    this._refreshActions();
+  },
+
+  // Shape GM result.applied into toast lines (heal / cleanse-one / cleanse-all).
+  _feedbackLines(desc, result) {
+    const applied = result.applied ?? [];
+    const caster = this._caster.name;
+    if (desc.kind === "cleanse") {
+      if (desc.cleanseScope === "all") {
+        const seen = new Set(); const lines = [];
+        for (const a of applied) {
+          if (seen.has(a.targetName)) continue; seen.add(a.targetName);
+          lines.push({ kind: "cleanse-all", casterName: caster, targetName: a.targetName, text: `${caster} cleanses ${a.targetName}` });
+        }
+        return lines;
+      }
+      return applied.map((a) => ({ kind: "cleanse-one", casterName: caster, targetName: a.targetName, debuff: a.debuffName, text: `${caster} cures ${a.debuffName} from ${a.targetName}` }));
+    }
+    return applied.filter((a) => a.healed > 0).map((a) => ({
+      kind: "heal", casterName: caster, targetName: a.targetName,
+      resource: a.resource, amount: a.healed, after: a.after, max: a.max,
+      text: `${caster} restores ${a.healed} ${(HEAL_RESOURCE[a.resource]?.label ?? a.resource)} to ${a.targetName}`,
+    }));
   },
 
   _flashCell(idx) {
@@ -631,7 +779,7 @@ const HealingHUD = {
       } else { return; }
 
       if (keyMatch(ev, HEAL_KEYS.CANCEL)) {
-        if (this._zone === "targets") { this._disarm(); }
+        if (this._zone === "targets" || this._zone === "debuffs") { this._disarm(); }
         else { this.close(); }
         return;
       }
@@ -644,12 +792,22 @@ const HealingHUD = {
         if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._cycleTab(-1); return; }
         if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._cycleTab(+1); return; }
         if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._armAction(); return; }
+      } else if (this._zone === "debuffs") { // debuff picker (one debuff at a time)
+        if (keyMatch(ev, HEAL_KEYS.LEFT) || keyMatch(ev, HEAL_KEYS.UP))    { this._moveDebuff(-1); return; }
+        if (keyMatch(ev, HEAL_KEYS.RIGHT) || keyMatch(ev, HEAL_KEYS.DOWN)) { this._moveDebuff(+1); return; }
+        if (keyMatch(ev, HEAL_KEYS.CONFIRM)) {
+          const target = this._members[this._targetIndex]?.actor;
+          const debuffs = this._actorDebuffs(target);
+          const eff = debuffs[this._debuffIndex] ?? debuffs[0];
+          if (target && eff) this._applyCleanseOne(target, eff.id);
+          return;
+        }
       } else { // targets (2x2 grid)
         if (keyMatch(ev, HEAL_KEYS.UP))    { this._moveTarget(0, -1); return; }
         if (keyMatch(ev, HEAL_KEYS.DOWN))  { this._moveTarget(0, +1); return; }
         if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._moveTarget(-1, 0); return; }
         if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._moveTarget(+1, 0); return; }
-        if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._confirmHeal(); return; }
+        if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._onConfirmTargets(); return; }
       }
     };
     window.addEventListener("keydown", this._keyHandler, true);

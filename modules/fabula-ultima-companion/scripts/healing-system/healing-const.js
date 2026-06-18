@@ -16,7 +16,7 @@ export const HEAL_TAG = "[FU][Healing]";
 // socketlib request names (player → GM). Kept namespaced to avoid clashes with
 // the other socketlib registrants in the module.
 export const HEAL_SOCKET = Object.freeze({
-  APPLY: "healing.apply",   // { casterUuid, targetUuid, actionUuid, consumableUuid? } → GM applies, returns result
+  APPLY: "healing.apply",   // { kind, casterUuid, targetUuids[], effectItemUuid, cleanseScope?, ... } → GM applies
 });
 
 // Action categories → HUD tabs. Derived from the *granted action's* skill_type
@@ -64,6 +64,7 @@ export const HEAL_SFX = Object.freeze({
   SELECT:  { src: `${_SND_BASE}BattleCursor_2.wav`,     volume: 0.55 },
   ARM:     { src: `${_SND_BASE}check_ready.wav`,        volume: 0.6 },
   HEAL:    { src: `${_SND_BASE}Soundboard/Item3.ogg`,   volume: 0.7 },
+  CLEANSE: { src: `${_SND_BASE}Recovery.ogg`,           volume: 0.7 },
   CANCEL:  { src: `${_SND_BASE}BattleCursor_2.wav`,     volume: 0.4 },
   DENY:    { src: `${_SND_BASE}BattleCursor_4.wav`,     volume: 0.35 },
   EXIT:    { src: `${_SND_BASE}bond_cleared.wav`,       volume: 0.6 },

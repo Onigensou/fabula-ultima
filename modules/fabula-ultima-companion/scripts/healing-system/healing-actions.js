@@ -27,6 +27,23 @@
 import { HEAL_TAG, HEAL_CATEGORY, HEAL_CREATE_PRESETS } from "./healing-const.js";
 import { classifyActionIntent } from "../battle-director/skill-intent.js";
 import { resolveHealAction, formatCostMap, formatGrants } from "./healing-resolve.js";
+import { getCleanseInfoForItem } from "./healing-cleanse.js";
+import { parseJRPGTargetingText } from "../jrpg-targeting-system/jrpg-targeting-parser.js";
+
+// Targeting mode for an action: "self" | "single" | "all".
+// Cleanse actions pin it via the registry (tonics have no skill_target); heals
+// parse skill_target. Per design, "up to N" / "exact N" collapse to single.
+function resolveTargeting(item, cleanseInfo) {
+  if (cleanseInfo) return cleanseInfo.target === "all" ? "all" : "single";
+  const raw = String(item?.system?.props?.skill_target ?? "");
+  try {
+    const r = parseJRPGTargetingText(raw);
+    if (r.mode === "self") return "self";
+    if (r.mode === "all") return "all";
+  } catch (e) { warnTargeting(raw, e); }
+  return "single";
+}
+function warnTargeting(raw, e) { console.warn(HEAL_TAG, "targeting parse failed", raw, e); }
 
 function entryUuid(entry) {
   return entry?.uuid ?? entry?.skillUuid ?? entry?.skill_uuid ?? entry?.itemUuid ?? null;
@@ -71,15 +88,20 @@ function stripHtml(html) {
   }
 }
 
-// Build a display descriptor from a resolved heal. Returns null when the action
-// doesn't heal (no grants).
-function buildDescriptor({ caster, category, displayItem, effectItem, costItem, source, sourceItemName = null, consumableUuid = null, quantity = null }) {
+// Build a display descriptor. For a pure heal, returns null when the action
+// restores nothing. For a cleanse action (cleanseInfo present), the heal grants
+// are optional — cost/affordability still resolve from the cost string.
+function buildDescriptor({ caster, category, displayItem, effectItem, costItem, source, sourceItemName = null, consumableUuid = null, quantity = null, cleanseInfo = null }) {
   const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: 1 });
-  if (!resolved.ok) return null;
+  const isCleanse = !!cleanseInfo;
+  if (!isCleanse && !resolved.ok) return null;   // pure heal must restore something
 
   const p = displayItem.system?.props ?? {};
   return {
     category,
+    kind: isCleanse ? "cleanse" : "heal",
+    cleanseScope: cleanseInfo?.scope ?? null,        // "one" | "all" | null
+    targeting: resolveTargeting(displayItem, cleanseInfo),   // "self" | "single" | "all"
     name: displayItem.name ?? p.name ?? "(unnamed)",
     img: displayItem.img ?? "icons/svg/heal.svg",
     descriptionHtml: String(p.description ?? p.skill_description ?? ""),
@@ -94,7 +116,7 @@ function buildDescriptor({ caster, category, displayItem, effectItem, costItem, 
     // structured grants (resource + amount) — used to gate full targets:
     grants: resolved.grants,
     // display:
-    healLabel: formatGrants(resolved.grants),
+    healLabel: isCleanse ? (cleanseInfo.scope === "all" ? "Cleanse All" : "Cleanse") : formatGrants(resolved.grants),
     costLabel: consumableUuid ? "1 Use" : formatCostMap(resolved.costMap),
     affordable: resolved.affordable && (quantity == null || quantity > 0),
     skillTarget: String(p.skill_target ?? "").trim(),
@@ -133,10 +155,14 @@ async function gatherCreateActions(caster) {
     }
     if (!resolved) { effectItem = carrier; resolved = { grants: [] }; }  // cleanse / placeholder
 
+    const cleanseInfo = getCleanseInfoForItem(carrier);   // Tonic → cleanse "one"
     const grants = resolved.grants ?? [];
     list.push({
       category: HEAL_CATEGORY.CREATE,
       mode: "create",
+      kind: cleanseInfo ? "cleanse" : "heal",
+      cleanseScope: cleanseInfo?.scope ?? null,
+      targeting: resolveTargeting(carrier, cleanseInfo),
       name: carrier.name ?? "(unnamed)",
       img: carrier.img ?? "icons/svg/item-bag.svg",
       descriptionHtml: String(carrier.system?.props?.description ?? ""),
@@ -145,12 +171,11 @@ async function gatherCreateActions(caster) {
       costItemUuid: null,
       consumableUuid: null,
       ipCost,
-      cleanse: !!preset.cleanse,
       source: "create",
       sourceItemName: null,
       quantity: null,
       grants,
-      healLabel: grants.length ? formatGrants(grants) : (preset.cleanse ? "Cleanse" : ""),
+      healLabel: cleanseInfo ? (cleanseInfo.scope === "all" ? "Cleanse All" : "Cleanse") : (grants.length ? formatGrants(grants) : ""),
       costLabel: `${ipCost} IP`,
       affordable: casterIp >= ipCost,
       skillTarget: String(effectItem.system?.props?.skill_target ?? carrier.system?.props?.skill_target ?? "").trim(),
@@ -183,6 +208,11 @@ export async function gatherHealingActions(actor) {
     if (skillType) {
       const category = categoryForSkillType(skillType);
       if (!category) continue;        // passive / other
+      const cleanseInfo = getCleanseInfoForItem(item);
+      if (cleanseInfo) {
+        push(buildDescriptor({ caster: actor, category, displayItem: item, effectItem: item, costItem: item, source: "actor", cleanseInfo }));
+        continue;
+      }
       if (!isAid(item)) continue;
       push(buildDescriptor({
         caster: actor, category, displayItem: item, effectItem: item, costItem: item, source: "actor",
@@ -195,6 +225,16 @@ export async function gatherHealingActions(actor) {
       const isUnique = !!p.isUnique;
       const qty = isUnique ? null : (Number(p.item_quantity ?? 0) || 0);
       if (!isUnique && qty <= 0) continue;
+
+      // Cleanse consumable (Super/Turbo Tonic) — hardcoded registry match.
+      const cleanseInfo = getCleanseInfoForItem(item);
+      if (cleanseInfo) {
+        push(buildDescriptor({
+          caster: actor, category: HEAL_CATEGORY.ITEM, displayItem: item, effectItem: item,
+          costItem: item, source: "consumable", sourceItemName: item.name, consumableUuid: item.uuid, quantity: qty, cleanseInfo,
+        }));
+        continue;
+      }
 
       // Heal lives on the carrier's effect_table, or on the linked action's
       // type_damage. Resolve against whichever yields grants.
@@ -231,10 +271,11 @@ export async function gatherHealingActions(actor) {
       if (!linked) continue;
       const category = categoryForSkillType(linked.system?.props?.skill_type);
       if (!category) continue;
-      if (!isAid(linked)) continue;
+      const cleanseInfo = getCleanseInfoForItem(linked);
+      if (!cleanseInfo && !isAid(linked)) continue;
       push(buildDescriptor({
         caster: actor, category, displayItem: linked, effectItem: linked, costItem: linked,
-        source: "equipment", sourceItemName: item.name,
+        source: "equipment", sourceItemName: item.name, cleanseInfo,
       }));
     }
   }

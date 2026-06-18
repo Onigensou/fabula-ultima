@@ -21,6 +21,7 @@
 
 import { HEAL_TAG } from "./healing-const.js";
 import { resolveHealAction } from "./healing-resolve.js";
+import { actorDebuffs } from "./healing-cleanse.js";
 import { HealingFeedback } from "./healing-feedback.js";
 import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
@@ -48,28 +49,68 @@ function _readNum(actor, key) {
   return Number.isFinite(n) ? n : 0;
 }
 
-// ── Authoritative apply (GM only) ───────────────────────────────────────────
+// Apply heal grants to one target. Returns applied entries (per resource).
+async function _applyHealToTarget(target, grants) {
+  const update = {};
+  const applied = [];
+  for (const g of (grants ?? [])) {
+    const slot = { hp: ["current_hp", "max_hp"], mp: ["current_mp", "max_mp"], ip: ["current_ip", "max_ip"] }[g.resource];
+    if (!slot) continue;
+    const [curKey, maxKey] = slot;
+    const before = _readNum(target, curKey);
+    const max = _readNum(target, maxKey) || before + g.amount;
+    const after = Math.min(max, before + g.amount);
+    update[`system.props.${curKey}`] = after;
+    applied.push({ type: "heal", targetName: target.name, resource: g.resource, before, after, max, healed: after - before });
+  }
+  if (Object.keys(update).length) {
+    try { await target.update(update); } catch (e) { console.warn(HEAL_TAG, "target.update failed", e); }
+  }
+  return applied;
+}
+
+// Remove debuff(s) from one target. scope "all" → every debuff; "one" → the
+// picked debuff (debuffId), else the first. Returns applied entries.
+async function _applyCleanseToTarget(target, scope, debuffId) {
+  const debuffs = actorDebuffs(target);
+  if (!debuffs.length) return [];
+  let toRemove;
+  if (scope === "all") toRemove = debuffs;
+  else {
+    const picked = debuffId ? debuffs.find((e) => e.id === debuffId) : null;
+    toRemove = [picked ?? debuffs[0]];
+  }
+  const entries = toRemove.filter(Boolean).map((e) => ({ type: "cleanse", targetName: target.name, debuffName: e.name }));
+  try { await target.deleteEmbeddedDocuments("ActiveEffect", toRemove.map((e) => e.id)); }
+  catch (e) { console.warn(HEAL_TAG, "deleteEmbeddedDocuments failed", e); return []; }
+  return entries;
+}
+
+// ── Authoritative apply (GM only) — heal OR cleanse, one OR many targets ─────
 async function applyHeal(payload) {
-  const { casterUuid, targetUuid, effectItemUuid, costItemUuid, consumableUuid = null,
-          mode = "use", ipCost = 0, cleanse = false } = payload ?? {};
+  const {
+    kind = "heal", casterUuid, targetUuids = [], effectItemUuid, costItemUuid, consumableUuid = null,
+    mode = "use", ipCost = 0, cleanseScope = null, cleansePicks = null, targetCount = 1,
+  } = payload ?? {};
   const isCreate = mode === "create";
+  const isCleanse = kind === "cleanse";
+
   const caster = await fromUuid(casterUuid).catch(() => null);
-  const target = await fromUuid(targetUuid).catch(() => null);
   const effectItem = await fromUuid(effectItemUuid).catch(() => null);
   const costItem = costItemUuid ? await fromUuid(costItemUuid).catch(() => null) : null;
-  if (!caster || !target || !effectItem) return { ok: false, reason: "resolve-failed" };
+  const targets = [];
+  for (const u of targetUuids) { const t = await fromUuid(u).catch(() => null); if (t) targets.push(t); }
+  if (!caster || !effectItem || !targets.length) return { ok: false, reason: "resolve-failed" };
 
-  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: 1 });
-  // Create mode (IP craft) may be a cleanse placeholder with no resource grant;
-  // otherwise it must yield a heal like any other action.
-  if (!resolved.ok && !(isCreate && cleanse)) return { ok: false, reason: resolved.reason ?? "no-heal" };
+  // Cost is resolved ONCE against the action (targetCount drives "×T" costs).
+  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount) });
+  if (!isCleanse && !resolved.ok) return { ok: false, reason: resolved.reason ?? "no-heal" };
   if (!resolved.affordable) return { ok: false, reason: "unaffordable", missing: resolved.missing };
 
   // Re-validate cost source.
   let carrier = null;
   if (isCreate) {
-    const curIp = _readNum(caster, "current_ip");
-    if (curIp < ipCost) return { ok: false, reason: "unaffordable-ip" };
+    if (_readNum(caster, "current_ip") < ipCost) return { ok: false, reason: "unaffordable-ip" };
   } else if (consumableUuid) {
     carrier = await fromUuid(consumableUuid).catch(() => null);
     if (!carrier) return { ok: false, reason: "consumable-missing" };
@@ -78,32 +119,18 @@ async function applyHeal(payload) {
     if (!isUnique && qty <= 0) return { ok: false, reason: "out-of-stock" };
   }
 
-  // Apply recovery to the target (single update, clamped to max).
-  const update = {};
+  // Apply to each target.
   const applied = [];
-  for (const g of (resolved.grants ?? [])) {
-    const slot = { hp: ["current_hp", "max_hp"], mp: ["current_mp", "max_mp"], ip: ["current_ip", "max_ip"] }[g.resource];
-    if (!slot) continue;
-    const [curKey, maxKey] = slot;
-    const before = _readNum(target, curKey);
-    const max = _readNum(target, maxKey) || before + g.amount;
-    const after = Math.min(max, before + g.amount);
-    update[`system.props.${curKey}`] = after;
-    applied.push({ resource: g.resource, before, after, max, healed: after - before });
-  }
-  if (Object.keys(update).length) {
-    try { await target.update(update); }
-    catch (e) { console.warn(HEAL_TAG, "target.update failed", e); return { ok: false, reason: "target-write-failed" }; }
+  for (const target of targets) {
+    if (isCleanse) applied.push(...await _applyCleanseToTarget(target, cleanseScope, cleansePicks?.[target.uuid] ?? null));
+    else applied.push(...await _applyHealToTarget(target, resolved.grants));
   }
 
-  // Deduct the caster's cost. Create → spend IP; otherwise → the parsed cost map.
+  // Deduct the caster's cost ONCE. Create → spend IP; else → parsed cost map.
   if (isCreate) {
     if (ipCost > 0) { try { await spendIp(caster, ipCost); } catch (e) { console.warn(HEAL_TAG, "spendIp failed", e); } }
-    // TODO: cleanse placeholder (Tonic) — remove one status effect once the
-    // status system is wired into this HUD.
   } else if (resolved.costMap.size) {
-    try { await debitCost(caster, resolved.costMap); }
-    catch (e) { console.warn(HEAL_TAG, "debitCost failed", e); }
+    try { await debitCost(caster, resolved.costMap); } catch (e) { console.warn(HEAL_TAG, "debitCost failed", e); }
   }
 
   // Consume one unit of the consumable (use mode only).
@@ -115,13 +142,12 @@ async function applyHeal(payload) {
 
   return {
     ok: true,
-    targetName: target.name,
+    kind,
     casterName: caster.name,
     applied,
     cost: isCreate ? (ipCost > 0 ? { ip: ipCost } : {}) : Object.fromEntries(resolved.costMap),
     consumed,
     created: isCreate,
-    placeholder: isCreate && cleanse && !applied.length,
   };
 }
 

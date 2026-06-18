@@ -165,6 +165,7 @@ export function injectHealingStyles() {
   box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .1s ease;
 }
 .oni-heal-debuff:hover { transform: scale(1.12); border-color: var(--hl-wood-2); }
+.oni-heal-debuff.picker-sel { border-color: #b8392f; box-shadow: 0 0 0 2px #b8392f, 0 0 10px rgba(184,57,47,.6); transform: scale(1.15); }
 .oni-heal-debuffs .none { font-size: 11px; opacity: .4; font-style: italic; }
 /* Debuff tooltip (DOM, follows cursor). Appended to <body> — OUTSIDE the
    overlay — so it can't use the overlay's CSS vars; uses literal opaque colors. */
@@ -195,7 +196,7 @@ export function injectHealingStyles() {
 .oni-heal-overlay.closing .oni-heal-cell { animation: oniHealCellOut .26s ease both; }
 
 /* === feather cursor (same pattern as the Save/Load UI) === */
-#oni-heal-cursor {
+#oni-heal-cursor, .oni-heal-cursor {
   position: fixed; z-index: 2147483647;
   width: 46px; height: 46px; pointer-events: none;
   transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
@@ -204,8 +205,8 @@ export function injectHealingStyles() {
   border: none !important; outline: none !important; box-shadow: none !important; background: transparent !important;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
 }
-#oni-heal-cursor.is-visible { opacity: 1; animation: oniHealCursorFloat 2.2s ease-in-out infinite; }
-#oni-heal-cursor.no-anim { transition: none !important; }
+#oni-heal-cursor.is-visible, .oni-heal-cursor.is-visible { opacity: 1; animation: oniHealCursorFloat 2.2s ease-in-out infinite; }
+#oni-heal-cursor.no-anim, .oni-heal-cursor.no-anim { transition: none !important; }
 @keyframes oniHealCursorFloat {
   0%, 100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px); }
   50%       { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }
