@@ -47,7 +47,12 @@ const HealingHUD = {
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   async open(opts = {}) {
-    if (this._root) { this.close(); }
+    // Re-open: tear down the existing HUD instantly (no exit anim/sfx).
+    if (this._root) {
+      if (this._keyHandler) { window.removeEventListener("keydown", this._keyHandler, true); this._keyHandler = null; }
+      if (this._updateHook) { Hooks.off("updateActor", this._updateHook); this._updateHook = null; }
+      this._root.remove(); this._root = null; this._armed = null;
+    }
     injectHealingStyles();
 
     // Resolve caster: explicit → user's assigned character → (GM fallback) first party member.
@@ -91,8 +96,14 @@ const HealingHUD = {
     if (this._updateHook) { Hooks.off("updateActor", this._updateHook); this._updateHook = null; }
     const root = this._root;
     this._root = null;
-    if (root) { root.classList.remove("visible"); setTimeout(() => root.remove(), 200); }
     this._armed = null;
+    if (!root) return;
+    // Reverse of the entrance: frame slides down + fades, cells slide out
+    // staggered (their inline animation-delay is reused by the closing rule).
+    playHealSfx("EXIT");
+    root.classList.remove("visible");
+    root.classList.add("closing");
+    setTimeout(() => root.remove(), 520);
   },
 
   async _resolveParty() {
@@ -136,13 +147,13 @@ const HealingHUD = {
     document.body.appendChild(root);
     this._root = root;
 
-    root.querySelector(".oni-heal-close").addEventListener("click", () => { playHealSfx("CANCEL"); this.close(); });
+    root.querySelector(".oni-heal-close").addEventListener("click", () => { this.close(); });
     // Click on the dark backdrop (outside the frame) closes.
-    root.addEventListener("pointerdown", (ev) => { if (ev.target === root) { playHealSfx("CANCEL"); this.close(); } });
+    root.addEventListener("pointerdown", (ev) => { if (ev.target === root) this.close(); });
 
     this._renderTabs();
     this._renderList();
-    this._renderParty();
+    this._renderParty(true);   // staggered intro
     this._renderBanner();
   },
 
@@ -196,21 +207,35 @@ const HealingHUD = {
     });
   },
 
-  _renderParty() {
+  // Battle-sprite (transparent) with token fallback. Animated .webm sprites
+  // render as a looping muted <video>; everything else as <img>.
+  _spriteHtml(actor) {
+    const battle = actor.system?.props?.sprite_battle;
+    const token = actor.prototypeToken?.texture?.src || actor.token?.texture?.src || actor.img;
+    const src = (typeof battle === "string" && battle.trim()) ? battle.trim() : (token || "icons/svg/mystery-man.svg");
+    const safe = escapeHtml(src);
+    if (/\.webm(\?.*)?$/i.test(src)) {
+      return `<video class="oni-heal-sprite" src="${safe}" autoplay loop muted playsinline disablepictureinpicture></video>`;
+    }
+    return `<img class="oni-heal-sprite" src="${safe}" />`;
+  },
+
+  _renderParty(intro = false) {
     const gridEl = this._root.querySelector(".oni-heal-grid");
     gridEl.innerHTML = "";
     for (let i = 0; i < 4; i++) {
       const entry = this._members[i] ?? null;
       const cell = document.createElement("div");
       cell.className = "oni-heal-cell" + (entry ? "" : " empty")
-        + (entry && i === this._targetIndex && this._zone === "targets" ? " sel targeting" : "");
+        + (entry && i === this._targetIndex && this._zone === "targets" ? " sel targeting" : "")
+        + (intro && entry ? " intro-cell" : "");
       cell.dataset.idx = String(i);
+      cell.style.animationDelay = `${i * 70}ms`;   // stagger (reused on exit)
       if (!entry) { cell.innerHTML = `<div class="pc-name" style="opacity:.5">—</div>`; gridEl.appendChild(cell); continue; }
       const a = entry.actor;
-      const token = a.prototypeToken?.texture?.src || a.token?.texture?.src || a.img || "icons/svg/mystery-man.svg";
       cell.innerHTML = `
         <div class="flash"></div>
-        <img class="pc-token" src="${escapeHtml(token)}" />
+        <div class="oni-heal-sprite-wrap">${this._spriteHtml(a)}</div>
         <div class="pc-info">
           <div class="pc-name">${escapeHtml(a.name)}</div>
           ${this._resHtml(a, "hp")}
@@ -374,7 +399,7 @@ const HealingHUD = {
 
       if (keyMatch(ev, HEAL_KEYS.CANCEL)) {
         if (this._zone === "targets") { this._disarm(); }
-        else { playHealSfx("CANCEL"); this.close(); }
+        else { this.close(); }
         return;
       }
       if (keyMatch(ev, HEAL_KEYS.TAB_NEXT)) { if (this._zone === "list") this._cycleTab(+1); return; }

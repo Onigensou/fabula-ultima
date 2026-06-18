@@ -46,13 +46,14 @@ export const HEAL_KEYS = Object.freeze({
 const _SND_BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
 export const HEAL_SFX = Object.freeze({
-  OPEN:    { src: `${_SND_BASE}check_start.wav`,    volume: 0.6 },
-  MOVE:    { src: `${_SND_BASE}BattleCursor_4.wav`, volume: 0.45 },
-  SELECT:  { src: `${_SND_BASE}BattleCursor_2.wav`, volume: 0.55 },
-  ARM:     { src: `${_SND_BASE}check_ready.wav`,    volume: 0.6 },
-  HEAL:    { src: `${_SND_BASE}Success_1.wav`,      volume: 0.7 },
-  CANCEL:  { src: `${_SND_BASE}BattleCursor_2.wav`, volume: 0.4 },
-  DENY:    { src: `${_SND_BASE}BattleCursor_4.wav`, volume: 0.35 },
+  OPEN:    { src: `${_SND_BASE}bond_create.wav`,        volume: 0.6 },
+  MOVE:    { src: `${_SND_BASE}BattleCursor_4.wav`,     volume: 0.45 },
+  SELECT:  { src: `${_SND_BASE}BattleCursor_2.wav`,     volume: 0.55 },
+  ARM:     { src: `${_SND_BASE}check_ready.wav`,        volume: 0.6 },
+  HEAL:    { src: `${_SND_BASE}Soundboard/Item3.ogg`,   volume: 0.7 },
+  CANCEL:  { src: `${_SND_BASE}BattleCursor_2.wav`,     volume: 0.4 },
+  DENY:    { src: `${_SND_BASE}BattleCursor_4.wav`,     volume: 0.35 },
+  EXIT:    { src: `${_SND_BASE}bond_cleared.wav`,       volume: 0.6 },
 });
 
 // Play a healing SFX locally. `key` is one of HEAL_SFX's keys (string) or a
