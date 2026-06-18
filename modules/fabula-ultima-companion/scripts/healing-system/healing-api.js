@@ -13,6 +13,7 @@
 import { HEAL_MODULE_ID, HEAL_TAG } from "./healing-const.js";
 import { HealingHUD } from "./healing-hud-app.js";
 import { wireHealingSocket } from "./healing-socket.js";
+import { openHealingTuner } from "./healing-tuner.js";
 
 const api = {
   /** Open the local Healing HUD. Returns the HealingHUD singleton. */
@@ -23,6 +24,8 @@ const api = {
   get isOpen() { return HealingHUD.isOpen; },
   /** Direct handle (advanced / debugging). */
   HUD: HealingHUD,
+  /** Live layout tuner. */
+  tuner: { open: () => openHealingTuner() },
 };
 
 function ensureModuleApi() {

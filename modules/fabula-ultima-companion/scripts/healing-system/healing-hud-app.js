@@ -17,7 +17,7 @@
 // hook) if numbers change underneath.
 // ============================================================================
 
-import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, HEAL_CURSOR_SRC, playHealSfx } from "./healing-const.js";
+import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, HEAL_CURSOR_SRC, HEAL_TUNE, tuneVars, playHealSfx } from "./healing-const.js";
 import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
 import { requestApply } from "./healing-socket.js";
@@ -159,6 +159,7 @@ const HealingHUD = {
       </div>`;
     document.body.appendChild(root);
     this._root = root;
+    this.applyTune();   // push tunable layout constants → CSS vars
 
     // Feather cursor (same pattern as the Save/Load UI).
     this._cursorReady = false;
@@ -452,6 +453,14 @@ const HealingHUD = {
       this._cursorEl.style.top = `${y}px`;
       this._cursorEl.classList.add("is-visible");
     }
+  },
+
+  // Push the live-tunable layout constants (HEAL_TUNE) onto the overlay root as
+  // CSS custom properties. Called on build and by the tuner for instant updates.
+  applyTune() {
+    if (!this._root) return;
+    const vars = tuneVars(HEAL_TUNE);
+    for (const [k, v] of Object.entries(vars)) this._root.style.setProperty(k, v);
   },
 
   _renderBanner() {

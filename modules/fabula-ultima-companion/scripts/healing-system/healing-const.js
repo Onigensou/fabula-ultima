@@ -83,6 +83,54 @@ export function playHealSfx(key) {
   }
 }
 
+// ── Live-tunable layout constants ───────────────────────────────────────────
+// Mutated by the tuner (FUCompanion.api.healing.tuner) and applied to the HUD
+// as CSS custom properties so changes are instant. Edit these defaults to bake
+// in a final design.
+export const HEAL_TUNE = {
+  // Panels
+  frameWidth: 1200,    // px (clamped to 95vw)
+  frameHeight: 700,    // px (clamped to 92vh)
+  pickerWidth: 34,     // % of frame width (action picker / left panel)
+  cellGap: 16,         // px gap between actor panels
+
+  // Battle sprite (floating element, anchored to the cell's bottom-right)
+  spriteWidth: 120,    // px
+  spriteHeight: 150,   // px
+  spriteRight: -6,     // px from the panel's right edge (negative = pop out)
+  spriteBottom: -2,    // px from the panel's bottom edge (negative = pop out)
+
+  // Actor name
+  nameSize: 22,            // px
+  nameStrokeColor: "#f6e3a0",
+  nameStrokeWidth: 1.1,    // px
+
+  // Stat text
+  resSize: 17,         // px (value text)
+  labelSize: 13,       // px (HP/MP/IP label)
+  rowGap: 6,           // px gap between stat rows
+};
+
+// Map the tune config → CSS custom properties for the overlay root.
+export function tuneVars(t = HEAL_TUNE) {
+  return {
+    "--hl-frame-w": `${t.frameWidth}px`,
+    "--hl-frame-h": `${t.frameHeight}px`,
+    "--hl-picker-w": `${t.pickerWidth}%`,
+    "--hl-cell-gap": `${t.cellGap}px`,
+    "--hl-sprite-w": `${t.spriteWidth}px`,
+    "--hl-sprite-h": `${t.spriteHeight}px`,
+    "--hl-sprite-right": `${t.spriteRight}px`,
+    "--hl-sprite-bottom": `${t.spriteBottom}px`,
+    "--hl-name-size": `${t.nameSize}px`,
+    "--hl-name-stroke": String(t.nameStrokeColor),
+    "--hl-name-stroke-w": `${t.nameStrokeWidth}px`,
+    "--hl-res-size": `${t.resSize}px`,
+    "--hl-label-size": `${t.labelSize}px`,
+    "--hl-row-gap": `${t.rowGap}px`,
+  };
+}
+
 // Canonical resource slots in actor.system.props (CSB stores current_* as
 // strings, max_* as numbers — always coerce with Number()).
 export const HEAL_RESOURCE = Object.freeze({
