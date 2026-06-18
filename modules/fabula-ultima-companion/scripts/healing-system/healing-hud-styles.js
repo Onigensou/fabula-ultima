@@ -117,10 +117,11 @@ export function injectHealingStyles() {
   flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
   gap: 16px; min-height: 0; padding: 18px 12px; overflow: hidden;
 }
-/* Cell: sprite on the left, info on the right. Stretches to fill the grid row. */
+/* Cell: stats on the left, a large battle sprite filling the right (Valkyrie
+   Profile style). Stretches to fill the grid row. */
 .oni-heal-cell {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 18px;
+  display: flex; align-items: stretch; gap: 12px;
+  padding: 14px 16px 14px 22px;
   border-radius: 12px; border: 1.5px solid rgba(120,86,40,.45);
   background: var(--hl-parch-1);
   box-shadow: inset 0 0 18px rgba(160,118,73,0.12);
@@ -134,19 +135,24 @@ export function injectHealingStyles() {
   box-shadow: 0 0 0 2px var(--hl-gold-2), 0 0 22px var(--hl-glow);
   transform: translateY(-2px); background: #fff5db;
 }
-/* Battle sprite — contained inside the panel, anchored to the bottom. */
+/* Battle sprite — large, on the RIGHT, fills the cell height, anchored bottom. */
 .oni-heal-sprite-wrap {
-  flex: 0 0 auto; width: 104px; height: 116px;
+  order: 2; flex: 0 0 auto; width: 150px; align-self: stretch;
   display: flex; align-items: flex-end; justify-content: center;
   pointer-events: none;
 }
 .oni-heal-sprite {
   max-width: 100%; max-height: 100%; width: auto; height: auto;
   object-fit: contain; object-position: bottom;
-  filter: drop-shadow(0 4px 5px rgba(40,24,10,.5));
+  filter: drop-shadow(0 4px 6px rgba(40,24,10,.55));
 }
-.oni-heal-cell .pc-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
-.oni-heal-cell .pc-name { font-size: 21px; font-weight: 800; font-style: italic; color: #4a2c10; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.oni-heal-cell .pc-info { order: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; flex: 1; }
+.oni-heal-cell .pc-name {
+  font-size: 22px; font-weight: 800; font-style: italic; color: #4a2c10;
+  -webkit-text-stroke: 1.1px #f6e3a0; paint-order: stroke fill;
+  text-shadow: 0 1px 1px rgba(0,0,0,.18);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
+}
 .oni-heal-res { display: flex; align-items: baseline; gap: 10px; font-variant-numeric: tabular-nums; }
 .oni-heal-res .rlabel { width: 30px; font-size: 13px; font-weight: 800; letter-spacing: .5px; }
 .oni-heal-res .rval { font-size: 17px; font-weight: 700; color: var(--hl-ink); }
