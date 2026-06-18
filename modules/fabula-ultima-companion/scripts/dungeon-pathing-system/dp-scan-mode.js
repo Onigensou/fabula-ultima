@@ -92,6 +92,7 @@
   let _ftBtn            = null;   // 🦅 DOM element
   let _travelBtn        = null;   // scene travel DOM element
   let _travelBtnMode    = null;   // "dungeon" | "exploration"
+  let _healBtn          = null;   // ❤️ out-of-combat healing DOM element
   let _scanning         = false;
   let _cameraSettled    = false;  // true once pivot is within 1wu of token and no pan needed
   let _tickerFn         = null;
@@ -107,6 +108,10 @@
   }
   function cfgFT() {
     return DP.UI?.FAST_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 168, FONT_SIZE: "28px" };
+  }
+  function cfgHeal() {
+    // Docked as the second button (right of Scan), same row.
+    return DP.UI?.HEAL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 94, FONT_SIZE: "28px" };
   }
   function cfgTravel() {
     return DP.UI?.SCENE_TRAVEL_BUTTON ?? { SIZE: 64, BOTTOM: 80, LEFT: 242, LEFT_NO_FT: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
@@ -379,6 +384,36 @@
     });
   }
 
+  // ── Healing button (independent — shown in dungeon AND exploration) ─────────
+  function showHealBtn() {
+    injectStyles();
+    if (_healBtn) return;
+    _healBtn = makeBtn(
+      "oni-dp-heal-btn",
+      "❤️",
+      "Healing — heal party members",
+      cfgHeal(),
+      () => {
+        const api = globalThis.FUCompanion?.api?.healing
+          ?? game.modules?.get("fabula-ultima-companion")?.api?.healing;
+        if (!api?.open) { ui.notifications?.warn("Healing system not available."); return; }
+        // Toggle: open if closed, close if already open.
+        if (api.isOpen) api.close();
+        else api.open();
+      },
+    );
+    document.body.appendChild(_healBtn);
+    requestAnimationFrame(() => _healBtn?.classList.add("dp-scan-visible"));
+  }
+
+  function hideHealBtn() {
+    if (!_healBtn) return;
+    _healBtn.classList.remove("dp-scan-visible");
+    const btn = _healBtn;
+    setTimeout(() => btn.remove(), 280);
+    _healBtn = null;
+  }
+
   function hide() {
     if (_scanning) {
       _scanning = false;
@@ -489,5 +524,9 @@
     showTravelBtn,
     /** Hide the scene travel button. */
     hideTravelBtn,
+    /** Show the healing HUD button (dungeon + exploration). */
+    showHealBtn,
+    /** Hide the healing HUD button. */
+    hideHealBtn,
   };
 })();

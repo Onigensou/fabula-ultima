@@ -146,11 +146,20 @@
       DEFAULT_RADIUS: 600,   // world units — fallback when scene flag is unset
     },
 
-    // Helper Mode button — placed to the right of the Scan button
+    // Healing HUD button — docked as the SECOND button (right of Scan), shown
+    // in both Dungeon and Exploration scene modes.
+    HEAL_BUTTON: {
+      SIZE:      64,
+      BOTTOM:    80,
+      LEFT:      94,         // 20 (scan left) + 64 (scan size) + 10 (gap)
+      FONT_SIZE: "28px",
+    },
+
+    // Helper Mode button — placed to the right of the Heal button
     HELPER_BUTTON: {
       SIZE:      64,         // diameter in px (matches SCAN_BUTTON.SIZE)
       BOTTOM:    80,         // px from bottom (same row as scan button)
-      LEFT:      94,         // 20 (scan left) + 64 (scan size) + 10 (gap)
+      LEFT:      168,        // 94 (heal left) + 64 (heal size) + 10 (gap)
       FONT_SIZE: "28px",
     },
 
@@ -158,7 +167,7 @@
     FAST_TRAVEL_BUTTON: {
       SIZE:      64,         // diameter in px
       BOTTOM:    80,         // px from bottom (same row)
-      LEFT:      168,        // 94 (helper left) + 64 (helper size) + 10 (gap)
+      LEFT:      242,        // 168 (helper left) + 64 (helper size) + 10 (gap)
       FONT_SIZE: "28px",
     },
 
@@ -166,9 +175,9 @@
     SCENE_TRAVEL_BUTTON: {
       SIZE:      64,
       BOTTOM:    80,
-      LEFT:      242,        // 168 (ft left) + 64 (ft size) + 10 (gap)
-      LEFT_NO_FT: 168,       // used when FT button is hidden (takes its slot)
-      LEFT_SOLO:  20,        // used in exploration mode (only button)
+      LEFT:      316,        // 242 (ft left) + 64 (ft size) + 10 (gap)
+      LEFT_NO_FT: 242,       // used when FT button is hidden (takes its slot)
+      LEFT_SOLO:  20,        // used in exploration mode (leftmost; heal docks at 94)
       FONT_SIZE: "28px",
     },
   };
