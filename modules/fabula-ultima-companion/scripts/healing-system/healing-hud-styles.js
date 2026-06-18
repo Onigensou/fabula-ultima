@@ -115,19 +115,18 @@ export function injectHealingStyles() {
 .oni-heal-banner.armed { background: linear-gradient(180deg,#d8f0c4,#bfe3a6); border-color: #6fa04a; color: #1f4a14; font-weight: 700; }
 .oni-heal-grid {
   flex: none; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 96px;
-  align-content: start; gap: 40px 16px; min-height: 0; padding: 20px 6px 8px 12px;
-  overflow: visible;
+  align-content: start; gap: 26px 16px; min-height: 0; padding: 30px 8px 22px 12px;
+  overflow: hidden;
 }
-/* Rectangle cell: short + wide. Left area is reserved (padding-left) for the
-   floating battle sprite that pops out beyond the panel edge. */
+/* Rectangle cell: short + wide. Sprite sits inside, on the left. */
 .oni-heal-cell {
-  display: flex; align-items: center; height: 96px;
-  padding: 10px 16px 10px 100px;
+  display: flex; align-items: center; gap: 12px; height: 96px;
+  padding: 8px 16px;
   border-radius: 12px; border: 1.5px solid rgba(120,86,40,.45);
   background: var(--hl-parch-1);
   box-shadow: inset 0 0 18px rgba(160,118,73,0.12);
   cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease, background .12s ease, transform .12s ease, opacity .12s ease;
-  position: relative; overflow: visible;
+  position: relative; overflow: hidden;
 }
 .oni-heal-cell.empty { opacity: .35; cursor: default; }
 .oni-heal-cell.dim-full { opacity: .5; }   /* armed but this target can't benefit */
@@ -136,17 +135,16 @@ export function injectHealingStyles() {
   box-shadow: 0 0 0 2px var(--hl-gold-2), 0 0 22px var(--hl-glow);
   transform: translateY(-2px); background: #fff5db;
 }
-/* Floating, detached battle sprite — larger than the cell, anchored to the
-   bottom-left and overflowing the top so it "pops out" of the panel. */
+/* Battle sprite — contained inside the panel, anchored to the bottom. */
 .oni-heal-sprite-wrap {
-  position: absolute; left: -8px; bottom: -2px; width: 104px; height: 122px;
+  flex: 0 0 auto; width: 72px; height: 84px;
   display: flex; align-items: flex-end; justify-content: center;
-  pointer-events: none; z-index: 3;
+  pointer-events: none;
 }
 .oni-heal-sprite {
   max-width: 100%; max-height: 100%; width: auto; height: auto;
   object-fit: contain; object-position: bottom;
-  filter: drop-shadow(0 5px 6px rgba(40,24,10,.55));
+  filter: drop-shadow(0 4px 5px rgba(40,24,10,.5));
 }
 .oni-heal-cell .pc-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .oni-heal-cell .pc-name { font-size: 18px; font-weight: 800; color: var(--hl-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
@@ -169,6 +167,23 @@ export function injectHealingStyles() {
 @keyframes oniHealCellOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(38px); } }
 .oni-heal-cell.intro-cell { animation: oniHealCellIn .34s cubic-bezier(.22,.8,.3,1) both; }
 .oni-heal-overlay.closing .oni-heal-cell { animation: oniHealCellOut .26s ease both; }
+
+/* === feather cursor (same pattern as the Save/Load UI) === */
+#oni-heal-cursor {
+  position: fixed; z-index: 2147483647;
+  width: 46px; height: 46px; pointer-events: none;
+  transform: translate(-38%, -92%) rotate(20deg) translateY(0px);
+  transition: left .18s cubic-bezier(0.22,1,0.36,1), top .18s cubic-bezier(0.22,1,0.36,1), opacity .12s ease;
+  opacity: 0;
+  border: none !important; outline: none !important; box-shadow: none !important; background: transparent !important;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
+}
+#oni-heal-cursor.is-visible { opacity: 1; animation: oniHealCursorFloat 2.2s ease-in-out infinite; }
+#oni-heal-cursor.no-anim { transition: none !important; }
+@keyframes oniHealCursorFloat {
+  0%, 100% { transform: translate(-38%, -92%) rotate(20deg) translateY(0px); }
+  50%       { transform: translate(-38%, -92%) rotate(20deg) translateY(-7px); }
+}
 
 .oni-heal-footer {
   display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;

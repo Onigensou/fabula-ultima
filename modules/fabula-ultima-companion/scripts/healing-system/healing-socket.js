@@ -22,7 +22,7 @@
 import { HEAL_TAG } from "./healing-const.js";
 import { resolveHealAction } from "./healing-resolve.js";
 import { debitCost } from "../battle-director/skill-cost.js";
-import { consumeOne } from "../battle-director/item-resource.js";
+import { consumeOne, spendIp } from "../battle-director/item-resource.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
 const T_REQ = "healing.apply.req";
@@ -48,7 +48,9 @@ function _readNum(actor, key) {
 
 // ── Authoritative apply (GM only) ───────────────────────────────────────────
 async function applyHeal(payload) {
-  const { casterUuid, targetUuid, effectItemUuid, costItemUuid, consumableUuid = null } = payload ?? {};
+  const { casterUuid, targetUuid, effectItemUuid, costItemUuid, consumableUuid = null,
+          mode = "use", ipCost = 0, cleanse = false } = payload ?? {};
+  const isCreate = mode === "create";
   const caster = await fromUuid(casterUuid).catch(() => null);
   const target = await fromUuid(targetUuid).catch(() => null);
   const effectItem = await fromUuid(effectItemUuid).catch(() => null);
@@ -56,12 +58,17 @@ async function applyHeal(payload) {
   if (!caster || !target || !effectItem) return { ok: false, reason: "resolve-failed" };
 
   const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: 1 });
-  if (!resolved.ok) return { ok: false, reason: resolved.reason ?? "no-heal" };
+  // Create mode (IP craft) may be a cleanse placeholder with no resource grant;
+  // otherwise it must yield a heal like any other action.
+  if (!resolved.ok && !(isCreate && cleanse)) return { ok: false, reason: resolved.reason ?? "no-heal" };
   if (!resolved.affordable) return { ok: false, reason: "unaffordable", missing: resolved.missing };
 
-  // Re-validate consumable stock.
+  // Re-validate cost source.
   let carrier = null;
-  if (consumableUuid) {
+  if (isCreate) {
+    const curIp = _readNum(caster, "current_ip");
+    if (curIp < ipCost) return { ok: false, reason: "unaffordable-ip" };
+  } else if (consumableUuid) {
     carrier = await fromUuid(consumableUuid).catch(() => null);
     if (!carrier) return { ok: false, reason: "consumable-missing" };
     const isUnique = !!carrier.system?.props?.isUnique;
@@ -72,7 +79,7 @@ async function applyHeal(payload) {
   // Apply recovery to the target (single update, clamped to max).
   const update = {};
   const applied = [];
-  for (const g of resolved.grants) {
+  for (const g of (resolved.grants ?? [])) {
     const slot = { hp: ["current_hp", "max_hp"], mp: ["current_mp", "max_mp"], ip: ["current_ip", "max_ip"] }[g.resource];
     if (!slot) continue;
     const [curKey, maxKey] = slot;
@@ -87,13 +94,17 @@ async function applyHeal(payload) {
     catch (e) { console.warn(HEAL_TAG, "target.update failed", e); return { ok: false, reason: "target-write-failed" }; }
   }
 
-  // Deduct the caster's resource cost.
-  if (resolved.costMap.size) {
+  // Deduct the caster's cost. Create → spend IP; otherwise → the parsed cost map.
+  if (isCreate) {
+    if (ipCost > 0) { try { await spendIp(caster, ipCost); } catch (e) { console.warn(HEAL_TAG, "spendIp failed", e); } }
+    // TODO: cleanse placeholder (Tonic) — remove one status effect once the
+    // status system is wired into this HUD.
+  } else if (resolved.costMap.size) {
     try { await debitCost(caster, resolved.costMap); }
     catch (e) { console.warn(HEAL_TAG, "debitCost failed", e); }
   }
 
-  // Consume one unit of the consumable.
+  // Consume one unit of the consumable (use mode only).
   let consumed = false;
   if (carrier) {
     const res = await consumeOne(caster, carrier);
@@ -105,8 +116,10 @@ async function applyHeal(payload) {
     targetName: target.name,
     casterName: caster.name,
     applied,
-    cost: Object.fromEntries(resolved.costMap),
+    cost: isCreate ? (ipCost > 0 ? { ip: ipCost } : {}) : Object.fromEntries(resolved.costMap),
     consumed,
+    created: isCreate,
+    placeholder: isCreate && cleanse && !applied.length,
   };
 }
 

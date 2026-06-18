@@ -25,7 +25,20 @@ export const HEAL_CATEGORY = Object.freeze({
   SKILL: "Skill",
   SPELL: "Spell",
   ITEM: "Item",
+  CREATE: "Create",
 });
+
+// Feather cursor sprite (same asset/pattern as the Save/Load system UI).
+export const HEAL_CURSOR_SRC = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/feather.png";
+
+// Inventory-Point creatable presets (Fabula Ultima core "Spending Inventory
+// Points"). World items; creating one spends IP and uses it immediately (no
+// stored quantity). Tonic's status-cleanse is a placeholder for now.
+export const HEAL_CREATE_PRESETS = Object.freeze([
+  { name: "Remedy", uuid: "Item.LIkvHKcRlhLRuRyt" },
+  { name: "Elixir", uuid: "Item.C1sbMzuHM6lA5u8q" },
+  { name: "Tonic",  uuid: "Item.ZO0vkyhHeR2pR4QH", cleanse: true },
+]);
 
 // Keyboard controls (JRPG-style). Arrows navigate; Z confirms; X cancels/backs.
 export const HEAL_KEYS = Object.freeze({

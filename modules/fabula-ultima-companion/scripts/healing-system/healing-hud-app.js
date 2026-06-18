@@ -17,12 +17,12 @@
 // hook) if numbers change underneath.
 // ============================================================================
 
-import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, playHealSfx } from "./healing-const.js";
+import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, HEAL_CURSOR_SRC, playHealSfx } from "./healing-const.js";
 import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
 import { requestApply } from "./healing-socket.js";
 
-const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM];
+const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM, HEAL_CATEGORY.CREATE];
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -33,7 +33,7 @@ const HealingHUD = {
   _root: null,
   _caster: null,
   _members: [],           // [{actor, actorId, userId, userName}] padded conceptually
-  _actions: { Skill: [], Spell: [], Item: [] },
+  _actions: { Skill: [], Spell: [], Item: [], Create: [] },
   _category: HEAL_CATEGORY.SKILL,
   _listIndex: 0,
   _zone: "list",          // "list" | "targets"
@@ -42,6 +42,8 @@ const HealingHUD = {
   _keyHandler: null,
   _updateHook: null,
   _refreshing: false,
+  _cursorEl: null,
+  _cursorReady: false,
 
   get isOpen() { return !!this._root; },
 
@@ -51,6 +53,7 @@ const HealingHUD = {
     if (this._root) {
       if (this._keyHandler) { window.removeEventListener("keydown", this._keyHandler, true); this._keyHandler = null; }
       if (this._updateHook) { Hooks.off("updateActor", this._updateHook); this._updateHook = null; }
+      this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
       this._root.remove(); this._root = null; this._armed = null;
     }
     injectHealingStyles();
@@ -88,7 +91,10 @@ const HealingHUD = {
     this._installUpdateHook();
     playHealSfx("OPEN");
 
-    requestAnimationFrame(() => this._root?.classList.add("visible"));
+    requestAnimationFrame(() => {
+      this._root?.classList.add("visible");
+      this._updateCursor();
+    });
   },
 
   close() {
@@ -97,6 +103,7 @@ const HealingHUD = {
     const root = this._root;
     this._root = null;
     this._armed = null;
+    this._cursorEl?.remove(); this._cursorEl = null; this._cursorReady = false;
     if (!root) return;
     // Reverse of the entrance: frame slides down + fades, cells slide out
     // staggered (their inline animation-delay is reused by the closing rule).
@@ -147,6 +154,13 @@ const HealingHUD = {
     document.body.appendChild(root);
     this._root = root;
 
+    // Feather cursor (same pattern as the Save/Load UI).
+    this._cursorReady = false;
+    this._cursorEl = document.createElement("img");
+    this._cursorEl.id = "oni-heal-cursor";
+    this._cursorEl.src = HEAL_CURSOR_SRC;
+    document.body.appendChild(this._cursorEl);
+
     root.querySelector(".oni-heal-close").addEventListener("click", () => { this.close(); });
     // Click on the dark backdrop (outside the frame) closes.
     root.addEventListener("pointerdown", (ev) => { if (ev.target === root) this.close(); });
@@ -179,6 +193,7 @@ const HealingHUD = {
       empty.className = "oni-heal-empty";
       empty.textContent = `No ${this._category.toLowerCase()} heals available.`;
       listEl.appendChild(empty);
+      if (this._zone === "list") this._updateCursor();
       return;
     }
     if (this._listIndex >= rows.length) this._listIndex = rows.length - 1;
@@ -200,11 +215,15 @@ const HealingHUD = {
           <div class="cost-badge">${escapeHtml(desc.costLabel)}${qty}</div>
         </div>`;
       row.addEventListener("click", () => {
+        // Toggle: clicking the already-armed action disarms it (mouse parity
+        // with the keyboard X-to-cancel behaviour).
+        if (this._armed && this._armed.effectItemUuid === desc.effectItemUuid) { this._disarm(); return; }
         this._listIndex = i; this._renderList();
         this._armAction();
       });
       listEl.appendChild(row);
     });
+    if (this._zone === "list") this._updateCursor();
   },
 
   // Battle-sprite (transparent) with token fallback. Animated .webm sprites
@@ -245,18 +264,53 @@ const HealingHUD = {
           ${this._resHtml(a, "ip")}
         </div>`;
       cell.addEventListener("click", () => {
-        if (!this._armed) { this._zone = "targets"; this._targetIndex = i; this._renderParty(); return; }
-        this._targetIndex = i; this._renderParty();
+        if (!this._armed) { this._zone = "targets"; this._targetIndex = i; this._updateCellStates(); return; }
+        this._targetIndex = i; this._updateCellStates();
         this._confirmHeal();
       });
       gridEl.appendChild(cell);
     }
+    this._updateCursor();
+  },
+
+  // Update only the selection / dim classes on existing cells — does NOT rebuild
+  // innerHTML, so the battle-sprite <video>s never reload (no blink on navigate).
+  _updateCellStates() {
+    const cells = this._root?.querySelectorAll(".oni-heal-cell") ?? [];
+    cells.forEach((cell) => {
+      const i = Number(cell.dataset.idx);
+      const entry = this._members[i] ?? null;
+      const targeting = !!entry && i === this._targetIndex && this._zone === "targets";
+      const dimFull = !!entry && !!this._armed && !this._canBenefit(entry.actor, this._armed);
+      cell.classList.toggle("sel", targeting);
+      cell.classList.toggle("targeting", targeting);
+      cell.classList.toggle("dim-full", dimFull);
+    });
+    this._updateCursor();
+  },
+
+  // Update only the resource readout text (after a heal / actor update).
+  _updateResources() {
+    const cells = this._root?.querySelectorAll(".oni-heal-cell") ?? [];
+    cells.forEach((cell) => {
+      const i = Number(cell.dataset.idx);
+      const a = this._members[i]?.actor;
+      if (!a) return;
+      for (const key of ["hp", "mp", "ip"]) {
+        const def = HEAL_RESOURCE[key];
+        const cur = Number(a.system?.props?.[def.cur] ?? 0) || 0;
+        const max = Number(a.system?.props?.[def.max] ?? 0) || 0;
+        const el = cell.querySelector(`.oni-heal-res.${key} .rval`);
+        if (el) el.textContent = `${cur} / ${max}`;
+      }
+    });
   },
 
   // Would this action actually restore anything on this target? True if any of
   // the action's grant resources is below the target's max. Drives both the
   // confirm gate and the dimmed "can't benefit" cell styling.
   _canBenefit(actor, desc) {
+    if (desc?.cleanse) return true;   // status cleanse (Tonic) — always usable (placeholder)
     const grants = desc?.grants ?? [];
     if (!grants.length) return false;
     return grants.some((g) => {
@@ -277,6 +331,34 @@ const HealingHUD = {
         <span class="rlabel">${def.label}</span>
         <span class="rval">${cur} / ${max}</span>
       </div>`;
+  },
+
+  // Feather cursor — points at the focused element (selected list row, or the
+  // targeted party cell). Same mechanism as the Save/Load UI: position via
+  // getBoundingClientRect, smooth transition, float animation, no-anim first show.
+  _updateCursor() {
+    if (!this._cursorEl || !this._root) return;
+    let targetEl = null;
+    if (this._zone === "targets") {
+      targetEl = this._root.querySelector(`.oni-heal-cell[data-idx="${this._targetIndex}"]`);
+    } else {
+      targetEl = this._root.querySelectorAll(".oni-heal-row")[this._listIndex] ?? null;
+    }
+    if (!targetEl) { this._cursorEl.classList.remove("is-visible"); return; }
+    const rect = targetEl.getBoundingClientRect();
+    const x = rect.right, y = rect.bottom;
+    if (!this._cursorReady) {
+      this._cursorEl.classList.add("no-anim");
+      this._cursorEl.style.left = `${x}px`;
+      this._cursorEl.style.top = `${y}px`;
+      this._cursorEl.classList.add("is-visible");
+      requestAnimationFrame(() => this._cursorEl?.classList.remove("no-anim"));
+      this._cursorReady = true;
+    } else {
+      this._cursorEl.style.left = `${x}px`;
+      this._cursorEl.style.top = `${y}px`;
+      this._cursorEl.classList.add("is-visible");
+    }
   },
 
   _renderBanner() {
@@ -317,7 +399,7 @@ const HealingHUD = {
     this._zone = "targets";
     if (!this._members[this._targetIndex]) this._targetIndex = 0;
     playHealSfx("ARM");
-    this._renderList(); this._renderParty(); this._renderBanner();
+    this._renderList(); this._updateCellStates(); this._renderBanner();
   },
 
   _disarm() {
@@ -325,7 +407,7 @@ const HealingHUD = {
     this._armed = null;
     this._zone = "list";
     playHealSfx("CANCEL");
-    this._renderList(); this._renderParty(); this._renderBanner();
+    this._renderList(); this._updateCellStates(); this._renderBanner();
     return true;
   },
 
@@ -335,7 +417,7 @@ const HealingHUD = {
     if (dCol) col = Math.max(0, Math.min(1, col + dCol));
     if (dRow) row = Math.max(0, Math.min(1, row + dRow));
     const next = row * 2 + col;
-    if (this._members[next] && next !== i) { this._targetIndex = next; playHealSfx("MOVE"); this._renderParty(); }
+    if (this._members[next] && next !== i) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
   },
 
   async _confirmHeal() {
@@ -352,6 +434,9 @@ const HealingHUD = {
       effectItemUuid: desc.effectItemUuid,
       costItemUuid: desc.costItemUuid,
       consumableUuid: desc.consumableUuid ?? null,
+      mode: desc.mode ?? "use",
+      ipCost: desc.ipCost ?? 0,
+      cleanse: !!desc.cleanse,
     };
     const result = await requestApply(payload).catch((e) => { console.warn(HEAL_TAG, "requestApply threw", e); return { ok: false, reason: "exception" }; });
 
@@ -363,10 +448,12 @@ const HealingHUD = {
     playHealSfx("HEAL");
     this._flashCell(this._targetIndex);
     const healed = (result.applied ?? []).filter((a) => a.healed > 0).map((a) => `+${a.healed} ${HEAL_RESOURCE[a.resource]?.label ?? a.resource}`).join(", ");
-    ui.notifications?.info(`${desc.name}: ${entry.actor.name} ${healed || "fully recovered"}.`);
+    const verb = result.created ? "created" : "used";
+    const summary = result.placeholder ? "(status cleanse — coming soon)" : (healed || "fully recovered");
+    ui.notifications?.info(`${desc.name} ${verb}: ${entry.actor.name} ${summary}.`);
 
-    // Refresh bars now (hook also fires) and re-evaluate caster affordability/stock.
-    this._renderParty();
+    // Update bars + states now (hook also fires) and re-evaluate caster affordability/stock.
+    this._updateResources(); this._updateCellStates();
     await this._refreshActions();   // cost spent / consumable count changed → stay armed if still usable
   },
 
@@ -390,7 +477,7 @@ const HealingHUD = {
         if (fresh && fresh.affordable) { this._armed = fresh; }
         else { this._armed = null; this._zone = "list"; }
       }
-      this._renderList(); this._renderBanner();
+      this._renderList(); this._updateCellStates(); this._renderBanner();
     } finally { this._refreshing = false; }
   },
 
@@ -399,8 +486,8 @@ const HealingHUD = {
     this._updateHook = (actor) => {
       if (!this._root) return;
       if (!watched.has(actor.id)) return;
-      // Re-render party bars for any watched actor.
-      this._renderParty();
+      // Update resource numbers + dim states for any watched actor (no sprite rebuild).
+      this._updateResources(); this._updateCellStates();
       // If the CASTER changed (cost spent elsewhere), refresh affordability.
       if (actor.id === this._caster.id) this._refreshActions();
     };
