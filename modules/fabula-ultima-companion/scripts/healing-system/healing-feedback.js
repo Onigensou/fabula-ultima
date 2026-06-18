@@ -70,18 +70,19 @@ function playSpawnSfx() {
 function cardHtml({ casterName, targetName, resource, amount, after, max }) {
   const res = HEAL_RESOURCE[resource]?.label ?? String(resource ?? "").toUpperCase();
   return `<b>${escapeHtml(casterName)}</b> restore <b>${amount} ${res}</b> to `
-       + `<b>${escapeHtml(targetName)}</b> <i>${after} / ${max}</i>`;
+       + `<b>${escapeHtml(targetName)}</b> <i>(${after} / ${max})</i>`;
 }
 
-// Size the banner to the play area (canvas), stopping before the sidebar so it
-// doesn't slide under it — FF-style near-full-width announcer.
+// Center a fixed-fraction banner over the play area (canvas), clear of the
+// sidebar — FF-style announcer, narrower than the full width.
+const WIDTH_RATIO = 0.55;   // fraction of the available play-area width
 function sizeContainer(el) {
-  const margin = 16;
   const sidebar = document.getElementById("sidebar");
   const sbRect = sidebar?.getBoundingClientRect?.();
   const rightBound = (sbRect && sbRect.width > 0 && sbRect.left > 100) ? sbRect.left : window.innerWidth;
-  el.style.left = `${margin}px`;
-  el.style.width = `${Math.max(200, rightBound - margin * 2)}px`;
+  const width = Math.max(280, Math.min(720, rightBound * WIDTH_RATIO));
+  el.style.left = `${Math.round((rightBound - width) / 2)}px`;
+  el.style.width = `${Math.round(width)}px`;
 }
 
 function showNext() {
