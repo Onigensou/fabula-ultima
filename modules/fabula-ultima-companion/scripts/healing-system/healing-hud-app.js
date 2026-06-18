@@ -207,16 +207,15 @@ const HealingHUD = {
       cell.dataset.idx = String(i);
       if (!entry) { cell.innerHTML = `<div class="pc-name" style="opacity:.5">—</div>`; gridEl.appendChild(cell); continue; }
       const a = entry.actor;
+      const token = a.prototypeToken?.texture?.src || a.token?.texture?.src || a.img || "icons/svg/mystery-man.svg";
       cell.innerHTML = `
         <div class="flash"></div>
-        <div class="pc-head">
-          <img class="pc-portrait" src="${escapeHtml(a.img || "icons/svg/mystery-man.svg")}" />
+        <img class="pc-token" src="${escapeHtml(token)}" />
+        <div class="pc-info">
           <div class="pc-name">${escapeHtml(a.name)}</div>
-        </div>
-        <div class="oni-heal-bars">
-          ${this._barHtml(a, "hp")}
-          ${this._barHtml(a, "mp")}
-          ${this._barHtml(a, "ip")}
+          ${this._resHtml(a, "hp")}
+          ${this._resHtml(a, "mp")}
+          ${this._resHtml(a, "ip")}
         </div>`;
       cell.addEventListener("click", () => {
         if (!this._armed) { this._zone = "targets"; this._targetIndex = i; this._renderParty(); return; }
@@ -227,16 +226,14 @@ const HealingHUD = {
     }
   },
 
-  _barHtml(actor, key) {
+  _resHtml(actor, key) {
     const def = HEAL_RESOURCE[key];
     const cur = Number(actor.system?.props?.[def.cur] ?? 0) || 0;
     const max = Number(actor.system?.props?.[def.max] ?? 0) || 0;
-    const pct = max > 0 ? Math.max(0, Math.min(100, Math.round((cur / max) * 100))) : 0;
     return `
-      <div class="oni-heal-bar" data-res="${key}">
-        <span class="lbl" style="color:${def.color}">${def.label}</span>
-        <span class="track"><span class="fill" style="width:${pct}%;background:${def.color}"></span></span>
-        <span class="num">${cur} / ${max}</span>
+      <div class="oni-heal-res ${key}" data-res="${key}">
+        <span class="rlabel">${def.label}</span>
+        <span class="rval">${cur} / ${max}</span>
       </div>`;
   },
 
