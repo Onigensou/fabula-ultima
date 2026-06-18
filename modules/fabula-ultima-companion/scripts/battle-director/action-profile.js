@@ -484,7 +484,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 // effect to each roster row, creating rows (auto-hit) for targets that have none
 // yet (pure heal). Heal shares the roster's hit determination instead of producing
 // a separate row set. Mutates `rows`; returns { healingObj }.
-async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary }) {
+async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttacker = null, check, kind, primary, chainVars = null }) {
   const rolled = !!(check?.required && check?.total != null);
   const isPreRoll = !!(check?.required && check?.total == null);
   const fireLabel = String(view?.fire_points?.on_activate_effect_ref ?? "").trim();
@@ -497,6 +497,26 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     if (!grantRow) grantRow = row;
   }
   if (!grantRow) return { healingObj: null };
+
+  // Precondition guard (#7): the primary grant amount must be a pure function of
+  // pre-card inputs. A VAR_<NAME> captured MID-CHAIN (a prompt in the RESOLVE
+  // effect_table, not at pre_activate_effect_ref) is absent at COMPUTE → it would
+  // silently resolve to 0 here (and, once heals apply from this profile, apply 0).
+  // Fail loud so the author moves the prompt pre-card. Pre-card captures live in
+  // chainVars (preActivateVars), so a VAR present there is fine.
+  const amtStr = String(grantRow.grant_amount ?? "");
+  const varRefs = [...amtStr.matchAll(/VAR_(\w+)/g)].map((m) => m[1].toLowerCase());
+  if (varRefs.length) {
+    const provided = chainVars ?? {};
+    const missing = varRefs.filter((v) => !(v in provided));
+    if (missing.length) {
+      throw new Error(
+        `[action-profile] grant "${grantRow.effect_label}" reads mid-chain ` +
+        `${missing.map((m) => "VAR_" + m.toUpperCase()).join(", ")} with no pre-card provider — ` +
+        `capture the choice at pre_activate_effect_ref so the grant amount is frozen before the card.`
+      );
+    }
+  }
 
   // Caster-side restore amount + itemized restore parts come from the SHARED
   // describeGrant — the SAME derivation grantApply runs at RESOLVE — so the
@@ -609,7 +629,7 @@ export async function computeActionProfile(input) {
   // formulas can read ACTION_TARGET_COUNT at compute time — e.g. an AoE that
   // splits a fixed pool across its targets (Ruinous Breath: "300 / ACTION_TARGET_COUNT").
   const resolver = buildSkillResolver({
-    actor: liveAttacker, payload: { targets }, skill, round: ctx?.round ?? 0,
+    actor: liveAttacker, payload: { targets, _chainVars: ctx?.chainVars ?? null }, skill, round: ctx?.round ?? 0,
   });
 
   const studiedGate = makeStudiedGate(attacker);
@@ -649,7 +669,7 @@ export async function computeActionProfile(input) {
     perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap });
   }
   if (primary.mode !== "damage") {
-    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary });
+    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars: ctx?.chainVars ?? null });
     healingObj = heal.healingObj;
   }
 
