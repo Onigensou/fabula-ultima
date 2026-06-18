@@ -191,4 +191,35 @@ export function lookupTerm(uuidOrName) {
   return _byUuid[s] ?? _byName[s.toLowerCase()] ?? null;
 }
 
+// Flat list of every term (one per name, so Shield variants are each searchable
+// with their own icon/label). Used by the keyword smart-suggestion editor tool.
+const _allEntries = DATA.map(([name, tail, icon, kind]) => ({
+  key: "JournalEntry." + tail, label: name, icon, kind, descHtml: DESC[tail] ?? "",
+}));
+
+// Rank-search terms by display name for the editor autocomplete. Returns up to
+// `limit` entries { key, label, icon, kind }. With `prefixOnly` (the default for
+// the suggestion tool), only exact/prefix name matches qualify — so ordinary
+// prose words don't trigger the dropdown. Without it, substring matches are
+// included (looser).
+export function searchTerms(query, { limit = 8, prefixOnly = false } = {}) {
+  const q = String(query ?? "").trim().toLowerCase();
+  if (q.length < 2) return [];
+  const scored = [];
+  for (const e of _allEntries) {
+    const name = e.label.toLowerCase();
+    let score = 0;
+    if (name === q) score = 100;
+    else if (name.startsWith(q)) score = 80;
+    else if (!prefixOnly && name.includes(q)) score = 40;
+    else continue;
+    scored.push({ e, score });
+  }
+  scored.sort((a, b) =>
+    b.score - a.score ||
+    a.e.label.length - b.e.label.length ||
+    a.e.label.localeCompare(b.e.label));
+  return scored.slice(0, limit).map((s) => s.e);
+}
+
 export const KEYWORD_REGISTRY = _byUuid;
