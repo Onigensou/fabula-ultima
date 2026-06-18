@@ -89,26 +89,26 @@ export function playHealSfx(key) {
 // in a final design.
 export const HEAL_TUNE = {
   // Panels
-  frameWidth: 1200,    // px (clamped to 95vw)
-  frameHeight: 700,    // px (clamped to 92vh)
+  frameWidth: 1260,    // px (clamped to 95vw)
+  frameHeight: 615,    // px (clamped to 92vh)
   pickerWidth: 34,     // % of frame width (action picker / left panel)
   cellGap: 16,         // px gap between actor panels
 
   // Battle sprite (floating element, anchored to the cell's bottom-right)
-  spriteWidth: 120,    // px
-  spriteHeight: 150,   // px
-  spriteRight: -6,     // px from the panel's right edge (negative = pop out)
-  spriteBottom: -2,    // px from the panel's bottom edge (negative = pop out)
+  spriteWidth: 142,    // px
+  spriteHeight: 148,   // px
+  spriteRight: -3,     // px from the panel's right edge (negative = pop out)
+  spriteBottom: 23,    // px from the panel's bottom edge (negative = pop out)
 
   // Actor name
-  nameSize: 22,            // px
-  nameStrokeColor: "#f6e3a0",
-  nameStrokeWidth: 1.1,    // px
+  nameSize: 27,            // px
+  nameStrokeColor: "#f7d8a1",
+  nameStrokeWidth: 0.5,    // px
 
   // Stat text
-  resSize: 17,         // px (value text)
-  labelSize: 13,       // px (HP/MP/IP label)
-  rowGap: 6,           // px gap between stat rows
+  resSize: 16,         // px (value text)
+  labelSize: 17,       // px (HP/MP/IP label)
+  rowGap: 2,           // px gap between stat rows
 };
 
 // Map the tune config → CSS custom properties for the overlay root.
