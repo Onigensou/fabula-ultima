@@ -21,12 +21,14 @@
 
 import { HEAL_TAG } from "./healing-const.js";
 import { resolveHealAction } from "./healing-resolve.js";
+import { HealingFeedback } from "./healing-feedback.js";
 import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
 const T_REQ = "healing.apply.req";
 const T_RES = "healing.apply.res";
+const T_FEEDBACK = "healing.feedback";   // operator → all OTHER clients (spectator toast)
 
 const _pending = new Map();   // id → { resolve, timer }
 let _wired = false;
@@ -87,7 +89,7 @@ async function applyHeal(payload) {
     const max = _readNum(target, maxKey) || before + g.amount;
     const after = Math.min(max, before + g.amount);
     update[`system.props.${curKey}`] = after;
-    applied.push({ resource: g.resource, before, after, healed: after - before });
+    applied.push({ resource: g.resource, before, after, max, healed: after - before });
   }
   if (Object.keys(update).length) {
     try { await target.update(update); }
@@ -145,7 +147,20 @@ function _onSocket(msg) {
     clearTimeout(entry.timer);
     _pending.delete(msg.id);
     entry.resolve(msg.result ?? { ok: false, reason: "empty-result" });
+    return;
   }
+
+  if (msg.type === T_FEEDBACK) {
+    // Only OTHER clients receive this (emit doesn't echo to the operator, who
+    // already sees the HUD). Spectators get the toast.
+    try { HealingFeedback.enqueue(msg.payload); } catch (e) { console.warn(HEAL_TAG, "feedback enqueue failed", e); }
+  }
+}
+
+// Operator → all other clients: show the spectator heal toast.
+export function broadcastHealFeedback(payload) {
+  try { game.socket.emit(CHANNEL, { type: T_FEEDBACK, payload }); }
+  catch (e) { console.warn(HEAL_TAG, "broadcastHealFeedback failed", e); }
 }
 
 export function wireHealingSocket() {

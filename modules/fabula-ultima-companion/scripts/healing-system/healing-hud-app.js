@@ -20,7 +20,7 @@
 import { HEAL_TAG, HEAL_CATEGORY, HEAL_KEYS, HEAL_RESOURCE, HEAL_CURSOR_SRC, HEAL_TUNE, tuneVars, playHealSfx } from "./healing-const.js";
 import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
-import { requestApply } from "./healing-socket.js";
+import { requestApply, broadcastHealFeedback } from "./healing-socket.js";
 
 const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM, HEAL_CATEGORY.CREATE];
 
@@ -513,12 +513,14 @@ const HealingHUD = {
     return true;
   },
 
-  // Linear navigation for the 1-column party list.
-  _moveTarget(dir) {
-    const n = this._members.length;
-    if (n <= 1) return;
-    const next = Math.max(0, Math.min(n - 1, this._targetIndex + dir));
-    if (next !== this._targetIndex) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
+  // 2x2 grid navigation: up/down move between rows, left/right between columns.
+  _moveTarget(dCol, dRow) {
+    const i = this._targetIndex;
+    let col = i % 2, row = Math.floor(i / 2);
+    if (dCol) col = Math.max(0, Math.min(1, col + dCol));
+    if (dRow) row = Math.max(0, Math.min(1, row + dRow));
+    const next = row * 2 + col;
+    if (this._members[next] && next !== i) { this._targetIndex = next; playHealSfx("MOVE"); this._updateCellStates(); }
   },
 
   async _confirmHeal() {
@@ -548,6 +550,12 @@ const HealingHUD = {
     }
     playHealSfx("HEAL");
     this._flashCell(this._targetIndex);
+    // Spectator feedback: tell every OTHER client an ally is being healed.
+    broadcastHealFeedback({
+      casterName: this._caster.name,
+      targetName: entry.actor.name,
+      entries: (result.applied ?? []).filter((a) => a.healed > 0),
+    });
     const healed = (result.applied ?? []).filter((a) => a.healed > 0).map((a) => `+${a.healed} ${HEAL_RESOURCE[a.resource]?.label ?? a.resource}`).join(", ");
     const verb = result.created ? "created" : "used";
     const summary = result.placeholder ? "(status cleanse — coming soon)" : (healed || "fully recovered");
@@ -636,9 +644,11 @@ const HealingHUD = {
         if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._cycleTab(-1); return; }
         if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._cycleTab(+1); return; }
         if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._armAction(); return; }
-      } else { // targets (1-column list)
-        if (keyMatch(ev, HEAL_KEYS.UP) || keyMatch(ev, HEAL_KEYS.LEFT))    { this._moveTarget(-1); return; }
-        if (keyMatch(ev, HEAL_KEYS.DOWN) || keyMatch(ev, HEAL_KEYS.RIGHT)) { this._moveTarget(+1); return; }
+      } else { // targets (2x2 grid)
+        if (keyMatch(ev, HEAL_KEYS.UP))    { this._moveTarget(0, -1); return; }
+        if (keyMatch(ev, HEAL_KEYS.DOWN))  { this._moveTarget(0, +1); return; }
+        if (keyMatch(ev, HEAL_KEYS.LEFT))  { this._moveTarget(-1, 0); return; }
+        if (keyMatch(ev, HEAL_KEYS.RIGHT)) { this._moveTarget(+1, 0); return; }
         if (keyMatch(ev, HEAL_KEYS.CONFIRM)) { this._confirmHeal(); return; }
       }
     };
