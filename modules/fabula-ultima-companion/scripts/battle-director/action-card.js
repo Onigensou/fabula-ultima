@@ -2335,8 +2335,27 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   // always shows the real roll total (reverts cleanly when no reaction is active).
   // The outcome is still nullified — negate via RESOLVE's ar.negated, Crossfire via
   // its accuracy=0 per-target recompute. Player mirrors get this via the broadcast.
-  const accTotal = rootEl.querySelector(".fud-bf-acc .total");
-  if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
+  // Accuracy override display. A BLOCKING override (Crossfire, to≤0) flows into
+  // the "Negated" treatment below — accuracy shows the real roll total, dimmed.
+  // A NON-blocking ADDITIVE/SUBTRACTIVE override (e.g. Cognitive Focus "+SL vs
+  // my focus") arrives as `delta.accuracyRoll` (the base check with the override
+  // folded into checkBonus + checkBonusParts + total). Re-render the whole
+  // accuracy fieldset from it via the SAME builder the initial card uses — so
+  // the row "+N", the hover Check-Bonus breakdown (itemized per source, like the
+  // damage bonus), AND the total all stay consistent and COMPOSE across sources.
+  const accFieldset = rootEl.querySelector(".fud-bf-acc")?.closest("fieldset");
+  if (delta.accuracyRoll && accFieldset) {
+    const legendEl = accFieldset.querySelector("legend");
+    const legendText = legendEl ? legendEl.textContent.trim() : null;
+    accFieldset.outerHTML = buildAccuracyHTML({
+      roll: delta.accuracyRoll,
+      isSpellish: !!delta.accuracyIsSpellish,
+      legendOverride: legendText || null,
+    });
+  } else {
+    const accTotal = rootEl.querySelector(".fud-bf-acc .total");
+    if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
+  }
   rootEl.querySelector(".fud-bf-acc")?.classList.remove("is-blocked");
   rootEl.querySelector(".fud-bf-dmg")?.classList.remove("is-blocked-dmg");
   const negated = !!delta.negated || !!delta.accuracyOverride?.blocked;
@@ -4462,6 +4481,10 @@ export async function postActionCard({ director, kind, payload }) {
             rollTotal: arSnapshot.roll?.total ?? null,
             element: arSnapshot.damage?.element ?? null,
             accuracyOverride: mutationResult.accuracyOverride ?? null,
+            // Itemized accuracy roll — computed once in applyTargetSetMutation
+            // (shared mutation entry) so every recompute path stays consistent.
+            accuracyRoll: mutationResult.accuracyRoll ?? null,
+            accuracyIsSpellish: !!mutationResult.accuracyIsSpellish,
             negated: !!mutationResult.negated,
           };
           applyCardTargetMutationDelta(root, delta);

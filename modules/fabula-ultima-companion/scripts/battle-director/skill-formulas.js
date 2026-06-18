@@ -335,7 +335,7 @@ export function normalizeDamageType(raw) {
 //   - skill     (Item | null)   — the firing skill, for SL.
 //   - round     (number | null) — current dCombat.round; falls back to 0.
 
-export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0 } = {}) {
+export function buildSkillResolver({ actor = null, payload = null, skill = null, round = 0, vars = null } = {}) {
   return (name) => {
     // Harness override hook — when `runDirectorSkillSimulate` was called
     // with `override: { SL, CHAR_LEVEL, BOND_COUNT, BOND_STRENGTH }`, the
@@ -347,6 +347,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
     const ov = globalThis.__FU_HARNESS_FORMULA_OVERRIDES__;
     if (ov && Object.prototype.hasOwnProperty.call(ov, name)) {
       const n = Number(ov[name]);
+      if (Number.isFinite(n)) return n;
+    }
+    // Caller-injected variables — context the resolver itself can't derive
+    // from (actor, payload, skill) alone. Consulted before the switch so a
+    // caller can supply identifiers it computes with extra context. First use:
+    // skill-targeting's per-candidate `target_filter` injects IS_ALLY / IS_ENEMY
+    // (disposition of THIS candidate relative to the reactor — needs the reactor
+    // token + allegiance overrides, which the resolver doesn't carry), so a pool
+    // filter can express "ally OR debuffed-enemy" in one formula.
+    if (vars && Object.prototype.hasOwnProperty.call(vars, name)) {
+      const n = Number(vars[name]);
       if (Number.isFinite(n)) return n;
     }
     switch (name) {
@@ -687,6 +698,32 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return hasEquippedWeaponOfType(actor, fam) ? 1 : 0;
         }
+        // Dynamic ANY_TARGET_HAS_MY_<STATUS> — per-applier twin of
+        // ANY_TARGET_HAS_<STATUS>: 1 if ANY of the action's targets carries the
+        // named status/AE THAT THIS ACTOR APPLIED (the AE's directorAppliedBy
+        // applier == the resolver actor; TOKEN-first, actor-uuid fallback — same
+        // rule as TARGET_GRAPPLED_BY_SELF so sibling NPC tokens don't cross-
+        // credit). Generic "I get a bonus while acting against a creature I
+        // marked" gate; Cognitive Focus's "+SL accuracy when my focus is among
+        // the targets" uses ANY_TARGET_HAS_MY_FOCUS (status fud-focus). MUST be
+        // tested before the plain ANY_TARGET_HAS_ branch below — startsWith would
+        // otherwise consume the "MY_…" and read needle = "my <status>".
+        if (name.startsWith("ANY_TARGET_HAS_MY_")) {
+          const needle = name
+            .slice("ANY_TARGET_HAS_MY_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const list = payload?.targetActorUuids
+            ?? payload?.hitTargets ?? payload?.targets ?? payload?.targetTokenUuids ?? [];
+          const selfTokenUuid = String(payload?.sourceTokenUuid ?? "").trim();
+          const selfActorUuid = String(actor?.uuid ?? "").trim();
+          for (const ref of (Array.isArray(list) ? list : [])) {
+            const a = _resolveActorByUuidSync(String(ref));
+            if (a && actorHasNamedStatusFromApplier(a, needle, selfTokenUuid, selfActorUuid)) return 1;
+          }
+          return 0;
+        }
         // Dynamic ANY_TARGET_HAS_<STATUS> — 1 if ANY creature in the trigger's
         // target list has the named status, else 0. Scans payload.targetActorUuids
         // (falls back to hitTargets / targets / targetTokenUuids — token OR actor
@@ -707,6 +744,23 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             if (a && actorHasNamedStatus(a, needle)) return 1;
           }
           return 0;
+        }
+        // Dynamic HAS_STATUS_<NAME> — 1 if the RESOLVER's own actor carries the
+        // named status, else 0. Twin of ANY_TARGET_HAS_<STATUS>, but reads
+        // `actor` (the resolver subject) instead of scanning a target list — so
+        // it works inside a per-candidate `target_filter` (skill-targeting.js),
+        // where `actor` is the candidate being kept-or-dropped. Matches by FU
+        // status id (statuses[] contains the needle, "shaken" → "fud-shaken")
+        // OR by AE name. Powers Cognitive Focus's "enemy must be Dazed/Enraged/
+        // Shaken" pool filter: target_filter "HAS_STATUS_DAZED + HAS_STATUS_ENRAGED
+        // + HAS_STATUS_SHAKEN" (kept when > 0).
+        if (name.startsWith("HAS_STATUS_")) {
+          const needle = name
+            .slice("HAS_STATUS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return (actor && actorHasNamedStatus(actor, needle)) ? 1 : 0;
         }
         // Dynamic SL_<NAME> — current SL of a named owned skill, 0 if
         // not owned. Cross-skill arithmetic gate: Dual Shieldbearer's
@@ -840,6 +894,27 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return species && species === needle ? 1 : 0;
+        }
+        // Dynamic TARGET_HAS_MY_<STATUS> — PER-TARGET twin of
+        // ANY_TARGET_HAS_MY_<STATUS>: 1 when the SINGLE subject being evaluated
+        // (payload.subjectActorUuid) carries the named status/AE THAT THIS ACTOR
+        // APPLIED. Used by per-target adjustments (adjust_scope:"per_target") that
+        // gate on the specific target — e.g. Cognitive Focus's heal-amp only
+        // boosts the heal to the focus target. Mirrors TARGET_GRAPPLED_BY_SELF
+        // (subject = target, applier = reactor/self).
+        if (name.startsWith("TARGET_HAS_MY_")) {
+          const needle = name
+            .slice("TARGET_HAS_MY_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const selfTokenUuid = String(payload?.sourceTokenUuid ?? "").trim();
+          const selfActorUuid = String(actor?.uuid ?? "").trim();
+          return actorHasNamedStatusFromApplier(subject, needle, selfTokenUuid, selfActorUuid) ? 1 : 0;
         }
         // TARGET_GRAPPLED_BY_SELF — 1 when the trigger SUBJECT (the target) has a
         // "Grappled" AE whose grappler is THIS reactor (the acting creature),
@@ -1118,6 +1193,27 @@ function actorHasNamedStatus(actor, needle) {
     const statuses = e.statuses ? Array.from(e.statuses) : [];
     if (statuses.some((s) => String(s).toLowerCase().includes(needle))) return true;
     if (String(e?.name ?? "").trim().toLowerCase() === needle) return true;
+  }
+  return false;
+}
+
+// Per-applier twin of actorHasNamedStatus: the matching status/AE must ALSO
+// have been applied by the given applier — matched TOKEN-first, then actor uuid
+// (same discriminator as TARGET_GRAPPLED_BY_SELF, so one NPC token's mark doesn't
+// credit a sibling token sharing the base actor). Powers ANY_TARGET_HAS_MY_<STATUS>.
+function actorHasNamedStatusFromApplier(actor, needle, applierTokenUuid, applierActorUuid) {
+  if (!actor?.effects || !needle) return false;
+  const effects = actor.effects.contents ?? Array.from(actor.effects);
+  for (const e of effects) {
+    if (e.disabled) continue;
+    const statuses = e.statuses ? Array.from(e.statuses) : [];
+    const matches = statuses.some((s) => String(s).toLowerCase().includes(needle))
+      || String(e?.name ?? "").trim().toLowerCase() === needle;
+    if (!matches) continue;
+    const by = e.flags?.["fabula-ultima-companion"]?.directorAppliedBy;
+    if (!by) continue;
+    if (applierTokenUuid && by.reactorTokenUuid === applierTokenUuid) return true;
+    if (applierActorUuid && by.reactorActorUuid === applierActorUuid) return true;
   }
   return false;
 }
@@ -1439,6 +1535,50 @@ export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
     else parts.push(mk(label, remainder));
   }
   return parts;
+}
+
+// ── Per-target performer-side grant (heal/restore) bonus ──────────────────
+// Walks the HEALER's owned skills for standing `per_target_grant_bonus` rows in
+// their `effect_table` — a flat bonus ADDED to the recovery THIS healer causes on
+// THIS target, gated PER TARGET by the row's `condition_formula` (e.g. Cognitive
+// Focus's "TARGET_HAS_MY_FOCUS == 1" → only the focus target is boosted) and
+// optionally filtered by `grant_resource` ("hp"/"mp"/"all"/blank = any). `SL`
+// resolves per owning skill. Stored as an effect_table ROW (a dynamic-table field
+// IS scriptable + sheet-editable; top-level props are NOT — see
+// [[reference_csb_reload_template_after_column_surgery]]). The row is never FIRED
+// (no reaction/fire-point references it; its registry handler is a no-op) — it is
+// pure standing config READ here. SINGLE source of truth for both the card preview
+// (buildHealPerTarget) AND RESOLVE (grantApply), so they can't drift.
+export function resolvePerTargetGrantBonus({ healer = null, targetActor = null, resource = null, sourceTokenUuid = null, round = 0 } = {}) {
+  if (!healer || !targetActor) return 0;
+  const items = healer.items?.contents ?? Array.from(healer.items ?? []);
+  const res = String(resource ?? "").trim().toLowerCase();
+  let total = 0;
+  for (const item of items) {
+    const tbl = item.system?.props?.effect_table;
+    if (!tbl || typeof tbl !== "object") continue;
+    for (const k of Object.keys(tbl)) {
+      const row = tbl[k];
+      if (!row || row.$deleted) continue;
+      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "per_target_grant_bonus") continue;
+      const resFilter = String(row.grant_resource ?? "").trim().toLowerCase();
+      if (resFilter && res && resFilter !== "all" && resFilter !== res) continue;
+      const payload = {
+        subjectActorUuid: targetActor.uuid,
+        sourceActorUuid: healer.uuid,
+        sourceTokenUuid: sourceTokenUuid ?? null,
+      };
+      const resolver = buildSkillResolver({ actor: healer, skill: item, payload, round });
+      const cond = String(row.condition_formula ?? "").trim();
+      if (cond) {
+        try { if (!(Number(evaluateFormula(cond, resolver, 0)) > 0)) continue; }
+        catch { continue; }
+      }
+      const amt = Number(evaluateFormula(row.grant_amount ?? "0", resolver, 0)) || 0;
+      if (amt) total += amt;
+    }
+  }
+  return total;
 }
 
 // ── Accuracy (added to the attack/spell Check total) ───────────────────

@@ -244,8 +244,19 @@ async function resolveTargetingRow(row, ctx) {
     pool = pool.filter((t) => {
       const actor = t?.actor;
       if (!actor) return false;
+      // Inject disposition of THIS candidate relative to the reactor so the
+      // formula can mix side + per-candidate state in one pass (e.g. Cognitive
+      // Focus: "IS_ALLY + IS_ENEMY * (HAS_STATUS_DAZED + HAS_STATUS_ENRAGED +
+      // HAS_STATUS_SHAKEN)" → allies always, enemies only when debuffed). Reuses
+      // matchesCategory so allegiance overrides + the neutral rules stay the
+      // single source of truth. Note: neutral counts as BOTH ally and enemy
+      // there (matches the category filter's own behavior).
+      const vars = {
+        IS_ALLY:  matchesCategory(t, "ally",  ctx) ? 1 : 0,
+        IS_ENEMY: matchesCategory(t, "enemy", ctx) ? 1 : 0,
+      };
       const resolver = buildSkillResolver({
-        actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+        actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0, vars,
       });
       return Number(evaluateFormula(filterFormula, resolver, 0)) > 0;
     });

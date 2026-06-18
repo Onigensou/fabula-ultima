@@ -18,7 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, healReceivingMultiplier } from "./skill-formulas.js";
+import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, healReceivingMultiplier, resolvePerTargetGrantBonus } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
@@ -72,10 +72,33 @@ function isTransientAE(eff) {
 // See [[ae-default-3-turn-duration]] for the classification rule.
 //
 // Returns `{ swept, perActor }` for logging.
+// Collect every actor that can BEAR a director-applied AE: world/linked actors
+// (game.actors) PLUS unlinked token actors on the relevant scenes (canvas +
+// active + any scene with a combat). Unlinked tokens (test dummies, most NPC
+// enemies) carry a SYNTHETIC actor that is NOT in game.actors — so a sweep over
+// game.actors alone never ticks/cleans AEs on them. THAT is why a Focus on an
+// unlinked enemy never expired at the applier's turn while a linked ally's did.
+// Deduped by actor.uuid; only unlinked token actors are added (linked tokens
+// share their world actor, already enumerated by game.actors).
+function collectDirectorAEBearers() {
+  const seen = new Set();
+  const out = [];
+  const add = (a) => { if (a?.uuid && !seen.has(a.uuid)) { seen.add(a.uuid); out.push(a); } };
+  for (const a of game.actors ?? []) add(a);
+  const scenes = new Set();
+  if (globalThis.canvas?.scene) scenes.add(globalThis.canvas.scene);
+  const active = game.scenes?.active; if (active) scenes.add(active);
+  for (const c of game.combats ?? []) { if (c?.scene) scenes.add(c.scene); }
+  for (const scene of scenes) {
+    for (const t of (scene.tokens ?? [])) { if (!t.actorLink) add(t.actor); }
+  }
+  return out;
+}
+
 export async function sweepTransientAEsAtSceneEnd() {
   const deleteByActor = new Map();   // actorUuid -> Set<aeId>
   let swept = 0;
-  for (const actor of game.actors ?? []) {
+  for (const actor of collectDirectorAEBearers()) {
     for (const eff of actor.effects ?? []) {
       if (!isTransientAE(eff)) continue;
       let set = deleteByActor.get(actor.uuid);
@@ -2003,7 +2026,7 @@ export async function tickDirectorAEsForApplier(applierActorUuid) {
   const updateByActor = new Map();    // actorUuid -> [{_id, flags.fabula-ultima-companion.directorAppliedBy.turnsRemaining}]
   const expiredNames = [];
   let ticked = 0;
-  for (const actor of game.actors ?? []) {
+  for (const actor of collectDirectorAEBearers()) {
     for (const eff of actor.effects ?? []) {
       const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
       if (!stamp) continue;
@@ -2275,7 +2298,7 @@ async function applyAdjustChargesEffect(row, ctx) {
   }
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
   if (!targetResult.ok || !targetResult.tokens?.length) {
-    return { ok: false, kind: "adjust_charges", reason: targetResult.reason ?? "no-targets" };
+    return { ok: false, kind: "adjust_charges", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   }
   const needle = aeName.toLowerCase();
   const maxRaw = String(row.charge_max ?? "").trim();
@@ -2634,7 +2657,7 @@ async function applyConfirmEffect(row, ctx) {
 // director's removeCombatant API so the FSM/turn-order/banner stay consistent.
 async function applyLeaveCombatEffect(row, ctx) {
   const tr = await resolveTargetRef(row.target_ref || "self", ctx);
-  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "leave_combat", reason: "no-targets", abort: true };
+  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "leave_combat", reason: tr.reason ?? "no-targets", abort: true, cancelled: !!tr.cancelled };
   // The director API lives at FUCompanion.api.experimental.battleDirector.
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
   const applied = [];
@@ -2733,6 +2756,13 @@ const EFFECT_KIND_DISPATCH = {
   // (skips outcome + effect/reaction firing when ar.negated). The reaction's OTHER
   // rows (Frightened, consume_self) still fire normally.
   negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // per_target_grant_bonus: STANDING config, never fired. The healer's owned-skill
+  // rows are READ by resolvePerTargetGrantBonus (skill-formulas.js) during the
+  // grant computation (buildHealPerTarget preview + grantApply RESOLVE) to add a
+  // per-target heal/restore bonus gated by the row's condition_formula (e.g.
+  // Cognitive Focus "+SL×2 to my focus": grant_amount "SL * 2", condition
+  // "TARGET_HAS_MY_FOCUS == 1"). No-op if a chain ever dispatches it.
+  per_target_grant_bonus: (row) => ({ ok: true, kind: "per_target_grant_bonus", applied: [], reason: "standing-config-read-by-grant-pipeline" }),
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -2775,6 +2805,7 @@ export const EFFECT_KIND_LABELS = {
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
   negate_action:       "Negate Action (block — no outcome/reactions)",
+  per_target_grant_bonus: "Per-Target Grant Bonus (standing: add to heal/restore this skill's owner causes, gated per target)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
@@ -2823,6 +2854,11 @@ const EFFECT_KIND_PREVIEW = {
   // by the add_target splice. No standalone card chip — the adjusted numbers show
   // in the per-target rows the splice rebuilds.
   adjust_grant: () => null,
+
+  // per_target_grant_bonus: standing config read by the grant pipeline; the boost
+  // shows inside the per-target heal rows (buildHealPerTarget folds it in), so no
+  // standalone chip.
+  per_target_grant_bonus: () => null,
 
   // grant: UNIFIED — preview lives in grantRun (mode:"preview"). Override below.
 
@@ -3351,7 +3387,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
   // target_ref resolves to a token list. Without one, fail.
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok) {
-    return { ok: false, kind: "grant", reason: targetResult.reason ?? "no-targets" };
+    return { ok: false, kind: "grant", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   }
   const tokens = targetResult.tokens;
   if (!tokens.length) {
@@ -3385,6 +3421,15 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
     if (resource === "hp" && amount > 0) {
       const mult = healReceivingMultiplier(actor);
       if (mult !== 1) recipAmount = Math.floor(amount * mult);
+    }
+    // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
+    // SAME helper buildHealPerTarget uses at preview → applied heal can't drift.
+    if (recipAmount > 0) {
+      const ptBonus = resolvePerTargetGrantBonus({
+        healer: ctx.reactorActor, targetActor: actor, resource,
+        sourceTokenUuid: ctx.reactorToken?.uuid ?? null, round: ctx.dCombat?.round ?? 0,
+      });
+      if (ptBonus) recipAmount += ptBonus;
     }
     const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {
@@ -3444,7 +3489,7 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
   }
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
-    return { ok: false, kind: "set_resource", reason: targetResult.reason ?? "no-targets" };
+    return { ok: false, kind: "set_resource", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   }
   const applied = [];
   for (const token of targetResult.tokens) {
@@ -3571,7 +3616,7 @@ async function dealDamageApply(row, ctx, d) {
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
-    return { ok: false, kind: "deal_damage", reason: targetResult.reason ?? "no-targets" };
+    return { ok: false, kind: "deal_damage", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   }
   // Battle-log sink: inherit the owning action's sink when fired as a rider
   // (so an attack + its deal_damage riders coalesce into ONE write), else own a
@@ -3730,7 +3775,7 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
   }
   const targetResult = await resolveTargetRef(targetRef, ctx);
   if (!targetResult.ok || !targetResult.tokens.length) {
-    return { ok: false, kind: "consume_resource", reason: "no-targets", abort: true };
+    return { ok: false, kind: "consume_resource", reason: targetResult.reason ?? "no-targets", abort: true, cancelled: !!targetResult.cancelled };
   }
   if (amount <= 0) {
     log(`skill-effects.consume_resource: amount evaluated to ${amount} (row "${row.effect_label}"); no debit`);
@@ -3918,7 +3963,7 @@ async function applyApplyAeEffect(row, ctx) {
   const casterUuid = ctx.reactorActor?.uuid ?? null;
 
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
-  if (!targetResult.ok) return { ok: false, kind: "apply_ae", reason: targetResult.reason ?? "no-targets" };
+  if (!targetResult.ok) return { ok: false, kind: "apply_ae", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
   if (!tokens.length) return { ok: false, kind: "apply_ae", reason: "no-targets" };
 
@@ -4532,7 +4577,7 @@ async function consumeChargeApply(row, ctx, { chargeKey, count, targetRef }) {
   const onEmpty = String(row.on_empty ?? "abort").trim().toLowerCase();
 
   const targetResult = await resolveTargetRef(targetRef, ctx);
-  if (!targetResult.ok) return { ok: false, kind: "consume_charge", reason: targetResult.reason ?? "no-targets" };
+  if (!targetResult.ok) return { ok: false, kind: "consume_charge", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
   if (!tokens.length) return { ok: false, kind: "consume_charge", reason: "no-targets" };
 
@@ -5722,7 +5767,7 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
   const count = removeAll ? Infinity : Math.max(1, Number(rawCount) || 1);
 
   const targetResult = await resolveTargetRef(row.target_ref, ctx);
-  if (!targetResult.ok) return { ok: false, kind: "remove_tagged_ae", reason: targetResult.reason ?? "no-targets" };
+  if (!targetResult.ok) return { ok: false, kind: "remove_tagged_ae", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   const tokens = targetResult.tokens;
   if (!tokens.length) return { ok: false, kind: "remove_tagged_ae", reason: "no-targets" };
 
@@ -6400,11 +6445,20 @@ async function applyChainEffect(row, ctx) {
       aggregated.push({ label, result: r });
       if (!r.ok) {
         log(`skill-effects.chain: step "${label}" returned ok=false (${r.reason ?? "?"}); stopping chain`);
-        return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort };
+        // Forward a user-cancellation signal (target picker / option menu
+        // dismissed) so the reaction dispatcher can re-offer the reaction
+        // (back to the menu) instead of treating it as a hard failure.
+        const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
+        return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort, cancelled };
       }
       if (r.abort) {
         log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
-        return { ok: true, kind: "chain", applied: aggregated, abort: true };
+        // Picker/menu/confirm cancels abort with ok:true + reason "cancelled"
+        // (open_action_menu, prompt_element, confirm). Forward the signal so
+        // the reaction dispatcher re-offers the reaction instead of marking it
+        // fired. A plain abort (no cancel reason) stays a normal early-stop.
+        const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
+        return { ok: true, kind: "chain", applied: aggregated, abort: true, cancelled };
       }
       if (r.skipBody) {
         // `redirect_target` returns skipBody:true (B.2). We surface it

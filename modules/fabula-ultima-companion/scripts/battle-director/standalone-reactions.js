@@ -57,6 +57,22 @@ import { INTENTS } from "./intents.js";
 const STANDALONE_FLAG_NS  = "fabula-ultima-companion";
 const STANDALONE_FLAG_KEY = "standaloneFired";
 
+// A reaction chain reports user-cancellation (a secondary picker — target
+// selection / option menu — dismissed before committing) via `cancelled:true`
+// on its result, with `reason` carrying "cancelled" as a fallback signal
+// (single-consumer reactions propagate the reason but the chain wrapper sets
+// the bool). Either marks the decision as "never mind", not a failure — the
+// reactor menu should re-offer the reaction rather than consume it.
+function isCancelledResult(res) {
+  if (!res) return false;
+  // Explicit bool — target-picker cancels (ok:false) and chain-forwarded cancels.
+  if (res.cancelled === true) return true;
+  // Picker/menu/confirm cancels: open_action_menu / prompt_element / confirm
+  // abort with ok:true + reason "cancelled"; target-picker fails with ok:false
+  // + reason "cancelled". Either is a "never mind", not a chain failure.
+  return String(res.reason ?? "").includes("cancelled");
+}
+
 // ── Multi-reactor dispatch coordinator ──────────────────────────────────
 //
 // Cross-menu signalling for the serial-with-blocking model: when ANY
@@ -681,7 +697,14 @@ export async function dispatchReactionMenu({
       chainResult = await firePreAcceptedCandidate({
         director, casterActor: reactor, candidate: cand, payload,
       });
-      if (chainResult?.ok) {
+      if (isCancelledResult(chainResult)) {
+        // The player backed out of a secondary picker (target selection /
+        // option menu) BEFORE committing. That's not a failure — it's
+        // "never mind, take me back". Checked FIRST because menu/confirm
+        // cancels report ok:true (abort) yet must NOT count as fired. The
+        // short-circuit below leaves the candidate clickable + re-renders.
+        log(`reaction[${trigger}]: "${cand.carrierName}" cancelled by ${reactor.name} → back to menu`);
+      } else if (chainResult?.ok) {
         fired.push(cand);
         log(`reaction[${trigger}]: fired "${cand.carrierName}" for ${reactor.name}`);
       } else {
@@ -690,6 +713,13 @@ export async function dispatchReactionMenu({
       }
     } catch (e) {
       warn(`reaction[${trigger}]: firePreAcceptedCandidate threw for ${cand.carrierName}`, e);
+    }
+    // Cancellation = back to the menu. Don't write a fired/aborted ledger
+    // entry and don't drop the candidate from `remaining` — the reaction
+    // stays in the menu so the player can re-pick it (or choose another).
+    // Returning keepGoing re-renders the menu via the onPick handler.
+    if (isCancelledResult(chainResult)) {
+      return remaining.length > 0;
     }
     if (scope && scene) {
       await appendFired(scene, scope, {

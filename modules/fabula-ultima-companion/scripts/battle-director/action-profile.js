@@ -18,6 +18,7 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
+  resolvePerTargetGrantBonus,
   applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
@@ -514,7 +515,14 @@ async function buildHealPerTarget({ view, ar, targets, resolver, liveAttacker = 
     // Incoming-heal modifier (recipient side, e.g. Bleed -50%): mirror
     // applyGrantEffect so the previewed heal matches the applied heal. HP only.
     const recipMult = canonRes === "hp" ? healReceivingMultiplier(tActor) : 1;
-    const amount = vismagusSuppress ? 0 : (recipMult !== 1 ? Math.floor(grantAmount * recipMult) : grantAmount);
+    const recipBase = vismagusSuppress ? 0 : (recipMult !== 1 ? Math.floor(grantAmount * recipMult) : grantAmount);
+    // Performer-side per-target grant bonus (Cognitive Focus "+SL×2 to my focus").
+    // SAME helper grantApply uses at RESOLVE → preview can't drift from the apply.
+    const ptBonus = (recipBase > 0 && liveAttacker)
+      ? resolvePerTargetGrantBonus({ healer: liveAttacker, targetActor: tActor, resource: canonRes,
+          sourceTokenUuid: ar?.attacker?.tokenUuid ?? null, round: ar?.round ?? 0 })
+      : 0;
+    const amount = recipBase + ptBonus;
     out.push({
       target: { actorUuid: e.actorUuid, tokenUuid: e.tokenUuid, name: e.name, img: e.tokenImg,
         disposition: e.disposition, studied: true, defenseShown: 0 },

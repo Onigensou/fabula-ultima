@@ -460,14 +460,38 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   let amount = Number(amountFormula);
   if (!Number.isFinite(amount)) {
     try {
-      const reactor = cand?.reactorActorUuid
+      let reactor = cand?.reactorActorUuid
         ? await fromUuid(cand.reactorActorUuid).catch(() => null)
         : null;
+      // Performer-side (self) reaction carries NO reactorActorUuid (only the
+      // third-party scan stamps it) — the reactor IS the action-taker. Lets a
+      // self adjust_accuracy (Cognitive Focus "+SL when attacking your focus")
+      // resolve its reactor + own AEs.
+      if (!reactor) {
+        const takerUuid = ctx?.ar?.attackerActorRef ?? ctx?.ar?.attacker?.actorUuid ?? null;
+        if (takerUuid) reactor = await fromUuid(takerUuid).catch(() => null);
+      }
+      // Resolve the carrier SKILL so `SL` (and other skill-scoped ids) in the
+      // amount formula reflect the reaction's source skill — not fall back to 1.
+      // carrier is an Item for skill/weapon reactions; for an AE-carried reaction
+      // resolve the origin skill via directorAppliedBy.skillUuid (then the AE's
+      // parent item). Mirrors firePreAcceptedCandidate's skill resolution.
+      const carrier = cand?.carrierUuid
+        ? await fromUuid(cand.carrierUuid).catch(() => null)
+        : null;
+      let skillForResolver = null;
+      if (carrier?.documentName === "Item") {
+        skillForResolver = carrier;
+      } else if (carrier?.documentName === "ActiveEffect") {
+        const sUuid = carrier.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.skillUuid;
+        skillForResolver = (sUuid ? await fromUuid(sUuid).catch(() => null) : null)
+          ?? (carrier.parent?.documentName === "Item" ? carrier.parent : null);
+      }
       const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
       const resolver = buildSkillResolver({
         actor: reactor,
         payload: cand?.payloadAtFire ?? null,
-        skill: null,
+        skill: skillForResolver,
         round: ctx.ar?.round ?? 0,
       });
       amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
@@ -477,8 +501,17 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
     }
   }
 
-  const oldTotal = Number(ctx.ar?.roll?.total ?? 0);
-  const newTotal = applyAccuracyOp(oldTotal, op, amount);
+  // Compose with any prior adjust_accuracy this card-mutation pass: the op
+  // applies to the RUNNING total (prior `to`), not the raw roll, so multiple
+  // sources stack. `from` stays the original roll total; `parts` itemizes each
+  // source so the hover breakdown renders them like checkBonusParts / damage
+  // bonus. (A `set`/block op — Crossfire — isn't an additive part.)
+  const prev = ctx.accuracyOverride;
+  const baseTotal = Number(prev?.from ?? ctx.ar?.roll?.total ?? 0);
+  const runningTotal = Number(prev?.to ?? ctx.ar?.roll?.total ?? 0);
+  const newTotal = applyAccuracyOp(runningTotal, op, amount);
+  const stepDelta = newTotal - runningTotal;
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
   const isCrit = !!ctx.ar?.roll?.isCrit;
   const isFumble = !!ctx.ar?.roll?.isFumble;
 
@@ -500,14 +533,17 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
     };
   }
 
+  const parts = Array.isArray(prev?.parts) ? [...prev.parts] : [];
+  if (op !== "set" && stepDelta !== 0) parts.push({ source: via, amount: stepDelta });
   ctx.accuracyOverride = {
-    from: oldTotal,
+    from: baseTotal,
     to: newTotal,
     blocked: newTotal <= 0,
-    via: cand?.carrierName ?? cand?.reactorActorName ?? "reaction",
+    via,
     reactorName: cand?.reactorActorName ?? null,
+    parts,
   };
-  log(`adjust_accuracy: ${op} ${amount} — total ${oldTotal} → ${newTotal} (via ${ctx.accuracyOverride.via})`);
+  log(`adjust_accuracy: ${op} ${amount} — total ${runningTotal} → ${newTotal} (via ${via})`);
   return "applied";
 }
 
@@ -695,8 +731,29 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
       hitTokenUuids = delta.hitTokenUuids ?? null;
     }
   } catch (e) { warn("applyTargetSetMutation: recompute threw", e); }
+  // Itemized accuracy roll — computed ONCE here, the single mutation entry every
+  // card recompute funnels through, so EVERY consumer (GM card, player mirror,
+  // any reaction-driven update) renders the same composed accuracy. Mirrors how
+  // perTargetResults flows. A NON-blocking adjust_accuracy (Cognitive Focus
+  // "+SL vs my focus") folds its `parts` into the base roll's checkBonus /
+  // checkBonusParts / total; the card re-renders the accuracy fieldset from it
+  // via the SAME builder the initial card uses. Blocking overrides (Crossfire)
+  // carry no parts → null → the "Negated" treatment owns the display.
+  let accuracyRoll = null;
+  if (accuracyOverride && !accuracyOverride.blocked
+      && Array.isArray(accuracyOverride.parts) && accuracyOverride.parts.length && ar?.roll) {
+    const sumParts = accuracyOverride.parts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+    accuracyRoll = {
+      ...ar.roll,
+      checkBonus: (Number(ar.roll.checkBonus) || 0) + sumParts,
+      checkBonusParts: [...(ar.roll.checkBonusParts ?? []), ...accuracyOverride.parts],
+      total: Number(accuracyOverride.to),
+    };
+  }
+  const accuracyIsSpellish = String(ar?.skillType ?? "").toLowerCase() === "spell";
   return {
     targets: mutatedTargets, perTargetResults, accuracyOverride,
+    accuracyRoll, accuracyIsSpellish,
     negated: false, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids,
   };
 }
@@ -764,13 +821,16 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     if (cancelled) break;
   }
 
-  // Phase 2: adjust_accuracy (Crossfire). Action-level — overrides the roll
-  // total and recomputes hit/miss for every target. Runs AFTER redirect so it
-  // recomputes against the final target identities. Third-party only today
-  // (`reactorActorUuid` discriminator), matching the existing card-mutation
-  // candidates.
+  // Phase 2: adjust_accuracy. Action-level — overrides the roll total and
+  // recomputes hit/miss for every target. Runs AFTER redirect so it recomputes
+  // against the final target identities. BOTH third-party (Crossfire, defender-
+  // side `creature_targeted_by_action`) AND performer-side (Cognitive Focus,
+  // `creature_performs_action` on the attacker's own action) reactions apply
+  // here — the latter carry no `reactorActorUuid` (only a carrier), so gate on
+  // having a carrier and let the reactor fall back to the action-taker inside
+  // applyAdjustAccuracyMutation.
   for (const cand of acceptedPrePassives ?? []) {
-    if (!cand?.reactorActorUuid) continue;
+    if (!cand?.reactorActorUuid && !cand?.carrierUuid) continue;
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
     const rows = expandEffectChain(effectTable, cand.ref);
