@@ -365,7 +365,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       affinityCode = computeAffinity();
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
-        type: "damage", valence: "harmful", source: kind === "Attack" ? "weapon" : "spell",
+        type: "resource_delta", valence: "harmful", actionKind: kind, source: kind === "Attack" ? "weapon" : "spell",
         targetRef: e.tokenUuid,
         element: primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: [], preAffinity: null, affinity: affinityCode, range: damageRange,
@@ -450,7 +450,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
-        type: "damage", valence: "harmful", source: kind === "Attack" ? "weapon" : "spell",
+        type: "resource_delta", valence: "harmful", actionKind: kind, source: kind === "Attack" ? "weapon" : "spell",
         targetRef: e.tokenUuid,
         element: reactionElement ?? primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: damageModParts, preAffinity: rawDamage, affinity: affinityCode,
@@ -538,7 +538,7 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
       : 0;
     const amount = recipBase + ptBonus;
     const healEffect = {
-      id: `primary-heal:${e.tokenUuid}`, type: "heal", valence: "beneficial",
+      id: `primary-heal:${e.tokenUuid}`, type: "resource_delta", valence: "beneficial", actionKind: kind,
       source: "skill", targetRef: e.tokenUuid, resource: canonRes, value: amount,
       // Recipient resource snapshot + Vismagus marker so flattenRow can rebuild
       // the flat grant row from effects alone.
@@ -720,7 +720,7 @@ export async function computeActionProfile(input) {
       // pre-roll card renders ONE range; per-target ops are in perTarget[].
       headlineRange: (() => {
         for (const r of perTarget) {
-          const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.range);
+          const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.range);
           if (dmg) return dmg.range;
         }
         return null;
@@ -743,12 +743,11 @@ export async function computeActionProfile(input) {
 function flattenRow(r, kind) {
   const t = r.target ?? {};
   const o = r.outcome ?? {};
-  // Heal/grant rows — WHO from target/outcome, WHAT from the heal effect entry.
-  // effects[] is the source of truth (was _parity). A heal effect is emitted for
-  // every restorable resource (hp/mp/ip/shield/…), so its presence is the grant
-  // marker (mirrors the old "grantAmount is a number" test). Heal/restore has no
-  // element affinity → always "NE".
-  const heal = (r.effects ?? []).find((x) => x.type === "heal");
+  // Heal/grant rows — WHO from target/outcome, WHAT from the beneficial resource
+  // effect. effects[] is the source of truth. A beneficial resource_delta is
+  // emitted for every restorable resource (hp/mp/ip/shield/…), so its presence is
+  // the grant marker. Heal/restore has no element affinity → always "NE".
+  const heal = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "beneficial");
   if (heal) {
     return {
       tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
@@ -763,7 +762,7 @@ function flattenRow(r, kind) {
   // effects[] is now the source of truth (was _parity). Attack rows carry
   // pierceMiss but NOT resource; Skill/Spell rows carry resource (hp/mp) but not
   // pierceMiss — match COMPUTE exactly.
-  const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.damageClass === "primary") ?? {};
+  const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.damageClass === "primary") ?? {};
   const baseFields = {
     tokenUuid: t.tokenUuid, actorUuid: t.actorUuid, name: t.name, tokenImg: t.img,
     disposition: t.disposition, defense: t.defenseShown ?? 0,
@@ -821,7 +820,7 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   const repReactionParts = (() => {
     for (const r of (profile.perTarget ?? [])) {
       if (!r.outcome?.hit) continue;
-      const dmg = (r.effects ?? []).find((x) => x.type === "damage" && x.damageClass === "primary");
+      const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.damageClass === "primary");
       if (dmg && Array.isArray(dmg.reactionParts) && dmg.reactionParts.length) return dmg.reactionParts;
     }
     return [];
