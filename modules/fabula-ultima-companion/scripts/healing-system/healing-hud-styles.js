@@ -29,7 +29,7 @@ export function injectHealingStyles() {
 
 .oni-heal-frame {
   display: flex; flex-direction: column;
-  width: min(1200px, 95vw); height: auto; max-height: 92vh;
+  width: min(1200px, 95vw); height: min(700px, 92vh);
   background: var(--hl-parch-1);
   border: 2.5px solid var(--hl-wood-2); border-radius: 14px;
   box-shadow: 0 0 0 1px var(--hl-wood-3), 0 18px 60px rgba(0,0,0,0.55), inset 0 0 26px rgba(160,118,73,0.18);
@@ -114,21 +114,20 @@ export function injectHealingStyles() {
 }
 .oni-heal-banner.armed { background: linear-gradient(180deg,#d8f0c4,#bfe3a6); border-color: #6fa04a; color: #1f4a14; font-weight: 700; }
 .oni-heal-grid {
-  flex: none; display: grid; grid-template-columns: 1fr; grid-auto-rows: auto;
-  align-content: start; gap: 14px; min-height: 0; padding: 18px 10px 16px 12px;
-  overflow: hidden;
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: 16px; min-height: 0; padding: 18px 12px; overflow: hidden;
 }
-/* Full-width row: sprite on the left, info on the right. */
+/* Cell: sprite on the left, info on the right. Stretches to fill the grid row. */
 .oni-heal-cell {
-  display: flex; align-items: center; gap: 18px; min-height: 118px;
-  padding: 12px 20px;
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 18px;
   border-radius: 12px; border: 1.5px solid rgba(120,86,40,.45);
   background: var(--hl-parch-1);
   box-shadow: inset 0 0 18px rgba(160,118,73,0.12);
   cursor: pointer; transition: border-color .12s ease, box-shadow .12s ease, background .12s ease, transform .12s ease, opacity .12s ease;
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; min-height: 0;
 }
-.oni-heal-cell.empty { opacity: .35; cursor: default; min-height: 60px; }
+.oni-heal-cell.empty { opacity: .35; cursor: default; }
 .oni-heal-cell.dim-full { opacity: .5; }   /* armed but this target can't benefit */
 .oni-heal-cell.sel.targeting {
   border-color: var(--hl-wood-2);
@@ -147,7 +146,7 @@ export function injectHealingStyles() {
   filter: drop-shadow(0 4px 5px rgba(40,24,10,.5));
 }
 .oni-heal-cell .pc-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
-.oni-heal-cell .pc-name { font-size: 21px; font-weight: 800; color: var(--hl-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.oni-heal-cell .pc-name { font-size: 21px; font-weight: 800; font-style: italic; color: #4a2c10; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
 .oni-heal-res { display: flex; align-items: baseline; gap: 10px; font-variant-numeric: tabular-nums; }
 .oni-heal-res .rlabel { width: 30px; font-size: 13px; font-weight: 800; letter-spacing: .5px; }
 .oni-heal-res .rval { font-size: 17px; font-weight: 700; color: var(--hl-ink); }
@@ -160,16 +159,17 @@ export function injectHealingStyles() {
 }
 .oni-heal-debuff:hover { transform: scale(1.12); border-color: var(--hl-wood-2); }
 .oni-heal-debuffs .none { font-size: 11px; opacity: .4; font-style: italic; }
-/* Debuff tooltip (DOM, follows cursor). */
+/* Debuff tooltip (DOM, follows cursor). Appended to <body> — OUTSIDE the
+   overlay — so it can't use the overlay's CSS vars; uses literal opaque colors. */
 #oni-heal-ae-tooltip {
   position: fixed; z-index: 2147483646; max-width: 300px; min-width: 160px;
   padding: 9px 11px; border-radius: 9px; display: none;
-  background: var(--hl-parch-1); color: var(--hl-ink);
-  border: 1.5px solid var(--hl-wood-2); box-shadow: 0 8px 22px rgba(0,0,0,.4);
+  background: #f6ebd3; color: #3b2a19;
+  border: 1.5px solid #8d5f38; box-shadow: 0 8px 22px rgba(0,0,0,.45);
   font: 12px/1.45 "Signika", sans-serif; pointer-events: none;
 }
-#oni-heal-ae-tooltip .tt-title { font-weight: 800; font-size: 13px; margin-bottom: 4px; color: var(--hl-hp); }
-#oni-heal-ae-tooltip .tt-body p { margin: 0 0 4px; }
+#oni-heal-ae-tooltip .tt-title { font-weight: 800; font-size: 13px; margin-bottom: 4px; color: #b8392f; }
+#oni-heal-ae-tooltip .tt-body, #oni-heal-ae-tooltip .tt-body p { margin: 0 0 4px; color: #3b2a19; }
 .oni-heal-res.hp .rlabel { color: var(--hl-hp); }
 .oni-heal-res.mp .rlabel { color: var(--hl-mp); }
 .oni-heal-res.ip .rlabel { color: var(--hl-ip); }

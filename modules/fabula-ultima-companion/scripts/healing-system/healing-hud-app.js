@@ -381,7 +381,7 @@ const HealingHUD = {
   // Icon-only row of the actor's debuff effects (empty placeholder when none).
   _debuffsHtml(actor) {
     const debuffs = this._actorDebuffs(actor);
-    if (!debuffs.length) return `<span class="none">No debuffs</span>`;
+    if (!debuffs.length) return "";   // blank row when no debuffs
     return debuffs.map((e) => {
       const img = e.img || e.icon || "icons/svg/downgrade.svg";
       return `<img class="oni-heal-debuff" data-eff-id="${escapeHtml(e.id)}" src="${escapeHtml(img)}" />`;
