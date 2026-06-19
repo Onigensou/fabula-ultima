@@ -23,13 +23,15 @@
   const TOTAL_ROUNDS = 3;
 
   // ---------------------------------------------------------------------------
-  // Fish tier tables (placeholder names — wire to real items later)
+  // Fish tier tables — entries with an id grant a real world item;
+  // entries without id are still placeholder (no item created yet).
+  // TODO: replace remaining placeholder entries with real item IDs later.
   // ---------------------------------------------------------------------------
-  const FISH_TIERS = [
-    ["Small Fish", "Mudfish", "Pebblecarp"],                          // Tier 1
-    ["River Trout", "Silverscale", "Speckled Bass"],                  // Tier 2
-    ["Coral Bass", "Goldfish", "Moonfish"],                           // Tier 3
-    ["Starfish", "Dragonscale Carp", "Phantom Eel"],                  // Tier 4 (Legendary)
+  const FISH_TABLE = [
+    [ { id: "fnd9BxHv1albIMpM", name: "Mudfish" },       { name: "Small Fish" },         { name: "Pebblecarp" }    ], // Tier 1
+    [ { id: "14X26PHWXppupLYt", name: "River Trout" },   { name: "Silverscale" },        { name: "Speckled Bass" } ], // Tier 2
+    [ { id: "czkjXYoh6vPaj5bQ", name: "Moonfish" },      { name: "Coral Bass" },         { name: "Goldfish" }      ], // Tier 3
+    [ { name: "Starfish" },                               { name: "Dragonscale Carp" },   { name: "Phantom Eel" }   ], // Tier 4 (Legendary)
   ];
 
   // ---------------------------------------------------------------------------
@@ -65,17 +67,32 @@
   }
 
   function _pickFish(castStrength, wlp) {
-    const tier  = _fishTier(castStrength, wlp);
-    const pool  = FISH_TIERS[tier];
+    const tier = _fishTier(castStrength, wlp);
+    const pool = FISH_TABLE[tier];
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
   // ---------------------------------------------------------------------------
-  // Award fish — placeholder until real item system exists
+  // Award fish — looks up name in FISH_TABLE to find a real item ID.
+  // Entries without an id are still placeholder (no item created yet).
+  // TODO: replace remaining placeholder entries with real IDs in FISH_TABLE.
   // ---------------------------------------------------------------------------
   async function _awardFish(actor, fishName) {
-    // TODO: replace with actual item creation when fish items are implemented
-    console.log(TAG, `${actor.name} caught: ${fishName} (placeholder — no item created yet)`);
+    const entry = FISH_TABLE.flat().find(e => e.name === fishName) ?? { name: fishName };
+    if (entry.id) {
+      const worldItem = game.items.get(entry.id);
+      if (!worldItem) {
+        console.warn(TAG, `Fish item not found in world: ${entry.id} (${fishName})`);
+        return;
+      }
+      const data = worldItem.toObject();
+      delete data._id;
+      await actor.createEmbeddedDocuments("Item", [data]);
+      console.debug(TAG, `${actor.name} received: ${fishName}`);
+    } else {
+      // TODO: replace with actual item creation when fish items are implemented
+      console.log(TAG, `${actor.name} caught: ${fishName} (placeholder — no item created yet)`);
+    }
   }
 
   // ---------------------------------------------------------------------------
