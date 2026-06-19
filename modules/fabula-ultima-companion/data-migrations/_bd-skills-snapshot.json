@@ -2906,8 +2906,34 @@
       "templateSystemUniqueVersion": null,
       "props": {
         "skill_type": "Passive",
-        "reaction_config_table": {},
-        "effect_table": {}
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_defeated",
+            "reaction_source": "all",
+            "reaction_passive_mode": "on",
+            "condition_formula": "SUBJECT_IS_MY_PHANTASM == 1",
+            "reaction_effect_ref": "pe_recover",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": ""
+          }
+        },
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "pe_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "pe_recover",
+            "effect_kind": "grant",
+            "grant_resource": "mp",
+            "grant_amount": "SL + 2",
+            "target_ref": "pe_self"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "JWzdHF8l1m2ZcdQw"

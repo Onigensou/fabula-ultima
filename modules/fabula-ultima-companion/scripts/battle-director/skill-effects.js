@@ -2676,10 +2676,38 @@ async function applyDestroySummonEffect(row, ctx) {
     return { ok: false, kind: "destroy_summon", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
   }
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const director = ctx.director ?? bd?.getActiveDirector?.() ?? null;
   const applied = [];
   for (const token of tr.tokens) {
     const actor = token.actor;
-    // 1. HP → 0 — fires creature_defeated (feeds Phantasmal Echo) before despawn.
+    // 0. Queue a creature_defeated event onto the resource ledger BEFORE despawn,
+    //    so the payload carries the summoner identity even after the token is
+    //    gone. It fans out observer-aware (LEDGER_FAMILY) at the post-resolve
+    //    settle → an onlooker's reaction (Phantasmal Echo) matches via
+    //    SUBJECT_IS_MY_PHANTASM. summonedBy is the summoner's ACTOR uuid.
+    try {
+      const NS = "fabula-ultima-companion";
+      const flags = token.flags?.[NS] ?? token.document?.flags?.[NS] ?? {};
+      if (director?.ctx) {
+        if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+        director.ctx._postResolveTriggers.push({
+          casterActor: actor,
+          trigger: "creature_defeated",
+          payload: {
+            // subject = the defeated creature (reaction_source self/ally/enemy keys off this)
+            sourceActorUuid: actor?.uuid ?? null,
+            sourceTokenUuid: token.uuid ?? null,
+            subjectActorUuid: actor?.uuid ?? null,
+            subjectTokenUuid: token.uuid ?? null,
+            summonedBy: flags.summonedBy ?? null,
+            isPhantasm: !!(actor?.system?.props?.isPhantasm || flags.isPhantasm),
+            cause: "shatter",
+            causeActorUuid: ctx.reactorActor?.uuid ?? null,   // who shattered it
+          },
+        });
+      }
+    } catch (e) { warn(`skill-effects.destroy_summon: queue creature_defeated failed for ${token.uuid}`, e); }
+    // 1. HP → 0 — also trips the universal creature-defeated emitter / cleanup.
     try {
       const cur = Number(actor?.system?.props?.current_hp ?? 0) || 0;
       if (actor && cur > 0) await actor.update({ "system.props.current_hp": 0 });

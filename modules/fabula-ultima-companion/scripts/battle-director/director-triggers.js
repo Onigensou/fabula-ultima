@@ -121,6 +121,12 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // so reactions (On the Hunt: "when an enemy enters Crisis") can chain off them.
   "creature_status_applied",
   "creature_loses_status",
+  // Defeat hook — fired (subject = the defeated creature) when a creature is
+  // reduced to 0 HP / shattered. Observer-aware (LEDGER_FAMILY): an onlooker
+  // reacts to ANOTHER creature's defeat, gated by condition_formula. First
+  // consumer: Phantasmal Echo (recover MP when MY phantasm is shattered, gated
+  // by SUBJECT_IS_MY_PHANTASM). Queued onto the resource ledger by destroy_summon.
+  "creature_defeated",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),
@@ -212,6 +218,8 @@ export const TRIGGER_PHASE = Object.freeze({
   // Status-ledger family (post-commit, subject = the creature gaining/losing it).
   "creature_status_applied":    "post-resolve",
   "creature_loses_status":      "post-resolve",
+  // Defeat (post-commit, subject = the defeated creature; observer-aware).
+  "creature_defeated":          "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",

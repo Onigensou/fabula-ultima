@@ -42,6 +42,10 @@ const BUILTIN_REACTORS = [];
 const LEDGER_FAMILY = new Set([
   "creature_lose_resource", "creature_gain_resource",
   "creature_status_applied", "creature_loses_status",
+  // creature_defeated fans out observer-aware too — an onlooker reacts to
+  // ANOTHER creature's defeat (Phantasmal Echo: recover MP when MY phantasm is
+  // shattered), gated by the row's condition_formula (SUBJECT_IS_MY_PHANTASM).
+  "creature_defeated",
 ]);
 
 export function registerBuiltinReactor(fn) {

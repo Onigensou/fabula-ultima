@@ -652,6 +652,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (subj && actor && subj.uuid === actor.uuid) return 1;
         return 0;
       }
+      // 1 when the trigger SUBJECT is a Phantasm that THIS reactor summoned —
+      // reads the event payload (summonedBy + isPhantasm), NOT the live token, so
+      // it still matches after the phantasm despawns (destroy_summon stamps both
+      // into the creature_defeated payload before removing the token). Powers
+      // Phantasmal Echo ("recover MP when MY phantasm is shattered"). summonedBy
+      // is the summoner's ACTOR uuid (= the reactor's actor uuid).
+      case "SUBJECT_IS_MY_PHANTASM": {
+        if (!payload?.isPhantasm) return 0;
+        const by = String(payload?.summonedBy ?? "").trim();
+        const me = String(actor?.uuid ?? "").trim();
+        return (by && me && by === me) ? 1 : 0;
+      }
       default:
         // Dynamic VAR_<NAME> — a chain-local variable captured earlier in the
         // SAME effect chain. `prompt_number` stores the player's entered amount
