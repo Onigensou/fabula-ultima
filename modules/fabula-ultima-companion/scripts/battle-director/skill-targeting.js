@@ -422,6 +422,7 @@ async function buildCandidatePool(source, ctx) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "own_summons":         return collectOwnSummons(ctx);
+    case "last_summoned":       return collectLastSummoned(ctx);
     case "action_targets":      return collectActionTargets(ctx);
     case "hit_action_targets":  return collectHitActionTargets(ctx);
     case "trigger_actor":       return collectTriggerActor(ctx);
@@ -444,6 +445,13 @@ function collectSelfTokens(ctx) {
 // Powers "Command an existing Phantasm" (Create Phantasm: Strike) and is reused
 // by Detonate / Illusory Shield / Zero Power. Empty pool → the targeting row
 // aborts the chain cleanly (no phantasm to command).
+// "last_summoned" — the token(s) the `summon` effect spawned earlier in THIS
+// chain (ctx.lastSummonedTokenUuids). Lets a follow-up row act on the just-
+// created summon (take_turn_next → Numen acts immediately).
+async function collectLastSummoned(ctx) {
+  return await uuidsToTokens(ctx.lastSummonedTokenUuids ?? []);
+}
+
 function collectOwnSummons(ctx) {
   const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
   if (!meUuid) return [];

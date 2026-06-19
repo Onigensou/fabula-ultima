@@ -2787,9 +2787,35 @@
       "template": "j0F5Msw5RZ8aIB3j",
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Active",
+        "skill_type": "Spell",
         "reaction_config_table": {},
-        "effect_table": {}
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "numen_do",
+            "effect_kind": "chain",
+            "summon_actor": "ZPPCxB0eOJPulEHv",
+            "summon_count": 1,
+            "chain_steps": "numen_summon, numen_act_next"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "numen_summon",
+            "effect_kind": "summon",
+            "summon_actor": "ZPPCxB0eOJPulEHv",
+            "summon_count": 1
+          },
+          "2": {
+            "$deleted": false,
+            "effect_label": "numen_act_next",
+            "effect_kind": "take_turn_next",
+            "target_ref": "numen_summon"
+          }
+        },
+        "cost": "50 MP",
+        "availability_formula": "OWN_NUMEN_COUNT == 0",
+        "availability_reason": "Numen already active",
+        "on_activate_effect_ref": "numen_do"
       },
       "unique": false,
       "uniqueId": "9yYY5TBMMVlHo28q"

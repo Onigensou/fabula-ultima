@@ -174,9 +174,25 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   const costMap = new Map(stringCostMap);
   for (const [res, amt] of configDebit) costMap.set(res, (costMap.get(res) ?? 0) + amt);
   const gate = checkAffordable(actor, costMap);
+  // Availability gate — a top-level `availability_formula` evaluated against the
+  // caster (e.g. Numen's "OWN_NUMEN_COUNT == 0"). Falsy → the skill shows DIMMED
+  // in the picker with `availability_reason` ("Numen already active"), the same
+  // disabled+reason treatment as an intent block. Empty formula = always
+  // available (fail-open if it throws). Reusable board-state gate for any skill.
+  let unavailableReason = null;
+  const availFormula = String(p.availability_formula ?? "").trim();
+  if (availFormula) {
+    try {
+      const resolver = buildSkillResolver({ actor, payload: null, skill, round: 0 });
+      if (!evaluateFormula(availFormula, resolver, 1)) {
+        unavailableReason = String(p.availability_reason ?? "").trim() || "Unavailable";
+      }
+    } catch (e) { warn("skill-picker: availability_formula threw", e); }
+  }
   return {
     uuid: skill.uuid,
     id: skill.id,
+    _unavailable: unavailableReason,
     name: skill.name ?? "(unnamed)",
     img: skill.img ?? "icons/svg/sun.svg",
     skillType: String(p.skill_type ?? "").trim() || "—",
@@ -266,17 +282,19 @@ function candidateToRow(c) {
     ? `<span class="source-tag" title="${escapeHtml(c.sourceItemName)}">⚔️</span> ` : "";
   const safeImg = c.img && !/['"<>\n\r]/.test(c.img) ? c.img : "icons/svg/sun.svg";
 
-  // Intent-disabled (e.g. Charm/Domination): dim + red-stamp the reason, taking
-  // precedence over the cost badge (it's a hard block, not an affordability one).
-  const intentDisabled = c._intentDisabled || null;
+  // Hard block (dim + red-stamp the reason), taking precedence over the cost
+  // badge: an intent block (Charm/Domination) OR an availability gate
+  // (availability_formula false, e.g. "Numen already active"). Distinct from the
+  // affordability dim, which keeps showing the cost badge.
+  const hardBlock = c._intentDisabled || c._unavailable || null;
   return {
     value: { skillUuid: c.uuid, sourceItemUuid: c.sourceItemUuid || null },
     imageUrl: safeImg,
     primary: `${sourceTag}${escapeHtml(c.name)}`,
     secondary,
-    badge: intentDisabled ? escapeHtml(intentDisabled) : escapeHtml(costLabel),
-    badgeTone: intentDisabled ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
-    disabled: !!intentDisabled || !c.affordable,
+    badge: hardBlock ? escapeHtml(hardBlock) : escapeHtml(costLabel),
+    badgeTone: hardBlock ? "danger" : (isFree ? "free" : (c.affordable ? null : "danger")),
+    disabled: !!hardBlock || !c.affordable,
     tooltip: {
       name: c.name,
       body: stripHtml(c.descriptionHtml || "(no description)"),

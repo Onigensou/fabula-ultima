@@ -407,6 +407,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Phantasm: Strike's "Command an existing Phantasm" menu option
       // (OWN_SUMMON_COUNT >= 1). General (not per-skill); reused for the 4-cap.
       case "OWN_SUMMON_COUNT": return ownSummonCount(actor);
+      // Number of NUMEN summons (actor.system.props.isNumen) THIS actor has out —
+      // gates Create Phantasm: Numen to one Numen (availability_formula
+      // "OWN_NUMEN_COUNT == 0"). Subset of OWN_SUMMON_COUNT.
+      case "OWN_NUMEN_COUNT": return ownSummonCount(actor, { numenOnly: true });
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -1444,7 +1448,7 @@ function myFocusInCrisis(actor, payload) {
 // Count live summons (incl. phantasms) THIS actor put on the field — canvas
 // tokens whose `summonedBy` flag == the actor's uuid and that still carry
 // isSummon/isPhantasm. Powers OWN_SUMMON_COUNT.
-function ownSummonCount(actor) {
+function ownSummonCount(actor, { numenOnly = false } = {}) {
   const meUuid = String(actor?.uuid ?? "").trim();
   if (!meUuid) return 0;
   const NS = "fabula-ultima-companion";
@@ -1454,6 +1458,7 @@ function ownSummonCount(actor) {
     if (!td?.actor) continue;
     const f = td.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (numenOnly) { if (td.actor?.system?.props?.isNumen) n++; continue; }
     if (f.isSummon || f.isPhantasm) n++;
   }
   return n;

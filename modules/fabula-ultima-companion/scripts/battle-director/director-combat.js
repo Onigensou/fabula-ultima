@@ -162,6 +162,9 @@ export class DirectorCombat {
     this.firstSide = "party";        // computed by buildDirectorCombat
     this.currentSide = "party";      // flips during nextTurn
     this.currentCombatantId = null;  // resolved by the picker (or auto-pick)
+    // Turn manipulation: a combatant id that should act IMMEDIATELY after the
+    // current turn (one-shot, consumed in nextTurn). Set via forceNextTurn().
+    this.forcedNextCombatantId = null;
 
     // Solo-player test mode (dev Test Battle tool): when set, every combatant
     // whose actorUuid differs gets 0 turns per round, so only the main player
@@ -280,6 +283,18 @@ export class DirectorCombat {
       c.turnsRemaining = 0;
     }
     return c;
+  }
+
+  // Turn manipulation — mark a combatant to act IMMEDIATELY after the current
+  // turn (consumed once by nextTurn, overriding side-alternation). The caller is
+  // responsible for ensuring the combatant has a turn available (turnsRemaining
+  // > 0) — take_turn_next grants one to a freshly-summoned creature. Accepts a
+  // combatant id; returns true if the combatant exists.
+  forceNextTurn(combatantId) {
+    const c = this.combatants.find((x) => x.id === combatantId);
+    if (!c) return false;
+    this.forcedNextCombatantId = combatantId;
+    return true;
   }
 
   // Enable solo-player mode: only the given actor keeps its turns; every other
@@ -428,6 +443,26 @@ export class DirectorCombat {
       acted.turnsRemaining = Math.max(0, acted.turnsRemaining - 1);
       log(`nextTurn: ${acted.name} acted (turnsRemaining now ${acted.turnsRemaining}/${acted.turnsPerRound})`);
     }
+
+    // 1b. Forced-next override (turn manipulation: a creature acts IMMEDIATELY
+    // after the current turn — Create Phantasm: Numen). One-shot: PIN the
+    // combatant directly so TURN_START uses it without the side-alternation or
+    // the picker (TURN_START only re-picks when currentCombatantId is null).
+    // Overrides RAW alternation by design (a granted extra/priority turn).
+    if (this.forcedNextCombatantId) {
+      const forcedId = this.forcedNextCombatantId;
+      this.forcedNextCombatantId = null;
+      const forced = this.combatants.find((c) => c.id === forcedId);
+      if (forced && !forced.isDefeatedLive?.() && forced.turnsRemaining > 0) {
+        this.currentSide = forced.side;
+        this.currentCombatantId = forced.id;   // PIN — TURN_START honors a set id
+        log(`nextTurn: FORCED next turn → ${forced.name} (turn manipulation)`);
+        this._notifyTurnActions();
+        return { round: this.round, currentSide: this.currentSide, wrappedRound: false, ended: false, eligibleIds: [forced.id], forced: true };
+      }
+      log(`nextTurn: forced-next ${forcedId} not eligible (defeated/no turns) — ignoring`);
+    }
+
     // Always clear; the picker fills it.
     this.currentCombatantId = null;
 

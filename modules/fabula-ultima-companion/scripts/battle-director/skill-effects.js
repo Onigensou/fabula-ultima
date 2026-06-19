@@ -2772,6 +2772,7 @@ const EFFECT_KIND_DISPATCH = {
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
   transfer_ae:         applyTransferAeEffect,
   summon:              applySummonEffect,
+  take_turn_next:      applyTakeTurnNextEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
@@ -2833,6 +2834,7 @@ export const EFFECT_KIND_LABELS = {
   remove_tagged_ae:    "Remove Tagged AE",
   transfer_ae:         "Transfer AE (move an AE to another creature, keeping charges)",
   summon:              "Summon (spawn actor(s) as own-turn combatants)",
+  take_turn_next:      "Take Turn Next (a creature acts immediately after this turn)",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
@@ -2932,6 +2934,7 @@ const EFFECT_KIND_PREVIEW = {
 
   // summon spawns combatants at RESOLVE — nothing to surface on the casting card.
   summon: () => null,
+  take_turn_next: () => null,
 
   encyclopedia_record: (row) => ({
     type: "reveal", aspect: "encyclopedia", tier: null,
@@ -5827,6 +5830,7 @@ async function applySummonEffect(row, ctx) {
   const { spawnLiveDirectorTokens } = await import("./director-init.js");
 
   const applied = [];
+  const spawnedDocs = [];
   for (const ref of refs) {
     const actor = await resolveRef(ref);
     if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
@@ -5858,6 +5862,7 @@ async function applySummonEffect(row, ctx) {
         });
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
       applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm });
+      spawnedDocs.push(tokenDoc);
     }
   }
 
@@ -5870,7 +5875,44 @@ async function applySummonEffect(row, ctx) {
     try { Hooks.callAll("fu-director-roster-changed", { dCombat: dc, change: "add" }); } catch (_e) {}
     log(`skill-effects.summon: row "${row.effect_label}" summoned ${applied.length} (${applied.map((a) => a.actor).join(", ")}; actThisRound=${actThisRound})`);
   }
+  // Register the spawned tokens under THIS row's effect_label — exactly like a
+  // targeting row — so a later chain row can `target_ref: "<this label>"` to act
+  // on the just-summoned creature (take_turn_next → Numen acts immediately).
+  // resolveTargetRef checks the resolvedTargets memo first, so the label resolves
+  // to these tokens without trying to re-run the summon row as a targeting row.
+  if (!ctx.resolvedTargets) ctx.resolvedTargets = new Map();
+  ctx.resolvedTargets.set(row.effect_label, { ok: spawnedDocs.length > 0, tokens: spawnedDocs });
+  // Also expose the most-recent summon for the `last_summoned` candidate_source.
+  ctx.lastSummonedTokenUuids = applied.map((a) => a.tokenUuid).filter(Boolean);
   return { ok: true, kind: "summon", applied };
+}
+
+// ── take_turn_next — a creature acts IMMEDIATELY after the current turn ──────
+// General turn-manipulation primitive: resolve target_ref → grant the creature
+// a turn if it has none (turnsRemaining = 1, so it's eligible this round) →
+// mark it forced-next on the dCombat (consumed by nextTurn, overriding side
+// alternation). First user: Create Phantasm: Numen (the summoned Numen acts
+// right after its summoner's turn). target_ref defaults to last_summoned.
+async function applyTakeTurnNextEffect(row, ctx) {
+  if (ctx?.mode === "preview") return { ok: true, kind: "take_turn_next", applied: [], reason: "preview" };
+  const director = ctx.director
+    ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+    ?? null;
+  const dc = director?.dCombat ?? ctx.dCombat ?? null;
+  if (!dc?.started || dc.ended) return { ok: false, kind: "take_turn_next", reason: "no-combat" };
+  const tr = await resolveTargetRef(row.target_ref || "last_summoned", ctx);
+  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "take_turn_next", reason: tr.reason ?? "no-targets" };
+  const applied = [];
+  for (const token of tr.tokens) {
+    const c = dc.combatants?.find?.((x) => x.tokenId === token.id || x.tokenDoc?.uuid === token.uuid);
+    if (!c) { warn(`skill-effects.take_turn_next: ${token.name ?? token.uuid} is not a combatant`); continue; }
+    // Ensure it has a turn to take this round (a fresh summon has 0).
+    if (!(c.turnsRemaining > 0)) c.turnsRemaining = Math.max(1, c.turnsPerRound || 1);
+    dc.forceNextTurn(c.id);
+    applied.push(c.id);
+  }
+  if (applied.length) { try { dc._notifyTurnActions?.(); } catch {} }
+  return { ok: !!applied.length, kind: "take_turn_next", applied };
 }
 
 async function applyRemoveTaggedAeEffect(row, ctx) {
