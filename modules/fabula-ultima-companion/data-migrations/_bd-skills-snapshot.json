@@ -490,7 +490,7 @@
             "reaction_trigger": "creature_performs_action",
             "reaction_source": "self",
             "reaction_passive_mode": "force",
-            "reaction_action_kind": "Attack,Spell",
+            "reaction_action_kind": "Attack,Spell,Skill",
             "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1",
             "reaction_effect_ref": "cf_acc",
             "reaction_damage_type": "",
@@ -2811,7 +2811,49 @@
       "props": {
         "skill_type": "Spell",
         "reaction_config_table": {},
-        "effect_table": {}
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "dp_pre",
+            "effect_kind": "chain",
+            "chain_steps": "dp_phantasm, dp_element"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "dp_phantasm",
+            "effect_kind": "targeting",
+            "candidate_source": "own_summons",
+            "mode": "exact",
+            "count": 1,
+            "skip_when_passive": false,
+            "auto_target": "confirm",
+            "target_prompt": "Choose a Phantasm to detonate"
+          },
+          "2": {
+            "$deleted": false,
+            "effect_label": "dp_element",
+            "effect_kind": "prompt_element",
+            "prompt_var": "element",
+            "menu_title": "Detonate Phantasm — choose a damage type",
+            "element_options": "light|dark"
+          },
+          "3": {
+            "$deleted": false,
+            "effect_label": "dp_destroy",
+            "effect_kind": "destroy_summon",
+            "target_ref": "dp_phantasm"
+          }
+        },
+        "isCheck": true,
+        "rolled_atr1": "INS",
+        "rolled_atr2": "WLP",
+        "defense_target_type": "mdef",
+        "type_damage": "VAR_ELEMENT",
+        "damage_bonus": "25",
+        "skill_target": "One Enemy",
+        "cost": "20 MP",
+        "pre_activate_effect_ref": "dp_pre",
+        "on_activate_effect_ref": "dp_destroy"
       },
       "unique": false,
       "uniqueId": "o6JD10LZF7bXvU6B"

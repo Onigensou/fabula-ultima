@@ -75,6 +75,18 @@ export async function resolveTargetRef(targetRef, ctx) {
   // Memoize per chain — multiple consumers should see the same tokens.
   if (ctx.resolvedTargets.has(key)) return ctx.resolvedTargets.get(key);
 
+  // Pre-card CAPTURE replay: if this ref's pick was captured in pre_activate
+  // (applyTargetingEffect → ctx.payload._capturedTargets[label], rehydrated onto
+  // the ctx at RESOLVE), return those tokens instead of re-prompting. Lets
+  // Detonate pick the Phantasm once, before the card, then reuse it.
+  const captured = ctx?.payload?._capturedTargets?.[key];
+  if (Array.isArray(captured) && captured.length) {
+    const toks = await uuidsToTokens(captured);
+    const result = { ok: toks.length > 0, tokens: toks, reason: toks.length ? undefined : "captured-gone" };
+    ctx.resolvedTargets.set(key, result);
+    return result;
+  }
+
   // Multi-ref union — "a,b,c" resolves each ref and unions their tokens
   // (dedup by uuid). Lets one effect row target several named picks at once
   // (Blazing Tether detonates giver + receiver via target_ref "giver,receiver").

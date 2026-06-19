@@ -2663,6 +2663,42 @@ async function applyLeaveCombatEffect(row, ctx) {
   return { ok: true, kind: "leave_combat", applied };
 }
 
+// ── destroy_summon — remove one of my summons/phantasms from play ──────────
+// The DESTROY half of the summon family. Drops the targeted summon's HP to 0
+// (so the universal creature-defeated emitter fires `creature_defeated` →
+// Phantasmal Echo + battle cleanup, while the token still exists) then despawns
+// it via the director's removeCombatant (drops the combatant AND the token).
+// First user: Detonate Phantasm; Illusory Shield + Zero Power will reuse it.
+async function applyDestroySummonEffect(row, ctx) {
+  if (ctx?.mode === "preview") return { ok: true, kind: "destroy_summon", applied: [], reason: "preview" };
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (!tr.ok || !tr.tokens.length) {
+    return { ok: false, kind: "destroy_summon", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
+  }
+  const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const applied = [];
+  for (const token of tr.tokens) {
+    const actor = token.actor;
+    // 1. HP → 0 — fires creature_defeated (feeds Phantasmal Echo) before despawn.
+    try {
+      const cur = Number(actor?.system?.props?.current_hp ?? 0) || 0;
+      if (actor && cur > 0) await actor.update({ "system.props.current_hp": 0 });
+    } catch (e) { warn(`skill-effects.destroy_summon: HP-zero failed for ${token.uuid}`, e); }
+    // 2. Despawn — remove the combatant + token (mirrors leave_combat).
+    if (typeof bd?.removeCombatant === "function") {
+      try {
+        const res = await bd.removeCombatant({ tokenUuid: token.uuid });
+        if (res?.ok) applied.push(token.uuid);
+        else warn(`skill-effects.destroy_summon: removeCombatant failed — ${res?.error}`);
+      } catch (e) { warn("skill-effects.destroy_summon: removeCombatant threw", e); }
+    } else {
+      try { await (token.document?.delete?.() ?? token.delete?.()); applied.push(token.uuid); }
+      catch (e) { warn("skill-effects.destroy_summon: token delete threw", e); }
+    }
+  }
+  return { ok: true, kind: "destroy_summon", applied };
+}
+
 // ── notify — surface a short message (chat + UI toast) ────────────────────
 // Generic "tell the player something" step. Primary use: branch STUBS for
 // not-yet-built subsystems (the Gadgets Alchemy/Magitech branches notify
@@ -2712,6 +2748,7 @@ const EFFECT_KIND_DISPATCH = {
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
   leave_combat:        applyLeaveCombatEffect,
+  destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
   adjust_grant:        applyAdjustGrantEffect,
@@ -2772,6 +2809,7 @@ export const EFFECT_KIND_LABELS = {
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
   leave_combat:        "Leave Combat (remove self from the conflict)",
+  destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
   adjust_grant:        "Adjust Grant (op on the action's restore — multiply/set/cap/floor/add)",
@@ -2908,6 +2946,7 @@ const EFFECT_KIND_PREVIEW = {
   // combatant — neither is a target-facing inline card row.
   confirm: () => null,
   leave_combat: () => null,
+  destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.
   chain: () => null,
@@ -3074,7 +3113,10 @@ export async function applyEffectRow(row, ctx) {
   // up front so the cast animation flows straight into damage with no mid-
   // resolve prompts. See fireActivationEffectPre.
   if (ctx?.captureMode) {
-    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae"]);
+    // `targeting` is capturable too: it PROMPTS the pick pre-card and records the
+    // chosen tokens (so a no-eligible-target case aborts back to the Action Menu
+    // before the card is built). applyTargetingEffect handles the capture branch.
+    const CAPTURE_KINDS = new Set(["chain", "prompt_element", "prompt_number", "open_action_menu", "remove_tagged_ae", "targeting"]);
     if (!CAPTURE_KINDS.has(kind)) {
       return { ok: true, kind, applied: [], skipped: true, reason: "capture-mode-noop" };
     }
@@ -3111,6 +3153,9 @@ function clearCapturedForStep(row, ctx) {
   } else if (kind === "open_action_menu") {
     const lbl = row.effect_label;
     if (lbl && ctx?.payload?._capturedMenuPicks) delete ctx.payload._capturedMenuPicks[lbl];
+  } else if (kind === "targeting") {
+    const lbl = row.effect_label;
+    if (lbl && ctx?.payload?._capturedTargets) delete ctx.payload._capturedTargets[lbl];
   }
 }
 
@@ -3218,7 +3263,27 @@ function findEffectRow(ctxOrSkill, label) {
 // rows are referenced via target_ref). Just resolves and reports.
 
 async function applyTargetingEffect(row, ctx) {
-  const result = await resolveTargetRef(row.effect_label, ctx);
+  const label = row.effect_label;
+  // Pre-card CAPTURE: prompt the pick now and record the chosen token uuids on
+  // ctx.payload._capturedTargets[label]. RESOLVE replays them (resolveTargetRef
+  // short-circuits on the captured list — no re-prompt). No eligible candidate
+  // OR a user cancel → abort, which the pre_activate caller turns into
+  // TARGET_BACK (back to the Action Menu, nothing spent). First user: Detonate's
+  // "pick a Phantasm to detonate" gate.
+  if (ctx?.captureMode) {
+    const result = await resolveTargetRef(label, ctx);
+    if (result?.cancelled) return { ok: true, kind: "targeting", abort: true, reason: "cancelled" };
+    const toks = result?.tokens ?? [];
+    if (!result?.ok || !toks.length) {
+      // no eligible target — hard abort (back to menu regardless of wizard step)
+      return { ok: true, kind: "targeting", abort: true, reason: "no-candidates" };
+    }
+    const uuids = toks.map((t) => t.uuid ?? t.document?.uuid).filter(Boolean);
+    if (!ctx.payload._capturedTargets) ctx.payload._capturedTargets = {};
+    ctx.payload._capturedTargets[label] = uuids;
+    return { ok: true, kind: "targeting", applied: toks, captured: uuids.length };
+  }
+  const result = await resolveTargetRef(label, ctx);
   return { ok: !!result.ok, kind: "targeting", applied: result.tokens ?? [], reason: result.reason };
 }
 

@@ -453,6 +453,11 @@ async function resolveAction(director, ar, opts = {}) {
   if (ar?.preActivateMenuPicks && typeof ar.preActivateMenuPicks === "object") {
     ctx.capturedMenuPicksByLabel = { ...ar.preActivateMenuPicks };
   }
+  // Pre-card targeting picks (Detonate's Phantasm) → resolveTargetRef replays
+  // them off ctx.payload._capturedTargets instead of re-prompting at RESOLVE.
+  if (ar?.preActivateTargets && typeof ar.preActivateTargets === "object") {
+    ctx.payload._capturedTargets = { ...(ctx.payload._capturedTargets ?? {}), ...ar.preActivateTargets };
+  }
 
   // Battle-log sink for THIS action: every commit (hits, via applyDamageToTarget's
   // logContext) + every miss (below) + any deal_damage riders fired through this
@@ -3140,6 +3145,7 @@ const Compute = {
       // the skill declares a pre_activate_effect_ref.
       let preActivateVars = ar.preActivateVars ?? null;
       let preActivateMenuPicks = ar.preActivateMenuPicks ?? null;
+      let preActivateTargets = ar.preActivateTargets ?? null;
       const preRef = String(view?.fire_points?.pre_activate_effect_ref
         ?? skill?.system?.props?.pre_activate_effect_ref ?? "").trim();
       if (preRef && !ar.preActivateDone) {
@@ -3165,6 +3171,7 @@ const Compute = {
           }
           preActivateVars = capCtx.payload?._chainVars ?? null;
           preActivateMenuPicks = capCtx.payload?._capturedMenuPicks ?? null;
+          preActivateTargets = capCtx.payload?._capturedTargets ?? null;
         } catch (e) { warn("Skill COMPUTE: pre_activate capture threw", e); }
       }
 
@@ -3189,7 +3196,7 @@ const Compute = {
         ...projectProfileToActionResult(profile, ar, allTargets),
         targets: allTargets,
         // Persist the captured pre_activate picks so RESOLVE replays them.
-        preActivateVars, preActivateMenuPicks, preActivateDone: true,
+        preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
