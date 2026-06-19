@@ -829,6 +829,185 @@
     "effects": []
   },
   {
+    "name": "Thermokinesis",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive1.png",
+    "folderPath": [
+      "Battle Director",
+      "Esper",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 3023268155,
+      "props": {
+        "name": "Thermokinesis",
+        "level": "1",
+        "max_level": "1",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "isOffensiveSpell": false,
+        "isCheck": false,
+        "isHeroic": false,
+        "isFacet": true,
+        "use_optional_params": false,
+        "optional_params": {},
+        "class": "Esper",
+        "skill_type": "Passive",
+        "cost": "5+ MP",
+        "skill_target": "Self",
+        "duration": "Instantaneous",
+        "skill_range": "Any",
+        "heroic_requirement": "",
+        "type_damage": "",
+        "description": "<ul><li><strong><em>Trigger:</em></strong> When you deal damage.</li></ul><p>That damage becomes <strong>Fire</strong> or <strong>Ice</strong> (your choice), and its source deals extra damage equal to <strong>2 + the number of filled sections in your Brainwave Clock</strong>.</p><p>The cost is <strong>5 MP</strong> (or, if your Brainwave Clock has 2 or more filled sections, <strong>5 MP per filled section</strong>). Using this gift fills <strong>1 section</strong> of your Brainwave Clock.</p>",
+        "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>2</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>3</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>5</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>6</p></td></tr></tbody></table>",
+        "ignore_hr": false,
+        "active_effect_config_table": {},
+        "defense_target_type": "def",
+        "isReaction": true,
+        "isZeroPower": false,
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "custom_logic_resolution": "",
+        "custom_logic_action": "",
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "therm_offer",
+            "reaction_damage_type": "",
+            "reaction_damage_amount": "",
+            "reaction_passive_target": ""
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "therm_offer",
+            "effect_kind": "open_action_menu",
+            "menu_title": "Thermokinesis",
+            "menu_subtitle": "Infuse the damage with Fire or Ice",
+            "menu_pick_count": "1",
+            "menu_option_refs": "therm_fire,therm_ice",
+            "menu_option_labels": "Fire|Ice",
+            "menu_option_descriptions": "Becomes Fire; +2 damage (+1 per filled Brainwave section)|Becomes Ice; +2 damage (+1 per filled Brainwave section)"
+          },
+          "1": {
+            "effect_label": "therm_fire",
+            "effect_kind": "chain",
+            "chain_steps": "therm_pay,therm_el_fire,therm_bonus,therm_fill",
+            "menu_label": "Fire"
+          },
+          "2": {
+            "effect_label": "therm_ice",
+            "effect_kind": "chain",
+            "chain_steps": "therm_pay,therm_el_ice,therm_bonus,therm_fill",
+            "menu_label": "Ice"
+          },
+          "3": {
+            "effect_label": "therm_pay",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "max(5, AE_CHARGES_BRAINWAVE_CLOCK * 5)",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "4": {
+            "effect_label": "therm_el_fire",
+            "effect_kind": "change_damage_element",
+            "change_element": "fire"
+          },
+          "5": {
+            "effect_label": "therm_el_ice",
+            "effect_kind": "change_damage_element",
+            "change_element": "ice"
+          },
+          "6": {
+            "effect_label": "therm_bonus",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "add",
+            "damage_amount": "2 + AE_CHARGES_BRAINWAVE_CLOCK",
+            "damage_stage": "outgoing"
+          },
+          "7": {
+            "effect_label": "therm_fill",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Brainwave Clock",
+            "ae_duplicate_mode": "add_charges",
+            "ae_initial_charges": "1",
+            "ae_initial_charges_max": "4",
+            "target_ref": "therm_self"
+          },
+          "8": {
+            "effect_label": "therm_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "017fLL4jHjuyiPO1"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": [
+      {
+        "name": "Brainwave Clock",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+        "changes": [],
+        "disabled": false,
+        "transfer": false,
+        "statuses": [
+          "fud-brainwave-clock"
+        ],
+        "type": "base",
+        "system": {},
+        "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "Other",
+            "charges": 0,
+            "chargesMax": 4,
+            "chargeKey": "brainwave",
+            "lifetimeMode": "on_activation",
+            "reactionConfig": {
+              "reaction_config_table": {},
+              "effect_table": {}
+            }
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 0,
+            "visible": false
+          }
+        },
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
     "name": "Rampart",
     "type": "equippableItem",
     "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
