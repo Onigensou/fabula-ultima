@@ -771,6 +771,54 @@ function canonActionLabel(raw) {
   return _ACTION_LABEL_CANON.get(k) ?? String(raw ?? "").trim();
 }
 
+// AE-driven cap on how many creatures an action may target. The declarative
+// counterpart to the action-LABEL gates above: instead of blocking a whole
+// action type, it limits the BEARER's actions by target arity. Powers the
+// Fatigue Advanced Debuff ("allows only single-target actions") — an AE carries
+//   key "max_action_targets"  value = integer cap (Fatigue → "1")
+// The MINIMUM cap across all active effects wins (two caps both apply). Returns
+// { cap, reason } where reason = the source AE's name (the dim stamp); cap is
+// Infinity when no AE restricts targeting. Mirrors getBlockedActionLabels' per-AE
+// union — a pure change-row marker the BD reads itself, no CSB template field.
+export function getMaxActionTargets(actor) {
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  let cap = Infinity;
+  let reason = null;
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "max_action_targets") continue;
+      const v = Number(ch.value);
+      if (Number.isFinite(v) && v < cap) {
+        cap = v;
+        reason = String(ae?.name ?? "").trim() || "Restricted";
+      }
+    }
+  }
+  return { cap, reason };
+}
+
+// Is an action inherently MULTI-target, judged from its skill_target text
+// ("All Enemy", "Up to three creatures", "Multi (x)", "Two creatures")? Text-only
+// (no formula resolver) — used by the Fatigue picker gate to decide whether the
+// max_action_targets cap blocks this action. Conservative: a formula-count
+// "Up to [SL]" reads as multi (the action is DESIGNED multi-target). Single-target
+// specs ("One Creature", "One Random …", "Self") return false.
+export function skillTargetIsMulti(skillTargetText) {
+  const t = String(skillTargetText ?? "").toLowerCase();
+  if (!t) return false;
+  if (/\ball\b|every|\bmulti\b/.test(t)) return true;
+  const m = t.match(/up to\s+(\d+|\[|\w+)/);
+  if (m) {
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? n > 1 : true;   // formula/word count ⇒ treat as multi
+  }
+  if (/\b(two|three|four|five|2|3|4|5)\b/.test(t)) return true;
+  return false;
+}
+
 // AE-driven turn-action gating. Walks an actor's active effects and collects
 // every change row that disables turn-action type(s) — the engine seam behind
 // the homebrew "action-gating" Advanced Debuffs (Frightened / Silence / Confused

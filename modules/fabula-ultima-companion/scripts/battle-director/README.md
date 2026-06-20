@@ -144,11 +144,11 @@ To prevent the legacy modules' Foundry hook handlers from firing on the director
 - `fabula-initiative-round-announcer` — `preUpdateCombat`, `updateCombat`
 - `fabula-initiative-autoUntarget` — `updateCombat`, `deleteCombat`
 - `creature-defeated-emitter` — `preUpdateActor`, `updateActor` (no `creature_defeated` trigger emit)
+- `auto-defeat` — `updateActor` (the BD-native `defeat-reactor.js` owns HP→0 removal instead; suppressing avoids a double-delete)
 
 **What stays active** (deliberately):
 
 - `auto-crisis-detection` — real Fabula game mechanic, applies Crisis AE at low HP
-- `auto-defeat` — marks tokens defeated when HP hits 0
 - `cutin-receiver` — cinematic UI, harmless
 - All Foundry-native hooks (combat doc lifecycle, etc.)
 

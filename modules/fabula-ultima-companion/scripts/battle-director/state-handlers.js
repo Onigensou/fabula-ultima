@@ -50,7 +50,7 @@ import { rollCheck, checkVsThreshold } from "./check.js";
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
 import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { STANDALONE_TRIGGERS } from "./director-triggers.js";
-import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
+import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
 
@@ -876,6 +876,24 @@ async function resolveAction(director, ar, opts = {}) {
     queuePostResolveTrigger(director, {
       casterActor,
       trigger: "creature_completes_item",
+      payload: payloadForPassives,
+    });
+  }
+
+  // 7b-zp. Zero Power unleash. When the resolving skill carries the
+  //     `isZeroPower` flag (the "this is a Zero Power" checkbox), broadcast
+  //     `creature_unleashes_zero_power` so an ALLY's Zero Trigger reaction
+  //     (Matador's "gain 6 Zero Power when an ally unleashes their Zero Power")
+  //     can fire. Dispatched observer-aware (the trigger is in instance-settle's
+  //     LEDGER_FAMILY) so it reaches allied combatants, not just the caster.
+  //     Subject = the unleasher (payloadForPassives.sourceActorUuid); the matcher
+  //     reads reaction_source "ally" against it (and excludes the caster's own).
+  //     Mirrors the legacy emit (action-execution-core.js:1972) on the BD substrate.
+  const _zpFlag = skill?.system?.props?.isZeroPower;
+  if (_zpFlag === true || String(_zpFlag).toLowerCase() === "true" || String(_zpFlag) === "1") {
+    queuePostResolveTrigger(director, {
+      casterActor,
+      trigger: "creature_unleashes_zero_power",
       payload: payloadForPassives,
     });
   }
@@ -4607,7 +4625,13 @@ const Resolve = {
     // (settleInstance drains each event via the same firePassiveTriggers call).
     try {
       const { settleInstance } = await import("./instance-settle.js");
-      await settleInstance(director, { reason: "resolve" });
+      // recordForReoffer: capture this action's reaction group (+ used-set) so
+      // REACTION_WINDOW can drain any queued free actions and re-offer the
+      // remaining reactions (deferred-action → return-to-reaction-phase loop).
+      // Skip for free actions — a free action's OWN reaction group is offered
+      // here but its re-offer loop is owned by the parent's REACTION_WINDOW
+      // (whose resolveDetour frame snapshots these fields across the drain).
+      await settleInstance(director, { reason: "resolve", recordForReoffer: !topIsFreeAction(director.ctx) });
     } catch (e) {
       warn("RESOLVE: settleInstance threw", e);
     }
@@ -4659,18 +4683,75 @@ const OpportunityWindow = {
 };
 
 // ─── REACTION_WINDOW ───────────────────────────────────────────────────
-// v1 stub: no reactions fire. Just pass through.
-// A real implementation runs MATCH → PASSIVE → MANUAL → DRAIN here.
+// Post-action-card reaction window. The action's FORCED + first ASK offer
+// already ran inside RESOLVE (settleInstance); this state owns the part that
+// was missing: when a post-resolve reaction queued a free action (Counterattack
+// etc.), drain it through FREE_ACTION_WINDOW and then RE-OFFER the remaining
+// reactions, looping until the queue stops refilling. This mirrors the
+// STANDALONE_REACTION_WINDOW ⇄ FREE_ACTION_WINDOW loop that lifecycle triggers
+// already have, extending it to every reaction group outside the action card.
+//
+// Three entry modes (distinguished by the continuation-stack top):
+//   - `freeAction:*` on top → we're mid free-action sub-flow (a free action's
+//     own RESOLVE landed here). Route straight back to FAW so it pops its frame
+//     and drains/exits — do NOT run the re-offer loop (the parent owns it).
+//   - `resolveDetour:*` on top → re-entry after a queued free action drained.
+//     Pop (restores _reactionWindowTriggers + _postResolveUsed), re-offer the
+//     remaining reactions, then fall through to the queue check.
+//   - neither (first entry from RESOLVE) → fall through to the queue check.
 const ReactionWindow = {
   async onEnter(director) {
-    log("REACTION_WINDOW — v1 stub, no reactions in prototype");
-    // Tiny delay to demonstrate the FSM is genuinely waiting in this state.
-    // Routes through director.timers so stop() guarantees cleanup.
-    director.timers.setTimeout(
-      () => director.dispatch({ type: INTENTS.INTERNAL_DONE }),
-      100,
-      { label: "reactionWindow:stubDelay" }
-    );
+    const ctx = director.ctx;
+
+    // Mid free-action sub-flow — the table routes REACTION_WINDOW → FAW on
+    // topIsFreeAction. Let it: FAW pops the frame and drains the next request
+    // (or exits to the resolveDetour frame underneath).
+    if (topIsFreeAction(ctx)) {
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
+
+    // Re-entry after a free action drained — pop our detour frame (restores the
+    // captured trigger group + used-set) and re-offer the remaining reactions.
+    if (topIsResolveDetour(ctx)) {
+      popFrame(director);
+      try {
+        const { reofferPostResolveReactions } = await import("./instance-settle.js");
+        await reofferPostResolveReactions(director, {
+          triggers: ctx._reactionWindowTriggers ?? [],
+        });
+      } catch (e) { warn("REACTION_WINDOW: re-offer threw", e); }
+    }
+
+    // If a reaction (first offer in RESOLVE, or the re-offer above) queued a
+    // free action, detour through FAW and resume HERE when it drains. The frame
+    // snapshots the trigger group + used-set so the free action's own RESOLVE
+    // can't clobber them (it populates its own copies, restored on our pop).
+    try {
+      const { freeActionQueue } = await import("./free-action-queue.js");
+      if (!freeActionQueue.isEmpty()) {
+        log(`REACTION_WINDOW: ${freeActionQueue.size()} free-action request(s) pending → detour through FREE_ACTION_WINDOW → re-offer on completion`);
+        pushFrame(director, {
+          reason: "resolveDetour:postResolve",
+          resumeAt: STATES.REACTION_WINDOW,
+          fieldsToSnapshot: ["_reactionWindowTriggers"],
+        });
+        try {
+          const sawPhase = rewindPhaseLabel(ctx, director.dCombat?.round);
+          await saveDirectorState(director, {
+            label: `${sawPhase} · reaction action pending`,
+            description: `${freeActionQueue.size()} free action(s) queued by a reaction; awaiting drain`,
+          });
+        } catch (e) { warn("REACTION_WINDOW: pre-FAW save failed", e); }
+        await director.transitionTo(STATES.FREE_ACTION_WINDOW);
+        return;
+      }
+    } catch (e) {
+      warn("REACTION_WINDOW: free-action queue check threw", e);
+    }
+
+    // Queue empty and nothing more to offer — the reaction window is done.
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
   },
 };
 
@@ -4681,6 +4762,11 @@ const Cleanup = {
     director.ctx.actionResult = null;
     director.ctx.currentWeapon = null;
     director.ctx.reactionDepth = 0;
+    // Post-resolve reaction-window state is per action resolution — clear it so
+    // the next action (incl. the next two-weapon pass) starts with a fresh
+    // reaction group. The REACTION_WINDOW loop has fully drained by the time we
+    // reach CLEANUP.
+    director.ctx._reactionWindowTriggers = null;
 
     // Multi-pass attacks (Two-Weapon Fighting): if more passes remain in
     // the queue, we keep declaredCommand / eligibleTargets / attackMode
@@ -4933,6 +5019,12 @@ const StandaloneReactionWindow = {
               const { sweepCrisis } = await import("./crisis-reactor.js");
               await sweepCrisis(director);
             } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} crisis sweep threw`, e); }
+            // Remove eligible enemies that begin combat already at 0 HP — the
+            // event-driven defeat reactor only fires on HP changes.
+            try {
+              const { sweepDefeat } = await import("./defeat-reactor.js");
+              await sweepDefeat(director);
+            } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} defeat sweep threw`, e); }
           }
           // FORCED pass — auto-fire force/on (Burn commits + populates the
           // ledger; action-creating grants like High Speed enqueue freeActionQueue).
@@ -5114,6 +5206,12 @@ const FreeActionWindow = {
       hrAsZero:         req.hrAsZero === true,
       sourceLabel:      req.sourceLabel,
       sourceItemUuid:   req.sourceItemUuid,
+      // Compose-style restrictions threaded from the free_action row: a Skill/Spell
+      // menu allow-list (Counter Pass → only Passes) and a forced target the composed
+      // action must hit (the triggering enemy). Both null when unset. composeSkill
+      // reads allowedSkillRefs; the targeting step reads lockedTargetTokenUuid.
+      allowedSkillRefs:      req.allowedSkillRefs ?? null,
+      lockedTargetTokenUuid: req.lockedTargetTokenUuid ?? null,
       // free_action preset (null for compose-style free_mode grants): a fully
       // determined action bundle. DECLARE reads this to skip composeAction and
       // stage the exact action directly. See applyFreeActionEffect.

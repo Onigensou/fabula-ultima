@@ -4230,6 +4230,19 @@ export async function postActionCard({ director, kind, payload }) {
       const pills = list ? Array.from(list.querySelectorAll(".fud-bf-reaction-pill")) : [];
       const fresh = pills.slice(-cands.length);
 
+      // Re-lock Confirm for each freshly-injected ACTIONABLE (ask) pill. A
+      // cascade / targeted-injection pill can appear AFTER the player already
+      // cleared the initial pending count (e.g. a redirect/shield brought a new
+      // creature in, exposing its "when targeted" reaction) — without bumping the
+      // card's data-fud-reactions-pending counter the Confirm button would stay
+      // clickable while the new reaction still awaits a decision. Mirrors
+      // initialPending (= count of ask pills); commitPillDecisionDom decrements it.
+      const freshPending = fresh.filter((el) => el?.dataset?.fudReactionPending === "1").length;
+      if (freshPending > 0 && card) {
+        const current = Number(card.dataset.fudReactionsPending ?? 0);
+        card.dataset.fudReactionsPending = String(current + freshPending);
+      }
+
       const GROW_MS = 260;   // pill unfolds (its real height drives the reflow)
       const GLOW_MS = 1500;  // settle glow, right after the grow
 

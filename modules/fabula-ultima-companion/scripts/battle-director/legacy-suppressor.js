@@ -18,9 +18,12 @@
 //
 // What we DO NOT suppress (kept active by design):
 //   - auto-crisis-detection — real game mechanic, harmless to keep
-//   - auto-defeat            — marks tokens defeated, fine
 //   - cutin-receiver         — cinematic UI, harmless
 //   - free-action-state      — director ignores it, harmless
+//
+// auto-defeat IS suppressed: while the director runs, the BD-native defeat
+// reactor (defeat-reactor.js) owns the removal pipeline behind the same gates,
+// so the legacy updateActor hook must stand down to avoid a double-delete.
 
 import { log, warn } from "./logger.js";
 
@@ -101,6 +104,11 @@ const TARGETS = [
   // ── creature-defeated-emitter.js (emits creature_defeated trigger) ──────
   { hookName: "preUpdateActor",   match: /creature[_-]?defeated|defeatedEmitter/, label: "creature-defeated-emitter:preUpdateActor" },
   { hookName: "updateActor",      match: /creature[_-]?defeated|defeatedEmitter/, label: "creature-defeated-emitter:updateActor" },
+
+  // ── auto-defeat.js (legacy HP→0 removal pipeline) ───────────────────────
+  // Owned by defeat-reactor.js while the director is active; suppress the
+  // legacy updateActor hook so a defeated enemy isn't deleted twice.
+  { hookName: "updateActor",      match: /tryAutoDefeatForActor|AUTO_DEFEAT_REQUEST/, label: "auto-defeat:updateActor" },
 ];
 
 // Snapshot of suppressed entries. Each is { hookName, fn } captured before

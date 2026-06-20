@@ -44,6 +44,7 @@ import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
+import { defeatReactor } from "./defeat-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
@@ -212,9 +213,13 @@ async function start(arg) {
   // settleInstance during every instance settle). Clear first so a restart
   // doesn't stack duplicates. The crisis reactor reconciles each creature's
   // Crisis AE by stored crisis_hp on every hp ledger event — the BD-native
-  // replacement for the retired auto-crisis-detection hook.
+  // replacement for the retired auto-crisis-detection hook. The defeat reactor
+  // runs the removal pipeline (animation → drop combatant → delete token) for
+  // eligible enemies at HP 0 — the BD-native replacement for auto-defeat.js,
+  // which is suppressed while the director is active.
   clearBuiltinReactors();
   registerBuiltinReactor(crisisReactor);
+  registerBuiltinReactor(defeatReactor);
 
   _instance = director;
   try {
@@ -493,6 +498,7 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // mid-combat reload, so creatures dropping below crisis_hp get no Crisis AE.
   clearBuiltinReactors();
   registerBuiltinReactor(crisisReactor);
+  registerBuiltinReactor(defeatReactor);
 
   _instance = director;
 

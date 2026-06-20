@@ -421,6 +421,158 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Shield redirect (effect_kind: "shield_redirect") — Illusory Shield ────────
+// A Phantasm "takes the place" of a threatened ally. Unlike redirect_target
+// (which REPLACES the victim's slot), this ADDS the phantasm as a new target
+// slot (re-derived vs its own affinity, like add_target) AND keeps the defended
+// slot, recording a `shieldLink` between them. The actual PV-capped split —
+// phantasm soaks damage up to its remaining PV (= current HP), overflow passes
+// to the defended creature, and the defended creature's on-hit statuses are
+// nullified — is applied in applyShieldSplit AFTER the per-target recompute,
+// because it depends on the recomputed phantasm damage (its affinity/DR).
+//   row: { effect_kind: "shield_redirect",
+//          target_ref: <threatened ally>, destination_ref: <own_summons phantasm> }
+// Returns "applied" | "cancelled" (player aborted a picker) | "failed".
+async function applyShieldRedirectMutation(ctx, cand, row) {
+  const reactorUuid = cand.reactorActorUuid;
+  if (!reactorUuid) { warn("shield_redirect: missing reactor on candidate"); return "failed"; }
+  const reactor = await fromUuid(reactorUuid);
+  if (!reactor) { warn(`shield_redirect: reactor ${reactorUuid} not resolvable`); return "failed"; }
+  const reactorTok = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === reactor.uuid)?.document
+    ?? reactor?.getActiveTokens?.()?.[0]?.document ?? null;
+
+  const targetRef = String(row?.target_ref ?? "").trim();
+  const destRef   = String(row?.destination_ref ?? "").trim();
+  if (!targetRef || !destRef) {
+    warn(`shield_redirect: row "${row?.effect_label}" needs both target_ref (defended) and destination_ref (phantasm)`);
+    return "failed";
+  }
+
+  // ── DEFENDED: the threatened ally (the slot we shield). Reuse the redirect
+  // subject resolver (caches the pick so a re-recompute pass doesn't re-prompt). ──
+  cand._pickerCancelled = false;
+  const defendedUuids = await resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx });
+  if (cand._pickerCancelled) return "cancelled";
+  const defendedUuid = defendedUuids[0];
+  if (!defendedUuid) return "failed";
+  const defIdx = ctx.targets.findIndex((t) => t?.actorUuid === defendedUuid);
+  if (defIdx === -1) { warn(`shield_redirect: defended ${defendedUuid} not in target set`); return "failed"; }
+
+  // ── PHANTASM: pick one own summon (cache on the candidate like redirect dest). ──
+  let phantActorUuid = cand.pickedShieldPhantasmUuid ?? null;
+  let phantTokDoc = null;
+  if (!phantActorUuid) {
+    const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+    const chainCtx = makeBdChainContext({
+      reactorActor: reactor,
+      reactorToken: reactorTok,
+      skill: carrier,
+      actionTargetUuids: (ctx.ar?.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
+      payload: { sourceActorUuid: ctx.ar?.attackerActorRef ?? null },
+      isPassive: false,   // a real choice — prompt when more than one phantasm
+      remotePrompt: ctx.remotePrompt ?? null,
+    });
+    const resolved = await resolveBdTargetRef(destRef, chainCtx);
+    if (resolved?.cancelled) { cand._pickerCancelled = true; return "cancelled"; }
+    const tok = resolved?.tokens?.[0];
+    if (!resolved?.ok || !tok?.actor) {
+      log(`shield_redirect: no phantasm available for ${cand.carrierName} (${resolved?.reason ?? "empty"})`);
+      return "failed";
+    }
+    phantActorUuid = tok.actor.uuid;
+    phantTokDoc = tok.document ?? tok;
+    cand.pickedShieldPhantasmUuid = phantActorUuid;
+  }
+  if (!phantTokDoc) {
+    phantTokDoc = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === phantActorUuid)?.document
+      ?? (await fromUuid(phantActorUuid).catch(() => null))?.getActiveTokens?.()?.[0]?.document ?? null;
+  }
+  const phantActor = await fromUuid(phantActorUuid).catch(() => null);
+  if (!phantActor || !phantTokDoc) { warn("shield_redirect: phantasm actor/token unresolved"); return "failed"; }
+
+  // Don't interpose the same phantasm twice (e.g. a re-recompute pass, or the
+  // phantasm is itself an action target).
+  if (ctx.targets.some((t) => t?.tokenUuid === phantTokDoc.uuid)) {
+    log(`shield_redirect: ${phantActor.name} already in the target set — skipping`);
+    return "failed";
+  }
+
+  // remaining PV = the phantasm's current HP.
+  const pv = Math.max(0, Number(phantActor?.system?.props?.current_hp ?? 0));
+
+  // ── ADD the phantasm as a new slot, re-derived vs its own affinity/DR ──
+  const { applyAffinityToDamage, snapshotTargetForToken } = await import("./snapshot.js");
+  const phantSnap = snapshotTargetForToken(phantTokDoc);
+  const per = (phantSnap && await rederiveTargetRow(ctx.ar, phantSnap))
+    ?? recomputePerTargetForRedirect({ ar: ctx.ar, reactor: phantActor, reactorTok: phantTokDoc, applyAffinityToDamage });
+  const defendedName = ctx.targets[defIdx]?.name ?? "?";
+  const shieldedVia = { via: cand.carrierName ?? "Illusory Shield", reactorName: reactor.name, shielding: defendedName };
+  per.shieldedVia = shieldedVia;
+  ctx.targets.push({
+    ...(phantSnap ?? {
+      actorUuid: phantActor.uuid, tokenUuid: phantTokDoc.uuid, name: phantActor.name,
+      tokenImg: phantTokDoc.texture?.src ?? phantActor.img, disposition: phantTokDoc.disposition, defense: per.defense,
+    }),
+    shieldedVia,
+  });
+  ctx.perTargets.push(per);
+
+  (ctx.shieldLinks ??= []).push({
+    phantasmTokenUuid: phantTokDoc.uuid,
+    phantasmActorUuid: phantActor.uuid,
+    phantasmName: phantActor.name,
+    defendedTokenUuid: ctx.targets[defIdx]?.tokenUuid ?? null,
+    defendedActorUuid: defendedUuid,
+    defendedName,
+    pv,
+    via: cand.carrierName ?? "Illusory Shield",
+  });
+  log(`shield_redirect: ${phantActor.name} (PV ${pv}) interposes for ${defendedName}; overflow → ${defendedName} forced (via ${shieldedVia.via})`);
+  return "applied";
+}
+
+// PV-capped split for every shield_redirect link, applied AFTER the per-target
+// recompute (it needs the recomputed phantasm damage). For each link:
+//   - the phantasm takes the hit NORMALLY (its DEF/MDEF + affinity already applied
+//     by the recompute) and soaks min(incoming, PV); overflow = max(0, incoming −
+//     PV). It stays in the hit list, so as the new hit target it can take the
+//     attack's on-hit statuses.
+//   - the OVERFLOW passes to the DEFENDED creature ("remaining damage goes to the
+//     defended creature"), applied FORCED: a forced hit (bypasses the defended
+//     creature's own DEF/MDEF — the attack rolled against the phantasm, not it) +
+//     neutral affinity (raw — no resist/vulnerable/absorb on the passthrough).
+//     The defended creature is dropped from the hit list so the attack's on-hit
+//     statuses are nullified for it (only-defended-escapes-statuses).
+// Returns fresh { perTargetResults, hitTokenUuids }.
+// Exported for the headless unit harness (pure function — no Foundry deps).
+export function applyShieldSplit(perTargetResults, hitTokenUuids, shieldLinks) {
+  const rows = Array.isArray(perTargetResults) ? perTargetResults.map((r) => ({ ...r })) : [];
+  let hits = Array.isArray(hitTokenUuids) ? [...hitTokenUuids] : null;
+  for (const link of shieldLinks ?? []) {
+    const phantRow = rows.find((r) => r.tokenUuid === link.phantasmTokenUuid);
+    if (!phantRow) continue;
+    const incoming = phantRow.hit ? Math.max(0, Number(phantRow.damage) || 0) : 0;
+    const absorbed = Math.min(incoming, Math.max(0, Number(link.pv) || 0));
+    const overflow = Math.max(0, incoming - absorbed);
+    // Phantasm soaks up to its PV (stays in the hit list → can take statuses).
+    phantRow.damage = absorbed;
+    phantRow.shieldAbsorbed = absorbed;
+    // Defended creature: takes the overflow, FORCED (bypasses its DEF/MDEF) and
+    // RAW (neutral affinity); statuses nullified (dropped from the hit list).
+    const defRow = rows.find((r) => r.tokenUuid === link.defendedTokenUuid);
+    if (defRow) {
+      defRow.damage = overflow;
+      defRow.affinity = "NE";         // raw passthrough — no resist/vulnerable/absorb
+      defRow.hit = overflow > 0;      // forced hit bypasses the defended's DEF/MDEF
+      defRow.element = phantRow.element ?? defRow.element;
+      defRow.shieldedBy = { name: link.phantasmName, absorbed, overflow, via: link.via };
+      if (hits) hits = hits.filter((u) => u !== link.defendedTokenUuid);
+    }
+    log(`shield_redirect split: ${link.phantasmName} soaks ${absorbed}/${link.pv}; overflow ${overflow} → ${link.defendedName} (forced, raw); statuses nullified`);
+  }
+  return { perTargetResults: rows, hitTokenUuids: hits };
+}
+
 // ── Accuracy adjustment (effect_kind: "adjust_accuracy") ─────────────────
 // Action-level mutation: rewrite the in-flight Accuracy Check total, then
 // recompute every target's hit/miss against the new total. The accuracy
@@ -959,6 +1111,17 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
       hitTokenUuids = delta.hitTokenUuids ?? null;
     }
   } catch (e) { warn("applyTargetSetMutation: recompute threw", e); }
+  // Illusory Shield PV-split — applied AFTER the recompute because it depends on
+  // the recomputed phantasm damage (its affinity/DR). Caps each interposing
+  // phantasm at its remaining PV, spills the overflow to the defended creature,
+  // and drops the defended creature from the hit list (nullifying the attack's
+  // on-hit statuses for it; the phantasm, as the new hit target, can still get
+  // them). See applyShieldRedirectMutation + applyShieldSplit.
+  if (Array.isArray(mut.shieldLinks) && mut.shieldLinks.length) {
+    const split = applyShieldSplit(perTargetResults, hitTokenUuids, mut.shieldLinks);
+    perTargetResults = split.perTargetResults;
+    hitTokenUuids = split.hitTokenUuids;
+  }
   // Itemized accuracy roll — computed ONCE here, the single mutation entry every
   // card recompute funnels through, so EVERY consumer (GM card, player mirror,
   // any reaction-driven update) renders the same composed accuracy. Mirrors how
@@ -1053,6 +1216,13 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
         const result = await applyRedirectTargetMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
         else if (result === "cancelled") { cancelled = true; break; }
+      } else if (kind === "shield_redirect") {
+        // Illusory Shield — a Phantasm interposes for a threatened ally. Adds the
+        // phantasm slot + records a shieldLink; the PV-capped split runs in
+        // applyShieldSplit (post-recompute, in applyTargetSetMutation).
+        const result = await applyShieldRedirectMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
+        else if (result === "cancelled") { cancelled = true; break; }
       }
     }
     if (cancelled) break;
@@ -1112,6 +1282,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     accuracyOverride: ctx.accuracyOverride ?? null,
     grantOverride: ctx.grantOverride ?? null,
     costOverride: ctx.costOverride ?? null,
+    shieldLinks: ctx.shieldLinks ?? null,
     negated: false,
   };
 }

@@ -681,6 +681,12 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const wr = String(payload?.weaponRange ?? "").toLowerCase();
         return (wr.includes("mele") || String(payload?.weaponType ?? "").toLowerCase() === "melee") ? 1 : 0;
       }
+      // How far an incoming attack fell SHORT of the defender's Defense
+      // (DEF − accuracy total), threaded onto the creature_miss_action payload by
+      // the §7d emit. Matador's Fancy Footwork gates on it: "if their Accuracy
+      // check is at least 【6 − SL】 lower than your Defense" → `MISS_MARGIN >= 6 - SL`.
+      // 0 when no margin is in the payload (so a `>= n` gate fails closed).
+      case "MISS_MARGIN": return Number(payload?.missMargin ?? 0) || 0;
       // ARCANE is a weapon FAMILY (not a range), so it correctly reads weaponType.
       case "ATTACK_IS_ARCANE": return String(payload?.weaponType ?? "").toLowerCase() === "arcane" ? 1 : 0;
       // The in-flight action's Accuracy Check total Result (post-roll). Threaded
@@ -978,6 +984,44 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           return effects.filter(
             (e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle
           ).length;
+        }
+        // Dynamic SPECIES_IS_<X> — 1 when the RESOLVER ACTOR's own species
+        // (`system.props.species`, e.g. "HUMANOID") matches <X>, else 0. The
+        // actor-side twin of TARGET_SPECIES_IS_<X> (which reads the trigger
+        // SUBJECT via payload). Because it reads the resolver's actor directly,
+        // it works inside a per-candidate `target_filter` (where actor = the
+        // candidate token) — e.g. Love Potion "only affects Humanoid enemies":
+        // target_filter "SPECIES_IS_HUMANOID == 1". Case-insensitive; underscores
+        // → spaces. Actors with no species prop (PCs) return 0.
+        if (name.startsWith("SPECIES_IS_")) {
+          const needle = name
+            .slice("SPECIES_IS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const species = String(actor?.system?.props?.species ?? "")
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return species && species === needle ? 1 : 0;
+        }
+        // Dynamic RANK_IS_<X> — 1 when the RESOLVER ACTOR's NPC rank
+        // (`system.props.npc_rank`, values "soldier" | "elite" | "champion")
+        // matches <X>, else 0. Twin of SPECIES_IS_<X>; reads the resolver actor,
+        // so it works inside a per-candidate `target_filter` (actor = candidate).
+        // PCs carry no npc_rank → 0. Used by Love Potion's "no effect on Champion"
+        // gate: target_filter "... && RANK_IS_CHAMPION == 0".
+        if (name.startsWith("RANK_IS_")) {
+          const needle = name
+            .slice("RANK_IS_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const rank = String(actor?.system?.props?.npc_rank ?? "")
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          return rank && rank === needle ? 1 : 0;
         }
         // Dynamic TARGET_SPECIES_IS_<X> — 1 when the trigger SUBJECT's species
         // (enemy template `system.props.species`, e.g. "UNDEAD") matches <X>,

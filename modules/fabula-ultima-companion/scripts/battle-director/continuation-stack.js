@@ -83,6 +83,15 @@ export function topIsSrwDetour(ctx) {
   return topReasonStartsWith(ctx, "srwDetour:");
 }
 
+// Top frame is a `resolveDetour:` marker — pushed by REACTION_WINDOW when a
+// post-resolve (post-action-card) reaction queued a free action and we detour
+// through FREE_ACTION_WINDOW to drain it. Mirrors srwDetour for the lifecycle
+// (SRW) loop: the post-resolve reaction window re-enters itself after the
+// queued action(s) resolve so it can re-offer the remaining reactions.
+export function topIsResolveDetour(ctx) {
+  return topReasonStartsWith(ctx, "resolveDetour:");
+}
+
 // Walk the stack bottom-up and return the trigger label of the
 // outermost `srwDetour:` frame (e.g. "conflict_start", "turn_start").
 // Returns null if no SRW frame is present.

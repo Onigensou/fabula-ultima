@@ -46,6 +46,11 @@ const LEDGER_FAMILY = new Set([
   // ANOTHER creature's defeat (Phantasmal Echo: recover MP when MY phantasm is
   // shattered), gated by the row's condition_formula (SUBJECT_IS_MY_PHANTASM).
   "creature_defeated",
+  // creature_unleashes_zero_power is a BROADCAST — an ALLY reacts to the
+  // caster unleashing a Zero Power (Matador's Zero Trigger: gain 6 ZP). Must
+  // fan out observer-aware so it reaches allied combatants, not just the caster;
+  // the row's reaction_source "ally" matches the unleasher (and excludes self).
+  "creature_unleashes_zero_power",
 ]);
 
 export function registerBuiltinReactor(fn) {
@@ -56,10 +61,33 @@ export function clearBuiltinReactors() {
   BUILTIN_REACTORS.length = 0;
 }
 
-export async function settleInstance(director, { reason = "", maxIters = 8 } = {}) {
+export async function settleInstance(director, { reason = "", maxIters = 8, recordForReoffer = false } = {}) {
   const ctx = director?.ctx;
   if (!ctx) return { reason, iters: 0, fired: 0 };
   if (!Array.isArray(ctx._postResolveTriggers)) ctx._postResolveTriggers = [];
+
+  // Re-offer recording — the RESOLVE caller (post-action-card reactions) sets
+  // recordForReoffer so REACTION_WINDOW can re-offer this action's reaction
+  // group after a queued free action drains (the deferred-action → return-to-
+  // reaction-phase loop). We snapshot the ACTION-LEVEL trigger configs only
+  // (the initial batch queued by resolveAction — not the transient ledger
+  // cascade) in a persistence-safe shape (actor UUID, not the live doc).
+  //
+  // No used-set: the re-offer re-collects candidates fresh, so a REPEATABLE
+  // reaction (Counter Pass — pay Adoration each time) re-offers while affordable
+  // and auto-skips once its cost/condition gate fails. A permanent "used" stamp
+  // would defeat exactly the chain-react fantasy this loop exists for. The loop
+  // terminates on Pass (no fire, no queue) or when nothing remains affordable.
+  // Lifecycle (SRW) callers leave this false — SRW owns its own re-offer loop.
+  if (recordForReoffer) {
+    ctx._reactionWindowTriggers = ctx._postResolveTriggers
+      .map((cfg) => ({
+        trigger: cfg?.trigger ?? null,
+        payload: cfg?.payload ?? null,
+        casterActorUuid: cfg?.casterActor?.uuid ?? null,
+      }))
+      .filter((c) => c.trigger);
+  }
 
   // Dynamic import keeps the cross-module hop cache-bust-friendly and avoids
   // any load-order coupling with the (large) skill-effects module.
@@ -144,4 +172,66 @@ export async function settleInstance(director, { reason = "", maxIters = 8 } = {
     log(`settleInstance(${reason}): ${iters} pass(es), ${fired} reaction(s) fired`);
   }
   return { reason, iters, fired };
+}
+
+// Resolve a reactor actor's canvas token for menu anchoring. Prefers the
+// active-scene placeable (the menu anchors on token.center); null when the
+// reactor isn't on the current canvas (off-scene → no menu, skip).
+function resolveReactorToken(actor) {
+  if (!actor) return null;
+  return canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
+}
+
+// Re-offer the post-resolve (post-action-card) reaction group after a queued
+// free action has drained — the "return to step 1" half of the deferred-action
+// loop. Mirrors settleInstance's FIRST offer but:
+//   - ASK ONLY (`phase: "ask"`) — the forced/cascade pass already committed in
+//     RESOLVE; re-running it would double-fire Burn/charges/crisis.
+//   - re-dispatches only the ACTION-LEVEL triggers (`triggers`, captured by
+//     settleInstance's recordForReoffer) — not the transient ledger cascade.
+//   - no skip set — candidates are re-collected fresh each pass, so a repeatable
+//     reaction re-offers while affordable and the menu auto-skips once its cost/
+//     condition gate fails (dispatchReactionMenu's allUnavailable guard). The
+//     reaction's OWN cost (consume_charge) is what bounds the chain, not engine
+//     bookkeeping.
+// Returns `{ fired }` — the count that fired this pass. The caller (REACTION_
+// WINDOW) loops while the free-action queue keeps refilling.
+export async function reofferPostResolveReactions(director, { triggers } = {}) {
+  const ctx = director?.ctx;
+  if (!ctx || !Array.isArray(triggers) || !triggers.length) return { fired: 0 };
+  const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+  let fired = 0;
+
+  for (const cfg of triggers) {
+    if (!cfg?.trigger) continue;
+    try {
+      if (LEDGER_FAMILY.has(cfg.trigger)) {
+        // Observer-aware: walk every live reactor (a creature other than the
+        // event subject may match), exactly as settleInstance does.
+        const reactors = await collectReactors(director);
+        for (const { actor, token } of reactors) {
+          const r = await dispatchReactionMenu({
+            director, reactor: actor, token,
+            trigger: cfg.trigger, payload: cfg.payload, phase: "ask",
+          });
+          fired += (r?.fired?.length ?? 0);
+        }
+      } else {
+        // Subject-scoped — re-offer to the recorded caster only.
+        const reactor = cfg.casterActorUuid ? await fromUuid(cfg.casterActorUuid).catch(() => null) : null;
+        if (!reactor) continue;
+        const token = resolveReactorToken(reactor);
+        if (!token) continue;
+        const r = await dispatchReactionMenu({
+          director, reactor, token,
+          trigger: cfg.trigger, payload: cfg.payload, phase: "ask",
+        });
+        fired += (r?.fired?.length ?? 0);
+      }
+    } catch (e) {
+      warn(`reofferPostResolveReactions: dispatch threw for ${cfg.trigger}`, e);
+    }
+  }
+  if (fired) log(`reofferPostResolveReactions: ${fired} reaction(s) re-offered + fired`);
+  return { fired };
 }

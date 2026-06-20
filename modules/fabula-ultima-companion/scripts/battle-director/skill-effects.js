@@ -2827,6 +2827,11 @@ const EFFECT_KIND_DISPATCH = {
   // extensible slot: new keywords add one option + one recompute branch.
   apply_action_keyword: (row) => ({ ok: true, kind: "apply_action_keyword", applied: [], reason: "applied-at-damage-recompute" }),
   redirect_target:     (row) => ({ ok: true, kind: "redirect_target", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // Illusory Shield: a Phantasm interposes for a threatened ally. The slot add +
+  // PV-capped damage split + status-nullification all happen in the card-mutation
+  // phase (card-mutations.applyShieldRedirectMutation + applyShieldSplit), so the
+  // chain step itself is a no-op here — exactly like redirect_target.
+  shield_redirect:     (row) => ({ ok: true, kind: "shield_redirect", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
   // adjust_defense: the DEFENDER-side twin of adjust_accuracy. A
   // creature_targeted_by_action reaction on the TARGET raises its OWN effective
@@ -2899,6 +2904,7 @@ export const EFFECT_KIND_LABELS = {
   change_damage_element: "Change Damage Element (override in-flight element)",
   apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
+  shield_redirect:     "Shield Redirect (Phantasm interposes; PV-capped soak, overflow to ally)",
   adjust_accuracy:     "Adjust Accuracy",
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
@@ -3035,6 +3041,7 @@ const EFFECT_KIND_PREVIEW = {
   substitute_cost: () => null,
   adjust_damage: () => null,
   redirect_target: () => null,
+  shield_redirect: () => null,
   adjust_accuracy: () => null,
   negate_action: () => null,
 };
@@ -5568,6 +5575,14 @@ async function applyFreeActionEffect(row, ctx) {
     enabledLabels = [preset.command];
   }
 
+  // Optional skill allow-list — restrict a COMPOSE-style free action's Skill/Spell
+  // menu to a specific set of skills (by NAME or by UUID). The reusable seam behind
+  // "perform a <subset> action as a free action" (Matador's Counter Pass → only
+  // Passes). Comma/newline list; matched case-insensitively against each candidate's
+  // name AND uuid in the picker. Empty = no restriction (any skill of the enabled type).
+  const allowedSkillRefs = String(row.allowed_skill_refs ?? "")
+    .split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+
   const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
   freeActionQueue.enqueue({
     reactorActorId:   reactor.id,
@@ -5577,7 +5592,12 @@ async function applyFreeActionEffect(row, ctx) {
     sourceLabel,
     sourceItemUuid: ctx.skill?.uuid ?? null,
     maxMpCost,
-    lockedTargetTokenUuid: null,
+    // Forced target (e.g. Counter Pass "must target the triggering enemy"): the
+    // first token resolved from row.target_ref. Carried to the grant so the
+    // composed action can pre-target it. null when the row sets no target_ref.
+    lockedTargetTokenUuid: presetTargetTokenUuids?.[0] ?? null,
+    // Skill menu allow-list (compose-style only). Empty array = unrestricted.
+    allowedSkillRefs: allowedSkillRefs.length ? allowedSkillRefs : null,
     preset,                                    // null = compose; set = staged directly in DECLARE
     // chain: this free action is a CHAIN strike, not a "free attack" — it
     // BYPASSES preventFreeAttack (a "no Free Attacks" debuff must not stop a

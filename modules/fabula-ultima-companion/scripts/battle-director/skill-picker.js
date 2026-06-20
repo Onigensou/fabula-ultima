@@ -15,6 +15,7 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { analyzeChainCost } from "./skill-effects.js";
 import { pickFromList, ListPicker } from "./list-picker.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { getMaxActionTargets, skillTargetIsMulti } from "./snapshot.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -254,6 +255,17 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
       }
     } catch (e) { warn("skill-picker: availability_formula threw", e); }
   }
+  // Single-target restriction (Fatigue Advanced Debuff). When the caster carries
+  // a `max_action_targets` cap below 2 and this action is inherently multi-target
+  // (All / Up to N>1 / Multi), dim it with the source-AE name — the same disabled
+  // + reason treatment as an availability block ("you may only perform single-
+  // target actions"). Single-target skills are unaffected.
+  if (!unavailableReason) {
+    const { cap, reason } = getMaxActionTargets(actor);
+    if (cap < 2 && skillTargetIsMulti(p.skill_target)) {
+      unavailableReason = reason || "Restricted";
+    }
+  }
   return {
     uuid: skill.uuid,
     id: skill.id,
@@ -389,13 +401,23 @@ export async function pickSkill({
   // classified intent is in this map are shown DIMMED + labelled with the reason
   // (NOT hidden), matching the disabled-menu style. Null/empty = no filtering.
   excludeIntents = null,
+  // Free-action skill allow-list (Counter Pass → only Passes). Array of skill
+  // NAMES and/or UUIDs; when set, only matching skills appear in the menu. Null =
+  // unrestricted. The reusable counterpart to the action-TYPE filter — lets a
+  // free action offer a named SUBSET of skills without hardcoding which.
+  allowedRefs = null,
 }) {
   const all = await gatherSkillsForActor(actor);
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
   // but their behavior is entirely triggered (reaction_config_table, no active
   // body), so they aren't turn-actions and would be a no-op if picked.
-  const candidates = filterBySkillTypes(all, allowedSkillTypes)
+  let candidates = filterBySkillTypes(all, allowedSkillTypes)
     .filter((c) => !c.isReactionOnly);
+  if (Array.isArray(allowedRefs) && allowedRefs.length) {
+    const wanted = new Set(allowedRefs.map((r) => String(r).trim().toLowerCase()));
+    candidates = candidates.filter((c) =>
+      wanted.has(String(c.name ?? "").trim().toLowerCase()) || wanted.has(String(c.uuid ?? "").toLowerCase()));
+  }
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {
       if (excludeIntents.has(c.intent)) c._intentDisabled = excludeIntents.get(c.intent) || "Disabled";

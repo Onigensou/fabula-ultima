@@ -41,7 +41,7 @@ import { pickSkill } from "./skill-picker.js";
 import { pickItem } from "./item-picker.js";
 import { getLinkedSkillUuid } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
-import { buildSkillResolver } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { extractTargetCountFromText } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
@@ -671,12 +671,34 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     : wantsEnemy    ? "enemy"
     : wantsAllyText ? "ally"
     : (intent === "aid" ? "ally" : "enemy");
-  const targetList = side === "any"
+  let targetList = side === "any"
     ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
     : (side === "ally" ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
   const categoryLabel = side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies");
+
+  // Optional per-candidate eligibility filter (skill prop `target_eligibility`):
+  // a formula evaluated against EACH candidate's own actor; keep only the truthy
+  // ones. Restricts WHO the picker offers, so an ineligible creature can't be
+  // selected at all (vs an effect-level guard that fizzles after the fact).
+  // Same predicate language as the effect-level targeting `target_filter`
+  // (skill-targeting.js) — named differently because that one is an effect_table
+  // ROW column; this is a top-level _Skill Template column ("Eligibility Filter").
+  // First user: Love Potion → Humanoid non-Champions only
+  // ("SPECIES_IS_HUMANOID == 1 && RANK_IS_CHAMPION == 0").
+  const targetFilter = String(source?.system?.props?.target_eligibility ?? "").trim();
+  if (targetFilter && targetList.length) {
+    const kept = [];
+    for (const cand of targetList) {
+      let candActor = null;
+      try { candActor = (await fromUuid(cand.tokenUuid))?.actor ?? null; } catch { /* unresolved → drop */ }
+      const r = buildSkillResolver({ actor: candActor, payload: null, skill: source, round: director?.dCombat?.round ?? 0 });
+      if (Number(evaluateFormula(targetFilter, r, 0)) > 0) kept.push(cand);
+    }
+    targetList = kept;
+  }
+
   if (!targetList.length) {
-    ui.notifications?.warn(`No eligible ${categoryLabel} on this scene.`);
+    ui.notifications?.warn(`No eligible ${categoryLabel} for ${source.name}.`);
     return { cancelled: true, reason: "no targets" };
   }
 
@@ -801,6 +823,12 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   // Charm/Domination) DIMS + labels aid/neutral entries (shown, not hidden).
   // Map intent→reason so the picker can stamp the source-AE name on dimmed rows.
   const excludeIntents = new Map((snap?.disabledActionIntents ?? []).map((d) => [d.intent, d.reason]));
+  // Free-action skill allow-list (Counter Pass → only Passes): when this Skill
+  // compose is running inside a free action whose grant carries allowedSkillRefs,
+  // restrict the menu to those skills (matched by name OR uuid). Null on a normal
+  // turn or an unrestricted free action.
+  const grant = freeActions.get(snap.actorId);
+  const allowedRefs = grant?.allowedSkillRefs ?? null;
   const pick = await raceCancel(
     pickSkill({
       director,
@@ -812,6 +840,7 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
         : `${actor.name ?? "Combatant"} has no Active skills available.`,
       externalCancel: cancelSentinel,
       excludeIntents,
+      allowedRefs,
     }),
     cancelSentinel,
   );
