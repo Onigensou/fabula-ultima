@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, resolvePrimaryAttackWeapon } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -293,6 +293,17 @@ async function resolveAction(director, ar, opts = {}) {
   // 1. Debit cost (unless an outer flow paid out-of-band).
   if (!skipCost) {
     const costMap = new Map(Object.entries(ar.costSerialized ?? {}));
+    // adjust_cost discount (Hypercognition) for NATIVE-cost spells (top-level
+    // `cost` prop → costSerialized). In-chain consume_resource costs are discounted
+    // in skill-effects.consumeResourceApply; this branch covers Detonate/Numen-style
+    // native MP. Signed per-resource delta, clamped >= 0.
+    const _co = ar.costOverride;
+    if (_co) {
+      for (const [res, delta] of Object.entries(_co)) {
+        if (res === "_parts" || !Number(delta) || !costMap.has(res)) continue;
+        costMap.set(res, Math.max(0, (Number(costMap.get(res)) || 0) + Number(delta)));
+      }
+    }
     if (costMap.size > 0) {
       try {
         const debitRes = await debitCost(casterActor, costMap);
@@ -422,6 +433,10 @@ async function resolveAction(director, ar, opts = {}) {
     // it auto-resolve open_action_menu prompts. Always null in live play.
     harnessPicks: ar?._harnessPicks ?? null,
     harnessNumbers: ar?._harnessNumbers ?? null,
+    // Cost discount from an accepted adjust_cost reaction (Hypercognition). A
+    // MUTABLE copy — in-chain consume_resource rows subtract + decrement it so a
+    // spell's total cost drops once regardless of how many consume rows it has.
+    costOverride: ar?.costOverride ? { ...ar.costOverride } : null,
   });
   // Thread the live action result + view onto ctx so action-level effect_kinds
   // (equip_swap, encyclopedia_record, cover-ally targeting) can read the
@@ -666,12 +681,14 @@ async function resolveAction(director, ar, opts = {}) {
     }
   }
 
-  // 5b. Miss VFX for Check-only skills (no damage — e.g. Zarg's Soul Steal).
-  //     These skip the damage loop above (it's gated on ar.hasDamage), so a
-  //     failed Check would otherwise show no whiff. Fire the Miss flourish for
-  //     each non-hit target. Gated on ar.isCheck because non-check skills
-  //     auto-hit (every perTargetResults entry is hit:true) — nothing to miss.
-  if (!ar.hasDamage && ar.isCheck && hits.length) {
+  // 5b. Miss VFX for can-miss actions with no damage (e.g. Zarg's Soul Steal
+  //     Check). These skip the damage loop above (it's gated on ar.hasDamage),
+  //     so a failed Check would otherwise show no whiff. Fire the Miss flourish
+  //     for each non-hit target. Gated on `ar.canMiss` (single-source capability
+  //     flag) because auto-hit actions can't miss — nothing to whiff. (Damaging
+  //     attacks have their own miss VFX in the damage loop, so hasDamage gates
+  //     them out here.)
+  if (!ar.hasDamage && ar.canMiss && hits.length) {
     for (const r of hits) {
       if (!r.hit) playMissVfx({ tokenUuid: r.tokenUuid });
     }
@@ -881,6 +898,84 @@ async function resolveAction(director, ar, opts = {}) {
         targets: hpLossTargetTokenUuids,
       },
     });
+  }
+
+  // 7d. Per-missed-target `creature_miss_action` (resolution_phase). Fires for
+  //     ANY action that can miss — `ar.canMiss` (single-source capability flag
+  //     stamped in freezeActionResult: weapon Attack OR Check-skill/offensive
+  //     spell). Once per MISSED target ACTOR per action; the per-actor dedup
+  //     means a creature that absorbs multiple missed instances in one action
+  //     (e.g. Protect covering an ally vs an AoE) still reacts ONCE → exactly
+  //     one Adoration Clock fill.
+  //
+  //     DISPATCH MODEL: the reaction is DEFENDER-side — the MISSED creature
+  //     reacts ("an enemy attacks YOU and misses"). We queue with
+  //     `casterActor` = the missed creature so the post-resolve drain dispatches
+  //     to IT (firePassiveTriggers reactor = casterActor). This is subject-
+  //     scoped to that one creature — NOT observer-aware — so an enemy whiffing
+  //     on someone else doesn't fill every ally's clock. The matcher
+  //     (passesMatchFilters) reads `payload.sourceActorUuid` as the event
+  //     subject, so the row uses reaction_source:"enemy" (the ATTACKER is the
+  //     reactor's enemy) — matching the working Fancy Footwork. Drives Matador's
+  //     Adoration fill + Fancy Footwork / Thread the Horns / Counter Pass.
+  if (ar.canMiss && Array.isArray(hits) && hits.length) {
+    const accuracyTotal = Number(ar.roll?.total ?? 0) || 0;
+    const weaponRange   = ar.weapon?.range ?? ar.weapon?.weapon_range ?? null;
+    const isRanged      = weaponRange ? /ranged|distance/i.test(String(weaponRange)) : false;
+    const isMelee       = weaponRange ? /melee/i.test(String(weaponRange)) : false;
+    const seenMissActors = new Set();
+    for (const r of hits) {
+      if (!r || r.hit || r.pierceMiss) continue;            // only genuine misses
+      const dedupKey = r.actorUuid ?? r.tokenUuid;
+      if (dedupKey && seenMissActors.has(dedupKey)) continue; // one event per target actor per action
+      if (dedupKey) seenMissActors.add(dedupKey);
+      // Reactor = the missed creature. Resolve its Actor so the drain dispatches
+      // the reaction to IT (not the attacker).
+      const missedActor = (await fromUuid(r.tokenUuid))?.actor ?? null;
+      if (!missedActor) continue;
+      const defense = Number(r.defense ?? 0) || 0;
+      queuePostResolveTrigger(director, {
+        casterActor: missedActor,
+        trigger: "creature_miss_action",
+        payload: {
+          // subject = the ATTACKER (matcher's reaction_source reads sourceActorUuid)
+          subjectTokenUuid:  ar.attacker?.tokenUuid ?? null,
+          subjectActorUuid:  ar.attackerActorRef,
+          sourceTokenUuid:   ar.attacker?.tokenUuid ?? null,
+          sourceActorUuid:   ar.attackerActorRef,
+          attackerUuid:      ar.attacker?.tokenUuid ?? null,
+          attackerActorUuid: ar.attackerActorRef,
+          // the missed creature (the reactor) — target_ref:"self" effects resolve
+          // to it; carried for margin/melee reads too.
+          targetUuid:        r.tokenUuid,
+          targetTokenUuids:  [r.tokenUuid],
+          targetActorUuid:   r.actorUuid,
+          // Attack-kind actions don't stamp `actionIntent` on the actionResult
+          // (it's set TARGET-side via classifyActionIntent for skills/spells) —
+          // they're harmful by definition. Default it so a fill/counter row with
+          // `reaction_action_intent: "harmful"` passes on a weapon attack too;
+          // mirrors the creature_targeted_by_action dispatch (Protect). Without
+          // this the Adoration Clock fill (+ Fancy Footwork / Thread the Horns /
+          // Counter Pass) silently never fired on a missed basic Attack.
+          actionIntent:      ar.actionIntent ?? (isAttackAction ? "harmful" : null),
+          actionKind:        ar.kind ?? null,
+          sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
+          weaponUuid:        ar.weapon?.uuid ?? null,
+          weaponType:        ar.weapon?.weaponType ?? null,
+          weaponRange,
+          isMelee,
+          isRanged,
+          // accuracy + margin for Fancy Footwork's `missMargin >= 6 - SL` gate.
+          // missMargin = defender DEF − attacker accuracy total (how far short).
+          total:        accuracyTotal,
+          accuracyTotal,
+          defense,
+          missMargin:   defense - accuracyTotal,
+          isCrit:       !!ar.roll?.isCrit,
+          isFumble:     !!ar.roll?.isFumble,
+        },
+      });
+    }
   }
 
   // 8. Action-kind post-resolve triggers (resolveAction-unification). These
@@ -2583,6 +2678,39 @@ const Target = {
         if (hpPaid > 0) displayCost = `${hpPaid} HP · Vismagus`;
       }
 
+      // Weapon-based skills ("perform a jab with your weapon"): any skill prop
+      // set to the sentinel "WEAPON" inherits the value from whatever weapon the
+      // Attack action reaches for FIRST — main hand → off hand → first exposed
+      // virtual attack (e.g. Dual Shieldbearer's Twin Shields). So a Matador Pass
+      // tracks whatever the wielder currently holds. Resolved once here; reused
+      // for the accuracy pair, damage element, and range.
+      const _skillProps = skill.system?.props ?? {};
+      const _usesWeapon = (v) => String(v ?? "").toUpperCase() === "WEAPON";
+      const _wantsWeapon = _usesWeapon(_skillProps.rolled_atr1)
+        || _usesWeapon(_skillProps.type_damage)
+        || _usesWeapon(_skillProps.skill_range);
+      const primaryW = _wantsWeapon ? resolvePrimaryAttackWeapon(attackerActor) : null;
+      if (_wantsWeapon && !primaryW) {
+        warn(`Skill "${skill.name}": a "WEAPON" sentinel is set but ${attackerActor?.name ?? "caster"} has no attack weapon — using fallbacks.`);
+      }
+
+      // Accuracy pair — fall back to MIG/MIG (a weapon skill must never silently
+      // roll the INS/INS default).
+      let skillRolledA1 = String(_skillProps.rolled_atr1 ?? "").toUpperCase();
+      let skillRolledA2 = String(_skillProps.rolled_atr2 ?? "").toUpperCase();
+      if (skillRolledA1 === "WEAPON") {
+        if (primaryW?.A1) {
+          skillRolledA1 = primaryW.A1; skillRolledA2 = primaryW.A2;
+          log(`Skill "${skill.name}": weapon-accuracy → ${primaryW.name} (${primaryW.A1}/${primaryW.A2})`);
+        } else { skillRolledA1 = "MIG"; skillRolledA2 = "MIG"; }
+      }
+      // Damage element — fall back to Physical.
+      let skillDamageType = String(_skillProps.type_damage ?? "");
+      if (_usesWeapon(skillDamageType)) skillDamageType = primaryW?.damageType ?? "Physical";
+      // Range (melee/ranged → feeds the Cover/Flying targeting gates) — fall back to Melee.
+      let skillRangeVal = String(_skillProps.skill_range ?? "");
+      if (_usesWeapon(skillRangeVal)) skillRangeVal = primaryW?.range ?? "Melee";
+
       // 4) Build actionResult. We deliberately do NOT freeze the live
       //    skill doc (circular item.parent refs blow the freeze walk);
       //    only uuids + scalar fields. RESOLVE re-fetches via fromUuid.
@@ -2596,12 +2724,19 @@ const Target = {
         skillType: String(skill.system?.props?.skill_type ?? ""),
         defenseTargetType: String(skill.system?.props?.defense_target_type ?? "").toLowerCase(),
         isCheck: !!skill.system?.props?.isCheck,
-        rolledA1: String(skill.system?.props?.rolled_atr1 ?? "").toUpperCase(),
-        rolledA2: String(skill.system?.props?.rolled_atr2 ?? "").toUpperCase(),
+        rolledA1: skillRolledA1,
+        rolledA2: skillRolledA2,
         checkBonus: Number(skill.system?.props?.check_bonus ?? 0) || 0,
         damageBonus: skill.system?.props?.damage_bonus ?? 0,
-        damageType: String(skill.system?.props?.type_damage ?? ""),
-        skillRange: String(skill.system?.props?.skill_range ?? ""),
+        damageType: skillDamageType,
+        skillRange: skillRangeVal,
+        // Equipped-weapon family/range/element of the wielder's primary attack
+        // weapon (null on non-weapon skills) — exposed for downstream weapon-aware
+        // gates/effects + the card. weaponType holds the Category (sword, dagger,
+        // brawling, arcane, …); weaponRange/weaponElement mirror the resolved range/element.
+        weaponType: primaryW?.weaponType ?? null,
+        weaponRange: primaryW?.range ?? null,
+        weaponElement: primaryW?.damageType ?? null,
         skillTarget: skillTargetText,
         sourceItemUuid: pick.sourceItemUuid ?? null,
         descriptionHtml: String(skill.system?.props?.description ?? ""),
@@ -3178,22 +3313,29 @@ const Compute = {
       // Roll the Check dice here (the RNG); computeActionProfile derives total /
       // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
       let dice = null;
+      let arForProfile = ar;
       if (ar.isCheck) {
         // Roll via the shared check primitive (computeActionProfile re-derives
         // crit/fumble from these dice). Last of the BD's raw roll sites unified.
+        // allowDieSwap lets a Psychokinesis-style check_die_swap replace one die
+        // (e.g. → WLP) pre-roll; the swapped attrs flow into the profile + card.
         const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
-        const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS" });
+        const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS", allowDieSwap: true, director });
         dice = { rA: c.rA, rB: c.rB };
+        if (c.dieSwap) arForProfile = { ...ar, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
       }
       const profile = await computeActionProfile({
-        view, ar, attacker, targets: allTargets, dice,
+        view, ar: arForProfile, attacker, targets: allTargets, dice,
         // chainVars lets the card preview resolve a VAR_<NAME> element (the
         // pre_activate element pick) to its real type instead of "varies".
         ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars },
       });
+      const skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
+      // Surface the check_die_swap note on the roll so the accuracy card shows it.
+      if (arForProfile.dieSwap && skillProj.roll) skillProj.roll = { ...skillProj.roll, dieSwap: arForProfile.dieSwap };
       director.ctx.actionResult = freezeActionResult({
-        ...ar,
-        ...projectProfileToActionResult(profile, ar, allTargets),
+        ...arForProfile,
+        ...skillProj,
         targets: allTargets,
         // Persist the captured pre_activate picks so RESOLVE replays them.
         preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
@@ -3254,10 +3396,13 @@ const Compute = {
         // Roll via the shared check primitive (computeActionProfile re-derives
         // crit/fumble from these dice). Last of the BD's raw roll sites unified.
         const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
-        const c = await rollCheck({ actor: liveActor, A1: weapon.A1, A2: weapon.A2 });
+        const c = await rollCheck({ actor: liveActor, A1: weapon.A1, A2: weapon.A2, allowDieSwap: true, director });
+        // Psychokinesis check_die_swap: a swapped attribute rolls (and displays)
+        // off the new die — override the weapon's accuracy attrs for the profile.
+        const weaponEff = c.dieSwap ? { ...weapon, A1: c.A1, A2: c.A2 } : weapon;
         const profile = await computeActionProfile({
           view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
-          attacker, weapon, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
+          attacker, weapon: weaponEff, targets: targetSnapshots, dice: { rA: c.rA, rB: c.rB },
           ctx: { round: director.dCombat?.round ?? 0, attackMode: director.ctx.attackMode, grant: attackGrant },
         });
         const delta = projectProfileToActionResult(profile, null, targetSnapshots);
@@ -3270,7 +3415,7 @@ const Compute = {
           passIndex: director.ctx.passIndex,
           totalPasses: director.ctx.totalPasses,
           targets: targetSnapshots,
-          roll: delta.roll,
+          roll: c.dieSwap ? { ...delta.roll, dieSwap: c.dieSwap } : delta.roll,
           damage: delta.damage,
           perTargetResults: delta.perTargetResults,
           // The HIT-target token list — drives `hit_action_targets` reactions
@@ -3603,6 +3748,10 @@ const Confirm = {
             targetTokenUuids: allTargetUuids,
             actionIntent: ar.actionIntent ?? "harmful",
             actionKind: ar.kind ?? "Attack",
+            // The casting item's real skill_type ("Spell"/"Skill"/…). actionKind
+            // can't distinguish spell-vs-skill (both stamp ar.kind "Skill"), so
+            // ACTION_IS_SPELL reads this for the precise gate (Hypercognition).
+            actionSkillType: String(ar.skillType ?? "").toLowerCase(),
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
@@ -4141,7 +4290,16 @@ const Confirm = {
       // the action-card preview recompute so the two CANNOT drift.
       let mutatedTargets = liveAr.targets ?? null;
       let recomputedPerTargets = liveAr.perTargetResults ?? null;
+      // The hit list must track a target-set mutation too: a redirect (Protect)
+      // swaps which creature is in a slot, and on-hit rider AEs resolve their
+      // victims via `hit_action_targets` → ar.hitTokenUuids. Without persisting
+      // the recomputed list, HP damage follows the redirect (driven by
+      // perTargetResults) but the rider AE (e.g. Flame Breath's Burn) still
+      // lands on the ORIGINAL target. Default to the live list; override below
+      // only when the recompute produced a fresh one.
+      let recomputedHitTokenUuids = liveAr.hitTokenUuids ?? null;
       let accuracyOverride = null;
+      let costOverride = null;
       let negated = false;
       try {
         const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
@@ -4152,7 +4310,11 @@ const Confirm = {
         if (!r.cancelled) {
           mutatedTargets = r.targets ?? mutatedTargets;
           recomputedPerTargets = r.perTargetResults ?? recomputedPerTargets;
+          // Only adopt a non-null recomputed hit list — a negated action returns
+          // hitTokenUuids: null (hits zeroed separately) and must keep the original.
+          if (Array.isArray(r.hitTokenUuids)) recomputedHitTokenUuids = r.hitTokenUuids;
           accuracyOverride = r.accuracyOverride ?? null;
+          costOverride = r.costOverride ?? null;
           if (r.mutationsApplied > 0 || negated) {
             log(`CONFIRM: target-set mutation — ${r.mutationsApplied} applied${negated ? "; NEGATED" : ""}`);
           }
@@ -4172,10 +4334,12 @@ const Confirm = {
         ...director.ctx.actionResult,
         targets: mutatedTargets,
         perTargetResults: recomputedPerTargets,
+        hitTokenUuids: recomputedHitTokenUuids,
         ...(newDamageType ? { damageType: newDamageType } : {}),
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,
         accuracyOverride,
+        costOverride,
         // negate_action (Shadow Possession) — RESOLVE skips outcome + effect/
         // reaction firing; the per-target hits are already zeroed + Blocked above.
         negated,

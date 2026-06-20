@@ -41,6 +41,7 @@
 //   - `clearAllDirectorStateFlags` clears BOTH state + history together.
 
 import { log, warn } from "./logger.js";
+import { RESOURCE_REGISTRY } from "./resources.js";
 import { DirectorCombat, DirectorCombatant } from "./director-combat.js";
 import { freeActions } from "./free-actions.js";
 import { freeActionQueue } from "./free-action-queue.js";
@@ -334,6 +335,14 @@ export async function saveDirectorState(director, opts = {}) {
         turnsPerRound: c.turnsPerRound,
         turnsRemaining: c.turnsRemaining,
         defeated: c.defeated,
+        // Full token document data so the rewind tool can RECREATE a token
+        // that was deleted since this save (an Illusionist Phantasm shattered,
+        // a `destroy_summon`'d drake, a GM-reaped corpse). For unlinked summon
+        // tokens the toObject carries `delta` (the synthetic actor overrides),
+        // so the recreated token rebuilds its own actor at the saved state.
+        // Null when the live token isn't resolvable at save time (recreation
+        // then isn't possible — same as the pre-tokenData behaviour).
+        tokenData: (() => { try { return c.tokenDoc?.toObject?.() ?? null; } catch { return null; } })(),
       })),
       // Active Guards table is already plain data; round-trip as-is.
       activeGuards: (dc.activeGuards ?? []).map((g) => ({
@@ -435,11 +444,13 @@ async function snapshotCombatantActors(dCombat) {
       tokenUuid: c.tokenUuid ?? actor.token?.uuid ?? null,
       name: actor.name ?? c.name ?? "?",
       props: {
-        // Resources
-        current_hp:     p.current_hp,
-        current_mp:     p.current_mp,
-        current_ip:     p.current_ip,
-        fabula_point:   p.fabula_point,
+        // Resources — every prop in RESOURCE_REGISTRY (single source of truth)
+        // so each restorable resource (HP/MP/IP/Fabula/Zero Power/Zenit/Enmity/
+        // Shield/…) is reversible. Hand-listing missed zero_power_value et al.,
+        // so a rewind left those resources at their post-action value.
+        ...Object.fromEntries(
+          Object.values(RESOURCE_REGISTRY).map((def) => [def.prop, p[def.prop]]),
+        ),
         // Equipment-display fields (mirrors what applyEquipmentSwap writes
         // — kept in sync with equipment-swap.js + the CSB template).
         main_hand:           p.main_hand,
@@ -680,13 +691,31 @@ export async function reconstructDirectorCombat(state, scene) {
   dc.currentTurnResolved = !!state.dCombat.currentTurnResolved;
 
   const droppedNames = [];
+  const recreatedNames = [];
   for (const sc of state.dCombat.combatants ?? []) {
     let tokenDoc = null;
     let actorDoc = null;
     try { tokenDoc = await fromUuid(sc.tokenUuid); } catch {}
+    // Token gone (unsummoned / destroy_summon'd / GM-reaped since the save).
+    // RECREATE it from the snapshot's `tokenData` rather than dropping the
+    // combatant — a faithful rewind must restore the token population, not
+    // just survivor stats. `keepId: true` preserves the token _id so its
+    // uuid (and any activeGuards / currentCombatantId refs) stay valid, and
+    // the recreated unlinked token rebuilds its delta actor from the data.
+    if (!tokenDoc && sc.tokenData) {
+      try {
+        const created = await scene.createEmbeddedDocuments(
+          "Token", [sc.tokenData], { keepId: true },
+        );
+        tokenDoc = created?.[0] ?? null;
+        if (tokenDoc) recreatedNames.push(sc.name ?? sc.tokenUuid);
+      } catch (e) {
+        warn(`reconstruct: token recreate threw for ${sc.name} (${sc.tokenUuid})`, e);
+      }
+    }
     if (!tokenDoc) {
       droppedNames.push(sc.name ?? sc.tokenUuid);
-      warn(`reconstruct: token ${sc.tokenUuid} (${sc.name}) stale, dropping`);
+      warn(`reconstruct: token ${sc.tokenUuid} (${sc.name}) stale and not recreatable, dropping`);
       continue;
     }
     try { actorDoc = await fromUuid(sc.actorUuid); } catch {}
@@ -732,6 +761,9 @@ export async function reconstructDirectorCombat(state, scene) {
     appliedAtRound: g.appliedAtRound,
   }));
 
+  if (recreatedNames.length) {
+    log(`reconstruct: recreated ${recreatedNames.length} deleted token(s): ${recreatedNames.join(", ")}`);
+  }
   if (droppedNames.length) {
     ui.notifications?.warn(`Director resume: ${droppedNames.length} combatant${droppedNames.length === 1 ? "" : "s"} missing (token deleted): ${droppedNames.join(", ")}`);
   }
@@ -831,20 +863,48 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
       catch (e) { warn(`restore: AE create threw on ${actor.name}`, e); }
     }
 
-    // 2c. Update AEs that exist on both: only push if `disabled`
-    //     differs. We intentionally don't try to merge `changes`,
-    //     `duration`, etc. — those mutate via Foundry's own update
-    //     paths and a Foundry update with stale data would clobber
-    //     legitimate in-flight changes. The most common rewind case
-    //     is a toggled status (Guard expired, Wet was applied) which
-    //     `disabled` covers; deeper rewinds re-create via 2a/2b.
+    // 2c. Update AEs that exist on both: reconcile `disabled` AND the
+    //     charge count. We still don't merge `changes` / `duration` —
+    //     those mutate via Foundry's own update paths and a stale write
+    //     would clobber legitimate in-flight changes. But the charge count
+    //     (`flags["fabula-ultima-companion"].charges`, the AE-backed
+    //     counter behind once-per-X gates, Protect/Counter reaction pools,
+    //     and persistent clocks like Adoration — see [[skill-charges]]) is
+    //     exactly the kind of consumable state a rewind must revert. An AE
+    //     that survived from the target save until now keeps its LIVE count
+    //     (spent down or refilled since); the disabled-only reconcile missed
+    //     it, so a rewound "ready" gate stayed spent. Charge AEs that drained
+    //     to 0 and self-deleted are handled by 2b (recreated from the
+    //     snapshot, flags and all).
     const aeUpdates = [];
+    const chargeKeyOf = (eff) => Number(eff?.flags?.[FLAG_NS]?.charges);
+    const chargesMaxOf = (eff) => eff?.flags?.[FLAG_NS]?.chargesMax;
     for (const [id, snapEff] of snapEffectsById) {
       const live = actor.effects?.get?.(id);
       if (!live) continue;
+      const update = { _id: id };
+      let changed = false;
       if (!!live.disabled !== !!snapEff.disabled) {
-        aeUpdates.push({ _id: id, disabled: !!snapEff.disabled });
+        update.disabled = !!snapEff.disabled;
+        changed = true;
       }
+      // Charge count — only when the snapshot AE actually carries a charges
+      // flag (skips the vast majority of AEs that have none) and the live
+      // value drifted. Restore both `charges` and `chargesMax` so a rewind
+      // past a max-bump (rare, but clocks can grow) is faithful too.
+      const snapCharges = chargeKeyOf(snapEff);
+      if (Number.isFinite(snapCharges)) {
+        if (chargeKeyOf(live) !== snapCharges) {
+          update[`flags.${FLAG_NS}.charges`] = snapCharges;
+          changed = true;
+        }
+        const snapMax = chargesMaxOf(snapEff);
+        if (snapMax != null && chargesMaxOf(live) !== snapMax) {
+          update[`flags.${FLAG_NS}.chargesMax`] = snapMax;
+          changed = true;
+        }
+      }
+      if (changed) aeUpdates.push(update);
     }
     if (aeUpdates.length) {
       try { await actor.updateEmbeddedDocuments("ActiveEffect", aeUpdates); }
@@ -967,6 +1027,36 @@ export async function rewindToHistorySnapshot(snapshotId) {
   if (!dCombat) {
     warn("rewindToHistorySnapshot: reconstruction failed (no combatants survived)");
     return { ok: false, error: "reconstruction failed" };
+  }
+
+  // 1b. Un-summon: delete director-summon tokens that were spawned AFTER the
+  //     target snapshot (a Phantasm / drake created later in the timeline the
+  //     GM just rolled back past). Scope is deliberately narrow — ONLY tokens
+  //     the director tagged as summons (`isSummon` / `isPhantasm` /
+  //     `summonedBy`) and NOT present in the rewound-to combatant set get
+  //     deleted, so a token the GM hand-placed mid-battle is never reaped.
+  //     This is the inverse of reconstruct's token RECREATE step, and is
+  //     rewind-only (a forward reload-resume has no post-save summons to drop).
+  try {
+    const savedTokenUuids = new Set(
+      (snapshot.dCombat?.combatants ?? []).map((c) => c.tokenUuid).filter(Boolean),
+    );
+    const strayIds = [];
+    const strayNames = [];
+    for (const td of (scene.tokens ?? [])) {
+      const f = td?.flags?.[FLAG_NS] ?? {};
+      const isDirectorSummon = !!(f.isSummon || f.isPhantasm || f.summonedBy);
+      if (!isDirectorSummon) continue;
+      if (savedTokenUuids.has(td.uuid)) continue;
+      strayIds.push(td.id);
+      strayNames.push(td.name ?? td.id);
+    }
+    if (strayIds.length) {
+      await scene.deleteEmbeddedDocuments("Token", strayIds);
+      log(`rewindToHistorySnapshot: un-summoned ${strayIds.length} post-save summon(s): ${strayNames.join(", ")}`);
+    }
+  } catch (e) {
+    warn("rewindToHistorySnapshot: post-save summon cleanup failed", e);
   }
 
   // 2. Restore actor state using the target snapshot. Future saves

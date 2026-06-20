@@ -322,6 +322,25 @@ export function normalizeDamageType(raw) {
   return _NO_DAMAGE_DT.has(s) ? "" : s;
 }
 
+// The "no element" damage token. Canonical form is "null" (displayed "Null");
+// "elementless"/"elementaless" are legacy aliases that mean the same thing — a
+// real damage type with NO elemental affinity (so the target's affinity is
+// always NE: nothing is Vulnerable/Resistant/Immune/Absorbing to it). Treated
+// like any other element through the pipeline (deals damage, can be overridden
+// by a reaction, displays its name) — it just never finds an affinity entry.
+const _NULL_ELEMENT_ALIASES = new Set(["null", "elementless", "elementaless"]);
+export function isNullElement(el) {
+  return _NULL_ELEMENT_ALIASES.has(String(el ?? "").trim().toLowerCase());
+}
+// Display label for a damage element: the null-family → "Null", every real
+// element → Capitalized (Fire, Ice, …). Blank stays blank (no-damage actions).
+export function displayElement(el) {
+  const s = String(el ?? "").trim().toLowerCase();
+  if (!s) return "";
+  if (isNullElement(s)) return "Null";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 // ── Context builder ─────────────────────────────────────────────────────
 //
 // Builds the standard resolver for skill activations + reactions. The
@@ -411,6 +430,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // gates Create Phantasm: Numen to one Numen (availability_formula
       // "OWN_NUMEN_COUNT == 0"). Subset of OWN_SUMMON_COUNT.
       case "OWN_NUMEN_COUNT": return ownSummonCount(actor, { numenOnly: true });
+      // Number of PHANTASM summons (token flag isPhantasm) THIS actor has out —
+      // gates the regular Create Phantasm skills to a 3-Phantasm cap
+      // ("OWN_PHANTASM_COUNT < 3"). Excludes the Numen, which is a full own-turn
+      // summon (no isPhantasm flag) and carries its own one-of-a-kind limit.
+      case "OWN_PHANTASM_COUNT": return ownSummonCount(actor, { phantasmOnly: true });
       case "BOND_STRENGTH": return bondStrengthTowardSubject(actor, payload);
       case "BOND_COUNT": return countBondSlots(actor);
       case "BOND_COUNT_ADMIRATION": return countBondsByEmotion(actor, "admiration");
@@ -419,6 +443,36 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "BOND_COUNT_MISTRUST":   return countBondsByEmotion(actor, "mistrust");
       case "BOND_COUNT_AFFECTION":  return countBondsByEmotion(actor, "affection");
       case "BOND_COUNT_HATRED":     return countBondsByEmotion(actor, "hatred");
+      // Strongest Bond the reactor holds toward ANY creature in the trigger's
+      // target/hit list (vs BOND_STRENGTH which only reads the single payload
+      // subject by name). Resolves each target uuid → actor → name, matched
+      // case-insensitively against the reactor's Bond slots; returns the best
+      // emotion-count found, else 0. Prefers the HIT list (creatures actually
+      // damaged) so "after you deal damage, if Bonded to one of them" gates
+      // resolve correctly on multi-target spells whose action-level payload
+      // carries no subject name. Used by Agony (Darkblade).
+      case "BOND_WITH_ANY_TARGET": {
+        if (!actor) return 0;
+        const list = payload?.hitTargets ?? payload?.hitTargetTokenUuids
+          ?? payload?.targetActorUuids ?? payload?.targets
+          ?? payload?.targetTokenUuids
+          ?? (payload?.subjectActorUuid ? [payload.subjectActorUuid] : []);
+        const slots = getBondSlots(actor);
+        if (!slots.length || !Array.isArray(list)) return 0;
+        let best = 0;
+        for (const ref of list) {
+          const a = _resolveActorByUuidSync(String(ref));
+          if (!a) continue;
+          const names = [a.name, a.token?.name, a.prototypeToken?.name]
+            .filter(Boolean).map((n) => String(n).toLowerCase());
+          for (const slot of slots) {
+            if (names.includes(String(slot.name).toLowerCase())) {
+              best = Math.max(best, slot.emotions.filter(Boolean).length);
+            }
+          }
+        }
+        return best;
+      }
       // Damage-card payload reads (per-target — payload is per-event)
       // RAW_DAMAGE: the PRE-affinity damage this hit WILL deal — available on the
       // pre-resolve creature_will_deal_damage payload (state-handlers stamps
@@ -512,10 +566,32 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Returns 0 on creature_deals_damage (per-target) — use this identifier
       // only in creature_completes_attack rows.
       case "ALL_TARGETS_HIT": return payload?.allTargetsHit ? 1 : 0;
-      // 1 if the completing action was a Spell — reads payload.actionKind, set on
-      // the post-resolve completion payloads (creature_completes_action et al.).
-      // Used by Consume's "deal damage WITH A SPELL" gate. 0 for Attack/Skill/Item.
-      case "ACTION_IS_SPELL":  return String(payload?.actionKind ?? "").toLowerCase() === "spell" ? 1 : 0;
+      // 1 if the action is a Spell. Reads payload.actionKind (the real kind on the
+      // post-resolve completion payloads — Consume's "deal damage WITH A SPELL"
+      // gate) OR payload.actionSkillType (the casting item's skill_type, carried on
+      // the creature_performs_action payload — Hypercognition). Needed because the
+      // BD stamps both Skill AND Spell as ar.kind:"Skill", so actionKind alone can't
+      // distinguish a spell from a skill on creature_performs_action.
+      case "ACTION_IS_SPELL": {
+        const k  = String(payload?.actionKind ?? "").toLowerCase();
+        const st = String(payload?.actionSkillType ?? "").toLowerCase();
+        return (k === "spell" || st === "spell") ? 1 : 0;
+      }
+      // 1 if the action targets EXACTLY ONE creature AND that creature carries MY
+      // Focus (per-applier, status fud-focus), else 0. Powers Hypercognition's
+      // "SL × 2 if your focus is the only target" cost discount. Mirrors
+      // ANY_TARGET_HAS_MY_FOCUS's applier match (TOKEN-first, actor-uuid fallback)
+      // restricted to the single-target case.
+      case "FOCUS_IS_ONLY_TARGET": {
+        const list = payload?.targetActorUuids
+          ?? payload?.hitTargets ?? payload?.targets ?? payload?.targetTokenUuids ?? [];
+        const arr = Array.isArray(list) ? list : [];
+        if (arr.length !== 1) return 0;
+        const selfTokenUuid = String(payload?.sourceTokenUuid ?? "").trim();
+        const selfActorUuid = String(actor?.uuid ?? "").trim();
+        const a = _resolveActorByUuidSync(String(arr[0]));
+        return (a && actorHasNamedStatusFromApplier(a, "focus", selfTokenUuid, selfActorUuid)) ? 1 : 0;
+      }
       // Roll-derived identifiers — populated whenever the action's roll
       // is threaded onto `payload` (Skill resolveSkillAction does this
       // via makeChainContext.payload and the firePostDamageEffect
@@ -1448,7 +1524,7 @@ function myFocusInCrisis(actor, payload) {
 // Count live summons (incl. phantasms) THIS actor put on the field — canvas
 // tokens whose `summonedBy` flag == the actor's uuid and that still carry
 // isSummon/isPhantasm. Powers OWN_SUMMON_COUNT.
-function ownSummonCount(actor, { numenOnly = false } = {}) {
+function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {}) {
   const meUuid = String(actor?.uuid ?? "").trim();
   if (!meUuid) return 0;
   const NS = "fabula-ultima-companion";
@@ -1459,6 +1535,10 @@ function ownSummonCount(actor, { numenOnly = false } = {}) {
     const f = td.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
     if (numenOnly) { if (td.actor?.system?.props?.isNumen) n++; continue; }
+    // phantasmOnly counts only Illusionist Phantasms (token flag isPhantasm,
+    // stamped by the summon effect for summon_type:"phantasm" rows). The Numen
+    // is a full own-turn summon — no isPhantasm flag — so it never counts here.
+    if (phantasmOnly) { if (f.isPhantasm) n++; continue; }
     if (f.isSummon || f.isPhantasm) n++;
   }
   return n;
@@ -1667,7 +1747,7 @@ export function resolveOutgoingDamageParts({ actor = null, props = null, kind = 
   if (kind === "spell")  add("extra_damage_mod_spell",  "Damage (Spell)");
   if (kind === "item")   add("extra_damage_mod_item",   "Damage (Item)");
   const el = String(elementType ?? "").toLowerCase();
-  if (el && el !== "elementless") add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
+  if (el && !isNullElement(el)) add(`extra_damage_mod_${el}`, `Damage (${_capWord(el)})`);
   const wk = String(weaponKey ?? "").toLowerCase();
   if (wk && wk !== "none") add(`extra_damage_mod_${wk}`, `Damage (${_capWord(wk)})`);
   return parts;
@@ -1845,7 +1925,7 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
   addFlat("damage_receiving_mod_all", "Reduction (All)");
   if (r === "melee")  addFlat("damage_receiving_mod_melee", "Reduction (Melee)");
   if (r === "ranged") addFlat("damage_receiving_mod_range", "Reduction (Ranged)");
-  if (el && el !== "elementless") addFlat(`damage_receiving_mod_${el}`, `Reduction (${_capWord(el)})`);
+  if (el && !isNullElement(el)) addFlat(`damage_receiving_mod_${el}`, `Reduction (${_capWord(el)})`);
 
   let v = base - flat;
 
@@ -1854,7 +1934,7 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
   pct += _mnum(p.damage_receiving_percentage_all);
   if (r === "melee")  pct += _mnum(p.damage_receiving_percentage_melee);
   if (r === "ranged") pct += _mnum(p.damage_receiving_percentage_range);
-  if (el && el !== "elementless") pct += _mnum(p[`damage_receiving_percentage_${el}`]);
+  if (el && !isNullElement(el)) pct += _mnum(p[`damage_receiving_percentage_${el}`]);
   if (pct !== 0) {
     const mult = Math.max(0, 1 - pct / 100);
     const before = Math.ceil(Math.max(0, v));

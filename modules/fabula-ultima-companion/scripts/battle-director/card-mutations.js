@@ -552,6 +552,143 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Defense adjustment (effect_kind: "adjust_defense") ───────────────────
+// The DEFENDER-side twin of adjust_accuracy: a `creature_targeted_by_action`
+// reaction on the TARGET raises ITS OWN effective defense for the in-flight
+// action, then recomputes only ITS hit/miss against the (possibly accuracy-
+// adjusted) roll total. Per-target — only the reactor's slot — unlike accuracy,
+// which rewrites the action-wide total. Raising defense can only flip a hit→miss
+// (never a miss→hit), so no HR/damage re-derivation is needed. The bumped
+// `defense` is whatever the action checks against (DEF for an attack, MDEF for a
+// spell), so it works for any action kind. First user: Matador "Verónica".
+//   { effect_kind: "adjust_defense",
+//     defense_operation: "add" | "subtract" | "set",   // default "add"
+//     defense_amount:    <number | formula> }
+const DEFENSE_OPS = new Set(["set", "add", "subtract"]);
+function applyDefenseOp(def, op, amount) {
+  switch (op) {
+    case "add":      return def + amount;
+    case "subtract": return def - amount;
+    case "set":      return amount;
+    default:         return def;
+  }
+}
+
+async function applyAdjustDefenseMutation(ctx, cand, row) {
+  // Resolve the reactor (the creature raising its OWN defense). Third-party
+  // reactions (Protect/Grappling, reaction_source ally/enemy) carry a stamped
+  // `reactorActorUuid`; a SELF reaction (Verónica, reaction_source "self") comes
+  // through the target's own item/AE scan and has NO stamp — the reactor is then
+  // the carrier's owning actor (the item/AE bearer). Verónica is the first self
+  // card-mutation, so this fallback is new.
+  let reactorUuid = cand?.reactorActorUuid ?? null;
+  if (!reactorUuid) {
+    const carrier = cand?.carrierUuid ? await fromUuid(cand.carrierUuid).catch(() => null) : null;
+    reactorUuid = carrier?.parent?.uuid ?? null;
+  }
+  if (!reactorUuid) { warn("adjust_defense: could not resolve reactor — skipping"); return "failed"; }
+
+  const { readAdjustment } = await import("./skill-formulas.js");
+  const { op, amountFormula } = readAdjustment(row, "defense", { defaultOp: "add" });
+  if (!DEFENSE_OPS.has(op)) {
+    warn(`adjust_defense: unknown defense_operation "${op}" — skipping`);
+    return "failed";
+  }
+
+  // Resolve the operand (a bare number short-circuits; otherwise evaluate the
+  // formula against the reactor + the candidate's fire-time payload so SL etc. work).
+  let amount = Number(amountFormula);
+  if (!Number.isFinite(amount)) {
+    try {
+      const { reactor, skill: skillForResolver } = await resolveReactionReactorSkill(ctx, cand);
+      const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+      const resolver = buildSkillResolver({
+        actor: reactor,
+        payload: cand?.payloadAtFire ?? null,
+        skill: skillForResolver,
+        round: ctx.ar?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+    } catch (e) {
+      warn("adjust_defense: formula eval threw — treating amount as 0", e);
+      amount = 0;
+    }
+  }
+
+  // Locate the reactor's own per-target slot (targets / perTargets are parallel).
+  const idx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
+  if (idx < 0) {
+    log(`adjust_defense: reactor ${reactorUuid} not among the action's targets — no-op`);
+    return "failed";
+  }
+  const pt = ctx.perTargets[idx];
+  if (!pt) return "failed";
+
+  // Compare the (possibly accuracy-adjusted) roll total to the NEW defense.
+  const accuracyTotal = Number(ctx.accuracyOverride?.to ?? ctx.ar?.roll?.total ?? 0);
+  const isCrit = !!ctx.ar?.roll?.isCrit;
+  const isFumble = !!ctx.ar?.roll?.isFumble;
+  const oldDef = Number(pt.defense ?? 10);
+  const newDef = applyDefenseOp(oldDef, op, amount);
+  const newHit = isCrit ? true : (!isFumble && accuracyTotal >= newDef);
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
+
+  ctx.perTargets[idx] = {
+    ...pt,
+    defense: newDef,
+    hit: newHit,
+    crit: isCrit && newHit,
+    rawDamage: newHit ? pt.rawDamage : 0,
+    damage: newHit ? pt.damage : 0,
+    defenseOverride: { from: oldDef, to: newDef, via, reactorName: cand?.reactorActorName ?? null },
+  };
+  log(`adjust_defense: ${op} ${amount} on ${pt.name ?? reactorUuid} — DEF ${oldDef} → ${newDef}; hit ${pt.hit ? "Y" : "N"}→${newHit ? "Y" : "N"} (via ${via})`);
+  return "applied";
+}
+
+// ── Cost adjustment (effect_kind: "adjust_cost", card-mutation path) ──────
+// Performer/self reaction that reduces the in-flight SPELL's resource cost
+// (Hypercognition: "−SL MP, −SL×2 if the focus is the only target"). Action-level
+// (cost is not per-target): records ctx.costOverride as a per-resource signed
+// DELTA map (negative = discount), composing across sources. RESOLVE applies the
+// delta to BOTH the in-chain consume_resource debit (skill-effects) AND the
+// native-cost debit (resolveAction), each clamped >= 0. Unlike accuracy/grant the
+// override changes a COST, consumed at resolve rather than read off perTargets.
+//   { effect_kind: "adjust_cost", cost_resource: "mp", cost_operation: "add",
+//     cost_amount: "-(SL + SL * FOCUS_IS_ONLY_TARGET)" }
+async function applyAdjustCostMutation(ctx, cand, row) {
+  const { readAdjustment, buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+  const { op, amountFormula } = readAdjustment(row, "cost");
+  const resource = String(row.cost_resource ?? "mp").trim().toLowerCase();
+  const { reactor, skill } = await resolveReactionReactorSkill(ctx, cand);
+  const resolver = buildSkillResolver({
+    actor: reactor,
+    payload: cand?.payloadAtFire ?? null,
+    skill,
+    round: ctx.ar?.round ?? 0,
+  });
+  // Optional secondary gate on the effect row itself (the reaction row already
+  // gates firing; this is a safety / extra scoping hook).
+  const cond = String(row.condition_formula ?? "").trim();
+  if (cond) {
+    let pass = 0;
+    try { pass = Number(evaluateFormula(cond, resolver, 0)) || 0; } catch { pass = 0; }
+    if (!pass) return "skipped";
+  }
+  // The operand is a signed delta added to the cost (a discount is negative).
+  let delta = 0;
+  try { delta = Number(evaluateFormula(amountFormula, resolver, 0)) || 0; } catch { delta = 0; }
+  if (op === "subtract") delta = -Math.abs(delta);
+  else if (op !== "add") warn(`adjust_cost: unsupported cost_operation "${op}" — treating as add`);
+  if (delta === 0) return "skipped";
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
+  const ov = ctx.costOverride ?? (ctx.costOverride = { _parts: [] });
+  ov[resource] = (Number(ov[resource]) || 0) + delta;
+  ov._parts.push({ source: via, resource, amount: delta });
+  log(`adjust_cost: ${resource} ${op} ${delta} (via ${via}) — running ${ov[resource]}`);
+  return "applied";
+}
+
 // ── Grant adjustment (effect_kind: "adjust_grant", card-mutation path) ───
 // The heal/restore counterpart of adjust_accuracy: a performer/self reaction
 // (Cognitive Focus "+SL×2 healing to my focus") adjusts the in-flight action's
@@ -787,13 +924,24 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   const mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
   if (mut.negated) {
+    // Spread the core result so every override bag it produced (accuracy/grant/
+    // cost/…) flows through; only the fields THIS layer transforms are overridden.
     return {
-      targets: mutatedTargets, perTargetResults, accuracyOverride: null,
-      negated: true, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids: null,
+      ...mut,
+      targets: mutatedTargets, perTargetResults,
+      accuracyOverride: null, hitTokenUuids: null,
+      negated: true, cancelled: false,
     };
   }
   const accuracyOverride = mut.accuracyOverride ?? null;
   const grantOverride = mut.grantOverride ?? null;
+  // Per-target defense overrides (adjust_defense / Verónica): collected from the
+  // core mutation and THREADED INTO the recompute (like accuracyOverride), so the
+  // recompute itself honors them — one place re-derives hit/miss for every override
+  // kind, instead of patching the result after the recompute clobbers it.
+  const defenseOverrides = (mut.perTargetResults ?? [])
+    .filter((p) => p?.defenseOverride)
+    .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
   let hitTokenUuids = null;
   try {
     const mutatedAr = { ...ar, targets: mutatedTargets, perTargetResults };
@@ -804,7 +952,7 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     }
     const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
     const delta = await recomputeActionProfile({
-      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride,
+      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride, defenseOverrides,
     });
     if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
       perTargetResults = delta.perTargetResults;
@@ -831,10 +979,19 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     };
   }
   const accuracyIsSpellish = String(ar?.skillType ?? "").toLowerCase() === "spell";
+  // Spread the core mutation result FIRST so every override bag it returns
+  // (accuracyOverride, grantOverride, costOverride, mutationsApplied, and any
+  // future kind) is forwarded automatically — then override only the fields this
+  // layer genuinely transforms (recomputed perTargets, the assembled accuracyRoll
+  // display object, hit list). Avoids the "added an override to the core but the
+  // wrapper silently dropped it" footgun.
   return {
-    targets: mutatedTargets, perTargetResults, accuracyOverride, grantOverride,
+    ...mut,
+    targets: mutatedTargets,
+    perTargetResults,
     accuracyRoll, accuracyIsSpellish,
-    negated: false, cancelled: false, mutationsApplied: mut.mutationsApplied, hitTokenUuids,
+    hitTokenUuids,
+    negated: false, cancelled: false,
   };
 }
 
@@ -919,11 +1076,22 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       if (kind === "adjust_accuracy") {
         const result = await applyAdjustAccuracyMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
+      } else if (kind === "adjust_defense") {
+        // Defender-side: the targeted creature raises its own DEF for this action
+        // (Verónica). Per-target; only the reactor's slot recomputes hit/miss.
+        const result = await applyAdjustDefenseMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
       } else if (kind === "adjust_grant") {
         // Performer/self reaction heal-boost (Cognitive Focus). Reaction-context
         // adjust_grant ONLY — Potion Rain's in-chain adjust_grant never appears as
         // an accepted reaction candidate, so the two paths never collide.
         const result = await applyAdjustGrantMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
+      } else if (kind === "adjust_cost") {
+        // Performer/self reaction cost discount (Hypercognition). Records a signed
+        // per-resource delta on ctx.costOverride; consumed at RESOLVE by the
+        // consume_resource + native-cost debit paths.
+        const result = await applyAdjustCostMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
       }
     }
@@ -943,6 +1111,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     cancelled,
     accuracyOverride: ctx.accuracyOverride ?? null,
     grantOverride: ctx.grantOverride ?? null,
+    costOverride: ctx.costOverride ?? null,
     negated: false,
   };
 }

@@ -506,6 +506,24 @@
     const targetUuids = uniq(actionCtx?.targets ?? []);
     const actionTypeDebug = buildActionTypeDebug(actionCtx);
 
+    // Expose action-type + equipment gates to the declarative passive-formula
+    // evaluator (oni.ReactionFormula). That evaluator can't reach the actor or
+    // the action context, so we pre-compute numeric (1/0) flags here and stamp
+    // them on actionCtx (= the evaluator's `payload`). Read by ACTION_IS_SPELL,
+    // ACTION_IS_OFFENSIVE_SPELL and HAS_ARCANE_WEAPON. Used by Magical Artillery
+    // ("+SL×2 to offensive-spell Magic Checks while an arcane weapon is equipped").
+    actionCtx._isSpell = actionTypeDebug.isSpell ? 1 : 0;
+    actionCtx._isOffensiveSpell =
+      (actionTypeDebug.isSpell && actionTypeDebug.raw?.phase_sourceItem_isOffensiveSpell === true) ? 1 : 0;
+    actionCtx._hasArcaneWeapon = (() => {
+      for (const it of (actor.items ?? [])) {
+        if (getItemTypeNormalized(it) !== "weapon") continue;
+        if (!isItemEquipped(it)) continue;
+        if (getItemCategoryNormalized(it) === "arcane") return 1;
+      }
+      return 0;
+    })();
+
     log(runId, "START ACTION", {
       actor: actor?.name ?? null,
       actorUuid: actor?.uuid ?? null,

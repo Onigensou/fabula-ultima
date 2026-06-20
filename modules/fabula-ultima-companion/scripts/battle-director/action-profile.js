@@ -846,17 +846,33 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
     return [];
   })();
   const reactionDelta = repReactionParts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  // Representative reaction ELEMENT override for the headline — a creature_will_deal_
+  // damage reaction (Thermokinesis Fire/Ice, Tinkerer Infusions) can change the
+  // in-flight element per-target. buildPerTarget stamps it on each hit row's primary
+  // damage effect as `overrideElement`; the per-target rows + affinity already honor
+  // it, but the headline `damage.element` was reading only the base/native element, so
+  // the card + battle log still showed the base (e.g. "Elementaless"). Fold the first
+  // hit target's override into the headline (uniform across hit targets, same as the
+  // numeric repReactionParts fold above).
+  const repOverrideElement = (() => {
+    for (const r of (profile.perTarget ?? [])) {
+      if (!r.outcome?.hit) continue;
+      const dmg = (r.effects ?? []).find((x) => x.type === "resource_delta" && x.valence === "harmful" && x.damageClass === "primary");
+      if (dmg && dmg.overrideElement) return dmg.overrideElement;
+    }
+    return null;
+  })();
   const damageObj = hasDamage ? (kind === "Attack" ? {
     base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
     baseParts: [...(prim.baseParts ?? prim.outgoingParts ?? []), ...repReactionParts],
-    element: prim.overriddenElement ?? prim.nativeElement ?? prim.element,
+    element: repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
     ignoreHR: attackIgnoreHR,
     ...(profile._summary?.hrZeroReason ? { hrZeroReason: profile._summary.hrZeroReason } : {}),
     finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
   } : {
     base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
     baseParts: [...(prim.outgoingParts ?? []), ...repReactionParts],
-    element: prim.element, resource: prim.resource,
+    element: repOverrideElement ?? prim.element, resource: prim.resource,
     ignoreHR: !roll,
     finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
   }) : null;
@@ -956,7 +972,7 @@ export async function buildActionViewFromAr(ar) {
 // pre-passive candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
-export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null } = {}) {
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null } = {}) {
   if (!ar) return null;
   try {
     const srcTargets = Array.isArray(targets) ? targets : (Array.isArray(ar.targets) ? ar.targets : []);
@@ -1005,6 +1021,34 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
         if (newHit && row.tokenUuid) newHits.push(row.tokenUuid);
       }
       delta.hitTokenUuids = newHits;
+    }
+    // Defense override (adjust_defense reaction, e.g. Verónica "+2 DEF when targeted"):
+    // card-mutations bumped a target's OWN defense, but buildPerTarget rebuilt hit/miss
+    // from the target's NATIVE defense. Re-apply each overridden target's defense and
+    // re-evaluate ITS hit against the effective total (the accuracyOverride total when
+    // one is also in play, else the roll total). PER-TARGET, so it runs AFTER the
+    // action-wide accuracy loop and only touches the overridden slots. Mirrors the
+    // accuracyOverride re-apply above. defenseOverrides: [{ tokenUuid, actorUuid, from, to, via }].
+    if (Array.isArray(defenseOverrides) && defenseOverrides.length && Array.isArray(delta?.perTargetResults)) {
+      const isCrit = !!ar.roll?.isCrit, isFumble = !!ar.roll?.isFumble;
+      const effTotal = Number(accuracyOverride?.to ?? ar.roll?.total ?? 0);
+      let flipped = false;
+      for (const row of delta.perTargetResults) {
+        const ov = defenseOverrides.find((o) =>
+          (o.tokenUuid && o.tokenUuid === row.tokenUuid) || (o.actorUuid && o.actorUuid === row.actorUuid));
+        if (!ov) continue;
+        const newDef = Number(ov.to);
+        const newHit = isCrit ? true : (!isFumble && effTotal >= newDef);
+        row.defense = newDef;
+        row.hit = newHit;
+        row.crit = isCrit && newHit;
+        row.rawDamage = newHit ? row.rawDamage : 0;
+        row.damage = newHit ? row.damage : 0;
+        row.defenseOverride = { from: ov.from, to: ov.to, via: ov.via, reactorName: ov.reactorName ?? null };
+        flipped = true;
+      }
+      // Rebuild the hit list from the final per-target state (covers a +DEF miss).
+      if (flipped) delta.hitTokenUuids = delta.perTargetResults.filter((r) => r.hit && r.tokenUuid).map((r) => r.tokenUuid);
     }
     // Grant override (adjust_grant reaction, e.g. Cognitive Focus "+SL×2 healing to
     // my focus"): card-mutations boosted the matching targets' grant amount, but

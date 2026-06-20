@@ -62,6 +62,36 @@ debuff-classified effects (see [Formula identifiers](#formula-identifiers-resolv
 Blank disables. Applies on every action — gate inside the formula itself
 (e.g. `min(STATUS_COUNT, 3)` resolves to 0 when no statuses are present).
 
+**Important — the passive-formula evaluator is `oni.ReactionFormula`
+([formula-evaluator.js](modules/fabula-ultima-companion/scripts/reaction-system/formula-evaluator.js)),
+a smaller identifier set than the Battle Director reaction resolver
+([skill-formulas.js](modules/fabula-ultima-companion/scripts/battle-director/skill-formulas.js)).**
+Rich identifiers like `HAS_RANGED_WEAPON`, `CRIT`, `RAW_DAMAGE`,
+`TARGET_STATUS_COUNT` etc. exist ONLY on the reaction side and resolve to
+0 here. The passive-formula evaluator supports: `SL`, `CUR/MAX_HP|MP|IP`,
+`BOND_STRENGTH`, `BOND_COUNT[_<EMOTION>]`, `STATUS_COUNT`,
+`DAMAGE|HP|MP|SHIELD_DEALT`, `ROUND`, `ACTION_TARGET_COUNT`, plus three
+action/equipment gates pre-computed by the passive-modifier-engine:
+`ACTION_IS_SPELL`, `ACTION_IS_OFFENSIVE_SPELL`, `HAS_ARCANE_WEAPON`
+(each 1/0). If you need a gate not in this list, add it to
+`oni.ReactionFormula` (and, when it needs actor/action context the
+evaluator can't reach, pre-compute a numeric flag in the
+passive-modifier-engine and read it off `payload`) — don't assume a
+reaction-side identifier is available.
+
+### Worked example — Magical Artillery (declarative)
+
+The Elementalist skill *Magical Artillery*: "+SL×2 to your Magic Check
+when you cast an Offensive Spell while an arcane weapon is equipped."
+
+```jsonc
+"system.props.passive_check_bonus_formula": "HAS_ARCANE_WEAPON * ACTION_IS_SPELL * SL * 2"
+```
+
+The two 0/1 gates multiply to 0 (inert) unless BOTH hold; `ACTION_IS_SPELL`
+keeps it off basic attacks (which is also why offensive spells — the only
+spells that roll a Magic Check — are the effective scope).
+
 ### Worked example — Adversity (declarative)
 
 The Darkblade Heroic Skill *Adversity* (Jan 2025 playtest revision):

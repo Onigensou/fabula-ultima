@@ -242,6 +242,9 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     damageType,
     range,
     weaponType,
+    // Flying exception (Psychokinesis): does the wielder's kit let THIS weapon's
+    // category reach Flying targets in melee? Read by applyAttackRangeGate.
+    canMeleeFlying: attackerCanMeleeFlying(actor, weaponType),
     imageUrl,
     // Live weapon Item uuid — null when the weapon isn't an embedded Item
     // (on-hit reaction effects simply won't fire then; the basic attack
@@ -333,6 +336,7 @@ export function resolveVirtualAttacks(actor) {
       damageType: String(profile.damageType ?? profile.type_damage ?? "Physical"),
       range: String(profile.range ?? profile.weapon_range ?? "Melee"),
       weaponType: String(profile.weaponType ?? profile.category ?? "Brawling"),
+      canMeleeFlying: attackerCanMeleeFlying(actor, String(profile.weaponType ?? profile.category ?? "Brawling")),
       imageUrl: profile.imageUrl ?? profile.img ?? ae.icon ?? null,
       sourceAeId: ae.id,
       sourceAeName: ae.name,
@@ -340,6 +344,24 @@ export function resolveVirtualAttacks(actor) {
   }
 
   return Object.freeze(out);
+}
+
+// Resolve the weapon a skill marked `rolled_atr1:"WEAPON"` should roll its
+// accuracy off — the SAME weapon the Attack action reaches for first, in the
+// weapon-mode picker's order: equipped MAIN hand, else OFF hand, else the first
+// exposed VIRTUAL attack (e.g. Dual Shieldbearer's Twin Shields, when both hands
+// hold shields and carry no usable weapon attribute). Returns the weapon-shape
+// object ({ A1, A2, checkBonus, damageBonus, ... }) or null when the wielder has
+// no attack weapon at all. Used by the Skill COMPUTE ar-build.
+export function resolvePrimaryAttackWeapon(actor) {
+  if (!actor) return null;
+  const main = resolveAttackerWeapon(actor, { which: "main" });
+  if (main?.A1) return main;
+  const off = resolveAttackerWeapon(actor, { which: "off" });
+  if (off?.A1) return off;
+  const virtuals = resolveVirtualAttacks(actor);
+  if (virtuals?.length && virtuals[0]?.A1) return virtuals[0];
+  return null;
 }
 
 // Does any applied AE grant mixed-Category Two-Weapon Fighting? Declarative seam
@@ -676,6 +698,56 @@ export function getTargetSideBlocks(actor) {
   return out;
 }
 
+// ── Flying targeting rule (RAW Core: a Flying creature can't be reached by melee) ──
+// Flying is a CONFIG status effect (not a hub AE), so we read the STATUS directly
+// — kept deliberately separate from the generic cannot_be_targeted_by block system
+// (Cover etc.) so the two never cross-interfere. The status id is resolved once by
+// name from CONFIG.statusEffects.
+let _flyingStatusId;
+function flyingStatusId() {
+  if (_flyingStatusId !== undefined) return _flyingStatusId;
+  const entry = (CONFIG.statusEffects ?? []).find(
+    (s) => String(s.name ?? s.label ?? "").trim().toLowerCase() === "flying"
+  );
+  _flyingStatusId = entry?.id ?? null;
+  return _flyingStatusId;
+}
+
+// True if `actor` currently carries the Flying status. CSB custom statuses apply
+// as an AE NAMED "Flying" but DON'T populate the AE's statuses[] with the status
+// id (unlike core-Foundry statuses), and actor.statuses misses it — so we match
+// by the status id (core path) OR by the AE name "Flying" (the CSB path).
+export function targetIsFlying(actor) {
+  if (!actor) return false;
+  const id = flyingStatusId();
+  if (id && actor.statuses?.has?.(id)) return true;
+  return !!actor.effects?.some?.((e) => !e.disabled && (
+    (id && e.statuses?.has?.(id)) ||
+    String(e.name ?? "").trim().toLowerCase() === "flying"
+  ));
+}
+
+// True if `actor` carries a melee-vs-Flying EXCEPTION covering a weapon of
+// `weaponType` — Psychokinesis: melee arcane/sword may target Flying. Reads
+// `can_target_flying_with` AE changes — the SYMMETRIC counterpart of the
+// `cannot_be_targeted_by` block (getTargetSideBlocks) — so blocks AND exceptions
+// are both AE-change-driven and compose with AE suppression. The value is a
+// comma-list of weapon categories (empty = any melee weapon). Reads
+// `appliedEffects` so an always-on (transfer:true) passive AE is seen.
+export function attackerCanMeleeFlying(actor, weaponType) {
+  const cat = String(weaponType ?? "").trim().toLowerCase();
+  const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae.changes ?? [])) {
+      if (ch?.key !== "can_target_flying_with") continue;
+      const cats = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      if (cats.length === 0 || cats.includes(cat)) return true;
+    }
+  }
+  return false;
+}
+
 // Canonical turn-action labels an action-gating debuff can block. Mirrors the
 // Octopath menu's action set (turn-ui-manager LEGACY_PAGES). "Switch" / "Passive"
 // are menu navigation, not real actions, so they're excluded — enable_action_only
@@ -862,6 +934,42 @@ export function getCannotTargetReasons(actor) {
   return out;
 }
 
+// ── Must-target constraint (Provoked) ─────────────────────────────────────
+// The inverse of `cannot_target_uuids`: an AE change
+// `{ key: "must_target_applier", value: "Attack,Spell" }` on the ACTING
+// creature forces it to target the AE's APPLIER (the "provoker") with the
+// listed action kinds. The provoker UUID is NOT in the change value — it's
+// resolved from the apply-time `directorAppliedBy.reactorActorUuid` stamp, so
+// one template serves every caster. First user: the Matador "Provoked" debuff
+// (Capote). Returns `{ uuids:Set<actorUuid>, kinds:Set<string>, reason }` or
+// `null` when the actor bears no such constraint (or no applier resolves — the
+// constraint then lapses, so a creature whose provoker has left the field can
+// still act). Callers exclude every NON-member target, but ONLY when a required
+// provoker is actually present among candidates (see eligibility loops).
+export function getMustTargetReasons(actor) {
+  const uuids = new Set();
+  const kinds = new Set();
+  let reason = null;
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "must_target_applier") continue;
+      const applier = ae?.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.reactorActorUuid;
+      if (!applier) continue; // unresolved provoker → this constraint lapses
+      uuids.add(String(applier).trim());
+      for (const k of String(ch.value ?? "").split(/[\s,]+/)) {
+        const t = k.trim().toLowerCase();
+        if (t) kinds.add(t);
+      }
+      reason = String(ae.name ?? "").trim() || "Must target";
+    }
+  }
+  return uuids.size ? { uuids, kinds, reason } : null;
+}
+
 // ── Allegiance override (relative side reclassification) ───────────────────
 // An AE change `{ key: "allegiance_override", value: "<target>:<override_to>" }`
 // on the ACTING creature reclassifies how IT sees other units' side. target =
@@ -935,6 +1043,15 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
   // Allegiance overrides — reclassify a candidate's effective side relative to
   // the attacker (e.g. Charm/Domination: allies count as enemies).
   const allegianceOverrides = (category === "self") ? [] : getAllegianceOverrides(attackerActor);
+  // Must-target (Provoked): when the attacker is forced to target its provoker
+  // with Attacks, every other target is excluded — but only while the provoker
+  // is actually present (else the constraint lapses; see getMustTargetReasons).
+  const mustTarget = (category === "self") ? null : getMustTargetReasons(attackerActor);
+  const mustTargetActive = !!mustTarget && mustTarget.kinds.has("attack")
+    && combatants.some((c) => {
+      const a = c.actorDoc; if (!a) return false;
+      return readPropNum(a, ["current_hp", "hp"]) > 0 && mustTarget.uuids.has(a.uuid);
+    });
   const out = [];
   const excluded = [];
   for (const c of combatants) {
@@ -956,6 +1073,20 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       ok = c.id === attackerSnapshot?.combatantId;
     }
     if (!ok) continue;
+    if (mustTargetActive && c.id !== attackerSnapshot?.combatantId && !mustTarget.uuids.has(actor.uuid)) {
+      excluded.push(Object.freeze({
+        combatantId: c.id,
+        tokenId: token.id,
+        tokenUuid: token.uuid,
+        actorId: actor.id,
+        actorUuid: actor.uuid,
+        name: actor.name,
+        tokenImg: token.texture?.src ?? token.img ?? actor.img ?? null,
+        disposition: disp,
+        reasons: Object.freeze([mustTarget.reason]),
+      }));
+      continue;
+    }
     if (exclusionReasons.size && exclusionReasons.has(actor.uuid)) {
       excluded.push(Object.freeze({
         combatantId: c.id,
@@ -996,6 +1127,7 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       // `.excluded` with the AE name as the reason. Stays empty for
       // most targets; ranges are normalized lowercase ("melee", "ranged",
       // "any").
+      isFlying: targetIsFlying(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
       )),
@@ -1039,6 +1171,7 @@ export function snapshotTargetForToken(tokenLike) {
     magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
     affinities: readAffinities(actor),
     conditions: Object.freeze(readActiveConditions(actor)),
+    isFlying: targetIsFlying(actor),
     targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
       Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
     )),
@@ -1075,6 +1208,7 @@ export function applyAttackRangeGate(eligible, weapon) {
     // No weapon — nothing to gate on. Return as-is.
     return eligible;
   }
+  const canMeleeFlying = !!weapon?.canMeleeFlying;
   const out = [];
   const newlyExcluded = [];
   for (const e of eligible) {
@@ -1085,6 +1219,13 @@ export function applyAttackRangeGate(eligible, weapon) {
       if (blockRanges.includes("any") || blockRanges.includes(range)) {
         matchingReasons.push(b.aeName);
       }
+    }
+    // Flying rule (RAW): a melee attack can't reach a Flying creature, unless the
+    // attacker's kit grants an exception for this weapon (weapon.canMeleeFlying —
+    // Psychokinesis: arcane/sword). Deliberately separate from the block loop above
+    // so it can't be confused with Cover / generic cannot_be_targeted_by blocks.
+    if (range === "melee" && e.isFlying && !canMeleeFlying) {
+      matchingReasons.push("Flying");
     }
     if (matchingReasons.length) {
       newlyExcluded.push(Object.freeze({
@@ -1129,6 +1270,13 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     ? new Map()
     : getCannotTargetReasons(attackerActor);
   const allegianceOverrides = (category === "self") ? [] : getAllegianceOverrides(attackerActor);
+  // Must-target (Provoked) — see the dCombat twin above for rationale.
+  const mustTarget = (category === "self") ? null : getMustTargetReasons(attackerActor);
+  const mustTargetActive = !!mustTarget && mustTarget.kinds.has("attack")
+    && combatants.some((c) => {
+      const a = c.actor; if (!a) return false;
+      return readPropNum(a, ["current_hp", "hp"]) > 0 && mustTarget.uuids.has(a.uuid);
+    });
   const out = [];
   const excluded = [];
   for (const c of combatants) {
@@ -1150,6 +1298,20 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       ok = c.id === attackerSnapshot?.combatantId;
     }
     if (!ok) continue;
+    if (mustTargetActive && c.id !== attackerSnapshot?.combatantId && !mustTarget.uuids.has(actor.uuid)) {
+      excluded.push(Object.freeze({
+        combatantId: c.id,
+        tokenId: token.id,
+        tokenUuid: token.uuid,
+        actorId: actor.id,
+        actorUuid: actor.uuid,
+        name: actor.name,
+        tokenImg: token.document?.texture?.src ?? token.texture?.src ?? token.img ?? actor.img ?? null,
+        disposition: disp,
+        reasons: Object.freeze([mustTarget.reason]),
+      }));
+      continue;
+    }
     if (exclusionReasons.size && exclusionReasons.has(actor.uuid)) {
       excluded.push(Object.freeze({
         combatantId: c.id,
@@ -1180,6 +1342,7 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
       affinities: readAffinities(actor),
       conditions: Object.freeze(readActiveConditions(actor)),
+      isFlying: targetIsFlying(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]) })
       )),
@@ -1190,12 +1353,28 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
 }
 
 // Snapshot the action result computed by COMPUTE. Used by CONFIRM + RESOLVE.
-export function freezeActionResult(obj) {
+export function freezeActionResult(obj, _depth = 0) {
   if (!obj || typeof obj !== "object") return obj;
-  if (Array.isArray(obj)) return Object.freeze(obj.map(freezeActionResult));
+  // NB: explicit lambda — Array.prototype.map passes (value, index, array),
+  // which would feed the index in as `_depth` and mis-trip the depth-0 guard.
+  if (Array.isArray(obj)) return Object.freeze(obj.map((v) => freezeActionResult(v, _depth + 1)));
   const out = {};
   for (const [k, v] of Object.entries(obj)) {
-    out[k] = (v && typeof v === "object") ? freezeActionResult(v) : v;
+    out[k] = (v && typeof v === "object") ? freezeActionResult(v, _depth + 1) : v;
+  }
+  // Single source of truth for "this action rolls an accuracy/Check and can
+  // therefore MISS". Derived ONCE on the actionResult root (depth 0) from its
+  // own `kind` + `isCheck`, so every consumer reads one capability fact instead
+  // of re-deriving `kind === "Attack" || isCheck` at each call site — whose
+  // half-spellings caused real bugs (weapon attacks don't set the skill-level
+  // isCheck prop; offensive spells/Check-skills do but aren't kind "Attack").
+  // `kind` stays the routing/economy/UI axis; this is the capability axis.
+  // `canMiss` is a readability synonym for `rollsAccuracy`. Guarded to objects
+  // that look like an actionResult so unrelated frozen objects are untouched.
+  if (_depth === 0 && (out.kind !== undefined || out.isCheck !== undefined)) {
+    const rolls = out.kind === "Attack" || !!out.isCheck;
+    out.rollsAccuracy = rolls;
+    out.canMiss = rolls;
   }
   return Object.freeze(out);
 }

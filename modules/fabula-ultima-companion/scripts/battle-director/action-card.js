@@ -30,6 +30,7 @@ import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
 import { resourceLabel } from "./resources.js";
+import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 
@@ -721,6 +722,34 @@ export function ensureStyles() {
       position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
       font-size: 14px; font-weight: 900;
       text-align: right;
+    }
+
+    /* Running-number direction cues — set by animateCardNumber() after a
+       reaction bumps/reduces Accuracy or Damage. An INCREASE rises into place
+       with a bright over-shoot; a DECREASE drops in desaturated and settles
+       smaller-first, so the two read apart at a glance without reading the
+       value. Purely cosmetic + per-client (never baked into the broadcast). */
+    .fud-bf-card .fud-bf-dmg-number.fud-num-up,
+    .fud-bf-card .fud-bf-acc .total.fud-num-up,
+    .fud-bf-card .fud-bf-target-row .t-result .t-num.fud-num-up {
+      display: inline-block;
+      animation: fud-num-up 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fud-bf-card .fud-bf-dmg-number.fud-num-down,
+    .fud-bf-card .fud-bf-acc .total.fud-num-down,
+    .fud-bf-card .fud-bf-target-row .t-result .t-num.fud-num-down {
+      display: inline-block;
+      animation: fud-num-down 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes fud-num-up {
+      0%   { transform: translateY(6px)  scale(0.84); filter: brightness(1.75) saturate(1.4); }
+      55%  { transform: translateY(-3px) scale(1.14); filter: brightness(1.2); }
+      100% { transform: translateY(0)    scale(1);    filter: none; }
+    }
+    @keyframes fud-num-down {
+      0%   { transform: translateY(-6px) scale(1.16); filter: saturate(0.3) brightness(0.82); }
+      55%  { transform: translateY(3px)  scale(0.9);  filter: saturate(0.6); }
+      100% { transform: translateY(0)    scale(1);    filter: none; }
     }
 
     /* Per-target result list */
@@ -1583,10 +1612,61 @@ function buildAttackerHTML({ attacker, targets }) {
   `;
 }
 
+// Write `v` into `el`'s leading numeric text node WITHOUT disturbing sibling
+// nodes (e.g. the +HR pill in the damage headline, which follows the number as
+// a separate <span>). Falls back to inserting a fresh text node if the element
+// has no leading text node.
+function setLeadingNumberText(el, v) {
+  const node = el.firstChild;
+  if (node && node.nodeType === Node.TEXT_NODE) node.textContent = String(v);
+  else el.insertBefore(document.createTextNode(String(v)), el.firstChild ?? null);
+}
+
+// Running-number tween for an Action-Card headline figure (Accuracy total or
+// Damage / Heal number). Animates `el`'s value from `from` → `to` over ~360ms
+// and tags it with a direction class (fud-num-up / fud-num-down) so increases
+// and decreases read differently (see the card <style> block). `setText` writes
+// each interpolated frame back. COSMETIC + PER-CLIENT — callers run this after
+// applying the value swap locally; tween state is never baked into the
+// broadcast HTML, so a late-joining mirror just sees the final value. No-ops on
+// non-numeric values (e.g. a fumble's "—") or when the value is unchanged. Uses
+// the rAF timestamp as its clock (no Date.now()/performance.now()).
+function animateCardNumber(el, from, to, setText) {
+  if (!el || typeof setText !== "function") return;
+  const a = Number(from), b = Number(to);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || a === b) { if (Number.isFinite(b)) setText(b); return; }
+  const up = b > a;
+  el.classList.remove("fud-num-up", "fud-num-down");
+  void el.offsetWidth; // force reflow so re-triggering the same direction replays the keyframes
+  el.classList.add(up ? "fud-num-up" : "fud-num-down");
+  const dur = 360;
+  let t0 = null;
+  const tick = (now) => {
+    if (t0 == null) t0 = now;
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3); // ease-out cubic
+    setText(Math.round(a + (b - a) * e));
+    if (k < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      setText(b);
+      el.classList.remove("fud-num-up", "fud-num-down");
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
 function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDefenseIcon = false, legendOverride = null }) {
   if (!roll) return "";
-  const { A1, A2, dA, dB, rA, rB, total, hr, checkBonus, checkBonusParts, isCrit, isFumble, opportunities } = roll;
+  const { A1, A2, dA, dB, rA, rB, total, hr, checkBonus, checkBonusParts, isCrit, isFumble, opportunities, dieSwap } = roll;
   const accCls = isFumble ? "is-fumble" : isCrit ? "is-crit" : "";
+  // Pre-roll Attribute-die swap (Psychokinesis): a small note under the dice
+  // showing what was replaced (e.g. "Psychokinesis: DEX → WLP"), so the auto-swap
+  // is transparent rather than a silent change.
+  const dieSwapList = Array.isArray(dieSwap) ? dieSwap : (dieSwap ? [dieSwap] : []);
+  const dieSwapNote = dieSwapList.length
+    ? `<div class="fud-bf-die-swap" style="font-size:11px; opacity:0.82; margin-top:3px;"><i class="fa-solid fa-arrow-right-arrow-left" style="font-size:10px;"></i> ${dieSwapList.map((d) => `${escapeHtml(d.label || "Die swap")}: ${escapeHtml(d.from)} → ${escapeHtml(d.to)}`).join("; ")}</div>`
+    : "";
 
   const dieA = `<span class="die-block">${attrIconHTML(A1)} <span class="attr">${escapeHtml(A1)}</span> <span class="die-size">d${dA}</span> <span class="die-result">${rA}</span></span>`;
   const dieB = `<span class="die-block">${attrIconHTML(A2)} <span class="attr">${escapeHtml(A2)}</span> <span class="die-size">d${dB}</span> <span class="die-result">${rB}</span></span>`;
@@ -1672,6 +1752,7 @@ function buildAccuracyHTML({ roll, isSpellish = false, legendSuffix = "", hideDe
         </div>
         ${banner}
         ${opportunityNote}
+        ${dieSwapNote}
       </div>
     </fieldset>
   `;
@@ -1712,7 +1793,7 @@ function buildDamagePreviewHTML({ damage, roll, legendSuffix = "" }) {
   const label = isHealing
     ? (resourceKey === "hp" ? "Heal" : "Restore")
     : (isMpDamage ? "MP Damage" : "Damage");
-  const elementLabel = isHealing ? restoreLabel : (isMpDamage ? "MP" : escapeHtml(cap(elemKey)));
+  const elementLabel = isHealing ? restoreLabel : (isMpDamage ? "MP" : escapeHtml(displayElement(elemKey)));
   const suffix = legendSuffix ? ` <span style="opacity:0.7; font-weight: 700;">— ${escapeHtml(legendSuffix)}</span>` : "";
 
   // Calculation tooltip — surfaces base damage + HR contribution + how
@@ -1910,7 +1991,7 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
   const elemRaw = String(
     element ?? weapon?.damageType ?? ""
   ).toLowerCase();
-  const elemLabel = elemRaw ? cap(elemRaw) : "—";
+  const elemLabel = elemRaw ? displayElement(elemRaw) : "—";
   // Defense label varies by action kind. Spellish actions (Skill/Spell
   // with skill_type='Spell') compare vs the target's Magic Defense in
   // COMPUTE — show "MDEF" instead of "DEF" so the per-target row
@@ -1981,6 +2062,15 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
         }).join("");
         tipLines.push(`<p style="margin:4px 0 0;"><b>Damage Mods:</b></p>${modLines}`);
       }
+    }
+    // Defense override (adjust_defense reaction, e.g. Verónica "+2 DEF when
+    // targeted") — itemize WHY this target's DEF differs from its base, same
+    // shape as the Damage Mods breakdown above, just before the Hit Check.
+    if (r.defenseOverride && Number(r.defenseOverride.from) !== Number(r.defenseOverride.to)) {
+      const dov = r.defenseOverride;
+      const d = Number(dov.to) - Number(dov.from);
+      const sign = d > 0 ? "+" : "−";
+      tipLines.push(`<p style="margin:4px 0 0;"><b>${defLabelTag} Mods:</b></p><div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(dov.via ?? "Reaction")}</span><span>${sign}${Math.abs(d)}</span></div>`);
     }
     if (roll?.isFumble) {
       tipLines.push(`<p><b>Hit Check:</b> Fumble — auto-miss</p>`);
@@ -2266,6 +2356,7 @@ function maskedGridHTML(slots) {
 //       via,              // skill name that caused the redirect
 //     }],
 //     hasDamageRows,      // gates the t-result re-derive
+//     vsMDef,             // true → label rows/tooltip "MDEF" (Spell / mdef-tagged); else "DEF"
 //     rollTotal,          // for the tooltip "Total N ≥/< DEF X" line
 //     element,            // for the tooltip Element + Affinity lines
 //   }
@@ -2277,6 +2368,10 @@ function maskedGridHTML(slots) {
 export function applyCardTargetMutationDelta(rootEl, delta) {
   if (!rootEl || !delta || !Array.isArray(delta.redirects)) return;
   const { redirects, hasDamageRows, rollTotal, element } = delta;
+  // DEF for Attacks / physical Skills; MDEF for Spell-kind or mdef-tagged
+  // actions. Mirrors buildPerTargetHTML's label so a redirect (Protect) onto a
+  // magic action keeps the MDEF wording instead of reverting to DEF.
+  const defLabelTag = delta.vsMDef ? "MDEF" : "DEF";
   for (const r of redirects) {
     if (!r?.origUuid) continue;
     const safeOrig = CSS.escape(String(r.origUuid));
@@ -2329,7 +2424,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
           `<small class="t-redirect-from" title="Redirected from ${escapeHtml(fromName)}">🔄</small>`;
       }
       const defSpan = rowEl.querySelector(".t-def");
-      if (defSpan) defSpan.textContent = `DEF ${r.newDefense}`;
+      if (defSpan) defSpan.textContent = `${defLabelTag} ${r.newDefense}`;
       rowEl.classList.add("is-redirected");
 
       // Tooltip — rebuild the per-target hover body to reflect the
@@ -2346,7 +2441,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
         `<small>(via ${escapeHtml(r.via ?? "reaction")})</small></p>` +
         `<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>` +
         `<p><b>Affinity:</b> ${escapeHtml(r.newAffinity ?? "NE")}</p>` +
-        `<p><b>Hit Check:</b> Total ${total} ${cmp} DEF ${r.newDefense} — ${verdict}</p>`;
+        `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${r.newDefense} — ${verdict}</p>`;
       rowEl.setAttribute("data-fud-equip-desc", tipBody);
 
       if (hasDamageRows) {
@@ -2358,10 +2453,49 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
             hit: r.newHit, crit: r.newCrit, affinity: r.newAffinity,
             damage: r.newDamage, resource: r.resource,
           };
+          const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
           resultSpan.className = `t-result ${resultClsFor(shim)}`;
           resultSpan.innerHTML = resultLabelFor(shim);
+          const tNum = resultSpan.querySelector(".t-num");
+          if (tNum) animateCardNumber(tNum, oldTNum, Number(tNum.textContent), (v) => { tNum.textContent = String(v); });
         }
       }
+    }
+  }
+
+  // Per-target DEFENSE override (adjust_defense / Verónica "+2 DEF when targeted"):
+  // the recompute bumped a target's OWN DEF and re-derived its hit. The redirect
+  // loop above only touches redirected slots and a self +DEF has none, so patch
+  // those rows here — the DEF number, the Hit Check + DEF-Mods hover, and the
+  // verdict — mirroring the redirect row patch. Serializable delta → player mirror too.
+  for (const d of (Array.isArray(delta.defenseOverrides) ? delta.defenseOverrides : [])) {
+    const rowEl = (d.tokenUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-token-uuid="${CSS.escape(String(d.tokenUuid))}"]`
+    )) || (d.actorUuid && rootEl.querySelector(
+      `.fud-bf-target-row[data-fud-target-actor-uuid="${CSS.escape(String(d.actorUuid))}"]`
+    ));
+    if (!rowEl) continue;
+    const defSpan = rowEl.querySelector(".t-def");
+    if (defSpan) defSpan.textContent = `${defLabelTag} ${d.to}`;
+    // Hover — re-derive the Hit Check vs the NEW DEF + itemize the +DEF source.
+    const verdict = d.hit ? (d.crit ? "Critical — auto-hit" : "hit") : "missed";
+    const cmp = d.hit ? "≥" : "&lt;";
+    const total = rollTotal ?? "?";
+    const dd = Number(d.to) - Number(d.from);
+    const sign = dd > 0 ? "+" : "−";
+    const elemLabel = element ?? "Physical";
+    rowEl.setAttribute("data-fud-equip-desc",
+      `<p><b>Element:</b> ${escapeHtml(elemLabel)}</p>` +
+      `<p><b>Affinity:</b> ${escapeHtml(d.affinity ?? "NE")}</p>` +
+      `<p style="margin:4px 0 0;"><b>${defLabelTag} Mods:</b></p>` +
+      `<div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(d.via ?? "Reaction")}</span><span>${sign}${Math.abs(dd)}</span></div>` +
+      `<p><b>Hit Check:</b> Total ${total} ${cmp} ${defLabelTag} ${d.to} — ${verdict}</p>`);
+    // Verdict — re-derive (keep it authoritative alongside the DEF/hover).
+    const resultSpan = rowEl.querySelector(".t-result");
+    if (resultSpan) {
+      const shim = { hit: d.hit, crit: d.crit, affinity: d.affinity, damage: d.damage };
+      resultSpan.className = `t-result ${resultClsFor(shim)}`;
+      resultSpan.innerHTML = resultLabelFor(shim);
     }
   }
 
@@ -2390,9 +2524,14 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
         && (delta.healHeadlineObj.isHealing || delta.healHeadlineObj.declaresHealing)) {
       const healFieldset = rootEl.querySelector(".fud-bf-dmg");
       if (healFieldset) {
+        const oldShown = parseInt(healFieldset.querySelector(".fud-bf-dmg-number")?.textContent ?? "", 10);
         const patchedHeal = { ...delta.healHeadlineObj, base: delta.grantHeadline, finalIfHit: delta.grantHeadline };
         const newHTML = buildDamagePreviewHTML({ damage: patchedHeal, roll: delta.healHeadlineRoll ?? null });
-        if (newHTML) healFieldset.outerHTML = newHTML;
+        if (newHTML) {
+          healFieldset.outerHTML = newHTML;
+          const numEl = rootEl.querySelector(".fud-bf-dmg .fud-bf-dmg-number");
+          if (numEl) animateCardNumber(numEl, oldShown, Number(delta.grantHeadline), (v) => setLeadingNumberText(numEl, v));
+        }
       }
     }
   }
@@ -2417,11 +2556,14 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   if (delta.accuracyRoll && accFieldset) {
     const legendEl = accFieldset.querySelector("legend");
     const legendText = legendEl ? legendEl.textContent.trim() : null;
+    const oldTotal = parseInt(accFieldset.querySelector(".fud-bf-acc .total")?.textContent ?? "", 10);
     accFieldset.outerHTML = buildAccuracyHTML({
       roll: delta.accuracyRoll,
       isSpellish: !!delta.accuracyIsSpellish,
       legendOverride: legendText || null,
     });
+    const totalEl = rootEl.querySelector(".fud-bf-acc .total");
+    if (totalEl) animateCardNumber(totalEl, oldTotal, Number(delta.accuracyRoll.total), (v) => { totalEl.textContent = String(v); });
   } else {
     const accTotal = rootEl.querySelector(".fud-bf-acc .total");
     if (accTotal && rollTotal != null) accTotal.textContent = String(rollTotal);
@@ -4577,6 +4719,14 @@ export async function postActionCard({ director, kind, payload }) {
             perTargetResults: Array.isArray(base?.perTargetResults) ? base.perTargetResults : [],
             roll: base?.roll ?? null,
             damage: base?.damage ?? null,
+            // damageType is what describePrimary's Skill/Spell path reads to
+            // classify the action as damage (Attack reads the weapon snapshot
+            // instead). Omitting it made every Skill recompute fall to mode
+            // "none" → no damage profile → reaction damage ops (element override
+            // + bonus, e.g. Thermokinesis fire/ice) silently dropped on Skills
+            // while Attacks worked. Carry it (+ skillName for breakdown labels).
+            damageType: base?.damageType ?? null,
+            skillName: base?.skillName ?? null,
             skillType: payload?.skillType ?? null,
             defenseTargetType: payload?.defenseTargetType ?? null,
             // Context the card-mutation layer needs to RE-DERIVE a redirected /
@@ -4638,6 +4788,14 @@ export async function postActionCard({ director, kind, payload }) {
           // label re-derive is gated on hasDamageRows downstream anyway).
           const original = Array.isArray(arSnapshot.perTargetResults) ? arSnapshot.perTargetResults : [];
           const mutTargets = Array.isArray(mutationResult.targets) ? mutationResult.targets : [];
+          // Defense kind for the redrawn rows — mirrors buildPerTarget's selector
+          // (Attacks always vs DEF; Skills/Spells vs MDEF when Spell-kind or
+          // defense_target_type='mdef'). Drives both the recomputed value pick
+          // below and the DEF/MDEF label in applyCardTargetMutationDelta.
+          const redirectVsMDef =
+            String(arSnapshot.kind ?? "").toLowerCase() !== "attack" &&
+            (String(arSnapshot.skillType ?? "").toLowerCase() === "spell" ||
+             String(arSnapshot.defenseTargetType ?? "").toLowerCase() === "mdef");
           const redirects = [];
           for (let i = 0; i < mutTargets.length; i++) {
             const t = mutTargets[i];
@@ -4648,7 +4806,11 @@ export async function postActionCard({ director, kind, payload }) {
               origUuid: rf.actorUuid,
               newName: t.name ?? entry.name,
               newImg: t.tokenImg ?? entry.tokenImg,
-              newDefense: t.defense ?? entry.defense,
+              // Prefer the recomputed buildPerTarget value (`entry.defense` is the
+              // action-correct DEF *or* MDEF for this target). `t.defense` is the
+              // raw snapshot's physical DEF only — a magic action redirected onto
+              // the protector must NOT fall back to it (would show physical DEF).
+              newDefense: entry.defense ?? t.defense,
               newAffinity: entry.affinity,
               newHit: !!entry.hit,
               newCrit: !!entry.crit,
@@ -4681,9 +4843,31 @@ export async function postActionCard({ director, kind, payload }) {
               grantHeadline = entry.grantAmount;
             }
           }
+          // Defense override rows (adjust_defense / Verónica): the recompute bumped
+          // a target's OWN DEF and re-derived its hit. Surface them so the shared
+          // applyCardTargetMutationDelta repaints the DEF number + hover + verdict —
+          // the redirect loop only touches redirected slots, and a self +DEF has none.
+          const defenseOverrideRows = [];
+          for (const entry of (recomputed ?? [])) {
+            if (!entry?.defenseOverride) continue;
+            defenseOverrideRows.push({
+              tokenUuid: entry.tokenUuid ?? null,
+              actorUuid: entry.actorUuid ?? null,
+              defense: entry.defense,
+              from: entry.defenseOverride.from,
+              to: entry.defenseOverride.to,
+              via: entry.defenseOverride.via,
+              hit: !!entry.hit, crit: !!entry.crit, damage: entry.damage,
+              affinity: entry.affinity ?? null,
+            });
+          }
           const delta = {
             redirects,
+            defenseOverrides: defenseOverrideRows,
             hasDamageRows,
+            // DEF vs MDEF for the redrawn redirect rows (broadcast to player
+            // mirrors too — both sides share applyCardTargetMutationDelta).
+            vsMDef: redirectVsMDef,
             rollTotal: arSnapshot.roll?.total ?? null,
             element: arSnapshot.damage?.element ?? null,
             accuracyOverride: mutationResult.accuracyOverride ?? null,
@@ -4774,8 +4958,25 @@ export async function postActionCard({ director, kind, payload }) {
               if (typeof entry.grantAmount === "number") continue; // grant rows aren't damage
               // Reuse the canonical label/class logic so affinity verbs
               // (WEAK / RESIST / NO EFFECT / HEALS) stay in sync everywhere.
+              const oldTNum = parseInt(resultSpan.querySelector(".t-num")?.textContent ?? "", 10);
               resultSpan.className = `t-result ${resultClsFor(entry)}`;
               resultSpan.innerHTML = resultLabelFor(entry);
+              // Running-number tween on this row's damage figure (same direction
+              // cues as the headline). No-ops when the row had no number (e.g.
+              // was MISS) or the value is unchanged.
+              const tNum = resultSpan.querySelector(".t-num");
+              if (tNum) animateCardNumber(tNum, oldTNum, Number(tNum.textContent), (v) => { tNum.textContent = String(v); });
+              // Sync the affinity badge too — it lives inside `.t-name` (name +
+              // badge), is NOT part of `.t-result`, and is built once at render.
+              // A reaction element override (Thermokinesis fire/ice) recomputes
+              // each target's affinity, so without this the badge (WEAK/RESIST/…)
+              // would go stale against the new element while the verb updated.
+              const nameSpan = rowEl.querySelector(".t-name");
+              if (nameSpan) {
+                const aff = buildAffinityTagHTML({ affinity: entry.affinity, hit: entry.hit, studied: entry.studied });
+                const nm = escapeHtml(entry.name ?? origEntry.name ?? "");
+                nameSpan.innerHTML = `${nm}${aff ? ` ${aff}` : ""}`;
+              }
             }
 
             // Headline damage preview — the prominent `.fud-bf-dmg` fieldset
@@ -4843,11 +5044,19 @@ export async function postActionCard({ director, kind, payload }) {
                   }
                 : baseDamage;
               const wasBlocked = dmgFieldset.classList.contains("is-blocked-dmg");
+              const oldShown = Number(baseDamage?.finalIfHit);
               const newHTML = buildDamagePreviewHTML({ damage: patchedDamage, roll: payload?.roll ?? null });
               if (newHTML) {
                 dmgFieldset.outerHTML = newHTML;
                 const refreshed = root.querySelector(".fud-bf-dmg");
                 if (refreshed && wasBlocked) refreshed.classList.add("is-blocked-dmg");
+                // Running-number tween on the headline (skip fumbles — they show
+                // "—", not a number). Per-client + cosmetic; the broadcast HTML
+                // already carries the final value for late-joining mirrors.
+                if (refreshed && !payload?.roll?.isFumble) {
+                  const numEl = refreshed.querySelector(".fud-bf-dmg-number");
+                  if (numEl) animateCardNumber(numEl, oldShown, Number(patchedDamage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
+                }
                 // Headline number is left as buildDamagePreviewHTML rendered it:
                 // damage.finalIfHit = base + attacker-side reaction bonuses, BEFORE
                 // any per-target incoming reduction. So an AoE shows the pre-split

@@ -92,10 +92,12 @@ export async function runBattleEndSequence(director) {
   }
   endCtx.promptResult = promptResult;
   endCtx.outcome = promptResult.outcome;
+  endCtx.debug = !!promptResult.debug;
 
   await runBattleEndFx(endCtx);
 
-  if (endCtx.outcome === "victory") {
+  // Debug mode returns to the scene with no rewards/summary cinematic.
+  if (endCtx.outcome === "victory" && !endCtx.debug) {
     await runBattleEndSummaryLogic(endCtx);
     await runBattleEndRank(endCtx);
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes

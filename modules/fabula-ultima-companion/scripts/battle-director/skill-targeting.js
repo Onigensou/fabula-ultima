@@ -52,6 +52,15 @@ const RESERVED_REFS = {
   // ctx.saveFailedTokenUuids). Used by follow-up apply_ae rows (Dreadwyrm: the
   // failures suffer Frightened/Paralyzed/Silence). mode "all" → every failure.
   save_failed_targets:   { candidate_source: "save_failed_targets", mode: "all" },
+  // The reactor's own summoned Numen (summonedBy == me + actor isNumen). A Numen
+  // subset of own_summons that EXCLUDES phantasms — used by Create Phantasm: Numen's
+  // turn_start reaction so take_turn_next force-moves only the Numen. mode "all"
+  // takes the (0 or 1) Numen without prompting.
+  own_numen:             { candidate_source: "own_numen", mode: "all" },
+  // ALL the reactor's own summons (phantasms + Numen). target_ref sugar for the
+  // candidate_source of the same name, so a row can `target_ref: "own_summons"`
+  // (Zero Power shatters every summon). mode "all" → every own summon, no prompt.
+  own_summons:           { candidate_source: "own_summons", mode: "all" },
 };
 
 // Public — resolve a target_ref to a token list within a chain context.
@@ -422,6 +431,7 @@ async function buildCandidatePool(source, ctx) {
     case "self":                return collectSelfTokens(ctx);
     case "self_or_my_focus":    return collectSelfOrMyFocusTokens(ctx);
     case "own_summons":         return collectOwnSummons(ctx);
+    case "own_numen":           return collectOwnNumen(ctx);
     case "last_summoned":       return collectLastSummoned(ctx);
     case "action_targets":      return collectActionTargets(ctx);
     case "hit_action_targets":  return collectHitActionTargets(ctx);
@@ -462,6 +472,25 @@ function collectOwnSummons(ctx) {
     const f = t.flags?.[NS] ?? {};
     if (String(f.summonedBy ?? "") !== meUuid) continue;
     if (!(f.isSummon || f.isPhantasm)) continue;
+    out.push(t);
+  }
+  return out;
+}
+
+// "own_numen" — the reactor's own summoned Numen (summonedBy == me AND actor
+// isNumen). A Numen subset of own_summons that EXCLUDES phantasms, so a
+// take_turn_next reaction force-moves only the Numen (phantasms have 0
+// activation and act narratively on the owner's turn — never force them).
+function collectOwnNumen(ctx) {
+  const meUuid = String(ctx.reactorActor?.uuid ?? ctx.reactorToken?.actor?.uuid ?? "").trim();
+  if (!meUuid) return [];
+  const NS = "fabula-ultima-companion";
+  const out = [];
+  for (const t of collectCombatTokens(ctx)) {
+    if (!t?.actor) continue;
+    const f = t.flags?.[NS] ?? {};
+    if (String(f.summonedBy ?? "") !== meUuid) continue;
+    if (!t.actor?.system?.props?.isNumen) continue;
     out.push(t);
   }
   return out;
@@ -746,6 +775,12 @@ export function makeChainContext({
   // Null for item-carried reactions / unattributed effects.
   appliedByActorUuid = null,
   appliedByTokenUuid = null,
+  // Signed per-resource cost-discount deltas ({ mp: -4, … }) produced by an
+  // accepted adjust_cost reaction (Hypercognition), threaded from ar.costOverride
+  // at RESOLVE. consume_resource rows debiting a listed resource subtract the
+  // delta (clamped >= 0) and decrement it, so a spell's total cost drops once
+  // across however many consume rows it has. MUTABLE (each consume mutates it).
+  costOverride = null,
 } = {}) {
   return {
     reactorActor,
@@ -767,6 +802,7 @@ export function makeChainContext({
     remotePrompt,
     appliedByActorUuid,
     appliedByTokenUuid,
+    costOverride,
     resolvedTargets: new Map(),
   };
 }

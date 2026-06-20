@@ -415,6 +415,14 @@ Hooks.once("ready", () => {
       case "HP_DEALT_TOTAL":     return _eventValue(payload, "hp");
       case "MP_DEALT_TOTAL":     return _eventValue(payload, "mp");
       case "SHIELD_DEALT_TOTAL": return _eventValue(payload, "shield");
+      // Action-type + equipment gates for passive-formula skills. The
+      // passive-modifier-engine pre-computes these as numeric flags on the
+      // action context (= this payload), since the evaluator can't reach the
+      // actor or action itself. Fail-safe 0 in any other context. Used by
+      // Magical Artillery: HAS_ARCANE_WEAPON * ACTION_IS_SPELL * SL * 2.
+      case "ACTION_IS_SPELL":           return Number(payload?._isSpell ?? 0) || 0;
+      case "ACTION_IS_OFFENSIVE_SPELL": return Number(payload?._isOffensiveSpell ?? 0) || 0;
+      case "HAS_ARCANE_WEAPON":         return Number(payload?._hasArcaneWeapon ?? 0) || 0;
     }
 
     // BOND_COUNT_<EMOTION>
@@ -465,6 +473,9 @@ Hooks.once("ready", () => {
       { name: "SHIELD_DEALT",  description: "Same but 0 unless the event's valueType is shield." },
       { name: "ROUND",         description: "Current combat round number (1-indexed). 0 outside combat." },
       { name: "ACTION_TARGET_COUNT", description: "Number of tokens targeted by the triggering action (payload.targets.length). 0 when the payload carries no target list." },
+      { name: "ACTION_IS_SPELL", description: "1 if the action that triggered this passive is a Spell, else 0. Pre-computed by the passive-modifier-engine; 0 outside the passive-formula path." },
+      { name: "ACTION_IS_OFFENSIVE_SPELL", description: "1 if the action is an Offensive Spell (isOffensiveSpell), else 0. Pre-computed by the passive-modifier-engine." },
+      { name: "HAS_ARCANE_WEAPON", description: "1 if the reactor has an equipped arcane-category weapon, else 0. Pre-computed by the passive-modifier-engine." },
     ];
   }
 

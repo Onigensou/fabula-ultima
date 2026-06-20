@@ -21,6 +21,7 @@
 //   Both capped at the last MAX entries.
 
 import { log, warn } from "./logger.js";
+import { displayElement } from "./skill-formulas.js";
 
 const MAX = 30;
 
@@ -139,7 +140,7 @@ export function buildDamageRow({
 
   let summary;
   if (isHeal) summary = `${attackerName} heals ${targetName} for ${displayAmt} ${valueTypeLbl}`;
-  else if (resource === "hp") summary = `${attackerName} deals ${displayAmt}${element !== "elementless" ? ` ${_cap(element)}` : ""} damage to ${targetName} [${effLabel}]`;
+  else if (resource === "hp") summary = `${attackerName} deals ${displayAmt} ${displayElement(element)} damage to ${targetName} [${effLabel}]`;
   else summary = `${attackerName} deals ${displayAmt} damage to ${targetName}'s ${valueTypeLbl}`;
 
   const entry = {

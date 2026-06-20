@@ -230,6 +230,11 @@ Hooks.once("ready", () => {
     },
     {
       key: "creature_miss_action",
+      // subject = the attacker (the creature that missed). The post-resolve
+      // dispatch is subject-scoped to the MISSED creature as the reactor (see
+      // state-handlers §7d), whose reaction_source:"enemy" row then matches the
+      // attacker carried in payload.sourceActorUuid. Defender-side reactions:
+      // Adoration Clock fill, Fancy Footwork, Thread the Horns, Counter Pass.
       label: "When a creature misses an Action",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_DAMAGE_SOURCE,

@@ -30,6 +30,18 @@ export function readCharges(effect) {
   };
 }
 
+// A "persistent counter" AE (a clock / points pool — Brainwave, Grave,
+// Adoration) treats 0 as a valid resting state: it must stay on the actor
+// (badge showing 0/max) until the scene-end sweep clears it, NOT vanish the
+// instant it empties. It opts out via the existing `lifetimeMode` field —
+// no new flag. Every other charge AE (once-per-X "ready" gates, active
+// cooldowns) still deletes at 0 so the next refresh re-grants a fresh one.
+function isPersistentCounter(effect) {
+  const f = effect?.flags?.[FLAG_NS] ?? {};
+  const mode = f.lifetimeMode ?? f.directorAppliedBy?.lifetimeMode ?? "";
+  return String(mode).toLowerCase() === "persistent_counter";
+}
+
 // Find all charge-bearing AEs on an actor, optionally filtered by key.
 // `includeDisabled` defaults to false — disabled AEs don't gate anything.
 export function findOnActor(actor, { key = null, includeDisabled = false } = {}) {
@@ -65,12 +77,22 @@ export async function consume(effect, { count = 1, deleteWhenEmpty = true } = {}
 
   const remaining = c.charges - n;
   try {
-    if (remaining === 0 && deleteWhenEmpty) {
+    if (remaining === 0 && deleteWhenEmpty && !isPersistentCounter(effect)) {
       await effect.delete();
       log(`charges.consume: ${effect.name} drained (${n}/${c.charges}) → deleted`);
       return { ok: true, consumed: n, remaining: 0, deleted: true };
     }
-    await effect.update({ [`flags.${FLAG_NS}.charges`]: remaining });
+    await effect.update({
+      [`flags.${FLAG_NS}.charges`]: remaining,
+      // Keep the visible token badge in sync. The 3rd-party statuscounter module
+      // renders `flags.statuscounter.value`, which is DECOUPLED from our charges
+      // flag — so without this the on-token count never moves when a charge is
+      // spent (the cost IS consumed; only the badge looked stale). Reached only on
+      // the remaining>0 path, so it affects persisting multi-charge clocks
+      // (Adoration, Grave Points, Brainwave, Bleed) — exactly the ones that show a count.
+      "flags.statuscounter.value": remaining,
+      "flags.statuscounter.visible": true,
+    });
     log(`charges.consume: ${effect.name} ${c.charges} → ${remaining} (consumed ${n})`);
     return { ok: true, consumed: n, remaining, deleted: false };
   } catch (e) {
@@ -87,11 +109,16 @@ export async function set(effect, value, { deleteWhenEmpty = true } = {}) {
   if (!c) return { ok: false, reason: "no-charges-flag" };
   const next = Math.max(0, Math.floor(Number(value) || 0));
   try {
-    if (next === 0 && deleteWhenEmpty) {
+    if (next === 0 && deleteWhenEmpty && !isPersistentCounter(effect)) {
       await effect.delete();
       return { ok: true, newValue: 0, deleted: true };
     }
-    await effect.update({ [`flags.${FLAG_NS}.charges`]: next });
+    await effect.update({
+      [`flags.${FLAG_NS}.charges`]: next,
+      // Mirror the visible badge (see consume() note) so refreshes/resets show too.
+      "flags.statuscounter.value": next,
+      "flags.statuscounter.visible": true,
+    });
     return { ok: true, newValue: next, deleted: false };
   } catch (e) {
     warn("charges.set: write failed", e);

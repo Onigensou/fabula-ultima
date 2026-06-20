@@ -1225,6 +1225,11 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available,
         unavailableKind,
         unavailableReason,
+        // The trigger payload at fire-time (targets, actionKind, sourceTokenUuid…)
+        // so a card-mutation handler's resolver can read it (e.g. Hypercognition's
+        // FOCUS_IS_ONLY_TARGET needs the action's target list). Mirrors the
+        // will_deal_damage path's explicit payloadAtFire.
+        payloadAtFire: payload ?? null,
       });
     }
   }
@@ -1259,6 +1264,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available,
         unavailableKind,
         unavailableReason,
+        payloadAtFire: payload ?? null,
       });
     }
   }
@@ -2671,8 +2677,20 @@ async function applyLeaveCombatEffect(row, ctx) {
 // First user: Detonate Phantasm; Illusory Shield + Zero Power will reuse it.
 async function applyDestroySummonEffect(row, ctx) {
   if (ctx?.mode === "preview") return { ok: true, kind: "destroy_summon", applied: [], reason: "preview" };
+  // suppress_defeat — shatter the summons WITHOUT emitting creature_defeated and
+  // WITHOUT the HP→0 trip, so no on-shatter reaction fires (Phantasmal Echo MP
+  // recover, Zero Trigger ZP gain). Used by Zero Power: Last Den of Cinders, where
+  // self-shattering your own Phantasms must not refund resources (too strong).
+  // Default off → normal shatter still feeds those reactions.
+  const suppressDefeat = row.suppress_defeat === true
+    || String(row.suppress_defeat ?? "").trim().toLowerCase() === "true";
   const tr = await resolveTargetRef(row.target_ref || "self", ctx);
   if (!tr.ok || !tr.tokens.length) {
+    // A silent mass-shatter (suppress_defeat) tolerates an empty/unresolved set:
+    // "shatter all my summons" is valid even with zero out, so it must NOT abort
+    // the enclosing on_activate chain (which would skip the action's damage — see
+    // state-handlers RESOLVE). A normal targeted destroy (Detonate) still aborts.
+    if (suppressDefeat) return { ok: true, kind: "destroy_summon", applied: [], reason: "no-summons" };
     return { ok: false, kind: "destroy_summon", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
   }
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
@@ -2685,10 +2703,11 @@ async function applyDestroySummonEffect(row, ctx) {
     //    gone. It fans out observer-aware (LEDGER_FAMILY) at the post-resolve
     //    settle → an onlooker's reaction (Phantasmal Echo) matches via
     //    SUBJECT_IS_MY_PHANTASM. summonedBy is the summoner's ACTOR uuid.
+    //    Skipped under suppress_defeat (silent shatter).
     try {
       const NS = "fabula-ultima-companion";
       const flags = token.flags?.[NS] ?? token.document?.flags?.[NS] ?? {};
-      if (director?.ctx) {
+      if (!suppressDefeat && director?.ctx) {
         if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
         director.ctx._postResolveTriggers.push({
           casterActor: actor,
@@ -2708,10 +2727,14 @@ async function applyDestroySummonEffect(row, ctx) {
       }
     } catch (e) { warn(`skill-effects.destroy_summon: queue creature_defeated failed for ${token.uuid}`, e); }
     // 1. HP → 0 — also trips the universal creature-defeated emitter / cleanup.
-    try {
-      const cur = Number(actor?.system?.props?.current_hp ?? 0) || 0;
-      if (actor && cur > 0) await actor.update({ "system.props.current_hp": 0 });
-    } catch (e) { warn(`skill-effects.destroy_summon: HP-zero failed for ${token.uuid}`, e); }
+    //    Skipped under suppress_defeat so the HP→0 transition never fires the
+    //    emitter (a silent shatter just despawns; the token leaves with no event).
+    if (!suppressDefeat) {
+      try {
+        const cur = Number(actor?.system?.props?.current_hp ?? 0) || 0;
+        if (actor && cur > 0) await actor.update({ "system.props.current_hp": 0 });
+      } catch (e) { warn(`skill-effects.destroy_summon: HP-zero failed for ${token.uuid}`, e); }
+    }
     // 2. Despawn — remove the combatant + token (mirrors leave_combat).
     if (typeof bd?.removeCombatant === "function") {
       try {
@@ -2764,6 +2787,7 @@ const EFFECT_KIND_DISPATCH = {
   apply_ae:            applyApplyAeEffect,
   consume_charge:      consumeChargeRun,     // UNIFIED (see consumeChargeRun)
   chain:               applyChainEffect,
+  chance:              applyChanceEffect,
   open_action_menu:    applyOpenActionMenuEffect,
   free_action:         applyFreeActionEffect,
   adjust_charges:      applyAdjustChargesEffect,
@@ -2804,6 +2828,26 @@ const EFFECT_KIND_DISPATCH = {
   apply_action_keyword: (row) => ({ ok: true, kind: "apply_action_keyword", applied: [], reason: "applied-at-damage-recompute" }),
   redirect_target:     (row) => ({ ok: true, kind: "redirect_target", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // adjust_defense: the DEFENDER-side twin of adjust_accuracy. A
+  // creature_targeted_by_action reaction on the TARGET raises its OWN effective
+  // defense for the in-flight action (Matador Verónica: +2 DEF when targeted).
+  // NO-OP in the effect pipeline — the real work runs at the card-mutation phase
+  // (card-mutations.applyAdjustDefenseMutation). Registered so the row validates
+  // + shows in the dropdown.
+  adjust_defense:      (row) => ({ ok: true, kind: "adjust_defense", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // adjust_cost: standing MP/IP cost modifier (the cost member of the adjust_*
+  // family). NO-OP in the effect pipeline — it is pure standing config read at
+  // cost-resolution time by skill-cost.applyCostAdjustments (affordability +
+  // debit), not run as a chain step. Registered so the row validates + appears
+  // in the effect_kind dropdown. First user: Hypercognition's focus discount.
+  adjust_cost:         (row) => ({ ok: true, kind: "adjust_cost", applied: [], reason: "applied-at-cost-resolution" }),
+  // check_die_swap: standing config read PRE-ROLL by check.rollCheck (Psychokinesis
+  // — replace one accuracy-check Attribute die with a larger one, e.g. WLP). NO-OP
+  // in the effect pipeline; the row's own swap_mode (on/ask/off) controls auto-swap.
+  // Registered so the row validates + shows in the dropdown.
+  // (The melee-vs-Flying exception is NOT an effect_kind — it's a `can_target_flying_with`
+  //  AE change, read by snapshot.attackerCanMeleeFlying, mirroring cannot_be_targeted_by.)
+  check_die_swap:      (row) => ({ ok: true, kind: "check_die_swap", applied: [], reason: "applied-pre-roll" }),
   // negate_action: nullify the performer's in-flight action (Shadow Possession's
   // Creeped). Data-only here — the real work is at the card-mutation phase
   // (card-mutations.js Phase 0 sets ar.negated + a Blocked override) and RESOLVE
@@ -2826,9 +2870,12 @@ export const EFFECT_KIND_LABELS = {
   apply_ae:            "Apply Active Effect",
   consume_charge:      "Consume Charge",
   chain:               "Chain (invoke other effects)",
+  chance:              "Chance (X% gate → then/else effect)",
   open_action_menu:    "Open Action Menu",
   free_action:         "Free Action (perform single action)",
   adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
+  adjust_cost:         "Adjust Cost (standing MP/IP cost modifier — e.g. focus discount)",
+  check_die_swap:      "Check Die Swap (pre-roll: replace one accuracy die — e.g. → WLP)",
   prompt_number:       "Prompt Number (ask the user for an amount)",
   prompt_element:      "Prompt Element (ask the user for a damage type)",
   remove_tagged_ae:    "Remove Tagged AE",
@@ -2853,6 +2900,7 @@ export const EFFECT_KIND_LABELS = {
   apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
   adjust_accuracy:     "Adjust Accuracy",
+  adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
 };
 
@@ -3865,6 +3913,19 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
   if (!targetResult.ok || !targetResult.tokens.length) {
     return { ok: false, kind: "consume_resource", reason: targetResult.reason ?? "no-targets", abort: true, cancelled: !!targetResult.cancelled };
   }
+  // adjust_cost discount (Hypercognition): an accepted cost reaction threads a
+  // signed per-resource delta on ctx.costOverride. Subtract it from THIS row's
+  // amount (clamp >= 0) and decrement the override, so a spell's total cost drops
+  // once across however many consume rows it has. Only present when a cost
+  // reaction fired for THIS action (gated spell + focus), so any MP consume of
+  // such a spell is its cost.
+  const _costOv = ctx?.costOverride;
+  if (_costOv && Number(_costOv[resource]) < 0 && amount > 0) {
+    const reduce = Math.min(amount, -Number(_costOv[resource]));
+    amount -= reduce;
+    _costOv[resource] += reduce;
+    if (reduce > 0) log(`skill-effects.consume_resource: adjust_cost −${reduce} ${resource} on "${row.effect_label}" → ${amount}`);
+  }
   if (amount <= 0) {
     log(`skill-effects.consume_resource: amount evaluated to ${amount} (row "${row.effect_label}"); no debit`);
     return { ok: true, kind: "consume_resource", applied: [], reason: "zero-amount" };
@@ -4383,6 +4444,10 @@ async function applyApplyAeEffect(row, ctx) {
       turnsRemaining = null;  // owned by round-end sweep, not applier-turn tick
     } else if (lifetimeMode === "on_activation") {
       turnsRemaining = null;  // charge-governed: expires when charges deplete on fire, not by turn-tick
+    } else if (lifetimeMode === "persistent_counter") {
+      turnsRemaining = null;  // clock / points pool (Brainwave, Grave, Adoration): rests at 0,
+                              // never turn-ticked, NOT deleted when charges empty (see
+                              // skill-charges.isPersistentCounter); cleared by scene-end sweep.
     } else if (lifetimeMode === "target_turn_end" || lifetimeMode === "target_turn_start") {
       // "Lasts N of the AFFECTED creature's turns, decrement at the END (…_end)
       // or START (…_start) of each of the bearer's turns." `target_turn_end` is
@@ -5765,7 +5830,13 @@ async function applyTransferAeEffect(row, ctx) {
 //   { effect_kind: "summon",
 //     summon_actor: "Flame Drake,Lightning Drake", // uuid / bare id / NAME, comma-list
 //     summon_count: "1",                           // copies of EACH ref (default 1)
-//     summon_act_this_round: false }               // true = acts THIS round; false = next round
+//     summon_act_this_round: false,                // true = acts THIS round; false = next round
+//     summon_max: "3",                             // optional hard cap on this kind on the
+//                                                  // field at once (phantasm rows count own
+//                                                  // isPhantasm tokens; 0/absent = unlimited)
+//     summon_at: "formation" }                     // optional. DEFAULT = in front of the
+//                                                  // caster (toward screen centre);
+//                                                  // "formation" = old top-quarter slot.
 //
 // Side/disposition mirror the caster (summons are its allies). Spawned tokens are
 // tagged summonedBy/isSummon for the battle-end summon sweep.
@@ -5789,6 +5860,17 @@ async function applySummonEffect(row, ctx) {
   // full own-turn combatant (Numen, Fafnir drakes).
   const summonType = String(row.summon_type ?? "").trim().toLowerCase();
   const asPhantasm = summonType === "phantasm";
+  // summon_max — optional hard cap on how many of THIS kind the caster may have
+  // on the field at once. Empty/0/absent = unlimited. Phantasm rows count only
+  // own isPhantasm tokens (so the Numen — a full own-turn summon — is excluded);
+  // non-phantasm rows count own summons generally. This is the authoritative
+  // backstop for the Create Phantasm 3-Phantasm cap; the menu also dims the
+  // "Create a new Phantasm" option via OWN_PHANTASM_COUNT so MP isn't wasted.
+  const summonMax = Math.max(0, Number(row.summon_max ?? 0) || 0);
+  // summon_at — placement mode. DEFAULT (empty / "caster_front") spawns just in
+  // front of the caster: one cell toward the centre of the scene, the way it
+  // faces. Opt out with "formation" to use the old top-quarter battle slot.
+  const placeAtCasterFront = String(row.summon_at ?? "").trim().toLowerCase() !== "formation";
 
   const director = ctx.director
     ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
@@ -5813,6 +5895,21 @@ async function applySummonEffect(row, ctx) {
   const side = disposition === -1 ? "enemy" : "party";
   const summonerUuid = ctx.reactorActor?.uuid ?? null;
 
+  // Caster-front anchor: a token-CENTER point one cell "in front" of the caster,
+  // i.e. one grid-step from the caster toward the centre of the scene (the way it
+  // faces). spawnLiveDirectorTokens fans from here and skips occupied cells, so a
+  // multi-summon spreads out next to it. Null unless summon_at: "caster_front".
+  let spawnAnchor = null;
+  if (placeAtCasterFront && casterTok) {
+    const grid = scene.grid?.size ?? 100;
+    const cw = (casterTok.width ?? 1) * grid;
+    const ch = (casterTok.height ?? 1) * grid;
+    const casterCx = casterTok.x + cw / 2;
+    const casterCy = casterTok.y + ch / 2;
+    const towardCenter = (scene.width / 2) >= casterCx ? 1 : -1; // face the centre
+    spawnAnchor = { x: casterCx + towardCenter * grid * 1.15, y: casterCy };
+  }
+
   // Robust ref resolver — full uuid, bare actor id, or NAME. spawnLiveDirectorTokens'
   // own resolveActor only handles uuid("Actor.x")/name and SILENTLY no-ops on a bare
   // id, so we resolve to a concrete actor (→ actor.uuid) up front.
@@ -5829,15 +5926,40 @@ async function applySummonEffect(row, ctx) {
   // Canonical import (no cache-bust) — director-init isn't the unit under edit.
   const { spawnLiveDirectorTokens } = await import("./director-init.js");
 
+  // summon_max cap — count how many of this kind the caster already has out, so
+  // the spawn loop can stop at the limit. Mirrors ownSummonCount in
+  // skill-formulas.js: phantasm rows count own isPhantasm tokens; others count
+  // own summons generally.
+  const countOwnSummons = () => {
+    if (!summonerUuid) return 0;
+    let n = 0;
+    for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+      const td = t?.document;
+      if (!td?.actor) continue;
+      const f = td.flags?.[FLAG_NS] ?? {};
+      if (String(f.summonedBy ?? "") !== summonerUuid) continue;
+      if (asPhantasm) { if (f.isPhantasm) n++; continue; }
+      if (f.isSummon || f.isPhantasm) n++;
+    }
+    return n;
+  };
+  let liveCount = summonMax ? countOwnSummons() : 0;
+  let cappedOut = false;
+
   const applied = [];
   const spawnedDocs = [];
   for (const ref of refs) {
     const actor = await resolveRef(ref);
     if (!actor) { warn(`skill-effects.summon: actor "${ref}" not found`); continue; }
     for (let i = 0; i < count; i++) {
+      if (summonMax && liveCount >= summonMax) {
+        cappedOut = true;
+        log(`skill-effects.summon: at summon_max=${summonMax} for "${row.effect_label}" — skipping spawn of ${actor.name}`);
+        break;
+      }
       let tokenDoc = null;
       try {
-        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition });
+        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor });
         tokenDoc = out?.[0] ?? null;
       } catch (e) { warn(`skill-effects.summon: spawn threw for ${actor.name}`, e); }
       if (!tokenDoc) { warn(`skill-effects.summon: spawn produced no token for ${actor.name}`); continue; }
@@ -5863,7 +5985,23 @@ async function applySummonEffect(row, ctx) {
       } catch (e) { warn(`skill-effects.summon: tag write failed for ${actor.name}`, e); }
       applied.push({ actor: actor.name, tokenUuid: tokenDoc.uuid, combatantId: c?.id ?? null, side, actThisRound, asPhantasm });
       spawnedDocs.push(tokenDoc);
+      liveCount++;
     }
+    if (cappedOut) break;
+  }
+
+  // Surface the cap to the player when nothing spawned because the limit was
+  // already reached (the menu normally dims the option first, but a direct/forced
+  // invocation can still land here). Headless (passive/no-DOM) just logs.
+  if (cappedOut && !applied.length) {
+    const noun = asPhantasm ? "Phantasm" : "summon";
+    const msg = `${noun} limit reached (max ${summonMax}).`;
+    if (!ctx.isPassive && typeof ui !== "undefined" && ui?.notifications) {
+      try { ui.notifications.warn(msg); } catch { /* non-fatal */ }
+    } else {
+      log(`skill-effects.summon: ${msg}`);
+    }
+    return { ok: false, kind: "summon", reason: "summon_max", applied: [] };
   }
 
   // Refresh the turn tracker so the new combatant(s) appear immediately.
@@ -6577,6 +6715,33 @@ function ensureLootDialogStyles() {
     .fud-steal-empty b { font-weight: 800; }
   `;
   document.head.appendChild(css);
+}
+
+// ── chance ─────────────────────────────────────────────────────────────
+// Probabilistic gate. Rolls 0..100; if the roll lands UNDER `chance_percent`
+// (a number or formula, clamped 0..100) it dispatches `chance_then_ref`,
+// otherwise the optional `chance_else_ref`. Both refs are effect_table labels
+// (resolved like a chain step / menu option). Lets any "X% chance to <do Y>"
+// rider stay declarative — first user: Muleta's 50% Bleed-on-hit.
+//   { effect_kind: "chance",
+//     chance_percent: <number | formula>,   // e.g. "50" or "25 + SL * 5"
+//     chance_then_ref: "<label>",            // run when the roll succeeds
+//     chance_else_ref: "<label>" }           // optional: run when it fails
+async function applyChanceEffect(row, ctx) {
+  const resolver = buildSkillResolver({
+    actor: ctx.reactorActor ?? ctx.casterActor ?? null,
+    payload: ctx.payload,
+    skill: ctx.skill,
+    round: ctx.dCombat?.round ?? 0,
+  });
+  const pct = Math.max(0, Math.min(100, Number(evaluateFormula(String(row.chance_percent ?? "0"), resolver, 0)) || 0));
+  const rolled = Math.random() * 100;
+  const passed = rolled < pct;
+  const refLabel = String((passed ? row.chance_then_ref : row.chance_else_ref) ?? "").trim();
+  log(`skill-effects.chance: ${pct}% → rolled ${rolled.toFixed(1)} → ${passed ? "PASS" : "fail"}${refLabel ? ` → ${refLabel}` : " (no ref)"}`);
+  if (!refLabel) return { ok: true, kind: "chance", passed, applied: [] };
+  const r = await applyEffectByLabel(refLabel, ctx);
+  return { ok: r?.ok !== false, kind: "chance", passed, child: r };
 }
 
 // ── chain ──────────────────────────────────────────────────────────────

@@ -29,6 +29,7 @@ import { registerPlayerReactionMenuHandler } from "./reaction-menu-player.js";
 import { registerRemotePickResponder } from "./remote-pick.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
+import { DieSwapPicker } from "./check-die-swap-picker.js";
 import { BattlefieldActionCard } from "./action-card.js";
 import * as LegacySuppressor from "./legacy-suppressor.js";
 import { runDirectorInit, cleanupDirectorSpawnedTokens, initDirectorEntrance, spawnLiveDirectorTokens } from "./director-init.js";
@@ -108,6 +109,7 @@ async function preflightCleanup() {
   try { TurnPicker.despawnAll(); } catch {}
   try { WeaponModePicker.despawnAll(); } catch {}
   try { AttributePairPicker.despawnAll(); } catch {}
+  try { DieSwapPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
 
@@ -318,6 +320,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   try { TurnPicker.despawnAll(); } catch {}
   try { WeaponModePicker.despawnAll(); } catch {}
   try { AttributePairPicker.despawnAll(); } catch {}
+  try { DieSwapPicker.despawnAll(); } catch {}
   try { BattlefieldActionCard.despawnAll(); } catch {}
   try { PassiveManager.despawn(); } catch {}
   // Surface registry — the despawnAll calls above remove DOM (the observer

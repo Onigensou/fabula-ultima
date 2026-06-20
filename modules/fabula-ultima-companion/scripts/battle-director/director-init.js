@@ -506,20 +506,36 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 // end-of-battle sweep removes it. Used by the Test Battle dev tool to add /
 // switch combatants on the fly. Placement is pragmatic: stack just below the
 // lowest existing same-disposition token, or fall back to a side column.
-export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition }) {
+// `anchor` (optional) = { x, y } token-CENTER coords to spawn around instead of
+// the default battle-formation corner. Used for caster-relative summons ("in
+// front of the caster"): the caller passes a point one cell toward screen centre
+// from the summoner, and the formation fans onward toward centre from there.
+export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null }) {
   if (!scene || !Array.isArray(actorUuids) || !actorUuids.length) return [];
   const grid = scene.grid?.size ?? 100;
-  const baseX = Math.round(scene.width * (disposition === -1 ? 0.16 : 0.82));
-  const baseY = Math.round(scene.height * 0.26);
   const step = grid * 1.15;
-  const dir = disposition === -1 ? 1 : -1; // enemies fan right, party fans left
+  const useAnchor = anchor && Number.isFinite(anchor.x) && Number.isFinite(anchor.y);
+  // Anchor mode: start at the caster-relative point and fan toward screen centre
+  // (left-of-centre → fan right, right-of-centre → fan left). Formation mode:
+  // the classic top-quarter corner (enemies left/fan-right, party right/fan-left).
+  const baseX = useAnchor
+    ? Math.round(anchor.x)
+    : Math.round(scene.width * (disposition === -1 ? 0.16 : 0.82));
+  const baseY = useAnchor
+    ? Math.round(anchor.y)
+    : Math.round(scene.height * 0.26);
+  const dir = useAnchor
+    ? (anchor.x <= scene.width / 2 ? 1 : -1)
+    : (disposition === -1 ? 1 : -1); // enemies fan right, party fans left
 
-  // Occupied token CENTERS (existing same-side + ones we place this call), so
+  // Occupied token CENTERS (every existing token + ones we place this call), so
   // we never drop a new token on top of another (which would make it look like
-  // a "ghost" with no visible token). Scan a small grid for the first free,
-  // in-bounds cell.
+  // a "ghost" with no visible token). We scan ALL dispositions, not just our own:
+  // caster-front summons spawn toward centre where the OTHER side may stand, so
+  // enemy tokens must block cells too. (Formation slots sit far from the opposite
+  // side, so including them there is harmless.) Scan a small grid for the first
+  // free, in-bounds cell.
   const occupied = (scene.tokens?.contents ?? [])
-    .filter((t) => t.disposition === disposition)
     .map((t) => ({ x: t.x + ((t.width ?? 1) * grid) / 2, y: t.y + ((t.height ?? 1) * grid) / 2 }));
   const freeCell = () => {
     for (let col = 0; col < 5; col++) {

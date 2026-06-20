@@ -101,9 +101,14 @@ export async function showBattleEndPrompt(endCtx) {
               <input type="radio" name="mode" value="defeat" ${defaultMode === "defeat" ? "checked" : ""}/>
               <span>Defeat</span>
             </label>
+            <label style="display:flex;gap:6px;align-items:center;">
+              <input type="radio" name="mode" value="debug" />
+              <span>Debug</span>
+            </label>
           </div>
           <div style="opacity:0.75;font-size:12px;margin-top:4px;">
             Auto-detected from battle state. Victory enables EXP + Zenit + Summary UI.
+            Debug returns to the scene with no animation, music, or rewards.
           </div>
         </div>
 
@@ -193,23 +198,29 @@ export async function showBattleEndPrompt(endCtx) {
             if (!form) { settleWith({ ok: false }); return; }
 
             const fd = new FormData(form);
-            const outcome = String(fd.get("mode") ?? "victory");
+            const mode = String(fd.get("mode") ?? "victory");
+            const debug = mode === "debug";
             const returnSceneId = String(fd.get("returnSceneId") ?? "");
             const bgmName = String(fd.get("bgmName") ?? "");
-            const playMusic = fd.get("playMusic") === "on";
-            const playAnimation = fd.get("playAnimation") === "on";
+            // Debug mode forgoes music, animation, and rewards by default.
+            const playMusic = !debug && fd.get("playMusic") === "on";
+            const playAnimation = !debug && fd.get("playAnimation") === "on";
 
             const expByActorId = {};
             const zenitByActorId = {};
             for (const id of partyActorIds) {
-              expByActorId[id]   = safeNumber(fd.get(`exp_${id}`), 0);
-              zenitByActorId[id] = safeInt(fd.get(`zenit_${id}`), 0);
+              expByActorId[id]   = debug ? 0 : safeNumber(fd.get(`exp_${id}`), 0);
+              zenitByActorId[id] = debug ? 0 : safeInt(fd.get(`zenit_${id}`), 0);
             }
 
-            log("[BattleEnd:Prompt] Confirmed", { outcome, returnSceneId, bgmName });
+            // Debug returns to the scene like a victory, but skips the reward pipeline.
+            const outcome = debug ? "victory" : (mode === "defeat" ? "defeat" : "victory");
+
+            log("[BattleEnd:Prompt] Confirmed", { mode, outcome, debug, returnSceneId, bgmName });
             settleWith({
               ok: true,
-              outcome: outcome === "defeat" ? "defeat" : "victory",
+              outcome,
+              debug,
               returnSceneId,
               expByActorId,
               zenitByActorId,
@@ -253,6 +264,23 @@ export async function showBattleEndPrompt(endCtx) {
 
       applyPreview(defaultReturnSceneId);
       sel?.addEventListener("change", ev => applyPreview(String(ev?.target?.value ?? "")));
+
+      // Debug mode visually forgoes music, animation, and rewards.
+      const music = root.querySelector('input[name="playMusic"]');
+      const anim  = root.querySelector('input[name="playAnimation"]');
+      const rewardInputs = root.querySelectorAll('input[name^="exp_"], input[name^="zenit_"]');
+      function applyMode(mode) {
+        const debug = mode === "debug";
+        if (music) { music.checked = !debug; music.disabled = debug; }
+        if (anim)  { anim.checked  = !debug; anim.disabled  = debug; }
+        rewardInputs.forEach(inp => {
+          inp.disabled = debug;
+          if (debug) inp.value = "0";
+        });
+      }
+      root.querySelectorAll('input[name="mode"]').forEach(r =>
+        r.addEventListener("change", ev => applyMode(String(ev?.target?.value ?? "")))
+      );
     }, 0);
   });
 }

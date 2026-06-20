@@ -385,10 +385,17 @@
    */
   async function offer({ actorUuid, actorName, source, actionCardId, context = {} }) {
     const ownerUserId = resolveOwnerUserId(actorUuid);
-    const amOwner     = !ownerUserId || game.user.id === ownerUserId;
     const amGM        = game.user?.isGM ?? false;
 
-    // Case 1: I am the owner (or GM-owned actor) — run full prompt phase locally
+    // If the owning player isn't connected, the GM can't route the picker to
+    // them — OPP_OFFER would go unanswered and the FSM would wedge for the full
+    // 120 s safety timeout (a soft-lock during solo/test play). In that case the
+    // GM runs the picker locally instead. A connected owner still gets it routed.
+    const ownerActive = ownerUserId ? !!game.users?.get(ownerUserId)?.active : false;
+    const amOwner     = !ownerUserId || game.user.id === ownerUserId || (amGM && !ownerActive);
+
+    // Case 1: I am the owner (or GM-owned / disconnected-owner actor) — run full
+    // prompt phase locally
     if (amOwner) {
       // Step 1 — stagger pause: player reads their roll result
       if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));

@@ -52,6 +52,7 @@ const FREE_GRANT_VIS = `or(equalText(sameRow("effect_kind",''), "open_action_men
 const NOTIFY_VIS = `equalText(sameRow("effect_kind",''), "notify")`;
 // change_damage_element — override the in-flight attack's element (Tinkerer Infusions).
 const CHANGE_EL_VIS = `equalText(sameRow("effect_kind",''), "change_damage_element")`;
+const CHECK_DIE_SWAP_VIS = `equalText(sameRow("effect_kind",''), "check_die_swap")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -154,6 +155,18 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // (re-derives each target's affinity for the new element). Literal element id or
   // VAR_<NAME> (a prompt_element pick from earlier in the chain).
   textCol("change_element", "Change To Element", { tooltip: "change_damage_element: the new element — fire/ice/bolt/earth/air/light/dark/poison/physical, or VAR_<NAME> from an earlier prompt_element pick.", vis: CHANGE_EL_VIS }),
+  // check_die_swap config (Psychokinesis) — which Attribute to swap an accuracy die TO + firing mode.
+  selectCol("swap_to_attribute", "Swap To Attribute", [
+    { key: "WLP", value: "WLP — Willpower" },
+    { key: "INS", value: "INS — Insight" },
+    { key: "MIG", value: "MIG — Might" },
+    { key: "DEX", value: "DEX — Dexterity" },
+  ], { tooltip: "check_die_swap: the Attribute to replace one accuracy-check die with (its die size).", vis: CHECK_DIE_SWAP_VIS, defaultValue: "WLP" }),
+  selectCol("swap_mode", "Swap Mode", [
+    { key: "on",  value: "On — auto-swap the best beneficial die" },
+    { key: "ask", value: "Ask — pre-roll picker (player chooses)" },
+    { key: "off", value: "Off — disabled" },
+  ], { tooltip: "check_die_swap: on = auto-swap the biggest upgrade · ask = pre-roll picker · off = disabled. One charge per swap skill (a single skill can't swap both dice).", vis: CHECK_DIE_SWAP_VIS, defaultValue: "on" }),
   // targeting config — Auto-target. Governs ASSURED targets (self / all / single).
   // "auto" (default) is ROLE-BASED: the GM resolves silently for pace; a PLAYER
   // gets a locked Confirm so they see what they're committing to. "skip" = never

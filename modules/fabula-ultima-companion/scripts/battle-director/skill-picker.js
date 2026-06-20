@@ -72,6 +72,45 @@ function asObjectValues(value) {
   return [];
 }
 
+// ── Reaction-only detection ───────────────────────────────────────────────
+// Some skills/spells are entirely passive in their working: their whole
+// behavior lives in `reaction_config_table` rows that fire in RESPONSE to an
+// event (every trigger in reaction-triggers.config.js is reactive/lifecycle —
+// there is no "on activate" trigger; that's the separate *_effect_ref
+// pipeline). Such items have no active turn-action, yet they still carry
+// skill_type "Active"/"Spell" (e.g. Protect, Illusory Shield, High Speed,
+// Cognitive Focus). The skill_type label filter alone therefore lets them leak
+// into the Skill/Spell action menu, where picking one spends the turn-action on
+// a no-op (empty body → Miss card). This predicate identifies them so the
+// picker can drop them, while leaving genuine actions that ALSO carry a
+// reaction rider (e.g. Gadgets) in place.
+
+// A row counts only when it actually declares a trigger (skips blank/spacer
+// and $deleted rows). Field name matches the engine + lint (`reaction_trigger`).
+function hasReactionRows(tbl) {
+  return asObjectValues(tbl).some(
+    (r) => !r?.$deleted && String(r?.reaction_trigger ?? "").trim(),
+  );
+}
+
+// An "active body" is anything that makes the item performable as a turn-action:
+// an accuracy Check, an offensive spell, or an action-pipeline fire-point ref
+// (on_activate / pre_activate / post_damage). Kept deliberately permissive so a
+// real action is never hidden by mistake.
+function hasActiveBody(p) {
+  return !!p?.isCheck
+    || !!p?.isOffensiveSpell
+    || !!String(p?.on_activate_effect_ref ?? "").trim()
+    || !!String(p?.pre_activate_effect_ref ?? "").trim()
+    || !!String(p?.post_damage_effect_ref ?? "").trim();
+}
+
+// True when the item carries reaction rows but no active body → it only ever
+// fires in response to a trigger, never as a turn-action.
+export function isReactionOnlySkill(p) {
+  return hasReactionRows(p?.reaction_config_table) && !hasActiveBody(p);
+}
+
 function stripHtml(html) {
   if (!html) return "";
   try {
@@ -142,6 +181,15 @@ export async function gatherSkillsForActor(actor) {
   return candidates;
 }
 
+// Friendly display names for AE-charge "clock" resources, so an unaffordable
+// charge cost reads like a real resource ("Adoration: 1/3") instead of the
+// generic internal chargeKey. Unknown keys fall back to "Charge".
+const CHARGE_LABELS = {
+  adoration: "Adoration",
+  grave:     "Grave Points",
+  brainwave: "Brainwave",
+};
+
 // Build a candidate from props (shared by the live-item walk and the
 // fromUuid path). `skill` is the resolved Item doc.
 function candidateFromSkill(skill, actor, { source, sourceItem }) {
@@ -160,6 +208,13 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   // Skills with no on_activate chain skip this entirely → identical to before.
   const configDebit = new Map();
   let costVariable = false;
+  // Charge-cost shortfalls (AE-charge "clock" resources like Adoration) — the
+  // string/resource cost path can't see these (they're consume_charge rows, not
+  // RESOURCE_REGISTRY). analyzeChainCost tallies them in `shortfalls`; we fold
+  // them into the affordability gate so a Pass with `consume_charge(adoration)`
+  // dims + red-stamps when the clock is too low, exactly like a missing-MP skill.
+  let chargeMissing = [];
+  let chargeCostParts = [];   // displayed charge cost, e.g. [{amount:3,label:"Adoration"}]
   const activateRef = String(p.on_activate_effect_ref ?? "").trim();
   if (activateRef && p.effect_table) {
     try {
@@ -167,6 +222,12 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
       if (ac?.ok) {
         for (const [res, amt] of Object.entries(ac.debit ?? {})) if (Number(amt) > 0) configDebit.set(res, Number(amt));
         costVariable = !!ac.variable;
+        chargeCostParts = Object.entries(ac.chargeDebit ?? {})
+          .filter(([, amt]) => Number(amt) > 0)
+          .map(([key, amt]) => ({ amount: Number(amt), label: CHARGE_LABELS[key] ?? "Charge" }));
+        chargeMissing = (ac.shortfalls ?? [])
+          .filter((s) => s.kind === "charge")
+          .map((s) => ({ label: CHARGE_LABELS[s.chargeKey] ?? "Charge", has: s.current, need: s.required }));
       }
     } catch (e) { warn("skill-picker: analyzeChainCost threw", e); }
   }
@@ -174,6 +235,10 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
   const costMap = new Map(stringCostMap);
   for (const [res, amt] of configDebit) costMap.set(res, (costMap.get(res) ?? 0) + amt);
   const gate = checkAffordable(actor, costMap);
+  // Combined affordability: resource gate AND charge gate. Charge shortfalls
+  // append to missingResources so the tooltip lists "Adoration: 1/3" too.
+  const affordable = gate.ok && chargeMissing.length === 0;
+  const missingResources = [...(gate.missing ?? []), ...chargeMissing];
   // Availability gate — a top-level `availability_formula` evaluated against the
   // caster (e.g. Numen's "OWN_NUMEN_COUNT == 0"). Falsy → the skill shows DIMMED
   // in the picker with `availability_reason` ("Numen already active"), the same
@@ -205,15 +270,19 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     descriptionHtml: String(p.description ?? ""),
     isCheck: !!p.isCheck,
     isOffensiveSpell: !!p.isOffensiveSpell,
+    // Reaction-only items (reaction rows, no active body) never act as a
+    // turn-action — the picker filters them out so they don't leak into the menu.
+    isReactionOnly: isReactionOnlySkill(p),
     rolledA1: String(p.rolled_atr1 ?? "").trim(),
     rolledA2: String(p.rolled_atr2 ?? "").trim(),
     rawCost,
     parsedCost,
     costMap,
     configDebit,
+    chargeCostParts,
     costVariable,
-    affordable: gate.ok,
-    missingResources: gate.missing,
+    affordable,
+    missingResources,
     source,
     sourceItemUuid: sourceItem?.uuid ?? null,
     sourceItemName: sourceItem?.name ?? null,
@@ -271,7 +340,10 @@ function candidateToRow(c) {
   // cost depends on a player choice (menu / confirm branch).
   const stringLabel = c.parsedCost?.tokens?.length ? formatParsedCost(c.parsedCost) : "";
   const configLabel = c.configDebit && c.configDebit.size ? formatCostMap(c.configDebit) : "";
-  const parts = [stringLabel, configLabel].filter(Boolean);
+  // Charge costs (AE-charge clocks like Adoration) — not resources, so they
+  // aren't in configDebit/stringLabel; render them as "3 Adoration".
+  const chargeLabel = (c.chargeCostParts ?? []).map((p) => `${p.amount} ${p.label}`).join(", ");
+  const parts = [stringLabel, configLabel, chargeLabel].filter(Boolean);
   let costLabel;
   if (parts.length && c.costVariable) costLabel = `${parts.join(", ")} + Varied`;
   else if (parts.length) costLabel = parts.join(", ");
@@ -319,7 +391,11 @@ export async function pickSkill({
   excludeIntents = null,
 }) {
   const all = await gatherSkillsForActor(actor);
-  const candidates = filterBySkillTypes(all, allowedSkillTypes);
+  // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
+  // but their behavior is entirely triggered (reaction_config_table, no active
+  // body), so they aren't turn-actions and would be a no-op if picked.
+  const candidates = filterBySkillTypes(all, allowedSkillTypes)
+    .filter((c) => !c.isReactionOnly);
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {
       if (excludeIntents.has(c.intent)) c._intentDisabled = excludeIntents.get(c.intent) || "Disabled";

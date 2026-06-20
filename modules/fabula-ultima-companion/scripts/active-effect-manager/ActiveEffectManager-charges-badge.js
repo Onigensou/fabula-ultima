@@ -43,7 +43,14 @@ Hooks.once("ready", () => {
     const warn = (...a) => console.warn(TAG, ...a);
 
     function normalizePath(p) {
-      return String(p ?? "").replace(/^https?:\/\/[^/]+/i, "").trim();
+      const s = String(p ?? "").replace(/^https?:\/\/[^/]+/i, "").trim();
+      // An AE stores img as a RELATIVE path ("icons/foo.webp") but the rendered
+      // sprite's texture src is the ABSOLUTE server URL ("/icons/foo.webp", or a
+      // full host URL for remote assets). After stripping the host these differ
+      // only by a leading slash, so a core/local icon (Grave Points) never
+      // matched its sprite while an absolute-URL icon (Forge-hosted Brainwave
+      // Clock) did. Drop leading slashes so both forms reduce to the same key.
+      return s.replace(/^\/+/, "");
     }
 
     function extractTexturePath(obj) {

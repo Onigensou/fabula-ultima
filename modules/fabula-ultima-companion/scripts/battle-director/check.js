@@ -31,8 +31,24 @@ export function deriveCheck({ rA = 0, rB = 0, props = null, fumbleThreshold = 1,
 // THE check. Rolls the two attribute dice for `actor` (or takes forced dice from
 // the test harness) and derives the outcome. Inputs: the roller + the two stats
 // + an optional flat bonus. Nothing else.
-export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null } = {}) {
+export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null, allowDieSwap = false, director = null } = {}) {
   const props = actor?.system?.props ?? null;
+  // Psychokinesis-style pre-roll die swap: an owning skill with a check_die_swap
+  // config may replace one Attribute die with a larger one (WLP) BEFORE rolling.
+  // Only on accuracy checks (allowDieSwap) and live rolls (forced `dice` are kept
+  // verbatim so the harness/crit machinery stays deterministic). `director` enables
+  // the "ask"-mode interactive picker (else auto).
+  let dieSwap = null;
+  if (allowDieSwap && !dice) {
+    const swaps = await resolveCheckDieSwap({ actor, A1, A2, director });
+    if (Array.isArray(swaps) && swaps.length) {
+      dieSwap = [];
+      for (const sw of swaps) {
+        if (sw.slot === "A1") A1 = sw.to; else if (sw.slot === "A2") A2 = sw.to;
+        dieSwap.push({ from: sw.from, to: sw.to, slot: sw.slot, label: sw.label });
+      }
+    }
+  }
   const dA = attrDieSize(actor, A1);
   const dB = attrDieSize(actor, A2);
   let rA, rB;
@@ -43,7 +59,109 @@ export async function rollCheck({ actor, A1, A2, checkBonus = 0, dice = null } =
     rA = faces[0] ?? 0; rB = faces[1] ?? 0;
   }
   const fumbleThreshold = readPropNum(actor, ["fumble_threshold"], 1);
-  return { ...deriveCheck({ rA, rB, props, fumbleThreshold, checkBonus }), dA, dB };
+  // Return the (possibly swapped) attributes so the caller can repaint the card
+  // with the die that was actually rolled, plus the swap note for display.
+  return { ...deriveCheck({ rA, rB, props, fumbleThreshold, checkBonus }), dA, dB, A1, A2, dieSwap };
+}
+
+// Resolve a pre-roll Attribute-die swap for `actor`'s accuracy check. Collects
+// EVERY `check_die_swap` skill the actor owns (multiple skills can grant swaps,
+// possibly to different attributes), builds the beneficial swap candidates
+// (slot × target where the new die is larger), then:
+//   - if ANY granting skill is "ask" AND a `director` is present → the interactive
+//     picker (player chooses which die/target, or keeps the roll);
+//   - else (all "on"/"force") → auto-apply the biggest upgrade.
+// Returns { slot:"A1"|"A2", from, to, label } or null (no skill / mode off /
+// no upgrade / picker kept the roll). "off" skills are dropped entirely.
+async function resolveCheckDieSwap({ actor, A1, A2, director = null }) {
+  const configs = findCheckDieSwapConfigs(actor).filter((c) => c.mode !== "off");
+  if (!configs.length) return null;
+  const A1u = String(A1).toUpperCase();
+  const A2u = String(A2).toUpperCase();
+  const dA = attrDieSize(actor, A1u);
+  const dB = attrDieSize(actor, A2u);
+  // Beneficial candidates across all distinct swap targets. A slot already on the
+  // target is ineligible; only strictly-larger dice are offered (so "may replace"
+  // is satisfied — we never propose a downgrade).
+  const targets = [...new Set(configs.map((c) => c.to))];
+  const sourceFor = (to) => [...new Set(configs.filter((c) => c.to === to).map((c) => c.label).filter(Boolean))].join(" / ");
+  // ALL swap candidates (slot × target where the target differs from the slot's
+  // attribute); gain may be ≤ 0. `upgrades` is the strictly-positive subset.
+  const all = [];
+  for (const to of targets) {
+    const dTo = attrDieSize(actor, to);
+    if (A1u !== to) all.push({ slot: "A1", from: A1u, to, dTo, gain: dTo - dA, source: sourceFor(to) });
+    if (A2u !== to) all.push({ slot: "A2", from: A2u, to, dTo, gain: dTo - dB, source: sourceFor(to) });
+  }
+  const upgrades = all.filter((c) => c.gain > 0);
+  if (!upgrades.length) return null;   // no beneficial swap → no prompt / no auto-swap
+
+  // ONE die per skill: each skill is a single swap "charge" for its target, so a
+  // target may be applied at most (# skills granting it) times across the two dice
+  // — and a single skill can never swap both dice. Budget = per-target charge count
+  // (its sum = the total swap cap = number of skills).
+  const budget = {};
+  for (const c of configs) budget[c.to] = (budget[c.to] ?? 0) + 1;
+
+  const askMode = configs.some((c) => c.mode === "ask");
+
+  if (askMode && director) {
+    const label = [...new Set(configs.map((c) => c.label).filter(Boolean))].join(" · ") || "Die swap";
+    // BOTH dice are shown, each with ALL its swap options (up OR down) + the change
+    // and the granting skill. The picker enforces the per-target `budget` so the
+    // player can't spend one skill on two dice.
+    const slots = [
+      { slot: "A1", attr: A1u, die: dA, options: all.filter((c) => c.slot === "A1").map((c) => ({ to: c.to, dTo: c.dTo, gain: c.gain, source: c.source })) },
+      { slot: "A2", attr: A2u, die: dB, options: all.filter((c) => c.slot === "A2").map((c) => ({ to: c.to, dTo: c.dTo, gain: c.gain, source: c.source })) },
+    ];
+    try {
+      const { pickDieSwap } = await import("./check-die-swap-picker.js");
+      const res = await pickDieSwap({ director, label, A1: A1u, A2: A2u, dA, dB, slots, budget });
+      return (res?.swaps ?? []).map((p) => ({ slot: p.slot, from: p.from, to: p.to, label: sourceFor(p.to) }));
+    } catch (e) {
+      warn("check_die_swap: picker threw — keeping the original roll", e);
+      return [];
+    }
+  }
+
+  // Auto: greedily assign skill charges to dice by biggest gain — each die swapped
+  // at most once, each target capped by its budget. A single skill → one die.
+  const remaining = { ...budget };
+  const usedDie = new Set();
+  const out = [];
+  for (const u of upgrades.slice().sort((a, b) => b.gain - a.gain)) {
+    if (usedDie.has(u.slot) || (remaining[u.to] ?? 0) <= 0) continue;
+    out.push({ slot: u.slot, from: u.from, to: u.to, label: sourceFor(u.to) });
+    usedDie.add(u.slot);
+    remaining[u.to] -= 1;
+  }
+  return out;
+}
+
+// Shared "kit capability" scan: walk the actor's owned skill Items for effect_table
+// rows of a given effect_kind — a standing config carried on a skill (read at a
+// pipeline point, vs a fired reaction or an AE change). Returns [{ row, item }].
+function collectKitConfigs(actor, kind) {
+  const out = [];
+  for (const item of actor?.items ?? []) {
+    const et = item.system?.props?.effect_table;
+    if (!et || typeof et !== "object") continue;
+    for (const row of Object.values(et)) {
+      if (row?.effect_kind === kind) out.push({ row, item });
+    }
+  }
+  return out;
+}
+
+// All of the actor's check_die_swap configs — { mode, to, label } per swap skill.
+// Mode + target live on the effect row itself (swap_mode / swap_to_attribute); no
+// companion reaction row. Multiple swap skills → multiple entries.
+function findCheckDieSwapConfigs(actor) {
+  return collectKitConfigs(actor, "check_die_swap").map(({ row, item }) => ({
+    mode: String(row.swap_mode ?? "on").trim().toLowerCase(),
+    to: String(row.swap_to_attribute ?? "WLP").trim().toUpperCase(),
+    label: item.name ?? "",
+  }));
 }
 
 // ── Comparison layer (the per-action interpretation) ───────────────────────
