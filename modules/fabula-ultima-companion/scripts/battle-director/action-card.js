@@ -3446,7 +3446,22 @@ function buildReactionPills(prePassives) {
     p?.mode !== "off" && !(p?.available === false && p?.unavailableKind === "condition")
   );
   if (!visible.length) return "";
-  return visible.map((p) => {
+  // Collapse duplicate AUTO (on/force) pills from the SAME carrier+reactor into
+  // one informational chip. A skill with multiple force rows (e.g. Adversity's
+  // creature_performs_action accuracy row + creature_will_deal_damage damage row)
+  // otherwise renders one "Active" pill per row. RESOLVE still fires every row
+  // from the decision map — this is display-only. Ask / cost-unavailable pills
+  // are NOT collapsed (each carries a distinct per-row decision or reason badge).
+  const seenAuto = new Set();
+  const deduped = visible.filter((p) => {
+    const isAuto = (p.mode === "on" || p.mode === "force") && p.available !== false;
+    if (!isAuto) return true;
+    const key = `${p.carrierUuid ?? p.carrierName ?? ""}::${p.reactorActorUuid ?? "self"}`;
+    if (seenAuto.has(key)) return false;
+    seenAuto.add(key);
+    return true;
+  });
+  return deduped.map((p) => {
     const safeName = escapeHtml(p.carrierName ?? "Reaction");
     const safeKey  = escapeHtml(String(p.rowKey ?? ""));
     const safeCarrier = escapeHtml(String(p.carrierUuid ?? ""));

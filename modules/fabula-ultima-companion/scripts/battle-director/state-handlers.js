@@ -4719,6 +4719,7 @@ const ReactionWindow = {
         const { reofferPostResolveReactions } = await import("./instance-settle.js");
         await reofferPostResolveReactions(director, {
           triggers: ctx._reactionWindowTriggers ?? [],
+          used: ctx._postResolveUsed ?? [],
         });
       } catch (e) { warn("REACTION_WINDOW: re-offer threw", e); }
     }
@@ -4734,7 +4735,7 @@ const ReactionWindow = {
         pushFrame(director, {
           reason: "resolveDetour:postResolve",
           resumeAt: STATES.REACTION_WINDOW,
-          fieldsToSnapshot: ["_reactionWindowTriggers"],
+          fieldsToSnapshot: ["_reactionWindowTriggers", "_postResolveUsed"],
         });
         try {
           const sawPhase = rewindPhaseLabel(ctx, director.dCombat?.round);
@@ -4764,9 +4765,10 @@ const Cleanup = {
     director.ctx.reactionDepth = 0;
     // Post-resolve reaction-window state is per action resolution — clear it so
     // the next action (incl. the next two-weapon pass) starts with a fresh
-    // reaction group. The REACTION_WINDOW loop has fully drained by the time we
-    // reach CLEANUP.
+    // reaction group + used-set. The REACTION_WINDOW loop has fully drained by
+    // the time we reach CLEANUP.
     director.ctx._reactionWindowTriggers = null;
+    director.ctx._postResolveUsed = null;
 
     // Multi-pass attacks (Two-Weapon Fighting): if more passes remain in
     // the queue, we keep declaredCommand / eligibleTargets / attackMode

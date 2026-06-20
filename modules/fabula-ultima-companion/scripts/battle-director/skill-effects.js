@@ -365,11 +365,16 @@ export async function applyDamageToTarget({
     if (damage <= 0) return empty;
     const curMp = readPropNum(target, ["current_mp", "mp"]);
     const newMp = Math.max(0, curMp - damage);
+    // ACTUAL MP reduced, clamped to what the target had. Drain Spirit recovers
+    // half of THIS (MP_DEALT), so a target at 0 MP — or one whose loss the clamp
+    // capped — yields a proportionally smaller (or zero) drain. Returning raw
+    // `damage` here would over-credit the drain. Mirrors the HP path's finalValue.
+    const mpLost = curMp - newMp;
     await target.update({ "system.props.current_mp": newMp });
-    log(`${prefix}applied ${damage} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
-    fireResourceLossVfx({ tokenUuid, resource: "mp", amount: curMp - newMp });
-    _pushLog({ resource: "mp", affinity: "NE", value: damage, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
-    return { resource: "mp", finalValue: damage, valueDirection: "loss", fired: [] };
+    log(`${prefix}applied ${mpLost} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
+    fireResourceLossVfx({ tokenUuid, resource: "mp", amount: mpLost });
+    _pushLog({ resource: "mp", affinity: "NE", value: mpLost, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
+    return { resource: "mp", finalValue: mpLost, valueDirection: "loss", fired: [] };
   }
 
   // HP path — full affinity rules.
@@ -1122,6 +1127,24 @@ function weaponReactionInPlay(item, payload, casterActor) {
   return item?.system?.props?.isEquipped === true;
 }
 
+// Container-linked reaction carriers — the gear `_skill`-inside model: a
+// skill_type "Passive" `_skill` whose `system.container` points at an equippable
+// gear shell (Skull Orb, Ninja Log). Its reaction is only LIVE while that shell
+// is equipped. Mirrors weaponReactionInPlay's equip gate, but keyed off the
+// CONTAINER item's `isEquipped` (the `_skill` itself has no equip state).
+// Fail-open when the container is missing/dangling or isn't equippable gear, so
+// ordinary (non-gear-linked) skill/AE reactions are never gated.
+function containerReactionInPlay(item, casterActor) {
+  const containerId = item?.system?.container;
+  if (!containerId) return true;
+  const container = casterActor?.items?.get?.(containerId);
+  if (!container) return true;
+  const itemType = String(container.system?.props?.item_type ?? "").toLowerCase();
+  const GEAR = new Set(["accessory", "armor", "weapon", "shield"]);
+  if (!GEAR.has(itemType)) return true;
+  return container.system?.props?.isEquipped === true;
+}
+
 // NOTE: the old `skillActionPassiveApplies` item-level gate (which used an
 // item's `skill_type` to decide whether its reaction rows were "ambient" vs.
 // "self-scoped to the acting skill") was REMOVED 2026-06-15. `skill_type`
@@ -1201,6 +1224,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     const rc = item.system?.props?.reaction_config_table;
     if (!rc || typeof rc !== "object") continue;
     if (!weaponReactionInPlay(item, payload, casterActor)) continue;
+    if (!containerReactionInPlay(item, casterActor)) continue;
     const effectTable = item.system?.props?.effect_table ?? {};
     for (const key of Object.keys(rc)) {
       const row = rc[key];
@@ -2797,6 +2821,8 @@ const EFFECT_KIND_DISPATCH = {
   transfer_ae:         applyTransferAeEffect,
   summon:              applySummonEffect,
   take_turn_next:      applyTakeTurnNextEffect,
+  modify_turns:        applyModifyTurnsEffect,
+  create_bond:         applyCreateBondEffect,
   substitute_cost:     applySubstituteCostEffect,
   consume_resource:    consumeResourceRun,   // UNIFIED (see consumeResourceRun)
   confirm:             applyConfirmEffect,
@@ -2833,6 +2859,10 @@ const EFFECT_KIND_DISPATCH = {
   // chain step itself is a no-op here — exactly like redirect_target.
   shield_redirect:     (row) => ({ ok: true, kind: "shield_redirect", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // force_reroll: Divination — reroll the action-taker's accuracy dice. Data-only
+  // here; the real work runs at the card-mutation phase
+  // (card-mutations.applyForceRerollMutation), exactly like adjust_accuracy.
+  force_reroll:        (row) => ({ ok: true, kind: "force_reroll", applied: [], reason: "applied-at-card-mutation-phase" }),
   // adjust_defense: the DEFENDER-side twin of adjust_accuracy. A
   // creature_targeted_by_action reaction on the TARGET raises its OWN effective
   // defense for the in-flight action (Matador Verónica: +2 DEF when targeted).
@@ -2887,6 +2917,8 @@ export const EFFECT_KIND_LABELS = {
   transfer_ae:         "Transfer AE (move an AE to another creature, keeping charges)",
   summon:              "Summon (spawn actor(s) as own-turn combatants)",
   take_turn_next:      "Take Turn Next (a creature acts immediately after this turn)",
+  modify_turns:        "Modify Turns (adjust a target's action count — Stop = -1, min 0)",
+  create_bond:         "Create Bond (form an FU Bond toward a creature — e.g. hatred)",
   substitute_cost:     "Substitute Cost",
   consume_resource:    "Consume Resource",
   confirm:             "Confirm (decision dialog — gate / multi-button)",
@@ -2906,6 +2938,7 @@ export const EFFECT_KIND_LABELS = {
   redirect_target:     "Redirect Target",
   shield_redirect:     "Shield Redirect (Phantasm interposes; PV-capped soak, overflow to ally)",
   adjust_accuracy:     "Adjust Accuracy",
+  force_reroll:        "Force Reroll (reroll the action's accuracy dice — Divination)",
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
 };
@@ -2989,6 +3022,10 @@ const EFFECT_KIND_PREVIEW = {
   // summon spawns combatants at RESOLVE — nothing to surface on the casting card.
   summon: () => null,
   take_turn_next: () => null,
+  // modify_turns mutates the turn tracker at RESOLVE — no inline card preview.
+  modify_turns: () => null,
+  // create_bond writes actor bond props at RESOLVE — no inline card preview.
+  create_bond: () => null,
 
   encyclopedia_record: (row) => ({
     type: "reveal", aspect: "encyclopedia", tier: null,
@@ -3043,6 +3080,7 @@ const EFFECT_KIND_PREVIEW = {
   redirect_target: () => null,
   shield_redirect: () => null,
   adjust_accuracy: () => null,
+  force_reroll: () => null,
   negate_action: () => null,
 };
 
@@ -4567,6 +4605,45 @@ async function applyApplyAeEffect(row, ctx) {
       );
     } catch (e) { warn(`skill-effects.apply_ae: reciprocal "${reciprocalName}" apply failed`, e); }
   }
+  // Emit `creature_status_applied` for each freshly-landed STATUS condition so
+  // gear/equipment reactions ("when YOU apply a status …", Skull Orb) can chain
+  // off it. Gated on the template carrying `statuses` (a real status condition,
+  // not a plain non-status AE) and on NEW applications only (skip removals).
+  // Subject = the bearer (matcher reads sourceActorUuid); cause = the applier
+  // (so CAUSE_IS_SELF scopes "applied BY me"). Mirrors crisis-reactor's
+  // queueStatusEvent; the settle loop dispatches observer-aware. Crisis is
+  // emitted by crisis-reactor at its own create site — skip it here so the
+  // ledger never carries a duplicate Crisis event.
+  if (Array.isArray(template.statuses) && template.statuses.length && applied.length) {
+    const statusName = template.name ?? "Effect";
+    if (statusName !== "Crisis") {
+      const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+      const director = ctx.director ?? bd?.getActiveDirector?.() ?? null;
+      if (director?.ctx) {
+        if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+        const causeActorUuid = ctx.appliedByActorUuid ?? ctx.reactorActor?.uuid ?? null;
+        const causeTokenUuid = ctx.appliedByTokenUuid ?? ctx.reactorToken?.uuid ?? null;
+        for (const a of applied) {
+          if (!a || a.removed || !a.actorUuid) continue;
+          const subjActor = await fromUuid(a.actorUuid).catch(() => null);
+          if (!subjActor) continue;
+          const subjTok = subjActor.getActiveTokens?.()?.[0]?.document ?? null;
+          director.ctx._postResolveTriggers.push({
+            casterActor: subjActor,
+            trigger: "creature_status_applied",
+            payload: {
+              status: statusName,
+              direction: "applied",
+              sourceActorUuid: a.actorUuid, sourceTokenUuid: subjTok?.uuid ?? null,
+              subjectActorUuid: a.actorUuid, subjectTokenUuid: subjTok?.uuid ?? null,
+              causeActorUuid, causeTokenUuid,
+              originLabel: statusName,
+            },
+          });
+        }
+      }
+    }
+  }
   log(`skill-effects.apply_ae: row "${row.effect_label}" applied "${template.name}" to ${applied.length} actor(s)`);
   return { ok: true, kind: "apply_ae", applied };
 }
@@ -6071,6 +6148,157 @@ async function applyTakeTurnNextEffect(row, ctx) {
   }
   if (applied.length) { try { dc._notifyTurnActions?.(); } catch {} }
   return { ok: !!applied.length, kind: "take_turn_next", applied };
+}
+
+// ── modify_turns ──────────────────────────────────────────────────────────
+//
+// Adjust a target combatant's available turns (FU action economy: one "turn" =
+// one action; turnsPerRound from system.props.activation). The reusable knob
+// behind "the target performs N fewer/more actions on their next turn"
+// (Entropist's Stop = -1, min 0 — a ONE-TIME loss of one activation). Resolves
+// the live DirectorCombat, finds each target's combatant, evaluates `turns_delta`
+// (signed formula, default -1) and:
+//   - absorbs the change into this round's `turnsRemaining` first (their next
+//     action this round), clamped to `turns_floor` (default 0);
+//   - any reduction that can't land this round (target already out of turns) is
+//     carried as a ONE-TIME debt (combatant.flags.pendingTurnDebt), consumed at
+//     the next round-reset (DirectorCombat._resetRoundCounters) so it lands on
+//     their genuine NEXT turn — and only once (RAW: "one fewer action on their
+//     next turn").
+// Positive deltas (grant an extra action) never floor, so they apply in full
+// this round and leave no debt. No combat / non-combatant target → no-op (warn).
+// A reload mid-combat drops an un-consumed debt (combatants rebuild from
+// persistent state) — acceptable for a next-turn-scoped effect.
+async function applyModifyTurnsEffect(row, ctx) {
+  if (ctx?.mode === "preview") return { ok: true, kind: "modify_turns", applied: [], reason: "preview" };
+  const director = ctx.director
+    ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()
+    ?? null;
+  const dc = director?.dCombat ?? ctx.dCombat ?? null;
+  if (!dc?.started || dc.ended) return { ok: false, kind: "modify_turns", reason: "no-combat" };
+
+  const tr = await resolveTargetRef(row.target_ref || "action_targets", ctx);
+  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "modify_turns", reason: tr.reason ?? "no-targets" };
+
+  const floor = Math.max(0, Math.floor(Number(row.turns_floor ?? 0)) || 0);
+  const applied = [];
+  for (const token of tr.tokens) {
+    const c = dc.combatants?.find?.((x) => x.tokenId === token.id || x.tokenDoc?.uuid === token.uuid);
+    if (!c) { warn(`skill-effects.modify_turns: ${token.name ?? token.uuid} is not a combatant`); continue; }
+    const resolver = buildSkillResolver({
+      actor: c.actorDoc ?? token.actor, payload: ctx.payload, skill: ctx.skill, round: dc.round ?? 0,
+    });
+    const delta = Math.round(Number(evaluateFormula(String(row.turns_delta ?? "-1"), resolver, -1)));
+    if (!Number.isFinite(delta) || delta === 0) {
+      applied.push({ id: c.id, delta: 0, turnsRemaining: c.turnsRemaining }); continue;
+    }
+    const cur = Number(c.turnsRemaining ?? 0);
+    const newRem = Math.max(floor, cur + delta);
+    const absorbed = newRem - cur;       // signed amount that landed this round
+    c.turnsRemaining = newRem;
+    const leftover = delta - absorbed;   // reduction not absorbable this round → next turn = next round
+    if (leftover < 0) c.flags.pendingTurnDebt = Math.min(0, Number(c.flags.pendingTurnDebt ?? 0) + leftover);
+    log(`modify_turns: ${c.name} ${delta >= 0 ? "+" : ""}${delta} turn(s) → ${c.turnsRemaining}/${c.turnsPerRound}${leftover < 0 ? ` (carry ${leftover} to next round)` : ""}`);
+    applied.push({ id: c.id, delta, turnsRemaining: c.turnsRemaining, carried: leftover < 0 ? leftover : 0 });
+  }
+  if (applied.length) { try { dc._notifyTurnActions?.(); } catch {} }
+  return { ok: !!applied.length, kind: "modify_turns", applied };
+}
+
+// ── create_bond ────────────────────────────────────────────────────────────
+//
+// Form a Fabula Ultima Bond on the CASTER (reactorActor) toward each resolved
+// target. NON-DESTRUCTIVE: never overwrites the player's real `bond_<N>` props —
+// it applies an AE TO SELF carrying `flags.fabula-ultima-companion.bondAE =
+// { bond_name, emotions:[…] }`. The bond reader getBondSlots() (skill-formulas.js)
+// folds these AEs in, so every BOND_* identifier (BOND_STRENGTH / BOND_COUNT /
+// BOND_WITH_ANY_TARGET …) counts them like a real bond slot.
+//
+// The AE itself is CONFIGURED data, not hardcoded: `ae_template_ref` resolves an
+// embedded "Bond of Hatred"-style AE (icon, name, description, statuses, and its
+// `flags.…bondAE.emotions` + any lifetime opt-in). create_bond clones it and
+// injects ONLY the dynamic `bond_name` (the picked creature) before applying to
+// self — because that "apply to ME, referencing a DIFFERENT creature" shape is
+// what plain apply_ae can't express. Falls back to a minimal inline AE when no
+// template is given (`bond_emotion`, default "hatred").
+//
+// Duration: stamps `directorAppliedBy` with `turnsRemaining: null` → no 3-turn
+// tick; the scene-end sweep clears it UNLESS the template opts into
+// `directorPermanent`/`crossScene` (so duration stays author-configurable). RAW
+// guard: skips a target already bonded (real prop OR existing bondAE), by name.
+const FU_BOND_PROP_SLOTS = ["1", "2", "3", "4", "5", "6", "temp"];
+function collectBondedNames(actor) {
+  const taken = new Set();
+  const p = actor?.system?.props ?? {};
+  for (const n of FU_BOND_PROP_SLOTS) {
+    const nm = String(p[`bond_${n}`] ?? "").trim();
+    if (nm) taken.add(nm.toLowerCase());
+  }
+  for (const eff of (actor?.appliedEffects ?? actor?.effects ?? [])) {
+    const bn = eff?.flags?.[FLAG_NS]?.bondAE?.bond_name;
+    if (bn) taken.add(String(bn).trim().toLowerCase());
+  }
+  return taken;
+}
+async function applyCreateBondEffect(row, ctx) {
+  const caster = ctx.reactorActor;
+  if (!caster) { warn(`skill-effects.create_bond: no reactorActor`); return { ok: false, kind: "create_bond", reason: "no-reactor" }; }
+  const tr = await resolveTargetRef(row.target_ref || "action_targets", ctx);
+  if (!tr.ok || !tr.tokens.length) return { ok: false, kind: "create_bond", reason: tr.reason ?? "no-targets" };
+
+  const sourceLabel = ctx.skill?.name ?? "Bond";
+  const fallbackEmotion = String(row.bond_emotion ?? "hatred").trim().toLowerCase();
+  const taken = collectBondedNames(caster);
+
+  // Resolve the configured AE template once (icon/name/description/statuses +
+  // flags.bondAE.emotions + any lifetime opt-in). null → inline fallback below.
+  const aeRef = String(row.ae_template_ref ?? "").trim();
+  const template = aeRef ? await resolveAeTemplate(aeRef, ctx) : null;
+  if (aeRef && !template) warn(`skill-effects.create_bond: ae_template_ref "${aeRef}" not found — using inline fallback`);
+
+  const toCreate = [];
+  const applied = [];
+  for (const token of tr.tokens) {
+    const name = String(token.actor?.name ?? token.name ?? "").trim();
+    if (!name) continue;
+    if (taken.has(name.toLowerCase())) { log(`create_bond: ${caster.name} already has a Bond toward ${name}; skipping`); continue; }
+    taken.add(name.toLowerCase());
+
+    const emoSlug = (fallbackEmotion || "bond").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const data = template
+      ? foundry.utils.duplicate(template)
+      : {
+          name: `${sourceLabel}: Bond toward ${name}`,
+          img: "icons/magic/death/skull-energy-light-purple.webp",
+          description: `<p><em>${sourceLabel}:</em> a temporary Bond (${fallbackEmotion}) toward ${name}.</p>`,
+          statuses: [`fud-bond-${emoSlug}`],
+          changes: [],
+        };
+    delete data._id;
+    data.transfer = false;
+    data.disabled = false;
+    // Personalize a generic template name with the bonded creature.
+    if (template && data.name && !/\btoward\b/i.test(data.name)) data.name = `${data.name} (${name})`;
+
+    const fu = ((data.flags ??= {})[FLAG_NS] = { ...(data.flags[FLAG_NS] ?? {}) });
+    const baseBond = fu.bondAE ?? {};
+    const emotions = Array.isArray(baseBond.emotions) && baseBond.emotions.length
+      ? baseBond.emotions.map((e) => String(e).trim().toLowerCase()).filter(Boolean)
+      : [fallbackEmotion];
+    fu.bondAE = { ...baseBond, bond_name: name, emotions };   // inject the dynamic bonded creature
+    fu.directorAppliedBy = {
+      skillUuid: ctx.skill?.uuid ?? null,
+      reactorActorUuid: caster.uuid ?? null,
+      effectLabel: row.effect_label ?? null,
+      appliedAtRound: ctx.dCombat?.round ?? 0,
+      turnsRemaining: null,   // no 3-turn tick; scene-end sweep clears it
+    };
+    toCreate.push(data);
+    applied.push({ name, emotions });
+    log(`create_bond: ${caster.name} forms a Bond toward ${name} [AE: ${data.name}]`);
+  }
+  if (toCreate.length) await caster.createEmbeddedDocuments("ActiveEffect", toCreate);
+  return { ok: applied.length > 0, kind: "create_bond", applied };
 }
 
 async function applyRemoveTaggedAeEffect(row, ctx) {

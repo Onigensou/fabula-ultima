@@ -738,6 +738,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (subj && actor && subj.uuid === actor.uuid) return 1;
         return 0;
       }
+      // CAUSE_IS_SELF — 1 when THIS reactor is the CAUSE/applier of the trigger
+      // (the creature who applied the status on creature_status_applied, the
+      // attacker on a resource-ledger event, …), else 0. The cause-side twin of
+      // SUBJECT_IS_SELF. Powers "when YOU apply a status …" gear reactions
+      // (Skull Orb). Reads payload.causeActorUuid; matches by actor uuid with a
+      // resolved-actor fallback (correct for linked PCs). 0 when no cause threaded.
+      case "CAUSE_IS_SELF": {
+        const causeUuid = String(payload?.causeActorUuid ?? "").trim();
+        if (!causeUuid) return 0;
+        const selfUuid = String(actor?.uuid ?? "").trim();
+        if (selfUuid && causeUuid === selfUuid) return 1;
+        const c = _resolveActorByUuidSync(causeUuid);
+        if (c && actor && c.uuid === actor.uuid) return 1;
+        return 0;
+      }
       // 1 when the trigger SUBJECT is a Phantasm that THIS reactor summoned —
       // reads the event payload (summonedBy + isPhantasm), NOT the live token, so
       // it still matches after the phantasm despawns (destroy_summon stamps both
@@ -1590,6 +1605,13 @@ function ownSummonCount(actor, { numenOnly = false, phantasmOnly = false } = {})
 
 // Bond data lives at `actor.system.props.bond_N` / `emotion_N_M`.
 // Strength = count of non-empty emotion fields per slot (0..3).
+//
+// PLUS AE-carried temporary bonds: an AE on the actor stamping
+// `flags.fabula-ultima-companion.bondAE = { bond_name, emotions:[…] }`
+// contributes one VIRTUAL bond slot — the non-destructive bond form used by
+// `create_bond` (Heart of Darkness) so a created Bond never overwrites the
+// player's authored `bond_N` props. Every BOND_* identifier reads through here,
+// so they all honor AE bonds automatically.
 function getBondSlots(actor) {
   const out = [];
   if (!actor?.system?.props) return out;
@@ -1603,6 +1625,18 @@ function getBondSlots(actor) {
       String(p[`emotion_${n}_3`] ?? "").trim().toLowerCase(),
     ];
     out.push({ slot: n, name: String(name).trim(), emotions });
+  }
+  // AE-carried temporary bonds (non-destructive).
+  let aeIdx = 0;
+  for (const eff of (actor.appliedEffects ?? actor.effects ?? [])) {
+    const b = eff?.flags?.["fabula-ultima-companion"]?.bondAE;
+    if (!b) continue;
+    const name = String(b.bond_name ?? b.name ?? "").trim();
+    if (!name) continue;
+    const emotions = Array.isArray(b.emotions)
+      ? b.emotions.map((e) => String(e ?? "").trim().toLowerCase()).filter(Boolean)
+      : [b.emotion_1, b.emotion_2, b.emotion_3].map((e) => String(e ?? "").trim().toLowerCase());
+    out.push({ slot: `ae${aeIdx++}`, name, emotions, fromAE: true });
   }
   return out;
 }

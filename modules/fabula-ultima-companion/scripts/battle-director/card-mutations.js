@@ -704,6 +704,90 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Force reroll (effect_kind: "force_reroll") ───────────────────────────
+// Divination (Entropist): a reactor forces the ACTION-TAKER to reroll BOTH
+// accuracy dice; the new total is applied via the same accuracyOverride channel
+// as adjust_accuracy, and every target's hit/miss recomputes against it. RAW
+// gate: cannot reroll a Critical or a Fumble — self-guarded here so the row is
+// safe even if the pill's condition_formula doesn't resolve. Returns "failed"
+// (no charge should be spent) when there's no rerollable roll or it's a crit/
+// fumble. NB: damage/HR is NOT recomputed from the new dice (the hit→miss flip
+// is the meaningful effect for a defender); a still-hitting reroll keeps the
+// original HR. Promote to a full recompute if a skill needs reroll-for-damage.
+async function applyForceRerollMutation(ctx, cand, row) {
+  const roll = ctx.ar?.roll;
+  if (!roll) { warn("force_reroll: no accuracy roll on this action — skipping"); return "failed"; }
+  if (roll.isCrit || roll.isFumble) { log("force_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
+
+  // The action-taker owns the dice being rerolled (fumble threshold etc.).
+  const attackerUuid = ctx.ar?.attackerActorRef ?? ctx.ar?.attacker?.actorUuid ?? null;
+  let attacker = null;
+  try { attacker = attackerUuid ? await fromUuid(attackerUuid) : null; } catch {}
+
+  let newRoll;
+  try {
+    const { rerollDice } = await import("./invoke/invoke-core.js");
+    newRoll = await rerollDice({ roll, choice: "AB", actor: attacker });
+  } catch (e) {
+    warn("force_reroll: rerollDice threw — skipping", e);
+    return "failed";
+  }
+
+  const newTotal = Number(newRoll?.total ?? 0);
+  const isCrit   = !!newRoll?.isCrit;
+  const isFumble = !!newRoll?.isFumble;
+  const via      = cand?.carrierName ?? cand?.reactorActorName ?? "Divination";
+
+  for (let i = 0; i < ctx.perTargets.length; i++) {
+    const pt = ctx.perTargets[i];
+    if (!pt) continue;
+    const def = Number(pt.defense ?? 10);
+    const newHit = isCrit ? true : (!isFumble && newTotal >= def);
+    ctx.perTargets[i] = {
+      ...pt,
+      hit: newHit,
+      crit: isCrit && newHit,
+      rawDamage: newHit ? pt.rawDamage : 0,
+      damage: newHit ? pt.damage : 0,
+      accuracyBlocked: !newHit,
+    };
+  }
+
+  // Persist the rerolled roll so any later mutation / display reads the new dice.
+  ctx.ar = { ...ctx.ar, roll: newRoll };
+  const baseTotal = Number(ctx.accuracyOverride?.from ?? roll.total ?? 0);
+  ctx.accuracyOverride = {
+    from: baseTotal,
+    to: newTotal,
+    blocked: newTotal <= 0,
+    via,
+    reactorName: cand?.reactorActorName ?? null,
+    parts: [{ source: `${via} (reroll)`, amount: newTotal - baseTotal }],
+    rerolled: true,
+  };
+
+  // Spend the reactor's charge HERE — tied to an actual reroll, so a declined
+  // pill or a crit/fumble no-op (returned above) never costs a charge. `charge_key`
+  // empty → no cost. The reactor's charge-AE self-deletes at 0 (= spell ends after
+  // its 2 rerolls). Done in the mutation (not a separate consume_charge row) so it
+  // doesn't depend on the reaction's effect chain running a second pass.
+  const chargeKey = String(row?.charge_key ?? "").trim();
+  if (chargeKey) {
+    try {
+      const { reactor } = await resolveReactionReactorSkill(ctx, cand);
+      if (reactor) {
+        const charges = await import("./skill-charges.js");
+        const found = charges.findOnActor(reactor, { key: chargeKey });
+        const hit = found.find((f) => f.charges > 0);
+        if (hit) await charges.consume(hit.effect, { count: Math.max(1, Number(row?.count) || 1) });
+      }
+    } catch (e) { warn("force_reroll: charge consume failed", e); }
+  }
+
+  log(`force_reroll: ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
+  return "applied";
+}
+
 // ── Defense adjustment (effect_kind: "adjust_defense") ───────────────────
 // The DEFENDER-side twin of adjust_accuracy: a `creature_targeted_by_action`
 // reaction on the TARGET raises ITS OWN effective defense for the in-flight
@@ -1245,6 +1329,10 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       const kind = String(row.effect_kind ?? "").trim().toLowerCase();
       if (kind === "adjust_accuracy") {
         const result = await applyAdjustAccuracyMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
+      } else if (kind === "force_reroll") {
+        // Divination: reroll the action-taker's accuracy dice, recompute hits.
+        const result = await applyForceRerollMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
       } else if (kind === "adjust_defense") {
         // Defender-side: the targeted creature raises its own DEF for this action

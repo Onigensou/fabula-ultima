@@ -418,6 +418,15 @@ export class DirectorCombat {
     for (const c of this.combatants) {
       c.turnsPerRound = this._effectiveActivation(c);
       c.turnsRemaining = c.isDefeatedLive() ? 0 : c.turnsPerRound;
+      // Consume a one-time turn debt left by the modify_turns effect_kind (Stop):
+      // a reduction that couldn't land last round because the target was already
+      // out of turns. It lands on their genuine NEXT turn, then clears. Negative
+      // value; floored at 0 actions.
+      const debt = Number(c.flags?.pendingTurnDebt ?? 0);
+      if (debt < 0 && c.turnsRemaining > 0) {
+        c.turnsRemaining = Math.max(0, c.turnsRemaining + debt);
+        c.flags.pendingTurnDebt = 0;
+      }
     }
   }
 

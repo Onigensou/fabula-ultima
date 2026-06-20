@@ -159,6 +159,33 @@
     return null;
   };
 
+  // Observer-model Divination (RAW, Entropist): a creature OTHER than the checker
+  // may force the reroll using ITS OWN divination charges ("after a creature you
+  // can see performs a Check … you may force that creature to reroll"). Returns an
+  // actor the LOCAL user controls (GM → any) that holds divination charges and is
+  // NOT the checking actor (that's the self-path, handled by findDivinationAe).
+  // Client-local: each client offers the button iff it controls a charge-holder.
+  const findObserverDivinationActor = (checkingActorUuid) => {
+    for (const actor of (game.actors ?? [])) {
+      if (!actor?.isOwner) continue;
+      if (actor.uuid === checkingActorUuid) continue;
+      if (findDivinationAe(actor)) return actor;
+    }
+    return null;
+  };
+
+  // GM-side "is a divination reroll possible on this check at all" (self OR any
+  // observer anywhere) — broadcast via st.canDivination so the checker's client
+  // keeps the panel open (suppresses no-options auto-confirm) long enough for an
+  // observer to react. Per-client button visibility is refined in syncPanel.
+  const anyDivinationAvailable = (checkingActor) => {
+    if (findDivinationAe(checkingActor)) return true;
+    for (const actor of (game.actors ?? [])) {
+      if (actor !== checkingActor && findDivinationAe(actor)) return true;
+    }
+    return false;
+  };
+
   const consumeDivinationCharge = async (actor) => {
     const ae = findDivinationAe(actor);
     if (!ae) return { ok: false };
@@ -689,9 +716,19 @@
     // Invoke area
     const allowInvokes = ses.opts?.allowInvokes !== false;
     const canInvoke    = allowInvokes && isOwner && allRolled && !st.confirmed && !st.result?.isFumble;
+    // Divination (RAW observer-model): usable by the LOCAL client if it owns the
+    // check AND the checker holds a divination charge (self-path), OR it controls
+    // a DIFFERENT divination charge-holder (observer-path). Independent of isOwner;
+    // gated like the self-path (rolled, not confirmed, not crit/fumble, not used).
+    const divReady    = allowInvokes && allRolled && !st.confirmed
+      && !st.result?.isCrit && !st.result?.isFumble && !st.usedDivination;
+    const selfDivAe   = divReady ? findDivinationAe(st._actor) : null;
+    const obsDivActor = (divReady && !(isOwner && selfDivAe)) ? findObserverDivinationActor(st.actorUuid) : null;
+    st._obsDivActorUuid = obsDivActor?.uuid ?? null;
+    const divUsable   = !!((isOwner && selfDivAe) || obsDivActor);
     const anyInvoke    = st.canTrait || st.canBond || st.canDivination;
     const invokeEl = zone(el, "invoke");
-    const shouldShowInvoke = canInvoke && anyInvoke;
+    const shouldShowInvoke = (canInvoke && anyInvoke) || divUsable;
     showZone(el, "invoke", shouldShowInvoke);
     let invokeJustShown = false;
     if (shouldShowInvoke && !st._invokeShown && invokeEl) {
@@ -699,6 +736,7 @@
       invokeJustShown = true;
       invokeEl.classList.add("oni-cr-zone-slide-in");
     }
+    // Trait / Bond — self-only (owner of the check, spends the checker's FP).
     if (canInvoke && anyInvoke) {
       const applyBtn = (sel, used, can) => {
         const btn = el.querySelector(sel);
@@ -708,13 +746,16 @@
       };
       applyBtn("[data-action='trait']",      st.usedTrait,      st.canTrait);
       applyBtn("[data-action='bond']",       st.usedBond,       st.canBond);
+    }
+    // Divination — self OR observer; shown independent of check ownership.
+    {
       const divBtn = el.querySelector("[data-action='divination']");
       if (divBtn) {
-        if (!st.canDivination && !st.usedDivination) {
+        if (!divUsable && !st.usedDivination) {
           divBtn.style.display = "none";
         } else {
           divBtn.style.display = "";
-          divBtn.disabled = st.usedDivination || !st.canDivination;
+          divBtn.disabled = st.usedDivination || !divUsable;
           divBtn.classList.toggle("used", st.usedDivination);
         }
       }
@@ -1095,7 +1136,10 @@
     st._actor = actor; st._bonds = bonds;
     st.canTrait = fp >= 1;
     st.canBond  = fp >= 1 && bonds.length > 0;
-    st.canDivination = !!findDivinationAe(actor);
+    // Broadcast "divination possible" = self OR any observer (RAW observer-model).
+    // Keeps the panel open for an observer to force a reroll; per-client button
+    // visibility is decided locally in syncPanel.
+    st.canDivination = anyDivinationAvailable(actor);
     syncPanel(slot);
   }
 
@@ -1201,7 +1245,13 @@
   async function onInvokeClick(btn) {
     const { action, slot } = btn.dataset;
     const st0 = _session?.panelStates.get(slot);
-    if (!st0 || !canOwnerAct(st0.actorUuid)) return;
+    if (!st0) return;
+    const ownsCheck = canOwnerAct(st0.actorUuid);
+    // Divination may be invoked by an OBSERVER who doesn't own the check (RAW
+    // observer-model); trait/bond stay owner-only.
+    if (action === "divination") {
+      if (!ownsCheck && !st0._obsDivActorUuid) return;
+    } else if (!ownsCheck) return;
     globalThis.ONI?.CheckRequester?.Sound?.playInvoke();
     if (action === "trait")      await invokeTrait(slot);
     else if (action === "bond")  await invokeBond(slot);
@@ -1306,12 +1356,18 @@
     const st = ses.panelStates.get(slot);
     if (!st || st.usedDivination) return;
     if (st.result?.isCrit || st.result?.isFumble) { ui.notifications?.warn("Cannot reroll Critical or Fumble."); return; }
-    const actor = st._actor ?? await resolveActor(st.actorUuid);
-    if (!actor) return;
-    if (!findDivinationAe(actor)) { ui.notifications?.warn("No Divination charges remaining."); return; }
+    const checker = st._actor ?? await resolveActor(st.actorUuid);
+    // Whose charge pays: the checker's own (self-model) if present, else the local
+    // observer's (RAW observer-model — forcing a reroll on a creature you can see).
+    let chargeActor = (checker && findDivinationAe(checker)) ? checker : null;
+    if (!chargeActor) {
+      chargeActor = (st._obsDivActorUuid ? await resolveActor(st._obsDivActorUuid) : null)
+        ?? findObserverDivinationActor(st.actorUuid);
+    }
+    if (!chargeActor || !findDivinationAe(chargeActor)) { ui.notifications?.warn("No Divination charges remaining."); return; }
 
     const newA = await rollDie(st.dieA), newB = await rollDie(st.dieB);
-    const res  = await consumeDivinationCharge(actor);
+    const res  = await consumeDivinationCharge(chargeActor);
     if (!res.ok) { ui.notifications?.error("Failed to consume Divination charge."); return; }
 
     const isSingle = !!st.singleDie;

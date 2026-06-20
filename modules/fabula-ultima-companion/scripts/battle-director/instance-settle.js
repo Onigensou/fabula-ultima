@@ -71,13 +71,13 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
   // group after a queued free action drains (the deferred-action → return-to-
   // reaction-phase loop). We snapshot the ACTION-LEVEL trigger configs only
   // (the initial batch queued by resolveAction — not the transient ledger
-  // cascade) in a persistence-safe shape (actor UUID, not the live doc).
-  //
-  // No used-set: the re-offer re-collects candidates fresh, so a REPEATABLE
-  // reaction (Counter Pass — pay Adoration each time) re-offers while affordable
-  // and auto-skips once its cost/condition gate fails. A permanent "used" stamp
-  // would defeat exactly the chain-react fantasy this loop exists for. The loop
-  // terminates on Pass (no fire, no queue) or when nothing remains affordable.
+  // cascade) in a persistence-safe shape (actor UUID, not the live doc), and
+  // accumulate every fired reaction into a WINDOW-SCOPED used-set so the
+  // re-offer skips it. "Window-scoped" = this one action's resolution: the set
+  // is cleared at CLEANUP, so the next action starts fresh. This mirrors SRW's
+  // standaloneFired and is what makes a reaction once-per-window — re-offering
+  // surfaces OTHER reactions/reactors, never the same row twice, which also
+  // bounds the counter chain (no infinite Counter Pass on one miss).
   // Lifecycle (SRW) callers leave this false — SRW owns its own re-offer loop.
   if (recordForReoffer) {
     ctx._reactionWindowTriggers = ctx._postResolveTriggers
@@ -87,7 +87,15 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
         casterActorUuid: cfg?.casterActor?.uuid ?? null,
       }))
       .filter((c) => c.trigger);
+    if (!Array.isArray(ctx._postResolveUsed)) ctx._postResolveUsed = [];
   }
+  const rememberUsed = (f) => {
+    if (!recordForReoffer || f?.carrierUuid == null || f?.rowKey == null) return;
+    const key = `${f.carrierUuid}:${f.rowKey}`;
+    if (!ctx._postResolveUsed.some((e) => `${e.carrierUuid}:${e.rowKey}` === key)) {
+      ctx._postResolveUsed.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
+    }
+  };
 
   // Dynamic import keeps the cross-module hop cache-bust-friendly and avoids
   // any load-order coupling with the (large) skill-effects module.
@@ -144,11 +152,14 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
               if (f?.carrierUuid != null && f?.rowKey != null) {
                 firedThisPass.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
               }
+              rememberUsed(f);
             }
           }
         } else {
           const res = await firePassiveTriggers({ director, ...cfg });
-          fired += res?.fired?.length ?? 0;
+          const ff = res?.fired ?? [];
+          fired += ff.length;
+          for (const f of ff) rememberUsed(f);
         }
       } catch (e) {
         warn(`settleInstance(${reason}): drain threw for ${cfg?.trigger}`, e);
@@ -189,18 +200,32 @@ function resolveReactorToken(actor) {
 //     RESOLVE; re-running it would double-fire Burn/charges/crisis.
 //   - re-dispatches only the ACTION-LEVEL triggers (`triggers`, captured by
 //     settleInstance's recordForReoffer) — not the transient ledger cascade.
-//   - no skip set — candidates are re-collected fresh each pass, so a repeatable
-//     reaction re-offers while affordable and the menu auto-skips once its cost/
-//     condition gate fails (dispatchReactionMenu's allUnavailable guard). The
-//     reaction's OWN cost (consume_charge) is what bounds the chain, not engine
-//     bookkeeping.
+//   - threads the window's used-set (`used`) as skipEvaluated so a reaction
+//     already fired in this window isn't re-offered — once-per-window, which
+//     bounds the counter chain. Other (un-used) reactions still surface, so the
+//     window genuinely "re-opens" for everyone who hasn't acted yet.
+// Newly-fired rows are appended to the used-set (both the local skip list AND
+// ctx._postResolveUsed) so the NEXT loop iteration skips them too.
 // Returns `{ fired }` — the count that fired this pass. The caller (REACTION_
 // WINDOW) loops while the free-action queue keeps refilling.
-export async function reofferPostResolveReactions(director, { triggers } = {}) {
+export async function reofferPostResolveReactions(director, { triggers, used } = {}) {
   const ctx = director?.ctx;
   if (!ctx || !Array.isArray(triggers) || !triggers.length) return { fired: 0 };
   const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+  const skipEvaluated = Array.isArray(used) ? used.slice() : [];
   let fired = 0;
+
+  const remember = (f) => {
+    if (f?.carrierUuid == null || f?.rowKey == null) return;
+    const key = `${f.carrierUuid}:${f.rowKey}`;
+    if (!skipEvaluated.some((e) => `${e.carrierUuid}:${e.rowKey}` === key)) {
+      skipEvaluated.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
+    }
+    if (Array.isArray(ctx._postResolveUsed) &&
+        !ctx._postResolveUsed.some((e) => `${e.carrierUuid}:${e.rowKey}` === key)) {
+      ctx._postResolveUsed.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
+    }
+  };
 
   for (const cfg of triggers) {
     if (!cfg?.trigger) continue;
@@ -212,9 +237,9 @@ export async function reofferPostResolveReactions(director, { triggers } = {}) {
         for (const { actor, token } of reactors) {
           const r = await dispatchReactionMenu({
             director, reactor: actor, token,
-            trigger: cfg.trigger, payload: cfg.payload, phase: "ask",
+            trigger: cfg.trigger, payload: cfg.payload, skipEvaluated, phase: "ask",
           });
-          fired += (r?.fired?.length ?? 0);
+          for (const f of (r?.fired ?? [])) { fired += 1; remember(f); }
         }
       } else {
         // Subject-scoped — re-offer to the recorded caster only.
@@ -224,9 +249,9 @@ export async function reofferPostResolveReactions(director, { triggers } = {}) {
         if (!token) continue;
         const r = await dispatchReactionMenu({
           director, reactor, token,
-          trigger: cfg.trigger, payload: cfg.payload, phase: "ask",
+          trigger: cfg.trigger, payload: cfg.payload, skipEvaluated, phase: "ask",
         });
-        fired += (r?.fired?.length ?? 0);
+        for (const f of (r?.fired ?? [])) { fired += 1; remember(f); }
       }
     } catch (e) {
       warn(`reofferPostResolveReactions: dispatch threw for ${cfg.trigger}`, e);
