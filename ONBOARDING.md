@@ -194,6 +194,45 @@ read-back hash verify (auto-rollback on mismatch) → journal append.
 edit, probe `safe-edit check` up front. Don't reflexively prepare a
 console snippet — direct-disk is cleaner if the game's closed.
 
+## Submitting world data to a co-dev — `world-export` (READ BEFORE ANY PUSH)
+
+World content is shared between developers by **committing the binary
+LevelDB** under `worlds/<world>/data/`. Git can't diff binary, so content
+loss is invisible — a stale world re-pushed wholesale silently clobbers the
+other dev's authoring (this is how a fully-authored boss moveset was once
+rolled back to empty shells with a 2-line textual diff).
+
+`world-export` ([tools/safe-edit/WORLD-EXPORT.md](tools/safe-edit/WORLD-EXPORT.md))
+fixes this with a **companion layer**: it exports every authored document to
+its own readable JSON under `worlds/<world>/_authored-export/`, so changes are
+reviewable and a removed skill shows up as a deleted file. The LevelDB still
+ships and is still what Foundry loads — the JSON is a review surface + tripwire.
+
+**Mandatory before any world-data commit/push** (game closed):
+
+```bash
+node tools/safe-edit/bin/world-export.js report   # diff vs HEAD; flags losses
+```
+
+Review the removals it prints. If anything unexpected would be removed, STOP —
+your world is probably stale and you are about to clobber the other dev. Pull +
+load the latest world first, or scope your push to only your changed documents.
+
+**One-time setup (per clone — git config is not shared through the repo):**
+
+```bash
+git config core.hooksPath tools/safe-edit/hooks
+```
+
+This installs a pre-commit hook that blocks any world-data commit which would
+lose content. Read [tools/safe-edit/WORLD-EXPORT.md](tools/safe-edit/WORLD-EXPORT.md)
+for the full workflow (baselines, `--since-baseline` mid-session tracking, limits).
+
+> **If you use Claude Code / an AI assistant in this repo:** add the line
+> `@tools/safe-edit/WORLD-EXPORT.md` to your local `CLAUDE.md` so the workflow
+> auto-loads every session, or just tell it once: *"read
+> tools/safe-edit/WORLD-EXPORT.md and follow it before any world-data push."*
+
 ## Reaction system
 
 Subsystem that lets passive/declarative skill effects fire in response

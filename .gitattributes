@@ -4,3 +4,10 @@
 *.ldb      binary
 **/CURRENT binary
 **/MANIFEST-* binary
+
+# Authored-content JSON export (world-export tool) — pin to LF so autocrlf
+# doesn't rewrite every line and bury real changes in line-ending noise.
+worlds/*/_authored-export/**/*.json text eol=lf
+
+# Git hooks MUST stay LF — a CRLF shebang breaks `/bin/sh` on Unix/Git Bash.
+tools/safe-edit/hooks/* text eol=lf

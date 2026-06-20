@@ -80,6 +80,14 @@
 /worlds/fabula-ultima-2/test-bridge/
 
 # -----------------------------
+# world-export local checkpoint — `.baseline/` is a private "last reviewed"
+# snapshot for the `--since-baseline` workflow. Never shared; never committed.
+# The rest of _authored-export/ IS committed (it's the reviewable artifact).
+# -----------------------------
+
+/worlds/*/_authored-export/.baseline/
+
+# -----------------------------
 # Ignore archive / temp files
 # -----------------------------
 

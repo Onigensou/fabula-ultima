@@ -1,0 +1,55 @@
+#!/bin/sh
+# world-export pre-commit gate.
+#
+# When a commit stages this world's LevelDB data, regenerate the human-readable
+# authored-content export and BLOCK the commit if any document — or any skill
+# inside an existing actor — would be lost. This is the tripwire that makes the
+# Fafnir-style silent wipe (committed binary LevelDB, no reviewable diff)
+# impossible to ship by accident.
+#
+# Install (per clone — git config is not shared via the repo):
+#     git config core.hooksPath tools/safe-edit/hooks
+# Disable for one commit:  git commit --no-verify
+# Disable entirely:        git config --unset core.hooksPath
+#
+# See tools/safe-edit/bin/world-export.js for the tool itself.
+
+WORLD=fabula-ultima-2
+
+# Only act when this commit actually touches the world's LevelDB data.
+if ! git diff --cached --name-only | grep -q "^worlds/${WORLD}/data/"; then
+  exit 0
+fi
+
+# Which data collections did the user stage? We re-stage exactly these after the
+# export, since opening the LevelDB to read it renumbers the shards (LevelDB
+# compaction on close) — without re-staging, the commit would capture a manifest
+# the export just superseded. We never widen the user's chosen scope.
+staged_cols=$(git diff --cached --name-only \
+  | sed -n "s#^worlds/${WORLD}/data/\([^/]*\)/.*#\1#p" | sort -u)
+
+echo "[world-export] world data staged — regenerating authored-content export…"
+node tools/safe-edit/bin/world-export.js check --world "$WORLD"
+status=$?
+
+if [ "$status" -eq 3 ]; then
+  echo ""
+  echo "[world-export] ⛔ Foundry appears to be running (LevelDB locked)."
+  echo "  Close the world before committing its data, then commit again."
+  exit 1
+elif [ "$status" -ne 0 ]; then
+  echo ""
+  echo "[world-export] ⛔ commit blocked: authored content would be LOST (see removals above)."
+  echo "  If the removal is intentional, re-run with:  git commit --no-verify"
+  echo "  Otherwise restore the dropped documents before committing."
+  exit 1
+fi
+
+# Refresh the data collections the export just renumbered, and keep the JSON
+# export in lock-step with the LevelDB being committed.
+for col in $staged_cols; do
+  git add "worlds/${WORLD}/data/${col}"
+done
+git add "worlds/${WORLD}/_authored-export"
+echo "[world-export] ✓ no losses; export + data re-staged consistently."
+exit 0
